@@ -83,7 +83,7 @@ import { AppDependenciesComponent } from './components/app-dependencies/app-depe
 import { HighchartsChartModule } from 'highcharts-angular';
 import { HighchartsGraphComponent } from './components/highcharts-graph/highcharts-graph.component';
 import { FabNavModule } from './components/fab-nav/fab-nav.module';
-import { FabPanelModule, FabIconModule, FabChoiceGroupModule, FabCommandBarModule, FabSearchBoxModule, FabDropdownModule, FabDetailsListModule, FabTextFieldModule, FabMessageBarModule, FabButtonModule, FabTooltipModule, FabSpinnerModule, FabCalloutModule, FabCheckboxModule, FabPivotModule, FabLinkModule, FabBreadcrumbModule } from '@angular-react/fabric';
+import { FabPanelModule, FabIconModule, FabChoiceGroupModule, FabSearchBoxModule, FabDropdownModule, FabDetailsListModule, FabTextFieldModule, FabMessageBarModule, FabButtonModule, FabTooltipModule, FabSpinnerModule, FabCalloutModule, FabCheckboxModule, FabPivotModule, FabLinkModule, FabBreadcrumbModule, FabCommandBarModule } from '@angular-react/fabric';
 import { SummaryCardsComponent } from './components/summary-cards/summary-cards.component';
 import { InsightsV4Component } from './components/insights-v4/insights-v4.component';
 import { CardSelectionV4Component } from './components/card-selection-v4/card-selection-v4.component';
@@ -122,6 +122,7 @@ import { RouterModule } from '@angular/router';
 import { ButtonStepComponent } from './components/step-views/button-step-view/button-step.component';
 import { FabCoachmarkModule } from './modules/fab-coachmark/coachmark.module';
 import { FabTeachingBubbleModule } from './modules/fab-teachingbubble/teachingbubble.module';
+import { HighChartsHoverService } from './services/highcharts-hover.service';
 
 @NgModule({
   imports: [
@@ -198,6 +199,7 @@ import { FabTeachingBubbleModule } from './modules/fab-teachingbubble/teachingbu
     CollapsibleListComponent,
     CollapsibleListFabricComponent,
     CollapsibleListItemComponent,
+    // FabCardComponent,
     InputStepComponent,
     StepViewsRendererComponent,
     InfoStepComponent,
@@ -243,6 +245,7 @@ import { FabTeachingBubbleModule } from './modules/fab-teachingbubble/teachingbu
     SolutionOrchestratorComponent,
     FabCoachmarkModule,
     FabTeachingBubbleModule,
+    FabTabComponent
   ],
 })
 export class DiagnosticDataModule {
@@ -265,7 +268,8 @@ export class DiagnosticDataModule {
         FeatureNavigationService,
         AppInsightsQueryService,
         ParseResourceService,
-        FabNavModule
+        FabNavModule,
+        HighChartsHoverService
       ]
     };
   }

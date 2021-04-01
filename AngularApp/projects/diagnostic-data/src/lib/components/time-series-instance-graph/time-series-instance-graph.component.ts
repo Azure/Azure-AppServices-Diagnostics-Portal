@@ -42,7 +42,8 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
 
   timeGrainInMinutes: number = 5;
   useHighchart: boolean = true;
-
+  // showMetrics: boolean = false;
+  showMetrics: boolean = true;
   processData(data: DiagnosticData) {
     super.processData(data);
 
@@ -66,6 +67,10 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
       if (this.graphOptions != undefined && this.graphOptions.useHighchart != undefined)
       {
         this.useHighchart = this.graphOptions && this.graphOptions.useHighchart &&  this.graphOptions.useHighchart === "true";
+      }
+
+      if(this.renderingProperties.showMetrics != undefined) {
+        this.showMetrics = this.renderingProperties.showMetrics;
       }
     }
   }
