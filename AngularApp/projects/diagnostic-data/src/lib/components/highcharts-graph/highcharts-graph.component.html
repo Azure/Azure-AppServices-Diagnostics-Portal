@@ -1,5 +1,14 @@
-<highcharts-chart *ngIf="HighchartData && !loading" [Highcharts]="Highcharts" [options]="options" style="display: block;">
+<highcharts-chart *ngIf="HighchartData && !loading" [Highcharts]="Highcharts" [options]="options"
+  style="display: block;">
 </highcharts-chart>
 <div *ngIf="!HighchartData || loading" style="height:200px">
   <i class="fa fa-circle-o-notch fa-spin"></i>
+</div>
+
+<div *ngIf="showMetrics && hoverData.length > 0" style="display: flex; flex-wrap: wrap;">
+  <div *ngFor="let data of hoverData" class="mr-5 pl-3" style="border-left:10px solid; width: 150px;"
+  [ngStyle]="{'border-left-color' : data.color}">
+    <h5 style="overflow-wrap: break-word;font-size: 10px;"><strong>{{data.name}}</strong></h5>
+    <h4 style="font-size: 18px;"><strong>{{data.value}}</strong></h4>
+  </div>
 </div>
