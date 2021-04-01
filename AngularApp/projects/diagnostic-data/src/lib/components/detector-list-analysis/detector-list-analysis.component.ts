@@ -29,6 +29,7 @@ import { GenericResourceService } from '../../services/generic-resource-service'
 import { zoomBehaviors } from '../../models/time-series';
 import * as momentNs from 'moment';
 const moment = momentNs;
+import { PanelType } from 'office-ui-fabric-react';
 
 const WAIT_TIME_IN_SECONDS_TO_ALLOW_DOWNTIME_INTERACTION: number = 58;
 const PERCENT_CHILD_DETECTORS_COMPLETED_TO_ALLOW_DOWNTIME_INTERACTION: number = 0.9;
@@ -79,6 +80,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     loadingChildDetectors: boolean = false;
     appInsights: any;
     allSolutions: Solution[] = [];
+    allSolutionsMap: Map<string, Solution[]> = new Map<string,Solution[]>();
     loadingMessages: string[] = [];
     loadingMessageIndex: number = 0;
     loadingMessageTimer: any;
@@ -111,6 +113,8 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     public inDrillDownMode: boolean = false;
     drillDownDetectorId: string = '';
     totalChildDetectorsLoaded: number = 0;
+    solutionPanelOpen: boolean = false;
+    solutionPanelType: PanelType = PanelType.custom;
 
     constructor(public _activatedRoute: ActivatedRoute, private _router: Router,
         private _diagnosticService: DiagnosticService, private _detectorControl: DetectorControlService,
@@ -684,12 +688,13 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
 
             // now populate solutions for all the insights
             allInsights.forEach(i => {
-                if (i.solutions != null) {
-                    i.solutions.forEach(s => {
-                        if (this.allSolutions.findIndex(x => x.Name === s.Name) === -1) {
-                            this.allSolutions.push(s);
-                        }
-                    });
+                if (i.solutions != null && i.solutions.length > 0) {
+                    // i.solutions.forEach(s => {
+                    //     if (this.allSolutions.findIndex(x => x.Name === s.Name) === -1) {
+                    //         this.allSolutions.push(s);
+                    //     }
+                    // });
+                    this.allSolutionsMap.set(viewModel.title, i.solutions);
                 }
             });
         }
@@ -909,5 +914,16 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
             }, 3000)
         }, 4000);
     }
+
+    openSolutionPanel(title: string) {
+        this.allSolutions = this.allSolutionsMap.get(title);
+        this.solutionPanelOpen = true;
+    }
+
+    dismissSolutionPanel() {
+        this.solutionPanelOpen = false;
+    }
+
+
 }
 
