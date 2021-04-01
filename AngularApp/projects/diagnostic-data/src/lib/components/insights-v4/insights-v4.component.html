@@ -1,11 +1,9 @@
 <!-- This is the common template for rendering insights.
      If there is a title I will wrap it in a container,
      otherwise I will show it by itself -->
-     <ng-template #insightView>
-      <div *ngFor="let insight of insights" class="insight-container" attr.name="{{insight.title}}"
-        attr.aria-label="{{insight.title}}" attr.aria-expanded="{{insight.isExpanded}}" role="button"
-        (keyup.enter)="toggleInsightStatus(insight)">
-        <div div class="panel insight-panel">
+<ng-template #insightView>
+  <div *ngFor="let insight of insights">
+    <!-- <div div class="panel insight-panel">
           <div class="panel-heading" (click)="toggleInsightStatus(insight)">
             <h5 class="panel-title" [class.clickable-header]="hasContent(insight)">
               <div style="display: table;">
@@ -54,17 +52,52 @@
             </table>
           </div>
 
+        </div> -->
+    <fab-card [isExpandable]="hasContent(insight)" [expanded]="hasContent(insight) && insight.isExpanded">
+      <div header>
+        <div style="display: flex;align-items: center;min-height: 40px;">
+          <status-icon class="mr-3" [loading]="LoadingStatus.Success" [status]="InsightStatus.Warning" [size]="20"></status-icon>
+          <div><strong>{{insight.title}}</strong></div>
         </div>
       </div>
-    </ng-template>
 
-    <!-- If there is title wrap it in container -->
-    <data-container *ngIf="renderingProperties.title; else noContainer" [title]="renderingProperties.title"
-      [description]="renderingProperties.description">
-      <ng-container *ngTemplateOutlet="insightView"></ng-container>
-    </data-container>
+      <div body>
+        <table>
+          <tbody>
+            <tr *ngFor="let key of insight.getKeys()">
+              <td class="table-key">
+                <b>{{key}}</b>
+              </td>
+              <td class="table-value">
+                <markdown-text [markdownData]="insight.data[key]" [detector]="detector"></markdown-text>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <!-- If there is no title, do not use container. Note this is called from the else statement in the *ngIf above -->
-    <ng-template #noContainer>
-      <ng-container *ngTemplateOutlet="insightView"></ng-container>
-    </ng-template>
+      <div *ngIf="hasSolutions(insight)" footer>
+        <fab-primary-button (onClick)="openSolutionPanel(insight)">View Solutions</fab-primary-button>
+      </div>
+    </fab-card>
+  </div>
+</ng-template>
+
+<fab-panel [isOpen]="solutionPanelOpen" [type]="solutionPanelType" [customWidth]="'800px'" [isHiddenOnDismiss]="true"
+ [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'" (onDismissed)="dismissSolutionPanel()">
+  <div *ngFor="let solution of solutions;let i = index">
+    <h4 *ngIf="solutions.length > 1">Step -- {{i + 1}}</h4>
+    <solution  [data]="solution"></solution>
+  </div>
+</fab-panel>
+
+<!-- If there is title wrap it in container -->
+<data-container *ngIf="renderingProperties.title; else noContainer" [title]="renderingProperties.title"
+  [description]="renderingProperties.description">
+  <ng-container *ngTemplateOutlet="insightView"></ng-container>
+</data-container>
+
+<!-- If there is no title, do not use container. Note this is called from the else statement in the *ngIf above -->
+<ng-template #noContainer>
+  <ng-container *ngTemplateOutlet="insightView"></ng-container>
+</ng-template>
