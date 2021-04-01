@@ -6,7 +6,8 @@
 
 <ng-template #highchartGraphView>
 <highcharts-graph [HighchartData]="selectedHighChartSeries" [chartDescription]="renderingProperties.description" [chartType]="renderingProperties.graphType" [chartOptions]="graphOptions"
-[xAxisPlotBands]="xAxisPlotBands" [zoomBehavior] = "zoomBehavior" (XAxisSelection)="onXAxisSelection($event)">
+[xAxisPlotBands]="xAxisPlotBands" [zoomBehavior] = "zoomBehavior" (XAxisSelection)="onXAxisSelection($event)"
+[showMetrics]="showMetrics">
 </highcharts-graph >
   <div *ngIf="!selectedSeries">Loading Data...</div>
 </ng-template>

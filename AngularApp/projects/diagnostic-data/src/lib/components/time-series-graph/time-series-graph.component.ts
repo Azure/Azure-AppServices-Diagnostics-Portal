@@ -41,7 +41,8 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
     useHighchart: boolean = true;
 
     timeGrain: momentNs.Duration;
-
+    // showMetrics: boolean = false;
+    showMetrics: boolean = true;
     processData(data: DiagnosticData) {
         super.processData(data);
 
@@ -56,6 +57,9 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
             this.customizeXAxis = this.graphOptions && this.graphOptions.customizeX && this.graphOptions.customizeX === 'true';
             this.timeGrain = this._getInitialTimegrain();
             this.dataTable = data.table;
+            if(this.renderingProperties.showMetrics != undefined) {
+                this.showMetrics = this.renderingProperties.showMetrics;
+            }
             this._processDiagnosticData(data);
             this.selectSeries();
         }
