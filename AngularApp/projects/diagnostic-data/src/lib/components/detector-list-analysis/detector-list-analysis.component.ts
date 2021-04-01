@@ -26,6 +26,7 @@ import { SolutionService } from '../../services/solution.service';
 import { PortalActionGenericService } from '../../services/portal-action.service';
 import {detectorSearchEnabledPesIds, detectorSearchEnabledPesIdsInternal } from '../../models/search';
 import { GenericResourceService } from '../../services/generic-resource-service';
+import { PanelType } from 'office-ui-fabric-react';
 
 @Component({
     selector: 'detector-list-analysis',
@@ -70,6 +71,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     loadingChildDetectors: boolean = false;
     appInsights: any;
     allSolutions: Solution[] = [];
+    allSolutionsMap: Map<string, Solution[]> = new Map<string,Solution[]>();
     loadingMessages: string[] = [];
     loadingMessageIndex: number = 0;
     loadingMessageTimer: any;
@@ -101,6 +103,8 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     readonly stringFormat: string = 'YYYY-MM-DDTHH:mm';
     public inDrillDownMode: boolean = false;
     drillDownDetectorId: string = '';
+    solutionPanelOpen: boolean = false;
+    solutionPanelType: PanelType = PanelType.custom;
 
     constructor(public _activatedRoute: ActivatedRoute, private _router: Router,
         private _diagnosticService: DiagnosticService, private _detectorControl: DetectorControlService,
@@ -643,12 +647,13 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
 
             // now populate solutions for all the insights
             allInsights.forEach(i => {
-                if (i.solutions != null) {
-                    i.solutions.forEach(s => {
-                        if (this.allSolutions.findIndex(x => x.Name === s.Name) === -1) {
-                            this.allSolutions.push(s);
-                        }
-                    });
+                if (i.solutions != null && i.solutions.length > 0) {
+                    // i.solutions.forEach(s => {
+                    //     if (this.allSolutions.findIndex(x => x.Name === s.Name) === -1) {
+                    //         this.allSolutions.push(s);
+                    //     }
+                    // });
+                    this.allSolutionsMap.set(viewModel.title, i.solutions);
                 }
             });
         }
@@ -868,5 +873,16 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
             }, 3000)
         }, 4000);
     }
+
+    openSolutionPanel(title: string) {
+        this.allSolutions = this.allSolutionsMap.get(title);
+        this.solutionPanelOpen = true;
+    }
+
+    dismissSolutionPanel() {
+        this.solutionPanelOpen = false;
+    }
+
+
 }
 

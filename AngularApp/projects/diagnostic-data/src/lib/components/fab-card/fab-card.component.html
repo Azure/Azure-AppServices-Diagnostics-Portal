@@ -1,0 +1,22 @@
+<div class="card">
+  <div class="card-container">    
+    <div class="btn-outer" [attr.aria-expanded]="ariaExpaned"  class="list-header" [attr.aria-label]="ariaLabel">
+      <div style="display: flex; align-items: baseline;" class="btn-inner">
+        <button *ngIf="isExpandable" class="custom-caret" [class.custom-caret-down]="!expanded" (click)="toggleExpand()">
+          <fab-icon iconName="ChevronUp" ariaLabel="ChevronUp"></fab-icon>
+        </button>
+        <div style="display: flex;margin-left: 8px;">
+          <ng-content select="[header]"></ng-content>
+        </div>
+      </div>
+    </div>
+    
+
+    <div>
+      <ng-content *ngIf="expanded" select="[body]"></ng-content>
+    </div>
+    <div>
+      <ng-content select="[footer]"></ng-content>
+    </div>
+  </div>
+</div>
