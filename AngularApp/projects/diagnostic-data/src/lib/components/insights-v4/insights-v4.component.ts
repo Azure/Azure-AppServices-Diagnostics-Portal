@@ -4,6 +4,9 @@ import { RenderingType, InsightsRendering, HealthStatus, DiagnosticData } from "
 import { Insight, InsightUtils } from "../../models/insight";
 import { TelemetryService } from "../../services/telemetry/telemetry.service";
 import { TelemetryEventNames } from "../../services/telemetry/telemetry.common";
+import { LoadingStatus } from "../../models/loading";
+import { PanelType } from "office-ui-fabric-react";
+import { Solution } from "dist/diagnostic-data/lib/components/solution/solution";
 
 
 @Component({
@@ -19,6 +22,11 @@ export class InsightsV4Component extends DataRenderBaseComponent {
   public insights: Insight[];
 
   InsightStatus = HealthStatus;
+  LoadingStatus = LoadingStatus;
+
+  solutions: Solution[] = [];
+  solutionPanelOpen: boolean = false;
+  solutionPanelType: PanelType = PanelType.custom;
 
   constructor(protected telemetryService: TelemetryService) {
     super(telemetryService);
@@ -63,5 +71,14 @@ export class InsightsV4Component extends DataRenderBaseComponent {
       insight.isHelpful = isHelpful;
       this.logEvent(TelemetryEventNames.InsightRated, eventProps);
     }
+  }
+
+  openSolutionPanel(insight: Insight) {
+    this.solutionPanelOpen = true;
+    this.solutions = insight.solutions;
+  }
+
+  dismissSolutionPanel(){
+    this.solutionPanelOpen = false;
   }
 }

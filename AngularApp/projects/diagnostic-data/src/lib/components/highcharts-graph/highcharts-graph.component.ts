@@ -4,11 +4,11 @@ import { TimeSeriesType } from '../../models/detector';
 import HC_exporting from 'highcharts/modules/exporting';
 import AccessibilityModule from 'highcharts/modules/accessibility';
 import { DetectorControlService } from '../../services/detector-control.service';
-import { HighChartTimeSeries } from '../../models/time-series';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection } from '../../models/time-series';
 import { KeyValue } from '@angular/common';
 import { PointerEventObject } from 'highcharts';
 import { interval, Subscription } from 'rxjs';
+import { HighChartsHoverService } from '../../services/highcharts-hover.service';
 
 declare var require: any
 var Highcharts = require('highcharts'),
@@ -40,6 +40,7 @@ export class HighchartsGraphComponent implements OnInit {
 
     @Input() endTime: momentNs.Moment;
 
+    @Input() showMetrics: boolean;
     private _xAxisPlotBands: xAxisPlotBand[] = null;
     @Input() public set xAxisPlotBands(value: xAxisPlotBand[]) {
         this._xAxisPlotBands = [];
@@ -53,6 +54,8 @@ export class HighchartsGraphComponent implements OnInit {
         return this._xAxisPlotBands;
     }
 
+    public hoverData: { name: string, value: string, color: string }[] = [];
+    private currentChartId: string;
     public static chartProperties: { [chartContainerId: string]: KeyValue<string, any>[] } = {};
     public static getChartProperty(propertyName: string, chartContainerId: string): any {
         if (chartContainerId != '') {
@@ -443,7 +446,7 @@ export class HighchartsGraphComponent implements OnInit {
 
     @HostListener('mousemove', ['$event'])
     onMouseMove(ev: MouseEvent) {
-        this.syncCharts(ev);
+        this.syncCharts();
     }
 
     @HostListener('keydown', ['$event'])
@@ -467,7 +470,7 @@ export class HighchartsGraphComponent implements OnInit {
         }
     }
 
-    constructor(private detectorControlService: DetectorControlService, private el: ElementRef<HTMLElement>) {
+    constructor(private detectorControlService: DetectorControlService, private el: ElementRef<HTMLElement>, private highChartsHoverService: HighChartsHoverService) {
     }
 
     ngOnInit() {
@@ -477,30 +480,46 @@ export class HighchartsGraphComponent implements OnInit {
         setTimeout(() => {
             this.loading = false;
         }, 100);
+
+
+
+        setTimeout(() => {
+            let currentCharts = this.el.nativeElement.getElementsByClassName('highcharts-container');
+            this.currentChartId = currentCharts[0].id;
+            this.highChartsHoverService.hoverXAxisValue.subscribe(data => {
+                this.updateLabel(data);
+            });
+
+
+
+            const chart = Highcharts.charts.find(c => c && c.container.id === this.currentChartId);
+            if (!chart) return;
+            chart.series.forEach(item => {
+                this.hoverData.push({
+                    name: item.name,
+                    color: item.color,
+                    value: "--"
+                });
+            });
+
+        }, 300);
     }
 
-    private syncCharts(ev: MouseEvent) {
+    private syncCharts() {
         let xAxisValue: number;
-
         let currentCharts = this.el.nativeElement.getElementsByClassName('highcharts-container');
         if (!currentCharts || !currentCharts[0]) {
             return;
         }
         let currentId = currentCharts[0].id;
-
-        // Find out which is the current chart object
         for (let i = 0; i < Highcharts.charts.length; i++) {
-            let chart = Highcharts.charts[i];
+            let chart = <Highcharts.Chart>Highcharts.charts[i];
             if (chart) {
                 if (currentId === chart.container.id) {
-                    //Add width of side-nav in Diag&Solve so cursor will align with vertical line
-                    const sideNav = <HTMLElement>document.getElementById('sidebar');
-                    let sideNavWidth = sideNav ? sideNav.offsetWidth : 0;
-                    let bbLeft = this.el.nativeElement.offsetLeft + chart.plotLeft + sideNavWidth;
-
-                    // Get the timestamp value where mouse is hovering
-                    xAxisValue = chart.xAxis[0].toValue(ev.pageX - bbLeft, true);
+                    if (chart.hoverPoint && chart.hoverPoint.category) xAxisValue = Number.parseFloat(chart.hoverPoint.category);
                     chart.xAxis[0].crosshair = false;
+                    this.highChartsHoverService.hoverXAxisValue.next(xAxisValue);
+
                     break;
                 }
             }
@@ -520,6 +539,34 @@ export class HighchartsGraphComponent implements OnInit {
                 });
             }
         }
+    }
+
+    private renderTooltipCallback: Highcharts.TooltipFormatterCallbackFunction = function (tooltip) {
+        const formattedDate = moment.utc(this.x).format("dddd, MMM DD,HH:mm");
+        return formattedDate;
+    }
+
+    private legendItemClickCallback: Highcharts.PointLegendItemClickCallbackFunction = function (legend) {
+
+    }
+
+    private updateLabel(xAxisValue: number) {
+        if (!this.showMetrics) return;
+        //Mouse hover to outside of graph
+        if (xAxisValue === undefined || xAxisValue === null) {
+            this.hoverData.forEach(data => {
+                data.value = "--";
+            });
+            return;
+        }
+        const chart = Highcharts.charts.find(c => c && c.container.id === this.currentChartId);
+        if (!chart) return;
+        const xAxisIndex = chart.series[0].xData.findIndex(item => item === xAxisValue);
+        if (xAxisIndex < 0) return;
+        this.hoverData.forEach((data, legendIndex) => {
+            const value = chart.series[legendIndex].data[xAxisIndex].y
+            data.value = value.toFixed(2).toString()
+        });
     }
 
     private _updateOptions() {
@@ -588,6 +635,10 @@ export class HighchartsGraphComponent implements OnInit {
         if (this.startTime && this.endTime) {
             this.options.forceX = [this.startTime, this.endTime];
         }
+
+        if (this.showMetrics) {
+            this.options.tooltip.formatter = this.renderTooltipCallback
+        }
     }
 
     private _updateObject(obj: Object, replacement: any): Object {
@@ -620,6 +671,7 @@ export class HighchartsGraphComponent implements OnInit {
             credits: {
                 enabled: false
             },
+            colors: ["#0078D4", "#EF6950", "#00188F", "#00A2AD", "#4B003F", "#E3008C", "#022F22"],
             accessibility: {
                 enabled: true,
                 describeSingleSeries: true,
@@ -677,7 +729,7 @@ export class HighchartsGraphComponent implements OnInit {
                         chart.customNamespace["toggleSelectionButton"].attr({
                             x: this.plotWidth - 20,
                         });
-                    }
+                    },
                 },
             },
             legend: {
