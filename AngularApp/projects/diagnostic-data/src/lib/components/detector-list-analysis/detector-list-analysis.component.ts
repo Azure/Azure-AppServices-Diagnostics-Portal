@@ -687,14 +687,15 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
             insight = { title: detectorInsight.title, description: description };
 
             // now populate solutions for all the insights
+            const solutions:Solution[] = [];
             allInsights.forEach(i => {
                 if (i.solutions != null && i.solutions.length > 0) {
-                    // i.solutions.forEach(s => {
-                    //     if (this.allSolutions.findIndex(x => x.Name === s.Name) === -1) {
-                    //         this.allSolutions.push(s);
-                    //     }
-                    // });
-                    this.allSolutionsMap.set(viewModel.title, i.solutions);
+                    i.solutions.forEach(s => {
+                        if (solutions.findIndex(x => x.Name === s.Name) === -1) {
+                            solutions.push(s);
+                        }
+                    });
+                    this.allSolutionsMap.set(viewModel.title, solutions);
                 }
             });
         }
