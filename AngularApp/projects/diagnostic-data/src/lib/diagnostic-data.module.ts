@@ -119,6 +119,7 @@ import { CheckStepComponent } from './components/step-views/check-step-view/chec
 import { CheckComponent, ConvertLevelToHealthStatusPipe } from './components/step-views/check-step-view/check.component';
 import { ButtonStepComponent } from './components/step-views/button-step-view/button-step.component';
 import { HighChartsHoverService } from './services/highcharts-hover.service';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   imports: [
@@ -130,6 +131,7 @@ import { HighChartsHoverService } from './services/highcharts-hover.service';
     MonacoEditorModule.forRoot(),
     CustomMaterialModule,
     HighchartsChartModule,
+    RouterModule,
     FabPanelModule,
     FabIconModule,
     FabChoiceGroupModule,
