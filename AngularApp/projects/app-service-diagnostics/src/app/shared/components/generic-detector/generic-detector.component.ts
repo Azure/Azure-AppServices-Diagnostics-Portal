@@ -26,6 +26,7 @@ export class GenericDetectorComponent implements OnDestroy {
         this._activatedRoute.paramMap.subscribe(params => {
             let currAnalysisId = params.get('analysisId');
             let currDetetctor = params.get('detectorName');
+            let drilldownDetector = params.get('drilldownDetectorName');
             if (!!currAnalysisId) {
                 this.analysisDetector = currAnalysisId;
                 if (!!currDetetctor) {
@@ -38,6 +39,8 @@ export class GenericDetectorComponent implements OnDestroy {
             else {
                 if (!!currDetetctor) {
                     this.detector = currDetetctor;
+                }else if(!!drilldownDetector) {
+                    this.detector = drilldownDetector;
                 }
             }
 
