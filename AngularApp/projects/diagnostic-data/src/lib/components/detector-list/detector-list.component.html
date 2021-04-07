@@ -49,3 +49,90 @@
     </div>
   </div>
 </ng-template>
+
+<ng-container *ngIf="!inDrillDownMode else drilldownTemplate">
+  <div *ngIf="issueDetectedViewModels.length > 0">
+    <collapsible-list-fabric [collapsed]="false" [title]="'Observation and Solutions'">
+      <collapsible-list-item body>
+        <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
+          <fab-card [expanded]="true">
+            <div header>
+              <div style="display: flex;align-items: center;min-height: 40px;">
+                <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"
+                  [size]="20"></status-icon>
+                <div><strong>{{viewModel.model.title}}</strong></div>
+              </div>
+              <div class="mt-2 mb-2"><strong>{{viewModel.insightTitle}}</strong></div>
+            </div>
+            <div body>
+              <markdown [data]="viewModel.insightDescription"></markdown>
+            </div>
+            <div footer>
+              <div style="display: flex;align-items: center;">
+                <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" contentClass="mr-5"
+                  (onClick)="openSolutionPanel(viewModel.model.title)">View Solutions</fab-primary-button>
+                <fab-link (onClick)="selectDetector(viewModel)">Go to detector</fab-link>
+              </div>
+            </div>
+          </fab-card>
+        </div>
+      </collapsible-list-item>
+    </collapsible-list-fabric>
+  </div>
+
+  <br />
+
+  <div *ngIf="successfulViewModels.length > 0">
+    <collapsible-list-fabric [collapsed]="true" [title]="'Successful Checks'">
+      <collapsible-list-item body>
+        <div class="list-text">
+          <div *ngFor="let viewModel of successfulViewModels" style="margin-bottom: 8px;">
+            <fab-card [expanded]="false">
+              <div header>
+                <div style="display: flex;align-items: center;min-height: 40px;">
+                  <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"
+                    [size]="20"></status-icon>
+                  <div><strong>{{viewModel.model.title}}</strong></div>
+                </div>
+              </div>
+              <div body>
+                <span>{{viewModel.insightTitle}}</span>
+                <fab-link (onClick)="selectDetector(viewModel)" contentStyle="margin-left: 2em;">Go to detector
+                </fab-link>
+              </div>
+            </fab-card>
+          </div>
+        </div>
+      </collapsible-list-item>
+    </collapsible-list-fabric>
+  </div>
+</ng-container>
+
+<ng-template #drilldownTemplate>
+  <div>
+    <div style="display: inline-block;margin-left: 20px">
+      <h2>{{ drilldownDetectorName }}</h2>
+    </div>
+    <div style="display: inline-block;margin-left: 10px">
+      <a tabindex="0" (keyup.enter)="goBackToParentView()" aria-label="Link to go back to the analysis view" role="button"
+        (click)="goBackToParentView()">Back to Observations</a>
+    </div>
+  </div>
+  <router-outlet></router-outlet>
+</ng-template>
+
+
+<fab-panel [isOpen]="solutionPanelOpen" [type]="solutionPanelType" [customWidth]="'800px'" [isHiddenOnDismiss]="true"
+  [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
+  (onDismissed)="dismissSolutionPanel()">
+  <!-- <solution-display-item *ngFor="let solution of allSolutions; index as i"
+ [title]="solution.Title" [titleTag]="solution.TypeTag" [index]="i">
+
+</solution-display-item> -->
+  <div *ngFor="let solution of allSolutions,let i = index" class="mb-7">
+    <h2><strong>Step -- {{i + 1}}</strong></h2>
+    <br />
+    <solution [data]="solution"></solution>
+    <br />
+  </div>
+</fab-panel>

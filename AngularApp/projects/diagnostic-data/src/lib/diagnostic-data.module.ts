@@ -123,6 +123,7 @@ import { ButtonStepComponent } from './components/step-views/button-step-view/bu
 import { FabCoachmarkModule } from './modules/fab-coachmark/coachmark.module';
 import { FabTeachingBubbleModule } from './modules/fab-teachingbubble/teachingbubble.module';
 import { HighChartsHoverService } from './services/highcharts-hover.service';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   imports: [
@@ -134,6 +135,7 @@ import { HighChartsHoverService } from './services/highcharts-hover.service';
     MonacoEditorModule.forRoot(),
     CustomMaterialModule,
     HighchartsChartModule,
+    RouterModule,
     FabPanelModule,
     FabIconModule,
     FabChoiceGroupModule,
