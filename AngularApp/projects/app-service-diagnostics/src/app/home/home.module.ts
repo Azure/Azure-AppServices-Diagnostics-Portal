@@ -187,6 +187,16 @@ export const HomeRoutes = RouterModule.forChild([
                         data: {
                             cacheComponent: true
                         },
+                        children:[
+                            {
+                                path: 'drilldownDetector/:drilldownDetectorName',
+                                component: GenericDetectorComponent,
+                                data: {
+                                    cacheComponent: false,
+                                    analysisMode: true
+                                }
+                            }
+                        ],
                         resolve: {
                             time: TimeControlResolver,
                             navigationTitle: TabTitleResolver,
