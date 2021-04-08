@@ -106,7 +106,7 @@
             <collapsible-list-fabric [collapsed]="false" [title]="'Observation and Solutions'">
               <collapsible-list-item body>
                 <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
-                  <fab-card [expanded]="true">
+                  <fab-card [expanded]="true" [isExpandable]="!!viewModel.insightDescription">
                     <div header>
                       <div style="display: flex;align-items: center;min-height: 40px;">
                         <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"
@@ -265,6 +265,8 @@
                   </div>
                   <div body>
                     <span>{{viewModel.insightTitle}}</span>
+                  </div>
+                  <div footer>
                     <fab-link (onClick)="selectDetector(viewModel)" contentStyle="margin-left: 2em;">Go to detector</fab-link>
                   </div>
                 </fab-card>

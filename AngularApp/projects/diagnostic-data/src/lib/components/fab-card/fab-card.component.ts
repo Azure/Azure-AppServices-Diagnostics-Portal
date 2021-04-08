@@ -1,4 +1,4 @@
-import { Component, Input, } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'fab-card',
@@ -14,7 +14,6 @@ export class FabCardComponent {
     return this.expanded ? "true" : "false";
   }
   toggleExpand() {
-    console.log("toggled");
     this.expanded = !this.expanded;
   }
 }
