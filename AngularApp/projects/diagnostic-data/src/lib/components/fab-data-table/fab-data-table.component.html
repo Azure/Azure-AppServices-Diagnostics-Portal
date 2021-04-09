@@ -1,0 +1,43 @@
+<div>
+  <div style="display: flex;align-items: baseline;">
+    <div *ngIf="allowColumnSearch" class="text-field">
+      <fab-search-box #fabSearchBox [value]="searchValue" (onChange)="updateSearchValue($event)" (onFocus)="focusSearchBox()" [placeholder]="searchAriaLabel"></fab-search-box>
+    </div>
+    <!-- Filters -->
+    <div *ngIf="tableFilters.length > 0" style="display: flex;">
+      <div *ngFor="let filter of tableFilters;let i = index" style="margin-left: 16px;">
+        <fab-data-table-filter [tableFilter]=filter [options]="getOptionsWithColName(filter.columnName)" (onFilterUpdate)="updateFilter(filter.columnName,$event)" [index]="i" [tableId]="tableId"></fab-data-table-filter>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="description" style="margin:16px 0px;">
+    <markdown-text [markdownData]="description"></markdown-text>
+  </div>
+
+  <div [attr.data-is-scrollable]="true" style="overflow: auto;">
+    <fab-details-list [items]="rows">
+      <columns>
+        <fab-details-list-column #fabDetailListColumn *ngFor="let col of columns;let colIndex=index" [key]="col.key"
+          [name]="col.name" [minWidth]="col.minWidth" [maxWidth]="col.maxWidth" [isSorted]="col.isSorted"
+          [isSortedDescending]="col.isSortedDescending" (onColumnClick)="clickColumn($event)"
+          [isResizable]="col.isResizable" [isMultiline]="col.isMultiline" [ariaLabel]="col.name">
+          <render>
+            <ng-template let-item="item" let-column="column" let-rowIndex="index">
+              <div [innerHTML]="item[column.name]"></div>
+            </ng-template>
+          </render>
+        </fab-details-list-column>
+      </columns>
+    </fab-details-list>
+  </div>
+  <div *ngIf="descriptionColumnName !== '' && selectionText !== ''">
+    <pre class="description-text">{{ selectionText }}</pre>
+  </div>
+</div>
+
+<ng-template #emptyTableFooter>
+  <div tabindex="0" class="table-footer">
+    <p>No Data to Display</p>
+  </div>
+</ng-template>
