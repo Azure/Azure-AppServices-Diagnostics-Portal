@@ -1,0 +1,24 @@
+.description-text{
+    margin-top: 5px;
+    padding: 5px;
+    height: 150px;
+    max-height: 150px;
+    overflow-y: scroll;
+    border-radius: 0px;
+    white-space: pre-wrap;
+  }
+
+  .text-field{
+    max-width: 300px; 
+    min-width: 250px;
+  }
+
+  .table-footer{
+    display: flex;
+    justify-content: center;
+  }
+
+  ::ng-deep .ms-DetailsHeader-cell{
+    font-weight: 600;
+  }
+  

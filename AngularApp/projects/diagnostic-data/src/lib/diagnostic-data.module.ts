@@ -120,6 +120,8 @@ import { CheckComponent, ConvertLevelToHealthStatusPipe } from './components/ste
 import { ButtonStepComponent } from './components/step-views/button-step-view/button-step.component';
 import { HighChartsHoverService } from './services/highcharts-hover.service';
 import { RouterModule } from '@angular/router';
+import { FabDataTableComponent } from './components/fab-data-table/fab-data-table.component';
+import { FabCardComponent } from './components/fab-card/fab-card.component';
 
 @NgModule({
   imports: [
@@ -192,7 +194,6 @@ import { RouterModule } from '@angular/router';
     CollapsibleListComponent,
     CollapsibleListFabricComponent,
     CollapsibleListItemComponent,
-    // FabCardComponent,
     InputStepComponent,
     StepViewsRendererComponent,
     InfoStepComponent,
@@ -201,6 +202,8 @@ import { RouterModule } from '@angular/router';
     CheckStepComponent,
     CheckComponent,
     ConvertLevelToHealthStatusPipe,
+    FabCardComponent,
+    FabDataTableComponent
   ],
   entryComponents: [DetectorListAnalysisComponent],
   exports: [
