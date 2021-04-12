@@ -7,6 +7,7 @@ import { TelemetryEventNames } from "../../services/telemetry/telemetry.common";
 import { LoadingStatus } from "../../models/loading";
 import { PanelType } from "office-ui-fabric-react";
 import { Solution } from "dist/diagnostic-data/lib/components/solution/solution";
+import { BehaviorSubject } from "rxjs";
 
 
 @Component({
@@ -25,8 +26,7 @@ export class InsightsV4Component extends DataRenderBaseComponent {
   LoadingStatus = LoadingStatus;
 
   solutions: Solution[] = [];
-  solutionPanelOpen: boolean = false;
-  solutionPanelType: PanelType = PanelType.custom;
+  solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(protected telemetryService: TelemetryService) {
     super(telemetryService);
@@ -74,11 +74,7 @@ export class InsightsV4Component extends DataRenderBaseComponent {
   }
 
   openSolutionPanel(insight: Insight) {
-    this.solutionPanelOpen = true;
     this.solutions = insight.solutions;
-  }
-
-  dismissSolutionPanel(){
-    this.solutionPanelOpen = false;
+    this.solutionPanelOpenSubject.next(true);
   }
 }

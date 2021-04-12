@@ -83,13 +83,7 @@
   </div>
 </ng-template>
 
-<fab-panel [isOpen]="solutionPanelOpen" [type]="solutionPanelType" [customWidth]="'800px'" [isHiddenOnDismiss]="true"
- [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'" (onDismissed)="dismissSolutionPanel()">
-  <div *ngFor="let solution of solutions;let i = index">
-    <h4 *ngIf="solutions.length > 1">Step -- {{i + 1}}</h4>
-    <solution  [data]="solution"></solution>
-  </div>
-</fab-panel>
+<solution-panel [isPanelOpenObservable]="solutionPanelOpenSubject" [solutions]="solutions"></solution-panel>
 
 <!-- If there is title wrap it in container -->
 <data-container *ngIf="renderingProperties.title; else noContainer" [title]="renderingProperties.title"
