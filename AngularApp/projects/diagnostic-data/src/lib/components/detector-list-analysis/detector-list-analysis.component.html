@@ -310,16 +310,5 @@
     </div>
   </div>
 </div>
-<fab-panel [isOpen]="solutionPanelOpen" [type]="solutionPanelType" [customWidth]="'800px'" [isHiddenOnDismiss]="true"
- [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'" (onDismissed)="dismissSolutionPanel()">
- <!-- <solution-display-item *ngFor="let solution of allSolutions; index as i"
- [title]="solution.Title" [titleTag]="solution.TypeTag" [index]="i">
 
-</solution-display-item> -->
-<div *ngFor="let solution of allSolutions,let i = index" class="mb-7">
-  <h2><strong>Step -- {{i + 1}}</strong></h2>
-  <br/>
-  <solution  [data]="solution"></solution>
-  <br/>
-</div>
-</fab-panel>
+<solution-panel [isPanelOpenObservable]="solutionPanelOpenSubject" [solutions]="allSolutions"></solution-panel>

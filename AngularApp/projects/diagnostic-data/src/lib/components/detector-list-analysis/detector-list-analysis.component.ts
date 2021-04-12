@@ -10,7 +10,7 @@ import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { Solution } from '../solution/solution';
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
-import { forkJoin as observableForkJoin, Observable, of } from 'rxjs';
+import { BehaviorSubject, forkJoin as observableForkJoin, Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { DetectorResponse, DetectorMetaData, HealthStatus, DetectorType, DownTime } from '../../models/detector';
 import { Insight, InsightUtils } from '../../models/insight';
@@ -103,8 +103,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     readonly stringFormat: string = 'YYYY-MM-DDTHH:mm';
     public inDrillDownMode: boolean = false;
     drillDownDetectorId: string = '';
-    solutionPanelOpen: boolean = false;
-    solutionPanelType: PanelType = PanelType.custom;
+    solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
     constructor(public _activatedRoute: ActivatedRoute, private _router: Router,
         private _diagnosticService: DiagnosticService, private _detectorControl: DetectorControlService,
@@ -877,13 +876,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
 
     openSolutionPanel(title: string) {
         this.allSolutions = this.allSolutionsMap.get(title);
-        this.solutionPanelOpen = true;
+        this.solutionPanelOpenSubject.next(true);
     }
-
-    dismissSolutionPanel() {
-        this.solutionPanelOpen = false;
-    }
-
-
 }
 

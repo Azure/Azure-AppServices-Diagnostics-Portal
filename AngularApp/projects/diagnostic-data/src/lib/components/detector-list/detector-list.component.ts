@@ -1,4 +1,4 @@
-import { forkJoin as observableForkJoin, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, forkJoin as observableForkJoin, Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/internal/operators/map';
 import { catchError } from 'rxjs/operators';
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -57,9 +57,12 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   issueDetectedViewModels: any[] = [];
   successfulViewModels: any[] = [];
   allSolutionsMap: Map<string, Solution[]> = new Map<string, Solution[]>();
-  solutionPanelOpen: boolean = false;
-  solutionPanelType: PanelType = PanelType.custom;
+  solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  panelType: PanelType = PanelType.custom;
   allSolutions: Solution[] = [];
+
+  childDetectorPanelOpen: boolean = false;
+
 
   constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute) {
     super(telemetryService);
@@ -357,7 +360,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   public selectDetector(viewModel: any) {
     if (viewModel != null && viewModel.model.metadata.id) {
       let drilldownDetectorId = viewModel.model.metadata.id;
-      let categoryName = "";
 
       // if (viewModel.model.metadata.category) {
       //   categoryName = viewModel.model.metadata.category.replace(/\s/g, '');
@@ -385,24 +387,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         } else {
           this.updateDrillDownMode(true, viewModel);
           if (viewModel.model.startTime != null && viewModel.model.endTime != null) {
-            // this.analysisContainsDowntime().subscribe(containsDowntime => {
-            //   if (containsDowntime) {
-            //     this._router.navigate([`./detectors/${detectorId}`], {
-            //       relativeTo: this._activatedRoute,
-            //       queryParams: { startTimeChildDetector: viewModel.model.startTime, endTimeChildDetector: viewModel.model.endTime },
-            //       queryParamsHandling: 'merge',
-            //       replaceUrl: true
-            //     });
-            //   }
-            //   else {
-            //     this._router.navigate([`./detectors/${detectorId}`], {
-            //       relativeTo: this._activatedRoute,
-            //       queryParams: { startTime: viewModel.model.startTime, endTime: viewModel.model.endTime },
-            //       queryParamsHandling: 'merge',
-            //       replaceUrl: true
-            //     });
-            //   }
-            // });
             this._router.navigate([`./drillDownDetector/${drilldownDetectorId}`], {
               relativeTo: this._activatedRoute,
               queryParams: { startTime: viewModel.model.startTime, endTime: viewModel.model.endTime },
@@ -417,6 +401,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
               preserveFragment: true
             });
           }
+          this.childDetectorPanelOpen = true;
         }
       }
     }
@@ -460,11 +445,18 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
   openSolutionPanel(title: string) {
     this.allSolutions = this.allSolutionsMap.get(title);
-    this.solutionPanelOpen = true;
+    // this.solutionPanelOpen = true;
+    this.solutionPanelOpenSubject.next(true);
+
   }
 
-  dismissSolutionPanel() {
-    this.solutionPanelOpen = false;
+  // dismissSolutionPanel() {
+  //   this.solutionPanelOpen = false;
+  // }
+
+  dismissChildDetectorPanel() {
+    this.childDetectorPanelOpen = false;
+    this.goBackToParentView();
   }
 }
 

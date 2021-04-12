@@ -122,6 +122,7 @@ import { HighChartsHoverService } from './services/highcharts-hover.service';
 import { RouterModule } from '@angular/router';
 import { FabDataTableComponent } from './components/fab-data-table/fab-data-table.component';
 import { FabCardComponent } from './components/fab-card/fab-card.component';
+import { SolutionPanelComponent } from './components/solution-panel/solution-panel.component';
 
 @NgModule({
   imports: [
@@ -203,7 +204,8 @@ import { FabCardComponent } from './components/fab-card/fab-card.component';
     CheckComponent,
     ConvertLevelToHealthStatusPipe,
     FabCardComponent,
-    FabDataTableComponent
+    FabDataTableComponent,
+    SolutionPanelComponent
   ],
   entryComponents: [DetectorListAnalysisComponent],
   exports: [
