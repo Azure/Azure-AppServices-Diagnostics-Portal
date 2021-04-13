@@ -1,8 +1,53 @@
+<div *ngIf="detectorDataLocalCopy" style="display: flex;" class="mb-3">
+  <!-- Debug -->
+  <!-- <div>isAnalysisView: {{isAnalysisView}}</div> -->
+  <!-- <div>hideDetectorHeader: {{hideDetectorHeader}}</div> -->
+
+  <div *ngIf="!hideDetectorHeader">
+    <div>
+      <fab-primary-button id="time-picker-button" contentStyle="color: #323130; border-radius: 12px; margin:0px 5px; background:rgba(0, 120, 212, 0.1);font-size:13; font-weight:600;">Time Range (UTC)</fab-primary-button>
+    </div>
+  </div>
+  <div *ngIf="isAnalysisView && supportsDownTime" class="dynamic-data-container">
+    <!-- <div class="downtime-container">
+    <span class="downtime-icon"><i class="fa fa-filter fa-lg" aria-hidden="true"></i></span>
+    <label for="downtimeFilter" tabindex="0" aria-label="Select a downtime to investigate."
+      role="text"><strong>Downtime</strong></label>
+    <fab-dropdown id="downtimeFilter" role="combobox" [options]="fabOptions" (onChange)="selectFabricKey($event)"
+      [defaultSelectedKey]="selectedKey"
+      contentStyle="margin-top: -5px; margin-left: 5px;width:{{fabDropdownWidth}}px;min-width:336px">
+    </fab-dropdown>
+  </div> -->
+
+    <fab-primary-button id="detector-view-downtime" (onClick)="showDowntimeCallout = true;"
+    contentStyle="color: #323130; border-radius: 12px; margin:0px 5px; background:rgba(0, 120, 212, 0.1);font-size:13; font-weight:600;">
+      <fab-icon [iconName]="'Clock'"></fab-icon>
+      <span class="ml-3">Downtime(UTC): {{downtimeButtonStr}}</span>
+    </fab-primary-button>
+    <fab-callout *ngIf="showDowntimeCallout" [setInitialFocus]="true" [target]="'#detector-view-downtime'"
+      (onDismiss)="showDowntimeCallout = false;">
+      <div style="max-width: 300px; overflow-y: auto; padding: 15px 25px;">
+        <fab-choice-group [options]="fabChoiceGroupOptions" [selectedKey]="selectedKey"></fab-choice-group>
+      </div>
+      <div style="border-top: 1px solid gray;" class="pt-3 pb-3 pl-3 pr-3">
+        <fab-primary-button (onClick)="selectFabricKey()" aria-label="apply" contentClass="mr-3">Apply
+        </fab-primary-button>
+        <fab-default-button (onClick)="showDowntimeCallout=false;" aria-label="cancel">Cancel</fab-default-button>
+      </div>
+    </fab-callout>
+    <div *ngIf="downtimeSelectionErrorStr!=''" class="errorMessage"
+      attr.aria-label="Error : {{downtimeSelectionErrorStr}}" tabindex="0" role="text">
+      <strong>Error :</strong> {{downtimeSelectionErrorStr}}<span style='vertical-align:super'>*</span>
+    </div>
+  </div>
+</div>
+
 <div *ngIf="detectorDataLocalCopy">
   <div *ngIf="((!hideDetectorHeader && !analysisMode) || isPopoutFromAnalysis) && !isInCaseSubmission()">
     <section class="content-header">
       <h2 style="display: flex;">
-        <div *ngIf="!isSystemInvoker && !insideDetectorList" tabindex="0" id="detector-name">{{detectorDataLocalCopy.metadata.name}}</div>
+        <div *ngIf="!isSystemInvoker && !insideDetectorList" tabindex="0" id="detector-name">
+          {{detectorDataLocalCopy.metadata.name}}</div>
         <div *ngIf="!isSystemInvoker && !insideDetectorList" class="blade-description">&nbsp;- &nbsp;</div>
         <div class="blade-description">{{detectorDataLocalCopy.metadata.description}}</div>
       </h2>
@@ -52,8 +97,8 @@
 
   <br *ngIf="isInCaseSubmission() && !isKeystoneView">
 
-  <div *ngIf="isAnalysisView && supportsDownTime" class="dynamic-data-container">
-    <!-- <div class="downtime-container">
+  <!-- <div *ngIf="isAnalysisView && supportsDownTime" class="dynamic-data-container">
+    <div class="downtime-container">
       <span class="downtime-icon"><i class="fa fa-filter fa-lg" aria-hidden="true"></i></span>
       <label for="downtimeFilter" tabindex="0" aria-label="Select a downtime to investigate."
         role="text"><strong>Downtime</strong></label>
@@ -61,31 +106,21 @@
         [defaultSelectedKey]="selectedKey" [disabled]="downtimeFilterDisabled"
         contentStyle="margin-top: -5px; margin-left: 5px;width:{{fabDropdownWidth}}px;min-width:336px">
       </fab-dropdown>
-    </div> -->
-
-    <fab-primary-button id="detector-view-downtime" (onClick)="showDowntimeCallout = true;" contentStyle="color: #323130; border-radius: 12px; margin:0px 5px;background:rgba(0, 120, 212, 0.1);font-size:13;font-weight:600;">
-      <fab-icon [iconName]="'Clock'"></fab-icon>
-      <span class="ml-3">Downtime(UTC): {{downtimeButtonStr}}</span>
-    </fab-primary-button>
-    <fab-callout *ngIf="showDowntimeCallout" [setInitialFocus]="true" [target]="'#detector-view-downtime'" (onDismiss)="showDowntimeCallout = false;">
-      <div style="max-width: 300px; overflow-y: auto; padding: 15px 25px;">
-        <fab-choice-group [options]="fabChoiceGroupOptions" [selectedKey]="selectedKey"></fab-choice-group>
-      </div>
-      <fab-primary-button (onClick)="selectFabricKey()" aria-label="apply">Apply</fab-primary-button>
-      <fab-default-button (onClick)="showDowntimeCallout=false;" aria-label="cancel">Cancel</fab-default-button>
-    </fab-callout>
+    </div>
     <div *ngIf="downtimeSelectionErrorStr!=''" class="errorMessage"
       attr.aria-label="Error : {{downtimeSelectionErrorStr}}" tabindex="0" role="text">
       <strong>Error :</strong> {{downtimeSelectionErrorStr}}<span style='vertical-align:super'>*</span>
     </div>
-  </div>
+  </div> -->
 
 
-  <div *ngFor="let data of detectorDataLocalCopy.dataset  | renderfilter:isAnalysisView" [ngClass]="{'dynamic-data-container': !isRiskAlertDetector}">
-    <dynamic-data [isRiskAlertDetector]="isRiskAlertDetector" [isAnalysisView]="isAnalysisView" [diagnosticData]="data" [startTime]="startTime" [endTime]="endTime"
-      [detectorEventProperties]="detectorEventProperties" [developmentMode]="developmentMode" [executionScript]="script"
-      [detector]="detector" [xAxisPlotBands]="xAxisPlotBands" [zoomBehavior]="zoomBehavior"
-      (XAxisSelection)="onXAxisSelection($event)" [compilationPackage]="compilationPackage" [hideShieldComponent]="hideShieldComponent"></dynamic-data>
+  <div *ngFor="let data of detectorDataLocalCopy.dataset  | renderfilter:isAnalysisView"
+    [ngClass]="{'dynamic-data-container': !isRiskAlertDetector}">
+    <dynamic-data [isRiskAlertDetector]="isRiskAlertDetector" [isAnalysisView]="isAnalysisView" [diagnosticData]="data"
+      [startTime]="startTime" [endTime]="endTime" [detectorEventProperties]="detectorEventProperties"
+      [developmentMode]="developmentMode" [executionScript]="script" [detector]="detector"
+      [xAxisPlotBands]="xAxisPlotBands" [zoomBehavior]="zoomBehavior" (XAxisSelection)="onXAxisSelection($event)"
+      [compilationPackage]="compilationPackage" [hideShieldComponent]="hideShieldComponent"></dynamic-data>
   </div>
 </div>
 
@@ -93,17 +128,16 @@
   <markdown *ngIf="supportDocumentContent.length>0" #markdownDiv [data]="supportDocumentContent"></markdown>
 </data-container>
 
-<div *ngIf="isAnalysisView && supportsDownTime && downTimes.length > 0 && !!selectedDownTime && !!selectedDownTime.StartTime && !!selectedDownTime.EndTime" class="dynamic-data-container" tabindex="0"
+<!-- <div *ngIf="isAnalysisView && supportsDownTime && downTimes.length > 0 && !!selectedDownTime && !!selectedDownTime.StartTime && !!selectedDownTime.EndTime" class="dynamic-data-container" tabindex="0"
   role="text"
   attr.aria-label="Showing results from {{ getTimestampAsString(selectedDownTime.StartTime) }} to {{ getTimestampAsString(selectedDownTime.EndTime) }}">
   <h2 aria-hidden="true">Showing results from {{ getTimestampAsString(selectedDownTime.StartTime) }} to
     {{ getTimestampAsString(selectedDownTime.EndTime) }}</h2>
-</div>
-
+</div> -->
 
 <cxp-chat-launcher *ngIf="showChatButton()" [trackingId]="cxpChatTrackingId" [chatUrl]="cxpChatUrl"
   [supportTopicId]="supportTopicId"></cxp-chat-launcher>
-  <loader-detector-view style="margin-top:300px" *ngIf="!detectorDataLocalCopy && !errorState"></loader-detector-view>
+<loader-detector-view style="margin-top:300px" *ngIf="!detectorDataLocalCopy && !errorState"></loader-detector-view>
 
 <ng-container *ngIf="!detectorDataLocalCopy && errorState">
   <span class="critical-color" *ngIf="errorState.error && !isPublic"> Error: {{errorState.error}}</span>
