@@ -24,7 +24,11 @@
           [isResizable]="col.isResizable" [isMultiline]="col.isMultiline" [ariaLabel]="col.name">
           <render>
             <ng-template let-item="item" let-column="column" let-rowIndex="index">
-              <div [innerHTML]="item[column.name]"></div>
+              <ng-container 
+                [ngTemplateOutlet]="isMarkdown(item[column.name]) ? markdownText : embeddedHTML"
+                [ngTemplateOutletContext]="{data:item[column.name]}"
+              >
+              </ng-container>
             </ng-template>
           </render>
         </fab-details-list-column>
@@ -40,4 +44,12 @@
   <div tabindex="0" class="table-footer">
     <p>No Data to Display</p>
   </div>
+</ng-template>
+
+<ng-template #markdownText let-data='data'>
+  <markdown-text [markdownData]="data"></markdown-text>
+</ng-template>
+
+<ng-template #embeddedHTML let-data='data'>
+  <div [innerHTML]="data"></div>
 </ng-template>
