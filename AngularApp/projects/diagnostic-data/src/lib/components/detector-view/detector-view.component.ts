@@ -98,7 +98,6 @@ export class DetectorViewComponent implements OnInit {
   @Input() isAnalysisView: boolean = false;
   @Input() isPopoutFromAnalysis: boolean = false;
   @Input() hideDetectorHeader: boolean = false;
-  @Input() isCategoryOverview: boolean = false;
   @Input() isKeystoneView: boolean = false;
   @Input() isRiskAlertDetector: boolean = false;
   feedbackButtonLabel: string = 'Send Feedback';
@@ -184,6 +183,7 @@ export class DetectorViewComponent implements OnInit {
     if (!this.insideDetectorList) {
       this.telemetryService.logPageView(TelemetryEventNames.DetectorViewLoaded, { "detectorId": this.detector });
     }
+    
     if (this._route.snapshot.queryParamMap.has('hideShieldComponent') && !!this._route.snapshot.queryParams['hideShieldComponent']) {
       this.hideShieldComponent = true;
     }
