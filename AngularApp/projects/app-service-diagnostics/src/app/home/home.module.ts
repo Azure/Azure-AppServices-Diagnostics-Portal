@@ -165,8 +165,7 @@ export const HomeRoutes = RouterModule.forChild([
                                 path: 'drilldownDetector/:drilldownDetectorName',
                                 component: GenericDetectorComponent,
                                 data: {
-                                    cacheComponent: false,
-                                    analysisMode: true
+                                    cacheComponent: false
                                 }
                             }
                         ],

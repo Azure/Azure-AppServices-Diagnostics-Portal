@@ -20,7 +20,7 @@ export class GenericDetectorComponent implements OnDestroy {
     navigateSub: Subscription;
     analysisMode: boolean = false;
     isCaseSubmissionSolutionIFrame: boolean = false;
-
+    hideDetectorControl: boolean = false;
     constructor(private _activatedRoute: ActivatedRoute, private _diagnosticService: DiagnosticService, private _resourceService: ResourceService, private _authServiceInstance: AuthService, protected _telemetryService: TelemetryService,
         private _navigator: FeatureNavigationService, private _router: Router) {
         this._activatedRoute.paramMap.subscribe(params => {
@@ -41,6 +41,7 @@ export class GenericDetectorComponent implements OnDestroy {
                     this.detector = currDetetctor;
                 }else if(!!drilldownDetector) {
                     this.detector = drilldownDetector;
+                    this.hideDetectorControl = true;
                 }
             }
 
