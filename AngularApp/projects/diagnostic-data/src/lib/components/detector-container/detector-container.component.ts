@@ -65,7 +65,10 @@ export class DetectorContainerComponent implements OnInit {
   @Output() downTimeChanged: EventEmitter<DownTime> = new EventEmitter<DownTime>();
 
   isCategoryOverview: boolean = false;
-  private isLegacy: boolean
+  private isLegacy: boolean;
+
+
+
   constructor(private _route: ActivatedRoute, private _diagnosticService: DiagnosticService,
     public detectorControlService: DetectorControlService, private versionService: VersionService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
         this.isPublic = config && config.isPublic;
@@ -108,9 +111,6 @@ export class DetectorContainerComponent implements OnInit {
     });
 
     const component: any = this._route.component;
-    if (component && component.name) {
-      this.isCategoryOverview = component.name === "CategoryOverviewComponent";
-    }
 
     let startTimeChildDetector: string = this._route.snapshot.queryParams['startTimeChildDetector'];
     if (!!startTimeChildDetector && startTimeChildDetector.length > 1 && moment.utc(startTimeChildDetector).isValid()) {
