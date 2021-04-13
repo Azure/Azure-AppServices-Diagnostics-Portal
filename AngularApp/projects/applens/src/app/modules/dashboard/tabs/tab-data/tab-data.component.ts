@@ -21,6 +21,7 @@ export class TabDataComponent implements OnInit {
 
   analysisMode:boolean = false;
 
+  hideDetectorControl: boolean = false;
   ngOnInit() {
 
     this._route.params.subscribe((params: Params) => {
@@ -41,6 +42,7 @@ export class TabDataComponent implements OnInit {
   refresh() {
     if(this._route.snapshot.params["drilldownDetectorName"]) {
       this.detector = this._route.snapshot.params["drilldownDetectorName"];
+      this.hideDetectorControl = true;
     }else {
       this.detector = this._route.snapshot.params['detector'];
     }
