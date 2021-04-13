@@ -68,7 +68,7 @@ export class DetectorViewComponent implements OnInit {
   selectedKey: string = '';
   fabDropdownWidth: number;
   showDowntimeCallout:boolean = false;
-  fabChoiceGroupOptions: IChoiceGroupOption[];
+  fabChoiceGroupOptions: IChoiceGroupOption[] = [];
   downtimeButtonStr: string = "";
 
   @Input()
@@ -357,7 +357,7 @@ export class DetectorViewComponent implements OnInit {
         //After loading detectors, foucs indicator will land into detector title
         //For now asynchronouslly to foucs after render, it should have better solution
         setTimeout(() => {
-          if (document.getElementById("detector-name")) {
+          if (document.getElementById("detector-name") && !this._route.snapshot.params["drilldownDetectorName"]) {
             document.getElementById("detector-name").focus();
           }
         });
@@ -432,6 +432,7 @@ export class DetectorViewComponent implements OnInit {
 
 
   selectFabricKey() {
+    this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
     this.onDownTimeChange(this.selectedDownTime,DowntimeInteractionSource.Dropdown);
     this.showDowntimeCallout = false;
   }
@@ -453,7 +454,7 @@ export class DetectorViewComponent implements OnInit {
       ariaLabel: this.getDowntimeLabel(d),
       onClick: () => {
         this.selectedKey = this.getKeyForDownTime(d);
-        this.selectedDownTime = d;
+        // this.selectedDownTime = d;
       }
     }
     return defaultOption;
@@ -496,6 +497,7 @@ export class DetectorViewComponent implements OnInit {
         this.selectedKey = this.fabChoiceGroupOptions[0].key;
         this.selectedDownTime = this.fabChoiceGroupOptions.length > 1 ? this.downTimes[0] : this.getDefaultDowntimeEntry();
       }
+      this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
     }
   }
 
@@ -665,7 +667,6 @@ export class DetectorViewComponent implements OnInit {
   }
 
   onDownTimeChange(selectedDownTime: DownTime, downtimeInteractionSource: string) {
-    this.downtimeButtonStr = "";
     if (!!selectedDownTime && !!selectedDownTime.StartTime && !!selectedDownTime.EndTime &&
       selectedDownTime.downTimeLabel != this.getDefaultDowntimeEntry().downTimeLabel &&
       momentNs.duration(selectedDownTime.StartTime.diff(this.startTime)).asMinutes() > -5 && //Allow a 5 min variance since backend normalizes starttime in 5 min timegrain
@@ -677,7 +678,6 @@ export class DetectorViewComponent implements OnInit {
         this.downTimeChanged.emit(this.selectedDownTime);
         this.setxAxisPlotBands(false);
         this.downtimeTriggerLog(selectedDownTime, downtimeInteractionSource, true, '');
-        this.downtimeButtonStr = selectedDownTime.downTimeLabel;
       }
       else {
         this.downtimeTriggerLog(selectedDownTime, downtimeInteractionSource, false, `Downtime valdation failed. Selected downtime is less than ${minSupportedDowntimeDuration} minutes`);
@@ -688,7 +688,6 @@ export class DetectorViewComponent implements OnInit {
       let reason = '';
       if (!!selectedDownTime && !!selectedDownTime.downTimeLabel) {
         reason = selectedDownTime.downTimeLabel === this.getDefaultDowntimeEntry().downTimeLabel ? 'Placeholder downtime entry selected' : 'Selected downtime is out of bounds';
-        this.downtimeButtonStr = selectedDownTime.downTimeLabel;
       }
       else {
         reason = (!!selectedDownTime) ? 'Empty downtime label' : 'Null downtime selected';
