@@ -192,7 +192,11 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
             },
             {
                 path: 'detectors/:detector',
-                component: TabCommonComponent,
+                // component: TabCommonComponent,
+                component: TabDataComponent,
+                data: {
+                    cacheComponent: true
+                },
                 children: [
                     {
                         path: '',
@@ -228,6 +232,13 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                     {
                         path: 'analytics/edit',
                         component: TabAnalyticsDevelopComponent
+                    },
+                    {
+                        path: 'drilldownDetector/:drilldownDetectorName',
+                        component: TabDataComponent,
+                        data: {
+                            analysisMode: true
+                        }
                     }
                 ]
             },
