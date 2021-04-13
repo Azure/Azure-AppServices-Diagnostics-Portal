@@ -14,7 +14,7 @@ import { VersionService } from '../../services/version.service';
 import { CXPChatService } from '../../services/cxp-chat.service';
 import * as momentNs from 'moment';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection } from '../../models/time-series';
-import { IDropdownOption } from 'office-ui-fabric-react';
+import { IChoiceGroupOption, IDropdownOption } from 'office-ui-fabric-react';
 
 const moment = momentNs;
 const minSupportedDowntimeDuration: number = 10;
@@ -66,7 +66,10 @@ export class DetectorViewComponent implements OnInit {
 
   fabOptions: IDropdownOption[] = [];
   selectedKey: string = '';
-  fabDropdownWidth: number
+  fabDropdownWidth: number;
+  showDowntimeCallout:boolean = false;
+  fabChoiceGroupOptions: IChoiceGroupOption[];
+  downtimeButtonStr: string = "";
 
   @Input()
   set detectorResponse(value: DetectorResponse) {
@@ -181,7 +184,6 @@ export class DetectorViewComponent implements OnInit {
     if (!this.insideDetectorList) {
       this.telemetryService.logPageView(TelemetryEventNames.DetectorViewLoaded, { "detectorId": this.detector });
     }
-
     if (this._route.snapshot.queryParamMap.has('hideShieldComponent') && !!this._route.snapshot.queryParams['hideShieldComponent']) {
       this.hideShieldComponent = true;
     }
@@ -428,18 +430,10 @@ export class DetectorViewComponent implements OnInit {
     }
   }
 
-  calculateFabWidth(options: IDropdownOption[]): number {
-    //each char 7px
-    let length = 0;
-    options.forEach(option => {
-      length = Math.max(length, option.text.length);
-    });
-    return (length * 7) + 50;
-  }
 
-  selectFabricKey(event: { option: IDropdownOption }) {
-    this.selectedKey = this.getKeyForDownTime(event.option.data);
-    this.onDownTimeChange(event.option.data, DowntimeInteractionSource.Dropdown);
+  selectFabricKey() {
+    this.onDownTimeChange(this.selectedDownTime,DowntimeInteractionSource.Dropdown);
+    this.showDowntimeCallout = false;
   }
 
   private getKeyForDownTime(d: DownTime): string {
@@ -451,15 +445,18 @@ export class DetectorViewComponent implements OnInit {
     }
   }
 
-  getDefaultFabricDownTimeEntry(): IDropdownOption {
+  getDefaultFabricDownTimeEntry(): IChoiceGroupOption {
     let d = this.getDefaultDowntimeEntry();
-    return {
+    const defaultOption:IChoiceGroupOption = {
       key: this.getKeyForDownTime(d),
       text: this.getDowntimeLabel(d),
       ariaLabel: this.getDowntimeLabel(d),
-      data: d,
-      isSelected: d.isSelected
-    } as IDropdownOption;
+      onClick: () => {
+        this.selectedKey = this.getKeyForDownTime(d);
+        this.selectedDownTime = d;
+      }
+    }
+    return defaultOption;
   }
 
   prepareCustomDowntimeLabel(startTime: Moment, endTime: Moment): string {
@@ -477,32 +474,28 @@ export class DetectorViewComponent implements OnInit {
 
   private populateFabricDowntimeDropDown(downTimes: DownTime[]): void {
     if (!!downTimes) {
-      this.fabOptions = [];
+      this.fabChoiceGroupOptions = [];
       downTimes.forEach(d => {
-        this.fabOptions.push({
+        this.fabChoiceGroupOptions.push({
           key: this.getKeyForDownTime(d),
           text: this.getDowntimeLabel(d),
           ariaLabel: this.getDowntimeLabel(d),
-          data: d,
-          isSelected: d.isSelected
+          onClick: () => {
+            this.selectedKey = this.getKeyForDownTime(d);
+            this.selectedDownTime = d;
+          }
         });
+      })
 
-        if (d.isSelected) {
-          this.selectedKey = this.getKeyForDownTime(d);
-        }
-
-      });
-
-      this.fabOptions.push(this.getDefaultFabricDownTimeEntry());
-
-      let defaultOption = this.fabOptions.find(x => x.isSelected);
-      if (defaultOption == null && this.fabOptions.length > 0) {
-        this.fabOptions[0].isSelected = true;
-        this.selectedKey = this.getKeyForDownTime(this.fabOptions[0].data);
+      this.fabChoiceGroupOptions.push(this.getDefaultFabricDownTimeEntry());
+      const defaultDowntime = this.downTimes.find(x => x.isSelected);
+      if(defaultDowntime != null) {
+        this.selectedKey = this.getKeyForDownTime(defaultDowntime);
+        this.selectedDownTime = defaultDowntime;
+      } else if(this.fabChoiceGroupOptions.length > 0) {
+        this.selectedKey = this.fabChoiceGroupOptions[0].key;
+        this.selectedDownTime = this.fabChoiceGroupOptions.length > 1 ? this.downTimes[0] : this.getDefaultDowntimeEntry();
       }
-
-      this.fabDropdownWidth = this.calculateFabWidth(this.fabOptions);
-
     }
   }
 
@@ -672,6 +665,7 @@ export class DetectorViewComponent implements OnInit {
   }
 
   onDownTimeChange(selectedDownTime: DownTime, downtimeInteractionSource: string) {
+    this.downtimeButtonStr = "";
     if (!!selectedDownTime && !!selectedDownTime.StartTime && !!selectedDownTime.EndTime &&
       selectedDownTime.downTimeLabel != this.getDefaultDowntimeEntry().downTimeLabel &&
       momentNs.duration(selectedDownTime.StartTime.diff(this.startTime)).asMinutes() > -5 && //Allow a 5 min variance since backend normalizes starttime in 5 min timegrain
@@ -683,6 +677,7 @@ export class DetectorViewComponent implements OnInit {
         this.downTimeChanged.emit(this.selectedDownTime);
         this.setxAxisPlotBands(false);
         this.downtimeTriggerLog(selectedDownTime, downtimeInteractionSource, true, '');
+        this.downtimeButtonStr = selectedDownTime.downTimeLabel;
       }
       else {
         this.downtimeTriggerLog(selectedDownTime, downtimeInteractionSource, false, `Downtime valdation failed. Selected downtime is less than ${minSupportedDowntimeDuration} minutes`);
@@ -693,6 +688,7 @@ export class DetectorViewComponent implements OnInit {
       let reason = '';
       if (!!selectedDownTime && !!selectedDownTime.downTimeLabel) {
         reason = selectedDownTime.downTimeLabel === this.getDefaultDowntimeEntry().downTimeLabel ? 'Placeholder downtime entry selected' : 'Selected downtime is out of bounds';
+        this.downtimeButtonStr = selectedDownTime.downTimeLabel;
       }
       else {
         reason = (!!selectedDownTime) ? 'Empty downtime label' : 'Null downtime selected';
