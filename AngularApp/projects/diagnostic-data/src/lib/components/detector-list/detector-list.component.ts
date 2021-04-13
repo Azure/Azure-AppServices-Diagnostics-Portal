@@ -71,6 +71,9 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   protected processData(data: DiagnosticData) {
     super.processData(data);
     this.renderingProperties = <DetectorListRendering>data.renderingProperties;
+    if (this._activatedRoute.firstChild && this._activatedRoute.firstChild.snapshot.params["drilldownDetectorName"]) {
+      this.drillDownDetectorId = this._activatedRoute.firstChild.snapshot.params["drilldownDetectorName"];
+    }
     this.getResponseFromResource();
   }
 
@@ -159,6 +162,12 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   private getDetectorResponses(): void {
     this._diagnosticService.getDetectors(this.overrideResourceUri).subscribe(detectors => {
       this.startDetectorRendering(detectors, null, false);
+
+      const defaultSelectedDetector = detectors.find(d => d.id === this.drillDownDetectorId);
+      if (defaultSelectedDetector) {
+        this.drilldownDetectorName = defaultSelectedDetector.name;
+        this.childDetectorPanelOpen = true;
+      }
     });
   }
 
@@ -430,9 +439,9 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     //   }
     // }
     this._router.navigate([`../../detectors/${this.detector}`], {
-      relativeTo: this._activatedRoute, 
+      relativeTo: this._activatedRoute,
       queryParamsHandling: 'merge'
-    },);
+    });
   }
 
   refresh() {

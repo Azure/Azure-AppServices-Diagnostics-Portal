@@ -344,7 +344,7 @@ export class DetectorViewComponent implements OnInit {
         //After loading detectors, foucs indicator will land into detector title
         //For now asynchronouslly to foucs after render, it should have better solution
         setTimeout(() => {
-          if (document.getElementById("detector-name")) {
+          if (document.getElementById("detector-name") && !this._route.snapshot.params["drilldownDetectorName"]) {
             document.getElementById("detector-name").focus();
           }
         });
