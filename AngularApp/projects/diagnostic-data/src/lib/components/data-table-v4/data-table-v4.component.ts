@@ -32,12 +32,6 @@ export class DataTableV4Component extends DataRenderBaseComponent {
     this.tableHeight = this.renderingProperties.height || "";
     this.tableDescription = this.renderingProperties.description || "";
   }
-
-  isMarkdown(s: any) {
-    let str = `${s}`;
-    str = str.trim();
-    return str.startsWith('<markdown>') && str.endsWith('</markdown>');
-  }
 }
 
 

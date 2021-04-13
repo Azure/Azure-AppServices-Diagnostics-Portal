@@ -271,4 +271,9 @@ export class FabDataTableComponent implements AfterContentInit {
     return columns.findIndex(col => col.columnName === option.name) > -1;
   }
 
+  isMarkdown(s: any) {
+    let str = `${s}`;
+    str = str.trim();
+    return str.startsWith('<markdown>') && str.endsWith('</markdown>');
+  }
 }
