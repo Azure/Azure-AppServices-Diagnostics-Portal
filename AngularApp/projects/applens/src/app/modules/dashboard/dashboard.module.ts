@@ -24,7 +24,7 @@ import { ApplensDiagnosticService } from './services/applens-diagnostic.service'
 import { ApplensCommsService } from './services/applens-comms.service';
 import { ApplensSupportTopicService } from './services/applens-support-topic.service';
 import { ApplensContentService } from './services/applens-content.service';
-import { DiagnosticService, DiagnosticDataModule, CommsService, DetectorControlService, GenericSupportTopicService, GenericContentService , GenericDocumentsSearchService  } from 'diagnostic-data';
+import { DiagnosticService, DiagnosticDataModule, CommsService, DetectorControlService, GenericSupportTopicService, GenericContentService , GenericDocumentsSearchService, SolutionOrchestratorComponent  } from 'diagnostic-data';
 import { FabPanelModule } from '@angular-react/fabric';
 import { CollapsibleMenuModule } from '../../collapsible-menu/collapsible-menu.module';
 import { ObserverService } from '../../shared/services/observer.service';
@@ -55,7 +55,6 @@ import { SearchService } from './services/search.service';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { ConfigurationComponent } from './configuration/configuration.component';
 import { ApplensDocumentsSearchService } from './services/applens-documents-search.service';
-import {SolutionOrchestratorComponent} from "diagnostic-data";
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<boolean>>{
@@ -197,7 +196,11 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
             },
             {
                 path: 'detectors/:detector',
-                component: TabCommonComponent,
+                // component: TabCommonComponent,
+                component: TabDataComponent,
+                data: {
+                    cacheComponent: true
+                },
                 children: [
                     {
                         path: '',
@@ -233,6 +236,13 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                     {
                         path: 'analytics/edit',
                         component: TabAnalyticsDevelopComponent
+                    },
+                    {
+                        path: 'drilldownDetector/:drilldownDetectorName',
+                        component: TabDataComponent,
+                        data: {
+                            analysisMode: true
+                        }
                     }
                 ]
             },
