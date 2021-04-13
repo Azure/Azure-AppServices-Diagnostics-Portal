@@ -53,7 +53,7 @@
   <br *ngIf="isInCaseSubmission() && !isKeystoneView">
 
   <div *ngIf="isAnalysisView && supportsDownTime" class="dynamic-data-container">
-    <div class="downtime-container">
+    <!-- <div class="downtime-container">
       <span class="downtime-icon"><i class="fa fa-filter fa-lg" aria-hidden="true"></i></span>
       <label for="downtimeFilter" tabindex="0" aria-label="Select a downtime to investigate."
         role="text"><strong>Downtime</strong></label>
@@ -61,7 +61,19 @@
         [defaultSelectedKey]="selectedKey" [disabled]="downtimeFilterDisabled"
         contentStyle="margin-top: -5px; margin-left: 5px;width:{{fabDropdownWidth}}px;min-width:336px">
       </fab-dropdown>
-    </div>
+    </div> -->
+
+    <fab-primary-button id="detector-view-downtime" (onClick)="showDowntimeCallout = true;" contentStyle="color: #323130; border-radius: 12px; margin:0px 5px;background:rgba(0, 120, 212, 0.1);font-size:13;font-weight:600;">
+      <fab-icon [iconName]="'Clock'"></fab-icon>
+      <span class="ml-3">Downtime(UTC): {{downtimeButtonStr}}</span>
+    </fab-primary-button>
+    <fab-callout *ngIf="showDowntimeCallout" [setInitialFocus]="true" [target]="'#detector-view-downtime'" (onDismiss)="showDowntimeCallout = false;">
+      <div style="max-width: 300px; overflow-y: auto; padding: 15px 25px;">
+        <fab-choice-group [options]="fabChoiceGroupOptions" [selectedKey]="selectedKey"></fab-choice-group>
+      </div>
+      <fab-primary-button (onClick)="selectFabricKey()" aria-label="apply">Apply</fab-primary-button>
+      <fab-default-button (onClick)="showDowntimeCallout=false;" aria-label="cancel">Cancel</fab-default-button>
+    </fab-callout>
     <div *ngIf="downtimeSelectionErrorStr!=''" class="errorMessage"
       attr.aria-label="Error : {{downtimeSelectionErrorStr}}" tabindex="0" role="text">
       <strong>Error :</strong> {{downtimeSelectionErrorStr}}<span style='vertical-align:super'>*</span>

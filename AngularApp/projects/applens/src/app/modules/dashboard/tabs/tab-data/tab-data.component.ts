@@ -39,7 +39,11 @@ export class TabDataComponent implements OnInit {
   }
 
   refresh() {
-    this.detector = this._route.snapshot.params['detector'];
+    if(this._route.snapshot.params["drilldownDetectorName"]) {
+      this.detector = this._route.snapshot.params["drilldownDetectorName"];
+    }else {
+      this.detector = this._route.snapshot.params['detector'];
+    }
   }
 
 }

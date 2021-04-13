@@ -51,7 +51,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   resourceText: string = "";
 
   inDrillDownMode: boolean = false;
-  detectorId: string = "";
   drilldownDetectorName: string = "";
   drillDownDetectorId: string = "";
   issueDetectedViewModels: any[] = [];
@@ -72,7 +71,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   protected processData(data: DiagnosticData) {
     super.processData(data);
     this.renderingProperties = <DetectorListRendering>data.renderingProperties;
-    this.detectorId = this._activatedRoute.snapshot.params["detectorName"];
     this.getResponseFromResource();
   }
 
@@ -431,7 +429,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     //     this._router.navigate([`../${this.analysisId}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
     //   }
     // }
-    this._router.navigate([`../../detectors/${this.detectorId}`], {
+    this._router.navigate([`../../detectors/${this.detector}`], {
       relativeTo: this._activatedRoute, 
       queryParamsHandling: 'merge'
     },);
