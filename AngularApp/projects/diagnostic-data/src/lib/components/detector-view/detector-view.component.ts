@@ -70,7 +70,8 @@ export class DetectorViewComponent implements OnInit {
   showDowntimeCallout:boolean = false;
   fabChoiceGroupOptions: IChoiceGroupOption[] = [];
   downtimeButtonStr: string = "";
-
+  openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  timePickerButtonStr: string = "";
   @Input()
   set detectorResponse(value: DetectorResponse) {
     this.resetGlobals();
@@ -160,11 +161,12 @@ export class DetectorViewComponent implements OnInit {
     this.loadDetector();
     this.errorSubject.subscribe((data: any) => {
       this.errorState = data;
-      if (!!this.errorState) {
+      if (!!this.errorState)
+      {
         let errorDetails = {
-          'isPublic': this.isPublic.toString(),
-          'errorDetails': JSON.stringify(this.errorState)
-        };
+            'isPublic': this.isPublic.toString(),
+            'errorDetails': JSON.stringify(this.errorState)
+          };
 
         this.logEvent("DetectorLoadingError", errorDetails);
       }
@@ -183,10 +185,14 @@ export class DetectorViewComponent implements OnInit {
     if (!this.insideDetectorList) {
       this.telemetryService.logPageView(TelemetryEventNames.DetectorViewLoaded, { "detectorId": this.detector });
     }
-    
+
     if (this._route.snapshot.queryParamMap.has('hideShieldComponent') && !!this._route.snapshot.queryParams['hideShieldComponent']) {
       this.hideShieldComponent = true;
     }
+
+    this.detectorControlService.timePickerStrSub.subscribe(s => {
+      this.timePickerButtonStr = s;
+    });
   }
 
   protected loadDetector() {
@@ -244,7 +250,8 @@ export class DetectorViewComponent implements OnInit {
 
         if (this.isAnalysisView) {
           let downTime = data.dataset.find(set => (<Rendering>set.renderingProperties).type === RenderingType.DownTime);
-          if (this.isInCaseSubmission()) {
+          if(this.isInCaseSubmission())
+          {
             //Disable downtimes in case submission
             downTime = null;
           }
@@ -342,6 +349,7 @@ export class DetectorViewComponent implements OnInit {
     this.xAxisPlotBands = [];
     this.zoomBehavior = zoomBehaviors.Zoom;
     this.populateFabricDowntimeDropDown(this.downTimes);
+    this.updateDownTimeErrorMessage("");
   }
 
   getTimestampAsString(dateTime: Moment) {
@@ -666,12 +674,13 @@ export class DetectorViewComponent implements OnInit {
     }
   }
   protected logEvent(eventMessage: string, eventProperties?: any, measurements?: any) {
-    if (!!this.detectorEventProperties) {
-      for (const id of Object.keys(this.detectorEventProperties)) {
-        if (this.detectorEventProperties.hasOwnProperty(id)) {
-          eventProperties[id] = String(this.detectorEventProperties[id]);
-        }
-      }
+    if (!!this.detectorEventProperties)
+    {
+        for (const id of Object.keys(this.detectorEventProperties)) {
+            if (this.detectorEventProperties.hasOwnProperty(id)) {
+              eventProperties[id] = String(this.detectorEventProperties[id]);
+            }
+          }
     }
 
     this.telemetryService.logEvent(eventMessage, eventProperties, measurements);
@@ -689,7 +698,7 @@ export class DetectorViewComponent implements OnInit {
   renderCXPChatButton() {
     if (this.cxpChatTrackingId === '' && this.cxpChatUrl === '') {
       if (this._supportTopicService && this._cxpChatService && this._cxpChatService.isSupportTopicEnabledForLiveChat(this._supportTopicService.supportTopicId)) {
-        this.cxpChatTrackingId = this._cxpChatService.generateTrackingId(((!!this._supportTopicService && !!this._supportTopicService.supportTopicId) ? this._supportTopicService.supportTopicId : ''));
+        this.cxpChatTrackingId = this._cxpChatService.generateTrackingId( ((!!this._supportTopicService && !!this._supportTopicService.supportTopicId) ? this._supportTopicService.supportTopicId : ''));
         this.supportTopicId = this._supportTopicService.supportTopicId;
         this._cxpChatService.getChatURL(this._supportTopicService.supportTopicId, this.cxpChatTrackingId).subscribe((chatApiResponse: any) => {
           if (chatApiResponse && chatApiResponse != '') {
@@ -721,7 +730,6 @@ export class DetectorViewComponent implements OnInit {
       });
     }
   }
-
 }
 
 @Pipe({

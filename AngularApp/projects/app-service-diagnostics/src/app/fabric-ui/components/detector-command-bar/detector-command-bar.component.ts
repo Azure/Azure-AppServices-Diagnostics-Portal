@@ -3,6 +3,7 @@ import { Globals } from '../../../globals';
 import { DetectorControlService } from 'projects/diagnostic-data/src/lib/services/detector-control.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TelemetryService,TelemetryEventNames, TelemetrySource } from 'diagnostic-data';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'detector-command-bar',
@@ -12,6 +13,7 @@ import { TelemetryService,TelemetryEventNames, TelemetrySource } from 'diagnosti
 export class DetectorCommandBarComponent implements AfterViewInit{
   @Input() disableGenie:boolean=false;
   time: string;
+  openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   constructor(private globals: Globals, private detectorControlService: DetectorControlService, private _route: ActivatedRoute, private router: Router, private telemetryService:TelemetryService) { }
   toggleOpenState() {
     this.telemetryService.logEvent(TelemetryEventNames.OpenGenie,{
@@ -64,7 +66,9 @@ export class DetectorCommandBarComponent implements AfterViewInit{
   }
 
   toggleOpenTimePicker() {
-    this.globals.openTimePicker = !this.globals.openTimePicker;
+    // this.globals.openTimePicker = !this.globals.openTimePicker;
+    // this.openTimePicker = !this.openTimePicker;
+    this.openTimePickerSubject.next(true);
     this.updateAriaExpanded();
   }
 
@@ -72,9 +76,6 @@ export class DetectorCommandBarComponent implements AfterViewInit{
     this.time = s;
   }
 
-  closeTimePicker() {
-    this.globals.openTimePicker = false;
-  }
 
   ngAfterViewInit() {
     // Async to get button element after grandchild is renderded
