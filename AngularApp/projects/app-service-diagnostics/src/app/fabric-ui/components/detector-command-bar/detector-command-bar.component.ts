@@ -10,7 +10,7 @@ import { BehaviorSubject } from 'rxjs';
   templateUrl: './detector-command-bar.component.html',
   styleUrls: ['./detector-command-bar.component.scss']
 })
-export class DetectorCommandBarComponent implements AfterViewInit{
+export class DetectorCommandBarComponent {
   time: string;
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   constructor(private globals: Globals, private detectorControlService: DetectorControlService, private _route: ActivatedRoute, private router: Router, private telemetryService:TelemetryService) { }
@@ -61,34 +61,6 @@ export class DetectorCommandBarComponent implements AfterViewInit{
     else if (instanceId)
     {
       this.detectorControlService.refresh(instanceId);
-    }
-  }
-
-  toggleOpenTimePicker() {
-    // this.globals.openTimePicker = !this.globals.openTimePicker;
-    // this.openTimePicker = !this.openTimePicker;
-    this.openTimePickerSubject.next(true);
-    this.updateAriaExpanded();
-  }
-
-  updateMessage(s: string) {
-    this.time = s;
-  }
-
-
-  ngAfterViewInit() {
-    // Async to get button element after grandchild is renderded
-    setTimeout(()=>{
-      this.updateAriaExpanded();
-    });
-  }
-
-
-  updateAriaExpanded(){
-    const btns = document.querySelectorAll("#fab-command-bar button");
-    if(btns && btns.length > 0) {
-      const dropdown = btns[btns.length - 1];
-      dropdown.setAttribute("aria-expanded",`${this.globals.openTimePicker}`);
     }
   }
 }
