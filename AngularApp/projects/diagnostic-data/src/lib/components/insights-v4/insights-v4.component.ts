@@ -5,7 +5,6 @@ import { Insight, InsightUtils } from "../../models/insight";
 import { TelemetryService } from "../../services/telemetry/telemetry.service";
 import { TelemetryEventNames } from "../../services/telemetry/telemetry.common";
 import { LoadingStatus } from "../../models/loading";
-import { PanelType } from "office-ui-fabric-react";
 import { Solution } from "dist/diagnostic-data/lib/components/solution/solution";
 import { BehaviorSubject } from "rxjs";
 
@@ -23,7 +22,6 @@ export class InsightsV4Component extends DataRenderBaseComponent {
   public insights: Insight[];
 
   InsightStatus = HealthStatus;
-  LoadingStatus = LoadingStatus;
 
   solutions: Solution[] = [];
   solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
