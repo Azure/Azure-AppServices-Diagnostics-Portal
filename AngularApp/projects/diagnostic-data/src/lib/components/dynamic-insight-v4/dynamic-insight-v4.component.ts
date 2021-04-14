@@ -5,6 +5,7 @@ import { DynamicInsight } from '../../models/insight';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
+import { LoadingStatus } from '../../models/loading';
 
 @Component({
   selector: 'dynamic-insight-v4',
@@ -18,7 +19,6 @@ export class DynamicInsightV4Component extends DataRenderBaseComponent {
   insight: DynamicInsight;
 
   InsightStatus = HealthStatus;
-
   constructor(private _markdownService: MarkdownService, protected telemetryService: TelemetryService) {
     super(telemetryService);
   }

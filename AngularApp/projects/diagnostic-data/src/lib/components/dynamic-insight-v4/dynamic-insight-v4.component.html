@@ -1,7 +1,9 @@
-<div class="panel insight-panel" tabindex="0" (keyup.enter)="toggleInsightExpanded(insight)" attr.name="{{insight.title}}"
-attr.aria-label="{{insight.title}}" attr.aria-expanded="{{insight.isExpanded}}" role="button">
+<!-- <div class="panel insight-panel" tabindex="0" (keyup.enter)="toggleInsightExpanded(insight)"
+  attr.name="{{insight.title}}" attr.aria-label="{{insight.title}}" attr.aria-expanded="{{insight.isExpanded}}"
+  role="button">
   <div class="panel-heading">
-    <h5 class="panel-title" [class.clickable-header]="insight.innerDiagnosticData"  (click)="toggleInsightExpanded(insight)">
+    <h5 class="panel-title" [class.clickable-header]="insight.innerDiagnosticData"
+      (click)="toggleInsightExpanded(insight)">
       <div style="display: table;">
         <div style="display: table-row">
           <div style="display: table-cell">
@@ -15,8 +17,9 @@ attr.aria-label="{{insight.title}}" attr.aria-expanded="{{insight.isExpanded}}" 
           </div>
           <div style="display: table-cell">
             <div class="pull-right" style="white-space: nowrap">
-              <span class="fa insight-expand-icon" [class.fa-angle-right]="insight.innerDiagnosticData && !insight.isExpanded"
-              [class.fa-angle-down]="insight.innerDiagnosticData && insight.isExpanded"></span>
+              <span class="fa insight-expand-icon"
+                [class.fa-angle-right]="insight.innerDiagnosticData && !insight.isExpanded"
+                [class.fa-angle-down]="insight.innerDiagnosticData && insight.isExpanded"></span>
             </div>
           </div>
         </div>
@@ -29,4 +32,19 @@ attr.aria-label="{{insight.title}}" attr.aria-expanded="{{insight.isExpanded}}" 
     <dynamic-data [diagnosticData]="insight.innerDiagnosticData" [startTime]="startTime" [endTime]="endTime">
     </dynamic-data>
   </div>
-</div>
+</div> -->
+
+<fab-card [isExpandable]="true" [expanded]="insight.isExpanded" [ariaLabel]="insight.title">
+  <div header>
+    <div style="display: flex;align-items: center;min-height: 40px;">
+      <status-icon class="mr-3" [status]="insight.status" [size]="20"></status-icon>
+      <div><strong>{{insight.title}}</strong></div>
+    </div>
+  </div>
+
+  <div body>
+    <div *ngIf="insight.description" [innerHtml]="insight.description"></div>
+    <dynamic-data [diagnosticData]="insight.innerDiagnosticData" [startTime]="startTime" [endTime]="endTime">
+    </dynamic-data>
+  </div>
+</fab-card>
