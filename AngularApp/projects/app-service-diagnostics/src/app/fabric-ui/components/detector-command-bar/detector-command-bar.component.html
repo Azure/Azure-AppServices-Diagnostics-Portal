@@ -26,15 +26,7 @@
       [iconProps]="gRPDFButtonIcon" (click)="generateResiliencyPDF()" [disabled]="gRPDFButtonDisabled" >
     </fab-command-bar-item>
   </items>
-
-  <far-items>
-    <fab-command-bar-item key="timepicker" [text]="time" [iconProps]="{ iconName: 'ChevronDown' }"
-      (click)="toggleOpenTimePicker()">
-    </fab-command-bar-item>
-  </far-items>
 </fab-command-bar>
-<detector-time-picker (updateTimerMessage)="updateMessage($event)" [target]="'.ms-CommandBar-secondaryCommand'" [openTimePickerCalloutObservalbe]="openTimePickerSubject"></detector-time-picker>
-
 
 <fab-coachmark 
    *ngIf="showCoachmark==true"

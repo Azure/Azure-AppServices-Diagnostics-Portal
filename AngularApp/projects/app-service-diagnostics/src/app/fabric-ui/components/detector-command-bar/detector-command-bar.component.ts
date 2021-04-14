@@ -197,17 +197,6 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     }
   }
 
-  toggleOpenTimePicker() {
-    // this.globals.openTimePicker = !this.globals.openTimePicker;
-    // this.openTimePicker = !this.openTimePicker;
-    this.openTimePickerSubject.next(true);
-    this.updateAriaExpanded();
-  }
-
-  updateMessage(s: string) {
-    this.time = s;
-  }
-
 
   ngAfterViewInit() {
     // Async to get button element after grandchild is rendered
