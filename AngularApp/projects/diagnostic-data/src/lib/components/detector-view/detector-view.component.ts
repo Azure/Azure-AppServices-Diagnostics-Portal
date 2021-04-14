@@ -70,7 +70,8 @@ export class DetectorViewComponent implements OnInit {
   showDowntimeCallout:boolean = false;
   fabChoiceGroupOptions: IChoiceGroupOption[] = [];
   downtimeButtonStr: string = "";
-
+  openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  timePickerButtonStr: string = "";
   @Input()
   set detectorResponse(value: DetectorResponse) {
     this.resetGlobals();
@@ -172,6 +173,10 @@ export class DetectorViewComponent implements OnInit {
     if (!this.insideDetectorList) {
       this.telemetryService.logPageView(TelemetryEventNames.DetectorViewLoaded, { "detectorId": this.detector });
     }
+
+    this.detectorControlService.timePickerStrSub.subscribe(s => {
+      this.timePickerButtonStr = s;
+    });
   }
 
   protected loadDetector() {
@@ -358,6 +363,7 @@ export class DetectorViewComponent implements OnInit {
     this.xAxisPlotBands = [];
     this.zoomBehavior = zoomBehaviors.Zoom;
     this.populateFabricDowntimeDropDown(this.downTimes);
+    this.updateDownTimeErrorMessage("");
   }
 
   getTimestampAsString(dateTime: Moment) {
@@ -751,7 +757,6 @@ export class DetectorViewComponent implements OnInit {
       });
     }
   }
-
 }
 
 @Pipe({

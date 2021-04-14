@@ -1,10 +1,12 @@
-import { Component, OnInit, EventEmitter, Output, Renderer2 } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Renderer2, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DetectorControlService, TelemetryService, TelemetryEventNames } from 'diagnostic-data';
 import { ICalendarStrings, IDatePickerProps, IChoiceGroupOption } from 'office-ui-fabric-react';
 import { addMonths, addDays } from 'office-ui-fabric-react/lib/utilities/dateMath/DateMath';
 import * as momentNs from 'moment';
-import { Globals } from '../../../globals';
+import { DetectorControlService, TimePickerInfo, TimePickerOptions } from '../../services/detector-control.service';
+import { TelemetryService } from '../../services/telemetry/telemetry.service';
+import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'detector-time-picker',
@@ -12,6 +14,9 @@ import { Globals } from '../../../globals';
   styleUrls: ['./detector-time-picker.component.scss']
 })
 export class DetectorTimePickerComponent implements OnInit {
+  @Input() openTimePickerCalloutObservalbe: Observable<boolean>;
+  openTimePickerCallout: boolean = false;
+  @Input() target: string = "";
   @Output() updateTimerMessage: EventEmitter<string> = new EventEmitter<string>(true);
   showCalendar: boolean = false;
   showTimePicker: boolean = false;
@@ -21,9 +26,6 @@ export class DetectorTimePickerComponent implements OnInit {
   maxDate: Date = this.convertUTCToLocalDate(this.today);
   minDate: Date = this.convertUTCToLocalDate(addMonths(this.today, -1));
 
-  set time(value: string) {
-    this.updateTimerMessage.next(value);
-  };
   startDate: Date;
   endDate: Date;
   //set Last xx hours
@@ -38,13 +40,14 @@ export class DetectorTimePickerComponent implements OnInit {
     return momentNs(date).format('M/D/YY');
   };
 
-  choiceGroupOptions: IChoiceGroupOption[] = [
-    { key: 'Last1Hour', text: 'Last 1 Hour', onClick: () => { this.setTime(1) } },
-    { key: 'Last6Hours', text: 'Last 6 Hours', onClick: () => { this.setTime(6) } },
-    { key: 'Last12Hour', text: 'Last 12 Hours', onClick: () => { this.setTime(12) } },
-    { key: 'Last24Hours', text: 'Last 24 Hours', onClick: () => { this.setTime(24) } },
-    { key: 'Custom', text: 'Custom', onClick: () => { this.selectCustom() } },
-  ];
+  choiceGroupOptions: IChoiceGroupOption[] =
+    [
+      { key: TimePickerOptions.Last1Hour, text: TimePickerOptions.Last1Hour, onClick: () => { this.setTime(1) } },
+      { key: TimePickerOptions.Last6Hours, text: TimePickerOptions.Last6Hours, onClick: () => { this.setTime(6) } },
+      { key: TimePickerOptions.Last12Hour, text: TimePickerOptions.Last12Hour, onClick: () => { this.setTime(12) } },
+      { key: TimePickerOptions.Last24Hours, text: TimePickerOptions.Last24Hours, onClick: () => { this.setTime(24) } },
+      { key: TimePickerOptions.Custom, text: TimePickerOptions.Custom, onClick: () => { this.selectCustom() } },
+    ];
 
   dayPickerString: ICalendarStrings = {
     months:
@@ -63,29 +66,27 @@ export class DetectorTimePickerComponent implements OnInit {
     weekNumberFormatString: 'Week number {0}',
   };
 
-  constructor(private activatedRoute: ActivatedRoute, private detectorControlService: DetectorControlService, private router: Router, public globals: Globals, private render: Renderer2,private telemetryService:TelemetryService) {
-    //When close if click outside
-    this.render.listen('window', 'click', (e: Event) => {
-      const clickElement = <HTMLElement>(e.target);
-      const timePicker = document.getElementById('timePicker');
-      //Get time text div in command bar
-      const commandBar = document.querySelector('.ms-CommandBar-secondaryCommand');
-      if (timePicker && commandBar && !timePicker.contains(clickElement) && !commandBar.contains(clickElement)) {
-        this.closeTimePicker();
-      }
-    })
+  constructor(private activatedRoute: ActivatedRoute, private detectorControlService: DetectorControlService, private router: Router, private telemetryService: TelemetryService) {
   }
 
   ngOnInit() {
     this.startDate = addDays(this.today, -1);
     this.endDate = this.today;
 
-    this.globals.timePickerInfoSub.subscribe(timerPickerInfo => {
+    this.openTimePickerCalloutObservalbe.subscribe(o => {
+      this.openTimePickerCallout = o;
+    });
+    this.detectorControlService.timePickerStrSub.subscribe(s => {
+      this.updateTimerMessage.next(s);
+    })
+
+
+    this.detectorControlService.timePickerInfoSub.subscribe(timerPickerInfo => {
       const option = this.choiceGroupOptions.find(option => timerPickerInfo.selectedKey === option.key);
       this.defaultSelectedKey = option.key;
       //If it's customized then should default the option
       //If not customized then prefill start date and endDate
-      if (timerPickerInfo.selectedKey === 'Custom') {
+      if (timerPickerInfo.selectedKey === TimePickerOptions.Custom) {
         this.showTimePicker = true;
         this.startDate = timerPickerInfo.startDate;
         this.endDate = timerPickerInfo.endDate;
@@ -107,13 +108,6 @@ export class DetectorTimePickerComponent implements OnInit {
     this.detectorControlService.update.subscribe(validUpdate => {
       if (validUpdate) {
         //Todo, update custom prefill info
-        const startTime = this.detectorControlService.startTimeString;
-        const endTime = this.detectorControlService.endTimeString;
-
-        const timeFromat = 'M/D/YY HH:mm';
-        const formattedStartTime = momentNs.utc(startTime).format(timeFromat);
-        const formattedEndTime = momentNs.utc(endTime).format(timeFromat);
-        this.time = `UTC Time Range (${formattedStartTime} to ${formattedEndTime})`;
       }
       const routeParams = {
         'startTime': this.detectorControlService.startTime.format('YYYY-MM-DDTHH:mm'),
@@ -137,14 +131,15 @@ export class DetectorTimePickerComponent implements OnInit {
 
   //Click outside or tab to next component
   closeTimePicker() {
-    this.globals.openTimePicker = false;
-    this.showTimePicker = this.defaultSelectedKey === "Custom";
+    // this.globals.openTimePicker = false;
+    this.openTimePickerCallout = false;
+    this.showTimePicker = this.defaultSelectedKey === TimePickerOptions.Custom;
   }
 
   //Press Escape,Click Cancel
   cancelTimeRange() {
     this.closeTimePicker();
-    (<HTMLInputElement>document.querySelector('.ms-CommandBar-secondaryCommand button')).focus();
+    // (<HTMLInputElement>document.querySelector('.ms-CommandBar-secondaryCommand button')).focus();
   }
 
   //clickHandler for apply button
@@ -154,8 +149,8 @@ export class DetectorTimePickerComponent implements OnInit {
     let timePickerInfo: TimePickerInfo;
     //customize
     if (this.showTimePicker) {
-      startDateWithTime = this.convertDateTimeToString(this.startDate,this.startClock);
-      endDateWithTime = this.convertDateTimeToString(this.endDate,this.endClock);
+      startDateWithTime = this.convertDateTimeToString(this.startDate, this.startClock);
+      endDateWithTime = this.convertDateTimeToString(this.endDate, this.endClock);
       //for timer picker, date and hour,minute
       let infoStartDate = new Date(this.startDate);
       infoStartDate.setHours(Number.parseInt(this.startClock.split(":")[0]), Number.parseInt(this.startClock.split(":")[1]));
@@ -163,7 +158,8 @@ export class DetectorTimePickerComponent implements OnInit {
       infoEndDate.setHours(Number.parseInt(this.endClock.split(":")[0]), Number.parseInt(this.endClock.split(":")[1]));
       timePickerInfo =
       {
-        selectedKey: 'Custom',
+        selectedKey: TimePickerOptions.Custom,
+        selectedText: TimePickerOptions.Custom,
         startDate: infoStartDate,
         endDate: infoEndDate
       };
@@ -174,18 +170,20 @@ export class DetectorTimePickerComponent implements OnInit {
       endDateWithTime = this.convertLocalDateToUTC(localEndTime);
 
       //find which option contains the hourDiff number
-      const infoSelectKey = this.choiceGroupOptions.find(option => option.key.includes(this.hourDiff.toString())).key
+      const infoSelectOption = this.choiceGroupOptions.find(option => option.key.includes(this.hourDiff.toString()))
       timePickerInfo = {
-        selectedKey: infoSelectKey
+        selectedKey: infoSelectOption.key,
+        selectedText: infoSelectOption.text
       };
     }
 
     this.timeDiffError = this.detectorControlService.getTimeDurationError(startDateWithTime, endDateWithTime);
     if (this.timeDiffError === '') {
       this.detectorControlService.setCustomStartEnd(startDateWithTime, endDateWithTime);
-      this.globals.updateTimePickerInfo(timePickerInfo);
+      this.detectorControlService.updateTimePickerInfo(timePickerInfo);
     }
-    this.globals.openTimePicker = this.timeDiffError !== "";
+    // this.globals.openTimePicker = this.timeDiffError !== "";
+    this.openTimePickerCallout = this.timeDiffError !== "";
     //Refoucs to command-bar text message again
     (<HTMLInputElement>document.querySelector('.ms-CommandBar-secondaryCommand button')).focus();
 
@@ -200,7 +198,7 @@ export class DetectorTimePickerComponent implements OnInit {
       const endTimeString = momentNs(timePickerInfo.startDate).format(this.detectorControlService.stringFormat);
       eventProperties['EndTime'] = endTimeString;
     }
-    this.telemetryService.logEvent(TelemetryEventNames.TimePickerApplied,eventProperties);
+    this.telemetryService.logEvent(TelemetryEventNames.TimePickerApplied, eventProperties);
   }
 
   onSelectStartDateHandler(e: { date: Date }) {
@@ -220,8 +218,8 @@ export class DetectorTimePickerComponent implements OnInit {
   private convertUTCToLocalDate(date: Date): Date {
     const moment = momentNs.utc(date);
     return new Date(
-      moment.year(),moment.month(),moment.date(),
-      moment.hour(),moment.minute()
+      moment.year(), moment.month(), moment.date(),
+      moment.hour(), moment.minute()
     );
   }
 
@@ -230,7 +228,7 @@ export class DetectorTimePickerComponent implements OnInit {
     return momentNs(date).format('HH:mm');
   }
 
-  private convertDateTimeToString(date:Date,time:string): string {
+  private convertDateTimeToString(date: Date, time: string): string {
     const dateString = momentNs(date).format('YYYY-MM-DD');
     const hour = Number.parseInt(time.split(':')[0]) < 10 ? `0${Number.parseInt(time.split(':')[0])}` : `${Number.parseInt(time.split(':')[0])}`;
     const minute = Number.parseInt(time.split(':')[1]) < 10 ? `0${Number.parseInt(time.split(':')[1])}` : `${Number.parseInt(time.split(':')[1])}`;
@@ -278,11 +276,4 @@ export class DetectorTimePickerComponent implements OnInit {
       this.closeTimePicker();
     }
   }
-}
-
-export interface TimePickerInfo {
-  selectedKey: string,
-  //if it is customized, then prefill with strart date and time
-  startDate?: Date,
-  endDate?: Date,
 }
