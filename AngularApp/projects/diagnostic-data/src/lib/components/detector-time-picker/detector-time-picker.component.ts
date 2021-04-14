@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, Renderer2, Input } from '@angular/core';
+import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICalendarStrings, IDatePickerProps, IChoiceGroupOption } from 'office-ui-fabric-react';
 import { addMonths, addDays } from 'office-ui-fabric-react/lib/utilities/dateMath/DateMath';
@@ -17,7 +17,7 @@ export class DetectorTimePickerComponent implements OnInit {
   @Input() openTimePickerCalloutObservalbe: Observable<boolean>;
   openTimePickerCallout: boolean = false;
   @Input() target: string = "";
-  @Output() updateTimerMessage: EventEmitter<string> = new EventEmitter<string>(true);
+  @Output() updateTimerMessage: EventEmitter<string> = new EventEmitter();
   showCalendar: boolean = false;
   showTimePicker: boolean = false;
   defaultSelectedKey: string;
