@@ -1,7 +1,6 @@
 import { Injectable, Injector, isDevMode } from '@angular/core';
 import { Message } from './supportbot/models/message';
 import { ActivatedRoute } from '@angular/router';
-import { TimePickerInfo } from './fabric-ui/components/detector-time-picker/detector-time-picker.component';
 import { BehaviorSubject } from 'rxjs';
 
 
@@ -34,9 +33,6 @@ export class Globals {
   callStackDetails = { managedException: "", callStack: "" };
 
   private localStorageKey: string = "genieChat";
-  public timePickerInfoSub: BehaviorSubject<TimePickerInfo> = new BehaviorSubject<TimePickerInfo>({
-    selectedKey: "Last24Hours"
-  });
   constructor(private activatedRoute: ActivatedRoute) {
   }
 
@@ -62,10 +58,6 @@ export class Globals {
       detectorName = childRoute.snapshot.params["category"];
     }
     return detectorName;
-  }
-
-  updateTimePickerInfo(updatedInfo: TimePickerInfo) {
-    this.timePickerInfoSub.next(updatedInfo);
   }
 
   get logDebugMessage():(message?: any, ...optionalParams: any[]) => void {;

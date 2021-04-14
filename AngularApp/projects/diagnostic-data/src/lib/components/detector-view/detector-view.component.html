@@ -3,24 +3,29 @@
   <!-- <div>isAnalysisView: {{isAnalysisView}}</div> -->
   <!-- <div>hideDetectorHeader: {{hideDetectorHeader}}</div> -->
 
-  <div *ngIf="!hideDetectorHeader">
+  <div *ngIf="!hideDetectorHeader" class="dynamic-data-container">
     <div>
-      <fab-primary-button id="time-picker-button" contentStyle="color: #323130; border-radius: 12px; margin:0px 5px; background:rgba(0, 120, 212, 0.1);font-size:13; font-weight:600;">Time Range (UTC)</fab-primary-button>
+      <fab-primary-button id="time-picker-button"
+        contentStyle="color: #323130; border-radius: 12px; margin:0px 5px; background:rgba(0, 120, 212, 0.1);font-size:13; font-weight:600;"
+        (onClick)="openTimePickerSubject.next(true);">
+        <fab-icon [iconName]="'Clock'"></fab-icon>
+        <span class="ml-3">Time Range (UTC) : {{timePickerButtonStr}}</span> 
+      </fab-primary-button>
     </div>
   </div>
-  <div *ngIf="isAnalysisView && supportsDownTime" class="dynamic-data-container">
+  <div *ngIf="isAnalysisView && supportsDownTime">
     <!-- <div class="downtime-container">
     <span class="downtime-icon"><i class="fa fa-filter fa-lg" aria-hidden="true"></i></span>
     <label for="downtimeFilter" tabindex="0" aria-label="Select a downtime to investigate."
       role="text"><strong>Downtime</strong></label>
     <fab-dropdown id="downtimeFilter" role="combobox" [options]="fabOptions" (onChange)="selectFabricKey($event)"
-      [defaultSelectedKey]="selectedKey"
+      [defaultSelectedKey]="selectedKey" [disabled]="downtimeFilterDisabled"
       contentStyle="margin-top: -5px; margin-left: 5px;width:{{fabDropdownWidth}}px;min-width:336px">
     </fab-dropdown>
   </div> -->
 
     <fab-primary-button id="detector-view-downtime" (onClick)="showDowntimeCallout = true;"
-    contentStyle="color: #323130; border-radius: 12px; margin:0px 5px; background:rgba(0, 120, 212, 0.1);font-size:13; font-weight:600;">
+      contentStyle="color: #323130; border-radius: 12px; margin:0px 5px; background:rgba(0, 120, 212, 0.1);font-size:13; font-weight:600;">
       <fab-icon [iconName]="'Clock'"></fab-icon>
       <span class="ml-3">Downtime(UTC): {{downtimeButtonStr}}</span>
     </fab-primary-button>
@@ -144,3 +149,6 @@
   <span class="critical-color" *ngIf="isPublic && errorState || !errorState.error">Sorry, an error occurred. Please
     refresh the page and try again.</span>
 </ng-container>
+
+<detector-time-picker [target]="'#time-picker-button'" [openTimePickerCalloutObservalbe]="openTimePickerSubject"
+  (updateTimerMessage)="updateMessage($event)"></detector-time-picker>

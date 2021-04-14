@@ -1,5 +1,5 @@
 import {
-  DetectorControlService, DiagnosticService, DetectorMetaData, DetectorResponse, TelemetryService, TelemetryEventNames, TelemetrySource 
+  DetectorControlService, DiagnosticService, DetectorMetaData, DetectorResponse, TelemetryService, TelemetryEventNames, TelemetrySource
 } from 'diagnostic-data';
 import { Component, AfterViewInit, Input } from '@angular/core';
 import { Globals } from '../../../globals';
@@ -10,6 +10,7 @@ import { OperatingSystem } from '../../../shared/models/site';
 import { SeverityLevel } from '@microsoft/applicationinsights-web';
 import { DirectionalHint } from 'office-ui-fabric-react';
 import { ResiliencyScoreReportHelper } from '../../../shared/utilities/resiliencyScoreReportHelper';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'detector-command-bar',
@@ -20,6 +21,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   @Input() disableGenie: boolean = false;
 
   time: string;
+  openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   detector: DetectorMetaData;
   fullReportPath: string;
 
@@ -196,7 +198,9 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   }
 
   toggleOpenTimePicker() {
-    this.globals.openTimePicker = !this.globals.openTimePicker;
+    // this.globals.openTimePicker = !this.globals.openTimePicker;
+    // this.openTimePicker = !this.openTimePicker;
+    this.openTimePickerSubject.next(true);
     this.updateAriaExpanded();
   }
 
@@ -204,9 +208,6 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     this.time = s;
   }
 
-  closeTimePicker() {
-    this.globals.openTimePicker = false;
-  }
 
   ngAfterViewInit() {
     // Async to get button element after grandchild is rendered

@@ -33,7 +33,7 @@
     </fab-command-bar-item>
   </far-items>
 </fab-command-bar>
-<detector-time-picker (updateTimerMessage)="updateMessage($event)"></detector-time-picker>
+<detector-time-picker (updateTimerMessage)="updateMessage($event)" [target]="'.ms-CommandBar-secondaryCommand'" [openTimePickerCalloutObservalbe]="openTimePickerSubject"></detector-time-picker>
 
 
 <fab-coachmark 
@@ -62,4 +62,5 @@
     Download a report to check how well your Web App scores against our recommended resiliency best practices.
   </fab-teachingbubble>
 </fab-coachmark>
+
 

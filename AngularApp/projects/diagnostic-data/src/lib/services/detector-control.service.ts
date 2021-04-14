@@ -64,6 +64,13 @@ export class DetectorControlService {
   public timeRangeErrorString: string = '';
   public allowedDurationInDays: number = 1;
 
+  public timePickerInfoSub: BehaviorSubject<TimePickerInfo> = new BehaviorSubject<TimePickerInfo>({
+    selectedKey: TimePickerOptions.Last24Hours,
+    selectedText: TimePickerOptions.Last24Hours
+  });
+
+  public timePickerStrSub: BehaviorSubject<string> = new BehaviorSubject(TimePickerOptions.Last24Hours);
+
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
     this.internalClient = !config.isPublic;
   }
@@ -172,7 +179,7 @@ export class DetectorControlService {
     let startTime, endTime: momentNs.Moment;
     if (start && end) {
       startTime = moment.utc(start);
-      if(moment.duration(moment.utc().diff(moment.utc(end))).asMinutes() < 16 ) {
+      if (moment.duration(moment.utc().diff(moment.utc(end))).asMinutes() < 16) {
         //The supplied end time > now - 15 minutes. Adjust the end time so that it becomes now()-15 minutes.
         endTime = moment.utc().subtract(16, 'minutes');
       }
@@ -190,13 +197,13 @@ export class DetectorControlService {
         endTime = startTime.clone().add(1, 'days');
       }
     } else if (end) {
-      if(moment.duration(moment.utc().diff(moment.utc(end))).asMinutes() < 16) {
+      if (moment.duration(moment.utc().diff(moment.utc(end))).asMinutes() < 16) {
         //The supplied end time > now - 15 minutes. Adjust the end time so that it becomes now()-15 minutes.
-        endTime = moment.utc().subtract(16,'minutes');
+        endTime = moment.utc().subtract(16, 'minutes');
       }
       else {
-    endTime = moment.utc(end);
-    }
+        endTime = moment.utc(end);
+      }
 
       startTime = endTime.clone().subtract(1, 'days');
     } else {
@@ -228,7 +235,7 @@ export class DetectorControlService {
             this.timeRangeErrorString += ' Auto adjusted Start and End date time.';
           }
           else {
-            if(moment.duration(moment.utc().diff(this._startTime.clone().add(1, 'days'))).asMinutes() < 16) {
+            if (moment.duration(moment.utc().diff(this._startTime.clone().add(1, 'days'))).asMinutes() < 16) {
               this._endTime = moment.utc().subtract(16, 'minutes');
             }
             else {
@@ -239,7 +246,7 @@ export class DetectorControlService {
           }
         }
         else {
-          this.timeRangeErrorString =  `Time range set to last 24 hrs. Start and End date time must not be more than ${(this.allowedDurationInDays * 24).toString()} hrs apart, Start date must be within the past 30 days and end date must be 15 minutes less than the current time.`;
+          this.timeRangeErrorString = `Time range set to last 24 hrs. Start and End date time must not be more than ${(this.allowedDurationInDays * 24).toString()} hrs apart, Start date must be within the past 30 days and end date must be 15 minutes less than the current time.`;
           this._endTime = moment.utc().subtract(16, 'minutes');
           this._startTime = this._endTime.clone().subtract(1, 'days');
         }
@@ -267,7 +274,7 @@ export class DetectorControlService {
     this.setCustomStartEnd(this._startTime.format(this.stringFormat), this.endTime.format(this.stringFormat));
   }
 
-  public refresh(instanceId: string="") {
+  public refresh(instanceId: string = "") {
     this._duration ? this.selectDuration(this._duration) : this._refreshData(instanceId);
   }
 
@@ -280,7 +287,7 @@ export class DetectorControlService {
     this.detectorQueryParams.next(detectorQueryParams);
   }
 
-  private _refreshData(instanceId: string="") {
+  private _refreshData(instanceId: string = "") {
     this._shouldRefresh = true;
     this._refresh.next(true);
     this._refreshInstanceId.next(instanceId);
@@ -315,6 +322,18 @@ export class DetectorControlService {
   public get effectiveLocale(): string {
       return this._effectiveLocale;
   }
+  
+  public updateTimePickerInfo(updatedInfo: TimePickerInfo) {
+    this.timePickerInfoSub.next(updatedInfo);
+    if (updatedInfo && updatedInfo.selectedKey !== TimePickerOptions.Custom) {
+      this.timePickerStrSub.next(updatedInfo.selectedText);
+    } else {
+      const timeFormat = 'M/D/YY HH:mm';
+      const st = momentNs(this.startTimeString).format(timeFormat);
+      const et = momentNs(this.endTimeString).format(timeFormat);
+      this.timePickerStrSub.next(`${st} to ${et}`);
+    }
+  }
 
 }
 
@@ -324,3 +343,19 @@ export interface DurationSelector {
   internalOnly: boolean;
   ariaLabel: string;
 }
+
+export interface TimePickerInfo {
+  //if it is customized, then prefill with strart date and time
+  selectedKey: string,
+  selectedText: string,
+  startDate?: Date,
+  endDate?: Date,
+}
+
+export enum TimePickerOptions {
+  Last1Hour = "Last 1 Hour",
+  Last6Hours = "Last 6 Hours",
+  Last12Hour = "Last 12 Hours",
+  Last24Hours = "Last 24 Hours",
+  Custom = "Custom"
+} 
