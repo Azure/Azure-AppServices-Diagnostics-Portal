@@ -1,3 +1,5 @@
+@import "../../../../../app-service-diagnostics/src/styles/main.scss";
+
 .detector-container {
     width: 100%;
     margin-bottom: 15px;
@@ -88,3 +90,7 @@
     margin-bottom: 15px;
 }
 
+
+.dot-flashing {
+    @include dot-flashing(14);
+}

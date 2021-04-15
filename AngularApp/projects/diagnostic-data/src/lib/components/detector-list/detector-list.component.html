@@ -54,6 +54,9 @@
 <div *ngIf="issueDetectedViewModels.length > 0">
   <collapsible-list-fabric [collapsed]="false" [title]="'Observation and Solutions'">
     <collapsible-list-item body>
+      <div style="margin-bottom: 30px;" *ngIf="loading === LoadingStatus.Loading">
+        <div class="dot-flashing"></div>
+      </div>
       <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
         <fab-card [expanded]="true">
           <div header>
