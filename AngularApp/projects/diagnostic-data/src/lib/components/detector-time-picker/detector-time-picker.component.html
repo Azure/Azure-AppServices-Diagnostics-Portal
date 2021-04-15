@@ -1,8 +1,7 @@
 <div class="timepicker" id="timePicker">
   <!-- <div class="time-picker-container" *ngIf="globals.openTimePicker" (keydown.escape)="escapeHandler($event)" (keydown.Tab)="tabHandler($event)"> -->
   <fab-callout *ngIf="openTimePickerCallout" [setInitialFocus]="true" [target]="target" (onDismiss)="openTimePickerCallout = false;">
-    <div style="max-width: 300px;" class="p-3">
-
+    <div style="width: 300px;padding: 16px;">
       <fab-choice-group [options]="choiceGroupOptions" [defaultSelectedKey]="defaultSelectedKey">
       </fab-choice-group>
       <div *ngIf="showTimePicker" class="row">
@@ -30,12 +29,9 @@
       </div>
       <div *ngIf="timeDiffError != ''" style="color:red;">{{timeDiffError}}</div>
       <div style="padding:15px 0px">
-        <fab-primary-button contentStyle="margin-right:10px" (onClick)="applyTimeRange()">
-          Apply
+        <fab-primary-button contentStyle="margin-right:10px" (onClick)="applyTimeRange()">Apply
         </fab-primary-button>
-        <fab-default-button (onClick)="cancelTimeRange()">
-          Cancel
-        </fab-default-button>
+        <fab-default-button (onClick)="cancelTimeRange()">Cancel</fab-default-button>
       </div>
 
     </div>
