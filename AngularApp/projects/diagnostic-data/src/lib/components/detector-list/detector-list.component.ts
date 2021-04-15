@@ -61,7 +61,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   allSolutions: Solution[] = [];
 
   childDetectorPanelOpen: boolean = false;
-
+  loading = LoadingStatus.Loading;
 
   constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService) {
     super(telemetryService);
@@ -105,60 +105,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     }
   }
 
-  // private getDetectorResponses() {
-  //   this._diagnosticService.getDetectors(this.overrideResourceUri).subscribe(detectors => {
-  //     this.detectorMetaData = detectors.filter(detector => this.renderingProperties.detectorIds.indexOf(detector.id) >= 0);
-  //     this.detectorViewModels = this.detectorMetaData.map(detector => this.getDetectorViewModel(detector, this.renderingProperties.additionalParams, this.overrideResourceUri));
-
-  //     const requests: Observable<any>[] = [];
-  //     this.detectorViewModels.forEach((metaData, index) => {
-  //       requests.push((<Observable<DetectorResponse>>metaData.request).pipe(
-  //         map((response: DetectorResponse) => {
-  //           this.detectorViewModels[index] = this.updateDetectorViewModelSuccess(metaData, response);
-  //           return {
-  //             'ChildDetectorName': this.detectorViewModels[index].title,
-  //             'ChildDetectorId': this.detectorViewModels[index].metadata.id,
-  //             'ChildDetectorStatus': this.detectorViewModels[index].status,
-  //             'ChildDetectorLoadingStatus': this.detectorViewModels[index].loadingStatus
-  //           };
-  //         })
-  //         , catchError(err => {
-  //           this.detectorViewModels[index].loadingStatus = LoadingStatus.Failed;
-  //           return throwError(err);
-  //         })
-  //       ));
-  //     });
-
-  //     // Log all the children detectors
-  //     observableForkJoin(requests).subscribe(childDetectorData => {
-  //       this.childDetectorsEventProperties['ChildDetectorsList'] = JSON.stringify(childDetectorData);
-  //       this.logEvent(TelemetryEventNames.ChildDetectorsSummary, this.childDetectorsEventProperties);
-  //     });
-  //   },
-  //     (err => {
-  //       if (this.overrideResourceUri !== "") {
-  //         const e = JSON.parse(err);
-  //         let code: string = "";
-  //         if (e && e.error && e.error.code) {
-  //           code = e.error.code;
-  //         }
-  //         switch (code) {
-  //           case "InvalidAuthenticationTokenTenant":
-  //             this.errorMsg = `No Access for resource ${this.resourceType} , please check your access`;
-  //             break;
-
-  //           case "":
-  //             break;
-
-  //           default:
-  //             this.errorMsg = code;
-  //             break;
-  //         }
-  //       }
-  //     })
-  //   );
-  // }
-
   private getDetectorResponses(): void {
     this._diagnosticService.getDetectors(this.overrideResourceUri).subscribe(detectors => {
       this.startDetectorRendering(detectors, null, false);
@@ -168,7 +114,27 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         this.drilldownDetectorName = defaultSelectedDetector.name;
         this.childDetectorPanelOpen = true;
       }
-    });
+    },(error => {
+        if (this.overrideResourceUri !== "") {
+          const e = JSON.parse(error);
+          let code: string = "";
+          if (e && e.error && e.error.code) {
+            code = e.error.code;
+          }
+          switch (code) {
+            case "InvalidAuthenticationTokenTenant":
+              this.errorMsg = `No Access for resource ${this.resourceType} , please check your access`;
+              break;
+
+            case "":
+              break;
+
+            default:
+              this.errorMsg = code;
+              break;
+          }
+        }
+    }));
   }
 
   public retryRequest(metaData: any) {
@@ -256,6 +222,8 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         map((response: DetectorResponse) => {
           this.detectorViewModels[index] = this.updateDetectorViewModelSuccess(viewModel, response);
 
+          this.loading = this.detectorViewModels.findIndex(vm => vm.loadingStatus === LoadingStatus.Loading) > -1 ? LoadingStatus.Loading : LoadingStatus.Success;
+
           if (this.detectorViewModels[index].loadingStatus !== LoadingStatus.Failed) {
             if (this.detectorViewModels[index].status === HealthStatus.Critical || this.detectorViewModels[index].status === HealthStatus.Warning) {
               this.getInsightSolutions(this.detectorViewModels[index]);
@@ -290,7 +258,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           };
         })
         , catchError(err => {
-          console.log(err);
           this.detectorViewModels[index].loadingStatus = LoadingStatus.Failed;
           return of({});
         })
