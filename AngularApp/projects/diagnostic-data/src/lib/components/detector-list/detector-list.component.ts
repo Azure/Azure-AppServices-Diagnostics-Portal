@@ -19,7 +19,7 @@ import { Insight, InsightUtils } from '../../models/insight';
 import { Solution } from '../solution/solution';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PanelType } from 'office-ui-fabric-react';
-import { numberFormat } from 'highcharts';
+import { PortalActionGenericService } from '../../services/portal-action.service';
 
 
 @Component({
@@ -39,7 +39,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   LoadingStatus = LoadingStatus;
   renderingProperties: DetectorListRendering;
   detectorMetaData: DetectorMetaData[];
-  detectorViewModels: any[] = [];
+  detectorViewModels: DetectorViewModel[] = [];
   DetectorStatus = HealthStatus;
   private childDetectorsEventProperties = {};
   overrideResourceUri: string = "";
@@ -53,8 +53,8 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   inDrillDownMode: boolean = false;
   drilldownDetectorName: string = "";
   drillDownDetectorId: string = "";
-  issueDetectedViewModels: any[] = [];
-  successfulViewModels: any[] = [];
+  issueDetectedViewModels: DetectorViewModeWithInsightInfo[] = [];
+  successfulViewModels: DetectorViewModeWithInsightInfo[] = [];
   allSolutionsMap: Map<string, Solution[]> = new Map<string, Solution[]>();
   solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   panelType: PanelType = PanelType.custom;
@@ -63,7 +63,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   childDetectorPanelOpen: boolean = false;
 
 
-  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute) {
+  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService) {
     super(telemetryService);
     this.isPublic = this.config && this.config.isPublic;
   }
@@ -182,7 +182,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
       });
   }
 
-  private getDetectorViewModel(detector: DetectorMetaData, additionalParams?: string, overwriteResourceUrl?: string) {
+  private getDetectorViewModel(detector: DetectorMetaData, additionalParams?: string, overwriteResourceUrl?: string): DetectorViewModel {
     let queryString = null;
     if (additionalParams) {
       let contextToPass = <Object>JSON.parse(additionalParams);
@@ -193,7 +193,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         }
       }
     }
-    return {
+    const viewModel: DetectorViewModel = {
       title: detector.name,
       metadata: detector,
       loadingStatus: LoadingStatus.Loading,
@@ -204,9 +204,11 @@ export class DetectorListComponent extends DataRenderBaseComponent {
       response: null,
       request: this._diagnosticService.getDetector(detector.id, this._detectorControl.startTimeString, this._detectorControl.endTimeString, this._detectorControl.shouldRefresh, this._detectorControl.isInternalView, queryString, overwriteResourceUrl)
     };
+
+    return viewModel;
   }
 
-  private updateDetectorViewModelSuccess(viewModel: any, res: DetectorResponse) {
+  private updateDetectorViewModelSuccess(viewModel: DetectorViewModel, res: DetectorResponse) {
     const status = res.status.statusId;
 
     viewModel.loadingStatus = LoadingStatus.Success,
@@ -240,29 +242,25 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
   //Get from detector-list-analysis
   startDetectorRendering(detectorList: DetectorMetaData[], downTime: DownTime, containsDownTime: boolean) {
-    // if (this.showWebSearchTimeout) {
-    //     clearTimeout(this.showWebSearchTimeout);
-    // }
-    // this.showWebSearchTimeout = setTimeout(() => { this.showWebSearch = true; }, 10000);
     this.issueDetectedViewModels = [];
     const requests: Observable<any>[] = [];
 
     this.detectorMetaData = detectorList.filter(detector => this.renderingProperties.detectorIds.indexOf(detector.id) >= 0);
-    //this.detectorViewModels = this.detectorMetaData.map(detector => this.getDetectorViewModel(detector, downTime, containsDownTime));
     this.detectorViewModels = this.detectorMetaData.map(detector => this.getDetectorViewModel(detector, this.renderingProperties.additionalParams, this.overrideResourceUri));
     // if (this.detectorViewModels.length > 0) {
     //     this.loadingChildDetectors = true;
     //     this.startLoadingMessage();
     // }
-    this.detectorViewModels.forEach((metaData, index) => {
-      requests.push((<Observable<DetectorResponse>>metaData.request).pipe(
+    this.detectorViewModels.forEach((viewModel, index) => {
+      requests.push((<Observable<DetectorResponse>>viewModel.request).pipe(
         map((response: DetectorResponse) => {
-          this.detectorViewModels[index] = this.updateDetectorViewModelSuccess(metaData, response);
+          this.detectorViewModels[index] = this.updateDetectorViewModelSuccess(viewModel, response);
 
           if (this.detectorViewModels[index].loadingStatus !== LoadingStatus.Failed) {
             if (this.detectorViewModels[index].status === HealthStatus.Critical || this.detectorViewModels[index].status === HealthStatus.Warning) {
-              let insight = this.getDetectorInsight(this.detectorViewModels[index]);
-              let issueDetectedViewModel = { model: this.detectorViewModels[index], insightTitle: insight.title, insightDescription: insight.description };
+              this.getInsightSolutions(this.detectorViewModels[index]);
+              let insightInfo = this.getDetectorInsightInfo(this.detectorViewModels[index]);
+              let issueDetectedViewModel: DetectorViewModeWithInsightInfo = { model: this.detectorViewModels[index], ...insightInfo };
 
               if (this.issueDetectedViewModels.length > 0) {
                 this.issueDetectedViewModels = this.issueDetectedViewModels.filter(iVM => (!!iVM.model && !!iVM.model.metadata && !!iVM.model.metadata.id && iVM.model.metadata.id != issueDetectedViewModel.model.metadata.id));
@@ -270,12 +268,11 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
               this.issueDetectedViewModels.push(issueDetectedViewModel);
               this.issueDetectedViewModels = this.issueDetectedViewModels.sort((n1, n2) => {
-                // if(this.allSolutionsMap.has(issueDetectedViewModel.model.title)) return Number.MIN_SAFE_INTEGER;
                 return n1.model.status - n2.model.status
               });
             } else {
-              let insight = this.getDetectorInsight(this.detectorViewModels[index]);
-              let successViewModel = { model: this.detectorViewModels[index], insightTitle: insight.title, insightDescription: insight.description };
+              let insightInfo = this.getDetectorInsightInfo(this.detectorViewModels[index]);
+              let successViewModel: DetectorViewModeWithInsightInfo = { model: this.detectorViewModels[index], ...insightInfo };
 
               if (this.successfulViewModels.length > 0) {
                 this.successfulViewModels = this.successfulViewModels.filter(sVM => (!!sVM.model && !!sVM.model.metadata && !!sVM.model.metadata.id && sVM.model.metadata.id != successViewModel.model.metadata.id));
@@ -293,6 +290,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           };
         })
         , catchError(err => {
+          console.log(err);
           this.detectorViewModels[index].loadingStatus = LoadingStatus.Failed;
           return of({});
         })
@@ -332,9 +330,12 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     // }
   }
 
-  getDetectorInsight(viewModel: any): any {
+  getDetectorInsightInfo(viewModel: DetectorViewModel): BasicInsightInfo {
     let allInsights: Insight[] = InsightUtils.parseAllInsightsFromResponse(viewModel.response);
-    let insight: any;
+    let insightInfo: BasicInsightInfo = {
+      insightTitle: "",
+      insightDescription: ""
+    }
     if (allInsights.length > 0) {
 
       let detectorInsight = allInsights.find(i => i.status === viewModel.status);
@@ -342,14 +343,19 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         detectorInsight = allInsights[0];
       }
 
-      let description = null;
+      let description: string = null;
       if (detectorInsight.hasData()) {
         description = detectorInsight.data["Description"];
       }
-      insight = { title: detectorInsight.title, description: description };
+      insightInfo.insightTitle = detectorInsight.title;
+      insightInfo.insightDescription = description;
+    }
+    return insightInfo;
+  }
 
-      // now populate solutions for all the insights
-      const solutions: Solution[] = [];
+  private getInsightSolutions(viewModel: DetectorViewModel) {
+    let allInsights: Insight[] = InsightUtils.parseAllInsightsFromResponse(viewModel.response);
+    const solutions: Solution[] = [];
       allInsights.forEach(i => {
         if (i.solutions != null && i.solutions.length > 0) {
           i.solutions.forEach(s => {
@@ -360,17 +366,11 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           this.allSolutionsMap.set(viewModel.title, solutions);
         }
       });
-    }
-    return insight;
   }
 
-  public selectDetector(viewModel: any) {
+  public selectDetector(viewModel: DetectorViewModeWithInsightInfo) {
     if (viewModel != null && viewModel.model.metadata.id) {
       let drilldownDetectorId = viewModel.model.metadata.id;
-
-      // if (viewModel.model.metadata.category) {
-      //   categoryName = viewModel.model.metadata.category.replace(/\s/g, '');
-      // }
       // else {
       //   // For uncategorized detectors:
       //   // If it is home page, redirect to availability category. Otherwise stay in the current category page.
@@ -390,24 +390,29 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         this.logEvent(TelemetryEventNames.ChildDetectorClicked, clickDetectorEventProperties);
 
         if (drilldownDetectorId === 'appchanges' && !this._detectorControl.internalClient) {
-          // this._portalActionService.openChangeAnalysisBlade(this._detectorControl.startTimeString, this._detectorControl.endTimeString);
+          this._portalActionService.openChangeAnalysisBlade(this._detectorControl.startTimeString, this._detectorControl.endTimeString);
         } else {
           this.updateDrillDownMode(true, viewModel);
-          if (viewModel.model.startTime != null && viewModel.model.endTime != null) {
-            this._router.navigate([`./drillDownDetector/${drilldownDetectorId}`], {
-              relativeTo: this._activatedRoute,
-              queryParams: { startTime: viewModel.model.startTime, endTime: viewModel.model.endTime },
-              queryParamsHandling: 'merge',
-              replaceUrl: true
-            });
-          }
-          else {
-            this._router.navigate([`./drilldownDetector/${drilldownDetectorId}`], {
-              relativeTo: this._activatedRoute,
-              queryParamsHandling: 'merge',
-              preserveFragment: true
-            });
-          }
+          // if (viewModel.model.startTime != null && viewModel.model.endTime != null) {
+          //   this._router.navigate([`./drillDownDetector/${drilldownDetectorId}`], {
+          //     relativeTo: this._activatedRoute,
+          //     queryParams: { startTime: viewModel.model.startTime, endTime: viewModel.model.endTime },
+          //     queryParamsHandling: 'merge',
+          //     replaceUrl: true
+          //   });
+          // }
+          // else {
+          //   this._router.navigate([`./drilldownDetector/${drilldownDetectorId}`], {
+          //     relativeTo: this._activatedRoute,
+          //     queryParamsHandling: 'merge',
+          //     preserveFragment: true
+          //   });
+          // }
+          this._router.navigate([`./drilldownDetector/${drilldownDetectorId}`], {
+            relativeTo: this._activatedRoute,
+            queryParamsHandling: 'merge',
+            preserveFragment: true
+          });
           this.childDetectorPanelOpen = true;
         }
       }
@@ -438,10 +443,17 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     //     this._router.navigate([`../${this.analysisId}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
     //   }
     // }
-    this._router.navigate([`../../detectors/${this.detector}`], {
-      relativeTo: this._activatedRoute,
-      queryParamsHandling: 'merge'
-    });
+    if (this.isAnalysisView) {
+      this._router.navigate([`../../analysis/${this.detector}`], {
+        relativeTo: this._activatedRoute,
+        queryParamsHandling: 'merge'
+      });
+    } else {
+      this._router.navigate([`../../detectors/${this.detector}`], {
+        relativeTo: this._activatedRoute,
+        queryParamsHandling: 'merge'
+      });
+    }
   }
 
   refresh() {
@@ -456,10 +468,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     this.solutionPanelOpenSubject.next(true);
 
   }
-
-  // dismissSolutionPanel() {
-  //   this.solutionPanelOpen = false;
-  // }
 
   dismissChildDetectorPanel() {
     this.childDetectorPanelOpen = false;
@@ -477,4 +485,25 @@ export class DetectorOrderPipe implements PipeTransform {
       return a.status > b.status ? 1 : -1;
     });
   }
+}
+
+interface DetectorViewModel {
+  title: string;
+  metadata: DetectorMetaData;
+  loadingStatus: LoadingStatus;
+  status: HealthStatus;
+  statusColor: string;
+  statusIcon: string;
+  expanded: boolean;
+  response: DetectorResponse;
+  request: Observable<DetectorResponse>
+}
+
+interface BasicInsightInfo {
+  insightTitle: string;
+  insightDescription: string;
+}
+
+interface DetectorViewModeWithInsightInfo extends BasicInsightInfo{
+  model: DetectorViewModel;
 }
