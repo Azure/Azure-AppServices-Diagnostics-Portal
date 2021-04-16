@@ -1,3 +1,4 @@
+@import "../../../../../app-service-diagnostics/src/styles/main.scss";
 .list-wrapper {
     position: relative;
     margin-left: 30px;
@@ -241,4 +242,8 @@
 
 .list-wrapper-genie {
     top: 10px;
+}
+
+.dot-flashing {
+    @include dot-flashing(14);
 }
