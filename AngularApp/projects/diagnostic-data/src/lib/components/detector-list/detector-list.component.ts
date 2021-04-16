@@ -386,7 +386,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     }
   }
 
-  private updateDrillDownMode(inDrillDownMode: boolean, viewModel: any): void {
+  private updateDrillDownMode(inDrillDownMode: boolean, viewModel: DetectorViewModeWithInsightInfo): void {
     this.inDrillDownMode = inDrillDownMode;
     if (!this.inDrillDownMode) {
       this.drilldownDetectorName = '';
