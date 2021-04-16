@@ -231,8 +231,6 @@ export class HighchartsGraphComponent implements OnInit {
         return null;
     }
     
-    //Use closure so we can access both this(outsider point to HighChartsGraph class and inside one point to chart)
-    //Need to invoke to get  CharLoadCallbackFunction in options below
     highchartCallback(): Highcharts.ChartLoadCallbackFunction {
         let _this = this;
         return function (e) {
