@@ -43,6 +43,7 @@ export class DetectorContainerComponent implements OnInit {
 
   @Input() analysisMode: boolean = false;
   @Input() isAnalysisView: boolean = false;
+  @Input() overWriteDetectorDescription: string = "";
 
   @Output() XAxisSelection: EventEmitter<XAxisSelection> = new EventEmitter<XAxisSelection>();
   public onXAxisSelection(event: XAxisSelection) {

@@ -1,12 +1,12 @@
 <div class="category-container" style="width:100%">
-  <div>
+  <!-- <div>
     <h2><span class="blade-title">{{categoryName}}</span><span class="blade-description"> -
         {{categoryDescription}}</span></h2>
     <p class="category-description" *ngIf="categoryId!=='navigator' && categoryId!=='DiagnosticTools'">
       If you have a specific problem you want to investigate, click a topic in the left navigation or click Ask Genie.
     </p>
-  </div>
-  <div style="margin-left: -20px;margin-top: 10px;">
-    <detector-container [detector]="categoryOverviewDetector" [hideDetectorControl]="false"></detector-container>
+  </div> -->
+  <div style="margin-left: -20px;">
+    <detector-container [detector]="categoryOverviewDetector" [hideDetectorControl]="false" [overWriteDetectorDescription]="categoryDescription"></detector-container>
   </div>
 </div>

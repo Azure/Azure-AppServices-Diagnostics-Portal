@@ -1,37 +1,46 @@
 <div class="timepicker" id="timePicker">
   <!-- <div class="time-picker-container" *ngIf="globals.openTimePicker" (keydown.escape)="escapeHandler($event)" (keydown.Tab)="tabHandler($event)"> -->
-  <fab-callout *ngIf="openTimePickerCallout" [setInitialFocus]="true" [target]="target" (onDismiss)="openTimePickerCallout = false;">
-    <div style="width: 300px;padding: 16px;">
-      <fab-choice-group [options]="choiceGroupOptions" [defaultSelectedKey]="defaultSelectedKey">
-      </fab-choice-group>
-      <div *ngIf="showTimePicker" class="row">
-        <div style="padding:15px">UTC Start Time (mm/dd/yy) </div>
-        <fab-date-picker contentClass="col-md-8" [strings]="dates" [minDate]="minDate" [maxDate]="maxDate"
-          placeholder="Select a date..." ariaLabel="Select start date" allowTextInput="true"
-          showMonthPickerAsOverlay="true" (onSelectDate)="onSelectStartDateHandler($event)" [formatDate]="formatDate"
-          [value]="startDate">
-        </fab-date-picker>
-        <fab-masked-text-field contentClass="col-md-4" maxLength="6" [(value)]="startClock"
-          [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
-          [getErrorMessage]="getErrorMessageOnTextField" [ariaLabel]="'startTime'">
-        </fab-masked-text-field>
-
-        <div style="padding:15px; margin-top:30px">UTC End Time (mm/dd/yy) </div>
-        <fab-date-picker contentClass="col-md-8" [strings]="dates" [minDate]="minDate" [maxDate]="maxDate"
-          placeholder="Select a date..." ariaLabel="Select end date" allowTextInput="true"
-          showMonthPickerAsOverlay="true" (onSelectDate)="onSelectEndDateHandler($event)" [formatDate]="formatDate"
-          [value]="endDate">
-        </fab-date-picker>
-        <fab-masked-text-field contentClass="col-md-4" maxLength="6" [(value)]="endClock"
-          [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
-          [getErrorMessage]="getErrorMessageOnTextField" [ariaLabel]="'endTime'">
-        </fab-masked-text-field>
+  <fab-callout *ngIf="openTimePickerCallout" [setInitialFocus]="true" [target]="target"
+    (onDismiss)="openTimePickerCallout = false;">
+    <div style="width: 300px;">
+      <div class="callout-padding">
+        <fab-choice-group [options]="choiceGroupOptions" [defaultSelectedKey]="defaultSelectedKey">
+        </fab-choice-group>
+        <div *ngIf="showTimePicker" class="row">
+          <div style="display: flex;" class="ml-3 mt-5">
+            <div class="mr-3 date-picker-label">Start </div>
+            <fab-date-picker contentClass="col-md-8" [strings]="dates" [minDate]="minDate" [maxDate]="maxDate"
+              placeholder="Select a date..." ariaLabel="Select start date" allowTextInput="true"
+              showMonthPickerAsOverlay="true" (onSelectDate)="onSelectStartDateHandler($event)" [formatDate]="formatDate"
+              [value]="startDate" contentStyle="width:100px;margin-right:4px">
+            </fab-date-picker>
+            <fab-masked-text-field contentClass="col-md-4" maxLength="6" [(value)]="startClock"
+              [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
+              [getErrorMessage]="getErrorMessageOnTextField" [ariaLabel]="'startTime'" [styles]="maskTextFieldStyles">
+            </fab-masked-text-field>
+          </div>
+  
+          <div style="display: flex;" class="ml-3 mt-5">
+            <div  class="mr-4 date-picker-label">End</div>
+            <fab-date-picker contentClass="col-md-8" [strings]="dates" [minDate]="minDate" [maxDate]="maxDate"
+              placeholder="Select a date..." ariaLabel="Select end date" allowTextInput="true"
+              showMonthPickerAsOverlay="true" (onSelectDate)="onSelectEndDateHandler($event)" [formatDate]="formatDate"
+              [value]="endDate" contentStyle="width:100px;margin-right:4px">
+            </fab-date-picker>
+            <fab-masked-text-field contentClass="col-md-4" maxLength="6" [(value)]="endClock"
+              [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
+              [getErrorMessage]="getErrorMessageOnTextField" [ariaLabel]="'endTime'" [styles]="maskTextFieldStyles">
+            </fab-masked-text-field>
+          </div>
+        </div>
+        <div *ngIf="timeDiffError != ''" style="color:red;">{{timeDiffError}}</div>
       </div>
-      <div *ngIf="timeDiffError != ''" style="color:red;">{{timeDiffError}}</div>
-      <div style="padding:15px 0px">
-        <fab-primary-button contentStyle="margin-right:10px" (onClick)="applyTimeRange()">Apply
-        </fab-primary-button>
-        <fab-default-button (onClick)="cancelTimeRange()">Cancel</fab-default-button>
+      <div style="border-top: 1px solid gray;" class="pt-3 pb-3 callout-padding">
+        <div class="mr-4">
+          <fab-primary-button (onClick)="applyTimeRange()" contentClass="mr-3">Apply
+          </fab-primary-button>
+          <fab-default-button (onClick)="cancelTimeRange()">Cancel</fab-default-button>
+        </div>
       </div>
 
     </div>
