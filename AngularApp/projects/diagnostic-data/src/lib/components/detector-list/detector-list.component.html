@@ -23,7 +23,7 @@
 </div> -->
 
 
-<ng-template #detectorContainer>
+<!-- <ng-template #detectorContainer>
   <div class="detector-container" *ngFor="let viewModel of detectorViewModels">
     <div class="detector-header" (click)="toggleDetectorHeaderStatus(viewModel)"
       (keyup.enter)="toggleDetectorHeaderStatus(viewModel)" tabindex="0" role="button"
@@ -47,7 +47,7 @@
       </div>
     </div>
   </div>
-</ng-template>
+</ng-template> -->
 
 
 <!-- New View -->
@@ -62,8 +62,7 @@
         <fab-card [expanded]="true">
           <div header>
             <div style="display: flex;align-items: center;min-height: 40px;">
-              <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"
-                [size]="20"></status-icon>
+              <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"></status-icon>
               <div><strong>{{viewModel.model.title}}</strong></div>
             </div>
             <div class="mt-2 mb-2"><strong>{{viewModel.insightTitle}}</strong></div>
@@ -94,8 +93,7 @@
           <fab-card [expanded]="false">
             <div header>
               <div style="display: flex;align-items: center;min-height: 40px;">
-                <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"
-                  [size]="20"></status-icon>
+                <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"></status-icon>
                 <div><strong>{{viewModel.model.title}}</strong></div>
               </div>
             </div>

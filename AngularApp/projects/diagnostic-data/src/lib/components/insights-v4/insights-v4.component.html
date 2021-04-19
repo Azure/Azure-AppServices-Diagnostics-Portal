@@ -3,60 +3,10 @@
      otherwise I will show it by itself -->
 <ng-template #insightView>
   <div *ngFor="let insight of insights">
-    <!-- <div div class="panel insight-panel">
-          <div class="panel-heading" (click)="toggleInsightStatus(insight)">
-            <h5 class="panel-title" [class.clickable-header]="hasContent(insight)">
-              <div style="display: table;">
-                <div style="display: table-row">
-                  <div style="display: table-cell">
-                    <span class="fa status-icon" [class.fa-exclamation-circle]="insight.status === InsightStatus.Critical"
-                      [class.fa-exclamation-triangle]="insight.status === InsightStatus.Warning"
-                      [class.fa-check-circle]="insight.status === InsightStatus.Success"
-                      [class.fa-info-circle]="insight.status === InsightStatus.Info"></span>
-                  </div>
-                  <div style="display: table-cell;width:100%">
-                    {{insight.title}}
-                  </div>
-                  <div *ngIf="hasContent(insight)" style="display: table-cell" class="pull-right">
-                    <span tabindex="0" class="fa insight-expand-icon" [class.fa-angle-right]="hasContent(insight) && !insight.isExpanded"
-                      [class.fa-angle-down]="hasContent(insight) && insight.isExpanded"></span>
-                  </div>
-                </div>
-              </div>
-            </h5>
-          </div>
-
-          <div class="panel-body" [hidden]="!(insight.isExpanded && insight.hasData())">
-            <table>
-              <tbody>
-                <tr *ngFor="let key of insight.getKeys()">
-                  <td class="table-key">
-                    <b>{{key}}</b>
-                  </td>
-                  <td class="table-value">
-                    <markdown-text [markdownData]="insight.data[key]" [detector]="detector"></markdown-text>
-                  </td>
-                </tr>
-
-                <ng-container *ngIf="hasSolutions(insight)">
-                  <tr>
-                    <td class="table-key">
-                      <b>Troubleshooting and Next Steps</b>
-                    </td>
-                    <td class="table-value">
-                      <solutions [solutions]="insight.solutions"></solutions>
-                    </td>
-                  </tr>
-                </ng-container>
-              </tbody>
-            </table>
-          </div>
-
-        </div> -->
     <fab-card [isExpandable]="hasContent(insight)" [expanded]="hasContent(insight) && insight.isExpanded" [ariaLabel]="insight.title">
       <div header>
         <div style="display: flex;align-items: center;min-height: 40px;">
-          <status-icon class="mr-3" [status]="insight.status" [size]="20"></status-icon>
+          <status-icon class="mr-3" [status]="insight.status"></status-icon>
           <div><strong>{{insight.title}}</strong></div>
         </div>
       </div>

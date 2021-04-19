@@ -6,14 +6,10 @@
         [ngClass]="{'card-container-hover':summaryCard.isClickable}"
     >
       <h3 class="card-title">{{summaryCard.title}}</h3>
-      <p class="card-message">
-          <span class="fa status-icon card-icon" [class.fa-exclamation-circle]="summaryCard.status === SummaryStatus.Critical"
-              [class.fa-exclamation-triangle]="summaryCard.status === SummaryStatus.Warning"
-              [class.fa-check-circle]="summaryCard.status === SummaryStatus.Success"
-              [class.fa-info-circle]="summaryCard.status === SummaryStatus.Info"
-          ></span>
-          <span>{{summaryCard.message}}</span>
-      </p>
+      <div class="card-message">
+          <div class="mr-3"><status-icon [status]="summaryCard.status"></status-icon></div>
+          <div>{{summaryCard.message}}</div>
+      </div>
       <p class="card-description">{{summaryCard.description}}</p>
   </div>
 </div>

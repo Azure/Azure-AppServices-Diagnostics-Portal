@@ -49,11 +49,10 @@
             <collapsible-list-fabric [collapsed]="false" [title]="'Observation and Solutions'">
               <collapsible-list-item body>
                 <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
-                  <fab-card [expanded]="true" [isExpandable]="!!viewModel.insightDescription">
+                  <fab-card [expanded]="true" [isExpandable]="true">
                     <div header>
                       <div style="display: flex;align-items: center;min-height: 40px;">
-                        <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"
-                          [size]="20"></status-icon>
+                        <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"></status-icon>
                         <div><strong>{{viewModel.model.title}}</strong></div>
                       </div>
                       <div class="mt-2 mb-2"><strong>{{viewModel.insightTitle}}</strong></div>
@@ -187,8 +186,7 @@
                 <fab-card [expanded]="false">
                   <div header>
                     <div style="display: flex;align-items: center;min-height: 40px;">
-                      <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"
-                        [size]="20"></status-icon>
+                      <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"></status-icon>
                       <div><strong>{{viewModel.model.title}}</strong></div>
                     </div>
                   </div>

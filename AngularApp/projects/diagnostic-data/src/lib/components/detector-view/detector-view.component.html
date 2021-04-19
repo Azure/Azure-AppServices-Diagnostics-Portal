@@ -4,7 +4,7 @@
   <!-- <div>hideDetectorHeader: {{hideDetectorHeader}}</div> -->
 
   <div *ngIf="!hideDetectorHeader">
-    <div>
+    <div *ngIf="isPublic && !isInCaseSubmission()">
       <fab-primary-button id="time-picker-button" [styles]="buttonStyle" (onClick)="openTimePickerSubject.next(true);">
         <fab-icon [iconName]="'Clock'"></fab-icon>
         <span class="ml-3">Time Range (UTC) : {{timePickerButtonStr}}</span>
