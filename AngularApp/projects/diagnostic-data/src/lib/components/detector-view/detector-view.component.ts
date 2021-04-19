@@ -14,7 +14,7 @@ import { VersionService } from '../../services/version.service';
 import { CXPChatService } from '../../services/cxp-chat.service';
 import * as momentNs from 'moment';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection } from '../../models/time-series';
-import { IChoiceGroupOption, IDropdownOption } from 'office-ui-fabric-react';
+import { IButtonProps, IButtonStyles, IChoiceGroupOption, IDropdownOption } from 'office-ui-fabric-react';
 
 const moment = momentNs;
 const minSupportedDowntimeDuration: number = 10;
@@ -72,6 +72,17 @@ export class DetectorViewComponent implements OnInit {
   downtimeButtonStr: string = "";
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   timePickerButtonStr: string = "";
+  buttonStyle:IButtonStyles = {
+    root:{
+      color: "#323130", 
+      borderRadius: "12px",
+       margin:" 0px 5px", 
+       background: "rgba(0, 120, 212, 0.1)",
+       fontSize:"13", 
+       fontWeight: "600",
+       height: "24px"
+    }
+  }
   @Input()
   set detectorResponse(value: DetectorResponse) {
     this.resetGlobals();
@@ -101,6 +112,7 @@ export class DetectorViewComponent implements OnInit {
   @Input() hideDetectorHeader: boolean = false;
   @Input() isKeystoneView: boolean = false;
   @Input() isRiskAlertDetector: boolean = false;
+  @Input() overWriteDetectorDescription: string = "";
   feedbackButtonLabel: string = 'Send Feedback';
   hideShieldComponent: boolean = false;
 
@@ -462,7 +474,6 @@ export class DetectorViewComponent implements OnInit {
       ariaLabel: this.getDowntimeLabel(d),
       onClick: () => {
         this.selectedKey = this.getKeyForDownTime(d);
-        // this.selectedDownTime = d;
       }
     }
     return defaultOption;
