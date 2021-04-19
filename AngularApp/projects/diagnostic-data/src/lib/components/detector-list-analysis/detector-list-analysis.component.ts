@@ -703,9 +703,6 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         return insight;
     }
 
-    ngOnChanges() {
-    }
-
     private updateDetectorViewModelSuccess(viewModel: any, res: DetectorResponse) {
         const status = res.status.statusId;
 

@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ICalendarStrings, IDatePickerProps, IChoiceGroupOption } from 'office-ui-fabric-react';
+import { ICalendarStrings, IDatePickerProps, IChoiceGroupOption, ITextFieldStyles } from 'office-ui-fabric-react';
 import { addMonths, addDays } from 'office-ui-fabric-react/lib/utilities/dateMath/DateMath';
 import * as momentNs from 'moment';
 import { DetectorControlService, TimePickerInfo, TimePickerOptions } from '../../services/detector-control.service';
@@ -18,6 +18,7 @@ export class DetectorTimePickerComponent implements OnInit {
   openTimePickerCallout: boolean = false;
   @Input() target: string = "";
   @Output() updateTimerMessage: EventEmitter<string> = new EventEmitter();
+  timePickerButtonStr: string = "";
   showCalendar: boolean = false;
   showTimePicker: boolean = false;
   defaultSelectedKey: string;
@@ -65,6 +66,8 @@ export class DetectorTimePickerComponent implements OnInit {
     goToToday: 'Go to today',
     weekNumberFormatString: 'Week number {0}',
   };
+
+  maskTextFieldStyles: Partial<ITextFieldStyles> = { fieldGroup: { width: "100px" } };
 
   constructor(private activatedRoute: ActivatedRoute, private detectorControlService: DetectorControlService, private router: Router, private telemetryService: TelemetryService) {
   }
