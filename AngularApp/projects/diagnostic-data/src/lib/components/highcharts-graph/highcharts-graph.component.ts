@@ -54,8 +54,7 @@ export class HighchartsGraphComponent implements OnInit {
         return this._xAxisPlotBands;
     }
 
-    public hoverData: { name: string, value: string, color: string,show: boolean }[] = [];
-    private currentChartId: string;
+    public hoverData: { name: string, value: string, color: string,isSelect: boolean }[] = [];
     public static chartProperties: { [chartContainerId: string]: KeyValue<string, any>[] } = {};
     public static getChartProperty(propertyName: string, chartContainerId: string): any {
         if (chartContainerId != '') {
@@ -243,7 +242,7 @@ export class HighchartsGraphComponent implements OnInit {
                     for (var i = 0; i < series.length; i++) {
                         series[i].setVisible(statusToSet, false);
                     }
-                    _this.hoverData.forEach(d => d.show = statusToSet);
+                    _this.hoverData.forEach(d => d.isSelect = statusToSet);
                     statusToSet = !statusToSet;
                     var textStr = statusToSet ? "All" : "None";
                     var ariaLabel = statusToSet ? "Select all the series" : "Deselect all the series";
@@ -488,21 +487,21 @@ export class HighchartsGraphComponent implements OnInit {
 
         setTimeout(() => {
             let currentCharts = this.el.nativeElement.getElementsByClassName('highcharts-container');
-            this.currentChartId = currentCharts[0].id;
+            const currentChartId = currentCharts[0].id;
             this.highChartsHoverService.hoverXAxisValue.subscribe(data => {
                 this.updateLabel(data);
             });
 
 
 
-            const chart = Highcharts.charts.find(c => c && c.container.id === this.currentChartId);
+            const chart = Highcharts.charts.find(c => c && c.container.id === currentChartId);
             if (!chart) return;
             chart.series.forEach(item => {
                 this.hoverData.push({
                     name: item.name,
                     color: item.color,
                     value: "--",
-                    show: true
+                    isSelect: true
                 });
             });
 
@@ -550,12 +549,6 @@ export class HighchartsGraphComponent implements OnInit {
         return formattedDate;
     }
 
-    private legendItemClickCallback: Highcharts.SeriesLegendItemClickCallbackFunction = legend => {
-        const name = legend.target.name;
-        const index = this.hoverData.findIndex(d => d.name.toLowerCase() === name.toLowerCase());
-        if(index < 0) return;
-        this.hoverData[index].show = !this.hoverData[index].show;
-    }
 
     private updateLabel(xAxisValue: number) {
         if (!this.showMetrics) return;
@@ -566,7 +559,7 @@ export class HighchartsGraphComponent implements OnInit {
             });
             return;
         }
-        const chart = Highcharts.charts.find(c => c && c.container.id === this.currentChartId);
+        const chart:any = this.getCurrentChart();
         if (!chart) return;
         const xAxisIndex = chart.series[0].xData.findIndex(item => item === xAxisValue);
         if (xAxisIndex < 0) return;
@@ -740,7 +733,7 @@ export class HighchartsGraphComponent implements OnInit {
                 },
             },
             legend: {
-                enabled: true,
+                enabled: !this.showMetrics,
                 align: 'center',
                 layout: 'horizontal',
                 verticalAlign: 'bottom',
@@ -764,9 +757,6 @@ export class HighchartsGraphComponent implements OnInit {
                         keyboardNavigation: {
                             enabled: true
                         }
-                    },
-                    events: {
-                        legendItemClick: this.legendItemClickCallback
                     }
                 }
             },
@@ -871,6 +861,23 @@ export class HighchartsGraphComponent implements OnInit {
             },
             series: this.HighchartData
         } as Highcharts.Options
+    }
+
+    selectSeries(index: number) {
+        const chart = this.getCurrentChart();
+        chart.series.forEach((s,i) => {
+            s.setVisible(i === index, false);
+        });
+        
+        this.hoverData.forEach((d,i) => {
+            d.isSelect = i === index;
+        });
+    }
+
+    leaveSeries() {
+        const chart = this.getCurrentChart();
+        chart.series.forEach(s => s.setVisible(true,false));
+        this.hoverData.forEach(h => h.isSelect = true);
     }
 }
 
