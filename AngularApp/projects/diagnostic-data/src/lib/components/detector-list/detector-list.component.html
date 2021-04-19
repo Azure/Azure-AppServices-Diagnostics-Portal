@@ -1,8 +1,7 @@
-<div role="group" aria-label="Detector list">
+<!-- <div role="group" aria-label="Detector list">
   <div *ngIf="overrideResourceUri !== '' else detectorContainer" class="list-wrapper">
-    <!-- If no error and no data then hide whole div -->
     <div *ngIf="internalErrorMsg !== '' || errorMsg !== '' || detectorViewModels.length > 0">
-      <!-- When has image and with error, hide vertical line -->
+      
       <div *ngIf="!(imgSrc !== '' && (internalErrorMsg !== '' || errorMsg !== ''))" class="red-line"></div>
       <div class="list-item-wrapper">
         <img *ngIf="imgSrc !== ''" [src]="imgSrc" class="resource-icon">
@@ -21,7 +20,7 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 
 <ng-template #detectorContainer>
@@ -50,13 +49,15 @@
   </div>
 </ng-template>
 
+
+<!-- New View -->
+<div style="margin-bottom: 30px;" *ngIf="loading === LoadingStatus.Loading">
+  <div class="dot-flashing"></div>
+</div>
 <!-- <ng-container *ngIf="!inDrillDownMode else drilldownTemplate"> -->
 <div *ngIf="issueDetectedViewModels.length > 0">
   <collapsible-list-fabric [collapsed]="false" [title]="'Observation and Solutions'">
     <collapsible-list-item body>
-      <div style="margin-bottom: 30px;" *ngIf="loading === LoadingStatus.Loading">
-        <div class="dot-flashing"></div>
-      </div>
       <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
         <fab-card [expanded]="true">
           <div header>

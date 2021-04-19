@@ -43,6 +43,7 @@ export class DetectorContainerComponent implements OnInit {
 
   @Input() analysisMode: boolean = false;
   @Input() isAnalysisView: boolean = false;
+  @Input() overWriteDetectorDescription: string = "";
 
   private _downtimeZoomBehavior:zoomBehaviors = zoomBehaviors.Zoom;
   @Input() public set downtimeZoomBehavior(zoomBehavior:zoomBehaviors) {
