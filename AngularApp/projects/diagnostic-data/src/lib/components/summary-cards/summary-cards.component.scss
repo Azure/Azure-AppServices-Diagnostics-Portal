@@ -17,23 +17,6 @@
     box-shadow: rgba(50,50,50,0.5) 0px 2px 2px;
 }
 
-
-
-.fa-exclamation-circle {
-    color: #ff0000;
-}
-
-.fa-exclamation-triangle {
-    color: #ff9104;
-}
-
-.fa-check-circle {
-    color: #3da907;
-}
-
-.fa-info-circle {
-    color: #3a9bc7;
-}
 .card-title{
     font-size: 13px;
     line-height: 15px;
@@ -47,6 +30,8 @@
 }
 
 .card-message{
+    display: flex;
+    align-items: center;
     font-size: 20px;
     line-height: 23px;
     margin: 5px 3px;
