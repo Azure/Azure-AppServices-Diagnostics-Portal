@@ -3,9 +3,8 @@
     <h3 class="risk-title risk-section">{{title}}</h3>
     <div class="risk-section" *ngIf="loading != LoadingStatus.Loading else loadingPlaceHolder">
       <div *ngFor="let info of infoList" class="risk-icon-section">
-        <span class="fa status-icon risk-icon" [ngClass]="StatusStyles.getIconByStatus(info.status)">
-        </span>
-        <span>{{info.message}}</span>
+        <div class="mr-3"><status-icon [status]="info.status"></status-icon></div>
+        <div>{{info.message}}</div>
       </div>
     </div>
 
