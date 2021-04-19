@@ -80,7 +80,7 @@ export class DetectorViewComponent implements OnInit {
        background: "rgba(0, 120, 212, 0.1)",
        fontSize:"13", 
        fontWeight: "600",
-       height: "24px"
+       height: "80%"
     }
   }
   @Input()
