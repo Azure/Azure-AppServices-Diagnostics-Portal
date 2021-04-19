@@ -7,10 +7,10 @@ export class StatusStyles {
     public static Info: string = '#3a9bc7';
     public static Gift: string = 'dodgerblue';
 
-    public static CriticalIcon: string = 'fa-exclamation-circle';
-    public static WarningIcon: string = 'fa-exclamation-triangle';
-    public static HealthyIcon: string = 'fa-check-circle';
-    public static InfoIcon: string = 'fa-info-circle';
+    public static CriticalIcon: string = 'ib-redx';
+    public static WarningIcon: string = 'ib-yellowexclam';
+    public static HealthyIcon: string = 'ib-greencheck';
+    public static InfoIcon: string = 'ib-blueinfo';
     public static GiftIcon: string = 'fa-gift';
 
     public static getColorByStatus(status: HealthStatus) {
