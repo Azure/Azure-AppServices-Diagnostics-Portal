@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { PanelType } from 'office-ui-fabric-react';
 import { Observable } from 'rxjs';
 import { Solution } from '../solution/solution';
@@ -10,11 +11,12 @@ import { Solution } from '../solution/solution';
 })
 export class SolutionPanelComponent implements OnInit {
 
-  constructor() { }
+  constructor(_router:ActivatedRoute) { }
 
   @Input() isPanelOpenObservable: Observable<boolean>;
   @Input() solutions: Solution[] = [];
   @Input() width: string = "800px";
+  @Input() solutionTitle: string = "";
   public isOpen: boolean;
   panelType: PanelType = PanelType.custom;
 
