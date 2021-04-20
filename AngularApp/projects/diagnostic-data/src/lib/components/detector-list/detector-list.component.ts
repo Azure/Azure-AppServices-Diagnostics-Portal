@@ -59,7 +59,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   panelType: PanelType = PanelType.custom;
   allSolutions: Solution[] = [];
-
+  solutionTitle:string = "";
   childDetectorPanelOpen: boolean = false;
   loading = LoadingStatus.Loading;
 
@@ -431,9 +431,8 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
   openSolutionPanel(title: string) {
     this.allSolutions = this.allSolutionsMap.get(title);
-    // this.solutionPanelOpen = true;
+    this.solutionTitle = `${title} Solution`;
     this.solutionPanelOpenSubject.next(true);
-
   }
 
   dismissChildDetectorPanel() {
