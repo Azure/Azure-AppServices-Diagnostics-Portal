@@ -25,7 +25,7 @@ export class InsightsV4Component extends DataRenderBaseComponent {
 
   solutions: Solution[] = [];
   solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
-
+  solutionTitle: string = "";
   constructor(protected telemetryService: TelemetryService) {
     super(telemetryService);
   }
@@ -73,6 +73,7 @@ export class InsightsV4Component extends DataRenderBaseComponent {
 
   openSolutionPanel(insight: Insight) {
     this.solutions = insight.solutions;
+    this.solutionTitle = insight.title;
     this.solutionPanelOpenSubject.next(true);
   }
 }

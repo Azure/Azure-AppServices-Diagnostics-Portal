@@ -33,7 +33,7 @@
   </div>
 </ng-template>
 
-<solution-panel [isPanelOpenObservable]="solutionPanelOpenSubject" [solutions]="solutions"></solution-panel>
+<solutions-panel [isPanelOpenObservable]="solutionPanelOpenSubject" [solutions]="solutions" [title]="solutionTitle"></solutions-panel>
 
 <!-- If there is title wrap it in container -->
 <data-container *ngIf="renderingProperties.title; else noContainer" [title]="renderingProperties.title"

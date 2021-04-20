@@ -116,6 +116,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     solutionPanelOpen: boolean = false;
     solutionPanelType: PanelType = PanelType.custom;
     solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    solutionTitle: string = "";
 
     constructor(public _activatedRoute: ActivatedRoute, private _router: Router,
         private _diagnosticService: DiagnosticService, private _detectorControl: DetectorControlService,
@@ -915,6 +916,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     }
 
     openSolutionPanel(title: string) {
+        this.solutionTitle = title;
         this.allSolutions = this.allSolutionsMap.get(title);
         this.solutionPanelOpenSubject.next(true);
     }

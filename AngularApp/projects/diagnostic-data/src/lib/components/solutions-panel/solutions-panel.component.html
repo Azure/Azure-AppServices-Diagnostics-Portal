@@ -1,0 +1,21 @@
+<fab-panel [isOpen]="isOpen" [type]="panelType" [customWidth]="width" [isHiddenOnDismiss]="true" [isLightDismiss]="true"
+  [hasCloseButton]="true" [closeButtonAriaLabel]="'close'" (onDismissed)="dismissPanel()">
+  <div>
+    <div class="solution-section solution-head">
+      <h3>{{title}}</h3>
+      <h4>{{resourceName}}</h4>
+    </div>
+    
+    <div *ngIf="!isPublic" class="solution-section">
+      <fab-message-bar [messageBarType]="messageBarType" [dismissable]="false" [styles]="messageBarStyles">Please copy
+        the following instructions to external customers.</fab-message-bar>
+    </div>
+    
+    <div class="solution-section">
+      <div *ngFor="let solution of solutions,let i = index" class="mb-7">
+        <h4 class="solution-step-title"><strong>Step -- {{i + 1}}</strong></h4>
+        <solution [data]="solution"></solution>
+      </div>
+    </div>
+  </div>
+</fab-panel>
