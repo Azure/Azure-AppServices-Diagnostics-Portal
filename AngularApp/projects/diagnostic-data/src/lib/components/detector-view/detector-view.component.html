@@ -1,30 +1,29 @@
-<div *ngIf="detectorDataLocalCopy" style="display: flex;" class="mb-3">
+<div *ngIf="detectorDataLocalCopy" style="display: flex;margin-top: 8px 0px">
   <!-- Debug -->
-  <!-- <div>isAnalysisView: {{isAnalysisView}}</div> -->
-  <!-- <div>hideDetectorHeader: {{hideDetectorHeader}}</div> -->
+  <!-- <div>isAnalysisView: {{isAnalysisView}}</div>
+  <div>hideDetectorHeader: {{hideDetectorHeader}}</div>
+  <div>isPublic: {{isPublic}}</div>
+  <div>isSystemInvoker: {{isSystemInvoker}}</div> -->
+  <!-- <div>supportsDownTime {{supportsDownTime}}</div> -->
 
   <div *ngIf="!hideDetectorHeader">
     <div *ngIf="isPublic && !isInCaseSubmission()">
       <fab-primary-button id="time-picker-button" [styles]="buttonStyle" (onClick)="openTimePickerSubject.next(true);">
         <fab-icon [iconName]="'Clock'"></fab-icon>
-        <span class="ml-3">Time Range (UTC) : {{timePickerButtonStr}}</span>
+        <span class="ml-3">
+          <span style="font-weight: 400;">Time Range (UTC) : </span>
+          {{timePickerButtonStr}}
+        </span>
       </fab-primary-button>
     </div>
   </div>
   <div *ngIf="isAnalysisView && supportsDownTime" class="ml-3">
-    <!-- <div class="downtime-container">
-    <span class="downtime-icon"><i class="fa fa-filter fa-lg" aria-hidden="true"></i></span>
-    <label for="downtimeFilter" tabindex="0" aria-label="Select a downtime to investigate."
-      role="text"><strong>Downtime</strong></label>
-    <fab-dropdown id="downtimeFilter" role="combobox" [options]="fabOptions" (onChange)="selectFabricKey($event)"
-      [defaultSelectedKey]="selectedKey" [disabled]="downtimeFilterDisabled"
-      contentStyle="margin-top: -5px; margin-left: 5px;width:{{fabDropdownWidth}}px;min-width:336px">
-    </fab-dropdown>
-  </div> -->
-
-    <fab-primary-button id="detector-view-downtime" (onClick)="showDowntimeCallout = true;" [styles]="buttonStyle">
+    <fab-primary-button id="detector-view-downtime" (onClick)="showDowntimeCallout = true;" [styles]="buttonStyle" [disabled]="downtimeFilterDisabled">
       <fab-icon [iconName]="'Clock'"></fab-icon>
-      <span class="ml-3">Downtime(UTC): {{downtimeButtonStr}}</span>
+      <span class="ml-3">
+        <span style="font-weight: 400;">Downtime(UTC): </span>
+        {{downtimeButtonStr}}
+      </span>
     </fab-primary-button>
     <fab-callout *ngIf="showDowntimeCallout" [setInitialFocus]="true" [target]="'#detector-view-downtime'"
       (onDismiss)="showDowntimeCallout = false;">

@@ -35,7 +35,8 @@
 </div>
 
 <div *ngIf="!inDrillDownMode">
-  <div *ngIf="detectors.length > 0 && (issueDetectedViewModels.length > 0 || successfulViewModels.length > 0) || (getPendingDetectorCount() === 0 && loadingChildDetectors)"
+  <div
+    *ngIf="detectors.length > 0 && (issueDetectedViewModels.length > 0 || successfulViewModels.length > 0) || (getPendingDetectorCount() === 0 && loadingChildDetectors)"
     class="list-wrapper" [ngClass]="{'list-wrapper-genie': withinGenie}">
     <div class="list-item-wrapper" *ngIf="issueDetectedViewModels.length > 0">
       <div>
@@ -49,20 +50,22 @@
             <collapsible-list-fabric [collapsed]="false" [title]="'Observation and Solutions'">
               <collapsible-list-item body>
                 <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
-                  <fab-card [expanded]="true" [isExpandable]="true">
+                  <fab-card [expanded]="false" [isExpandable]="true">
                     <div header>
                       <div style="display: flex;align-items: center;min-height: 40px;">
-                        <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"></status-icon>
+                        <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus"
+                          [status]="viewModel.model.status"></status-icon>
                         <div><strong>{{viewModel.model.title}}</strong></div>
                       </div>
-                      <div class="mt-2 mb-2"><strong>{{viewModel.insightTitle}}</strong></div>
+                      <div style="margin: 12px 0px 16px 0px;">{{viewModel.insightTitle}}</div>
                     </div>
                     <div body>
                       <markdown [data]="viewModel.insightDescription"></markdown>
                     </div>
                     <div footer>
-                      <div style="display: flex;align-items: center;">
-                        <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" contentClass="mr-5" (onClick)="openSolutionPanel(viewModel.model.title)">View Solutions</fab-primary-button>
+                      <div style="display: flex;align-items: center;margin-bottom:20px;">
+                        <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" contentClass="mr-5"
+                          (onClick)="openSolutionPanel(viewModel.model.title)">View Solutions</fab-primary-button>
                         <fab-link (onClick)="selectDetector(viewModel)">Go to detector</fab-link>
                       </div>
                     </div>
@@ -186,7 +189,8 @@
                 <fab-card [expanded]="false">
                   <div header>
                     <div style="display: flex;align-items: center;min-height: 40px;">
-                      <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"></status-icon>
+                      <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus"
+                        [status]="viewModel.model.status"></status-icon>
                       <div><strong>{{viewModel.model.title}}</strong></div>
                     </div>
                   </div>
@@ -194,7 +198,7 @@
                     <span>{{viewModel.insightTitle}}</span>
                   </div>
                   <div footer>
-                    <fab-link (onClick)="selectDetector(viewModel)" contentStyle="margin-left: 2em;">Go to detector</fab-link>
+                    <fab-link (onClick)="selectDetector(viewModel)">Go to detector</fab-link>
                   </div>
                 </fab-card>
               </div>
