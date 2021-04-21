@@ -12,7 +12,7 @@
     </div>
     
     <div class="solution-section">
-      <div *ngFor="let solution of solutions,let i = index" class="mb-7">
+      <div *ngFor="let solution of solutions,let i = index" style="margin-bottom: 16px;">
         <h4 class="solution-step-title"><strong>Step -- {{i + 1}}</strong></h4>
         <solution [data]="solution"></solution>
       </div>
