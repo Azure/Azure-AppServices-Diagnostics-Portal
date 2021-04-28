@@ -1,4 +1,4 @@
-import { BehaviorSubject, forkJoin as observableForkJoin, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, forkJoin as observableForkJoin, Observable, of } from 'rxjs';
 import { map } from 'rxjs/internal/operators/map';
 import { catchError } from 'rxjs/operators';
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -18,8 +18,8 @@ import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagn
 import { Insight, InsightUtils } from '../../models/insight';
 import { Solution } from '../solution/solution';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PanelType } from 'office-ui-fabric-react';
 import { PortalActionGenericService } from '../../services/portal-action.service';
+import { FeatureNavigationService } from '../../services/feature-navigation.service';
 
 
 @Component({
@@ -50,20 +50,16 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   imgSrc: string = "";
   resourceText: string = "";
 
-  inDrillDownMode: boolean = false;
-  drilldownDetectorName: string = "";
-  drillDownDetectorId: string = "";
+
   issueDetectedViewModels: DetectorViewModeWithInsightInfo[] = [];
   successfulViewModels: DetectorViewModeWithInsightInfo[] = [];
   allSolutionsMap: Map<string, Solution[]> = new Map<string, Solution[]>();
   solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  panelType: PanelType = PanelType.custom;
   allSolutions: Solution[] = [];
   solutionTitle:string = "";
-  childDetectorPanelOpen: boolean = false;
   loading = LoadingStatus.Loading;
 
-  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService) {
+  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService,private _featureNavigationService:FeatureNavigationService) {
     super(telemetryService);
     this.isPublic = this.config && this.config.isPublic;
   }
@@ -71,9 +67,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   protected processData(data: DiagnosticData) {
     super.processData(data);
     this.renderingProperties = <DetectorListRendering>data.renderingProperties;
-    if (this._activatedRoute.firstChild && this._activatedRoute.firstChild.snapshot.params["drilldownDetectorName"]) {
-      this.drillDownDetectorId = this._activatedRoute.firstChild.snapshot.params["drilldownDetectorName"];
-    }
     this.getResponseFromResource();
   }
 
@@ -108,12 +101,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   private getDetectorResponses(): void {
     this._diagnosticService.getDetectors(this.overrideResourceUri).subscribe(detectors => {
       this.startDetectorRendering(detectors, null, false);
-
-      const defaultSelectedDetector = detectors.find(d => d.id === this.drillDownDetectorId);
-      if (defaultSelectedDetector) {
-        this.drilldownDetectorName = defaultSelectedDetector.name;
-        this.childDetectorPanelOpen = true;
-      }
     },(error => {
         if (this.overrideResourceUri !== "") {
           const e = JSON.parse(error);
@@ -213,10 +200,9 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
     this.detectorMetaData = detectorList.filter(detector => this.renderingProperties.detectorIds.indexOf(detector.id) >= 0);
     this.detectorViewModels = this.detectorMetaData.map(detector => this.getDetectorViewModel(detector, this.renderingProperties.additionalParams, this.overrideResourceUri));
-    // if (this.detectorViewModels.length > 0) {
-    //     this.loadingChildDetectors = true;
-    //     this.startLoadingMessage();
-    // }
+    if(this.detectorViewModels.length === 0) {
+      this.loading = LoadingStatus.Success;
+    }
     this.detectorViewModels.forEach((viewModel, index) => {
       requests.push((<Observable<DetectorResponse>>viewModel.request).pipe(
         map((response: DetectorResponse) => {
@@ -285,16 +271,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
       // }
       this.logEvent(TelemetryEventNames.ChildDetectorsSummary, this.childDetectorsEventProperties);
     });
-
-    // if (requests.length === 0) {
-    //     let dataOutput = {};
-    //     dataOutput["status"] = true;
-    //     dataOutput["data"] = {
-    //         'detectors': []
-    //     };
-
-    //     this.onComplete.emit(dataOutput);
-    // }
   }
 
   getDetectorInsightInfo(viewModel: DetectorViewModel): BasicInsightInfo {
@@ -337,14 +313,9 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
   public selectDetector(viewModel: DetectorViewModeWithInsightInfo) {
     if (viewModel != null && viewModel.model.metadata.id) {
-      let drilldownDetectorId = viewModel.model.metadata.id;
-      // else {
-      //   // For uncategorized detectors:
-      //   // If it is home page, redirect to availability category. Otherwise stay in the current category page.
-      //   categoryName = this._router.url.split('/')[11] ? this._router.url.split('/')[11] : "availabilityandperformance";
-      // }
+      let targetDetector = viewModel.model.metadata.id;
 
-      if (drilldownDetectorId !== "") {
+      if (targetDetector !== "") {
         const clickDetectorEventProperties = {
           'ChildDetectorName': viewModel.model.title,
           'ChildDetectorId': viewModel.model.metadata.id,
@@ -356,88 +327,24 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         // Log children detectors click
         this.logEvent(TelemetryEventNames.ChildDetectorClicked, clickDetectorEventProperties);
 
-        if (drilldownDetectorId === 'appchanges' && !this._detectorControl.internalClient) {
+        if (targetDetector === 'appchanges' && !this.isPublic) {
           this._portalActionService.openChangeAnalysisBlade(this._detectorControl.startTimeString, this._detectorControl.endTimeString);
         } else {
-          this.updateDrillDownMode(true, viewModel);
-          // if (viewModel.model.startTime != null && viewModel.model.endTime != null) {
-          //   this._router.navigate([`./drillDownDetector/${drilldownDetectorId}`], {
-          //     relativeTo: this._activatedRoute,
-          //     queryParams: { startTime: viewModel.model.startTime, endTime: viewModel.model.endTime },
-          //     queryParamsHandling: 'merge',
-          //     replaceUrl: true
-          //   });
-          // }
-          // else {
-          //   this._router.navigate([`./drilldownDetector/${drilldownDetectorId}`], {
-          //     relativeTo: this._activatedRoute,
-          //     queryParamsHandling: 'merge',
-          //     preserveFragment: true
-          //   });
-          // }
-          this._router.navigate([`./drilldownDetector/${drilldownDetectorId}`], {
-            relativeTo: this._activatedRoute,
-            queryParamsHandling: 'merge',
-            preserveFragment: true
+          this._featureNavigationService.NavigateToDetector(this.detector,targetDetector);
+          const resourceId = this._diagnosticService.resourceId;
+          const routeUrl = this.isPublic ? `resource${resourceId}/detectors/${targetDetector}` : `${resourceId}/detectors/${targetDetector}`;
+          this._router.navigateByUrl(routeUrl,{
+            queryParamsHandling: 'merge'
           });
-          this.childDetectorPanelOpen = true;
         }
       }
     }
-  }
-
-  private updateDrillDownMode(inDrillDownMode: boolean, viewModel: DetectorViewModeWithInsightInfo): void {
-    this.inDrillDownMode = inDrillDownMode;
-    if (!this.inDrillDownMode) {
-      this.drilldownDetectorName = '';
-      this.drillDownDetectorId = '';
-    }
-    else {
-      if (!!viewModel && !!viewModel.model && !!viewModel.model.metadata && !!viewModel.model.metadata.name) {
-        this.drilldownDetectorName = viewModel.model.metadata.name;
-        this.drillDownDetectorId = viewModel.model.metadata.id;
-      }
-    }
-  }
-
-  goBackToParentView() {
-    this.updateDrillDownMode(false, null);
-    // if (this.analysisId === "searchResultsAnalysis" && this.searchTerm) {
-    //   this._router.navigate([`../../../../${this.analysisId}/search`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', queryParams: { searchTerm: this.searchTerm } });
-    // }
-    // else {
-    //   if (!!this.analysisId && this.analysisId.length > 0) {
-    //     this._router.navigate([`../${this.analysisId}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
-    //   }
-    // }
-    if (this.isAnalysisView) {
-      this._router.navigate([`../../analysis/${this.detector}`], {
-        relativeTo: this._activatedRoute,
-        queryParamsHandling: 'merge'
-      });
-    } else {
-      this._router.navigate([`../../detectors/${this.detector}`], {
-        relativeTo: this._activatedRoute,
-        queryParamsHandling: 'merge'
-      });
-    }
-  }
-
-  refresh() {
-    // this._activatedRoute.paramMap.subscribe(params => {
-    //   this.detectorId = params.get("detectorName") ? this.de
-    // });
   }
 
   openSolutionPanel(title: string) {
     this.allSolutions = this.allSolutionsMap.get(title);
     this.solutionTitle = `${title} Solution`;
     this.solutionPanelOpenSubject.next(true);
-  }
-
-  dismissChildDetectorPanel() {
-    this.childDetectorPanelOpen = false;
-    this.goBackToParentView();
   }
 }
 

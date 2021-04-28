@@ -56,6 +56,7 @@ import { CrashMonitoringComponent } from '../shared/components/tools/crash-monit
 import { RiskTileComponent } from './components/risk-tile/risk-tile.component';
 import { IntegratedSolutionsViewComponent } from '../shared/components/integrated-solutions-view/integrated-solutions-view.component';
 import { HomeContainerComponent } from './components/home-container/home-container.component';
+import { RedirectResolver } from './resolvers/redirect.resolver';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -160,15 +161,6 @@ export const HomeRoutes = RouterModule.forChild([
                         data: {
                             cacheComponent: true
                         },
-                        children:[
-                            {
-                                path: 'drilldownDetector/:drilldownDetectorName',
-                                component: GenericDetectorComponent,
-                                data: {
-                                    cacheComponent: false
-                                }
-                            }
-                        ],
                         resolve: {
                             time: TimeControlResolver,
                             navigationTitle: TabTitleResolver,
@@ -501,6 +493,7 @@ export const HomeRoutes = RouterModule.forChild([
                 resolve: {
                     time: TimeControlResolver,
                     navigationTitle: TabTitleResolver,
+                    redirect: RedirectResolver
                 }
             },
             {
@@ -648,7 +641,8 @@ export const HomeRoutes = RouterModule.forChild([
             { provide: GenericContentService, useExisting: ContentService },
             { provide: GenericDocumentsSearchService, useExisting: DocumentSearchService },
             { provide: CXPChatService, useExisting: CXPChatCallerService },
-            { provide: GenericResourceService, useExisting: ResourceService }
+            { provide: GenericResourceService, useExisting: ResourceService },
+            RedirectResolver
         ],
 })
 export class HomeModule { }

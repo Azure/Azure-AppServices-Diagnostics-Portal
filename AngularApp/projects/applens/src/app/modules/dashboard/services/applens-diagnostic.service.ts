@@ -8,8 +8,10 @@ import { Package } from '../../../shared/models/package';
 
 @Injectable()
 export class ApplensDiagnosticService {
-
+  public resourceId:string = "";
   constructor(private _diagnosticApi: DiagnosticApiService, private _resourceService: ResourceService) {
+    this.resourceId = this._resourceService.getCurrentResourceId(true);
+    if(!this.resourceId.startsWith("/")) this.resourceId = "/" + this.resourceId;
   }
 
   getDetector(detector: string, startTime: string, endTime: string, refresh: boolean = false, internalView: boolean = true, formQueryParams?: string,overrideResourceUri?: string): Observable<DetectorResponse> {

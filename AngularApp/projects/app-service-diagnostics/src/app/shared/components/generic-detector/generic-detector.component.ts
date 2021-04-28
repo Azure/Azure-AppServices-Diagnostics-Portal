@@ -45,17 +45,6 @@ export class GenericDetectorComponent implements OnDestroy {
                 }
             }
 
-            this.navigateSub = this._navigator.OnDetectorNavigate.subscribe((detector: string) => {
-                if (detector) {
-                    let detectorMetaData: DetectorMetaData = this._diagnosticService.getDetectorById(detector);
-                    if (detectorMetaData.type === DetectorType.Detector) {
-                        this._router.navigate([`../../detectors/${detector}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
-                    } else if (detectorMetaData.type === DetectorType.Analysis) {
-                        this._router.navigate([`../../analysis/${detector}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
-                    }
-                }
-            });
-
             this._activatedRoute.data.subscribe(data => {
                 this.analysisMode = data['analysisMode'];
             })

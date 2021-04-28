@@ -1,6 +1,7 @@
 import { FabDetailsListComponent, FabSearchBoxComponent } from '@angular-react/fabric';
-import { AfterContentInit, Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { AfterContentInit, Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { DetailsListLayoutMode, IColumn, IListProps, ISelection, SelectionMode, Selection } from 'office-ui-fabric-react';
+import { BehaviorSubject } from 'rxjs';
 import { DataTableResponseObject, TableColumnOption, TableFilter, TableFilterSelectionOption } from '../../models/detector';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 
@@ -17,7 +18,9 @@ export class FabDataTableComponent implements AfterContentInit {
 
   constructor(private telemetryService: TelemetryService) { }
 
-  @Input() table: DataTableResponseObject;
+  @Input("table") private set _table(t:DataTableResponseObject){
+      this.tableObserve.next(t);
+  } ;
   @Input() columnOptions: TableColumnOption[] = [];
   @Input() descriptionColumnName: string = "";
   @Input() allowColumnSearch: boolean = false;
@@ -42,6 +45,24 @@ export class FabDataTableComponent implements AfterContentInit {
   @ViewChild(FabDetailsListComponent, { static: true }) fabDetailsList: FabDetailsListComponent;
   @ViewChild('emptyTableFooter', { static: true }) emptyTableFooter: TemplateRef<any>;
   @ViewChild(FabSearchBoxComponent, { static: false }) fabSearchBox: any;
+  tableObserve = new BehaviorSubject<DataTableResponseObject>(null);
+
+  selection: ISelection = new Selection({
+    onSelectionChanged: () => {
+      const selectionCount = this.selection.getSelectedCount();
+      if (selectionCount === 0) {
+        this.selectionText = "";
+      } else if (selectionCount === 1) {
+        const row = this.selection.getSelection()[0];
+        if (this.descriptionColumnName) {
+          const selectionText = row[this.descriptionColumnName];
+          this.selectionText = selectionText !== undefined ? selectionText : "";
+        }
+      }
+    }
+  });
+
+
 
   ngAfterContentInit() {
     if (this.columnOptions && this.columnOptions.length > 0) {
@@ -53,10 +74,14 @@ export class FabDataTableComponent implements AfterContentInit {
       });
     }
 
-    this.createFabricDataTableObjects();
+    this.tableObserve.subscribe(t => {
+      this.initFabricTableColumns(t);
+      this.createFabricDataTableObjects(t);
+    });
 
     this.fabDetailsList.selectionMode = this.descriptionColumnName ? SelectionMode.single : SelectionMode.none;
     this.fabDetailsList.selection = this.selection;
+    
     //Ideally,it should be enable if table is too large. 
     //But for now, if enabled, it will show only 40 rows
     this.fabDetailsList.onShouldVirtualize = (list: IListProps<any>) => {
@@ -88,44 +113,15 @@ export class FabDataTableComponent implements AfterContentInit {
     }
   }
 
-
-  selection: ISelection = new Selection({
-    onSelectionChanged: () => {
-      const selectionCount = this.selection.getSelectedCount();
-      if (selectionCount === 0) {
-        this.selectionText = "";
-      } else if (selectionCount === 1) {
-        const row = this.selection.getSelection()[0];
-        if (this.descriptionColumnName) {
-          const selectionText = row[this.descriptionColumnName];
-          this.selectionText = selectionText !== undefined ? selectionText : "";
-        }
-      }
-    }
-  });
-
-  private createFabricDataTableObjects() {
-    let columns = this.table.columns.map(column =>
-      <IColumn>{
-        key: column.columnName,
-        name: column.columnName,
-        ariaLabel: column.columnName,
-        isSortedDescending: true,
-        isSorted: false,
-        isResizable: true,
-        isMultiline: true,
-        minWidth: this.getMinOrMaxColumnWidth(column.columnName, true),
-        maxWidth: this.getMinOrMaxColumnWidth(column.columnName, false),
-      });
-
-    this.columns = columns.filter((item) => item.name !== this.descriptionColumnName && this.checkColumIsVisible(item.name));
+  private createFabricDataTableObjects(t:DataTableResponseObject) {
+    if(t === null) return;
     this.rows = [];
 
-    this.table.rows.forEach(row => {
+    t.rows.forEach(row => {
       const rowObject: any = {};
 
-      for (let i: number = 0; i < this.table.columns.length; i++) {
-        const columnName = this.table.columns[i].columnName
+      for (let i: number = 0; i < t.columns.length; i++) {
+        const columnName = t.columns[i].columnName
         rowObject[columnName] = row[i];
 
         if (this.filtersMap.has(columnName)) {
@@ -139,9 +135,25 @@ export class FabDataTableComponent implements AfterContentInit {
     });
   }
 
+  private initFabricTableColumns(t:DataTableResponseObject) {
+    if(!t || this.columns.length > 0) return;
+    let columns = t.columns.map(column =>
+      <IColumn>{
+        key: column.columnName,
+        name: column.columnName,
+        ariaLabel: column.columnName,
+        isSortedDescending: true,
+        isSorted: false,
+        isResizable: true,
+        isMultiline: true,
+        minWidth: this.getMinOrMaxColumnWidth(column.columnName, true),
+        maxWidth: this.getMinOrMaxColumnWidth(column.columnName, false)
+      });
+    this.columns = columns.filter((item) => item.name !== this.descriptionColumnName && this.checkColumIsVisible(item.name));
+  }
+
 
   updateTable() {
-    //For single search bar
     const temp = [];
     for (const row of this.rowsClone) {
       if (this.checkRowWithSearchValue(row) && this.checkRowForFilter(row)) {
@@ -149,7 +161,7 @@ export class FabDataTableComponent implements AfterContentInit {
       }
     }
     this.rows = temp;
-    //Update rows order with column sorting
+    
     const column = this.columns.find(col => col.isSorted === true);
     if (column) {
       this.sortColumn(column, column.isSortedDescending);
@@ -221,7 +233,6 @@ export class FabDataTableComponent implements AfterContentInit {
 
   updateFilter(name: string, options: Set<string>) {
     this.filterSelectionMap.set(name, options);
-    //call updateTable to update table rows with latest filter
     this.telemetryService.logEvent(
       "TableFilterUpdated",
       { "FilterName": name }
@@ -267,7 +278,7 @@ export class FabDataTableComponent implements AfterContentInit {
     if (option.selectionOption === undefined || option.selectionOption === TableFilterSelectionOption.None) {
       return false;
     }
-    const columns = this.table.columns;
+    const columns = this._table.columns;
     return columns.findIndex(col => col.columnName === option.name) > -1;
   }
 

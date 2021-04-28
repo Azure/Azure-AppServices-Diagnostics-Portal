@@ -42,8 +42,8 @@ export interface DataTableResponseObject {
 
 export interface DataTableResponseColumn {
     columnName: string;
-    dataType: string;
-    columnType: string;
+    dataType?: string;
+    columnType?: string;
 }
 
 export interface DetectorMetaData {
@@ -56,6 +56,7 @@ export interface DetectorMetaData {
     type: DetectorType;
     category: string;
     score: number;
+    internalOnly:boolean;
 }
 
 export interface DataProviderMetadata {

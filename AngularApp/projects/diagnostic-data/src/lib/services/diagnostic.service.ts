@@ -10,7 +10,7 @@ export class DiagnosticService {
     // This class is never supposed to be used directly
     // In applens we provide this withValue: applens-diagnostics.service
     // In Support Center we provide this withValue: generic-api.service
-
+    public resourceId:string = "";
     public getDetectorById(detectorId: string) {
         return null;
     }
