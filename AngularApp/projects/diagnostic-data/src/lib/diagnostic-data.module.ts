@@ -249,7 +249,8 @@ import { DetectorTimePickerComponent } from './components/detector-time-picker/d
     ConvertLevelToHealthStatusPipe,
     GetDropdownOptionsPipe,
     SolutionOrchestratorComponent,
-    DetectorTimePickerComponent
+    DetectorTimePickerComponent,
+    FabDataTableComponent
   ],
 })
 export class DiagnosticDataModule {
