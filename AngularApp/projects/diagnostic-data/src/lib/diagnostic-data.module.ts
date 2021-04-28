@@ -256,7 +256,8 @@ import { DetectorTimePickerComponent } from './components/detector-time-picker/d
     FabCoachmarkModule,
     FabTeachingBubbleModule,
     FabTabComponent,
-    DetectorTimePickerComponent
+    DetectorTimePickerComponent,
+    FabDataTableComponent
   ],
 })
 export class DiagnosticDataModule {

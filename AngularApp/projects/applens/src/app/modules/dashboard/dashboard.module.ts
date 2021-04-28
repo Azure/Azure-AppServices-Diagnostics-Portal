@@ -203,16 +203,7 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                 children: [
                     {
                         path: '',
-                        component: TabDataComponent,
-                        children: [
-                            {
-                                path: 'drilldownDetector/:drilldownDetectorName',
-                                component: TabDataComponent,
-                                data: {
-                                    analysisMode: true
-                                }
-                            }
-                        ]
+                        component: TabDataComponent
                     },
                     {
                         path: 'data',
@@ -244,14 +235,7 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                     {
                         path: 'analytics/edit',
                         component: TabAnalyticsDevelopComponent
-                    },
-                    // {
-                    //     path: 'drilldownDetector/:drilldownDetectorName',
-                    //     component: TabDataComponent,
-                    //     data: {
-                    //         analysisMode: true
-                    //     }
-                    // }
+                    }
                 ]
             },
             {
@@ -313,7 +297,8 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         NgSelectModule,
         MarkdownModule.forRoot(),
         HighchartsChartModule,
-        FabPanelModule
+        FabPanelModule,
+        DiagnosticDataModule
     ],
     providers: [
         ApplensDiagnosticService,
