@@ -17,7 +17,9 @@ import { AadAuthGuard } from './auth/aad-auth-guard.service';
 import { LoginComponent } from './components/login/login.component';
 import { RouterModule } from '@angular/router';
 import { CaseCleansingApiService } from './services/casecleansing-api.service';
-import { ApplensBannerComponent } from './applens-banner/applens-preview-banner.component';
+import {  ApplensBannerComponent } from './applens-banner/applens-preview-banner.component';
+import { ApplensHeaderComponent } from './components/applens-header/applens-header.component';
+import { ApplensDiagnosticService } from '../modules/dashboard/services/applens-diagnostic.service';
 
 @NgModule({
   imports: [
@@ -26,14 +28,15 @@ import { ApplensBannerComponent } from './applens-banner/applens-preview-banner.
     FormsModule,
     RouterModule,
   ],
-  declarations: [TreeViewComponent, LoginComponent, ApplensBannerComponent],
-  exports: [TreeViewComponent, ApplensBannerComponent]
+  declarations: [TreeViewComponent, LoginComponent, ApplensHeaderComponent],
+  exports: [TreeViewComponent,ApplensBannerComponent,ApplensHeaderComponent]
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: SharedModule,
       providers: [
+        ApplensDiagnosticService,
         DiagnosticApiService,
         ResourceService,
         SiteService,

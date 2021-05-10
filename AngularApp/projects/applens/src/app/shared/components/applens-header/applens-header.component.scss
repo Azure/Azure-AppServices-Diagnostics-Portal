@@ -1,0 +1,21 @@
+.header-image {
+    width:24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.avatar :hover {
+    cursor: pointer;
+}
+
+.header-nav {
+    display: flex;
+    height: 50px;background-color: #ffffff;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header-title {
+    font-size: 14px;
+    font-weight: 600;
+}
