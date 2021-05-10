@@ -1,0 +1,9 @@
+<fab-panel [isOpen]="true" [type]="panelType" [customWidth]="'70px'" [hasCloseButton]="false" [styles]="panelStyles" [isBlocking]="false">
+  <div style="margin-top: 16px;">
+    <div *ngFor="let item of sideItems" class="side-item" [ngClass]="{'side-item-enable':!getItemDisabled(item), 'side-item-disable':getItemDisabled(item)}">
+      <img [src]="getImageUrl(item)" alt="item.displayName">
+      <h4 style="font-size: 12px;">{{item.displayName}}</h4>
+    </div>
+  </div>
+</fab-panel>
+
