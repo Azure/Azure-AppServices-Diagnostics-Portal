@@ -1,0 +1,17 @@
+.side-item {
+    margin-bottom: 16px;
+}
+
+.side-item-enable :hover {
+    cursor: pointer;
+}
+
+.side-item-disable :hover {
+    cursor: not-allowed;
+}
+
+
+::ng-deep .ms-Panel-content {
+    padding-left: 10px;
+    padding-right: 0px;
+}
