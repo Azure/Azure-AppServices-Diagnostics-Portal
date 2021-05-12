@@ -22,17 +22,54 @@
     color: #dddddd;
 }
 
-.error-msg-container{
-    border:4px solid white;
+// .error-msg-container{
+//     border:4px solid white;
+// }
+
+// .error-msg-container .errorMessage{
+//     white-space: pre-wrap;
+//     overflow-wrap: break-word;
+//     height:80%;
+//     color:red;
+//     padding:10px;
+//     margin:5px;
+//     background-color:#fff7e5;
+//     border:1px solid rgba(83,90,96,0.1);
+// }
+
+.section {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 26px ;
 }
 
-.error-msg-container .errorMessage{
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-    height:80%;
-    color:red;
-    padding:10px;
-    margin:5px;
-    background-color:#fff7e5;
-    border:1px solid rgba(83,90,96,0.1);
+.section > label {
+    width: 120px;
+}
+
+.section > div {
+    width: 300px;
+}
+
+.time-picker {
+    border: 1px solid #8A8886; 
+    min-width: 300px;
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 8px;
+}
+
+.time-picker :hover {
+    cursor: pointer;
+}
+
+.error-message-container {
+    display: flex;
+}
+
+.error-message {
+    font-size: 12px;
+    line-height: 15px;
+    color: #A4262C;
+    word-break: break-word;
 }

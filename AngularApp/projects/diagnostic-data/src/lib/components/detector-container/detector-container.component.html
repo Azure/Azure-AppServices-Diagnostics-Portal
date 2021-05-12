@@ -1,4 +1,4 @@
-<detector-control *ngIf="(!hideDetectorControl && !hideTimerPicker && detectorResponse && !analysisMode) || isPopoutFromAnalysis"></detector-control>
+<!-- <detector-control *ngIf="(!hideDetectorControl && !hideTimerPicker && detectorResponse && !analysisMode) || isPopoutFromAnalysis"></detector-control> -->
 <div [ngClass]="{'keystone-detector-container': isKeystoneSolution}" [ngStyle]="{'padding-top': hideTimerPicker? '10px': '0px', 'min-height.px': isPublic? '0': '240'}" class="detector-view-container">
   <detector-view [analysisMode]="analysisMode" [isKeystoneView]="isKeystoneSolution" [isAnalysisView]="isAnalysisView" [detectorResponse]="detectorResponse" [error]="error" [startTime]="getStartTime" [endTime]="getEndTime"
    [developmentMode]="false" [detector]="detectorName" (downTimeChanged)="onDowntimeChanged($event)" (XAxisSelection)="onXAxisSelection($event)" [hideDetectorHeader]="hideDetectorControl" [isPopoutFromAnalysis]="isPopoutFromAnalysis" [overWriteDetectorDescription]="overWriteDetectorDescription" [downtimeZoomBehavior] = "downtimeZoomBehavior">
