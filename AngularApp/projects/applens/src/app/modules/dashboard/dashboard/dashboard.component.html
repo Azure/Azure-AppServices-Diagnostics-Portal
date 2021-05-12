@@ -1,5 +1,4 @@
-<header class="main-header">
-  <!-- Header Navbar: style can be found in header.less -->
+<!-- <header class="main-header">
   <nav class="navbar navbar-fixed-top" role="navigation">
     <a (click)="reloadHome()" class="logo">
       <span class="logo-lg">
@@ -32,9 +31,9 @@
       </span>
     </div>
   </nav>
-</header>
+</header> -->
 <div class="site-content">
-  <section class="sidebar">
+  <!-- <section class="sidebar">
     <div class="user-panel" [class.active]="doesMatchCurrentRoute('home')">
       <div class="pull-left image" (click)="navigateTo('home/category')">
         <img [src]="resourceService.imgSrc" class="resource-logo" style="max-width:25px">
@@ -46,36 +45,31 @@
         <i class="fa fa-info-circle" aria-hidden="true"></i>
       </div>
     </div>
-  </section>
-  <side-nav></side-nav>
-  <div class="content-wrapper gray-background">
-    <router-outlet></router-outlet>
-    <fab-panel [isOpen]="openResourceInfoPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-      [styles]="panelStyles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
-      (onDismissed)="dismissedHandler()">
-      <div>
-        <div class="row">
-          <div>
-            <div style="margin-bottom: 10px">
-              <div
-                style="position: absolute; left:25px; right: 32px; top:0px; height: 32px; font-family: 'segoe UI'; font-size: 18px; line-height: 24px; font-weight: 600;display: flex; align-items: flex-end"
-                tabindex="0" aria-label="Comm alerts">
-                Resource Information</div>
-            </div>
-            <div class="resource-content">
-              <div *ngIf="observerLink !== ''">
-                <a href="{{observerLink}}" target="_blank">Observer Link
-                  <i class="fa fa-link" aria-hidden="true"></i>
-                </a>
-              </div>
-              <div *ngFor="let key of keys">
-                <b>{{key}}:</b> {{resource[key]}}&nbsp;<span *ngIf="resource[key] !== ''"><img
-                    src="/assets/img/copy-icon.png" style="height: 12px;"
-                    (click)="copyToClipboard(resource[key], $event)" alt="Copy to clipboard" /></span>
-              </div>
-            </div>
-          </div>
-        </div>
+  </section> -->
+  <!-- <side-nav></side-nav> -->
+  <div class="dashboard-content">
+    <div style="display: flex;">
+      <div style="margin: auto 10px auto 0px;">
+        <img [src]="resourceService.imgSrc" class="resource-logo" [alt]="resourceService.searchSuffix"
+          style="width: 32px;">
       </div>
-    </fab-panel>
+      <div>
+        <p style="font-size: 24px;"><strong>{{resourceService.getResourceName() | formatResourceName}}</strong></p>
+        <p style="font-size: 12px;">{{resourceService.searchSuffix}}</p>
+      </div>
+    </div>
+    <div style="margin-top: 10px;">
+      <fab-command-bar contentClass="fab-command-bar-class" [styles]="commandBarStyles">
+        <items>
+          <fab-command-bar-item *ngIf="!isInHomepage" key="refresh" text="Refresh" [iconProps]="{ iconName: 'Refresh' }">
+          </fab-command-bar-item>
+          <fab-command-bar-item key="feedback" text="Feedback" [iconProps]="{ iconName: 'Emoji2' }">
+          </fab-command-bar-item>
+          <fab-command-bar-item *ngIf="!isInHomepage" key="emailToAuthor" text="Email Author" [iconProps]="{ iconName: 'Mail' }">
+          </fab-command-bar-item>
+        </items>
+      </fab-command-bar>
+    </div>
+    <router-outlet></router-outlet>
   </div>
+</div>

@@ -20,7 +20,6 @@ import { CaseCleansingApiService } from './services/casecleansing-api.service';
 import { ApplensBannerComponent } from './applens-banner/applens-preview-banner.component';
 import { ApplensHeaderComponent } from './components/applens-header/applens-header.component';
 import { ApplensDiagnosticService } from '../modules/dashboard/services/applens-diagnostic.service';
-import { L1SideNavComponent } from './components/l1-side-nav/l1-side-nav.component';
 import { FabPanelModule } from '@angular-react/fabric';
 
 @NgModule({
@@ -31,8 +30,8 @@ import { FabPanelModule } from '@angular-react/fabric';
     RouterModule,
     FabPanelModule
   ],
-  declarations: [TreeViewComponent, LoginComponent, ApplensHeaderComponent, L1SideNavComponent],
-  exports: [TreeViewComponent, ApplensBannerComponent, ApplensHeaderComponent, L1SideNavComponent]
+  declarations: [TreeViewComponent, ApplensBannerComponent, LoginComponent],
+  exports: [TreeViewComponent, ApplensBannerComponent]
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

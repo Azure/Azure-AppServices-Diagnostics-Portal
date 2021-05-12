@@ -190,9 +190,18 @@ fab-command-bar .ms-SearchBox {
   border-bottom: 1px solid rgb(204, 204, 204)!important;
   font-size: 12px!important;
   height: 34px;
+  padding: 0px !important;
 }
 
 
-.fab-command-bar-class .ms-CommandBar {
-  height: 33px;
+.ms-CommandBar, .ms-Button--commandBar{
+  background-color: white!important;
+}
+
+.ms-Button--commandBar:hover {
+  background-color: rgba(85, 179, 255, 0.1)!important;
+}
+
+.ms-CommandBar, .ms-Button--commandBar{
+  background-color: white!important;
 }

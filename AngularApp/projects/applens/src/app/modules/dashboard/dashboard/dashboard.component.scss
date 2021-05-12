@@ -36,10 +36,11 @@ side-nav {
     color: #ffb353
 }
 
-.content-wrapper.white-background, .content-wrapper.gray-background {
+.dashboard-content {
     min-height: calc(100vh - 95px);
     height: 100%;
-    margin-top:0px;
+    margin-top:40px;
+    margin-left: 40px;
 
     // Nested onboarding-flow components have two navbars totalling 92px
     ::ng-deep onboarding-flow {

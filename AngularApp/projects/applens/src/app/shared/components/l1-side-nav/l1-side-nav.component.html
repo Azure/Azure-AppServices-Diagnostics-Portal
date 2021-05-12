@@ -1,9 +1,17 @@
 <fab-panel [isOpen]="true" [type]="panelType" [customWidth]="'70px'" [hasCloseButton]="false" [styles]="panelStyles" [isBlocking]="false">
   <div style="margin-top: 16px;">
-    <div *ngFor="let item of sideItems" class="side-item" [ngClass]="{'side-item-enable':!getItemDisabled(item), 'side-item-disable':getItemDisabled(item)}">
+    <div *ngFor="let item of sideItems" class="side-item" [ngClass]="{'side-item-enable':!getItemDisabled(item), 'side-item-disable':getItemDisabled(item)}" (click)="item.click()" role="button" (keyup.enter)="item.click()">
       <img [src]="getImageUrl(item)" alt="item.displayName">
       <h4 style="font-size: 12px;">{{item.displayName}}</h4>
     </div>
   </div>
 </fab-panel>
+
+<fab-dialog [hidden]="!showDialog" (onDismiss)="dismissDialog()">
+  <fab-dialog-content [title]="dialogTitle" [subText]="dialogSubText" [styles]="dialogContentStyles"></fab-dialog-content>
+  <fab-dialog-footer>
+    <fab-primary-button (onClick)="navigateToLandingPage()" contentClass="mr-3">Continue</fab-primary-button>
+    <fab-default-button (onClick)="dismissDialog()">Cancel</fab-default-button>
+  </fab-dialog-footer>
+</fab-dialog>
 
