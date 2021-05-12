@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { IDialogContentProps, IPanelProps, PanelType } from 'office-ui-fabric-react';
-import { BehaviorSubject } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { ApplensGlobal } from '../../../applens-global';
+import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-nav.component';
 
 @Component({
   selector: 'l1-side-nav',
@@ -11,7 +12,6 @@ import { filter } from 'rxjs/operators';
 })
 export class L1SideNavComponent implements OnInit {
   private isInLandingPage: boolean = true;
-  openL2SideNavSubject:BehaviorSubject<any> = new BehaviorSubject<any>(true);
   sideItems: SideNavItem[] = [
     {
       name: SideNavItemName[SideNavItemName.Landing],
@@ -20,6 +20,7 @@ export class L1SideNavComponent implements OnInit {
       click: () => {
         if(this.isInLandingPage) return;
         this.showDialog = true;
+        console.log(this.showDialog);
       }
     },
     {
@@ -51,7 +52,7 @@ export class L1SideNavComponent implements OnInit {
       displayName: SideNavItemName[SideNavItemName.Detectors],
       enabledInLandingPage: false,
       click: () => { 
-        this.openL2SideNavSubject.next(true);
+        this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.Detectors);
       }
     },
     {
@@ -59,7 +60,6 @@ export class L1SideNavComponent implements OnInit {
       displayName: SideNavItemName[SideNavItemName.Docs],
       enabledInLandingPage: true,
       click: () => {
-
       }
     }
   ];
@@ -71,6 +71,9 @@ export class L1SideNavComponent implements OnInit {
       marginTop: '50px',
     }
   };
+  panelFocusTrapZoneProps: IPanelProps["focusTrapZoneProps"] = {
+    disabled: true
+  }
   showDialog: boolean = false;
   dialogTitle: string = "Are you sure to select a new resource?";
   dialogSubText: string = "You’ll lose access to current resource’s data. Are you sure to select a new resource?";
@@ -88,7 +91,7 @@ export class L1SideNavComponent implements OnInit {
     }
   }
 
-  constructor(private _router: Router,private _activatedRoute:ActivatedRoute) { }
+  constructor(private _router: Router,private _activatedRoute:ActivatedRoute,private _applensGlobal:ApplensGlobal) { }
 
   ngOnInit() {
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
@@ -132,7 +135,9 @@ interface SideNavItem {
   name: string;
   displayName: string;
   enabledInLandingPage: boolean,
-  click: () => void
+  click: () => void,
+  disabled?: boolean,
+  img?:string,
 }
 
 enum SideNavItemName {

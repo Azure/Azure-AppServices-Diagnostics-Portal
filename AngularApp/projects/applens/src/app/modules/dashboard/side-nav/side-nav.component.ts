@@ -7,7 +7,7 @@ import { CollapsibleMenuItem } from '../../../collapsible-menu/components/collap
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { DetectorType } from 'diagnostic-data';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
-import {TelemetryEventNames} from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
+import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -36,7 +36,7 @@ export class SideNavComponent implements OnInit {
 
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService) {
     this.contentHeight = (window.innerHeight - 139) + 'px';
-    if(environment.adal.enabled){
+    if (environment.adal.enabled) {
       let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
       this.userId = alias.replace('@microsoft.com', '');
     }
@@ -67,41 +67,41 @@ export class SideNavComponent implements OnInit {
       icon: null
     },
     {
-    label: 'New Detector',
-    id: "",
-    onClick: () => {
-      this.navigateTo('create');
+      label: 'New Detector',
+      id: "",
+      onClick: () => {
+        this.navigateTo('create');
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: null,
+      icon: null
     },
-    expanded: false,
-    subItems: null,
-    isSelected: null,
-    icon: null
-  },
-  {
-    label: 'New Gist',
-    id: "",
-    onClick: () => {
-      this.navigateTo('createGist');
-    },
-    expanded: false,
-    subItems: null,
-    isSelected: null,
-    icon: null
-  }
+    {
+      label: 'New Gist',
+      id: "",
+      onClick: () => {
+        this.navigateTo('createGist');
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: null,
+      icon: null
+    }
   ];
 
   configuration: CollapsibleMenuItem[] = [
-      {
-          label: 'Kusto Mapping',
-          onClick: () => {
-            this.navigateTo('kustoConfig');
-          },
-          id: "",
-          expanded: false,
-          subItems: null,
-          isSelected: null,
-          icon: null
-      }
+    {
+      label: 'Kusto Mapping',
+      onClick: () => {
+        this.navigateTo('kustoConfig');
+      },
+      id: "",
+      expanded: false,
+      subItems: null,
+      isSelected: null,
+      icon: null
+    }
   ];
 
   ngOnInit() {
@@ -146,7 +146,7 @@ export class SideNavComponent implements OnInit {
           };
 
           let category = element.category ? element.category : "Uncategorized";
-          let menuItem = new CollapsibleMenuItem(element.name, element.id, onClick, isSelected, null, false, [], element.supportTopicList && element.supportTopicList.length>0 ? element.supportTopicList.map(x => x.id).join(","): null);
+          let menuItem = new CollapsibleMenuItem(element.name, element.id, onClick, isSelected, null, false, [], element.supportTopicList && element.supportTopicList.length > 0 ? element.supportTopicList.map(x => x.id).join(",") : null);
 
           let categoryMenuItem = this.categories.find((cat: CollapsibleMenuItem) => cat.label === category);
           if (!categoryMenuItem) {
@@ -165,7 +165,7 @@ export class SideNavComponent implements OnInit {
               return this.currentRoutePath && this.currentRoutePath.join('/') === `analysis/${element.id}`;
             }
 
-            let analysisMenuItem = new CollapsibleMenuItem(element.name, element.id , onClickAnalysisParent, isSelectedAnalysis, null, true, [], element.supportTopicList && element.supportTopicList.length>0 ? element.supportTopicList.map(x => x.id).join(","): null);
+            let analysisMenuItem = new CollapsibleMenuItem(element.name, element.id, onClickAnalysisParent, isSelectedAnalysis, null, true, [], element.supportTopicList && element.supportTopicList.length > 0 ? element.supportTopicList.map(x => x.id).join(",") : null);
             this.analysisTypes.push(analysisMenuItem);
 
           }
