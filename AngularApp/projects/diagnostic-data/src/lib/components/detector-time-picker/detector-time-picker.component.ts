@@ -14,7 +14,7 @@ import { Observable } from 'rxjs';
   styleUrls: ['./detector-time-picker.component.scss']
 })
 export class DetectorTimePickerComponent implements OnInit {
-  @Input() openTimePickerCalloutObservalbe: Observable<boolean>;
+  @Input() openTimePickerCalloutObservable: Observable<boolean>;
   openTimePickerCallout: boolean = false;
   @Input() target: string = "";
   @Output() updateTimerMessage: EventEmitter<string> = new EventEmitter();
@@ -76,7 +76,7 @@ export class DetectorTimePickerComponent implements OnInit {
     this.startDate = addDays(this.today, -1);
     this.endDate = this.today;
 
-    this.openTimePickerCalloutObservalbe.subscribe(o => {
+    this.openTimePickerCalloutObservable.subscribe(o => {
       this.openTimePickerCallout = o;
     });
     this.detectorControlService.timePickerStrSub.subscribe(s => {
@@ -107,23 +107,6 @@ export class DetectorTimePickerComponent implements OnInit {
     if (this.detectorControlService.timeRangeDefaulted) {
       this.timeDiffError = this.detectorControlService.timeRangeErrorString;
     }
-
-    this.detectorControlService.update.subscribe(validUpdate => {
-      if (validUpdate) {
-        //Todo, update custom prefill info
-      }
-      const routeParams = {
-        'startTime': this.detectorControlService.startTime.format('YYYY-MM-DDTHH:mm'),
-        'endTime': this.detectorControlService.endTime.format('YYYY-MM-DDTHH:mm')
-      };
-      if (this.detectorControlService.detectorQueryParamsString != "") {
-        routeParams['detectorQueryParams'] = this.detectorControlService.detectorQueryParamsString;
-      }
-      if (this.activatedRoute.queryParams['searchTerm']) {
-        routeParams['searchTerm'] = this.activatedRoute.snapshot.queryParams['searchTerm'];
-      }
-      this.router.navigate([], { queryParams: routeParams, relativeTo: this.activatedRoute });
-    });
   }
 
   setTime(hourDiff: number) {
@@ -134,7 +117,6 @@ export class DetectorTimePickerComponent implements OnInit {
 
   //Click outside or tab to next component
   closeTimePicker() {
-    // this.globals.openTimePicker = false;
     this.openTimePickerCallout = false;
     this.showTimePicker = this.defaultSelectedKey === TimePickerOptions.Custom;
   }
@@ -142,7 +124,6 @@ export class DetectorTimePickerComponent implements OnInit {
   //Press Escape,Click Cancel
   cancelTimeRange() {
     this.closeTimePicker();
-    // (<HTMLInputElement>document.querySelector('.ms-CommandBar-secondaryCommand button')).focus();
   }
 
   //clickHandler for apply button
@@ -185,10 +166,7 @@ export class DetectorTimePickerComponent implements OnInit {
       this.detectorControlService.setCustomStartEnd(startDateWithTime, endDateWithTime);
       this.detectorControlService.updateTimePickerInfo(timePickerInfo);
     }
-    // this.globals.openTimePicker = this.timeDiffError !== "";
     this.openTimePickerCallout = this.timeDiffError !== "";
-    //Refoucs to command-bar text message again
-    (<HTMLInputElement>document.querySelector('.ms-CommandBar-secondaryCommand button')).focus();
 
     const eventProperties = {
       'Title': timePickerInfo.selectedKey

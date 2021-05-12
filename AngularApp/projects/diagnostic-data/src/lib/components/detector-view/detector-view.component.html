@@ -1,13 +1,13 @@
 <div *ngIf="detectorDataLocalCopy" style="display: flex;margin-top: 8px 0px">
   <!-- Debug -->
-  <!-- <div>isAnalysisView: {{isAnalysisView}}</div>
+  <div>isAnalysisView: {{isAnalysisView}}</div>
   <div>hideDetectorHeader: {{hideDetectorHeader}}</div>
   <div>isPublic: {{isPublic}}</div>
-  <div>isSystemInvoker: {{isSystemInvoker}}</div> -->
+  <div>isSystemInvoker: {{isSystemInvoker}}</div>
   <!-- <div>supportsDownTime {{supportsDownTime}}</div> -->
 
   <div *ngIf="!hideDetectorHeader">
-    <div *ngIf="isPublic && !isInCaseSubmission()">
+    <div *ngIf="!isInCaseSubmission()">
       <fab-primary-button id="time-picker-button" [styles]="buttonStyle" (onClick)="openTimePickerSubject.next(true);">
         <fab-icon [iconName]="'Clock'"></fab-icon>
         <span class="ml-3">
@@ -154,5 +154,5 @@
   <span>{{overWriteDetectorDescription}}</span>
 </ng-template>
 
-<detector-time-picker [target]="'#time-picker-button'" [openTimePickerCalloutObservalbe]="openTimePickerSubject">
+<detector-time-picker [target]="'#time-picker-button'" [openTimePickerCalloutObservable]="openTimePickerSubject">
 </detector-time-picker>

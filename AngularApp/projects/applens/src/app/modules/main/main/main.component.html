@@ -1,3 +1,4 @@
+
 <div class="container-fluid main-container">
   <div class="row main-row">
     <div class="col-md-6 col-md-offset-3">
@@ -5,56 +6,34 @@
         <div class="box-header with-border">
           <h3 class="box-title">Search Applens</h3>
         </div>
-
-        <form #form="ngForm" (ngSubmit)="onSubmit(form.value)">
-          <div class="form-group">
-            <div class="form-row">
-              <div class="col-md-6">
-                <label>Resource Type</label>
-                <div class="dropdown" [class.show]="showResourceTypeOptions">
-                  <button class="btn btn-default dropdown-toggle" type="button" (click)="showResourceTypeOptions = !showResourceTypeOptions"
-                    id="dropdownMenu1">
-                    {{this.selectedResourceType.displayName}}
-                    <span class="caret"></span>
-                  </button>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenu1" [class.show]="showResourceTypeOptions">
-                    <li *ngFor="let type of resourceTypes" (click)="selectResourceType(type)">
-                      <a>{{type.displayName}}</a>
-                    </li>
-
-                  </div>
-                </div>
-              </div>
-              <div *ngIf="!this.selectedResourceType.caseId" class="col-md-6">
-                <label>{{this.selectedResourceType.resourceTypeLabel}}</label>
-                <input class="form-control" [(ngModel)]="resourceName" name="resourceName" type="text" aria-describedby="nameHelp" placeholder="Enter resource name">
-              </div>
-            </div>
-            <div class="form-row" *ngIf="!this.selectedResourceType.caseId">
-              <div class="col-md-6">
-                <label>Start Time</label>
-                <input id="startTime" name="startTime" class="form-control input-sm" [(ngModel)]="startTime" [owlDateTimeTrigger]="start"
-                  [owlDateTime]="start">
-                 <owl-date-time #start></owl-date-time>
-              </div>
-              <div class="col-md-6">
-                <label>End Time</label>
-                <input id="endTime" name="endTime" class="form-control input-sm" [(ngModel)]="endTime" [owlDateTimeTrigger]="end" [owlDateTime]="end">
-                <owl-date-time #end></owl-date-time>
-              </div>
+        <div style="padding: 30px 48px;">
+          <div class="section">
+            <label>Service Type</label>
+            <div id="landing-page-service-type">
+              <!-- <fab-choice-group [options]="fabChoiceGroupOptions" [defaultSelectedKey]="selectedResourceType.displayName"></fab-choice-group> -->
+              <fab-dropdown [options]="fabDropdownOptions" [defaultSelectedKey]="fabDropdownOptions[0].key" (onChange)="selectDropdownKey($event)"></fab-dropdown>
             </div>
           </div>
-          <div class="form-group go-form">
-            <fab-primary-button contentStyle="margin-top: 20px;"
-                [disabled]="!(resourceName && resourceName.length > 0)" type="Submit" text='Go'>
-            </fab-primary-button>
+          <div class="section">
+            <label for="landing-page-resource">{{selectedResourceType.resourceTypeLabel}}</label>
+            <div id="landing-page-resource">
+              <fab-text-field [ariaLabel]="selectedResourceType.resourceTypeLabel" [(value)]="resourceName" [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel"></fab-text-field>
+              <div *ngIf="errorMessage!== ''" class="mt-3 error-message-container"><status-icon [status]="status"></status-icon><span class="ml-3 error-message">{{errorMessage}}</span></div>
+            </div>
           </div>
-        </form>
-        <div class = "error-msg-container">
-          <div *ngIf = "this.errorMessage!== ''" class="errorMessage">
-              {{this.errorMessage}}
+          <div class="section">
+            <label for="landing-page-time-picker">Time range(UTC)</label>
+            <div id="landing-page-time-picker" (click)="openTimePicker()" class="time-picker" (keyup.enter)="openTimePicker()" tabindex="0" aria-label="Choose time range">
+              <span style="color: #605E5C;">{{timePickerStr}}</span>
+              <fab-icon iconName="ChevronDown" ariaLabel="ChevronDown"></fab-icon>
+            </div>
+          </div>
+          
+          <div class="section">
+            <fab-primary-button [disabled]="disableSubmitButton" (click)="onSubmit()" >Continue</fab-primary-button>
           </div>
         </div>
+
       </div>
       <div class="col-md-6" *ngIf="showCaseCleansingOption">
         <a (click)="caseCleansingNavigate()">Review case tagging</a>
@@ -62,3 +41,6 @@
     </div>
   </div>
 </div>
+
+<detector-time-picker [target]="'#landing-page-time-picker'" [openTimePickerCalloutObservable]="openTimePickerSubject">
+</detector-time-picker>
