@@ -1,0 +1,15 @@
+.info-container {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 13px;
+}
+
+.observer-link {
+    flex:100%;
+    margin-bottom: 8px;
+}
+
+.info-item {
+    flex:50%;
+    margin-top: 6px;
+}

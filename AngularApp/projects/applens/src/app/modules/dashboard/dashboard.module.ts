@@ -25,7 +25,7 @@ import { ApplensCommsService } from './services/applens-comms.service';
 import { ApplensSupportTopicService } from './services/applens-support-topic.service';
 import { ApplensContentService } from './services/applens-content.service';
 import { DiagnosticService, DiagnosticDataModule, CommsService, DetectorControlService, GenericSupportTopicService, GenericContentService , GenericDocumentsSearchService, SolutionOrchestratorComponent  } from 'diagnostic-data';
-import { FabPanelModule } from '@angular-react/fabric';
+import { FabCommandBarModule, FabPanelModule } from '@angular-react/fabric';
 import { CollapsibleMenuModule } from '../../collapsible-menu/collapsible-menu.module';
 import { ObserverService } from '../../shared/services/observer.service';
 import { TabDataSourcesComponent } from './tabs/tab-data-sources/tab-data-sources.component';
@@ -55,6 +55,8 @@ import { SearchService } from './services/search.service';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { ConfigurationComponent } from './configuration/configuration.component';
 import { ApplensDocumentsSearchService } from './services/applens-documents-search.service';
+import { DashboardContainerComponent } from './dashboard-container/dashboard-container.component';
+import { L2SideNavComponent } from './l2-side-nav/l2-side-nav.component';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<boolean>>{
@@ -74,7 +76,7 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         children: [
             {
                 path: '',
-                redirectTo: 'home/category'
+                component: DashboardContainerComponent
             },
             {
                 path: 'home/:viewType',
@@ -298,6 +300,7 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         MarkdownModule.forRoot(),
         HighchartsChartModule,
         FabPanelModule,
+        FabCommandBarModule,
         DiagnosticDataModule
     ],
     providers: [
@@ -325,6 +328,6 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         SearchMenuPipe, TabDataComponent, TabDevelopComponent, TabCommonComponent, TabDataSourcesComponent, TabMonitoringComponent,
         TabMonitoringDevelopComponent, TabAnalyticsDevelopComponent, TabAnalyticsDashboardComponent, GistComponent, TabGistCommonComponent,
         TabGistDevelopComponent, TabChangelistComponent, GistChangelistComponent, TabAnalysisComponent, CategoryPageComponent, SupportTopicPageComponent,
-        SelfHelpContentComponent, UserProfileComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent]
+        SelfHelpContentComponent, UserProfileComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent, L2SideNavComponent]
 })
 export class DashboardModule { }
