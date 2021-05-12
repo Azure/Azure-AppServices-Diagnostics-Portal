@@ -13,7 +13,8 @@ import { v4 as uuid } from 'uuid';
 import { environment } from '../../../../environments/environment';
 import {DiagnosticApiService} from '../../../shared/services/diagnostic-api.service';
 import { ObserverService } from '../../../shared/services/observer.service';
-import { PanelType } from 'office-ui-fabric-react';
+import { ICommandBarProps, PanelType } from 'office-ui-fabric-react';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'dashboard',
@@ -48,6 +49,14 @@ export class DashboardComponent implements OnDestroy {
           marginTop: '50px',
       }
   }
+
+  commandBarStyles: ICommandBarProps["styles"] = {
+    root: {
+      padding: "0px"
+    }
+  };
+
+  isInHomepage: boolean = true;
 
   constructor(public resourceService: ResourceService, private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
@@ -104,39 +113,37 @@ export class DashboardComponent implements OnDestroy {
   }
 
   ngOnInit() {
-    let serviceInputs = this.startupService.getInputs();
+    // let serviceInputs = this.startupService.getInputs();
 
-    this.resourceReady = this.resourceService.getCurrentResource();
-    this.resourceReady.subscribe(resource => {
-      if (resource) {
-        this.resource = resource;
+    // this.resourceReady = this.resourceService.getCurrentResource();
+    // this.resourceReady.subscribe(resource => {
+    //   if (resource) {
+    //     this.resource = resource;
 
-        if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/hostingenvironments' && this.resource && this.resource.Name)
-        {
-            this.observerLink = "https://wawsobserver.azurewebsites.windows.net/MiniEnvironments/"+ this.resource.Name;
-            this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
-            this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
-        }
-        else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/sites')
-        {
-            this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
-            this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
-            this._diagnosticApiService.Location = this.resource["WebSpace"];
-            this.observerLink = "https://wawsobserver.azurewebsites.windows.net/sites/"+ this.resource.SiteName;
+    //     if (serviceInputs.resourceType.toString() === 'Microsoft.Web/hostingEnvironments' && this.resource && this.resource.Name)
+    //     {
+    //         this.observerLink = "https://wawsobserver.azurewebsites.windows.net/MiniEnvironments/"+ this.resource.Name;
+    //         this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
+    //         this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
+    //     }
+    //     else if (serviceInputs.resourceType.toString() === 'Microsoft.Web/sites')
+    //     {
+    //         this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
+    //         this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
+    //         this._diagnosticApiService.Location = this.resource["WebSpace"];
+    //         this.observerLink = "https://wawsobserver.azurewebsites.windows.net/sites/"+ this.resource.SiteName;
 
-            if (resource['IsXenon']) {
-                this.resourceService.imgSrc = this.resourceService.altIcons['Xenon'];
-            }
-        }
-        else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/workerapps')
-        {
-          this._diagnosticApiService.GeomasterServiceAddress = this.resource.ServiceAddress;
-          this._diagnosticApiService.GeomasterName = this.resource.GeoMasterName;
-          this.observerLink = "https://wawsobserver.azurewebsites.windows.net/partner/workerapp/" + this.resource.WorkerAppName;
-        }
+    //         if (resource['IsXenon']) {
+    //             this.resourceService.imgSrc = this.resourceService.altIcons['Xenon'];
+    //         }
+    //     }
 
-        this.keys = Object.keys(this.resource);
-      }
+    //     this.keys = Object.keys(this.resource);
+    //   }
+    // });
+    this.checkIsInHomepage();
+    this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
+      this.checkIsInHomepage();
     });
 
     if (!!this._activatedRoute && !!this._activatedRoute.snapshot && !!this._activatedRoute.snapshot.queryParams && !!this._activatedRoute.snapshot.queryParams['l'])
@@ -212,12 +219,24 @@ export class DashboardComponent implements OnDestroy {
     }, 3000);
   }
 
-  dismissedHandler() {
-    this.openResourceInfoPanel = false;
-}
+//   dismissedHandler() {
+//     this.openResourceInfoPanel = false;
+// }
 
   ngOnDestroy() {
     this.navigateSub.unsubscribe();
+  }
+
+  checkIsInHomepage() {
+    if(this._activatedRoute.firstChild && this._activatedRoute.firstChild.snapshot.params["detector"]){
+      this.isInHomepage = false;
+    }else {
+      this.isInHomepage = true;
+    }
+  }
+
+  emailToAuthor() {
+
   }
 
 }

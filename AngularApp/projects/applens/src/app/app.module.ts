@@ -1,5 +1,5 @@
 
-import {map} from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, Injectable, ErrorHandler } from '@angular/core';
 import { RouterModule, Resolve, ActivatedRouteSnapshot, Router, UrlSerializer } from '@angular/router';
@@ -16,13 +16,16 @@ import { AdalService, AdalGuard, AdalInterceptor } from 'adal-angular4';
 import { CustomUrlSerializerService } from './shared/services/custom-url-serializer.service';
 import { DiagnosticDataModule } from 'diagnostic-data';
 import { UnhandledExceptionHandlerService, AppInsightsTelemetryService } from 'diagnostic-data';
-import {CustomMaterialModule} from './material-module';
+import { CustomMaterialModule } from './material-module';
 import { HighchartsChartModule } from 'highcharts-angular';
-import {UnauthorizedComponent} from './shared/components/unauthorized/unauthorized.component';
-import {AuthRequestFailedComponent} from './shared/components/auth-request-failed/auth-request-failed.component';
-import {TokenInvalidComponent} from './shared/components/tokeninvalid/tokeninvalid.component';
+import { UnauthorizedComponent } from './shared/components/unauthorized/unauthorized.component';
+import { AuthRequestFailedComponent } from './shared/components/auth-request-failed/auth-request-failed.component';
+import { TokenInvalidComponent } from './shared/components/tokeninvalid/tokeninvalid.component';
 import { AngularReactBrowserModule } from '@angular-react/core';
 import { ApplensAppinsightsTelemetryService } from './shared/services/applens-appinsights-telemetry.service';
+import { ApplensHeaderComponent } from './shared/components/applens-header/applens-header.component';
+import { L1SideNavComponent } from './shared/components/l1-side-nav/l1-side-nav.component';
+import { FabButtonModule, FabDialogModule, FabPanelModule } from '@angular-react/fabric';
 
 @Injectable()
 export class ValidResourceResolver implements Resolve<void>{
@@ -116,14 +119,18 @@ export const Routes = RouterModule.forRoot([
     path: 'login',
     component: LoginComponent
   }
-]);
+],
+  { enableTracing: true }
+);
 
 @NgModule({
   declarations: [
     AppComponent,
     UnauthorizedComponent,
     AuthRequestFailedComponent,
-    TokenInvalidComponent
+    TokenInvalidComponent,
+    ApplensHeaderComponent,
+    L1SideNavComponent
   ],
   imports: [
     AngularReactBrowserModule,
@@ -133,11 +140,14 @@ export const Routes = RouterModule.forRoot([
     Routes,
     SharedModule.forRoot(),
     CustomMaterialModule,
-    HighchartsChartModule
+    HighchartsChartModule,
+    FabPanelModule,
+    FabDialogModule,
+    FabButtonModule
   ],
   providers: [
     ValidResourceResolver,
-    { provide: AppInsightsTelemetryService, useExisting: ApplensAppinsightsTelemetryService},
+    { provide: AppInsightsTelemetryService, useExisting: ApplensAppinsightsTelemetryService },
     AdalService,
     {
       provide: UrlSerializer,
