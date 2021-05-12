@@ -1,14 +1,14 @@
 import { AdalService } from 'adal-angular4';
 import * as momentNs from 'moment';
-import { map, catchError } from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import {
-    ResourceServiceInputs, ResourceType, ResourceTypeState, ResourceServiceInputsJsonResponse
+  ResourceServiceInputs, ResourceType, ResourceTypeState, ResourceServiceInputsJsonResponse
 } from '../../../shared/models/resources';
-import { trimTrailingNulls } from '@angular/compiler/src/render3/view/util';
 import { HttpClient } from '@angular/common/http';
-import { FabDialogModule, FabButtonModule } from '@angular-react/fabric';
+import { IChoiceGroupOption, IDropdownOption } from 'office-ui-fabric-react';
+import { BehaviorSubject } from 'rxjs';
+import { DetectorControlService, HealthStatus } from 'diagnostic-data';
 const moment = momentNs;
 
 @Component({
@@ -42,14 +42,14 @@ export class MainComponent implements OnInit {
       resourceType: null,
       resourceTypeLabel: 'ARM Resource ID',
       routeName: (name) => `${name}`,
-      displayName: 'ARM Resource ID',      
+      displayName: 'ARM Resource ID',
       enabled: true,
       caseId: false
     },
     {
       resourceType: null,
       resourceTypeLabel: 'Session Id',
-      routeName: (name) =>  this.getFakeArmResource('Microsoft.AzurePortal', 'sessions', name),
+      routeName: (name) => this.getFakeArmResource('Microsoft.AzurePortal', 'sessions', name),
       displayName: 'Azure Portal Session',
       enabled: true,
       caseId: false
@@ -77,8 +77,17 @@ export class MainComponent implements OnInit {
   enabledResourceTypes: ResourceServiceInputs[];
   inIFrame = false;
   errorMessage = "";
+  status = HealthStatus.Critical;
 
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _http: HttpClient, private _adalService: AdalService,) {
+  fabDropdownOptions: IDropdownOption[] = [];
+  openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  timePickerStr: string = "";
+  get disableSubmitButton(): boolean {
+    return !this.resourceName || this.resourceName.length === 0;
+  }
+
+
+  constructor(private _router: Router, private _http: HttpClient, private _detectorControlService: DetectorControlService) {
     this.endTime = moment.utc();
     this.startTime = this.endTime.clone().add(-1, 'days');
     this.inIFrame = window.parent !== window;
@@ -88,13 +97,25 @@ export class MainComponent implements OnInit {
     }
 
     // TODO: Use this to restrict access to routes that don't match a supported resource type
-    this._http.get<ResourceServiceInputsJsonResponse>('assets/enabledResourceTypes.json').subscribe(jsonResponse =>{
+    this._http.get<ResourceServiceInputsJsonResponse>('assets/enabledResourceTypes.json').subscribe(jsonResponse => {
       this.enabledResourceTypes = <ResourceServiceInputs[]>jsonResponse.enabledResourceTypes;
     });
   }
 
   ngOnInit() {
     this.selectedResourceType = this.resourceTypes[0];
+    this.resourceTypes.forEach(resource => {
+      const displayName = resource.displayName;
+      this.fabDropdownOptions.push({
+        key: displayName,
+        text: displayName,
+        ariaLabel: displayName
+      });
+    });
+    this._detectorControlService.timePickerStrSub.subscribe(s => {
+      this.timePickerStr = s;
+      this._detectorControlService.timeRangeErrorString
+    });
   }
 
   selectResourceType(type: ResourceTypeState) {
@@ -104,24 +125,28 @@ export class MainComponent implements OnInit {
     }
   }
 
-  private normalizeArmUriForRoute(resourceURI: string, enabledResourceTypes : ResourceServiceInputs[]) : string {
+  selectDropdownKey(e: { option: IDropdownOption, index: number }) {
+    this.selectResourceType(this.resourceTypes[e.index]);
+  }
+
+  private normalizeArmUriForRoute(resourceURI: string, enabledResourceTypes: ResourceServiceInputs[]): string {
     resourceURI = resourceURI.trim();
-    var resourceUriPattern = /subscriptions\/(.*)\/resourceGroups\/(.*)\/providers\/(.*)/i;
-    var result = resourceURI.match(resourceUriPattern);
+    const resourceUriPattern = /subscriptions\/(.*)\/resourceGroups\/(.*)\/providers\/(.*)/i;
+    const result = resourceURI.match(resourceUriPattern);
 
     if (result && result.length === 4) {
-      var allowedResources : string = "";
-      var routeString : string = '';
+      let allowedResources: string = "";
+      let routeString: string = '';
 
       if (enabledResourceTypes) {
         enabledResourceTypes.forEach(enabledResource => {
-          allowedResources+= `${enabledResource.resourceType}\n`;
-          var resourcePattern = new RegExp(
-              `(?<=${enabledResource.resourceType.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\/).*`, 'i'
+          allowedResources += `${enabledResource.resourceType}\n`;
+          const resourcePattern = new RegExp(
+            `(?<=${enabledResource.resourceType.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\/).*`, 'i'
           );
-          var enabledResourceResult = result[3].match(resourcePattern);
+          const enabledResourceResult = result[3].match(resourcePattern);
 
-          if(enabledResourceResult){
+          if (enabledResourceResult) {
             routeString = `subscriptions/${result[1]}/resourceGroups/${result[2]}/providers/${enabledResource.resourceType}/${enabledResourceResult[0]}`;
           }
         });
@@ -129,7 +154,7 @@ export class MainComponent implements OnInit {
 
       this.errorMessage = routeString === '' ?
         'The supplied ARM resource is not enabled in AppLens. Allowed resource types are as follows\n\n' +
-          `${allowedResources}` :
+        `${allowedResources}` :
         '';
 
       return routeString;
@@ -142,27 +167,27 @@ export class MainComponent implements OnInit {
     }
   }
 
-  onSubmit(form: any) {
-    form.resourceName = form.resourceName.trim();
+  onSubmit() {
+    this.resourceName = this.resourceName.trim();
 
     if (this.selectedResourceType.displayName === "ARM Resource ID") {
-      form.resourceName = this.normalizeArmUriForRoute(form.resourceName, this.enabledResourceTypes);
+      this.resourceName = this.normalizeArmUriForRoute(this.resourceName, this.enabledResourceTypes);
     } else {
       this.errorMessage = "";
     }
 
-    let route = this.selectedResourceType.routeName(form.resourceName);
+    let route = this.selectedResourceType.routeName(this.resourceName);
 
     if (route === 'srid') {
-      window.location.href = `https://azuresupportcenter.msftcloudes.com/caseoverview?srId=${form.resourceName}`;
+      window.location.href = `https://azuresupportcenter.msftcloudes.com/caseoverview?srId=${this.resourceName}`;
     }
 
-    let startUtc = moment.utc(form.startTime.format('YYYY-MM-DD HH:mm'));
-    let endUtc = moment.utc(form.endTime.format('YYYY-MM-DD HH:mm'));
+    let startUtc = this._detectorControlService.startTime;
+    let endUtc = this._detectorControlService.endTime;
 
     let timeParams = {
-      startTime: startUtc.format('YYYY-MM-DDTHH:mm'),
-      endTime: endUtc.format('YYYY-MM-DDTHH:mm')
+      startTime: startUtc ? startUtc.format('YYYY-MM-DDTHH:mm') : "",
+      endTime: endUtc ? endUtc.format('YYYY-MM-DDTHH:mm') : ""
     }
 
     let navigationExtras: NavigationExtras = {
@@ -183,4 +208,7 @@ export class MainComponent implements OnInit {
     return fakeRes;
   }
 
+  openTimePicker() {
+    this.openTimePickerSubject.next(true);
+  }
 }
