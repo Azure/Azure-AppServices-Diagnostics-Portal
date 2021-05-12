@@ -113,34 +113,6 @@ export class DashboardComponent implements OnDestroy {
   }
 
   ngOnInit() {
-    // let serviceInputs = this.startupService.getInputs();
-
-    // this.resourceReady = this.resourceService.getCurrentResource();
-    // this.resourceReady.subscribe(resource => {
-    //   if (resource) {
-    //     this.resource = resource;
-
-    //     if (serviceInputs.resourceType.toString() === 'Microsoft.Web/hostingEnvironments' && this.resource && this.resource.Name)
-    //     {
-    //         this.observerLink = "https://wawsobserver.azurewebsites.windows.net/MiniEnvironments/"+ this.resource.Name;
-    //         this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
-    //         this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
-    //     }
-    //     else if (serviceInputs.resourceType.toString() === 'Microsoft.Web/sites')
-    //     {
-    //         this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
-    //         this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
-    //         this._diagnosticApiService.Location = this.resource["WebSpace"];
-    //         this.observerLink = "https://wawsobserver.azurewebsites.windows.net/sites/"+ this.resource.SiteName;
-
-    //         if (resource['IsXenon']) {
-    //             this.resourceService.imgSrc = this.resourceService.altIcons['Xenon'];
-    //         }
-    //     }
-
-    //     this.keys = Object.keys(this.resource);
-    //   }
-    // });
     this.checkIsInHomepage();
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
       this.checkIsInHomepage();
