@@ -1,17 +1,16 @@
 <aside class="main-sidebar">
-  <section class="sidebar">
+  <section class="sidebar" style="height: 100vh;">
     <collapsible-menu theme="light">
       <search-box [(searchValue)]="searchValue"></search-box>
-      <menu-scroll>
-        <section-divider [label]="'Develop'" [initiallyExpanded]="false" [disableExpandIcon]="true">
+        <!-- <section-divider [label]="'Develop'" [initiallyExpanded]="false" [disableExpandIcon]="true">
           <i class="fa fa-code fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let item of createNew" [menuItem]="item"></collapsible-menu-item>
-        </section-divider>
-        <section-divider [label]="'Documentation'" [initiallyExpanded]="false" [collapsible]="false" (click)="openDocumentation()">
+        </section-divider> -->
+        <!-- <section-divider [label]="'Documentation'" [initiallyExpanded]="false" [collapsible]="false" (click)="openDocumentation()">
           <i class="fa fa-book fa-fw menu-icon menu-icon-documentation" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let doc of documentation" [menuItem]="doc"></collapsible-menu-item>
-        </section-divider>
-        <section-divider  *ngIf="analysisTypes.length > 0" [label]="'Analysis'">
+        </section-divider> -->
+        <!-- <section-divider  *ngIf="analysisTypes.length > 0" [label]="'Analysis'">
           <i class="fa fa-heartbeat fa-fw menu-icon menu-icon-analysis" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let item of analysisTypes" [menuItem]="item"></collapsible-menu-item>
           <i *ngIf="!categories || categories.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
@@ -20,17 +19,17 @@
           <i class="fa fa-stethoscope fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let category of categories" [searchValue]="searchValue" [menuItem]="category"></collapsible-menu-item>
           <i *ngIf="!categories || categories.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
-        </section-divider>
-        <section-divider *ngIf="gists.length > 0" [label]="'Gists'" [initiallyExpanded]="false">
+        </section-divider> -->
+        <!-- <section-divider *ngIf="gists.length > 0" [label]="'Gists'" [initiallyExpanded]="false">
           <i class="fa fa-file-code-o fa-fw menu-icon menu-icon-gists" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let gist of gists" [searchValue]="searchValue" [menuItem]="gist"></collapsible-menu-item>
           <i *ngIf="!gists || gists.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
-        </section-divider>
-        <section-divider [label]="'Configuration'" [initiallyExpanded]="false">
+        </section-divider> -->
+        <!-- <section-divider [label]="'Configuration'" [initiallyExpanded]="false">
           <i class="fa fa-wrench fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let setting of configuration" [menuItem]="setting"></collapsible-menu-item>
-        </section-divider>
-      </menu-scroll>
+        </section-divider> -->
+        <collapsible-menu-item *ngFor="let category of categories" [searchValue]="searchValue" [menuItem]="category"></collapsible-menu-item>
     </collapsible-menu>
   </section>
 </aside>

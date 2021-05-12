@@ -26,6 +26,7 @@ import { ApplensAppinsightsTelemetryService } from './shared/services/applens-ap
 import { ApplensHeaderComponent } from './shared/components/applens-header/applens-header.component';
 import { L1SideNavComponent } from './shared/components/l1-side-nav/l1-side-nav.component';
 import { FabButtonModule, FabDialogModule, FabPanelModule } from '@angular-react/fabric';
+import { ApplensGlobal } from './applens-global';
 
 @Injectable()
 export class ValidResourceResolver implements Resolve<void>{
@@ -140,7 +141,6 @@ export const Routes = RouterModule.forRoot([
     Routes,
     SharedModule.forRoot(),
     CustomMaterialModule,
-    HighchartsChartModule,
     FabPanelModule,
     FabDialogModule,
     FabButtonModule
@@ -156,7 +156,8 @@ export const Routes = RouterModule.forRoot([
     {
       provide: ErrorHandler,
       useClass: UnhandledExceptionHandlerService
-    }
+    },
+    ApplensGlobal
   ],
   bootstrap: [AppComponent]
 })
