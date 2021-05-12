@@ -33,3 +33,10 @@
     margin-right: 11px;
     color: #b57500;
 }
+
+.app-container {
+    position: relative;
+    top:50px;
+    left:70px;
+    height: calc(100% - 50px);
+}
