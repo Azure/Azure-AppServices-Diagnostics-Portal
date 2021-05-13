@@ -15,6 +15,8 @@ import {DiagnosticApiService} from '../../../shared/services/diagnostic-api.serv
 import { ObserverService } from '../../../shared/services/observer.service';
 import { ICommandBarProps, PanelType } from 'office-ui-fabric-react';
 import { filter } from 'rxjs/operators';
+import { ApplensGlobal } from '../../../applens-global';
+import { L2SideNavType } from '../l2-side-nav/l2-side-nav.component';
 
 @Component({
   selector: 'dashboard',
@@ -57,10 +59,12 @@ export class DashboardComponent implements OnDestroy {
   };
 
   isInHomepage: boolean = true;
+  title:string = "";
+  showL2SideNav:boolean = false;
 
   constructor(public resourceService: ResourceService, private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
-    private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, private startupService: StartupService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService) {
+    private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService,private _applensGlobal:ApplensGlobal) {
     this.contentHeight = (window.innerHeight - 50) + 'px';
 
     this.navigateSub = this._navigator.OnDetectorNavigate.subscribe((detector: string) => {
@@ -116,6 +120,14 @@ export class DashboardComponent implements OnDestroy {
     this.checkIsInHomepage();
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
       this.checkIsInHomepage();
+    });
+
+    this._applensGlobal.dashboardTitleSubject.subscribe(t => {
+      this.title = t;
+    });
+
+    this._applensGlobal.openL2SideNavSubject.subscribe(type => {
+      this.showL2SideNav = type !== L2SideNavType.None;
     });
 
     if (!!this._activatedRoute && !!this._activatedRoute.snapshot && !!this._activatedRoute.snapshot.queryParams && !!this._activatedRoute.snapshot.queryParams['l'])
@@ -191,9 +203,6 @@ export class DashboardComponent implements OnDestroy {
     }, 3000);
   }
 
-//   dismissedHandler() {
-//     this.openResourceInfoPanel = false;
-// }
 
   ngOnDestroy() {
     this.navigateSub.unsubscribe();
@@ -205,6 +214,10 @@ export class DashboardComponent implements OnDestroy {
     }else {
       this.isInHomepage = true;
     }
+  }
+
+  refreshPage() {
+    this._detectorControlService.refresh("V3ControlRefresh");
   }
 
   emailToAuthor() {

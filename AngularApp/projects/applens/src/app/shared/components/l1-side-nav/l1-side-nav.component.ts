@@ -11,24 +11,24 @@ import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-na
   styleUrls: ['./l1-side-nav.component.scss']
 })
 export class L1SideNavComponent implements OnInit {
-  private isInLandingPage: boolean = true;
   sideItems: SideNavItem[] = [
     {
-      name: SideNavItemName[SideNavItemName.Landing],
-      displayName: SideNavItemName[SideNavItemName.Landing],
+      name: L1SideNavType[L1SideNavType.Landing],
+      displayName: L1SideNavType[L1SideNavType.Landing],
       enabledInLandingPage: true,
       click: () => {
-        if(this.isInLandingPage) return;
+        this.dismissL2SideNav();
+        if(this.checkIsLandingPage()) return;
         this.showDialog = true;
-        console.log(this.showDialog);
       }
     },
     {
-      name: SideNavItemName[SideNavItemName.Home],
-      displayName: SideNavItemName[SideNavItemName.Home],
+      name: L1SideNavType[L1SideNavType.Home],
+      displayName: L1SideNavType[L1SideNavType.Home],
       enabledInLandingPage: false,
       click: () => {
-        if(this.isInLandingPage) return;
+        this.dismissL2SideNav();
+        if(this.checkIsLandingPage()) return;
         if(this._activatedRoute.firstChild.firstChild.firstChild) {
           const params = this._activatedRoute.firstChild.firstChild.firstChild.snapshot.params;
           
@@ -48,18 +48,19 @@ export class L1SideNavComponent implements OnInit {
       }
     },
     {
-      name: SideNavItemName[SideNavItemName.Detectors],
-      displayName: SideNavItemName[SideNavItemName.Detectors],
+      name: L1SideNavType[L1SideNavType.Detectors],
+      displayName: L1SideNavType[L1SideNavType.Detectors],
       enabledInLandingPage: false,
       click: () => { 
         this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.Detectors);
       }
     },
     {
-      name: SideNavItemName[SideNavItemName.Docs],
-      displayName: SideNavItemName[SideNavItemName.Docs],
+      name: L1SideNavType[L1SideNavType.Docs],
+      displayName: L1SideNavType[L1SideNavType.Docs],
       enabledInLandingPage: true,
       click: () => {
+        this.dismissL2SideNav();
       }
     }
   ];
@@ -94,24 +95,23 @@ export class L1SideNavComponent implements OnInit {
   constructor(private _router: Router,private _activatedRoute:ActivatedRoute,private _applensGlobal:ApplensGlobal) { }
 
   ngOnInit() {
-    this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
-      this.isInLandingPage = this.checkIsLandingPage();
-    });
   }
 
-  getItemDisabled(item: SideNavItem): boolean {
-    return this.isInLandingPage && !item.enabledInLandingPage;
+  getItemEnabled(item: SideNavItem): boolean {
+    const isInLandingPage = this.checkIsLandingPage();
+
+    return !isInLandingPage || item.enabledInLandingPage;
   }
 
   getImageUrl(item: SideNavItem): string {
     const basePath = "../../../../assets/img/applens-skeleton/side-nav";
-    const folder = this.getItemDisabled(item) ? 'disable' : 'enable';
+    const folder = this.getItemEnabled(item) ? 'enable' : 'disable';
     return `${basePath}/${folder}/${item.name.toLowerCase()}.svg`;
   }
 
   highlightNavIcon(url: string) {
-    if (url === "/") return SideNavItemName.Landing;
-    if (url.endsWith("/home/category")) return SideNavItemName.Home;
+    if (url === "/") return L1SideNavType.Landing;
+    if (url.endsWith("/home/category")) return L1SideNavType.Home;
     return null;
   }
 
@@ -129,6 +129,10 @@ export class L1SideNavComponent implements OnInit {
     this.dismissDialog();
   }
 
+  dismissL2SideNav() {
+    this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.None);
+  }
+
 }
 
 interface SideNavItem {
@@ -140,7 +144,7 @@ interface SideNavItem {
   img?:string,
 }
 
-enum SideNavItemName {
+enum L1SideNavType {
   Landing,
   Home,
   Detectors,
