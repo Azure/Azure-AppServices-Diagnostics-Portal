@@ -32,7 +32,7 @@
     </div>
   </nav>
 </header> -->
-<div class="site-content">
+<div [class.content-with-side-nav]="showL2SideNav">
   <!-- <section class="sidebar">
     <div class="user-panel" [class.active]="doesMatchCurrentRoute('home')">
       <div class="pull-left image" (click)="navigateTo('home/category')">
@@ -56,14 +56,16 @@
           style="width: 32px;">
       </div>
       <div>
-        <p style="font-size: 24px;"><strong>{{resourceService.getResourceName() | formatResourceName}}</strong></p>
+        <p style="font-size: 24px;">
+          <strong>{{resourceService.getResourceName() | formatResourceName}}</strong>
+          <strong *ngIf="title != ''">&nbsp;| {{title}}</strong></p>
         <p style="font-size: 12px;">{{resourceService.searchSuffix}}</p>
       </div>
     </div>
     <div style="margin-top: 10px;">
       <fab-command-bar contentClass="fab-command-bar-class" [styles]="commandBarStyles">
         <items>
-          <fab-command-bar-item *ngIf="!isInHomepage" key="refresh" text="Refresh" [iconProps]="{ iconName: 'Refresh' }">
+          <fab-command-bar-item *ngIf="!isInHomepage" key="refresh" text="Refresh" [iconProps]="{ iconName: 'Refresh' }" (click)="refreshPage()">
           </fab-command-bar-item>
           <fab-command-bar-item key="feedback" text="Feedback" [iconProps]="{ iconName: 'Emoji2' }">
           </fab-command-bar-item>
@@ -72,6 +74,6 @@
         </items>
       </fab-command-bar>
     </div>
-    <router-outlet></router-outlet>
+    <router-outlet (activate)="updateSubtitle($event)"></router-outlet>
   </div>
 </div>
