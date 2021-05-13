@@ -9,7 +9,10 @@ import { ApplensGlobal } from '../../../applens-global';
 })
 export class L2SideNavComponent implements OnInit {
   panelType: PanelType = PanelType.customNear;
-  type: L2SideNavType = null;
+  type: L2SideNavType = L2SideNavType.None;
+  get isSideNavOpen():boolean {
+    return this.type !== L2SideNavType.None;
+  }
   openL2SideNav: boolean = false;
   panelStyles: IPanelProps['styles'] = {
     root: {
@@ -29,9 +32,14 @@ export class L2SideNavComponent implements OnInit {
     });
   }
 
+  dismissSideNav() {
+    this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.None);
+  }
+
 }
 
 export enum L2SideNavType {
+  None,
   Detectors,
   Develop
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
+import { ApplensGlobal } from '../../../applens-global';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ObserverService } from '../../../shared/services/observer.service';
 import { ResourceService } from '../../../shared/services/resource.service';
@@ -18,7 +19,7 @@ export class DashboardContainerComponent implements OnInit {
   resourceDetailsSub: Subscription;
   observerLink: string = "";
 
-  constructor(public _resourceService: ResourceService, private _startupService: StartupService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService) { }
+  constructor(public _resourceService: ResourceService, private _startupService: StartupService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, private _applensGlobal: ApplensGlobal) { }
 
   ngOnInit() {
     let serviceInputs = this._startupService.getInputs();
@@ -52,6 +53,7 @@ export class DashboardContainerComponent implements OnInit {
         this.updateVentAndLinuxInfo();
       }
     });
+    this._applensGlobal.dashboardTitleSubject.next("Overview");
   }
 
   updateVentAndLinuxInfo() {
