@@ -30,6 +30,9 @@ export class CollapsibleMenuItemComponent {
 
   hasChildren: boolean;
   matchesSearchTerm: boolean = true;
+  get iconName() {
+    return this.menuItem.expanded ? "ChevronRight" : "ChevronDown";
+  }
 
   constructor(private _searchPipe: SearchPipe) { }
 

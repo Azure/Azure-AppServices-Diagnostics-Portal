@@ -5,6 +5,8 @@ import { DetectorResponse, DetectorMetaData } from 'diagnostic-data';
 import { Observable } from 'rxjs';
 import { QueryResponse } from 'diagnostic-data';
 import { Package } from '../../../shared/models/package';
+import { filter } from 'rxjs-compat/operator/filter';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class ApplensDiagnosticService {
@@ -70,6 +72,12 @@ export class ApplensDiagnosticService {
         null,
         queryParams,
         internalClient);
+  }
+
+  getDetectorMetaDataById(id:string):Observable<DetectorMetaData> {
+    return this.getDetectors().pipe(map(datas => {
+      return datas.find(d => d.id === id);
+    }));
   }
 
   getUsers(body: any): Observable<any> {
