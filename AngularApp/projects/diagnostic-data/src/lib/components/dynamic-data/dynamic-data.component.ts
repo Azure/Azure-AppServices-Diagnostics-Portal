@@ -163,7 +163,7 @@ export class DynamicDataComponent implements OnInit {
       case RenderingType.TimeSeriesPerInstance:
         return TimeSeriesInstanceGraphComponent;
       case RenderingType.DynamicInsight:
-        return this.isLegacy ? DynamicInsightComponent : DynamicInsightV4Component;
+        return DynamicInsightV4Component;
       case RenderingType.Markdown:
         return MarkdownViewComponent;
       case RenderingType.DetectorList:

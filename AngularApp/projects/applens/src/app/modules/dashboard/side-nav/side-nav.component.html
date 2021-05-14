@@ -1,7 +1,13 @@
 <aside class="main-sidebar">
   <section class="sidebar" style="height: 100vh;">
     <collapsible-menu theme="light">
-      <search-box [(searchValue)]="searchValue"></search-box>
+      <div style="display: flex;align-items: center;">
+        <!-- <fab-text-field [(value)]="searchValue" placeholder="Search detector" autoComplete="off" [iconProps]="searchBoxIcon"></fab-text-field> -->
+        <fab-search-box #fabSearchBox [value]="searchValue" (onChange)="updateSearchValue($event)" [styles]="searchBoxStyles" (onFocus)="focusSearchBox()"></fab-search-box>
+        <div class="icon-colleapse-side-nav" (keyup.enter)="dismissL2SideNav()" (click)="dismissL2SideNav()" tabindex="0" aria-label="Close side nav">
+          <fab-icon [iconName]="'DoubleChevronLeft'" contentClass="ml-3"></fab-icon>
+        </div>
+      </div>
         <!-- <section-divider [label]="'Develop'" [initiallyExpanded]="false" [disableExpandIcon]="true">
           <i class="fa fa-code fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let item of createNew" [menuItem]="item"></collapsible-menu-item>
@@ -29,6 +35,7 @@
           <i class="fa fa-wrench fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let setting of configuration" [menuItem]="setting"></collapsible-menu-item>
         </section-divider> -->
+        
         <collapsible-menu-item *ngFor="let category of categories" [searchValue]="searchValue" [menuItem]="category"></collapsible-menu-item>
     </collapsible-menu>
   </section>

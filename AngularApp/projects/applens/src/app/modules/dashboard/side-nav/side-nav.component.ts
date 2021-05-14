@@ -1,6 +1,6 @@
 import { AdalService } from 'adal-angular4';
 import { filter } from 'rxjs/operators';
-import { Component, OnInit, PipeTransform, Pipe } from '@angular/core';
+import { Component, OnInit, PipeTransform, Pipe, ViewChild, ElementRef } from '@angular/core';
 import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from '@angular/router';
 import { ResourceService } from '../../../shared/services/resource.service';
 import { CollapsibleMenuItem } from '../../../collapsible-menu/components/collapsible-menu-item/collapsible-menu-item.component';
@@ -9,6 +9,10 @@ import { DetectorType } from 'diagnostic-data';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
 import { environment } from '../../../../environments/environment';
+import { ISearchBoxProps, ITextFieldProps } from 'office-ui-fabric-react';
+import { ApplensGlobal } from '../../../applens-global';
+import { L2SideNavType } from '../l2-side-nav/l2-side-nav.component';
+import { FabSearchBoxComponent } from '@angular-react/fabric';
 
 @Component({
   selector: 'side-nav',
@@ -34,12 +38,12 @@ export class SideNavComponent implements OnInit {
 
   getDetectorsRouteNotFound: boolean = false;
 
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService) {
-    this.contentHeight = (window.innerHeight - 139) + 'px';
-    if (environment.adal.enabled) {
-      let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
-      this.userId = alias.replace('@microsoft.com', '');
-    }
+  searchBoxIcon: ITextFieldProps["iconProps"] = {
+    iconName: "Zoom",
+  }
+
+  @ViewChild(FabSearchBoxComponent,{static: false}) fabSearchBox:any;
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService, private _applensGlobal: ApplensGlobal) {
   }
 
   documentation: CollapsibleMenuItem[] = [
@@ -104,6 +108,12 @@ export class SideNavComponent implements OnInit {
     }
   ];
 
+  searchBoxStyles:ISearchBoxProps['styles'] = {
+    root: {
+      width: "190px"
+    }
+  }
+
   ngOnInit() {
     this.initializeDetectors();
 
@@ -112,6 +122,11 @@ export class SideNavComponent implements OnInit {
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
       this.getCurrentRoutePath();
     });
+  }
+
+  focusSearchBox() {
+    const input = this.fabSearchBox.elementRef.nativeElement.firstChild.lastElementChild;
+    input.autocomplete = "off";
   }
 
   private getCurrentRoutePath() {
@@ -134,11 +149,13 @@ export class SideNavComponent implements OnInit {
 
   initializeDetectors() {
     this._diagnosticApiService.getDetectors().subscribe(detectorList => {
+      const analysisMenuItem = new CollapsibleMenuItem("Analysis","",null,null,null,true);
       if (detectorList) {
         detectorList.forEach(element => {
           let onClick = () => {
             this._telemetryService.logEvent(TelemetryEventNames.SideNavigationItemClicked, { "elementId": element.id });
             this.navigateTo(`detectors/${element.id}`);
+            this.dismissL2SideNav();
           };
 
           let isSelected = () => {
@@ -155,9 +172,11 @@ export class SideNavComponent implements OnInit {
           }
 
           categoryMenuItem.subItems.push(menuItem);
+
           if (element.type === DetectorType.Analysis) {
             let onClickAnalysisParent = () => {
               this.navigateTo(`analysis/${element.id}`);
+              this.dismissL2SideNav();
             };
 
             let isSelectedAnalysis = () => {
@@ -165,13 +184,18 @@ export class SideNavComponent implements OnInit {
               return this.currentRoutePath && this.currentRoutePath.join('/') === `analysis/${element.id}`;
             }
 
-            let analysisMenuItem = new CollapsibleMenuItem(element.name, element.id, onClickAnalysisParent, isSelectedAnalysis, null, true, [], element.supportTopicList && element.supportTopicList.length > 0 ? element.supportTopicList.map(x => x.id).join(",") : null);
-            this.analysisTypes.push(analysisMenuItem);
-
+            let analysisSubMenuItem = new CollapsibleMenuItem(element.name, element.id, onClickAnalysisParent, isSelectedAnalysis, null, true, [], element.supportTopicList && element.supportTopicList.length > 0 ? element.supportTopicList.map(x => x.id).join(",") : null);
+            analysisMenuItem.subItems.push(analysisSubMenuItem);
           }
-        });
 
-        this.categories = this.categories.sort((a, b) => a.label === 'Uncategorized' ? 1 : (a.label > b.label ? 1 : -1));
+
+        });
+        this.categories.push(analysisMenuItem);
+        this.categories = this.categories.sort((a, b) => {
+          if(a.label === 'Analysis') return -1;
+          if(a.label === 'Uncategorized') return 1;
+          return a.label > b.label ? 1 : -1
+        });
 
         this.detectorsLoading = false;
         this._telemetryService.logPageView(TelemetryEventNames.SideNavigationLoaded, {});
@@ -223,6 +247,14 @@ export class SideNavComponent implements OnInit {
 
   openDocumentation() {
     window.open('https://app-service-diagnostics-docs.azurewebsites.net/api/Diagnostics.ModelsAndUtils.Models.Response.html#extensionmethods', '_blank');
+  }
+
+  updateSearchValue(e: any) {
+    this.searchValue = e.newValue;
+  }
+
+  dismissL2SideNav() {
+    this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.None);
   }
 }
 

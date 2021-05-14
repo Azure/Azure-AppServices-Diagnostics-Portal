@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
 import { DetectorControlService } from 'diagnostic-data';
+import { DetectorMetaData } from 'dist/diagnostic-data/public_api';
+import { ApplensCommandBarService } from '../../services/applens-command-bar.service';
 
 @Component({
   selector: 'tab-data',
@@ -11,7 +13,7 @@ import { DetectorControlService } from 'diagnostic-data';
 })
 export class TabDataComponent implements OnInit {
 
-  constructor(private _route: ActivatedRoute, private _diagnosticApiService: ApplensDiagnosticService, private detectorControlService: DetectorControlService) { }
+  constructor(private _route: ActivatedRoute, private _diagnosticApiService: ApplensDiagnosticService, private _detectorControlService: DetectorControlService,private _applensCommandBarService:ApplensCommandBarService) { }
 
   detectorResponse: DetectorResponse;
 
@@ -19,9 +21,11 @@ export class TabDataComponent implements OnInit {
 
   error: any;
 
-  analysisMode:boolean = false;
+  analysisMode: boolean = false;
 
   hideDetectorControl: boolean = false;
+
+  detectors: DetectorMetaData[] = [];
   ngOnInit() {
 
     this._route.params.subscribe((params: Params) => {
@@ -29,23 +33,30 @@ export class TabDataComponent implements OnInit {
     });
     // If route query params contains detectorQueryParams, setting the values in shared service so it is accessible in all components
     this._route.queryParams.subscribe((queryParams: Params) => {
-      if(queryParams.detectorQueryParams != undefined) {
-        this.detectorControlService.setDetectorQueryParams(queryParams.detectorQueryParams);
+      if (queryParams.detectorQueryParams != undefined) {
+        this._detectorControlService.setDetectorQueryParams(queryParams.detectorQueryParams);
       } else {
-        this.detectorControlService.setDetectorQueryParams("");
+        this._detectorControlService.setDetectorQueryParams("");
       }
 
       this.analysisMode = this._route.snapshot.data['analysisMode'];
-    })
+    });
+    this._diagnosticApiService.getDetectors().subscribe(detectors => {
+      this.detectors = detectors;
+    });
   }
 
   refresh() {
-    if(this._route.snapshot.params["drilldownDetectorName"]) {
-      this.detector = this._route.snapshot.params["drilldownDetectorName"];
-      this.hideDetectorControl = true;
-    }else {
-      this.detector = this._route.snapshot.params['detector'];
-    }
+    this.detector = this._route.snapshot.params['detector'];
   }
 
+  refreshPage() {
+    this._applensCommandBarService.refreshPage();
+  }
+
+  emailToAuthor() {
+    this._applensCommandBarService.getDetectorMeatData(this.detector).subscribe(metaData =>{
+      this._applensCommandBarService.emailToAuthor(metaData);
+    });
+  }
 }

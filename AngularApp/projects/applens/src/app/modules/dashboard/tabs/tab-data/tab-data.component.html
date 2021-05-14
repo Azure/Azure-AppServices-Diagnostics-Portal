@@ -1,2 +1,12 @@
 <!-- <comm-alert *ngIf="!analysisMode"></comm-alert> -->
-<detector-container [analysisMode]="analysisMode" [detector]="detector" [hideDetectorControl]="hideDetectorControl"></detector-container>
+<fab-command-bar contentClass="fab-command-bar-class">
+    <items>
+      <fab-command-bar-item key="refresh" text="Refresh" [iconProps]="{ iconName: 'Refresh' }" (click)="refreshPage()">
+      </fab-command-bar-item>
+      <fab-command-bar-item key="feedback" text="Feedback" [iconProps]="{ iconName: 'Emoji2' }">
+      </fab-command-bar-item>
+      <fab-command-bar-item key="emailToAuthor" text="Email Author" [iconProps]="{ iconName: 'Mail' }" (click)="emailToAuthor()">
+      </fab-command-bar-item>
+    </items>
+  </fab-command-bar>
+<detector-container [analysisMode]="analysisMode" [detector]="detector"></detector-container>

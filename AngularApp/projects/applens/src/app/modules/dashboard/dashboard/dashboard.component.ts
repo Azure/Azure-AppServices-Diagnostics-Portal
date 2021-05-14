@@ -58,9 +58,9 @@ export class DashboardComponent implements OnDestroy {
     }
   };
 
-  isInHomepage: boolean = true;
   title:string = "";
   showL2SideNav:boolean = false;
+  detectors:DetectorMetaData[] = [];
 
   constructor(public resourceService: ResourceService, private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
@@ -72,14 +72,15 @@ export class DashboardComponent implements OnDestroy {
         this._router.navigate([`./detectors/${detector}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
 
         this._diagnosticService.getDetectors().subscribe(detectors => {
-          let detectorMetaData: DetectorMetaData = detectors.find(d => d.id.toLowerCase() === detector.toLowerCase());
-          if (detectorMetaData) {
-            if (detectorMetaData.type === DetectorType.Detector) {
-              this._router.navigate([`./detectors/${detector}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
-            } else if (detectorMetaData.type === DetectorType.Analysis) {
-              this._router.navigate([`./analysis/${detector}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
-            }
-          }
+          // this.detectors = detectors;
+          // let detectorMetaData: DetectorMetaData = detectors.find(d => d.id.toLowerCase() === detector.toLowerCase());
+          // if (detectorMetaData) {
+          //   if (detectorMetaData.type === DetectorType.Detector) {
+          //     this._router.navigate([`./detectors/${detector}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
+          //   } else if (detectorMetaData.type === DetectorType.Analysis) {
+          //     this._router.navigate([`./analysis/${detector}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
+          //   }
+          // }
         });
       }
     });
@@ -117,14 +118,15 @@ export class DashboardComponent implements OnDestroy {
   }
 
   ngOnInit() {
-    this.checkIsInHomepage();
+    this._diagnosticService.getDetectors().subscribe(detectors => {
+      this.detectors = detectors;
+      this.updateTitle();
+    })
+
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
-      this.checkIsInHomepage();
+      this.updateTitle();
     });
 
-    this._applensGlobal.dashboardTitleSubject.subscribe(t => {
-      this.title = t;
-    });
 
     this._applensGlobal.openL2SideNavSubject.subscribe(type => {
       this.showL2SideNav = type !== L2SideNavType.None;
@@ -208,20 +210,15 @@ export class DashboardComponent implements OnDestroy {
     this.navigateSub.unsubscribe();
   }
 
-  checkIsInHomepage() {
-    if(this._activatedRoute.firstChild && this._activatedRoute.firstChild.snapshot.params["detector"]){
-      this.isInHomepage = false;
+  updateTitle() {
+    const parms = this._activatedRoute.firstChild.snapshot.params;
+    if(parms["detector"] || parms["analysisId"]) {
+      const id = parms["detector"] || parms["analysisId"];
+      const data = this.detectors.find(d => d.id === id);
+      this.title = data ? data.name : "" ;
     }else {
-      this.isInHomepage = true;
+      this.title = "Overview";
     }
-  }
-
-  refreshPage() {
-    this._detectorControlService.refresh("V3ControlRefresh");
-  }
-
-  emailToAuthor() {
-
   }
 
 }
