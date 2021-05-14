@@ -1,6 +1,7 @@
 <div *ngIf="matchesSearchTerm">
-    <div class="menu-item" (click)="handleClick()" [class.selected]="isSelected()" [style.padding-left]="getPadding()" [style.font-size]="getFontSize()">
-        <i class="fa expand-icon" *ngIf=" menuItem.subItems && menuItem.subItems.length > 0" [class.fa-caret-right]="!menuItem.expanded" [class.fa-caret-down]="menuItem.expanded"></i>
+    <div class="menu-item" (click)="handleClick()" [class.selected]="isSelected()" [style.padding-left]="getPadding()" [style.font-size]="getFontSize()" tabindex="0">
+        <!-- <i class="fa expand-icon" *ngIf=" menuItem.subItems && menuItem.subItems.length > 0" [class.fa-caret-right]="!menuItem.expanded" [class.fa-caret-down]="menuItem.expanded"></i> -->
+        <fab-icon *ngIf=" menuItem.subItems && menuItem.subItems.length > 0" [iconName]="iconName"></fab-icon>
         <i class="fa" *ngIf="menuItem.icon" [ngClass]="menuItem.icon"></i>
         <span class="menu-label" [innerHtml]="menuItem.label | searchmatch:searchValueLocal"></span>
     </div>
