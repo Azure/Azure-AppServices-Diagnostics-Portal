@@ -62,18 +62,6 @@
         <p style="font-size: 12px;">{{resourceService.searchSuffix}}</p>
       </div>
     </div>
-    <div style="margin-top: 10px;">
-      <fab-command-bar contentClass="fab-command-bar-class" [styles]="commandBarStyles">
-        <items>
-          <fab-command-bar-item *ngIf="!isInHomepage" key="refresh" text="Refresh" [iconProps]="{ iconName: 'Refresh' }" (click)="refreshPage()">
-          </fab-command-bar-item>
-          <fab-command-bar-item key="feedback" text="Feedback" [iconProps]="{ iconName: 'Emoji2' }">
-          </fab-command-bar-item>
-          <fab-command-bar-item *ngIf="!isInHomepage" key="emailToAuthor" text="Email Author" [iconProps]="{ iconName: 'Mail' }">
-          </fab-command-bar-item>
-        </items>
-      </fab-command-bar>
-    </div>
-    <router-outlet (activate)="updateSubtitle($event)"></router-outlet>
+    <router-outlet></router-outlet>
   </div>
 </div>
