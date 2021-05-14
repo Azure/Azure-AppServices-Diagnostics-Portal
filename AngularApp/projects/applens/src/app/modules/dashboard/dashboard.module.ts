@@ -25,7 +25,7 @@ import { ApplensCommsService } from './services/applens-comms.service';
 import { ApplensSupportTopicService } from './services/applens-support-topic.service';
 import { ApplensContentService } from './services/applens-content.service';
 import { DiagnosticService, DiagnosticDataModule, CommsService, DetectorControlService, GenericSupportTopicService, GenericContentService , GenericDocumentsSearchService, SolutionOrchestratorComponent  } from 'diagnostic-data';
-import { FabCommandBarModule, FabIconModule, FabPanelModule } from '@angular-react/fabric';
+import { FabCommandBarModule, FabIconModule, FabPanelModule, FabSearchBoxModule, FabTextFieldModule } from '@angular-react/fabric';
 import { CollapsibleMenuModule } from '../../collapsible-menu/collapsible-menu.module';
 import { ObserverService } from '../../shared/services/observer.service';
 import { TabDataSourcesComponent } from './tabs/tab-data-sources/tab-data-sources.component';
@@ -57,6 +57,7 @@ import { ConfigurationComponent } from './configuration/configuration.component'
 import { ApplensDocumentsSearchService } from './services/applens-documents-search.service';
 import { DashboardContainerComponent } from './dashboard-container/dashboard-container.component';
 import { L2SideNavComponent } from './l2-side-nav/l2-side-nav.component';
+import { ApplensCommandBarService } from './services/applens-command-bar.service';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<boolean>>{
@@ -302,6 +303,8 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         FabPanelModule,
         FabCommandBarModule,
         FabIconModule,
+        FabTextFieldModule,
+        FabSearchBoxModule,
         DiagnosticDataModule
     ],
     providers: [
@@ -310,6 +313,7 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         ApplensCommsService,
         ApplensSupportTopicService,
         ApplensContentService,
+        ApplensCommandBarService,
         InitResolver,
         {
             provide: ResourceService,
