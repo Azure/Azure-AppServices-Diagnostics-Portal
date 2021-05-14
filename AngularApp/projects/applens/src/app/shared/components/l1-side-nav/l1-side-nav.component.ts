@@ -125,7 +125,9 @@ export class L1SideNavComponent implements OnInit {
   }
 
   navigateToLandingPage() {
-    this._router.navigate(["/"]);
+    //Some issue with Resource.service,for now refresh whole page
+    // this._router.navigate(["/"]);
+    window.location.href = "/"
     this.dismissDialog();
   }
 
