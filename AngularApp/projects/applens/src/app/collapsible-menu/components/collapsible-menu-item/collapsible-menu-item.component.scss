@@ -5,7 +5,7 @@
 .menu-item {
     cursor: pointer;
     font-family: az_ea_font,"Segoe UI",wf_segoe-ui_normal,"Segoe WP",Tahoma,Arial,sans-serif;
-    
+    display: flex;
 }
 
 .expand-icon {
@@ -18,8 +18,8 @@
 
 :host-context(.dark-theme) .menu-item {
     color:#e2e2e2;
-    padding: 5px 5px 5px 30px;
-    font-size: 14px;
+    padding: 5px 5px 5px 10px;
+    font-size: 13px;
 }
 
 :host-context(.dark-theme) .menu-item:hover,
@@ -31,8 +31,8 @@
 /* LIGHT THEME */
 :host-context(.light-theme) .menu-item {
     color:#1d1d1d;
-    font-size: 12px;
-    padding: 10px 5px 9px 35px;
+    font-size: 13px;
+    padding: 10px 5px 9px 10px;
 }
 
 :host-context(.light-theme) .menu-item:hover,
@@ -42,4 +42,8 @@
 
 .menu-label > b {
     color: #ffb353;
+}
+
+.break-all {
+    word-break: break-all;
 }

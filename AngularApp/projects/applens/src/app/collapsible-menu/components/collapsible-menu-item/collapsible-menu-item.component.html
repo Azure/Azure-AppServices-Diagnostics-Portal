@@ -1,11 +1,11 @@
 <div *ngIf="matchesSearchTerm">
-    <div class="menu-item" (click)="handleClick()" [class.selected]="isSelected()" [style.padding-left]="getPadding()" [style.font-size]="getFontSize()" tabindex="0">
-        <!-- <i class="fa expand-icon" *ngIf=" menuItem.subItems && menuItem.subItems.length > 0" [class.fa-caret-right]="!menuItem.expanded" [class.fa-caret-down]="menuItem.expanded"></i> -->
+    <div class="menu-item" (click)="handleClick()" [class.selected]="isSelected()" [tabindex]="focusable ? 0 : -1" [style.padding-left]="getPadding()" (keyup.enter)="handleClick()">
+      <div class="mr-3">
         <fab-icon *ngIf=" menuItem.subItems && menuItem.subItems.length > 0" [iconName]="iconName"></fab-icon>
-        <i class="fa" *ngIf="menuItem.icon" [ngClass]="menuItem.icon"></i>
-        <span class="menu-label" [innerHtml]="menuItem.label | searchmatch:searchValueLocal"></span>
+      </div>
+        <div class="menu-label" [class.break-all]="!isLabelWordBreakable(menuItem.label)" [innerHtml]="menuItem.label | searchmatch:searchValueLocal"></div>
     </div>
     <div class="menu-item-children" [@expand]="menuItem.expanded ? 'shown' : 'hidden'">
-      <collapsible-menu-item *ngFor="let item of menuItem.subItems" [searchValue]="searchValueLocal" [menuItem]="item" [level]="level + 1"></collapsible-menu-item>
+      <collapsible-menu-item *ngFor="let item of menuItem.subItems" [searchValue]="searchValueLocal" [menuItem]="item" [level]="level + 1" [focusable]="menuItem.expanded"></collapsible-menu-item>
     </div>
 </div>

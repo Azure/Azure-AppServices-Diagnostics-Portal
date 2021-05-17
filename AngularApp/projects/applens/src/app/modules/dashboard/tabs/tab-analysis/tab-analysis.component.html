@@ -4,12 +4,14 @@
     </fab-command-bar-item>
     <fab-command-bar-item key="feedback" text="Feedback" [iconProps]="{ iconName: 'Emoji2' }">
     </fab-command-bar-item>
-    <fab-command-bar-item key="emailToAuthor" text="Email Author" [iconProps]="{ iconName: 'Mail' }" (click)="emailToAuthor()">
+    <fab-command-bar-item key="emailToAuthor" text="Email Author" [iconProps]="{ iconName: 'Mail' }"
+      (click)="emailToAuthor()">
     </fab-command-bar-item>
   </items>
 </fab-command-bar>
-<div style="margin-left:20px">
-  <detector-container [detector]="analysisId" [isAnalysisView]="true" (downTimeChanged)="onDowntimeChanged($event)"></detector-container>
+<div>
+  <detector-container [detector]="analysisId" [isAnalysisView]="true" (downTimeChanged)="onDowntimeChanged($event)">
+  </detector-container>
 </div>
 
 <detector-list-analysis #detectorListAnalysis detectorParmName="detector"></detector-list-analysis>
