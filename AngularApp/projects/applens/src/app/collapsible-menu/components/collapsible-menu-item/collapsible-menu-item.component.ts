@@ -25,6 +25,7 @@ export class CollapsibleMenuItemComponent {
   @Input() set searchValue(value) {
     this._searchValueSubject.next(value);
   };
+  @Input() focusable: boolean = true;
 
   children: CollapsibleMenuItem[];
 
@@ -65,11 +66,15 @@ export class CollapsibleMenuItemComponent {
   }
 
   getPadding() {
-    return (25 + this.level * 10) + 'px';
+    return (10 + this.level * 10) + 'px';
   }
 
   getFontSize() {
-      return (14 - this.level) + 'px';
+    return (13 - this.level) + 'px';
+  }
+
+  isLabelWordBreakable(label: string): boolean {
+    return label.includes(" ");
   }
 
 }
