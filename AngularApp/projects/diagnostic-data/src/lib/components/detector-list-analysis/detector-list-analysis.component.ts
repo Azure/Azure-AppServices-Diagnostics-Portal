@@ -852,29 +852,31 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                     if (detectorId === 'appchanges' && !this._detectorControl.internalClient) {
                         this.portalActionService.openChangeAnalysisBlade(this._detectorControl.startTimeString, this._detectorControl.endTimeString);
                     } else {
-                        this.updateDrillDownMode(true, viewModel);
+                        //TODO, For D&S blade, need to add a service to find category and navigate to detector
                         if (viewModel.model.startTime != null && viewModel.model.endTime != null) {
                             this.analysisContainsDowntime().subscribe(containsDowntime => {
                                 if (containsDowntime) {
-                                    this._router.navigate([`./detectors/${detectorId}`], {
+                                    this._router.navigate([`../../detectors/${detectorId}`], {
                                         relativeTo: this._activatedRoute,
-                                        queryParams: { startTimeChildDetector: viewModel.model.startTime, endTimeChildDetector: viewModel.model.endTime },
-                                        queryParamsHandling: 'merge',
-                                        replaceUrl: true
+                                        queryParams: 
+                                        { 
+                                            startTimeChildDetector: viewModel.model.startTime, 
+                                            endTimeChildDetector: viewModel.model.endTime 
+                                        },
+                                        queryParamsHandling: 'merge'
                                     });
                                 }
                                 else {
-                                    this._router.navigate([`./detectors/${detectorId}`], {
+                                    this._router.navigate([`../../detectors/${detectorId}`], {
                                         relativeTo: this._activatedRoute,
                                         queryParams: { startTime: viewModel.model.startTime, endTime: viewModel.model.endTime },
-                                        queryParamsHandling: 'merge',
-                                        replaceUrl: true
+                                        queryParamsHandling: 'merge'
                                     });
                                 }
                             });
                         }
                         else {
-                            this._router.navigate([`../../analysis/${this.analysisId}/detectors/${detectorId}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', preserveFragment: true });
+                            this._router.navigate([`../../detectors/${detectorId}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', preserveFragment: true });
                         }
                     }
                 }

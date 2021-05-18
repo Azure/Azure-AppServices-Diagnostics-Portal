@@ -1,6 +1,6 @@
 <span *ngIf="showPreLoadingError" style="margin-left:30px;margin-top:10px;">{{preLoadingErrorMessage}}</span>
 <span *ngIf="showPreLoader"><i class="fa fa-circle-o-notch fa-2x fa-spin preloading-icon"></i></span>
-<div *ngIf="searchMode != SearchAnalysisMode.Genie && inDrillDownMode && this.isPublic">
+<!-- <div *ngIf="searchMode != SearchAnalysisMode.Genie && inDrillDownMode && this.isPublic">
   <div>
     <div style="display: inline-block;margin-left: 20px">
       <h2>{{ detectorName }}</h2>
@@ -10,8 +10,8 @@
         (click)="goBackToAnalysis()">Back to Observations</a>
     </div>
   </div>
-</div>
-<div *ngIf="inDrillDownMode && !this.isPublic">
+</div> -->
+<!-- <div *ngIf="inDrillDownMode && !this.isPublic">
   <div style="margin-left:20px" class="tab-container">
     <div style="margin-left:20px;margin-bottom: 10px">
       <div style="display: inline-block">
@@ -28,13 +28,13 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 <div *ngIf="getPendingDetectorCount() > 0" style="margin-bottom: 30px">
   <div class="dot-flashing"></div>
 </div>
 
-<div *ngIf="!inDrillDownMode">
+<div>
   <div
     *ngIf="detectors.length > 0 && (issueDetectedViewModels.length > 0 || successfulViewModels.length > 0) || (getPendingDetectorCount() === 0 && loadingChildDetectors)"
     class="list-wrapper" [ngClass]="{'list-wrapper-genie': withinGenie}">
