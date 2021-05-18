@@ -1,9 +1,9 @@
 <fab-panel [isOpen]="true" [type]="panelType" [customWidth]="'70px'" [hasCloseButton]="false" [styles]="panelStyles" [isBlocking]="false" [focusTrapZoneProps]="panelFocusTrapZoneProps">
   <div style="margin-top: 16px;">
     <div *ngFor="let item of sideItems" class="side-item" [class.side-item-disable]="!getItemEnabled(item)" [class.side-item-enable]="getItemEnabled(item)" (click)="item.click()" type="button" (keyup.enter)="item.click()"
-    [tabindex]="getItemEnabled(item) ? 0 : -1 ">
+    [tabindex]="getItemEnabled(item) ? 0 : -1" [attr.aria-label]="item.displayName" [class.highlight-side-item]="getCurrentHighLightItem() === item.type">
       <img [src]="getImageUrl(item)" [alt]="item.displayName">
-      <h4 style="font-size: 12px;">{{item.displayName}}</h4>
+      <p style="font-size: 12px;">{{item.displayName}}</p>
     </div>
   </div>
 </fab-panel>
