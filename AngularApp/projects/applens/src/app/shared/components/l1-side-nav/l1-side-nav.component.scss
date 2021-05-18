@@ -1,5 +1,10 @@
 .side-item {
     margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 60px;
+    justify-content: center;
 }
 
 .side-item-enable :hover {
@@ -10,8 +15,13 @@
     cursor: not-allowed;
 }
 
+.highlight-side-item {
+    border-left: 4px solid #0C8FC7;
+    background: #DCDCDC;
+}
+
 
 ::ng-deep .ms-Panel-content {
-    padding-left: 10px;
+    padding-left: 0px;
     padding-right: 0px;
 }
