@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IDialogContentProps, IPanelProps, PanelType } from 'office-ui-fabric-react';
-import { filter } from 'rxjs/operators';
 import { ApplensGlobal } from '../../../applens-global';
+import { DashboardContainerComponent } from '../../../modules/dashboard/dashboard-container/dashboard-container.component';
 import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-nav.component';
 
 @Component({
@@ -13,25 +13,25 @@ import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-na
 export class L1SideNavComponent implements OnInit {
   sideItems: SideNavItem[] = [
     {
-      name: L1SideNavType[L1SideNavType.Landing],
-      displayName: L1SideNavType[L1SideNavType.Landing],
+      type: L1SideNavItemType.Selection,
+      displayName: L1SideNavItemType[L1SideNavItemType.Selection],
       enabledInLandingPage: true,
       click: () => {
         this.dismissL2SideNav();
-        if(this.checkIsLandingPage()) return;
+        if (this.checkIsLandingPage()) return;
         this.showDialog = true;
       }
     },
     {
-      name: L1SideNavType[L1SideNavType.Home],
-      displayName: L1SideNavType[L1SideNavType.Home],
+      type: L1SideNavItemType.Overview,
+      displayName: L1SideNavItemType[L1SideNavItemType.Overview],
       enabledInLandingPage: false,
       click: () => {
         this.dismissL2SideNav();
-        if(this.checkIsLandingPage()) return;
-        if(this._activatedRoute.firstChild.firstChild.firstChild) {
+        if (this.checkIsLandingPage()) return;
+        if (this._activatedRoute.firstChild.firstChild.firstChild) {
           const params = this._activatedRoute.firstChild.firstChild.firstChild.snapshot.params;
-          
+
           const subscriptionId = params["subscriptionId"];
           const resourceGroup = params["resourceGroup"];
           const provider = params["provider"];
@@ -40,7 +40,7 @@ export class L1SideNavComponent implements OnInit {
 
           const url = `subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${provider}/${resourceTypeName}/${resourceName}`;
 
-          this._router.navigate([url],{
+          this._router.navigate([url], {
             queryParamsHandling: "preserve"
           });
         }
@@ -48,22 +48,23 @@ export class L1SideNavComponent implements OnInit {
       }
     },
     {
-      name: L1SideNavType[L1SideNavType.Detectors],
-      displayName: L1SideNavType[L1SideNavType.Detectors],
+      type: L1SideNavItemType.Detectors,
+      displayName: L1SideNavItemType[L1SideNavItemType.Detectors],
       enabledInLandingPage: false,
-      click: () => { 
+      click: () => {
         this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.Detectors);
       }
     },
-    {
-      name: L1SideNavType[L1SideNavType.Docs],
-      displayName: L1SideNavType[L1SideNavType.Docs],
-      enabledInLandingPage: true,
-      click: () => {
-        this.dismissL2SideNav();
-      }
-    }
+    // {
+    //   type: L1SideNavType.Docs,
+    //   displayName: L1SideNavType[L1SideNavType.Docs],
+    //   enabledInLandingPage: true,
+    //   click: () => {
+    //     this.dismissL2SideNav();
+    //   }
+    // }
   ];
+  currentHightLightItem:L1SideNavItemType = null;
   panelType: PanelType = PanelType.customNear;
   panelStyles: IPanelProps['styles'] = {
     main: {
@@ -78,7 +79,7 @@ export class L1SideNavComponent implements OnInit {
   showDialog: boolean = false;
   dialogTitle: string = "Are you sure to select a new resource?";
   dialogSubText: string = "You’ll lose access to current resource’s data. Are you sure to select a new resource?";
-  dialogContentStyles:  IDialogContentProps['styles'] = {
+  dialogContentStyles: IDialogContentProps['styles'] = {
     title: {
       fontSize: "18px",
       lineHeight: "24px",
@@ -92,7 +93,7 @@ export class L1SideNavComponent implements OnInit {
     }
   }
 
-  constructor(private _router: Router,private _activatedRoute:ActivatedRoute,private _applensGlobal:ApplensGlobal) { }
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _applensGlobal: ApplensGlobal) { }
 
   ngOnInit() {
   }
@@ -106,12 +107,21 @@ export class L1SideNavComponent implements OnInit {
   getImageUrl(item: SideNavItem): string {
     const basePath = "../../../../assets/img/applens-skeleton/side-nav";
     const folder = this.getItemEnabled(item) ? 'enable' : 'disable';
-    return `${basePath}/${folder}/${item.name.toLowerCase()}.svg`;
+    const file = L1SideNavItemType[item.type].toLowerCase();
+    return `${basePath}/${folder}/${file}.svg`;
   }
 
-  highlightNavIcon(url: string) {
-    if (url === "/") return L1SideNavType.Landing;
-    if (url.endsWith("/home/category")) return L1SideNavType.Home;
+  getCurrentHighLightItem(): L1SideNavItemType {
+    if (this.checkIsLandingPage()) {
+      return L1SideNavItemType.Selection;
+    }
+    const childRoute = this._activatedRoute.firstChild.firstChild.firstChild.firstChild.firstChild;
+    if (childRoute && (childRoute.snapshot.params["analysisId"] || childRoute.snapshot.params["detector"])) {
+      return L1SideNavItemType.Detectors;
+    } else if (childRoute.component === DashboardContainerComponent) {
+      return L1SideNavItemType.Overview;
+    }
+
     return null;
   }
 
@@ -138,17 +148,15 @@ export class L1SideNavComponent implements OnInit {
 }
 
 interface SideNavItem {
-  name: string;
+  type: L1SideNavItemType
   displayName: string;
   enabledInLandingPage: boolean,
   click: () => void,
-  disabled?: boolean,
-  img?:string,
 }
 
-enum L1SideNavType {
-  Landing,
-  Home,
+enum L1SideNavItemType {
+  Selection,
+  Overview,
   Detectors,
   Docs
 }
