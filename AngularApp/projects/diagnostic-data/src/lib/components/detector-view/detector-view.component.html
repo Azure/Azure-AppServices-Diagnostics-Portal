@@ -1,9 +1,9 @@
-<div *ngIf="detectorDataLocalCopy" style="display: flex;margin-top: 8px 0px">
+<div *ngIf="detectorDataLocalCopy" style="display: flex;align-items: baseline;margin: 20px 0px">
   <!-- Debug -->
-  <div>isAnalysisView: {{isAnalysisView}}</div>
+  <!-- <div>isAnalysisView: {{isAnalysisView}}</div>
   <div>hideDetectorHeader: {{hideDetectorHeader}}</div>
   <div>isPublic: {{isPublic}}</div>
-  <div>isSystemInvoker: {{isSystemInvoker}}</div>
+  <div>isSystemInvoker: {{isSystemInvoker}}</div> -->
   <!-- <div>supportsDownTime {{supportsDownTime}}</div> -->
 
   <div *ngIf="!hideDetectorHeader">
@@ -44,7 +44,7 @@
 </div>
 
 <div *ngIf="detectorDataLocalCopy">
-  <div *ngIf="((!hideDetectorHeader && !analysisMode) || isPopoutFromAnalysis) && !isInCaseSubmission()">
+  <!-- <div *ngIf="((!hideDetectorHeader && !analysisMode) || isPopoutFromAnalysis) && !isInCaseSubmission()">
     <section class="content-header">
       <h2 style="display: flex;">
         <div *ngIf="!isSystemInvoker && !insideDetectorList &&!isPublic" tabindex="0" id="detector-name">
@@ -98,9 +98,9 @@
       </div>
     </section>
     <hr>
-  </div>
+  </div> -->
 
-  <br *ngIf="isInCaseSubmission() && !isKeystoneView">
+  <!-- <br *ngIf="isInCaseSubmission() && !isKeystoneView"> -->
 
   <!-- <div *ngIf="isAnalysisView && supportsDownTime" class="dynamic-data-container">
     <div class="downtime-container">
@@ -118,6 +118,11 @@
     </div>
   </div> -->
 
+  <div style="margin-bottom: 24px;">
+    <span *ngIf="!overWriteDetectorDescription || overWriteDetectorDescription.length === 0;else overwriteDescription">
+      {{detectorDataLocalCopy.metadata.description}}
+    </span>
+  </div>
 
   <div *ngFor="let data of detectorDataLocalCopy.dataset  | renderfilter:isAnalysisView"
     [ngClass]="{'dynamic-data-container': !isRiskAlertDetector}">
