@@ -58,7 +58,7 @@
       <div>
         <p style="font-size: 24px;">
           <strong>{{resourceService.getResourceName() | formatResourceName}}</strong>
-          <strong *ngIf="title != ''">&nbsp;| {{title}}</strong></p>
+          <strong>&nbsp;| {{getTitle()}}</strong></p>
         <p style="font-size: 12px;">{{resourceService.searchSuffix}}</p>
       </div>
     </div>
