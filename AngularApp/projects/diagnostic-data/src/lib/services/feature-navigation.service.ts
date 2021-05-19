@@ -6,6 +6,8 @@ export class FeatureNavigationService {
 
   public lastDetector: string = null;
 
+  public lastIsAnalysisView: boolean = true;
+
   private _navigateToDetector :BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   constructor() { }
