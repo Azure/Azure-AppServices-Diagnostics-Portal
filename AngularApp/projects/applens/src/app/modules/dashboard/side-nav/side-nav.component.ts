@@ -134,8 +134,12 @@ export class SideNavComponent implements OnInit {
   }
 
   navigateTo(path: string) {
+    const queryParams = {...this._activatedRoute.snapshot.queryParams};
+    delete queryParams.startTimeChildDetector;
+    delete queryParams.endTimeChildDetector;
+
     let navigationExtras: NavigationExtras = {
-      queryParamsHandling: 'preserve',
+      queryParams: queryParams,
       preserveFragment: true,
       relativeTo: this._activatedRoute
     };

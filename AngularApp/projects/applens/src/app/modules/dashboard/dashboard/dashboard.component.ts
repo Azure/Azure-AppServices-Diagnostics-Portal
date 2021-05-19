@@ -120,12 +120,8 @@ export class DashboardComponent implements OnDestroy {
   ngOnInit() {
     this._diagnosticService.getDetectors().subscribe(detectors => {
       this.detectors = detectors;
-      this.updateTitle();
     })
 
-    this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
-      this.updateTitle();
-    });
 
 
     this._applensGlobal.openL2SideNavSubject.subscribe(type => {
@@ -138,9 +134,6 @@ export class DashboardComponent implements OnDestroy {
     }
   }
 
-  reloadHome() {
-    window.location.href = '/';
-  }
 
   triggerSearch(){
     this._searchService.searchTerm = this._searchService.searchTerm.trim();
@@ -210,17 +203,18 @@ export class DashboardComponent implements OnDestroy {
     this.navigateSub.unsubscribe();
   }
 
-  updateTitle() {
+  getTitle():string {
+    let title = "";
     const parms = this._activatedRoute.firstChild.snapshot.params;
-    if(parms["detector"] || parms["analysisId"]) {
+    if(parms["detector"] || parms["analysisId"]){
       const id = parms["detector"] || parms["analysisId"];
       const data = this.detectors.find(d => d.id === id);
-      this.title = data ? data.name : "" ;
+      title = data ? data.name : "" ;
     }else {
-      this.title = "Overview";
+      title = "Overview"
     }
+    return title;
   }
-
 }
 
 @Pipe({name: 'formatResourceName'})

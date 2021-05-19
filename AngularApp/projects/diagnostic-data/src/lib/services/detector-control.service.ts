@@ -69,6 +69,8 @@ export class DetectorControlService {
     selectedText: TimePickerOptions.Last24Hours
   });
 
+  public changeFromTimePicker:boolean = false;
+
   public timePickerStrSub: BehaviorSubject<string> = new BehaviorSubject(TimePickerOptions.Last24Hours);
 
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
