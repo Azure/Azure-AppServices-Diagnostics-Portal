@@ -17,8 +17,8 @@
       </fab-primary-button>
     </div>
   </div>
-  <div *ngIf="isAnalysisView && supportsDownTime" class="ml-3">
-    <fab-primary-button id="detector-view-downtime" (onClick)="showDowntimeCallout = true;" [styles]="buttonStyle">
+  <div *ngIf="showDownTimeButton" class="ml-3">
+    <fab-primary-button id="detector-view-downtime" (onClick)="showDowntimeCallout = true;" [styles]="buttonStyle" [disabled]="disableDowntimeButton">
       <fab-icon [iconName]="'Clock'"></fab-icon>
       <span class="ml-3">
         <span style="font-weight: 400;">Downtime(UTC): </span>

@@ -17,6 +17,7 @@ export class DetectorTimePickerComponent implements OnInit {
   @Input() openTimePickerCalloutObservable: Observable<boolean>;
   openTimePickerCallout: boolean = false;
   @Input() target: string = "";
+  @Input() disableUpdateQueryParams: boolean = false;
   @Output() updateTimerMessage: EventEmitter<string> = new EventEmitter();
   timePickerButtonStr: string = "";
   showCalendar: boolean = false;
@@ -107,6 +108,30 @@ export class DetectorTimePickerComponent implements OnInit {
     if (this.detectorControlService.timeRangeDefaulted) {
       this.timeDiffError = this.detectorControlService.timeRangeErrorString;
     }
+
+    this.detectorControlService.update.subscribe(validUpdate => {
+      if (validUpdate) {
+        //Todo, update custom prefill info
+      }
+      const queryParams = {...this.activatedRoute.snapshot.queryParams};
+      if(this.detectorControlService.startTime && this.detectorControlService.endTime) {
+        queryParams["startTime"] = this.detectorControlService.startTime.format('YYYY-MM-DDTHH:mm');
+        queryParams["endTime"] = this.detectorControlService.endTime.format('YYYY-MM-DDTHH:mm');
+      }
+      if(this.detectorControlService.changeFromTimePicker) {
+        delete queryParams.startTimeChildDetector;
+        delete queryParams.endTimeChildDetector;
+      }
+
+      //Temporary solution to get rid of route twice within main.component and site-finder.component
+      const url:string = this.router.url.split("?")[0];
+      // if(url !== "/" && !url.startsWith("/sites")){
+      if(!this.disableUpdateQueryParams){
+        this.router.navigate([], { queryParams: queryParams, relativeTo: this.activatedRoute }).then((_) => {
+          this.detectorControlService.changeFromTimePicker = false;
+        });
+      }
+    });
   }
 
   setTime(hourDiff: number) {
@@ -128,6 +153,8 @@ export class DetectorTimePickerComponent implements OnInit {
 
   //clickHandler for apply button
   applyTimeRange() {
+    this.detectorControlService.changeFromTimePicker = true;
+
     let startDateWithTime: string;
     let endDateWithTime: string;
     let timePickerInfo: TimePickerInfo;

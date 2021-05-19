@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, ViewChild } from '@angular/core';
+import { Component, OnInit, OnChanges, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
 import { DetectorListAnalysisComponent } from 'diagnostic-data';

@@ -334,8 +334,8 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           const resourceId = this._diagnosticService.resourceId;
           const routeUrl = this.isPublic ? `resource${resourceId}/detectors/${targetDetector}` : `${resourceId}/detectors/${targetDetector}`;
           this._router.navigateByUrl(routeUrl,{
-            queryParamsHandling: 'merge'
-          });
+            queryParamsHandling: 'preserve'
+          }).then(_ => console.log("Detector List Navigation Finish"));
         }
       }
     }
