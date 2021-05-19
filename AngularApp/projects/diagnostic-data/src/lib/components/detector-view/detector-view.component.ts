@@ -1,7 +1,7 @@
 import { Moment } from 'moment';
 import { BehaviorSubject } from 'rxjs';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Inject, Input, OnInit, Output, EventEmitter, Pipe, PipeTransform, SimpleChanges } from '@angular/core';
+import { Component, Inject, Input, OnInit, Output, EventEmitter, Pipe, PipeTransform, SimpleChanges, OnDestroy } from '@angular/core';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 import { DetectorResponse, Rendering, RenderingType, DataTableResponseObject, DownTime, DowntimeInteractionSource, DetectorMetaData, DetectorType, DiagnosticData } from '../../models/detector';
 import { DetectorControlService } from '../../services/detector-control.service';
@@ -9,7 +9,7 @@ import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { CompilationProperties } from '../../models/compilation-properties';
 import { GenericSupportTopicService } from '../../services/generic-support-topic.service';
-import { ActivatedRoute, UrlSegment } from '@angular/router';
+import { ActivatedRoute, Params, Router, UrlSegment } from '@angular/router';
 import { VersionService } from '../../services/version.service';
 import { CXPChatService } from '../../services/cxp-chat.service';
 import * as momentNs from 'moment';
@@ -33,7 +33,7 @@ const defaultDowntimeSelectionError: string = 'Downtimes less than 10 minutes ar
     ])
   ]
 })
-export class DetectorViewComponent implements OnInit {
+export class DetectorViewComponent implements OnInit, OnDestroy {
 
   detectorDataLocalCopy: DetectorResponse;
   errorState: any;
@@ -67,20 +67,26 @@ export class DetectorViewComponent implements OnInit {
   fabOptions: IDropdownOption[] = [];
   selectedKey: string = '';
   fabDropdownWidth: number;
-  showDowntimeCallout:boolean = false;
+  showDowntimeCallout: boolean = false;
   fabChoiceGroupOptions: IChoiceGroupOption[] = [];
+  get showDownTimeButton() {
+    if(this.downtimeButtonStr === "") return false;
+    const isAnalysisWithDowntime = this.isAnalysisView && this.supportsDownTime;
+    return isAnalysisWithDowntime || this.disableDowntimeButton;
+  }
+  disableDowntimeButton: boolean = false;
   downtimeButtonStr: string = "";
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   timePickerButtonStr: string = "";
-  buttonStyle:IButtonStyles = {
-    root:{
-      color: "#323130", 
+  buttonStyle: IButtonStyles = {
+    root: {
+      color: "#323130",
       borderRadius: "12px",
-       margin:" 0px 5px", 
-       background: "rgba(0, 120, 212, 0.1)",
-       fontSize:"13", 
-       fontWeight: "600",
-       height: "80%"
+      margin: " 0px 5px",
+      background: "rgba(0, 120, 212, 0.1)",
+      fontSize: "13",
+      fontWeight: "600",
+      height: "80%"
     }
   }
   @Input()
@@ -163,22 +169,27 @@ export class DetectorViewComponent implements OnInit {
   private isLegacy: boolean;
 
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private telemetryService: TelemetryService,
-    private detectorControlService: DetectorControlService, private _supportTopicService: GenericSupportTopicService, private _cxpChatService: CXPChatService, protected _route: ActivatedRoute, private versionService: VersionService) {
+    private detectorControlService: DetectorControlService, private _supportTopicService: GenericSupportTopicService, private _cxpChatService: CXPChatService, protected _route: ActivatedRoute, private versionService: VersionService, private _router: Router) {
     this.isPublic = config && config.isPublic;
     this.feedbackButtonLabel = this.isPublic ? 'Send Feedback' : 'Rate Detector';
   }
 
   ngOnInit() {
     this.versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
-    this.loadDetector();
+    this._route.params.subscribe(p => {
+      //remove XXXTimeChildDetector query params 
+      console.log()
+      this.loadDetector();
+      // this.removeQueryParam();
+    });
+
     this.errorSubject.subscribe((data: any) => {
       this.errorState = data;
-      if (!!this.errorState)
-      {
+      if (!!this.errorState) {
         let errorDetails = {
-            'isPublic': this.isPublic.toString(),
-            'errorDetails': JSON.stringify(this.errorState)
-          };
+          'isPublic': this.isPublic.toString(),
+          'errorDetails': JSON.stringify(this.errorState)
+        };
 
         this.logEvent("DetectorLoadingError", errorDetails);
       }
@@ -292,8 +303,7 @@ export class DetectorViewComponent implements OnInit {
 
         if (this.isAnalysisView) {
           let downTime = data.dataset.find(set => (<Rendering>set.renderingProperties).type === RenderingType.DownTime);
-          if(this.isInCaseSubmission())
-          {
+          if (this.isInCaseSubmission()) {
             //Disable downtimes in case submission
             downTime = null;
           }
@@ -376,7 +386,7 @@ export class DetectorViewComponent implements OnInit {
         //After loading detectors, foucs indicator will land into detector title
         //For now asynchronouslly to foucs after render, it should have better solution
         setTimeout(() => {
-          if (document.getElementById("detector-name") && !this._route.snapshot.params["drilldownDetectorName"]) {
+          if (document.getElementById("detector-name")) {
             document.getElementById("detector-name").focus();
           }
         });
@@ -453,7 +463,7 @@ export class DetectorViewComponent implements OnInit {
 
   selectFabricKey() {
     this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
-    this.onDownTimeChange(this.selectedDownTime,DowntimeInteractionSource.Dropdown);
+    this.onDownTimeChange(this.selectedDownTime, DowntimeInteractionSource.Dropdown);
     this.showDowntimeCallout = false;
   }
 
@@ -468,7 +478,7 @@ export class DetectorViewComponent implements OnInit {
 
   getDefaultFabricDownTimeEntry(): IChoiceGroupOption {
     let d = this.getDefaultDowntimeEntry();
-    const defaultOption:IChoiceGroupOption = {
+    const defaultOption: IChoiceGroupOption = {
       key: this.getKeyForDownTime(d),
       text: this.getDowntimeLabel(d),
       ariaLabel: this.getDowntimeLabel(d),
@@ -509,14 +519,21 @@ export class DetectorViewComponent implements OnInit {
 
       this.fabChoiceGroupOptions.push(this.getDefaultFabricDownTimeEntry());
       const defaultDowntime = this.downTimes.find(x => x.isSelected);
-      if(defaultDowntime != null) {
+      if (defaultDowntime != null) {
         this.selectedKey = this.getKeyForDownTime(defaultDowntime);
         this.selectedDownTime = defaultDowntime;
-      } else if(this.fabChoiceGroupOptions.length > 0) {
+      } else if (this.fabChoiceGroupOptions.length > 0) {
         this.selectedKey = this.fabChoiceGroupOptions[0].key;
         this.selectedDownTime = this.fabChoiceGroupOptions.length > 1 ? this.downTimes[0] : this.getDefaultDowntimeEntry();
       }
-      this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
+
+      if(this.isAnalysisView) {
+        this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
+        this.disableDowntimeButton = false;
+      }else {
+        this.disableDowntimeButton = true;
+        this.downtimeButtonStr = this.getDownTimeButtonStrForDetector(this._route.snapshot.queryParams);
+      }
     }
   }
 
@@ -715,13 +732,12 @@ export class DetectorViewComponent implements OnInit {
     }
   }
   protected logEvent(eventMessage: string, eventProperties?: any, measurements?: any) {
-    if (!!this.detectorEventProperties)
-    {
-        for (const id of Object.keys(this.detectorEventProperties)) {
-            if (this.detectorEventProperties.hasOwnProperty(id)) {
-              eventProperties[id] = String(this.detectorEventProperties[id]);
-            }
-          }
+    if (!!this.detectorEventProperties) {
+      for (const id of Object.keys(this.detectorEventProperties)) {
+        if (this.detectorEventProperties.hasOwnProperty(id)) {
+          eventProperties[id] = String(this.detectorEventProperties[id]);
+        }
+      }
     }
 
     this.telemetryService.logEvent(eventMessage, eventProperties, measurements);
@@ -739,7 +755,7 @@ export class DetectorViewComponent implements OnInit {
   renderCXPChatButton() {
     if (this.cxpChatTrackingId === '' && this.cxpChatUrl === '') {
       if (this._supportTopicService && this._cxpChatService && this._cxpChatService.isSupportTopicEnabledForLiveChat(this._supportTopicService.supportTopicId)) {
-        this.cxpChatTrackingId = this._cxpChatService.generateTrackingId( ((!!this._supportTopicService && !!this._supportTopicService.supportTopicId) ? this._supportTopicService.supportTopicId : ''));
+        this.cxpChatTrackingId = this._cxpChatService.generateTrackingId(((!!this._supportTopicService && !!this._supportTopicService.supportTopicId) ? this._supportTopicService.supportTopicId : ''));
         this.supportTopicId = this._supportTopicService.supportTopicId;
         this._cxpChatService.getChatURL(this._supportTopicService.supportTopicId, this.cxpChatTrackingId).subscribe((chatApiResponse: any) => {
           if (chatApiResponse && chatApiResponse != '') {
@@ -783,6 +799,34 @@ export class DetectorViewComponent implements OnInit {
         }
       });
     }
+  }
+
+  getDownTimeButtonStrForDetector(queryParams: Params) {
+    let buttonStr = "";
+    if(queryParams["startTimeChildDetector"] && queryParams['endTimeChildDetector']) {
+      const qStartTime = moment.utc(queryParams["startTimeChildDetector"]);
+      const qEndTime = moment.utc(queryParams['endTimeChildDetector']);
+      buttonStr = this.prepareCustomDowntimeLabel(qStartTime, qEndTime);
+    }
+    return buttonStr;
+  }
+
+  removeQueryParam() {
+    if (this.isAnalysisView) return;
+    if (this._route.snapshot.queryParams["startTimeChildDetector"] || this._route.snapshot.queryParams["endTimeChildDetector"]) {
+      const queryParams = { ...this._route.snapshot.queryParams };
+      delete queryParams.startTimeChildDetector;
+      delete queryParams.endTimeChildDetector;
+      this._router.navigate([], {
+        queryParams: queryParams
+      });
+    }
+    console.log("Remove Query Params");
+  }
+
+  ngOnDestroy() {
+    //Remove startTimeChildDetector and endTimeChildDetector query params 
+    console.log("Destory");
   }
 }
 
