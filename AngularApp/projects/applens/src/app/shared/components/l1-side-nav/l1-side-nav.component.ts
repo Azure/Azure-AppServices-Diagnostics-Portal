@@ -14,8 +14,8 @@ export class L1SideNavComponent implements OnInit {
   @Input() isInLandingPage: boolean = false;
   sideItems: SideNavItem[] = [
     {
-      type: L1SideNavItemType.Selection,
-      displayName: L1SideNavItemType[L1SideNavItemType.Selection],
+      type: L1SideNavItemType.Home,
+      displayName: L1SideNavItemType[L1SideNavItemType.Home],
       enabledInLandingPage: true,
       click: () => {
         this.dismissL2SideNav();
@@ -29,9 +29,9 @@ export class L1SideNavComponent implements OnInit {
       enabledInLandingPage: false,
       click: () => {
         this.dismissL2SideNav();
-        if (this.checkIsLandingPage()) return;
-        if (this._activatedRoute.firstChild.firstChild.firstChild) {
-          const params = this._activatedRoute.firstChild.firstChild.firstChild.snapshot.params;
+        if (this.isInLandingPage) return;
+        if (this._activatedRoute.parent) {
+          const params = this._activatedRoute.parent.snapshot.params;
 
           const subscriptionId = params["subscriptionId"];
           const resourceGroup = params["resourceGroup"];
@@ -55,6 +55,7 @@ export class L1SideNavComponent implements OnInit {
       displayName: L1SideNavItemType[L1SideNavItemType.Detectors],
       enabledInLandingPage: false,
       click: () => {
+        if(this.isInLandingPage) return;
         this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.Detectors);
       }
     },
@@ -74,7 +75,12 @@ export class L1SideNavComponent implements OnInit {
       background: "#EAEAEA",
       boxShadow: "inset -1px 0px 0px rgba(0, 0, 0, 0.12)",
       marginTop: '50px',
-    }
+      padding: "0px"
+    },
+    content:{
+      padding: "0px",
+      margin: "0px"
+    },
   };
   panelFocusTrapZoneProps: IPanelProps["focusTrapZoneProps"] = {
     disabled: true
@@ -114,7 +120,7 @@ export class L1SideNavComponent implements OnInit {
 
   getCurrentHighLightItem(): L1SideNavItemType {
     if (this.isInLandingPage) {
-      return L1SideNavItemType.Selection;
+      return L1SideNavItemType.Home;
     }
     const childRoute = this._activatedRoute.firstChild;
     if (childRoute && (childRoute.snapshot.params["analysisId"] || childRoute.snapshot.params["detector"])) {
@@ -164,7 +170,7 @@ interface SideNavItem {
 }
 
 enum L1SideNavItemType {
-  Selection,
+  Home,
   Overview,
   Detectors,
   Docs

@@ -4,7 +4,7 @@
     flex-direction: column;
     align-items: center;
     height: 60px;
-    justify-content: center;
+    justify-content: flex-end;
 }
 
 .side-item-enable :hover {
@@ -20,8 +20,7 @@
     background: #DCDCDC;
 }
 
-
-::ng-deep .ms-Panel-content {
-    padding-left: 0px;
-    padding-right: 0px;
+//Use -20px to cancel ms-panel-content padding
+.panel-container {
+    margin: 16px -20px 0px -20px;
 }
