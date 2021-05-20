@@ -1,10 +1,13 @@
-import { Component, AfterViewInit, ViewChild, TemplateRef, AfterContentInit, OnInit, OnDestroy } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, TemplateRef, AfterContentInit, OnInit, OnDestroy, Inject } from '@angular/core';
 import { DirectionalHint, ICheckProps, IPanelProps, PanelType } from 'office-ui-fabric-react';
-import { TelemetryService, TelemetryEventNames, PIIUtilities, TelemetrySource } from 'diagnostic-data';
-import { Globals } from '../../../globals';
 import { ActivatedRoute } from '@angular/router';
 import * as momentNs from 'moment';
-import { Guid } from '../../../shared/utilities/guid';
+import { TelemetryService } from '../../services/telemetry/telemetry.service';
+import { PIIUtilities } from '../../utilities/pii-utilities';
+import { TelemetryEventNames, TelemetrySource } from '../../services/telemetry/telemetry.common';
+import { Guid } from '../../utilities/guid';
+import { DiagnosticDataConfig, DIAGNOSTIC_DATA_CONFIG } from '../../config/diagnostic-data-config';
+import { GenieGlobals } from '../../services/genie.service';
 
 
 @Component({
@@ -47,7 +50,9 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
     }
   }
   currentTime: string = "";
-  constructor(protected telemetryService: TelemetryService, public globals: Globals, private activatedRoute: ActivatedRoute) {
+  isPublic:boolean = false;
+  constructor(protected telemetryService: TelemetryService, public globals: GenieGlobals, private activatedRoute: ActivatedRoute,@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
+    this.isPublic = config && config.isPublic;
   }
 
   submitFeedback() {
@@ -55,16 +60,22 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
       Rating: String(this.rating),
       Feedback: PIIUtilities.removePII(this.feedbackText)
     };
-    const detectorName = this.feedbackPanelConfig.detectorName || this.globals.getDetectorName();
-    const isHomepage = !this.activatedRoute.root.firstChild.firstChild.firstChild.firstChild.snapshot.params["category"];
+
+
+
+    let detectorName = "";
+    if(this.isPublic) {
+      const isHomepage = !this.activatedRoute.root.firstChild.firstChild.firstChild.firstChild.snapshot.params["category"];
+    }
+    detectorName = this.feedbackPanelConfig.detectorName || this.globals.getDetectorName();
     this.ratingEventProperties = {
       'DetectorId': detectorName,
       'Url': window.location.href,
-      'Location': isHomepage ? TelemetrySource.LandingPage : TelemetrySource.CategoryPage,
+      // 'Location': isHomepage ? TelemetrySource.LandingPage : TelemetrySource.CategoryPage,
       'MayContact': this.checked,
       'FeedbackId': Guid.newShortGuid()
     };
-    this.logEvent(TelemetryEventNames.StarRatingSubmitted, eventProps);
+    // this.logEvent(TelemetryEventNames.StarRatingSubmitted, eventProps);
 
     this.reset();
     this.submitted = true;
@@ -128,16 +139,20 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
 
   onOpenFeedbackPanel() {
     if (this.feedbackPanelConfig.url != window.location.href.split("?")[0]) {
-      var globals = this.globals;
-      if (globals.messagesData.feedbackPanelConfig != null && globals.messagesData.feedbackPanelConfig.url == window.location.href.split("?")[0]) {
+      const globals = this.globals;
+      if (this.isPublic && globals.messagesData.feedbackPanelConfig != null && globals.messagesData.feedbackPanelConfig.url == window.location.href.split("?")[0]) {
         this.feedbackPanelConfig = globals.messagesData.feedbackPanelConfig;
 
       } else {
-        this.feedbackPanelConfig = {url: window.location.href.split("?")[0]};
+        this.feedbackPanelConfig = { url: window.location.href.split("?")[0] };
       }
       this.feedbackText = this.feedbackPanelConfig.defaultFeedbackText || "";
     }
-    this.siteName = this.activatedRoute.root.firstChild.firstChild.snapshot.params['resourcename'];
+    if(this.isPublic) {
+      this.siteName = this.activatedRoute.root.firstChild.firstChild.snapshot.params['resourcename'];
+    }else {
+      this.siteName = "";
+    }
   }
 
   ngOnDestroy() {

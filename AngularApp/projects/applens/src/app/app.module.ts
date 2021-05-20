@@ -24,9 +24,7 @@ import { TokenInvalidComponent } from './shared/components/tokeninvalid/tokeninv
 import { AngularReactBrowserModule } from '@angular-react/core';
 import { ApplensAppinsightsTelemetryService } from './shared/services/applens-appinsights-telemetry.service';
 import { ApplensHeaderComponent } from './shared/components/applens-header/applens-header.component';
-import { L1SideNavComponent } from './shared/components/l1-side-nav/l1-side-nav.component';
 import { FabButtonModule, FabDialogModule, FabPanelModule } from '@angular-react/fabric';
-import { ApplensGlobal } from './applens-global';
 
 @Injectable()
 export class ValidResourceResolver implements Resolve<void>{
@@ -130,8 +128,7 @@ export const Routes = RouterModule.forRoot([
     UnauthorizedComponent,
     AuthRequestFailedComponent,
     TokenInvalidComponent,
-    ApplensHeaderComponent,
-    L1SideNavComponent
+    ApplensHeaderComponent
   ],
   imports: [
     AngularReactBrowserModule,
@@ -156,8 +153,7 @@ export const Routes = RouterModule.forRoot([
     {
       provide: ErrorHandler,
       useClass: UnhandledExceptionHandlerService
-    },
-    ApplensGlobal
+    }
   ],
   bootstrap: [AppComponent]
 })
