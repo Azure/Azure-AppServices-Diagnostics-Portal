@@ -1,5 +1,5 @@
 .main-container {
-    background-color: #e4e4e4;
+    background-color: #E5E5E5;
     height: 100vh;
 }
 
@@ -17,34 +17,33 @@
     margin-top: 10px;
 }
 
+.main-content {
+    display: flex;
+    flex-direction: column;
+    margin: 0px auto;width: 600px;
+    background: #ffffff;
+    padding: 28px;
+}
+
+.main-content > h3 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
 .dropdown-menu > .disabled {
     cursor: not-allowed;
     color: #dddddd;
 }
 
-// .error-msg-container{
-//     border:4px solid white;
-// }
-
-// .error-msg-container .errorMessage{
-//     white-space: pre-wrap;
-//     overflow-wrap: break-word;
-//     height:80%;
-//     color:red;
-//     padding:10px;
-//     margin:5px;
-//     background-color:#fff7e5;
-//     border:1px solid rgba(83,90,96,0.1);
-// }
-
 .section {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     margin-top: 26px ;
 }
 
 .section > label {
     width: 120px;
+    font-weight: 400;
 }
 
 .section > div {
@@ -56,7 +55,9 @@
     min-width: 300px;
     display: flex;
     justify-content: space-between;
-    padding: 0px 8px;
+    padding: 0px 12px;
+    height: 32px;
+    align-items: center;
 }
 
 .time-picker :hover {
@@ -72,4 +73,8 @@
     line-height: 15px;
     color: #A4262C;
     word-break: break-word;
+}
+
+.required {
+    color: #a4262c;
 }
