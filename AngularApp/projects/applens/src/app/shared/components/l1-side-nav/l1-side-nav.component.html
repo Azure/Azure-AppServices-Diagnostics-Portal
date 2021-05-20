@@ -1,3 +1,4 @@
+<div>l1-side-nav</div>
 <fab-panel [isOpen]="true" [type]="panelType" [customWidth]="'70px'" [hasCloseButton]="false" [styles]="panelStyles" [isBlocking]="false" [focusTrapZoneProps]="panelFocusTrapZoneProps">
   <div style="margin-top: 16px;">
     <div *ngFor="let item of sideItems" class="side-item" [class.side-item-disable]="!getItemEnabled(item)" [class.side-item-enable]="getItemEnabled(item)" (click)="item.click()" type="button" (keyup.enter)="item.click()"

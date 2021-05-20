@@ -5,6 +5,7 @@ import { ApplensDiagnosticService } from '../../services/applens-diagnostic.serv
 import { DetectorControlService } from 'diagnostic-data';
 import { DetectorMetaData } from 'dist/diagnostic-data/public_api';
 import { ApplensCommandBarService } from '../../services/applens-command-bar.service';
+import { ApplensGlobal } from 'projects/applens/src/app/applens-global';
 
 @Component({
   selector: 'tab-data',
@@ -13,7 +14,7 @@ import { ApplensCommandBarService } from '../../services/applens-command-bar.ser
 })
 export class TabDataComponent implements OnInit {
 
-  constructor(private _route: ActivatedRoute, private _diagnosticApiService: ApplensDiagnosticService, private _detectorControlService: DetectorControlService,private _applensCommandBarService:ApplensCommandBarService) { }
+  constructor(private _route: ActivatedRoute, private _diagnosticApiService: ApplensDiagnosticService, private _detectorControlService: DetectorControlService,private _applensCommandBarService:ApplensCommandBarService,private _applensGlobal:ApplensGlobal) { }
 
   detectorResponse: DetectorResponse;
 
@@ -58,5 +59,9 @@ export class TabDataComponent implements OnInit {
     this._applensCommandBarService.getDetectorMeatData(this.detector).subscribe(metaData =>{
       this._applensCommandBarService.emailToAuthor(metaData);
     });
+  }
+
+  openFeedback() {
+    this._applensGlobal.openFeedback = true;
   }
 }

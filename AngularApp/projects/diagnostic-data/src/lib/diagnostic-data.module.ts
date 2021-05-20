@@ -127,6 +127,7 @@ import { FabDataTableComponent } from './components/fab-data-table/fab-data-tabl
 import { FabCardComponent } from './components/fab-card/fab-card.component';
 import { SolutionsPanelComponent } from './components/solutions-panel/solutions-panel.component';
 import { DetectorTimePickerComponent } from './components/detector-time-picker/detector-time-picker.component';
+import { FabricFeedbackComponent } from './components/fabric-feedback/fabric-feedback.component';
 
 @NgModule({
   imports: [
@@ -219,7 +220,8 @@ import { DetectorTimePickerComponent } from './components/detector-time-picker/d
     FabCardComponent,
     FabDataTableComponent,
     SolutionsPanelComponent,
-    DetectorTimePickerComponent
+    DetectorTimePickerComponent,
+    FabricFeedbackComponent
   ],
   entryComponents: [DetectorListAnalysisComponent],
   exports: [
@@ -257,7 +259,8 @@ import { DetectorTimePickerComponent } from './components/detector-time-picker/d
     FabTeachingBubbleModule,
     FabTabComponent,
     DetectorTimePickerComponent,
-    FabDataTableComponent
+    FabDataTableComponent,
+    FabricFeedbackComponent
   ],
 })
 export class DiagnosticDataModule {
