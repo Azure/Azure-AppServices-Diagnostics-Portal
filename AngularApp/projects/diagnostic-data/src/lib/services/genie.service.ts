@@ -9,4 +9,8 @@ export class GenieGlobals {
     openGeniePanel: boolean = false;
     openFeedback: boolean = false;
     messagesData: { [id: string]: any } = {};
+
+    getDetectorName():string {
+        return "";
+    }
 }
