@@ -35,8 +35,7 @@
   </nav>
 </header> -->
 <div class="dashboard-container">
-  <div [class.content-with-side-nav]="showL2SideNav">
-    <!-- <section class="sidebar">
+  <!-- <section class="sidebar">
       <div class="user-panel" [class.active]="doesMatchCurrentRoute('home')">
         <div class="pull-left image" (click)="navigateTo('home/category')">
           <img [src]="resourceService.imgSrc" class="resource-logo" style="max-width:25px">
@@ -49,24 +48,26 @@
         </div>
       </div>
     </section> -->
-    <!-- <side-nav></side-nav> -->
-    <div class="dashboard-content">
-      <comm-alert></comm-alert>
-      <l2-side-nav></l2-side-nav>
-      <div style="display: flex;">
-        <div style="margin: auto 10px auto 0px;">
-          <img [src]="resourceService.imgSrc" class="resource-logo" [alt]="resourceService.searchSuffix"
-            style="width: 32px;">
-        </div>
-        <div>
-          <p style="font-size: 24px;">
-            <strong>{{resourceService.getResourceName() | formatResourceName}}</strong>
-            <strong>&nbsp;| {{getTitle()}}</strong>
-          </p>
-          <p style="font-size: 12px;">{{resourceService.searchSuffix}}</p>
-        </div>
+  <!-- <side-nav></side-nav> -->
+  <div class="dashboard-content">
+    <comm-alert></comm-alert>
+    <l2-side-nav></l2-side-nav>
+    <div style="display: flex;">
+      <div style="margin: auto 10px auto 0px;">
+        <img [src]="resourceService.imgSrc" class="resource-logo" [alt]="resourceService.searchSuffix"
+          style="width: 32px;">
       </div>
+      <div>
+        <p style="font-size: 24px;">
+          <strong>{{resourceService.getResourceName() | formatResourceName}}</strong>
+          <strong>&nbsp;| {{getTitle()}}</strong>
+        </p>
+        <p style="font-size: 12px;">{{resourceService.searchSuffix}}</p>
+      </div>
+    </div>
+    <div [class.content-with-side-nav]="showL2SideNav">
       <router-outlet></router-outlet>
     </div>
   </div>
+
 </div>

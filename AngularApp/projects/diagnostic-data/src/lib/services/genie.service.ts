@@ -13,4 +13,8 @@ export class GenieGlobals {
     getDetectorName():string {
         return "";
     }
+
+    getUserAlias():string {
+        return "";
+    }
 }

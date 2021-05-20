@@ -18,7 +18,7 @@ import { GenieGlobals } from '../../services/genie.service';
 export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy {
   type: PanelType = PanelType.custom;
   siteName: string = "";
-  ratingEventProperties: any;
+  ratingEventProperties: { [key: string]: any } = {};
   feedbackPanelConfig: { defaultFeedbackText?: string, notResetOnDismissed?: boolean, detectorName?: string, url?: string } = {};
   feedbackText: string = "";
   panelWidth: string = "315px";
@@ -50,8 +50,8 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
     }
   }
   currentTime: string = "";
-  isPublic:boolean = false;
-  constructor(protected telemetryService: TelemetryService, public globals: GenieGlobals, private activatedRoute: ActivatedRoute,@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
+  isPublic: boolean = false;
+  constructor(protected telemetryService: TelemetryService, public globals: GenieGlobals, private activatedRoute: ActivatedRoute, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
     this.isPublic = config && config.isPublic;
   }
 
@@ -60,22 +60,19 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
       Rating: String(this.rating),
       Feedback: PIIUtilities.removePII(this.feedbackText)
     };
-
-
-
-    let detectorName = "";
-    if(this.isPublic) {
+    const detectorName = this.feedbackPanelConfig.detectorName || this.globals.getDetectorName();
+    if (this.isPublic) {
       const isHomepage = !this.activatedRoute.root.firstChild.firstChild.firstChild.firstChild.snapshot.params["category"];
+      this.ratingEventProperties["Location"] = isHomepage ? TelemetrySource.LandingPage : TelemetrySource.CategoryPage;
+    } else {
+      const user = this.globals.getUserAlias();
+      this.ratingEventProperties["User"] = user;
     }
-    detectorName = this.feedbackPanelConfig.detectorName || this.globals.getDetectorName();
-    this.ratingEventProperties = {
-      'DetectorId': detectorName,
-      'Url': window.location.href,
-      // 'Location': isHomepage ? TelemetrySource.LandingPage : TelemetrySource.CategoryPage,
-      'MayContact': this.checked,
-      'FeedbackId': Guid.newShortGuid()
-    };
-    // this.logEvent(TelemetryEventNames.StarRatingSubmitted, eventProps);
+    this.ratingEventProperties["DetectorId"] = detectorName;
+    this.ratingEventProperties["Url"] = window.location.href;
+    this.ratingEventProperties["MayContact"] = this.checked;
+    this.ratingEventProperties["FeedbackId"] = Guid.newShortGuid();
+    this.logEvent(TelemetryEventNames.StarRatingSubmitted, eventProps);
 
     this.reset();
     this.submitted = true;
@@ -91,7 +88,8 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
         eventProperties[id] = String(this.ratingEventProperties[id]);
       }
     }
-    this.telemetryService.logEvent(eventMessage, eventProperties, measurements);
+    console.log(eventProperties);
+    // this.telemetryService.logEvent(eventMessage, eventProperties, measurements);
   }
 
   ngOnInit() {
@@ -147,11 +145,6 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
         this.feedbackPanelConfig = { url: window.location.href.split("?")[0] };
       }
       this.feedbackText = this.feedbackPanelConfig.defaultFeedbackText || "";
-    }
-    if(this.isPublic) {
-      this.siteName = this.activatedRoute.root.firstChild.firstChild.snapshot.params['resourcename'];
-    }else {
-      this.siteName = "";
     }
   }
 

@@ -17,7 +17,7 @@ export class L2SideNavComponent implements OnInit {
   panelStyles: IPanelProps['styles'] = {
     root: {
       marginLeft: "70px",
-      marginTop: "50px"
+      marginTop: "170px"
     }
   }
 
