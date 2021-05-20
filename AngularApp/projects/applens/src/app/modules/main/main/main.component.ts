@@ -1,4 +1,3 @@
-import { AdalService } from 'adal-angular4';
 import * as momentNs from 'moment';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
@@ -6,7 +5,7 @@ import {
   ResourceServiceInputs, ResourceType, ResourceTypeState, ResourceServiceInputsJsonResponse
 } from '../../../shared/models/resources';
 import { HttpClient } from '@angular/common/http';
-import { IChoiceGroupOption, IDropdownOption } from 'office-ui-fabric-react';
+import { IDropdownOption } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
 import { DetectorControlService, HealthStatus } from 'diagnostic-data';
 const moment = momentNs;
@@ -24,7 +23,7 @@ export class MainComponent implements OnInit {
   resourceTypes: ResourceTypeState[] = [
     {
       resourceType: ResourceType.Site,
-      resourceTypeLabel: 'App Name',
+      resourceTypeLabel: 'App name',
       routeName: (name) => `sites/${name}`,
       displayName: 'App',
       enabled: true,
@@ -32,17 +31,17 @@ export class MainComponent implements OnInit {
     },
     {
       resourceType: ResourceType.AppServiceEnvironment,
-      resourceTypeLabel: 'ASE Name',
+      resourceTypeLabel: 'ASE name',
       routeName: (name) => `hostingEnvironments/${name}`,
-      displayName: 'App Service Environment',
+      displayName: 'App service environment',
       enabled: true,
       caseId: false
     },
     {
       resourceType: null,
-      resourceTypeLabel: 'ARM Resource ID',
+      resourceTypeLabel: 'ARM resource ID',
       routeName: (name) => `${name}`,
-      displayName: 'ARM Resource ID',
+      displayName: 'ARM resource ID',
       enabled: true,
       caseId: false
     },
@@ -50,15 +49,15 @@ export class MainComponent implements OnInit {
       resourceType: null,
       resourceTypeLabel: 'Session Id',
       routeName: (name) => this.getFakeArmResource('Microsoft.AzurePortal', 'sessions', name),
-      displayName: 'Azure Portal Session',
+      displayName: 'Azure portal session',
       enabled: true,
       caseId: false
     },
     {
       resourceType: null,
-      resourceTypeLabel: 'Virtual Machine Id',
+      resourceTypeLabel: 'Virtual machine Id',
       routeName: (name) => this.getFakeArmResource('Microsoft.Compute', 'virtualMachines', name),
-      displayName: 'Azure Virutal Machine',
+      displayName: 'Azure virtual machine',
       enabled: true,
       caseId: false
     },
@@ -85,6 +84,8 @@ export class MainComponent implements OnInit {
   get disableSubmitButton(): boolean {
     return !this.resourceName || this.resourceName.length === 0;
   }
+
+  mandatoryStarPath:string = "../../../../assets/img/applens-skeleton/mandatory_star.svg";
 
 
   constructor(private _router: Router, private _http: HttpClient, private _detectorControlService: DetectorControlService) {
