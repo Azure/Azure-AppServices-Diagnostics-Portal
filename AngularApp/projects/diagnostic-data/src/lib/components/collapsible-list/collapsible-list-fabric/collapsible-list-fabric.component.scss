@@ -1,5 +1,4 @@
 .collapsable-list {
-    margin-top: 24px;
     padding: 0px 10px;
     border-bottom: 1px solid #ccc;
 }
@@ -72,4 +71,10 @@ button {
 
 .custom-caret-down {
     transform: rotate(180deg);
+}
+
+.collapsible-list-title {
+    font-weight: 600;
+    font-size: 13px;
+    color: #000000;
 }
