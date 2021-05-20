@@ -39,7 +39,6 @@ import {
     FabProgressIndicatorModule,
     FabContextualMenuModule
 } from '@angular-react/fabric';
-import { FabricFeedbackComponent } from '../fabric-ui/components/fabric-feedback/fabric-feedback.component';
 import { FabricSearchResultsComponent } from '../fabric-ui/components/fabric-search-results/fabric-search-results.component';
 import { DetectorCommandBarComponent } from '../fabric-ui/components/detector-command-bar/detector-command-bar.component';
 import { CategorySummaryComponent } from '../fabric-ui/components/category-summary/category-summary.component';
@@ -60,7 +59,6 @@ import { CallstackPanelComponent } from './components/callstack-panel/callstack-
 @NgModule({
     declarations: [
         FabricSearchResultsComponent,
-        FabricFeedbackComponent,
         DetectorCommandBarComponent,
         CategorySummaryComponent,
         CategoryOverviewComponent,
@@ -123,7 +121,6 @@ import { CallstackPanelComponent } from './components/callstack-panel/callstack-
     ],
     exports: [
         FabricSearchResultsComponent,
-        FabricFeedbackComponent,
         DetectorCommandBarComponent,
         CategorySummaryComponent,
         CategoryOverviewComponent,
