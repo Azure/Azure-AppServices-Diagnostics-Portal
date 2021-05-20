@@ -40,7 +40,7 @@ side-nav {
     min-height: calc(100vh - 95px);
     height: 100%;
     margin-top:40px;
-    margin-left: 40px;
+    margin-left: 20px;
 
     // Nested onboarding-flow components have two navbars totalling 92px
     ::ng-deep onboarding-flow {

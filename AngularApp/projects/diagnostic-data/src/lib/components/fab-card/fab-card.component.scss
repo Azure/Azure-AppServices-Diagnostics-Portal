@@ -34,3 +34,9 @@ button {
     border: none;
     overflow: hidden;
 }
+
+.card-container {
+    display: flex;
+    margin-left: 8px;
+    flex-direction: column;
+}
