@@ -24,7 +24,7 @@ import { ApplensDiagnosticService } from './services/applens-diagnostic.service'
 import { ApplensCommsService } from './services/applens-comms.service';
 import { ApplensSupportTopicService } from './services/applens-support-topic.service';
 import { ApplensContentService } from './services/applens-content.service';
-import { DiagnosticService, DiagnosticDataModule, CommsService, DetectorControlService, GenericSupportTopicService, GenericContentService , GenericDocumentsSearchService, SolutionOrchestratorComponent  } from 'diagnostic-data';
+import { DiagnosticService, DiagnosticDataModule, CommsService, DetectorControlService, GenericSupportTopicService, GenericContentService, GenericDocumentsSearchService, GenieGlobals, SolutionOrchestratorComponent } from 'diagnostic-data';
 import { FabCommandBarModule, FabIconModule, FabPanelModule, FabSearchBoxModule, FabTextFieldModule } from '@angular-react/fabric';
 import { CollapsibleMenuModule } from '../../collapsible-menu/collapsible-menu.module';
 import { ObserverService } from '../../shared/services/observer.service';
@@ -58,6 +58,7 @@ import { ApplensDocumentsSearchService } from './services/applens-documents-sear
 import { DashboardContainerComponent } from './dashboard-container/dashboard-container.component';
 import { L2SideNavComponent } from './l2-side-nav/l2-side-nav.component';
 import { ApplensCommandBarService } from './services/applens-command-bar.service';
+import { ApplensGlobal as ApplensGlobals } from '../../applens-global';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<boolean>>{
@@ -134,11 +135,11 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
             {
                 path: 'analysis/:analysisId/popout/:detector',
                 component: TabCommonComponent,
-                children:[
+                children: [
                     {
-                        path:'',
-                        component:TabDataComponent,
-                        data:{
+                        path: '',
+                        component: TabDataComponent,
+                        data: {
                             analysisMode: true
                         },
                     },
@@ -149,49 +150,49 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                     {
                         path: 'edit',
                         component: TabDevelopComponent,
-                        data:{
+                        data: {
                             analysisMode: true
                         },
                     },
                     {
                         path: 'changelist',
                         component: TabChangelistComponent,
-                        data:{
+                        data: {
                             analysisMode: true
                         },
                     },
                     {
                         path: 'datasource',
                         component: TabDataSourcesComponent,
-                        data:{
+                        data: {
                             analysisMode: true
                         },
                     },
                     {
                         path: 'monitoring',
                         component: TabMonitoringComponent,
-                        data:{
+                        data: {
                             analysisMode: true
                         },
                     },
                     {
                         path: 'analytics',
                         component: TabAnalyticsDashboardComponent,
-                        data:{
+                        data: {
                             analysisMode: true
                         },
                     },
                     {
                         path: 'monitoring/edit',
                         component: TabMonitoringDevelopComponent,
-                        data:{
+                        data: {
                             analysisMode: true
                         },
                     },
                     {
                         path: 'analytics/edit',
                         component: TabAnalyticsDevelopComponent,
-                        data:{
+                        data: {
                             analysisMode: true
                         },
                     }
@@ -248,17 +249,17 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                     {
                         path: 'detectors/:detector',
                         component: TabDataComponent,
-                        data:{
+                        data: {
                             analysisMode: true
                         },
-                        children:[
+                        children: [
                             {
-                                path:'data',
-                                redirectTo:''
+                                path: 'data',
+                                redirectTo: ''
                             },
                             {
-                                path:'datasource',
-                                component:TabDataSourcesComponent
+                                path: 'datasource',
+                                component: TabDataSourcesComponent
                             }
                         ]
                     },
@@ -273,8 +274,8 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                 ]
             },
             {
-              path: 'search',
-              component: SearchResultsComponent
+                path: 'search',
+                component: SearchResultsComponent
             },
             {
                 path: 'kustoConfig',
@@ -315,19 +316,21 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         ApplensContentService,
         ApplensCommandBarService,
         InitResolver,
+        ApplensGlobals,
         {
             provide: ResourceService,
             useFactory: ResourceServiceFactory,
             deps: [StartupService, ObserverService]
         },
         { provide: DiagnosticService, useExisting: ApplensDiagnosticService },
-        { provide: GenericSupportTopicService, useExisting: ApplensSupportTopicService},
-        { provide: GenericContentService, useExisting: ApplensContentService},
-        { provide: GenericDocumentsSearchService, useExisting: ApplensDocumentsSearchService},
+        { provide: GenericSupportTopicService, useExisting: ApplensSupportTopicService },
+        { provide: GenericContentService, useExisting: ApplensContentService },
+        { provide: GenericDocumentsSearchService, useExisting: ApplensDocumentsSearchService },
         { provide: CommsService, useExisting: ApplensCommsService },
         { provide: DiagnosticSiteService, useExisting: ResourceService },
         { provide: GenericResourceService, useExisting: ResourceService },
-        { provide: SolutionService, useExisting: GenericSolutionService }
+        { provide: SolutionService, useExisting: GenericSolutionService },
+        { provide: GenieGlobals, useExisting:ApplensGlobals }
     ],
     declarations: [DashboardComponent, SideNavComponent, ResourceMenuItemComponent, ResourceHomeComponent, OnboardingFlowComponent, SearchTermAdditionComponent,
         SearchMenuPipe, TabDataComponent, TabDevelopComponent, TabCommonComponent, TabDataSourcesComponent, TabMonitoringComponent,
