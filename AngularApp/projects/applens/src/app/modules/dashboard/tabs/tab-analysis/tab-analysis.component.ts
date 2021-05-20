@@ -4,6 +4,7 @@ import { ApplensDiagnosticService } from '../../services/applens-diagnostic.serv
 import { DetectorListAnalysisComponent } from 'diagnostic-data';
 import { DownTime } from 'diagnostic-data';
 import { ApplensCommandBarService } from '../../services/applens-command-bar.service';
+import { ApplensGlobal } from 'projects/applens/src/app/applens-global';
 
 @Component({
   selector: 'tab-analysis',
@@ -20,7 +21,7 @@ export class TabAnalysisComponent implements OnInit {
 
   @ViewChild('detectorListAnalysis', { static: true }) detectorListAnalysis: DetectorListAnalysisComponent
 
-  constructor(private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticService: ApplensDiagnosticService,private _applensCommandBarService:ApplensCommandBarService) {
+  constructor(private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticService: ApplensDiagnosticService,private _applensCommandBarService:ApplensCommandBarService,private _applensGlobal:ApplensGlobal) {
     this._activatedRoute.paramMap.subscribe(params => {
       this.analysisId = params.get('analysisId');
     });
@@ -53,5 +54,9 @@ export class TabAnalysisComponent implements OnInit {
     this._applensCommandBarService.getDetectorMeatData(this.analysisId).subscribe(metaData =>{
       this._applensCommandBarService.emailToAuthor(metaData);
     });
+  }
+
+  openFeedback() {
+    this._applensGlobal.openFeedback = true;
   }
 }

@@ -15,6 +15,15 @@
     cursor: not-allowed;
 }
 
+.side-item > img {
+    width: 22px;
+    height: 22px;
+}
+
+.side-item > p {
+    font-size: 10px;
+}
+
 .highlight-side-item {
     border-left: 4px solid #0C8FC7;
     background: #DCDCDC;

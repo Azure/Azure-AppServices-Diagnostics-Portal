@@ -8,15 +8,15 @@
   <collapsible-list-item body>
     <div class="info-container">
       <div *ngIf="observerLink !== ''" class="info-item">
-        <div>Observer Link</div>
+        <div class="info-item-key">Observer Link</div>
         <div>
           <a href="{{observerLink}}" target="_blank">Observer Link<i class="fa fa-link" aria-hidden="true"></i></a>
         </div>
 
       </div>
       <div *ngFor="let key of keys" class="info-item">
-        <div>{{key}}</div>
-        <div><strong>{{resource[key]}}</strong></div>
+        <div class="info-item-key">{{key}}</div>
+        <div class="info-item-value">{{resource[key]}}</div>
       </div>
     </div>
   </collapsible-list-item>
