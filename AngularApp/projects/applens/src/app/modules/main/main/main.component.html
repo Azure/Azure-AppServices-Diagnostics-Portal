@@ -1,4 +1,4 @@
-
+<l1-side-nav [isInLandingPage]="true"></l1-side-nav>
 <div class="container-fluid main-container">
   <div class="row main-row">
     <div class="col-md-6 col-md-offset-3">
@@ -10,7 +10,6 @@
           <div class="section">
             <label>Service Type</label>
             <div id="landing-page-service-type">
-              <!-- <fab-choice-group [options]="fabChoiceGroupOptions" [defaultSelectedKey]="selectedResourceType.displayName"></fab-choice-group> -->
               <fab-dropdown [options]="fabDropdownOptions" [defaultSelectedKey]="fabDropdownOptions[0].key" (onChange)="selectDropdownKey($event)"></fab-dropdown>
             </div>
           </div>
