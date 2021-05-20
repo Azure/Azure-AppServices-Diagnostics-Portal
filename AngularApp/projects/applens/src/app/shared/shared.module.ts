@@ -18,7 +18,8 @@ import { LoginComponent } from './components/login/login.component';
 import { RouterModule } from '@angular/router';
 import { CaseCleansingApiService } from './services/casecleansing-api.service';
 import { ApplensDiagnosticService } from '../modules/dashboard/services/applens-diagnostic.service';
-import { FabPanelModule } from '@angular-react/fabric';
+import { FabButtonModule, FabDialogModule, FabPanelModule } from '@angular-react/fabric';
+import { L1SideNavComponent } from './components/l1-side-nav/l1-side-nav.component';
 
 @NgModule({
   imports: [
@@ -26,10 +27,12 @@ import { FabPanelModule } from '@angular-react/fabric';
     HttpClientModule,
     FormsModule,
     RouterModule,
-    FabPanelModule
+    FabPanelModule,
+    FabDialogModule,
+    FabButtonModule
   ],
-  declarations: [TreeViewComponent, LoginComponent],
-  exports: [TreeViewComponent]
+  declarations: [TreeViewComponent, LoginComponent,L1SideNavComponent],
+  exports: [TreeViewComponent,L1SideNavComponent]
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {
