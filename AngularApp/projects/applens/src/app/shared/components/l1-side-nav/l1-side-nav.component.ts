@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Optional } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { IDialogContentProps, IPanelProps, PanelType } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';
@@ -11,6 +11,7 @@ import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-na
   styleUrls: ['./l1-side-nav.component.scss']
 })
 export class L1SideNavComponent implements OnInit {
+  @Input() isInLandingPage: boolean = false;
   sideItems: SideNavItem[] = [
     {
       type: L1SideNavItemType.Selection,
@@ -18,7 +19,7 @@ export class L1SideNavComponent implements OnInit {
       enabledInLandingPage: true,
       click: () => {
         this.dismissL2SideNav();
-        if (this.checkIsLandingPage()) return;
+        if (this.isInLandingPage) return;
         this.showDialog = true;
       }
     },
@@ -95,15 +96,13 @@ export class L1SideNavComponent implements OnInit {
     }
   }
 
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _applensGlobal: ApplensGlobal) { }
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, @Optional() private _applensGlobal: ApplensGlobal) { }
 
   ngOnInit() {
   }
 
   getItemEnabled(item: SideNavItem): boolean {
-    const isInLandingPage = this.checkIsLandingPage();
-
-    return !isInLandingPage || item.enabledInLandingPage;
+    return !this.isInLandingPage || item.enabledInLandingPage;
   }
 
   getImageUrl(item: SideNavItem): string {
@@ -114,10 +113,10 @@ export class L1SideNavComponent implements OnInit {
   }
 
   getCurrentHighLightItem(): L1SideNavItemType {
-    if (this.checkIsLandingPage()) {
+    if (this.isInLandingPage) {
       return L1SideNavItemType.Selection;
     }
-    const childRoute = this._activatedRoute.firstChild.firstChild.firstChild.firstChild.firstChild;
+    const childRoute = this._activatedRoute.firstChild;
     if (childRoute && (childRoute.snapshot.params["analysisId"] || childRoute.snapshot.params["detector"])) {
       return L1SideNavItemType.Detectors;
     } else if (childRoute.component === DashboardContainerComponent) {
