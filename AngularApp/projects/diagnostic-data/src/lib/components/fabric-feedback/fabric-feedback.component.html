@@ -36,7 +36,7 @@
 <ng-template #feedbackFooter>
   <hr class="feedback-panel-divider">
   <div>
-    <div class="panel-text">
+    <div *ngIf="isPublic" class="panel-text">
       <fab-checkbox [label]="checkLabel" [ariaLabel]="checkLabel" [(checked)]="checked"></fab-checkbox>
       <div class="feedback-panel-link">
         <a href="https://privacy.microsoft.com/en-US/privacystatement" target="_blank">Privacy</a>
