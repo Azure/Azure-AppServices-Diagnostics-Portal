@@ -37,10 +37,9 @@ side-nav {
 }
 
 .dashboard-content {
-    min-height: calc(100vh - 95px);
-    height: 100%;
-    margin-top:40px;
+    height: 100vh;
     margin-left: 20px;
+    padding-top: 16px;
 
     // Nested onboarding-flow components have two navbars totalling 92px
     ::ng-deep onboarding-flow {
@@ -55,7 +54,7 @@ side-nav {
 
 .content-with-side-nav {
     position: relative;
-    left: 240px;
+    left: 300px;
 }
 
 .dashboard-container {
