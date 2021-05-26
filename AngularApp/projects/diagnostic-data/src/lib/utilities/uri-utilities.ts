@@ -19,6 +19,6 @@ export class UriUtilities {
     }
 
     static removeChildDetectorStartAndEndTime(allQueryParams: { [key: string]: any }) {
-        return this.removeQueryParams(allQueryParams,["startTimeChildDetector","endTimeChildDetector"]);
+        return UriUtilities.removeQueryParams(allQueryParams,["startTimeChildDetector","endTimeChildDetector"]);
     }
 }

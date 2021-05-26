@@ -9,7 +9,7 @@
         <div *ngIf="showTimePicker" class="row">
           <div style="display: flex;" class="ml-3 mt-5">
             <div class="mr-3 date-picker-label">Start </div>
-            <fab-date-picker contentClass="col-md-8" [strings]="dates" [minDate]="minDate" [maxDate]="maxDate"
+            <fab-date-picker contentClass="col-md-8" [minDate]="minDate" [maxDate]="maxDate"
               placeholder="Select a date..." ariaLabel="Select start date" allowTextInput="true"
               showMonthPickerAsOverlay="true" (onSelectDate)="onSelectStartDateHandler($event)" [formatDate]="formatDate"
               [value]="startDate" contentStyle="width:100px;margin-right:4px">
@@ -22,7 +22,7 @@
   
           <div style="display: flex;" class="ml-3 mt-5">
             <div  class="mr-4 date-picker-label">End</div>
-            <fab-date-picker contentClass="col-md-8" [strings]="dates" [minDate]="minDate" [maxDate]="maxDate"
+            <fab-date-picker contentClass="col-md-8" [minDate]="minDate" [maxDate]="maxDate"
               placeholder="Select a date..." ariaLabel="Select end date" allowTextInput="true"
               showMonthPickerAsOverlay="true" (onSelectDate)="onSelectEndDateHandler($event)" [formatDate]="formatDate"
               [value]="endDate" contentStyle="width:100px;margin-right:4px">
@@ -47,7 +47,7 @@
   </fab-callout>
   <!-- </div> -->
 
-  <fab-calendar *ngIf="showCalendar" (onSelectDate)="onSelectDate($event)"
+  <fab-calendar *ngIf="showCalendar"
     contentStyle="position: absolute;top: 20px;right: 0px ;background: #FFFFFF; padding: 8px; color: #323130; font-size: 14px;">
     <fab-calendar-strings [months]="dayPickerString.months" [shortMonths]="dayPickerString.shortMonths"
       [days]="dayPickerString.days" [shortDays]="dayPickerString.shortDays" [goToToday]="dayPickerString.goToToday"
