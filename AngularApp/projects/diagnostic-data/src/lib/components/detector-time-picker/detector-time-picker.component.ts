@@ -8,6 +8,8 @@ import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { Observable } from 'rxjs';
 
+const moment = momentNs;
+
 @Component({
   selector: 'detector-time-picker',
   templateUrl: './detector-time-picker.component.html',
@@ -39,7 +41,7 @@ export class DetectorTimePickerComponent implements OnInit {
 
   formatDate: IDatePickerProps['formatDate'] = (date) => {
     //only this format can do both fill in date and select date
-    return momentNs(date).format('M/D/YY');
+    return moment(date).format('M/D/YY');
   };
 
   choiceGroupOptions: IChoiceGroupOption[] =
@@ -199,11 +201,11 @@ export class DetectorTimePickerComponent implements OnInit {
       'Title': timePickerInfo.selectedKey
     }
     if (timePickerInfo.startDate) {
-      const startTimeString = momentNs(timePickerInfo.startDate).format(this.detectorControlService.stringFormat);
+      const startTimeString = moment(timePickerInfo.startDate).format(this.detectorControlService.stringFormat);
       eventProperties['StartTime'] = startTimeString;
     }
     if (timePickerInfo.endDate) {
-      const endTimeString = momentNs(timePickerInfo.startDate).format(this.detectorControlService.stringFormat);
+      const endTimeString = moment(timePickerInfo.startDate).format(this.detectorControlService.stringFormat);
       eventProperties['EndTime'] = endTimeString;
     }
     this.telemetryService.logEvent(TelemetryEventNames.TimePickerApplied, eventProperties);
@@ -233,11 +235,11 @@ export class DetectorTimePickerComponent implements OnInit {
 
   //Get HH:mm from date
   private getHourAndMinute(date: Date): string {
-    return momentNs(date).format('HH:mm');
+    return moment(date).format('HH:mm');
   }
 
   private convertDateTimeToString(date: Date, time: string): string {
-    const dateString = momentNs(date).format('YYYY-MM-DD');
+    const dateString = moment(date).format('YYYY-MM-DD');
     const hour = Number.parseInt(time.split(':')[0]) < 10 ? `0${Number.parseInt(time.split(':')[0])}` : `${Number.parseInt(time.split(':')[0])}`;
     const minute = Number.parseInt(time.split(':')[1]) < 10 ? `0${Number.parseInt(time.split(':')[1])}` : `${Number.parseInt(time.split(':')[1])}`;
     return `${dateString} ${hour}:${minute}`;
