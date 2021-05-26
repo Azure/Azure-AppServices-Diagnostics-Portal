@@ -5,7 +5,7 @@ import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from 
 import { ResourceService } from '../../../shared/services/resource.service';
 import { CollapsibleMenuItem } from '../../../collapsible-menu/components/collapsible-menu-item/collapsible-menu-item.component';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
-import { DetectorType } from 'diagnostic-data';
+import { DetectorType, UriUtilities } from 'diagnostic-data';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
 import { environment } from '../../../../environments/environment';
@@ -151,9 +151,7 @@ export class SideNavComponent implements OnInit {
   }
 
   navigateTo(path: string) {
-    const queryParams = { ...this._activatedRoute.snapshot.queryParams };
-    delete queryParams.startTimeChildDetector;
-    delete queryParams.endTimeChildDetector;
+    const queryParams = UriUtilities.removeChildDetectorStartAndEndTime(this._activatedRoute.snapshot.queryParams);
 
     let navigationExtras: NavigationExtras = {
       queryParams: queryParams,

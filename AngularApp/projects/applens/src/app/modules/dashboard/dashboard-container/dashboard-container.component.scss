@@ -12,12 +12,24 @@
 .info-item {
     flex:50%;
     margin-top: 6px;
+    display: flex;
 }
 
 .info-item-key {
     color: #605E5C;
+    width: 160px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .info-item-value {
     color: #323130;
+    flex: 1 0 auto;
+}
+
+.info-item-splitter {
+    flex: 0 0 15px;
+    text-align: center;
 }

@@ -7,13 +7,14 @@ import { SectionDividerComponent } from './components/section-divider/section-di
 import { SearchBoxComponent } from './components/search-box/search-box.component';
 import { MenuScrollComponent } from './components/menu-scroll/menu-scroll.component';
 import { SearchPipe, SearchMatchPipe } from './pipes/search.pipe';
-import { FabIconModule } from '@angular-react/fabric';
+import { FabIconModule, FabTooltipModule } from '@angular-react/fabric';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    FabIconModule
+    FabIconModule,
+    FabTooltipModule
   ],
   declarations: [CollapsibleMenuComponent, CollapsibleMenuItemComponent, SectionDividerComponent, SearchBoxComponent, MenuScrollComponent, SearchPipe, SearchMatchPipe],
   exports: [CollapsibleMenuComponent, CollapsibleMenuItemComponent, SectionDividerComponent, SearchBoxComponent, MenuScrollComponent, SearchPipe],

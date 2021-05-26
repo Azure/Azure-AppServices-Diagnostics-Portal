@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, Optional } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { UriUtilities } from 'diagnostic-data';
 import { IDialogContentProps, IPanelProps, PanelType } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';
 import { DashboardContainerComponent } from '../../../modules/dashboard/dashboard-container/dashboard-container.component';
@@ -41,7 +42,7 @@ export class L1SideNavComponent implements OnInit {
 
           const url = `subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${provider}/${resourceTypeName}/${resourceName}`;
 
-          const queryParams = this.removeChildDetectorQueryParams(this._activatedRoute.snapshot.queryParams);
+          const queryParams = UriUtilities.removeChildDetectorStartAndEndTime(this._activatedRoute.snapshot.queryParams);
 
           this._router.navigate([url], {
             queryParams:queryParams
@@ -135,15 +136,6 @@ export class L1SideNavComponent implements OnInit {
   dismissL2SideNav() {
     this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.None);
   }
-
-  removeChildDetectorQueryParams(queryParams:Params) {
-    const copiedQueryParams = {...queryParams};
-    delete copiedQueryParams.startTimeChildDetector;
-    delete copiedQueryParams.endTimeChildDetector;
-
-    return copiedQueryParams;
-  }
-
 }
 
 interface SideNavItem {

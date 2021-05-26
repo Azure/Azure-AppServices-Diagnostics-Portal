@@ -7,14 +7,11 @@ import { DetectorControlService, FeatureNavigationService, DetectorMetaData, Det
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from '@angular/router';
 import { UserInfo } from '../user-profile/user-profile.component';
-import { StartupService } from '../../../shared/services/startup.service';
 import { SearchService } from '../services/search.service';
-import { v4 as uuid } from 'uuid';
 import { environment } from '../../../../environments/environment';
 import {DiagnosticApiService} from '../../../shared/services/diagnostic-api.service';
 import { ObserverService } from '../../../shared/services/observer.service';
 import { ICommandBarProps, PanelType } from 'office-ui-fabric-react';
-import { filter } from 'rxjs/operators';
 import { ApplensGlobal } from '../../../applens-global';
 import { L2SideNavType } from '../l2-side-nav/l2-side-nav.component';
 
