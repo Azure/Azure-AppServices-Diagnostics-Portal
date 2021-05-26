@@ -134,10 +134,9 @@ export class DetectorContainerComponent implements OnInit {
 
     this._route.params.subscribe(param => {
       if(!this.featureNavigationService.lastIsAnalysisView && !param["analysisId"]) {
-        this.removeQueryParam();
+        // this.removeQueryParam();
       }
       this.featureNavigationService.lastIsAnalysisView = !!param["analysisId"];
-      console.log(param);
     });
   }
 
@@ -279,6 +278,5 @@ export class DetectorContainerComponent implements OnInit {
         queryParams: queryParams
       });
     }
-    console.log("Remove Query Params");
   }
 }
