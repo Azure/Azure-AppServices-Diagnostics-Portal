@@ -1,9 +1,8 @@
-import { DetectorResponse } from 'diagnostic-data';
+import { DetectorMetaData, DetectorResponse } from 'diagnostic-data';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
 import { DetectorControlService } from 'diagnostic-data';
-import { DetectorMetaData } from 'dist/diagnostic-data/public_api';
 import { ApplensCommandBarService } from '../../services/applens-command-bar.service';
 import { ApplensGlobal } from 'projects/applens/src/app/applens-global';
 
