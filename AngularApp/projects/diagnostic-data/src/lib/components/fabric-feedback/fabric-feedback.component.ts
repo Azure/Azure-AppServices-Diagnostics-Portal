@@ -9,6 +9,7 @@ import { Guid } from '../../utilities/guid';
 import { DiagnosticDataConfig, DIAGNOSTIC_DATA_CONFIG } from '../../config/diagnostic-data-config';
 import { GenieGlobals } from '../../services/genie.service';
 
+const moment = momentNs;
 
 @Component({
   selector: 'fabric-feedback',
@@ -131,7 +132,7 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
   }
 
   onOpenSubmittedPanel() {
-    this.currentTime = momentNs(Date.now()).format("hh:mm A");
+    this.currentTime = moment(Date.now()).format("hh:mm A");
     this.submittedPanelTimer = setTimeout(() => {
       this.dismissedSubmittedHandler();
     }, 3000);
