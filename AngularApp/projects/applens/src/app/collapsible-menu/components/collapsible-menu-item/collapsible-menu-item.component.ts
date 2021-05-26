@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BehaviorSubject } from 'rxjs';
 import { SearchPipe } from '../../pipes/search.pipe';
+import { DirectionalHint } from 'office-ui-fabric-react';
 
 @Component({
   selector: 'collapsible-menu-item',
@@ -34,6 +35,8 @@ export class CollapsibleMenuItemComponent {
   get iconName() {
     return this.menuItem.expanded ? "ChevronRight" : "ChevronDown";
   }
+
+  directionalHint = DirectionalHint.bottomLeftEdge;
 
   constructor(private _searchPipe: SearchPipe) { }
 
