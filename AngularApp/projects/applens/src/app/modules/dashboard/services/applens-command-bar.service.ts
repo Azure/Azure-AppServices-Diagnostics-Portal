@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DetectorControlService } from 'diagnostic-data';
-import { DetectorMetaData } from 'dist/diagnostic-data/public_api';
+import { DetectorControlService,DetectorMetaData } from 'diagnostic-data';
 import { ApplensDiagnosticService } from './applens-diagnostic.service';
 
 @Injectable()
