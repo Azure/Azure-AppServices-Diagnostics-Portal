@@ -32,4 +32,19 @@ export class UriUtilities {
         }
 
     }
+    
+    static removeQueryParams(allQueryParams: { [key: string]: any }, removeQueryList: string[]) {
+        const allQueryParamKeys = Object.keys(allQueryParams);
+        const queryParams = {};
+        for(const key of allQueryParamKeys){
+            if(removeQueryList.findIndex(q => q.toLowerCase() === key.toLowerCase()) === -1){
+                queryParams[key] = allQueryParams[key];
+            }
+        }
+        return queryParams;
+    }
+
+    static removeChildDetectorStartAndEndTime(allQueryParams: { [key: string]: any }) {
+        return this.removeQueryParams(allQueryParams,["startTimeChildDetector","endTimeChildDetector"]);
+    }
 }
