@@ -20,6 +20,8 @@ import { Solution } from '../solution/solution';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PortalActionGenericService } from '../../services/portal-action.service';
 import { FeatureNavigationService } from '../../services/feature-navigation.service';
+import { UriUtilities } from '../../utilities/uri-utilities';
+
 
 
 @Component({
@@ -326,14 +328,14 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
         // Log children detectors click
         this.logEvent(TelemetryEventNames.ChildDetectorClicked, clickDetectorEventProperties);
-
+        const queryParams = UriUtilities.removeChildDetectorStartAndEndTime(this._activatedRoute.snapshot.queryParams);
         if (targetDetector === 'appchanges' && !this.isPublic) {
           this._portalActionService.openChangeAnalysisBlade(this._detectorControl.startTimeString, this._detectorControl.endTimeString);
         } else {
           const resourceId = this._diagnosticService.resourceId;
           const routeUrl = this.isPublic ? `resource${resourceId}/detectors/${targetDetector}` : `${resourceId}/detectors/${targetDetector}`;
           this._router.navigate([routeUrl],{
-            queryParamsHandling: 'preserve'
+            queryParams: queryParams
           });
         }
       }

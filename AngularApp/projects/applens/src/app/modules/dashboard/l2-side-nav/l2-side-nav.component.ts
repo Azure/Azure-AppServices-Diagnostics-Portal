@@ -18,6 +18,9 @@ export class L2SideNavComponent implements OnInit {
     root: {
       marginLeft: "70px",
       marginTop: "130px"
+    },
+    main: {
+      boxShadow: "none"
     }
   }
 
