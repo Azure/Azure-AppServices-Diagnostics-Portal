@@ -9,7 +9,7 @@ import { DetectorType } from 'diagnostic-data';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
 import { environment } from '../../../../environments/environment';
-import { ISearchBoxProps, ITextFieldProps } from 'office-ui-fabric-react';
+import { CheckboxVisibility, IDetailsListProps, IGroup, IGroupedListProps, IListProps, ISearchBoxProps, ISelection, ITextFieldProps, SelectionMode } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';
 import { L2SideNavType } from '../l2-side-nav/l2-side-nav.component';
 import { FabSearchBoxComponent } from '@angular-react/fabric';
@@ -42,7 +42,7 @@ export class SideNavComponent implements OnInit {
     iconName: "Zoom",
   }
 
-  @ViewChild(FabSearchBoxComponent,{static: false}) fabSearchBox:any;
+  @ViewChild(FabSearchBoxComponent, { static: false }) fabSearchBox: any;
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService, private _applensGlobal: ApplensGlobal) {
   }
 
@@ -108,11 +108,28 @@ export class SideNavComponent implements OnInit {
     }
   ];
 
-  searchBoxStyles:ISearchBoxProps['styles'] = {
+  searchBoxStyles: ISearchBoxProps['styles'] = {
     root: {
-      width: "190px"
+      width: "250px"
     }
   }
+
+  selectionMode = SelectionMode.single;
+  checkboxVisibility  = CheckboxVisibility.hidden;
+  onShouldVirtualize = (props: IListProps) => {
+    return false;
+  }
+
+  cellStyleProps:IDetailsListProps['cellStyleProps'] = {
+    cellLeftPadding: 0,
+    cellRightPadding: 0,
+    cellExtraRightPadding: 0
+  }
+
+
+  collapsibleItemListCopy: CollapsibleMenuItem[] = [];
+  collapsibleItemList: CollapsibleMenuItem[] = [];
+  groups: IGroup[] = [];
 
   ngOnInit() {
     this.initializeDetectors();
@@ -134,7 +151,7 @@ export class SideNavComponent implements OnInit {
   }
 
   navigateTo(path: string) {
-    const queryParams = {...this._activatedRoute.snapshot.queryParams};
+    const queryParams = { ...this._activatedRoute.snapshot.queryParams };
     delete queryParams.startTimeChildDetector;
     delete queryParams.endTimeChildDetector;
 
@@ -153,7 +170,7 @@ export class SideNavComponent implements OnInit {
 
   initializeDetectors() {
     this._diagnosticApiService.getDetectors().subscribe(detectorList => {
-      const analysisMenuItem = new CollapsibleMenuItem("Analysis","",null,null,null,true);
+      const analysisMenuItem = new CollapsibleMenuItem("Analysis", "", null, null, null, true);
       if (detectorList) {
         detectorList.forEach(element => {
           let onClick = () => {
@@ -196,11 +213,15 @@ export class SideNavComponent implements OnInit {
         });
         this.categories.push(analysisMenuItem);
         this.categories = this.categories.sort((a, b) => {
-          if(a.label === 'Analysis') return -1;
-          if(a.label === 'Uncategorized') return 1;
+          if (a.label === 'Analysis') return -1;
+          if (a.label === 'Uncategorized') return 1;
           return a.label > b.label ? 1 : -1
         });
 
+        this.collapsibleItemList = this.flatCategoriesList(this.categories);
+        this.collapsibleItemListCopy = [...this.collapsibleItemList];
+
+        this.groups = this.getGroupsFromList(this.collapsibleItemList);
         this.detectorsLoading = false;
         this._telemetryService.logPageView(TelemetryEventNames.SideNavigationLoaded, {});
       }
@@ -253,12 +274,66 @@ export class SideNavComponent implements OnInit {
     window.open('https://app-service-diagnostics-docs.azurewebsites.net/api/Diagnostics.ModelsAndUtils.Models.Response.html#extensionmethods', '_blank');
   }
 
-  updateSearchValue(e: any) {
-    this.searchValue = e.newValue;
+  updateSearchValue(e: { newValue: string }) {
+    const searchValue = e.newValue;
+    this.searchValue = searchValue;
+    this.updateListGroups(searchValue);
+
+  }
+
+  updateListGroups(searchValue: string) {
+    this.collapsibleItemList = this.collapsibleItemListCopy.filter(item => {
+      return item.label.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.id.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.metadata && item.metadata.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0;
+    });
+    
+    this.groups = this.getGroupsFromList(this.collapsibleItemList);
+    this.groups.forEach(g => g.isCollapsed = false);
+    
+
   }
 
   dismissL2SideNav() {
     this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.None);
+  }
+
+  private flatCategoriesList(categories: CollapsibleMenuItem[]) {
+    const itemList: CollapsibleMenuItem[] = [];
+    for (const category of categories) {
+      if (category.subItems && category.subItems.length > 0) {
+        for (const item of category.subItems) {
+          item.group = category.label;
+          itemList.push(item);
+        }
+      }
+      // category.subItems = [];
+    }
+    return itemList;
+  }
+
+  private getGroupsFromList(list: CollapsibleMenuItem[]): IGroup[] {
+    const groups: IGroup[] = [];
+    if (list.length === 0) return groups;
+
+    for (let i = 0; i < list.length; i++) {
+      const item = list[i];
+      const group = groups.find(g => g.name.toLowerCase() === item.group.toLowerCase());
+      if(!group){
+        groups.push({
+          key: item.group,
+          name: item.group,
+          startIndex: i,
+          count: 1,
+          isCollapsed: true
+        });
+      }else {
+        group.count += 1;
+      }
+    }
+    return groups;
+  }
+
+  listInvokedHandler(e: {item:CollapsibleMenuItem}) {
+    e.item.onClick();
   }
 }
 
