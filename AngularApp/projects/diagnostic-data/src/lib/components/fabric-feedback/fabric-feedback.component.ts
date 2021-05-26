@@ -67,11 +67,13 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
     } else {
       const user = this.globals.getUserAlias();
       this.ratingEventProperties["User"] = user;
+      this.ratingEventProperties["Location"] = detectorName ? TelemetrySource.OverviewPage : TelemetrySource.DetectorPage
     }
     this.ratingEventProperties["DetectorId"] = detectorName;
     this.ratingEventProperties["Url"] = window.location.href;
     this.ratingEventProperties["MayContact"] = this.checked;
     this.ratingEventProperties["FeedbackId"] = Guid.newShortGuid();
+    this.ratingEventProperties["isPublic"] = this.isPublic
     this.logEvent(TelemetryEventNames.StarRatingSubmitted, eventProps);
 
     this.reset();

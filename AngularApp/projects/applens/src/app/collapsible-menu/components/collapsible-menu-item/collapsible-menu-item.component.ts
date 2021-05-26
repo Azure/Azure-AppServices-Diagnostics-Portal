@@ -88,6 +88,7 @@ export class CollapsibleMenuItem {
   subItems: CollapsibleMenuItem[];
   isSelected: Function;
   icon: string;
+  group?:string
 
   constructor(label: string, id: string, onClick: Function, isSelected: Function, icon: string = null, expanded: boolean = false, subItems: CollapsibleMenuItem[] = [], metadata: string = null) {
     this.label = label;

@@ -69,22 +69,6 @@ export class L1SideNavComponent implements OnInit {
     // }
   ];
   currentHightLightItem:L1SideNavItemType = null;
-  panelType: PanelType = PanelType.customNear;
-  panelStyles: IPanelProps['styles'] = {
-    main: {
-      background: "#EAEAEA",
-      boxShadow: "inset -1px 0px 0px rgba(0, 0, 0, 0.12)",
-      marginTop: '50px',
-      padding: "0px"
-    },
-    content:{
-      padding: "0px",
-      margin: "0px"
-    },
-  };
-  panelFocusTrapZoneProps: IPanelProps["focusTrapZoneProps"] = {
-    disabled: true
-  }
   showDialog: boolean = false;
   dialogTitle: string = "Are you sure to select a new resource?";
   dialogSubText: string = "You’ll lose access to current resource’s data. Are you sure to select a new resource?";

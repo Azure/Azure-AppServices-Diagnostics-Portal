@@ -330,12 +330,11 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         if (targetDetector === 'appchanges' && !this.isPublic) {
           this._portalActionService.openChangeAnalysisBlade(this._detectorControl.startTimeString, this._detectorControl.endTimeString);
         } else {
-          this._featureNavigationService.NavigateToDetector(this.detector,targetDetector);
           const resourceId = this._diagnosticService.resourceId;
           const routeUrl = this.isPublic ? `resource${resourceId}/detectors/${targetDetector}` : `${resourceId}/detectors/${targetDetector}`;
-          this._router.navigateByUrl(routeUrl,{
+          this._router.navigate([routeUrl],{
             queryParamsHandling: 'preserve'
-          }).then(_ => console.log("Detector List Navigation Finish"));
+          });
         }
       }
     }

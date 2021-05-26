@@ -47,6 +47,7 @@ $panel-padding-right: 20px;
 .panel-text {
     font-size: 12px;
     line-height: 16px;
+    margin-left: 16px;
 }
 
 .feedback-panel-header {
@@ -97,8 +98,10 @@ $panel-padding-right: 20px;
 }
 
 ::ng-deep .ms-Panel-content {
-    padding-left: $panel-padding-left;
-    padding-right: $panel-padding-right;
+    // padding-left: $panel-padding-left;
+    // padding-right: $panel-padding-right;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 ::ng-deep .ms-Panel-footerInner {

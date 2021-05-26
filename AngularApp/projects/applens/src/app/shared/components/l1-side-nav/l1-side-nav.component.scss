@@ -29,7 +29,11 @@
     background: #DCDCDC;
 }
 
-//Use -20px to cancel ms-panel-content padding
-.panel-container {
-    margin: 16px -20px 0px -20px;
+.l1-side-nav {
+    position: fixed;
+    width: 70px;
+    left:0px;
+    background: #EAEAEA;
+    box-shadow: inset -1px 0px 0px rgba(0, 0, 0, 0.12);
+    height: 100%;
 }

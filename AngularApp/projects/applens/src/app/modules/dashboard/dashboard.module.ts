@@ -25,7 +25,7 @@ import { ApplensCommsService } from './services/applens-comms.service';
 import { ApplensSupportTopicService } from './services/applens-support-topic.service';
 import { ApplensContentService } from './services/applens-content.service';
 import { DiagnosticService, DiagnosticDataModule, CommsService, DetectorControlService, GenericSupportTopicService, GenericContentService, GenericDocumentsSearchService, GenieGlobals } from 'diagnostic-data';
-import { FabCommandBarModule, FabIconModule, FabPanelModule, FabSearchBoxModule, FabTextFieldModule } from '@angular-react/fabric';
+import { FabCommandBarModule, FabDetailsListModule, FabIconModule, FabPanelModule, FabSearchBoxModule, FabTextFieldModule } from '@angular-react/fabric';
 import { CollapsibleMenuModule } from '../../collapsible-menu/collapsible-menu.module';
 import { ObserverService } from '../../shared/services/observer.service';
 import { TabDataSourcesComponent } from './tabs/tab-data-sources/tab-data-sources.component';
@@ -302,6 +302,7 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         FabIconModule,
         FabTextFieldModule,
         FabSearchBoxModule,
+        FabDetailsListModule,
         DiagnosticDataModule
     ],
     providers: [
