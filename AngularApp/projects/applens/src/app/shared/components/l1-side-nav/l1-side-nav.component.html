@@ -1,18 +1,22 @@
-<fab-panel [isOpen]="true" [type]="panelType" [customWidth]="'70px'" [hasCloseButton]="false" [styles]="panelStyles" [isBlocking]="false" [focusTrapZoneProps]="panelFocusTrapZoneProps">
-  <div class="panel-container">
-    <div *ngFor="let item of sideItems" class="side-item" [class.side-item-disable]="!getItemEnabled(item)" [class.side-item-enable]="getItemEnabled(item)" (click)="item.click()" type="button" (keyup.enter)="item.click()"
-    [tabindex]="getItemEnabled(item) ? 0 : -1" [attr.aria-label]="item.displayName" [class.highlight-side-item]="getCurrentHighLightItem() === item.type">
+<!-- <fab-panel [isOpen]="true" [type]="panelType" [customWidth]="'70px'" [hasCloseButton]="false" [styles]="panelStyles" [isBlocking]="false" [focusTrapZoneProps]="panelFocusTrapZoneProps"> -->
+<aside class="l1-side-nav">
+  <div style="margin-top: 16px;">
+    <div *ngFor="let item of sideItems" class="side-item" [class.side-item-disable]="!getItemEnabled(item)"
+      [class.side-item-enable]="getItemEnabled(item)" (click)="item.click()" type="button" (keyup.enter)="item.click()"
+      [tabindex]="getItemEnabled(item) ? 0 : -1" [attr.aria-label]="item.displayName"
+      [class.highlight-side-item]="getCurrentHighLightItem() === item.type">
       <img [src]="getImageUrl(item)" [alt]="item.displayName">
       <p>{{item.displayName}}</p>
     </div>
   </div>
-</fab-panel>
+</aside>
+<!-- </fab-panel> -->
 
 <fab-dialog [hidden]="!showDialog" (onDismiss)="dismissDialog()">
-  <fab-dialog-content [title]="dialogTitle" [subText]="dialogSubText" [styles]="dialogContentStyles"></fab-dialog-content>
+  <fab-dialog-content [title]="dialogTitle" [subText]="dialogSubText" [styles]="dialogContentStyles">
+  </fab-dialog-content>
   <fab-dialog-footer>
     <fab-primary-button (onClick)="navigateToLandingPage()" contentClass="mr-3">Continue</fab-primary-button>
     <fab-default-button (onClick)="dismissDialog()">Cancel</fab-default-button>
   </fab-dialog-footer>
 </fab-dialog>
-
