@@ -83,3 +83,9 @@ menu-scroll {
     cursor: pointer;
 }
 
+::ng-deep {
+    .ms-GroupHeader-title{
+        font-size: 14px;
+        font-weight: 600;
+    }
+}

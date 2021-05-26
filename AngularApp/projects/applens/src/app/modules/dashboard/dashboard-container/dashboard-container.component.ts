@@ -84,4 +84,8 @@ export class DashboardContainerComponent implements OnInit {
     });
   }
 
+  openFeedback() {
+    this._applensGlobal.openFeedback = true;
+  }
+
 }

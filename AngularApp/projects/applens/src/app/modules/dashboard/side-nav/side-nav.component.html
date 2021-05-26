@@ -1,9 +1,8 @@
-<aside class="main-sidebar">
+<aside>
   <section class="sidebar" style="height: 100vh;">
     <collapsible-menu theme="light">
-      <div style="display: flex;align-items: center;">
-        <!-- <fab-text-field [(value)]="searchValue" placeholder="Search detector" autoComplete="off" [iconProps]="searchBoxIcon"></fab-text-field> -->
-        <fab-search-box #fabSearchBox [value]="searchValue" (onChange)="updateSearchValue($event)" [styles]="searchBoxStyles" (onFocus)="focusSearchBox()"></fab-search-box>
+      <div style="display: flex;align-items: center; margin: 16px 8px;justify-content: space-between;">
+        <fab-search-box #fabSearchBox [value]="searchValue" (onChange)="updateSearchValue($event)" [styles]="searchBoxStyles" (onFocus)="focusSearchBox()" placeHolder="Search detector"></fab-search-box>
         <div class="icon-colleapse-side-nav" (keyup.enter)="dismissL2SideNav()" (click)="dismissL2SideNav()" tabindex="0" aria-label="Close side nav">
           <fab-icon [iconName]="'DoubleChevronLeft'" contentClass="ml-3"></fab-icon>
         </div>
@@ -36,7 +35,21 @@
           <collapsible-menu-item *ngFor="let setting of configuration" [menuItem]="setting"></collapsible-menu-item>
         </section-divider> -->
         
-        <collapsible-menu-item *ngFor="let category of categories" [searchValue]="searchValue" [menuItem]="category"></collapsible-menu-item>
+        <!-- <collapsible-menu-item *ngFor="let category of categories" [searchValue]="searchValue" [menuItem]="category"></collapsible-menu-item> -->
+        <fab-details-list [isHeaderVisible]="false" [selectionMode]="selectionMode" [items]="collapsibleItemList" [onShouldVirtualize]="onShouldVirtualize" (onItemInvoked)="listInvokedHandler($event)" [compact]="true" [indentWidth]="10" [checkboxVisibility]="checkboxVisibility" [cellStyleProps]="cellStyleProps">
+          <groups>
+            <fab-group-item *ngFor="let group of groups" [name]="group.name" [id]="group.id" [ariaLabel]="group.name" [startIndex]="group.startIndex" [count]="group.count" [isCollapsed]="group.isCollapsed"></fab-group-item>
+          </groups>
+          <columns>
+            <fab-details-list-column>
+              <render>
+                <ng-template let-item="item" let-index="index">
+                  <collapsible-menu-item [searchValue]="searchValue" [menuItem]="item"></collapsible-menu-item>
+                </ng-template>
+              </render>
+            </fab-details-list-column>
+          </columns>
+        </fab-details-list>
     </collapsible-menu>
   </section>
 </aside>
