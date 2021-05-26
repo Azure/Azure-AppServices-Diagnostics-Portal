@@ -97,7 +97,9 @@ export const TelemetryEventNames = {
 export const TelemetrySource = {
     LandingPage: 'LandingPage',
     CategoryPage: 'CategoryPage',
-    CaseSubmissionFlow: 'CaseSubmissionFlow'
+    CaseSubmissionFlow: 'CaseSubmissionFlow',
+    OverviewPage:'OverviewPage',
+    DetectorPage: 'DetectorPage'
 }
 
 export interface TelemetryPayload {

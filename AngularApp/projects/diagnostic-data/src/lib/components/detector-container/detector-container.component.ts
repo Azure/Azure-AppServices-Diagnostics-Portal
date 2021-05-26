@@ -275,9 +275,9 @@ export class DetectorContainerComponent implements OnInit {
       const queryParams = { ...this._route.snapshot.queryParams };
       delete queryParams.startTimeChildDetector;
       delete queryParams.endTimeChildDetector;
-      // this.router.navigate([], {
-      //   queryParams: queryParams
-      // });
+      this.router.navigate([], {
+        queryParams: queryParams
+      });
     }
     console.log("Remove Query Params");
   }
