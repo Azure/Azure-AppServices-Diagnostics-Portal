@@ -5,8 +5,8 @@ import { Insight, InsightUtils } from "../../models/insight";
 import { TelemetryService } from "../../services/telemetry/telemetry.service";
 import { TelemetryEventNames } from "../../services/telemetry/telemetry.common";
 import { LoadingStatus } from "../../models/loading";
-import { Solution } from "dist/diagnostic-data/lib/components/solution/solution";
 import { BehaviorSubject } from "rxjs";
+import { Solution } from "../solution/solution";
 
 
 @Component({
