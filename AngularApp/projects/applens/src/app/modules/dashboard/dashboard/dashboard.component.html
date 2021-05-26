@@ -54,18 +54,17 @@
     <l2-side-nav></l2-side-nav>
     <div style="display: flex;">
       <div style="margin: auto 10px auto 0px;">
-        <img [src]="resourceService.imgSrc" class="resource-logo" [alt]="resourceService.searchSuffix"
-          style="width: 32px;">
+        <img [src]="resourceService.imgSrc" class="resource-logo" [alt]="resourceService.searchSuffix">
       </div>
       <div>
-        <p style="font-size: 24px;">
+        <div style="font-size: 24px;">
           <strong>{{resourceService.getResourceName() | formatResourceName}}</strong>
-          <strong>&nbsp;| {{getTitle()}}</strong>
-        </p>
-        <p style="font-size: 12px;">{{resourceService.searchSuffix}}</p>
+          <span>&nbsp;| {{getTitle()}}</span>
+        </div>
+        <div style="font-size: 12px;">{{resourceService.searchSuffix}}</div>
       </div>
     </div>
-    <div [class.content-with-side-nav]="showL2SideNav">
+    <div [class.content-with-side-nav]="showL2SideNav" class="mt-3">
       <router-outlet></router-outlet>
     </div>
   </div>
