@@ -33,7 +33,7 @@ const defaultDowntimeSelectionError: string = 'Downtimes less than 10 minutes ar
     ])
   ]
 })
-export class DetectorViewComponent implements OnInit, OnDestroy {
+export class DetectorViewComponent implements OnInit {
 
   detectorDataLocalCopy: DetectorResponse;
   errorState: any;
@@ -69,12 +69,12 @@ export class DetectorViewComponent implements OnInit, OnDestroy {
   fabDropdownWidth: number;
   showDowntimeCallout: boolean = false;
   fabChoiceGroupOptions: IChoiceGroupOption[] = [];
+  disableDowntimeButton: boolean = false;
   get showDownTimeButton() {
-    if(this.downtimeButtonStr === "") return false;
+    // if (this.downtimeButtonStr === "") return false;
     const isAnalysisWithDowntime = this.isAnalysisView && this.supportsDownTime;
     return isAnalysisWithDowntime || this.disableDowntimeButton;
   }
-  disableDowntimeButton: boolean = false;
   downtimeButtonStr: string = "";
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   timePickerButtonStr: string = "";
@@ -177,10 +177,7 @@ export class DetectorViewComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
     this._route.params.subscribe(p => {
-      //remove XXXTimeChildDetector query params 
-      console.log()
       this.loadDetector();
-      // this.removeQueryParam();
     });
 
     this.errorSubject.subscribe((data: any) => {
@@ -400,6 +397,7 @@ export class DetectorViewComponent implements OnInit, OnDestroy {
     this.supportsDownTime = false;
     this.xAxisPlotBands = [];
     this.zoomBehavior = zoomBehaviors.Zoom;
+    this.disableDowntimeButton = false;
     this.populateFabricDowntimeDropDown(this.downTimes);
     this.updateDownTimeErrorMessage("");
   }
@@ -527,10 +525,10 @@ export class DetectorViewComponent implements OnInit, OnDestroy {
         this.selectedDownTime = this.fabChoiceGroupOptions.length > 1 ? this.downTimes[0] : this.getDefaultDowntimeEntry();
       }
 
-      if(this.isAnalysisView) {
+      if (this.isAnalysisView) {
         this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
         this.disableDowntimeButton = false;
-      }else {
+      } else if(this.checkHaveDownTimeForDetector(this._route.snapshot.queryParams)){
         this.disableDowntimeButton = true;
         this.downtimeButtonStr = this.getDownTimeButtonStrForDetector(this._route.snapshot.queryParams);
       }
@@ -803,7 +801,7 @@ export class DetectorViewComponent implements OnInit, OnDestroy {
 
   getDownTimeButtonStrForDetector(queryParams: Params) {
     let buttonStr = "";
-    if(queryParams["startTimeChildDetector"] && queryParams['endTimeChildDetector']) {
+    if (!!queryParams["startTimeChildDetector"] && !!queryParams['endTimeChildDetector']) {
       const qStartTime = moment.utc(queryParams["startTimeChildDetector"]);
       const qEndTime = moment.utc(queryParams['endTimeChildDetector']);
       buttonStr = this.prepareCustomDowntimeLabel(qStartTime, qEndTime);
@@ -811,22 +809,12 @@ export class DetectorViewComponent implements OnInit, OnDestroy {
     return buttonStr;
   }
 
-  removeQueryParam() {
-    if (this.isAnalysisView) return;
-    if (this._route.snapshot.queryParams["startTimeChildDetector"] || this._route.snapshot.queryParams["endTimeChildDetector"]) {
-      const queryParams = { ...this._route.snapshot.queryParams };
-      delete queryParams.startTimeChildDetector;
-      delete queryParams.endTimeChildDetector;
-      this._router.navigate([], {
-        queryParams: queryParams
-      });
+  checkHaveDownTimeForDetector(queryParams: Params):boolean {
+    if(!!queryParams["startTimeChildDetector"] && momentNs.utc(queryParams["startTimeChildDetector"]).isValid() && !!queryParams["endTimeChildDetector"] && momentNs.utc(queryParams["endTimeChildDetector"]).isValid()){
+      return true;
     }
-    console.log("Remove Query Params");
-  }
 
-  ngOnDestroy() {
-    //Remove startTimeChildDetector and endTimeChildDetector query params 
-    console.log("Destory");
+    return false;
   }
 }
 
