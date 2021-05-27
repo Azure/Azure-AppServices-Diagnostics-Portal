@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { IPanelProps, PanelType } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';
+import { L2SideNavType } from './l2-side-nav-type';
 
 @Component({
   selector: 'l2-side-nav',
@@ -39,10 +40,4 @@ export class L2SideNavComponent implements OnInit {
     this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.None);
   }
 
-}
-
-export enum L2SideNavType {
-  None,
-  Detectors,
-  Develop
 }

@@ -11,8 +11,8 @@ import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/s
 import { environment } from '../../../../environments/environment';
 import { CheckboxVisibility, IDetailsListProps, IGroup, IGroupedListProps, IListProps, ISearchBoxProps, ISelection, ITextFieldProps, SelectionMode } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';
-import { L2SideNavType } from '../l2-side-nav/l2-side-nav.component';
 import { FabSearchBoxComponent } from '@angular-react/fabric';
+import { L2SideNavType } from '../l2-side-nav/l2-side-nav-type';
 
 @Component({
   selector: 'side-nav',
