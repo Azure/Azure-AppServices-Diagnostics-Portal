@@ -1,6 +1,6 @@
 import { AdalService } from 'adal-angular4';
 import { filter } from 'rxjs/operators';
-import { Component, OnInit, PipeTransform, Pipe, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, PipeTransform, Pipe, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from '@angular/router';
 import { ResourceService } from '../../../shared/services/resource.service';
 import { CollapsibleMenuItem } from '../../../collapsible-menu/components/collapsible-menu-item/collapsible-menu-item.component';
@@ -8,8 +8,7 @@ import { ApplensDiagnosticService } from '../services/applens-diagnostic.service
 import { DetectorType, UriUtilities } from 'diagnostic-data';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
-import { environment } from '../../../../environments/environment';
-import { CheckboxVisibility, IDetailsListProps, IGroup, IGroupedListProps, IListProps, ISearchBoxProps, ISelection, ITextFieldProps, SelectionMode } from 'office-ui-fabric-react';
+import { CheckboxVisibility, IDetailsListProps, IGroup, IGroupedListProps, IListProps, ISearchBoxProps, ISelection, ITextFieldProps, Selection, SelectionMode } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';
 import { FabSearchBoxComponent } from '@angular-react/fabric';
 import { L2SideNavType } from '../l2-side-nav/l2-side-nav-type';
@@ -44,6 +43,21 @@ export class SideNavComponent implements OnInit {
 
   @ViewChild(FabSearchBoxComponent, { static: false }) fabSearchBox: any;
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService, private _applensGlobal: ApplensGlobal) {
+  }
+
+  @HostListener('click',['$event.target'])
+  onHandleClickGroupTitle(ele:HTMLElement) {
+
+    const parentElement = ele.parentElement;
+    this.toggleGroupCollapsible(parentElement);
+  }
+
+  @HostListener('keydown.Enter',['$event.target'])
+  onHandleEnterGroupTitle(ele:HTMLElement) {
+    if(ele.firstElementChild && ele.firstElementChild.lastElementChild) {
+      const element = <HTMLElement>ele.firstElementChild.lastElementChild;
+      this.toggleGroupCollapsible(element);
+    }
   }
 
   documentation: CollapsibleMenuItem[] = [
@@ -116,9 +130,6 @@ export class SideNavComponent implements OnInit {
 
   selectionMode = SelectionMode.single;
   checkboxVisibility  = CheckboxVisibility.hidden;
-  onShouldVirtualize = (props: IListProps) => {
-    return false;
-  }
 
   cellStyleProps:IDetailsListProps['cellStyleProps'] = {
     cellLeftPadding: 0,
@@ -335,6 +346,19 @@ export class SideNavComponent implements OnInit {
 
   listInvokedHandler(e: {item:CollapsibleMenuItem}) {
     e.item.onClick();
+  }
+
+  private toggleGroupCollapsible(ele:HTMLElement) {
+
+    const classNameList = ele.className.split(" ");
+    if(classNameList.findIndex(name => name === "ms-GroupHeader-title") === -1) return;
+    const groupName = ele.firstElementChild.innerHTML;
+
+    const groupIndex = this.groups.findIndex(g => g.name.toLowerCase() === groupName.toLowerCase());
+    if(groupIndex > -1) {
+      const isCollapsed = this.groups[groupIndex].isCollapsed;
+      this.groups[groupIndex].isCollapsed = !isCollapsed;
+    }
   }
 }
 
