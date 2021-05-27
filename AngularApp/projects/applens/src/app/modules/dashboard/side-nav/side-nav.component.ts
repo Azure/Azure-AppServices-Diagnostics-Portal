@@ -219,6 +219,10 @@ export class SideNavComponent implements OnInit {
         this.collapsibleItemListCopy = [...this.collapsibleItemList];
 
         this.groups = this.getGroupsFromList(this.collapsibleItemList);
+        
+        const analysisGroup = this.groups.find(g => g.name.toLowerCase() === "analysis");
+        analysisGroup.isCollapsed = false;
+
         this.detectorsLoading = false;
         this._telemetryService.logPageView(TelemetryEventNames.SideNavigationLoaded, {});
       }
