@@ -13,7 +13,7 @@ import {DiagnosticApiService} from '../../../shared/services/diagnostic-api.serv
 import { ObserverService } from '../../../shared/services/observer.service';
 import { ICommandBarProps, PanelType } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';
-import { L2SideNavType } from '../l2-side-nav/l2-side-nav.component';
+import { L2SideNavType } from '../l2-side-nav/l2-side-nav-type';
 
 @Component({
   selector: 'dashboard',
