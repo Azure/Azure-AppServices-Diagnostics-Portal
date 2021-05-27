@@ -2,7 +2,8 @@ import { Injectable } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { AdalService } from "adal-angular4";
 import { BehaviorSubject } from "rxjs";
-import { L2SideNavType } from "./modules/dashboard/l2-side-nav/l2-side-nav.component";
+import { L2SideNavType } from "./modules/dashboard/l2-side-nav/l2-side-nav-type";
+
 
 @Injectable()
 export class ApplensGlobal {
