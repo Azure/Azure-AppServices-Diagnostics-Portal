@@ -4,7 +4,7 @@ import { UriUtilities } from 'diagnostic-data';
 import { IDialogContentProps, IPanelProps, PanelType } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';
 import { DashboardContainerComponent } from '../../../modules/dashboard/dashboard-container/dashboard-container.component';
-import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-nav.component';
+import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-nav-type';
 
 @Component({
   selector: 'l1-side-nav',
