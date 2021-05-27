@@ -36,7 +36,7 @@
         </section-divider> -->
         
         <!-- <collapsible-menu-item *ngFor="let category of categories" [searchValue]="searchValue" [menuItem]="category"></collapsible-menu-item> -->
-        <fab-details-list [isHeaderVisible]="false" [selectionMode]="selectionMode" [items]="collapsibleItemList" [onShouldVirtualize]="onShouldVirtualize" (onItemInvoked)="listInvokedHandler($event)" [compact]="true" [indentWidth]="10" [checkboxVisibility]="checkboxVisibility" [cellStyleProps]="cellStyleProps">
+        <fab-details-list [isHeaderVisible]="false" [selectionMode]="selectionMode" [items]="collapsibleItemList" (onItemInvoked)="listInvokedHandler($event)" [compact]="true" [indentWidth]="10" [checkboxVisibility]="checkboxVisibility" [cellStyleProps]="cellStyleProps">
           <groups>
             <fab-group-item *ngFor="let group of groups" [name]="group.name" [id]="group.id" [ariaLabel]="group.name" [startIndex]="group.startIndex" [count]="group.count" [isCollapsed]="group.isCollapsed"></fab-group-item>
           </groups>

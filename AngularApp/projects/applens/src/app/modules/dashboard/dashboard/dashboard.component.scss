@@ -55,6 +55,7 @@ side-nav {
 .content-with-side-nav {
     position: relative;
     left: 300px;
+    width: calc(100vw - 300px);
 }
 
 .dashboard-container {
