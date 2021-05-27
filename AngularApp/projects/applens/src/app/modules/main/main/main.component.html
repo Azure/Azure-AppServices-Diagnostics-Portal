@@ -19,7 +19,7 @@
           </label>
           <div id="landing-page-resource">
             <fab-text-field [ariaLabel]="selectedResourceType.resourceTypeLabel" [(value)]="resourceName"
-              [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel"></fab-text-field>
+              [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel" (keyup.enter)="onSubmit()"></fab-text-field>
             <div *ngIf="errorMessage!== ''" class="mt-3 error-message-container">
               <status-icon [status]="status"></status-icon><span class="ml-3 error-message">{{errorMessage}}</span>
             </div>
