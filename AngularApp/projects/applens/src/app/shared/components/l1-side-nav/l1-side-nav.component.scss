@@ -15,12 +15,12 @@
 }
 
 .side-item > img {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
 }
 
 .side-item > p {
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .highlight-side-item {
@@ -35,4 +35,9 @@
     background: #EAEAEA;
     box-shadow: inset -1px 0px 0px rgba(0, 0, 0, 0.12);
     height: 100%;
+}
+
+.diag-footer {
+    display: flex;
+    margin-left: 28px;
 }

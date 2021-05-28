@@ -84,6 +84,9 @@ export class L1SideNavComponent implements OnInit {
       fontSize: "13px",
       lineHeight: "18px",
       fontWeight: "600"
+    },
+    inner: {
+      textAlign:"left"
     }
   }
 

@@ -1,4 +1,4 @@
-<div *ngIf="detectorDataLocalCopy" style="display: flex;align-items: baseline;margin: 20px 0px">
+<div *ngIf="detectorDataLocalCopy" class="detector-control">
   <!-- Debug -->
   <!-- <div>isAnalysisView: {{isAnalysisView}}</div>
   <div>hideDetectorHeader: {{hideDetectorHeader}}</div>
@@ -9,19 +9,19 @@
   <div *ngIf="!hideDetectorHeader">
     <div *ngIf="!isInCaseSubmission()">
       <fab-primary-button id="time-picker-button" [styles]="buttonStyle" (onClick)="openTimePickerSubject.next(true);">
-        <fab-icon [iconName]="'Clock'"></fab-icon>
-        <span class="ml-3">
-          <span style="font-weight: 400;">Time Range (UTC) : </span>
+        <fab-icon [iconName]="'Clock'" [styles]="iconStyles"></fab-icon>
+        <span class="ml-3 control-pill-text">
+          <span>Time Range (UTC) : </span>
           {{timePickerButtonStr}}
         </span>
       </fab-primary-button>
     </div>
   </div>
-  <div *ngIf="isAnalysisView && supportsDownTime" class="ml-3">
+  <div *ngIf="showDownTimeButton" class="ml-3">
     <fab-primary-button id="detector-view-downtime" (onClick)="showDowntimeCallout = true;" [styles]="buttonStyle" [disabled]="downtimeFilterDisabled">
-      <fab-icon [iconName]="'Clock'"></fab-icon>
-      <span class="ml-3">
-        <span style="font-weight: 400;">Downtime(UTC): </span>
+      <fab-icon [iconName]="'Clock'" [styles]="iconStyles"></fab-icon>
+      <span class="ml-3 control-pill-text">
+        <span>Downtime(UTC): </span>
         {{downtimeButtonStr}}
       </span>
     </fab-primary-button>

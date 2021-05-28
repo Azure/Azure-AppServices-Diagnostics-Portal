@@ -6,7 +6,7 @@
     <!-- Feedback Panel Content -->
     <div class="panel-text">
       <p>Thank you for giving us feedback!</p>
-      <label aria-required="true">Are you satisfied with your experience?</label>
+      <p aria-required="true">Are you satisfied with your experience?</p>
       <div class="feedback-panel-icons" id="feedback-icons">
         <div *ngFor="let feedbackIcon of feedbackIcons;let i = index" (click)="setRating(i)"
           [ngClass]="{'selected-icon':rating - 1 === i}" class="feedback-icon hover-item" style="padding: 5px;"
@@ -15,7 +15,7 @@
         <div class="tooltiptext">{{feedbackIcon.text}}</div>
         </div>
       </div>
-      <label for="feedback-textarea">Tell us about your experience.</label>
+      <label for="feedback-textarea" style="font-weight: 400;">Tell us about your experience.</label>
       <textarea id="feedback-textarea" [(ngModel)]="feedbackText" tabindex="0" rows="7" cols="35"></textarea>
     </div>
   </fab-panel>

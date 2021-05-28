@@ -3,6 +3,7 @@
 @import "~@ng-select/ng-select/themes/default.theme.css";
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "styles/vendor/bootstrap-4-utilities.min.css";
+@import "styles/icons.scss";
 // @import 'office-ui-fabric-core/dist/sass/Fabric.scss';
 .ngx-datatable.bootstrap {
   border: 1px solid #dddddd;
@@ -48,6 +49,13 @@
 /* You can add global styles to this file, and also import other style files */
 body {
   margin: 0px;
+  color: #323130;
+  //Use segoe UI in all components 
+  font-family: 'Segoe UI' !important;
+}
+
+.sub-title {
+  color: #605E5C;
 }
 
 .skin-purple-light .sidebar-menu > li:hover > a,
@@ -199,4 +207,11 @@ fab-command-bar .ms-SearchBox {
 
 .ms-CommandBar, .ms-Button--commandBar{
   background-color: white!important;
+}
+
+.fab-command-bar-class {
+  border-bottom: 1px solid #D6D6D6 !important;
+  font-size: 12px !important;
+  padding: 0px !important;
+  margin-top: 16px;
 }

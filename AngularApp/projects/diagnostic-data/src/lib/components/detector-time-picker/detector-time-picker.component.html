@@ -7,7 +7,7 @@
         <fab-choice-group [options]="choiceGroupOptions" [defaultSelectedKey]="defaultSelectedKey">
         </fab-choice-group>
         <div *ngIf="showTimePicker" class="row">
-          <div style="display: flex;" class="ml-3 mt-5">
+          <div style="display: flex;" class="ml-3 mt-3">
             <div class="mr-3 date-picker-label">Start </div>
             <fab-date-picker contentClass="col-md-8" [minDate]="minDate" [maxDate]="maxDate"
               placeholder="Select a date..." ariaLabel="Select start date" allowTextInput="true"
@@ -20,7 +20,7 @@
             </fab-masked-text-field>
           </div>
   
-          <div style="display: flex;" class="ml-3 mt-5">
+          <div style="display: flex;" class="ml-3 mt-3">
             <div  class="mr-4 date-picker-label">End</div>
             <fab-date-picker contentClass="col-md-8" [minDate]="minDate" [maxDate]="maxDate"
               placeholder="Select a date..." ariaLabel="Select end date" allowTextInput="true"
