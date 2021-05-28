@@ -58,10 +58,10 @@
       </div>
       <div>
         <div style="font-size: 24px;">
-          <strong>{{resourceService.getResourceName() | formatResourceName}}</strong>
+          <span style="font-weight: 600;">{{resourceService.getResourceName() | formatResourceName}}</span>
           <span>&nbsp;| {{getTitle()}}</span>
         </div>
-        <div style="font-size: 12px;">{{resourceService.searchSuffix}}</div>
+        <div style="font-size: 12px;" class="sub-title">{{resourceService.searchSuffix}}</div>
       </div>
     </div>
     <div [class.content-with-side-nav]="showL2SideNav" class="mt-3">

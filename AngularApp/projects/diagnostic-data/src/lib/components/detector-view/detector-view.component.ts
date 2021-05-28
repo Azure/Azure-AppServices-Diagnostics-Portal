@@ -14,7 +14,7 @@ import { VersionService } from '../../services/version.service';
 import { CXPChatService } from '../../services/cxp-chat.service';
 import * as momentNs from 'moment';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection } from '../../models/time-series';
-import { IButtonProps, IButtonStyles, IChoiceGroupOption, IDropdownOption } from 'office-ui-fabric-react';
+import { IButtonProps, IButtonStyles, IChoiceGroupOption, IDropdownOption, IIconProps } from 'office-ui-fabric-react';
 
 const moment = momentNs;
 const minSupportedDowntimeDuration: number = 10;
@@ -87,6 +87,11 @@ export class DetectorViewComponent implements OnInit {
       fontSize: "13",
       fontWeight: "600",
       height: "80%"
+    }
+  }
+  iconStyles:IIconProps["styles"] = {
+    root: {
+      color: "#0078d4"
     }
   }
   @Input()

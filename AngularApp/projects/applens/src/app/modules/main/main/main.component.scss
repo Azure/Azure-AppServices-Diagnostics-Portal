@@ -1,5 +1,5 @@
 .main-container {
-    background-color: #E5E5E5;
+    background-color: #f2f2f2;
     height: 100vh;
 }
 
@@ -22,7 +22,7 @@
     flex-direction: column;
     margin: 0px auto;width: 600px;
     background: #ffffff;
-    padding: 28px;
+    padding: 28px 48px;
 }
 
 .main-content > h3 {
@@ -42,7 +42,7 @@
 }
 
 .section > label {
-    width: 120px;
+    width: 130px;
     font-weight: 400;
 }
 
@@ -51,7 +51,7 @@
 }
 
 .time-picker {
-    border: 1px solid #8A8886; 
+    border: 1px solid rgb(166,166,166); 
     min-width: 300px;
     display: flex;
     justify-content: space-between;
