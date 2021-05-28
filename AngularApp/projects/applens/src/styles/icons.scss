@@ -1,0 +1,11 @@
+.icon {
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    display: inline-block;
+}
+.hyper-link-icon {
+    @extend .icon;
+    background: url('assets/img/applens-skeleton/hyperlink.svg');
+    width: 12px;
+    height: 12px;
+}

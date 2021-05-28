@@ -1,5 +1,19 @@
 @import "../../../../../app-service-diagnostics/src/styles/main.scss";
 
+.detector-control {
+    display: flex;
+    align-items: baseline;
+    margin: 16px 0px 12px 0px;
+}
+
+.control-pill-text {
+    font-size: 13px;
+}
+
+.control-pill-text :first-child {
+    font-weight: 400;
+}
+
 .edit-button{
     float:right;
     margin-top: 10px;
