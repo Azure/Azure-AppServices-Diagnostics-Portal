@@ -37,7 +37,7 @@
 <div>
   <div
     *ngIf="detectors.length > 0 && (issueDetectedViewModels.length > 0 || successfulViewModels.length > 0) || (getPendingDetectorCount() === 0 && loadingChildDetectors)"
-    class="list-wrapper" [ngClass]="{'list-wrapper-genie': withinGenie}">
+    [ngClass]="{'list-wrapper-genie': withinGenie}">
     <div class="list-item-wrapper" *ngIf="issueDetectedViewModels.length > 0">
       <div>
         <div class="list-text">
@@ -63,7 +63,7 @@
                       <markdown [data]="viewModel.insightDescription"></markdown>
                     </div>
                     <div footer>
-                      <div style="display: flex;align-items: center;margin-bottom:20px;">
+                      <div style="display: flex;align-items: center;margin-bottom:15px;">
                         <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" contentClass="mr-5"
                           (onClick)="openSolutionPanel(viewModel.model.title)">View Solutions</fab-primary-button>
                         <fab-link (onClick)="selectDetector(viewModel)">Go to detector</fab-link>
@@ -198,7 +198,9 @@
                     <span>{{viewModel.insightTitle}}</span>
                   </div>
                   <div footer>
-                    <fab-link (onClick)="selectDetector(viewModel)">Go to detector</fab-link>
+                    <div style="margin-bottom:15px;">
+                      <fab-link (onClick)="selectDetector(viewModel)">Go to detector</fab-link>
+                    </div>
                   </div>
                 </fab-card>
               </div>
@@ -225,7 +227,7 @@
     </documents-search>
   </div>
 
-  <div class="list-wrapper" *ngIf="supportDocumentRendered">
+  <div *ngIf="supportDocumentRendered">
     <div class="list-item-wrapper" *ngIf="supportDocumentRendered">
       <div class="stepper-circle stepper-circle-dark-blue">
         <i aria-hidden="true" class="fa fa-file-text-o"></i>
