@@ -347,7 +347,7 @@ export class SideNavComponent implements OnInit {
       }
     }
 
-    //Add an empty group for fixing toggling last group will expand/collapsible all groups bug 
+    //Add an empty group in last, for fixing toggling last group expand/collapsible all groups bug 
     groups.push({
       key:"empty",
       name: "empty",
