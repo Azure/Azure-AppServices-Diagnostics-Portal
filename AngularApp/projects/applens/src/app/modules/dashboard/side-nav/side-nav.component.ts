@@ -122,6 +122,10 @@ export class SideNavComponent implements OnInit {
     }
   ];
 
+  onShouldVirtualize = (props: IListProps) => {
+    return false;
+  }
+
   searchBoxStyles: ISearchBoxProps['styles'] = {
     root: {
       width: "250px"
@@ -223,7 +227,8 @@ export class SideNavComponent implements OnInit {
         this.categories = this.categories.sort((a, b) => {
           if (a.label === 'Analysis') return -1;
           if (a.label === 'Uncategorized') return 1;
-          return a.label > b.label ? 1 : -1
+          return a.label > b.label ? 1 : -1;
+          // if (a.label === 'Uncategorized') return -1;
         });
 
         this.collapsibleItemList = this.flatCategoriesList(this.categories);
@@ -341,6 +346,16 @@ export class SideNavComponent implements OnInit {
         group.count += 1;
       }
     }
+
+    //Add an empty group for fixing toggling last group will expand/collapsible all groups bug 
+    groups.push({
+      key:"empty",
+      name: "empty",
+      startIndex: list.length - 1,
+      count: 0,
+      isCollapsed: true
+    });
+
     return groups;
   }
 
