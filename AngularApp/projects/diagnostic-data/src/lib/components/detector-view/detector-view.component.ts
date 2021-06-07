@@ -223,7 +223,8 @@ export class DetectorViewComponent implements OnInit {
   protected loadDetector() {
     this.detectorResponseSubject.subscribe((data: DetectorResponse) => {
       let metadata: DetectorMetaData = data ? data.metadata : null;
-      this.detectorDataLocalCopy = data;
+      // this.detectorDataLocalCopy = data;
+      this.detectorDataLocalCopy = this.mergeDetectorListResponse(data);
       if (data) {
         this.detectorEventProperties = {
           'StartTime': this.startTime.toISOString(),
@@ -820,6 +821,37 @@ export class DetectorViewComponent implements OnInit {
     }
 
     return false;
+  }
+
+  //Merge all child detectors and put it into last place
+  private mergeDetectorListResponse(response: DetectorResponse):DetectorResponse {
+    if(!response || !response.dataset || !response.dataset.find(d => d.renderingProperties.type === RenderingType.DetectorList)) return response;
+    
+    const mergedResponse = {...response};
+    let lastIndex = 0;
+    const detectorIds:string[] = [];
+
+    for(let i = 0;i < response.dataset.length;i++){
+      const data = response.dataset[i];
+      const isVisible = (<Rendering>data.renderingProperties).isVisible;
+      if(data.renderingProperties.type === RenderingType.DetectorList && isVisible !== false){
+        lastIndex = i;
+        const detectors:string[] = data.renderingProperties.detectorIds ? data.renderingProperties.detectorIds : [];
+        detectorIds.push(...detectors);
+      }
+    }
+
+    const dataSet = mergedResponse.dataset.filter((data,index) => {
+      return data.renderingProperties.type !== RenderingType.DetectorList || index === lastIndex;
+    });
+
+    const detectorMetaData = dataSet.find(d => d.renderingProperties.type === RenderingType.DetectorList);
+    if(detectorMetaData){
+      detectorMetaData.renderingProperties.detectorIds = detectorIds;
+    }
+
+    mergedResponse.dataset = dataSet;
+    return mergedResponse;
   }
 }
 
