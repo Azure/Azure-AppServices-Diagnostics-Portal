@@ -85,9 +85,6 @@ export class MainComponent implements OnInit {
     return !this.resourceName || this.resourceName.length === 0;
   }
 
-  mandatoryStarPath:string = "../../../../assets/img/applens-skeleton/mandatory_star.svg";
-
-
   constructor(private _router: Router, private _http: HttpClient, private _detectorControlService: DetectorControlService) {
     this.endTime = moment.utc();
     this.startTime = this.endTime.clone().add(-1, 'days');
@@ -171,7 +168,7 @@ export class MainComponent implements OnInit {
   onSubmit() {
     this.resourceName = this.resourceName.trim();
 
-    if (this.selectedResourceType.displayName === "ARM Resource ID") {
+    if (this.selectedResourceType.displayName === "ARM resource ID") {
       this.resourceName = this.normalizeArmUriForRoute(this.resourceName, this.enabledResourceTypes);
     } else {
       this.errorMessage = "";
