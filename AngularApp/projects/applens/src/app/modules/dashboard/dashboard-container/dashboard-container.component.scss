@@ -32,3 +32,7 @@
     flex: 0 0 15px;
     text-align: center;
 }
+
+.observer-link > a:focus {
+    border: 1px solid black;
+}
