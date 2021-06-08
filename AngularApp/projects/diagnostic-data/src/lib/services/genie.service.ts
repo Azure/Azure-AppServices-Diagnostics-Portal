@@ -1,4 +1,5 @@
 import { Injectable} from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -17,4 +18,6 @@ export class GenieGlobals {
     getUserAlias():string {
         return "";
     }
+
+    showCommAlertSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 }

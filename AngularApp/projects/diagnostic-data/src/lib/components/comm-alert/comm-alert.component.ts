@@ -4,6 +4,7 @@ import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagn
 import { Communication, CommunicationStatus } from '../../models/communication';
 import { CommsService } from '../../services/comms.service';
 import { MessageBarType, PanelType } from 'office-ui-fabric-react';
+import { GenieGlobals } from '../../services/genie.service';
 const moment = momentNs;
 
 @Component({
@@ -45,7 +46,7 @@ export class CommAlertComponent implements OnInit {
         }
     }
 
-    constructor(private commsService: CommsService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
+    constructor(private commsService: CommsService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig,private genieGlobals:GenieGlobals) {
         this.commAlertToShow = null;
         this.commAlertTitle = '';
         this.isPublic = config.isPublic;
@@ -62,6 +63,7 @@ export class CommAlertComponent implements OnInit {
                 this.commAlertToShow = commAlert;
                 this.isAlertExpanded = this.autoExpand && this.commAlertToShow.isExpanded;
                 this.commPublishedTime = moment.utc(this.commAlertToShow.publishedTime).format('YYYY-MM-DD HH:mm A');
+                this.genieGlobals.showCommAlertSubject.next(true);
 
                 if (commAlert.status === CommunicationStatus.Active) {
                     this.commAlertTitle = this.activeAlertTitle;
