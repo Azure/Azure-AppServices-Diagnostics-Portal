@@ -15,10 +15,10 @@ export class L2SideNavComponent implements OnInit {
     return this.type !== L2SideNavType.None;
   }
   openL2SideNav: boolean = false;
+  panelMarginTop: number = 130;
   panelStyles: IPanelProps['styles'] = {
     root: {
       marginLeft: "70px",
-      marginTop: "130px"
     },
     main: {
       boxShadow: "none"
@@ -34,6 +34,10 @@ export class L2SideNavComponent implements OnInit {
     this._applensGlobal.openL2SideNavSubject.subscribe(type => {
       this.type = type;
     });
+    this._applensGlobal.showCommAlertSubject.subscribe(showCommAlert => {
+      this.panelMarginTop = showCommAlert ? 200 : 130;
+      this.panelStyles["root"].marginTop = `${this.panelMarginTop}px`;
+    })
   }
 
   dismissSideNav() {

@@ -228,7 +228,6 @@ export class SideNavComponent implements OnInit {
           if (a.label === 'Analysis') return -1;
           if (a.label === 'Uncategorized') return 1;
           return a.label > b.label ? 1 : -1;
-          // if (a.label === 'Uncategorized') return -1;
         });
 
         this.collapsibleItemList = this.flatCategoriesList(this.categories);
