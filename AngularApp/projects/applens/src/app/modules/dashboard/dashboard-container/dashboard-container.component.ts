@@ -49,7 +49,6 @@ export class DashboardContainerComponent implements OnInit {
         this.updateVentAndLinuxInfo();
       }
     });
-    this._applensGlobal.dashboardTitleSubject.next("Overview");
   }
 
   updateVentAndLinuxInfo() {

@@ -12,6 +12,9 @@ export class ApplensGlobal {
 
     dashboardTitleSubject:BehaviorSubject<string> = new BehaviorSubject<string>("");
 
+    showCommAlertSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+
     openFeedback:boolean = false;
     getDetectorName():string {
         const detectorId = this._route.firstChild.firstChild.firstChild.firstChild.firstChild.snapshot.params["detector"];
