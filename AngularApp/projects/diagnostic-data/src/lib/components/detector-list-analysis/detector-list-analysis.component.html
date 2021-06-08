@@ -181,7 +181,7 @@
     </ng-container> -->
     <div class="list-item-wrapper" *ngIf="successfulViewModels.length > 0">
       <div>
-        <collapsible-list-fabric [collapsed]="true" [title]="'Successful Checks'">
+        <collapsible-list-fabric [collapsed]="issueDetectedViewModels.length > 0 ||  getPendingDetectorCount() > 0" [title]="'Successful Checks'">
           <collapsible-list-item body>
             <div class="list-text">
               <div *ngFor="let viewModel of successfulViewModels" style="margin-bottom: 8px;">
