@@ -67,6 +67,7 @@ side-nav {
     left: 70px;
     width: calc(100% - 70px);
     padding: 30px 20px;
+    overflow-y: auto;
 }
 
 .avatar:hover {
