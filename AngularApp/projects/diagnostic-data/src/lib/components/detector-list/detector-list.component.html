@@ -83,9 +83,8 @@
 </div>
 
 <br />
-
 <div *ngIf="successfulViewModels.length > 0">
-  <collapsible-list-fabric [collapsed]="true" [title]="'Successful Checks'">
+  <collapsible-list-fabric [collapsed]="issueDetectedViewModels.length > 0 || loading === LoadingStatus.Loading" [title]="'Successful Checks'">
     <collapsible-list-item body>
       <div class="list-text">
         <div *ngFor="let viewModel of successfulViewModels" style="margin-bottom: 8px;">
