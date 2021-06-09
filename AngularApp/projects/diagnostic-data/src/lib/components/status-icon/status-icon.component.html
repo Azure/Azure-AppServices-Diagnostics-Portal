@@ -1,4 +1,4 @@
-<div class="status-icon">
+<div class="status-icon" [style.margin-top.px]="size/4">
   <i class="fa fa-circle-o-notch fa-spin" *ngIf="loading === LoadingStatus.Loading" [style.font-size.px]="size"></i>
   <i *ngIf="loading === LoadingStatus.Success" [ngClass]="statusIcon" [style.width.px]="size" [style.height.px]="size"></i>
 </div>
