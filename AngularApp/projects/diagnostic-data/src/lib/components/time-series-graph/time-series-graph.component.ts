@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DataTableDataType, DiagnosticData, TimeSeriesRendering, DataTableResponseObject, RenderingType } from '../../models/detector';
+import { DataTableDataType, DiagnosticData, TimeSeriesRendering, DataTableResponseObject, RenderingType, MetricType } from '../../models/detector';
 import { GraphSeries, GraphPoint } from '../nvd3-graph/nvd3-graph.component';
 import { HighchartsData, HighchartGraphSeries } from '../highcharts-graph/highcharts-graph.component';
 import { DataRenderBaseComponent, DataRenderer } from '../data-render-base/data-render-base.component';
@@ -41,8 +41,7 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
     useHighchart: boolean = true;
 
     timeGrain: momentNs.Duration;
-    // showMetrics: boolean = false;
-    showMetrics: boolean = true;
+    metricType: MetricType;
     processData(data: DiagnosticData) {
         super.processData(data);
 
@@ -57,9 +56,7 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
             this.customizeXAxis = this.graphOptions && this.graphOptions.customizeX && this.graphOptions.customizeX === 'true';
             this.timeGrain = this._getInitialTimegrain();
             this.dataTable = data.table;
-            if(this.renderingProperties.showMetrics != undefined) {
-                this.showMetrics = this.renderingProperties.showMetrics;
-            }
+            this.metricType = this.renderingProperties.metricType;
             this._processDiagnosticData(data);
             this.selectSeries();
         }

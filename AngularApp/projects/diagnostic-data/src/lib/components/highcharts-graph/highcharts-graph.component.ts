@@ -1,6 +1,6 @@
 import * as momentNs from 'moment';
 import { Component, Input, OnInit, HostListener, ElementRef, Output, EventEmitter } from '@angular/core';
-import { TimeSeriesType } from '../../models/detector';
+import { MetricType, TimeSeriesType } from '../../models/detector';
 import HC_exporting from 'highcharts/modules/exporting';
 import AccessibilityModule from 'highcharts/modules/accessibility';
 import { DetectorControlService } from '../../services/detector-control.service';
@@ -27,6 +27,7 @@ export class HighchartsGraphComponent implements OnInit {
     Highcharts: typeof Highcharts = Highcharts;
     options: any;
 
+    MetricType = MetricType;
 
     @Input() HighchartData: any = [];
 
@@ -40,7 +41,7 @@ export class HighchartsGraphComponent implements OnInit {
 
     @Input() endTime: momentNs.Moment;
 
-    @Input() showMetrics: boolean;
+    @Input() metricType: MetricType;
     private _xAxisPlotBands: xAxisPlotBand[] = null;
     @Input() public set xAxisPlotBands(value: xAxisPlotBand[]) {
         this._xAxisPlotBands = [];
@@ -207,7 +208,7 @@ export class HighchartsGraphComponent implements OnInit {
 
     private getCurrentChartContainerId(): string {
         if (this.el.nativeElement.getElementsByClassName('highcharts-container') && this.el.nativeElement.getElementsByClassName('highcharts-container').length > 0) {
-            return this.el.nativeElement.getElementsByClassName('highcharts-container')[0].id;;
+            return this.el.nativeElement.getElementsByClassName('highcharts-container')[0].id;
         }
         else {
             return '';
@@ -237,6 +238,7 @@ export class HighchartsGraphComponent implements OnInit {
             chart.customNamespace = {};
             chart.customNamespace["toggleSelectionButton"] = chart.renderer.button(
                 "None", null, -10, function () {
+                    // console.log("chart width", `${chart.plotWidth - 20}`);
                     var series = chart.series;
                     var statusToSet = this.text && this.text.textStr && this.text.textStr === "All" ? true : false;
                     for (var i = 0; i < series.length; i++) {
@@ -272,7 +274,8 @@ export class HighchartsGraphComponent implements OnInit {
                 namespace["toggleSelectionButton"].attr({
                     role: 'button',
                     tabindex: -1,
-                    x: chart.plotWidth - 20,
+                    x: chart.container.offsetWidth - 20,
+                    // r: 0,
                     "aria-label": "Deselect all the series",
                 });
             }
@@ -519,9 +522,12 @@ export class HighchartsGraphComponent implements OnInit {
             let chart = <Highcharts.Chart>Highcharts.charts[i];
             if (chart) {
                 if (currentId === chart.container.id) {
-                    if (chart.hoverPoint && chart.hoverPoint.category) xAxisValue = Number.parseFloat(chart.hoverPoint.category);
+                    if (chart.hoverPoint && chart.hoverPoint.category) {
+                        xAxisValue = Number.parseFloat(chart.hoverPoint.category);
+                    }
                     chart.xAxis[0].crosshair = false;
                     this.highChartsHoverService.hoverXAxisValue.next(xAxisValue);
+                    console.log(chart.hoverPoint);
 
                     break;
                 }
@@ -551,7 +557,7 @@ export class HighchartsGraphComponent implements OnInit {
 
 
     private updateLabel(xAxisValue: number) {
-        if (!this.showMetrics) return;
+        if (this.metricType === MetricType.None) return;
         //Mouse hover to outside of graph
         if (xAxisValue === undefined || xAxisValue === null) {
             this.hoverData.forEach(data => {
@@ -636,7 +642,7 @@ export class HighchartsGraphComponent implements OnInit {
             this.options.forceX = [this.startTime, this.endTime];
         }
 
-        if (this.showMetrics) {
+        if (this.metricType !== MetricType.None) {
             this.options.tooltip.formatter = this.renderTooltipCallback
         }
     }
@@ -728,12 +734,13 @@ export class HighchartsGraphComponent implements OnInit {
                         var chart: any = this;
                         chart.customNamespace["toggleSelectionButton"].attr({
                             x: this.plotWidth - 20,
+                            // x:0
                         });
                     },
                 },
             },
             legend: {
-                enabled: !this.showMetrics,
+                enabled: this.metricType !== MetricType.None,
                 align: 'center',
                 layout: 'horizontal',
                 verticalAlign: 'bottom',
@@ -801,7 +808,7 @@ export class HighchartsGraphComponent implements OnInit {
                 buttons: {
                     contextButton: {
                         enabled: false,
-                    }
+                    }, 
                 },
 
             },

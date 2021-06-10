@@ -5,7 +5,7 @@
   <i class="fa fa-circle-o-notch fa-spin"></i>
 </div>
 
-<div *ngIf="showMetrics && hoverData.length > 0" style="display: flex; flex-wrap: wrap;">
+<div *ngIf="metricType !== MetricType.None && hoverData.length > 0" style="display: flex; flex-wrap: wrap;">
   <ng-container *ngFor="let data of hoverData;let i = index;">
     <div (mouseenter)="selectSeries(i)" (mouseleave)="leaveSeries()" style="border-left:10px solid; width: 150px;padding-left: 5px;margin-right: 16px;" [ngStyle]="{'border-left-color' : data.color, 'opacity': data.isSelect ? '1' : '0.3'}">
       <div style="overflow-wrap: break-word;font-size: 10px;"><strong>{{data.name}}</strong></div>

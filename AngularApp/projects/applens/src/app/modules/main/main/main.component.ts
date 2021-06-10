@@ -168,7 +168,8 @@ export class MainComponent implements OnInit {
   onSubmit() {
     this.resourceName = this.resourceName.trim();
 
-    if (this.selectedResourceType.displayName === "ARM resource ID") {
+    //If it is ARM resource id
+    if (this.selectedResourceType === this.resourceTypes[2]) {
       this.resourceName = this.normalizeArmUriForRoute(this.resourceName, this.enabledResourceTypes);
     } else {
       this.errorMessage = "";
