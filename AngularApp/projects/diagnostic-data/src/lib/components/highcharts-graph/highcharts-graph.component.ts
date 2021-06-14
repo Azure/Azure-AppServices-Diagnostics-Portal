@@ -1,5 +1,5 @@
 import * as momentNs from 'moment';
-import { Component, Input, OnInit, HostListener, ElementRef, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, HostListener, ElementRef, Output, EventEmitter, Pipe, PipeTransform } from '@angular/core';
 import { MetricType, TimeSeriesType } from '../../models/detector';
 import HC_exporting from 'highcharts/modules/exporting';
 import AccessibilityModule from 'highcharts/modules/accessibility';
@@ -55,7 +55,7 @@ export class HighchartsGraphComponent implements OnInit {
         return this._xAxisPlotBands;
     }
 
-    public hoverData: { name: string, value: string, color: string,isSelect: boolean }[] = [];
+    public hoverData: { name: string, value: number, color: string, isSelect: boolean, defaultValue: number }[] = [];
     public static chartProperties: { [chartContainerId: string]: KeyValue<string, any>[] } = {};
     public static getChartProperty(propertyName: string, chartContainerId: string): any {
         if (chartContainerId != '') {
@@ -230,7 +230,7 @@ export class HighchartsGraphComponent implements OnInit {
         }
         return null;
     }
-    
+
     highchartCallback(): Highcharts.ChartLoadCallbackFunction {
         let _this = this;
         return function (e) {
@@ -268,7 +268,7 @@ export class HighchartsGraphComponent implements OnInit {
                     color: '#015cda'
                 }
             }, null, null, null, true).add();
-    
+
             var namespace = chart.customNamespace || {};
             if (namespace["toggleSelectionButton"]) {
                 namespace["toggleSelectionButton"].attr({
@@ -282,7 +282,7 @@ export class HighchartsGraphComponent implements OnInit {
             var ToggleSelectionButton = function toggleSelectionButton(chart) {
                 this.initBase(chart);
             };
-    
+
             ToggleSelectionButton.prototype = new Highcharts.AccessibilityComponent();
             Highcharts.extend(ToggleSelectionButton.prototype, {
                 // Define keyboard navigation for this component
@@ -291,7 +291,7 @@ export class HighchartsGraphComponent implements OnInit {
                         chart = this.chart,
                         namespace = chart.customNamespace || {},
                         component = this;
-    
+
                     return new Highcharts.KeyboardNavigationHandler(chart, {
                         keyCodeMap: [
                             // On arrow/tab we just move to the next chart element.
@@ -304,7 +304,7 @@ export class HighchartsGraphComponent implements OnInit {
                                         'prev' : 'next'
                                 ];
                             }],
-    
+
                             // Space/enter means we click the button
                             [[
                                 keys.space, keys.enter
@@ -318,7 +318,7 @@ export class HighchartsGraphComponent implements OnInit {
                                 return this.response.success;
                             }]
                         ],
-    
+
                         // Focus button initially
                         init: function () {
                             var buttonElement = namespace["toggleSelectionButton"] &&
@@ -330,7 +330,7 @@ export class HighchartsGraphComponent implements OnInit {
                     });
                 }
             });
-    
+
             chart.update({
                 accessibility: {
                     customComponents: {
@@ -343,7 +343,7 @@ export class HighchartsGraphComponent implements OnInit {
             });
         };
     }
-    
+
     private customChartSelectionCallbackFunction: Highcharts.ChartSelectionCallbackFunction = (event: Highcharts.ChartSelectionContextObject) => {
         if (this._zoomBehavior & zoomBehaviors.FireXAxisSelectionEvent) {
             if (!!event.xAxis) {
@@ -492,18 +492,23 @@ export class HighchartsGraphComponent implements OnInit {
             let currentCharts = this.el.nativeElement.getElementsByClassName('highcharts-container');
             const currentChartId = currentCharts[0].id;
             this.highChartsHoverService.hoverXAxisValue.subscribe(data => {
-                this.updateLabel(data);
+                this.updateMetric(data);
             });
 
 
 
-            const chart = Highcharts.charts.find(c => c && c.container.id === currentChartId);
+            const chart = <Highcharts.Chart>Highcharts.charts.find(c => c && c.container.id === currentChartId);
             if (!chart) return;
-            chart.series.forEach(item => {
+
+            chart.series.forEach(series => {
+                const data: number[] = series.data.map(point => point.options.y);
+                const defaultValue = this.getMetricsDefaultValue(data);
                 this.hoverData.push({
-                    name: item.name,
-                    color: item.color,
-                    value: "--",
+                    name: series.name,
+                    //Workaround,no color property in highchart ts definition
+                    color: (<any>series).color,
+                    value: defaultValue,
+                    defaultValue: defaultValue,
                     isSelect: true
                 });
             });
@@ -527,8 +532,25 @@ export class HighchartsGraphComponent implements OnInit {
                     }
                     chart.xAxis[0].crosshair = false;
                     this.highChartsHoverService.hoverXAxisValue.next(xAxisValue);
-                    console.log(chart.hoverPoint);
-
+                    
+                    const yAxisValue = chart.hoverPoint.options.y;
+                    const hoverIndex = chart.hoverPoint.colorIndex;
+                    const series = chart.series;
+                    if(xAxisValue != undefined && xAxisValue != null) {
+                        this.hoverData.forEach(h => h.isSelect = false);
+                        this.hoverData[hoverIndex].isSelect = true;
+                        //Find all series with same xAxisValue, its yAxisValue is close(<5% diff), then set it to select, other series set to unselect
+                        chart.series.forEach((s,index) => {
+                            const points = s.data;
+                            const point = points.find(p => p.options.x === xAxisValue);
+                            if(point && ((point.y - yAxisValue)/yAxisValue < 0.01 || (point.y === 0 && yAxisValue === 0))){
+                                this.hoverData[index].isSelect = true;
+                            }
+                        });
+                        console.log(this.hoverData);
+                    }else {
+                        this.hoverData.forEach(h => h.isSelect = true);
+                    }
                     break;
                 }
             }
@@ -556,22 +578,22 @@ export class HighchartsGraphComponent implements OnInit {
     }
 
 
-    private updateLabel(xAxisValue: number) {
+    private updateMetric(xAxisValue: number) {
         if (this.metricType === MetricType.None) return;
         //Mouse hover to outside of graph
         if (xAxisValue === undefined || xAxisValue === null) {
             this.hoverData.forEach(data => {
-                data.value = "--";
+                data.value = data.defaultValue;
             });
             return;
         }
-        const chart:any = this.getCurrentChart();
+        const chart: any = this.getCurrentChart();
         if (!chart) return;
         const xAxisIndex = chart.series[0].xData.findIndex(item => item === xAxisValue);
         if (xAxisIndex < 0) return;
         this.hoverData.forEach((data, legendIndex) => {
             const value = chart.series[legendIndex].data[xAxisIndex].y
-            data.value = value.toFixed(2).toString()
+            data.value = value;
         });
     }
 
@@ -740,7 +762,7 @@ export class HighchartsGraphComponent implements OnInit {
                 },
             },
             legend: {
-                enabled: this.metricType !== MetricType.None,
+                enabled: this.metricType === MetricType.None,
                 align: 'center',
                 layout: 'horizontal',
                 verticalAlign: 'bottom',
@@ -808,7 +830,7 @@ export class HighchartsGraphComponent implements OnInit {
                 buttons: {
                     contextButton: {
                         enabled: false,
-                    }, 
+                    },
                 },
 
             },
@@ -870,23 +892,51 @@ export class HighchartsGraphComponent implements OnInit {
         } as Highcharts.Options
     }
 
-    selectSeries(index: number) {
+    selectMetric(index: number) {
         const chart = this.getCurrentChart();
-        chart.series.forEach((s,i) => {
+        chart.series.forEach((s, i) => {
             s.setVisible(i === index, false);
         });
-        
-        this.hoverData.forEach((d,i) => {
+
+        this.hoverData.forEach((d, i) => {
             d.isSelect = i === index;
         });
     }
 
-    leaveSeries() {
+    leaveMetric() {
         const chart = this.getCurrentChart();
-        chart.series.forEach(s => s.setVisible(true,false));
+        chart.series.forEach(s => s.setVisible(true, false));
         this.hoverData.forEach(h => h.isSelect = true);
     }
+
+    private getMetricsDefaultValue(data: number[]): number {
+        switch (this.metricType) {
+            case MetricType.Avg:
+                const sum = data.reduce((a, b) => a + b, 0);
+                return sum / data.length;
+            case MetricType.Min:
+                return Math.min(...data);
+            case MetricType.Max:
+                return Math.max(...data);
+            case MetricType.Sum:
+                return data.reduce((a, b) => a + b, 0);
+
+            case MetricType.None:
+            default:
+                return null;
+        }
+    }
 }
+
+@Pipe({ name: "chartMetricPipe" })
+export class ChartMetricPipe implements PipeTransform {
+    transform(num: number): string {
+        const decimalLength = 2;
+        const n = Math.floor(num * Math.pow(10,decimalLength))/Math.pow(10,decimalLength);
+        return `${n.toFixed(2)}`;
+    }
+}
+
 
 export interface GraphPoint {
     x: momentNs.Moment;
