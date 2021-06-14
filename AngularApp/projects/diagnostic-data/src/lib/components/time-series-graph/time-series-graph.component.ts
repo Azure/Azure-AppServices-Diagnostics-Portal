@@ -41,7 +41,7 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
     useHighchart: boolean = true;
 
     timeGrain: momentNs.Duration;
-    metricType: MetricType;
+    metricType: MetricType = MetricType.Avg;
     processData(data: DiagnosticData) {
         super.processData(data);
 
@@ -53,10 +53,13 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
                 this.useHighchart = this.graphOptions && this.graphOptions.useHighchart && this.graphOptions.useHighchart === "true";
             }
 
+            if(this.renderingProperties.metricType != undefined) {
+                this.metricType = this.renderingProperties.metricType;
+            }
+
             this.customizeXAxis = this.graphOptions && this.graphOptions.customizeX && this.graphOptions.customizeX === 'true';
             this.timeGrain = this._getInitialTimegrain();
             this.dataTable = data.table;
-            this.metricType = this.renderingProperties.metricType;
             this._processDiagnosticData(data);
             this.selectSeries();
         }
