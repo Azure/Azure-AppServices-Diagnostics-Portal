@@ -42,7 +42,7 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
 
   timeGrainInMinutes: number = 5;
   useHighchart: boolean = true;
-  metricType: MetricType;
+  metricType: MetricType = MetricType.Avg;
   processData(data: DiagnosticData) {
     super.processData(data);
 
@@ -67,8 +67,10 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
       {
         this.useHighchart = this.graphOptions && this.graphOptions.useHighchart &&  this.graphOptions.useHighchart === "true";
       }
-      this.metricType = this.renderingProperties.metricType;
-      
+
+      if(this.renderingProperties.metricType != undefined) {
+        this.metricType = this.renderingProperties.metricType;
+      }
     }
   }
 
