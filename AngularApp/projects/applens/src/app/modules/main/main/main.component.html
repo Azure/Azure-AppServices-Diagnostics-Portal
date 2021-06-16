@@ -1,8 +1,12 @@
 <l1-side-nav [isInLandingPage]="true"></l1-side-nav>
 <div class="main-container">
   <div class="main-row">
+    <div *ngIf="userGivenName" class="welcome-word">Welcome to Applens, {{userGivenName}}!</div>
     <div class="main-content">
-      <h3>Select a resource to begin troubleshooting:</h3>
+      <div class="main-content-header">
+        <img src="assets/img/applens-skeleton/main/troubleshoot.svg" alt="troubleshoot" class="mr-3">
+        <h3>Select a resource to begin troubleshooting:</h3>
+      </div>
       <div>
         <div class="section">
           <label for="landing-page-service-type">
@@ -19,7 +23,8 @@
           </label>
           <div id="landing-page-resource">
             <fab-text-field [ariaLabel]="selectedResourceType.resourceTypeLabel" [(value)]="resourceName"
-              [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel" (keyup.enter)="onSubmit()"></fab-text-field>
+              [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel" (keyup.enter)="onSubmit()">
+            </fab-text-field>
             <div *ngIf="errorMessage!== ''" class="mt-3 error-message-container">
               <status-icon [status]="status"></status-icon><span class="ml-3 error-message">{{errorMessage}}</span>
             </div>
@@ -35,9 +40,11 @@
         </div>
 
         <div class="section">
-          <fab-primary-button contentStyle="border-radius: 2px;" [disabled]="disableSubmitButton" (click)="onSubmit()">Continue</fab-primary-button>
+          <fab-primary-button contentStyle="border-radius: 2px;" [disabled]="disableSubmitButton" (click)="onSubmit()">
+            Continue</fab-primary-button>
         </div>
       </div>
+
 
     </div>
     <div class="col-md-6" *ngIf="showCaseCleansingOption">
