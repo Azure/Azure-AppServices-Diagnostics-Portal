@@ -20,14 +20,25 @@
 .main-content {
     display: flex;
     flex-direction: column;
-    margin: 0px auto;width: 600px;
+    margin: 0px auto;
+    width: 600px;
     background: #ffffff;
     padding: 28px 48px;
 }
 
-.main-content > h3 {
+.main-content-header {
+    display: flex;
+    align-items: baseline;
+}
+
+.main-content-header > h3 {
     font-size: 16px;
     font-weight: 600;
+}
+
+.main-content-header > img {
+    width: 22px;
+    height: 22px;
 }
 
 .dropdown-menu > .disabled {
@@ -77,4 +88,11 @@
 
 .required {
     color: #a4262c;
+}
+
+.welcome-word{
+    margin: 20px auto;
+    width: 600px;
+    font-weight: 600;
+    font-size: 16px;
 }

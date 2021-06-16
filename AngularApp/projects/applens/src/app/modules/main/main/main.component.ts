@@ -8,6 +8,7 @@ import { HttpClient } from '@angular/common/http';
 import { IDropdownOption } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
 import { DetectorControlService, HealthStatus } from 'diagnostic-data';
+import { AdalService } from 'adal-angular4';
 const moment = momentNs;
 
 @Component({
@@ -84,8 +85,10 @@ export class MainComponent implements OnInit {
   get disableSubmitButton(): boolean {
     return !this.resourceName || this.resourceName.length === 0;
   }
+  troubleShootIcon:string = "../../../../assets/img/applens-skeleton/main/troubleshoot.svg";
+  userGivenName:string = "";
 
-  constructor(private _router: Router, private _http: HttpClient, private _detectorControlService: DetectorControlService) {
+  constructor(private _router: Router, private _http: HttpClient, private _detectorControlService: DetectorControlService,private _adalService:AdalService) {
     this.endTime = moment.utc();
     this.startTime = this.endTime.clone().add(-1, 'days');
     this.inIFrame = window.parent !== window;
@@ -110,10 +113,14 @@ export class MainComponent implements OnInit {
         ariaLabel: displayName
       });
     });
+
     this._detectorControlService.timePickerStrSub.subscribe(s => {
       this.timePickerStr = s;
       this._detectorControlService.timeRangeErrorString
     });
+
+    this.userGivenName = this._adalService.userInfo.profile.given_name;
+
   }
 
   selectResourceType(type: ResourceTypeState) {
