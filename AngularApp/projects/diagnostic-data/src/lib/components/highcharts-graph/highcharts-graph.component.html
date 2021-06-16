@@ -1,5 +1,5 @@
 <highcharts-chart *ngIf="HighchartData && !loading" [Highcharts]="Highcharts" [options]="options"
-  style="display: block;">
+  style="display: block;" (mouseleave)="leaveMetric()">
 </highcharts-chart>
 <div *ngIf="!HighchartData || loading" style="height:200px">
   <i class="fa fa-circle-o-notch fa-spin"></i>
