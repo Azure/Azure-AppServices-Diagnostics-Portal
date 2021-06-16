@@ -534,22 +534,20 @@ export class HighchartsGraphComponent implements OnInit {
                     this.highChartsHoverService.hoverXAxisValue.next(xAxisValue);
                     
                     const yAxisValue = chart.hoverPoint.options.y;
-                    const hoverIndex = chart.hoverPoint.colorIndex;
-                    const series = chart.series;
                     if(xAxisValue != undefined && xAxisValue != null) {
                         this.hoverData.forEach(h => h.isSelect = false);
-                        this.hoverData[hoverIndex].isSelect = true;
-                        //Find all series with same xAxisValue, its yAxisValue is close(<5% diff), then set it to select, other series set to unselect
+                        //Find all series with same xAxisValue, its yAxisValue is close(<5% diff), then set metric to select
                         chart.series.forEach((s,index) => {
                             const points = s.data;
                             const point = points.find(p => p.options.x === xAxisValue);
-                            if(point && ((point.y - yAxisValue)/yAxisValue < 0.01 || (point.y === 0 && yAxisValue === 0))){
-                                this.hoverData[index].isSelect = true;
-                            }
+                            // if(point && ((point.y - yAxisValue)/yAxisValue < 0.01 || (point.y === 0 && yAxisValue === 0))){
+                            //     this.hoverData[index].isSelect = true;
+                            // }else {
+                            //     this.hoverData[index].isSelect = false;
+                            // }
+                            this.hoverData[index].isSelect = point && point.y === yAxisValue;
                         });
                         console.log(this.hoverData);
-                    }else {
-                        this.hoverData.forEach(h => h.isSelect = true);
                     }
                     break;
                 }
@@ -573,7 +571,7 @@ export class HighchartsGraphComponent implements OnInit {
     }
 
     private renderTooltipCallback: Highcharts.TooltipFormatterCallbackFunction = function (tooltip) {
-        const formattedDate = moment.utc(this.x).format("dddd, MMM DD,HH:mm");
+        const formattedDate = moment.utc(this.x).format("MM-DD,HH:mm");
         return formattedDate;
     }
 
@@ -609,8 +607,8 @@ export class HighchartsGraphComponent implements OnInit {
             // "Stack" by "percent".
             switch (this.chartType as TimeSeriesType) {
                 case TimeSeriesType.StackedAreaGraph:
-                    type = 'area';
-                    stacking = 'normal';
+                    // type = 'area';
+                    // stacking = 'normal';
                     break;
                 case TimeSeriesType.StackedBarGraph:
                     type = 'column';
