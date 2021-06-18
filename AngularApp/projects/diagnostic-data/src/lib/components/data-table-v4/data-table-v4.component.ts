@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { DiagnosticData, DataTableRendering, TableColumnOption, DataTableResponseObject } from '../../models/detector';
+import { DiagnosticData, DataTableRendering, DataTableResponseObject } from '../../models/detector';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
+import { TableColumnOption } from '../../models/data-table';
 
 
 @Component({
