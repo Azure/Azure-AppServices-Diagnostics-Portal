@@ -21,6 +21,7 @@ export class DataTableV4Component extends DataRenderBaseComponent {
   allowColumnSearch: boolean = false;
   tableHeight: string = "";
   tableDescription: string = "";
+  searchPlaceholder: string = "";
 
   protected processData(data: DiagnosticData) {
     super.processData(data);
@@ -31,6 +32,7 @@ export class DataTableV4Component extends DataRenderBaseComponent {
     this.allowColumnSearch = this.renderingProperties.allowColumnSearch;
     this.tableHeight = this.renderingProperties.height || "";
     this.tableDescription = this.renderingProperties.description || "";
+    this.searchPlaceholder = this.renderingProperties.searchPlaceholder || "";
   }
 }
 
