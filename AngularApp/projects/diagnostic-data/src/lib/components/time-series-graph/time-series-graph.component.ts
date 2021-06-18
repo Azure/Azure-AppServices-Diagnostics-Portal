@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { DataTableDataType, DiagnosticData, TimeSeriesRendering, DataTableResponseObject, RenderingType, MetricType } from '../../models/detector';
+import { DataTableDataType, DiagnosticData, TimeSeriesRendering, DataTableResponseObject, RenderingType } from '../../models/detector';
 import { GraphSeries, GraphPoint } from '../nvd3-graph/nvd3-graph.component';
 import { HighchartsData, HighchartGraphSeries } from '../highcharts-graph/highcharts-graph.component';
 import { DataRenderBaseComponent, DataRenderer } from '../data-render-base/data-render-base.component';
-import { TimeSeries, TablePoint, HighChartTimeSeries } from '../../models/time-series';
+import { TimeSeries, TablePoint, HighChartTimeSeries, MetricType } from '../../models/time-series';
 import * as momentNs from 'moment';
 import { TimeUtilities } from '../../utilities/time-utilities';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
