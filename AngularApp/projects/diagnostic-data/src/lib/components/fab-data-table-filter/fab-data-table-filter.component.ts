@@ -1,7 +1,7 @@
 import { FabCheckboxComponent } from '@angular-react/fabric';
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { DirectionalHint, IButtonStyles, IChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react';
-import { TableFilterSelectionOption, TableFilter } from '../../models/detector';
+import { TableFilterSelectionOption, TableFilter } from '../../models/data-table';
 
 const all = "all";
 

@@ -1,10 +1,10 @@
 import * as momentNs from 'moment';
 import { Component, Input, OnInit, HostListener, ElementRef, Output, EventEmitter, Pipe, PipeTransform } from '@angular/core';
-import { MetricType, TimeSeriesType } from '../../models/detector';
+import { TimeSeriesType } from '../../models/detector';
 import HC_exporting from 'highcharts/modules/exporting';
 import AccessibilityModule from 'highcharts/modules/accessibility';
 import { DetectorControlService } from '../../services/detector-control.service';
-import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection } from '../../models/time-series';
+import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection,MetricType } from '../../models/time-series';
 import { KeyValue } from '@angular/common';
 import { PointerEventObject } from 'highcharts';
 import { interval, Subscription } from 'rxjs';

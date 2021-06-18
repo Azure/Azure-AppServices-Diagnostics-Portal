@@ -2,7 +2,8 @@ import { FabDetailsListComponent, FabSearchBoxComponent } from '@angular-react/f
 import { AfterContentInit, Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { DetailsListLayoutMode, IColumn, IListProps, ISelection, SelectionMode, Selection } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
-import { DataTableResponseObject, TableColumnOption, TableFilter, TableFilterSelectionOption } from '../../models/detector';
+import { DataTableResponseObject } from '../../models/detector';
+import { TableColumnOption, TableFilter, TableFilterSelectionOption } from '../../models/data-table';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 
 
@@ -29,7 +30,7 @@ export class FabDataTableComponent implements AfterContentInit {
   @Input("searchPlaceholder") private _searchPlaceholder: string = "";
 
   get searchPlaceholder() {
-    if(this._searchPlaceholder && this._searchPlaceholder.length > 0) {
+    if (this._searchPlaceholder && this._searchPlaceholder.length > 0) {
       return this._searchPlaceholder;
     }
     return "Search by keywords";

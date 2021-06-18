@@ -1,5 +1,7 @@
 import * as momentNs from 'moment';
-import { Solution } from '../components/solution/solution';
+import { Solution, SolutionButtonOption } from '../components/solution/solution';
+import { TableColumnOption } from './data-table';
+import { MetricType } from './time-series';
 
 export interface ArmObject {
     id: string;
@@ -157,23 +159,6 @@ export interface DataTableRendering extends Rendering {
     searchPlaceholder: string;
 }
 
-export enum TableFilterSelectionOption {
-    None = 0,
-    Single,
-    Multiple
-}
-
-export interface TableFilter {
-    selectionOption: TableFilterSelectionOption;
-    name: string;
-    defaultSelection: string[];
-}
-
-export interface TableColumnOption extends TableFilter {
-    minWidth: number;
-    maxWidth: number;
-    visible: boolean;
-}
 
 export interface TimeSeriesRendering extends Rendering {
     defaultValue: number;
@@ -206,6 +191,7 @@ export interface InsightsRendering extends Rendering {
     valueColumnName: string;
     typeColumnName: string;
     isBackgroundPainted: boolean;
+    solutionButtonOption: SolutionButtonOption;
 }
 
 export interface NotificationRendering extends Rendering {
@@ -265,11 +251,3 @@ export const DowntimeInteractionSource = {
     DefaultFromQueryParams: 'DefaultFromQueryParams',
     DefaultFromUI: 'DefaultFromUI'
 };
-
-export enum MetricType {
-        None,
-        Avg,
-        Min,
-        Max,
-        Sum,
-}
