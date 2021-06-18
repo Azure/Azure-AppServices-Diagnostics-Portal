@@ -7,7 +7,10 @@
       <div header>
         <div style="display: flex;align-items: center;min-height: 40px;">
           <status-icon class="mr-3" [status]="insight.status"></status-icon>
-          <div><strong>{{insight.title}}</strong></div>
+          <div class="mr-3"><strong>{{insight.title}}</strong></div>
+          <div *ngIf="hasSolutions(insight) && solutionButtonPosition === SolutionButtonPosition.NextToTitle">
+            <ng-container [ngTemplateOutlet]="solutionButton" [ngTemplateOutletContext]="{'insight':insight}"></ng-container>
+          </div>
         </div>
       </div>
 
@@ -26,8 +29,8 @@
         </table>
       </div>
 
-      <div *ngIf="hasSolutions(insight)" footer>
-        <fab-primary-button (onClick)="openSolutionPanel(insight)">View Solutions</fab-primary-button>
+      <div *ngIf="hasSolutions(insight) && solutionButtonPosition === SolutionButtonPosition.Bottom" footer>
+        <ng-container [ngTemplateOutlet]="solutionButton" [ngTemplateOutletContext]="{'insight':insight}"></ng-container>
       </div>
     </fab-card>
   </div>
@@ -44,4 +47,16 @@
 <!-- If there is no title, do not use container. Note this is called from the else statement in the *ngIf above -->
 <ng-template #noContainer>
   <ng-container *ngTemplateOutlet="insightView"></ng-container>
+</ng-template>
+
+<!-- Show as Button or Link for solution -->
+<ng-template #solutionButton let-insight="insight">
+  <ng-container [ngSwitch]="solutionButtonType">
+    <ng-container *ngSwitchCase="SolutionButtonType.Button">
+      <fab-primary-button (onClick)="openSolutionPanel(insight)">{{solutionButtonLabel}}</fab-primary-button>
+    </ng-container>
+    <ng-container *ngSwitchCase="SolutionButtonType.Link">
+      <fab-link (onClick)="openSolutionPanel(insight)">{{solutionButtonLabel}}</fab-link>
+    </ng-container>
+  </ng-container>
 </ng-template>
