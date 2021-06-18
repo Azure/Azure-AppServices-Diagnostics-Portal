@@ -13,6 +13,12 @@ export class StatusStyles {
     public static InfoIcon: string = 'ib-blueinfo';
     public static GiftIcon: string = 'fa-gift';
 
+
+    public static CriticalBackground: string = '#FEF0F1';
+    public static WarningBackground: string = '#FFF8F0';
+    public static HealthyBackground: string = '#F8FFF0';
+    public static InfoBackground: string = '#F0F6FF';
+
     public static getColorByStatus(status: HealthStatus) {
         switch (status) {
             case HealthStatus.Critical:
@@ -42,6 +48,21 @@ export class StatusStyles {
                 return StatusStyles.InfoIcon;
             case HealthStatus.Onboarding:
                 return StatusStyles.GiftIcon;
+            default:
+                return '';
+        }
+    }
+
+    public static getBackgroundByStatus(status: HealthStatus) {
+        switch(status) {
+            case HealthStatus.Critical:
+                return StatusStyles.CriticalBackground;
+            case HealthStatus.Warning:
+                return StatusStyles.WarningBackground;
+            case HealthStatus.Success:
+                return StatusStyles.HealthyBackground;
+            case HealthStatus.Info:
+                return StatusStyles.Info;
             default:
                 return '';
         }

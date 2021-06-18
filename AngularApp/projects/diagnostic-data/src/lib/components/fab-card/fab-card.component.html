@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card" [ngStyle]="{'background': background !=='' ? background : ''}">
   <div *ngIf="isExpandable">
     <div class="btn-outer" [attr.aria-expanded]="ariaExpaned" [attr.aria-label]="ariaLabel">
       <button *ngIf="isExpandable" class="custom-caret" [class.custom-caret-down]="!expanded" (click)="toggleExpand()">
