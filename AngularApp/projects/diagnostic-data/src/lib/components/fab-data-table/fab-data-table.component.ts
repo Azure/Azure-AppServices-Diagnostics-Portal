@@ -18,14 +18,22 @@ export class FabDataTableComponent implements AfterContentInit {
 
   constructor(private telemetryService: TelemetryService) { }
 
-  @Input("table") private set _table(t:DataTableResponseObject){
-      this.tableObserve.next(t);
-  } ;
+  @Input("table") private set _table(t: DataTableResponseObject) {
+    this.tableObserve.next(t);
+  };
   @Input() columnOptions: TableColumnOption[] = [];
   @Input() descriptionColumnName: string = "";
   @Input() allowColumnSearch: boolean = false;
   @Input() tableHeight: string = "";
   @Input() description: string = "";
+  @Input("searchPlaceholder") private _searchPlaceholder: string = "";
+
+  get searchPlaceholder() {
+    if(this._searchPlaceholder && this._searchPlaceholder.length > 0) {
+      return this._searchPlaceholder;
+    }
+    return "Search by keywords";
+  }
 
   selectionText = "";
   rows: any[] = [];
@@ -33,7 +41,7 @@ export class FabDataTableComponent implements AfterContentInit {
   rowLimit = 25;
   columns: IColumn[] = [];
   searchTimeout: any;
-  searchAriaLabel = "Search by keywords";
+
   heightThreshold = window.innerHeight * 0.5;
   tableFilters: TableFilter[] = [];
   searchValue: string = "";
@@ -81,7 +89,7 @@ export class FabDataTableComponent implements AfterContentInit {
 
     this.fabDetailsList.selectionMode = this.descriptionColumnName ? SelectionMode.single : SelectionMode.none;
     this.fabDetailsList.selection = this.selection;
-    
+
     //Ideally,it should be enable if table is too large. 
     //But for now, if enabled, it will show only 40 rows
     this.fabDetailsList.onShouldVirtualize = (list: IListProps<any>) => {
@@ -113,8 +121,8 @@ export class FabDataTableComponent implements AfterContentInit {
     }
   }
 
-  private createFabricDataTableObjects(t:DataTableResponseObject) {
-    if(t === null) return;
+  private createFabricDataTableObjects(t: DataTableResponseObject) {
+    if (t === null) return;
     this.rows = [];
 
     t.rows.forEach(row => {
@@ -135,8 +143,8 @@ export class FabDataTableComponent implements AfterContentInit {
     });
   }
 
-  private initFabricTableColumns(t:DataTableResponseObject) {
-    if(!t || this.columns.length > 0) return;
+  private initFabricTableColumns(t: DataTableResponseObject) {
+    if (!t || this.columns.length > 0) return;
     let columns = t.columns.map(column =>
       <IColumn>{
         key: column.columnName,
@@ -161,7 +169,7 @@ export class FabDataTableComponent implements AfterContentInit {
       }
     }
     this.rows = temp;
-    
+
     const column = this.columns.find(col => col.isSorted === true);
     if (column) {
       this.sortColumn(column, column.isSortedDescending);
