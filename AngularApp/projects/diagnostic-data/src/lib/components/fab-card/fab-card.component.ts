@@ -9,6 +9,7 @@ export class FabCardComponent {
   @Input() isExpandable: boolean = true;
   @Input() expanded: boolean = true;
   @Input() ariaLabel: string = "";
+  @Input() background: string = "";
   get ariaExpaned() {
     if(!this.isExpandable) return null;
     return this.expanded ? "true" : "false";

@@ -3,7 +3,7 @@
      otherwise I will show it by itself -->
 <ng-template #insightView>
   <div *ngFor="let insight of insights">
-    <fab-card [isExpandable]="hasContent(insight)" [expanded]="hasContent(insight) && insight.isExpanded" [ariaLabel]="insight.title">
+    <fab-card [isExpandable]="hasContent(insight)" [expanded]="hasContent(insight) && insight.isExpanded" [ariaLabel]="insight.title" [background]="getInsightBackground(insight.status)">
       <div header>
         <div style="display: flex;align-items: center;min-height: 40px;">
           <status-icon class="mr-3" [status]="insight.status"></status-icon>

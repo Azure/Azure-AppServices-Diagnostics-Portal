@@ -7,6 +7,8 @@ import { TelemetryEventNames } from "../../services/telemetry/telemetry.common";
 import { LoadingStatus } from "../../models/loading";
 import { BehaviorSubject } from "rxjs";
 import { Solution } from "../solution/solution";
+import { StatusStyles } from "../../models/styles";
+
 
 
 @Component({
@@ -75,5 +77,12 @@ export class InsightsV4Component extends DataRenderBaseComponent {
     this.solutions = insight.solutions;
     this.solutionTitle = insight.title;
     this.solutionPanelOpenSubject.next(true);
+  }
+
+  getInsightBackground(status:HealthStatus):string {
+    if(this.renderingProperties.isBackgroundPainted) {
+      return StatusStyles.getBackgroundByStatus(status);
+    }
+    return "";
   }
 }
