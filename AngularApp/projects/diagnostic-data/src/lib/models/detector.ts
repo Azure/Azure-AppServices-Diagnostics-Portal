@@ -205,6 +205,7 @@ export interface InsightsRendering extends Rendering {
     nameColumnName: string;
     valueColumnName: string;
     typeColumnName: string;
+    isBackgroundPainted: boolean;
 }
 
 export interface NotificationRendering extends Rendering {
