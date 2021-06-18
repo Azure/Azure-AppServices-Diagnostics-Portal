@@ -1,8 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { DataTableDataType, DiagnosticData, TimeSeriesPerInstanceRendering, DataTableResponseObject, DataTableResponseColumn, MetricType } from '../../models/detector';
+import { DataTableDataType, DiagnosticData, TimeSeriesPerInstanceRendering, DataTableResponseObject, DataTableResponseColumn } from '../../models/detector';
 import { GraphSeries, GraphPoint } from '../nvd3-graph/nvd3-graph.component';
 import { DataRenderBaseComponent, DataRenderer } from '../data-render-base/data-render-base.component';
-import { InstanceDetails, DetailedInstanceTimeSeries, DetailedInstanceHighChartTimeSeries } from '../../models/time-series';
+import { InstanceDetails, DetailedInstanceTimeSeries, DetailedInstanceHighChartTimeSeries,MetricType } from '../../models/time-series';
 import { TimeZones, TimeUtilities } from '../../utilities/time-utilities';
 import * as momentNs from 'moment';
 import { HighchartsData, HighchartGraphSeries } from '../highcharts-graph/highcharts-graph.component';

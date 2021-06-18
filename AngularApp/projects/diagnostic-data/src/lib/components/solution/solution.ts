@@ -39,3 +39,19 @@ export class GoToBladeOptions {
     DetailBladeInputs: any;
     Extension?: string;
 }
+
+export interface SolutionButtonOption {
+    label: string;
+    type: SolutionButtonType;
+    position: SolutionButtonPosition;
+}
+
+export enum SolutionButtonType {
+    Button = "Button",
+    Link = "Link",
+}
+
+export enum SolutionButtonPosition {
+    Bottom,
+    NextToTitle
+}

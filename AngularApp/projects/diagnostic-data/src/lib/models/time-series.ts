@@ -98,3 +98,11 @@ export interface TablePoint {
   column: string;
   counterName: string;
 }
+
+export enum MetricType {
+  None,
+  Avg,
+  Min,
+  Max,
+  Sum,
+}
