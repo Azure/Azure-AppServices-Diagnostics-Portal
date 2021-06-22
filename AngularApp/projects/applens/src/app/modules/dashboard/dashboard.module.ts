@@ -59,6 +59,7 @@ import { DashboardContainerComponent } from './dashboard-container/dashboard-con
 import { L2SideNavComponent } from './l2-side-nav/l2-side-nav.component';
 import { ApplensCommandBarService } from './services/applens-command-bar.service';
 import { ApplensGlobal as ApplensGlobals } from '../../applens-global';
+import { ApplensDocsComponent } from './applens-docs/applens-docs.component';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<boolean>>{
@@ -108,6 +109,10 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
             {
                 path: 'createGist',
                 component: GistComponent
+            },
+            {
+                path: 'docs',
+                component: ApplensDocsComponent
             },
             {
                 path: 'gists/:gist',
@@ -327,12 +332,12 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         { provide: DiagnosticSiteService, useExisting: ResourceService },
         { provide: GenericResourceService, useExisting: ResourceService },
         { provide: SolutionService, useExisting: GenericSolutionService },
-        { provide: GenieGlobals, useExisting:ApplensGlobals }
+        { provide: GenieGlobals, useExisting: ApplensGlobals }
     ],
     declarations: [DashboardComponent, SideNavComponent, ResourceMenuItemComponent, ResourceHomeComponent, OnboardingFlowComponent, SearchTermAdditionComponent,
         SearchMenuPipe, TabDataComponent, TabDevelopComponent, TabCommonComponent, TabDataSourcesComponent, TabMonitoringComponent,
         TabMonitoringDevelopComponent, TabAnalyticsDevelopComponent, TabAnalyticsDashboardComponent, GistComponent, TabGistCommonComponent,
         TabGistDevelopComponent, TabChangelistComponent, GistChangelistComponent, TabAnalysisComponent, CategoryPageComponent, SupportTopicPageComponent,
-        SelfHelpContentComponent, UserProfileComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent, L2SideNavComponent]
+        SelfHelpContentComponent, UserProfileComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent, L2SideNavComponent, ApplensDocsComponent]
 })
 export class DashboardModule { }

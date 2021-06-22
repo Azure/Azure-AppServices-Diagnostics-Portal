@@ -3,15 +3,20 @@
     flex-direction: column;
     align-items: center;
     height: 60px;
-    justify-content: flex-end;
+    flex-direction: row;
 }
 
-.side-item-enable :hover {
+.side-item-expand {
+    justify-content: flex-start;
+    padding-left: 14px;
+}
+
+.side-item-collapse {
+    justify-content: center;
+}
+
+.side-item :hover {
     cursor: pointer;
-}
-
-.side-item-disable :hover {
-    cursor: not-allowed;
 }
 
 .side-item > img {
@@ -24,13 +29,13 @@
 }
 
 .highlight-side-item {
+    background: #cccccc;
     border-left: 4px solid #0C8FC7;
-    background: #DCDCDC;
 }
 
 .l1-side-nav {
     position: fixed;
-    width: 70px;
+    // width: 70px;
     left:0px;
     background: #EAEAEA;
     box-shadow: inset -1px 0px 0px rgba(0, 0, 0, 0.12);
