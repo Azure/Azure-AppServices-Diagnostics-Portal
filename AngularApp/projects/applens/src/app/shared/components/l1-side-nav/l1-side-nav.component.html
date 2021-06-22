@@ -1,11 +1,17 @@
-<nav class="l1-side-nav">
+<nav class="l1-side-nav" [ngStyle]="{'width': sideNavWidth + 'px' }">
   <div>
-    <div *ngFor="let item of sideItems" class="side-item" [class.side-item-disable]="!getItemEnabled(item)"
-      [class.side-item-enable]="getItemEnabled(item)" (click)="item.click()" type="button" (keyup.enter)="item.click()"
-      [tabindex]="getItemEnabled(item) ? 0 : -1" [attr.aria-label]="item.displayName"
-      [class.highlight-side-item]="getCurrentHighLightItem() === item.type">
-      <img [src]="getImageUrl(item)" [alt]="item.displayName">
-      <p class="mt-2">{{item.displayName}}</p>
+    <div class="side-item" [class.side-item-expand]="isExpand" [class.side-item-collapse]="!isExpand"  (click)="toggleSideNavExpand()" (keyup.enter)="toggleSideNavExpand()" tabindex="0">
+      <img src="assets/img/applens-skeleton/side-nav/hamburger.svg" alt="">
+    </div>
+
+
+    <div *ngFor="let item of sideItems" [ngStyle]="{'background' : item.subItems ? '#dcdcdc' : ''}">
+      <ng-container [ngTemplateOutlet]="sideItem" [ngTemplateOutletContext]="{'item':item}"></ng-container>
+      <ng-container *ngIf="item.subItems && item.subItems.length > 0"> 
+        <ng-container *ngFor="let subItem of item.subItems">
+          <ng-container [ngTemplateOutlet]="sideItem" [ngTemplateOutletContext]="{'item':subItem}"></ng-container>
+        </ng-container>
+      </ng-container>
     </div>
   </div>
 </nav>
@@ -20,3 +26,11 @@
     </div>
   </fab-dialog-footer>
 </fab-dialog>
+
+<ng-template #sideItem let-item="item">
+  <div class="side-item" [class.side-item-expand]="isExpand" [class.side-item-collapse]="!isExpand" (click)="clickSideItem(item)" type="button" (keyup.enter)="clickSideItem(item)" tabindex="0"
+    [attr.aria-label]="item.displayName">
+    <img [src]="item.iconPath" [alt]="item.displayName">
+    <div *ngIf="isExpand" class="ml-3">{{item.displayName}}</div>
+  </div>
+</ng-template>

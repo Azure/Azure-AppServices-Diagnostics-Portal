@@ -3,3 +3,5 @@ export enum L2SideNavType {
     Detectors,
     Develop
 }
+
+export const l2SideNavWidth = 310;
