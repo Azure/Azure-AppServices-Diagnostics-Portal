@@ -34,7 +34,7 @@
     </div>
   </nav>
 </header> -->
-<div class="dashboard-container">
+<div class="dashboard-container" [ngStyle]="getContainerStyle()">
   <!-- <section class="sidebar">
       <div class="user-panel" [class.active]="doesMatchCurrentRoute('home')">
         <div class="pull-left image" (click)="navigateTo('home/category')">
