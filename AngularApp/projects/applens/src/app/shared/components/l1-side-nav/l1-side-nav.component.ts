@@ -1,10 +1,15 @@
 import { Component, Input, OnInit, Optional } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { UriUtilities } from 'diagnostic-data';
 import { IDialogContentProps, IPanelProps, PanelType } from 'office-ui-fabric-react';
+import { filter } from 'rxjs/operators';
 import { ApplensGlobal } from '../../../applens-global';
+import { ApplensDocsComponent } from '../../../modules/dashboard/applens-docs/applens-docs.component';
 import { DashboardContainerComponent } from '../../../modules/dashboard/dashboard-container/dashboard-container.component';
-import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-nav-type';
+import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-nav';
+import { l1SideNavExpandWidth, l1SideNavCollapseWidth } from './l1-side-nav';
+
+const iconBasePath = "assets/img/applens-skeleton/side-nav";
 
 @Component({
   selector: 'l1-side-nav',
@@ -12,64 +17,44 @@ import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-na
   styleUrls: ['./l1-side-nav.component.scss']
 })
 export class L1SideNavComponent implements OnInit {
-  @Input() isInLandingPage: boolean = false;
+  isExpand: boolean = false;
+  get sideNavWidth() {
+    return this.isExpand ? l1SideNavExpandWidth : l1SideNavCollapseWidth
+  }
   sideItems: SideNavItem[] = [
     {
-      type: L1SideNavItemType.Home,
-      displayName: L1SideNavItemType[L1SideNavItemType.Home],
-      enabledInLandingPage: true,
-      click: () => {
-        this.dismissL2SideNav();
-        if (this.isInLandingPage) return;
-        this.showDialog = true;
-      }
-    },
-    {
-      type: L1SideNavItemType.Overview,
-      displayName: L1SideNavItemType[L1SideNavItemType.Overview],
-      enabledInLandingPage: false,
-      click: () => {
-        this.dismissL2SideNav();
-        if (this.isInLandingPage) return;
-        if (this._activatedRoute.parent) {
-          const params = this._activatedRoute.parent.snapshot.params;
-
-          const subscriptionId = params["subscriptionId"];
-          const resourceGroup = params["resourceGroup"];
-          const provider = params["provider"];
-          const resourceTypeName = params["resourceTypeName"];
-          const resourceName = params["resourceName"];
-
-          const url = `subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${provider}/${resourceTypeName}/${resourceName}`;
-
-          const queryParams = UriUtilities.removeChildDetectorStartAndEndTime(this._activatedRoute.snapshot.queryParams);
-
-          this._router.navigate([url], {
-            queryParams:queryParams
-          });
+      type: L1SideNavItemType.Resource,
+      displayName: "Resource",
+      iconPath: `${iconBasePath}/resource.svg`,
+      subItems: [
+        {
+          type: L1SideNavItemType.Overview,
+          displayName: "Overview",
+          iconPath: `${iconBasePath}/overview.svg`,
+          click: () => {
+            this.navigate("");
+          }
         }
-
-      }
+        , {
+          type: L1SideNavItemType.Detectors,
+          displayName: "Detectors",
+          iconPath: `${iconBasePath}/detectors.svg`,
+          click: () => {
+            this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.Detectors);
+          }
+        }
+      ]
     },
     {
-      type: L1SideNavItemType.Detectors,
-      displayName: L1SideNavItemType[L1SideNavItemType.Detectors],
-      enabledInLandingPage: false,
+      type: L1SideNavItemType.Docs,
+      displayName: "Documentation",
+      iconPath: `${iconBasePath}/docs.svg`,
       click: () => {
-        if(this.isInLandingPage) return;
-        this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.Detectors);
+        this.navigate("/docs")
       }
-    },
-    // {
-    //   type: L1SideNavType.Docs,
-    //   displayName: L1SideNavType[L1SideNavType.Docs],
-    //   enabledInLandingPage: true,
-    //   click: () => {
-    //     this.dismissL2SideNav();
-    //   }
-    // }
+    }
   ];
-  currentHightLightItem:L1SideNavItemType = null;
+  currentHightLightItem: L1SideNavItemType = null;
   showDialog: boolean = false;
   dialogTitle: string = "Are you sure to select a new resource?";
   dialogSubText: string = "You’ll lose access to current resource’s data. Are you sure to select a new resource?";
@@ -86,43 +71,44 @@ export class L1SideNavComponent implements OnInit {
       fontWeight: "600"
     },
     inner: {
-      textAlign:"left"
+      textAlign: "left"
     }
   }
 
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, @Optional() private _applensGlobal: ApplensGlobal) { }
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _applensGlobal: ApplensGlobal) { }
 
   ngOnInit() {
-  }
+    this._applensGlobal.expandL1SideNavSubject.subscribe(isExpand => {
+      this.isExpand = isExpand;
+    });
 
-  getItemEnabled(item: SideNavItem): boolean {
-    return !this.isInLandingPage || item.enabledInLandingPage;
+    // this._activatedRoute.params.subscribe(param => {
+    //   console.log(param);
+    // })
+    this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(e => {
+      this.getCurrentHighLightItem();
+    });
   }
-
-  getImageUrl(item: SideNavItem): string {
-    const basePath = "../../../../assets/img/applens-skeleton/side-nav";
-    const folder = this.getItemEnabled(item) ? 'enable' : 'disable';
-    const file = L1SideNavItemType[item.type].toLowerCase();
-    return `${basePath}/${folder}/${file}.svg`;
-  }
-
   getCurrentHighLightItem(): L1SideNavItemType {
-    if (this.isInLandingPage) {
-      return L1SideNavItemType.Home;
-    }
     const childRoute = this._activatedRoute.firstChild;
     if (childRoute && (childRoute.snapshot.params["analysisId"] || childRoute.snapshot.params["detector"])) {
       return L1SideNavItemType.Detectors;
     } else if (childRoute.component === DashboardContainerComponent) {
       return L1SideNavItemType.Overview;
+    } else if (childRoute.component === ApplensDocsComponent) {
+      return L1SideNavItemType.Docs;
     }
 
     return null;
   }
 
-  private checkIsLandingPage() {
-    const url = this._router.url.split("?")[0];
-    return url === "/";
+  clickSideItem(item: SideNavItem) {
+    this.dismissL2SideNav();
+    let sideItem = item.subItems && item.subItems.length > 0 ? item.subItems[0] : item;
+
+    if (typeof sideItem.click === "function") {
+      sideItem.click();
+    }
   }
 
   dismissDialog() {
@@ -130,8 +116,6 @@ export class L1SideNavComponent implements OnInit {
   }
 
   navigateToLandingPage() {
-    //Some issue with Resource.service,for now refresh whole page
-    // this._router.navigate(["/"]);
     window.location.href = "/"
     this.dismissDialog();
   }
@@ -139,17 +123,43 @@ export class L1SideNavComponent implements OnInit {
   dismissL2SideNav() {
     this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.None);
   }
+
+  private navigate(path: string) {
+    if (this._activatedRoute.parent) {
+      const params = this._activatedRoute.parent.snapshot.params;
+
+      const subscriptionId = params["subscriptionId"];
+      const resourceGroup = params["resourceGroup"];
+      const provider = params["provider"];
+      const resourceTypeName = params["resourceTypeName"];
+      const resourceName = params["resourceName"];
+
+      const url = `subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${provider}/${resourceTypeName}/${resourceName}/${path}`;
+
+      const queryParams = UriUtilities.removeChildDetectorStartAndEndTime(this._activatedRoute.snapshot.queryParams);
+
+      this._router.navigate([url], {
+        queryParams: queryParams
+      });
+    }
+  }
+
+  toggleSideNavExpand() {
+    this._applensGlobal.expandL1SideNavSubject.next(!this.isExpand);
+  }
 }
 
 interface SideNavItem {
-  type: L1SideNavItemType
+  type: L1SideNavItemType;
   displayName: string;
-  enabledInLandingPage: boolean,
-  click: () => void,
+  iconPath: string;
+  click?: () => void,
+  subItems?: SideNavItem[],
 }
 
 enum L1SideNavItemType {
   Home,
+  Resource,
   Overview,
   Detectors,
   Docs
