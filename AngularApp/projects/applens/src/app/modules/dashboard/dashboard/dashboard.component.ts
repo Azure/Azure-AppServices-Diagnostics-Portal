@@ -9,11 +9,12 @@ import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from 
 import { UserInfo } from '../user-profile/user-profile.component';
 import { SearchService } from '../services/search.service';
 import { environment } from '../../../../environments/environment';
-import {DiagnosticApiService} from '../../../shared/services/diagnostic-api.service';
+import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ObserverService } from '../../../shared/services/observer.service';
 import { ICommandBarProps, PanelType } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';
-import { L2SideNavType } from '../l2-side-nav/l2-side-nav-type';
+import { L2SideNavType } from '../l2-side-nav/l2-side-nav';
+import { l1SideNavCollapseWidth, l1SideNavExpandWidth } from '../../../shared/components/l1-side-nav/l1-side-nav';
 
 @Component({
   selector: 'dashboard',
@@ -29,13 +30,13 @@ export class DashboardComponent implements OnDestroy {
   navigateSub: Subscription;
   userId: string = "";
   userName: string = "";
-  displayName: string="";
+  displayName: string = "";
   userPhotoSource: string = undefined;
 
   currentRoutePath: string[];
   resource: any;
   keys: string[];
-  observerLink: string="";
+  observerLink: string = "";
   showUserInformation: boolean;
   resourceReady: Observable<any>;
   resourceDetailsSub: Subscription;
@@ -44,9 +45,9 @@ export class DashboardComponent implements OnDestroy {
   width: string = "850px";
 
   panelStyles: any = {
-      root: {
-          marginTop: '50px',
-      }
+    root: {
+      marginTop: '50px',
+    }
   }
 
   commandBarStyles: ICommandBarProps["styles"] = {
@@ -55,13 +56,14 @@ export class DashboardComponent implements OnDestroy {
     }
   };
 
-  title:string = "";
-  showL2SideNav:boolean = false;
-  detectors:DetectorMetaData[] = [];
+  title: string = "";
+  showL2SideNav: boolean = false;
+  expandL1SideNav: boolean = false;
+  detectors: DetectorMetaData[] = [];
 
   constructor(public resourceService: ResourceService, private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
-    private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService,private _applensGlobal:ApplensGlobal) {
+    private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, private _applensGlobal: ApplensGlobal) {
     this.contentHeight = (window.innerHeight - 50) + 'px';
 
     this.navigateSub = this._navigator.OnDetectorNavigate.subscribe((detector: string) => {
@@ -92,7 +94,7 @@ export class DashboardComponent implements OnDestroy {
       if (!this._activatedRoute.queryParams['detectorQueryParams']) {
         routeParams['detectorQueryParams'] = this._activatedRoute.snapshot.queryParams['detectorQueryParams'];
       }
-      if (!this._activatedRoute.queryParams['searchTerm']){
+      if (!this._activatedRoute.queryParams['searchTerm']) {
         this._searchService.searchTerm = this._activatedRoute.snapshot.queryParams['searchTerm'];
         routeParams['searchTerm'] = this._activatedRoute.snapshot.queryParams['searchTerm'];
       }
@@ -100,7 +102,7 @@ export class DashboardComponent implements OnDestroy {
       this._router.navigate([], { queryParams: routeParams, queryParamsHandling: 'merge', relativeTo: this._activatedRoute });
     }
 
-    if((this.showUserInformation = environment.adal.enabled)){
+    if ((this.showUserInformation = environment.adal.enabled)) {
       let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
       this.userId = alias.replace('@microsoft.com', '');
       this._diagnosticService.getUserPhoto(this.userId).subscribe(image => {
@@ -125,26 +127,29 @@ export class DashboardComponent implements OnDestroy {
       this.showL2SideNav = type !== L2SideNavType.None;
     });
 
-    if (!!this._activatedRoute && !!this._activatedRoute.snapshot && !!this._activatedRoute.snapshot.queryParams && !!this._activatedRoute.snapshot.queryParams['l'])
-    {
-        this._diagnosticApiService.effectiveLocale = this._activatedRoute.snapshot.queryParams['l'].toString().toLowerCase();
+    this._applensGlobal.expandL1SideNavSubject.subscribe(isExpand => {
+      this.expandL1SideNav = isExpand;
+    });
+
+    if (!!this._activatedRoute && !!this._activatedRoute.snapshot && !!this._activatedRoute.snapshot.queryParams && !!this._activatedRoute.snapshot.queryParams['l']) {
+      this._diagnosticApiService.effectiveLocale = this._activatedRoute.snapshot.queryParams['l'].toString().toLowerCase();
     }
   }
 
 
-  triggerSearch(){
+  triggerSearch() {
     this._searchService.searchTerm = this._searchService.searchTerm.trim();
-    if (this._searchService.searchIsEnabled && this._searchService.searchTerm && this._searchService.searchTerm.length>3){
-      this.navigateTo(`search`, {searchTerm: this._searchService.searchTerm}, 'merge');
+    if (this._searchService.searchIsEnabled && this._searchService.searchTerm && this._searchService.searchTerm.length > 3) {
+      this.navigateTo(`search`, { searchTerm: this._searchService.searchTerm }, 'merge');
     }
   }
 
   navigateTo(path: string, queryParams?: any, queryParamsHandling?: any) {
     let navigationExtras: NavigationExtras = {
-        queryParamsHandling: queryParamsHandling || 'preserve',
-        preserveFragment: true,
-        relativeTo: this._activatedRoute,
-        queryParams: queryParams
+      queryParamsHandling: queryParamsHandling || 'preserve',
+      preserveFragment: true,
+      relativeTo: this._activatedRoute,
+      queryParams: queryParams
     };
 
     this._router.navigate([path], navigationExtras);
@@ -159,16 +164,14 @@ export class DashboardComponent implements OnDestroy {
   }
 
   openResourceInfoModal() {
-    if (this.keys.indexOf('VnetName') == -1 && this.resourceReady != null && this.resourceDetailsSub == null)
-    {
+    if (this.keys.indexOf('VnetName') == -1 && this.resourceReady != null && this.resourceDetailsSub == null) {
       this.resourceDetailsSub = this.resourceReady.subscribe(resource => {
         if (resource) {
           this._observerService.getSiteRequestDetails(this.resource.SiteName, this.resource.InternalStampName).subscribe(siteInfo => {
             this.resource['VnetName'] = siteInfo.details.vnetname;
             this.keys.push('VnetName');
 
-            if (this.resource['IsLinux'])
-            {
+            if (this.resource['IsLinux']) {
               this.resource['LinuxFxVersion'] = siteInfo.details.linuxfxversion;
               this.keys.push('LinuxFxVersion');
             }
@@ -200,29 +203,39 @@ export class DashboardComponent implements OnDestroy {
     this.navigateSub.unsubscribe();
   }
 
-  getTitle():string {
+  getTitle(): string {
     let title = "";
     const parms = this._activatedRoute.firstChild.snapshot.params;
-    if(parms["detector"] || parms["analysisId"]){
+    if (parms["detector"] || parms["analysisId"]) {
       const id = parms["detector"] || parms["analysisId"];
       const data = this.detectors.find(d => d.id === id);
-      title = data ? data.name : "" ;
-    }else {
+      title = data ? data.name : "";
+    } else {
       title = "Overview"
     }
     return title;
   }
+
+  getContainerStyle() {
+    const left = `${this.expandL1SideNav ? l1SideNavExpandWidth : l1SideNavCollapseWidth}px`;
+    const width = `calc(100% - ${left})`;
+
+    return {
+      'position': 'relative',
+      'left': left,
+      'width': width
+    }
+  }
 }
 
-@Pipe({name: 'formatResourceName'})
+@Pipe({ name: 'formatResourceName' })
 export class FormatResourceNamePipe implements PipeTransform {
-    transform(resourceName: string): string {
-        let displayedResourceName = resourceName;
-        if (resourceName && resourceName.length >= 35)
-        {
-            displayedResourceName = resourceName.substring(0, 35).concat("...");
-        }
-
-        return displayedResourceName;
+  transform(resourceName: string): string {
+    let displayedResourceName = resourceName;
+    if (resourceName && resourceName.length >= 35) {
+      displayedResourceName = resourceName.substring(0, 35).concat("...");
     }
+
+    return displayedResourceName;
+  }
 }

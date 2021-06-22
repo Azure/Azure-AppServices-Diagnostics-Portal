@@ -1,3 +1,5 @@
-<fab-panel [isOpen]="isSideNavOpen" [customWidth]="'310px'" [type]="panelType" [styles]="panelStyles" [focusTrapZoneProps]="panelFocusTrapZoneProps" [isLightDismiss]="true" [hasCloseButton]="false" (onDismissed)="dismissSideNav()" (onLightDismissClick)="dismissSideNav()" [isBlocking]="false">
-  <side-nav></side-nav>
-</fab-panel>
+<div>
+  <fab-panel #fabPanel [isOpen]="isSideNavOpen" [customWidth]="'310px'" [type]="panelType" [styles]="panelStyles" [focusTrapZoneProps]="panelFocusTrapZoneProps" [isLightDismiss]="true" [hasCloseButton]="false" (onDismissed)="dismissSideNav()" (onLightDismissClick)="dismissSideNav()" [isBlocking]="false">
+    <side-nav></side-nav>
+  </fab-panel>
+</div>
