@@ -116,7 +116,10 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
             },
             {
                 path: 'docs',
-                component: ApplensDocsComponent
+                component: ApplensDocsComponent,
+                data: {
+                    showTitle: false
+                }
             },
             {
                 path: 'gists/:gist',
