@@ -21,6 +21,10 @@ export class L1SideNavComponent implements OnInit {
   get sideNavWidth() {
     return this.isExpand ? l1SideNavExpandWidth : l1SideNavCollapseWidth
   }
+  get expandSubItem() {
+    if (this.currentHightLightItem === null) return null;
+    return this.getParentSideItem(this.currentHightLightItem);
+  }
   sideItems: SideNavItem[] = [
     {
       type: L1SideNavItemType.Resource,
@@ -32,7 +36,7 @@ export class L1SideNavComponent implements OnInit {
           displayName: "Overview",
           iconPath: `${iconBasePath}/overview.svg`,
           click: () => {
-            this.navigate("");
+            this.navigateTo("");
           }
         }
         , {
@@ -40,17 +44,23 @@ export class L1SideNavComponent implements OnInit {
           displayName: "Detectors",
           iconPath: `${iconBasePath}/detectors.svg`,
           click: () => {
+            this.currentHightLightItem = L1SideNavItemType.Detectors;
             this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.Detectors);
           }
         }
       ]
     },
     {
+      type: L1SideNavItemType.Develop,
+      displayName: "Develop",
+      iconPath: `${iconBasePath}/develop.svg`
+    },
+    {
       type: L1SideNavItemType.Docs,
       displayName: "Documentation",
       iconPath: `${iconBasePath}/docs.svg`,
       click: () => {
-        this.navigate("/docs")
+        this.navigateTo("/docs")
       }
     }
   ];
@@ -82,12 +92,11 @@ export class L1SideNavComponent implements OnInit {
       this.isExpand = isExpand;
     });
 
-    // this._activatedRoute.params.subscribe(param => {
-    //   console.log(param);
-    // })
-    this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(e => {
-      this.getCurrentHighLightItem();
-    });
+    this.currentHightLightItem = this.getCurrentHighLightItem();
+
+    // this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(e => {
+    //   this.currentHightLightItem = this.getCurrentHighLightItem();
+    // });
   }
   getCurrentHighLightItem(): L1SideNavItemType {
     const childRoute = this._activatedRoute.firstChild;
@@ -104,7 +113,13 @@ export class L1SideNavComponent implements OnInit {
 
   clickSideItem(item: SideNavItem) {
     this.dismissL2SideNav();
-    let sideItem = item.subItems && item.subItems.length > 0 ? item.subItems[0] : item;
+    let sideItem = item;
+    if(item.subItems && item.subItems.length > 0) {
+      sideItem = item.subItems[0];
+      this.currentHightLightItem = item.subItems[0].type;
+    } else {
+      this.currentHightLightItem = item.type;
+    }
 
     if (typeof sideItem.click === "function") {
       sideItem.click();
@@ -124,7 +139,7 @@ export class L1SideNavComponent implements OnInit {
     this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.None);
   }
 
-  private navigate(path: string) {
+  private navigateTo(path: string) {
     if (this._activatedRoute.parent) {
       const params = this._activatedRoute.parent.snapshot.params;
 
@@ -147,14 +162,30 @@ export class L1SideNavComponent implements OnInit {
   toggleSideNavExpand() {
     this._applensGlobal.expandL1SideNavSubject.next(!this.isExpand);
   }
+
+  private getParentSideItem(type: L1SideNavItemType) {
+    //{item,parentItem}
+    const map = new Map<L1SideNavItemType, L1SideNavItemType>();
+    for (const item of this.sideItems) {
+      const parentItemType = item.type;
+      map.set(parentItemType, parentItemType);
+      if (item.subItems && item.subItems.length > 0) {
+        for (const subItem of item.subItems) {
+          const itemType = subItem.type;
+          map.set(itemType, parentItemType);
+        }
+      }
+    }
+    return map.get(type);
+  }
 }
 
 interface SideNavItem {
   type: L1SideNavItemType;
   displayName: string;
   iconPath: string;
-  click?: () => void,
-  subItems?: SideNavItem[],
+  click?: () => void;
+  subItems?: SideNavItem[];
 }
 
 enum L1SideNavItemType {
@@ -162,5 +193,6 @@ enum L1SideNavItemType {
   Resource,
   Overview,
   Detectors,
-  Docs
+  Docs,
+  Develop
 }

@@ -5,9 +5,9 @@
     </div>
 
 
-    <div *ngFor="let item of sideItems" [ngStyle]="{'background' : item.subItems ? '#dcdcdc' : ''}">
+    <div *ngFor="let item of sideItems" [ngStyle]="{'background' : item.subItems && expandSubItem === item.type ? '#dcdcdc' : ''}">
       <ng-container [ngTemplateOutlet]="sideItem" [ngTemplateOutletContext]="{'item':item}"></ng-container>
-      <ng-container *ngIf="item.subItems && item.subItems.length > 0"> 
+      <ng-container *ngIf="item.subItems && item.subItems.length > 0 && expandSubItem === item.type"> 
         <ng-container *ngFor="let subItem of item.subItems">
           <ng-container [ngTemplateOutlet]="sideItem" [ngTemplateOutletContext]="{'item':subItem}"></ng-container>
         </ng-container>
@@ -29,7 +29,7 @@
 
 <ng-template #sideItem let-item="item">
   <div class="side-item" [class.side-item-expand]="isExpand" [class.side-item-collapse]="!isExpand" (click)="clickSideItem(item)" type="button" (keyup.enter)="clickSideItem(item)" tabindex="0"
-    [attr.aria-label]="item.displayName">
+    [attr.aria-label]="item.displayName" [class.highlight-side-item]="currentHightLightItem === item.type">
     <img [src]="item.iconPath" [alt]="item.displayName">
     <div *ngIf="isExpand" class="ml-3">{{item.displayName}}</div>
   </div>
