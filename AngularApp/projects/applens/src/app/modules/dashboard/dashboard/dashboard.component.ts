@@ -15,6 +15,7 @@ import { ICommandBarProps, PanelType } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';
 import { L2SideNavType } from '../l2-side-nav/l2-side-nav';
 import { l1SideNavCollapseWidth, l1SideNavExpandWidth } from '../../../shared/components/l1-side-nav/l1-side-nav';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'dashboard',
@@ -43,7 +44,7 @@ export class DashboardComponent implements OnDestroy {
   openResourceInfoPanel: boolean = false;
   type: PanelType = PanelType.custom;
   width: string = "850px";
-
+  showTitle: boolean = true;
   panelStyles: any = {
     root: {
       marginTop: '50px',
@@ -119,8 +120,12 @@ export class DashboardComponent implements OnDestroy {
   ngOnInit() {
     this._diagnosticService.getDetectors().subscribe(detectors => {
       this.detectors = detectors;
-    })
+    });
 
+    this.updateShowTitle();
+    this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(e => {
+      this.updateShowTitle();
+    });
 
 
     this._applensGlobal.openL2SideNavSubject.subscribe(type => {
@@ -134,6 +139,13 @@ export class DashboardComponent implements OnDestroy {
     if (!!this._activatedRoute && !!this._activatedRoute.snapshot && !!this._activatedRoute.snapshot.queryParams && !!this._activatedRoute.snapshot.queryParams['l']) {
       this._diagnosticApiService.effectiveLocale = this._activatedRoute.snapshot.queryParams['l'].toString().toLowerCase();
     }
+
+    // this._activatedRoute.firstChild.data.subscribe(data => {
+    //   if(data["showTitle"] !== undefined){
+    //     this.showTitle = data["showTitle"]  
+    //   }
+    //   console.log(data);
+    // });
   }
 
 
@@ -225,6 +237,11 @@ export class DashboardComponent implements OnDestroy {
       'left': left,
       'width': width
     }
+  }
+
+  private updateShowTitle() {
+    const showTitle = this._activatedRoute.firstChild.snapshot.data["showTitle"];
+    this.showTitle = showTitle === undefined ? true : showTitle;
   }
 }
 

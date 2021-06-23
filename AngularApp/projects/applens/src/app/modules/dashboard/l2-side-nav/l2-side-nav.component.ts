@@ -48,8 +48,6 @@ export class L2SideNavComponent implements OnInit {
       if(this.fabPanelComponent && this.fabPanelComponent.styles){
         this.fabPanelComponent.styles = styles;
       }
-      
-      console.log("styles",styles);
     });
   }
 
