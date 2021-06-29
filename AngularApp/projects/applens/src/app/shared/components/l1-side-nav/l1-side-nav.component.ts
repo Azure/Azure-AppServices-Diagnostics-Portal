@@ -27,8 +27,8 @@ export class L1SideNavComponent implements OnInit {
   }
   sideItems: SideNavItem[] = [
     {
-      type: L1SideNavItemType.Resource,
-      displayName: "Resource",
+      type: L1SideNavItemType.Troubleshoot,
+      displayName: "Troubleshoot",
       iconPath: `${iconBasePath}/resource.svg`,
       subItems: [
         {
@@ -53,16 +53,18 @@ export class L1SideNavComponent implements OnInit {
     {
       type: L1SideNavItemType.Develop,
       displayName: "Develop",
-      iconPath: `${iconBasePath}/develop.svg`
+      iconPath: `${iconBasePath}/develop.svg`,
+      subItems: [
+        {
+          type: L1SideNavItemType.Docs,
+          displayName: "Documentation",
+          iconPath: `${iconBasePath}/docs.svg`,
+          click: () => {
+            this.navigateTo("/docs")
+          }
+        }
+      ]
     },
-    {
-      type: L1SideNavItemType.Docs,
-      displayName: "Documentation",
-      iconPath: `${iconBasePath}/docs.svg`,
-      click: () => {
-        this.navigateTo("/docs")
-      }
-    }
   ];
   currentHightLightItem: L1SideNavItemType = null;
   showDialog: boolean = false;
@@ -114,7 +116,7 @@ export class L1SideNavComponent implements OnInit {
   clickSideItem(item: SideNavItem) {
     this.dismissL2SideNav();
     let sideItem = item;
-    if(item.subItems && item.subItems.length > 0) {
+    if (item.subItems && item.subItems.length > 0) {
       sideItem = item.subItems[0];
       this.currentHightLightItem = item.subItems[0].type;
     } else {
@@ -189,8 +191,7 @@ interface SideNavItem {
 }
 
 enum L1SideNavItemType {
-  Home,
-  Resource,
+  Troubleshoot,
   Overview,
   Detectors,
   Docs,
