@@ -6,14 +6,12 @@ export enum TableFilterSelectionOption {
 
 export interface TableFilter {
     selectionOption: TableFilterSelectionOption;
-    columnName: string;
+    name: string;
     defaultSelection: string[];
 }
 
-export interface TableColumnOption {
-    name: string;
+export interface TableColumnOption extends TableFilter {
     minWidth: number;
     maxWidth: number;
-    selectionOption: TableFilterSelectionOption,
     visible: boolean;
 }
