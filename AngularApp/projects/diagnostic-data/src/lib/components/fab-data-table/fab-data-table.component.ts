@@ -72,54 +72,59 @@ export class FabDataTableComponent implements AfterContentInit {
   });
 
 
-
   ngAfterContentInit() {
-    if (this.columnOptions && this.columnOptions.length > 0) {
-      this.columnOptions.forEach((option) => {
-        if (this.validateFilterOption(option)) {
-          this.tableFilters.push({ columnName: option.name, selectionOption: option.selectionOption });
-          this.filtersMap.set(option.name, new Set<string>());
-        }
-      });
-    }
-
     this.tableObserve.subscribe(t => {
+      
       this.initFabricTableColumns(t);
+      
+
+      if (this.columnOptions && this.columnOptions.length > 0) {
+        this.columnOptions.forEach((option) => {
+          if (this.validateFilterOption(option)) {
+            this.tableFilters.push({ name: option.name, selectionOption: option.selectionOption, defaultSelection: option.defaultSelection });
+            this.filtersMap.set(option.name, new Set<string>());
+          }
+        });
+      }
+
       this.createFabricDataTableObjects(t);
+      
+
+      this.fabDetailsList.selectionMode = this.descriptionColumnName !== "" ? SelectionMode.single : SelectionMode.none;
+      this.fabDetailsList.selection = this.selection;
+
+      //Ideally,it should be enable if table is too large. 
+      //But for now, if enabled, it will show only 40 rows
+      this.fabDetailsList.onShouldVirtualize = (list: IListProps<any>) => {
+        // return this.rows.length > this.rowLimit ? true : false;
+        return false;
+      }
+
+
+      if (this.descriptionColumnName !== "") {
+        this.fabDetailsList.getRowAriaLabel = (row: any) => {
+          const descriptionName = this.descriptionColumnName;
+          return `${descriptionName} : ${row[descriptionName]}`;
+        }
+      }
+
+      let tableHeight = "";
+      if (this.estimateTableHeight() >= this.heightThreshold) {
+        tableHeight = `${this.heightThreshold}px`;
+      }
+      if (this.tableHeight !== "") {
+        tableHeight = this.tableHeight;
+      }
+      this.fabDetailsList.styles = { root: { height: tableHeight } };
+
+      this.fabDetailsList.layoutMode = DetailsListLayoutMode.justified;
+
+      if (this.rowsClone.length === 0) {
+        this.fabDetailsList.renderDetailsFooter = this.emptyTableFooter
+      }
     });
 
-    this.fabDetailsList.selectionMode = this.descriptionColumnName ? SelectionMode.single : SelectionMode.none;
-    this.fabDetailsList.selection = this.selection;
 
-    //Ideally,it should be enable if table is too large. 
-    //But for now, if enabled, it will show only 40 rows
-    this.fabDetailsList.onShouldVirtualize = (list: IListProps<any>) => {
-      // return this.rows.length > this.rowLimit ? true : false;
-      return false;
-    }
-
-
-    if (this.descriptionColumnName !== "") {
-      this.fabDetailsList.getRowAriaLabel = (row: any) => {
-        const descriptionName = this.descriptionColumnName;
-        return `${descriptionName} : ${row[descriptionName]}`;
-      }
-    }
-
-    let tableHeight = "";
-    if (this.estimateTableHeight() >= this.heightThreshold) {
-      tableHeight = `${this.heightThreshold}px`;
-    }
-    if (this.tableHeight !== "") {
-      tableHeight = this.tableHeight;
-    }
-    this.fabDetailsList.styles = { root: { height: tableHeight } };
-
-    this.fabDetailsList.layoutMode = DetailsListLayoutMode.justified;
-
-    if (this.rowsClone.length === 0) {
-      this.fabDetailsList.renderDetailsFooter = this.emptyTableFooter
-    }
   }
 
   private createFabricDataTableObjects(t: DataTableResponseObject) {
@@ -134,7 +139,8 @@ export class FabDataTableComponent implements AfterContentInit {
         rowObject[columnName] = row[i];
 
         if (this.filtersMap.has(columnName)) {
-          this.filtersMap.get(columnName).add(row[i]);
+          const value = `${row[i]}`;
+          this.filtersMap.get(columnName).add(value);
         }
       }
 
@@ -253,7 +259,8 @@ export class FabDataTableComponent implements AfterContentInit {
     //Only if filterSelectionMap has the column name and value for the cell value does not include in the set, return false
     const keys = Array.from(this.filterSelectionMap.keys());
     for (let key of keys) {
-      if (row[key] !== undefined && !this.filterSelectionMap.get(key).has(row[key])) return false;
+      const value = row[key];
+      if (value !== undefined && !this.filterSelectionMap.get(key).has(`${value}`)) return false;
     }
     return true;
   }
@@ -287,8 +294,8 @@ export class FabDataTableComponent implements AfterContentInit {
     if (option.selectionOption === undefined || option.selectionOption === TableFilterSelectionOption.None) {
       return false;
     }
-    const columns = this._table.columns;
-    return columns.findIndex(col => col.columnName === option.name) > -1;
+    const columns = this.columns;
+    return columns.findIndex(col => col.name === option.name) > -1;
   }
 
   isMarkdown(s: any) {
