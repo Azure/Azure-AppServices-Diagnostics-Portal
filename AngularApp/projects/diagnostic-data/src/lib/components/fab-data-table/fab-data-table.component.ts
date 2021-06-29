@@ -18,8 +18,10 @@ const columnMaxWidth: number = 250;
 export class FabDataTableComponent implements AfterContentInit {
 
   constructor(private telemetryService: TelemetryService) { }
+  table:DataTableResponseObject;
 
   @Input("table") private set _table(t: DataTableResponseObject) {
+    this.table = t;
     this.tableObserve.next(t);
   };
   @Input() columnOptions: TableColumnOption[] = [];
@@ -55,7 +57,6 @@ export class FabDataTableComponent implements AfterContentInit {
   @ViewChild('emptyTableFooter', { static: true }) emptyTableFooter: TemplateRef<any>;
   @ViewChild(FabSearchBoxComponent, { static: false }) fabSearchBox: any;
   tableObserve = new BehaviorSubject<DataTableResponseObject>(null);
-
   selection: ISelection = new Selection({
     onSelectionChanged: () => {
       const selectionCount = this.selection.getSelectedCount();
@@ -294,8 +295,8 @@ export class FabDataTableComponent implements AfterContentInit {
     if (option.selectionOption === undefined || option.selectionOption === TableFilterSelectionOption.None) {
       return false;
     }
-    const columns = this.columns;
-    return columns.findIndex(col => col.name === option.name) > -1;
+    const columns = this.table.columns;
+    return columns.findIndex(col => col.columnName === option.name) > -1;
   }
 
   isMarkdown(s: any) {
