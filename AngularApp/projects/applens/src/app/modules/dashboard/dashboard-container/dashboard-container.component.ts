@@ -30,18 +30,9 @@ export class DashboardContainerComponent implements OnInit {
 
         if (serviceInputs.resourceType.toString() === 'Microsoft.Web/hostingEnvironments' && this.resource && this.resource.Name) {
           this.observerLink = "https://wawsobserver.azurewebsites.windows.net/MiniEnvironments/" + this.resource.Name;
-          this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
-          this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
         }
         else if (serviceInputs.resourceType.toString() === 'Microsoft.Web/sites') {
-          this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
-          this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
-          this._diagnosticApiService.Location = this.resource["WebSpace"];
           this.observerLink = "https://wawsobserver.azurewebsites.windows.net/sites/" + this.resource.SiteName;
-
-          if (resource['IsXenon']) {
-            this._resourceService.imgSrc = this._resourceService.altIcons['Xenon'];
-          }
         }
 
         this.keys = Object.keys(this.resource);
