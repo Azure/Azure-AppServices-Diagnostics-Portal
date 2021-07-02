@@ -16,6 +16,7 @@ import { ApplensGlobal } from '../../../applens-global';
 import { L2SideNavType } from '../l2-side-nav/l2-side-nav';
 import { l1SideNavCollapseWidth, l1SideNavExpandWidth } from '../../../shared/components/l1-side-nav/l1-side-nav';
 import { filter } from 'rxjs/operators';
+import { StartupService } from '../../../shared/services/startup.service';
 
 @Component({
   selector: 'dashboard',
@@ -64,7 +65,7 @@ export class DashboardComponent implements OnDestroy {
 
   constructor(public resourceService: ResourceService, private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
-    private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, private _applensGlobal: ApplensGlobal) {
+    private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, private _applensGlobal: ApplensGlobal, private _startupService: StartupService, private _resourceService: ResourceService) {
     this.contentHeight = (window.innerHeight - 50) + 'px';
 
     this.navigateSub = this._navigator.OnDetectorNavigate.subscribe((detector: string) => {
@@ -140,6 +141,25 @@ export class DashboardComponent implements OnDestroy {
       this._diagnosticApiService.effectiveLocale = this._activatedRoute.snapshot.queryParams['l'].toString().toLowerCase();
     }
 
+    let serviceInputs = this._startupService.getInputs();
+    this._resourceService.getCurrentResource().subscribe(resource => {
+      this.resource = resource;
+      if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/hostingenvironments' && this.resource && this.resource.Name) {
+        this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
+        this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
+      } else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/sites') {
+        this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
+        this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
+        this._diagnosticApiService.Location = this.resource["WebSpace"];
+        if (resource['IsXenon']) {
+          this._resourceService.imgSrc = this._resourceService.altIcons['Xenon'];
+        }
+      } else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/workerapps') {
+        this._diagnosticApiService.GeomasterServiceAddress = this.resource.ServiceAddress;
+        this._diagnosticApiService.GeomasterName = this.resource.GeoMasterName;
+      }
+    });
+
     // this._activatedRoute.firstChild.data.subscribe(data => {
     //   if(data["showTitle"] !== undefined){
     //     this.showTitle = data["showTitle"]  
@@ -173,25 +193,6 @@ export class DashboardComponent implements OnDestroy {
 
   navigateToUserPage() {
     this.navigateTo(`users/${this.userId}`);
-  }
-
-  openResourceInfoModal() {
-    if (this.keys.indexOf('VnetName') == -1 && this.resourceReady != null && this.resourceDetailsSub == null) {
-      this.resourceDetailsSub = this.resourceReady.subscribe(resource => {
-        if (resource) {
-          this._observerService.getSiteRequestDetails(this.resource.SiteName, this.resource.InternalStampName).subscribe(siteInfo => {
-            this.resource['VnetName'] = siteInfo.details.vnetname;
-            this.keys.push('VnetName');
-
-            if (this.resource['IsLinux']) {
-              this.resource['LinuxFxVersion'] = siteInfo.details.linuxfxversion;
-              this.keys.push('LinuxFxVersion');
-            }
-          });
-        }
-      });
-    }
-    this.openResourceInfoPanel = true;
   }
 
   copyToClipboard(item, event) {
