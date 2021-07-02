@@ -30,8 +30,6 @@ export class DashboardContainerComponent implements OnInit {
 
         if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/hostingenvironments' && this.resource && this.resource.Name) {
           this.observerLink = "https://wawsobserver.azurewebsites.windows.net/MiniEnvironments/" + this.resource.Name;
-          this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
-          this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
         }
         else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/sites') {
           this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
