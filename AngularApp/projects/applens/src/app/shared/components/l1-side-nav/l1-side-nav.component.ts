@@ -2,12 +2,11 @@ import { Component, Input, OnInit, Optional } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { UriUtilities } from 'diagnostic-data';
 import { IDialogContentProps, IPanelProps, PanelType } from 'office-ui-fabric-react';
-import { filter } from 'rxjs/operators';
 import { ApplensGlobal } from '../../../applens-global';
 import { ApplensDocsComponent } from '../../../modules/dashboard/applens-docs/applens-docs.component';
 import { DashboardContainerComponent } from '../../../modules/dashboard/dashboard-container/dashboard-container.component';
 import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-nav';
-import { l1SideNavExpandWidth, l1SideNavCollapseWidth } from './l1-side-nav';
+import { l1SideNavExpandWidth, l1SideNavCollapseWidth,L1SideNavItemType } from './l1-side-nav';
 
 const iconBasePath = "assets/img/applens-skeleton/side-nav";
 
@@ -29,7 +28,7 @@ export class L1SideNavComponent implements OnInit {
     {
       type: L1SideNavItemType.Troubleshoot,
       displayName: "Troubleshoot",
-      iconPath: `${iconBasePath}/resource.svg`,
+      iconPath: `${iconBasePath}/troubleshoot.svg`,
       subItems: [
         {
           type: L1SideNavItemType.Overview,
@@ -56,11 +55,27 @@ export class L1SideNavComponent implements OnInit {
       iconPath: `${iconBasePath}/develop.svg`,
       subItems: [
         {
+          type: L1SideNavItemType.Develop_Detectors,
+          displayName: "Detectors",
+          iconPath: `${iconBasePath}/develop_detectors.svg`,
+          click: () => {
+            this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.Develop_Detectors);
+          }
+        },
+        {
+          type: L1SideNavItemType.Gits,
+          displayName: "Code Library(Gists)",
+          iconPath: `${iconBasePath}/gists.svg`,
+          click: () => {
+            this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.Gits);
+          }
+        },
+        {
           type: L1SideNavItemType.Docs,
           displayName: "Documentation",
           iconPath: `${iconBasePath}/docs.svg`,
           click: () => {
-            this.navigateTo("/docs")
+            this.navigateTo("/docs");
           }
         }
       ]
@@ -188,12 +203,4 @@ interface SideNavItem {
   iconPath: string;
   click?: () => void;
   subItems?: SideNavItem[];
-}
-
-enum L1SideNavItemType {
-  Troubleshoot,
-  Overview,
-  Detectors,
-  Docs,
-  Develop
 }

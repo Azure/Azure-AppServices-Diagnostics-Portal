@@ -30,7 +30,7 @@
 
 .highlight-side-item {
     background: #cccccc;
-    border-left: 4px solid #0C8FC7;
+    border-left: 4px solid #0078D4;
 }
 
 .l1-side-nav {
@@ -45,4 +45,8 @@
 .diag-footer {
     display: flex;
     margin-left: 28px;
+}
+
+.selected-section {
+    background: #dcdcdc;
 }
