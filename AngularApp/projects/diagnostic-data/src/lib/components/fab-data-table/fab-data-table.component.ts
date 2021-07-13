@@ -296,7 +296,7 @@ export class FabDataTableComponent implements AfterContentInit {
       return false;
     }
     const columns = this.table.columns;
-    return columns.findIndex(col => col.columnName === option.name) > -1;
+    return columns.findIndex(col => col.columnName === option.name) > -1 && this.table.rows.length > 0;
   }
 
   isMarkdown(s: any) {
