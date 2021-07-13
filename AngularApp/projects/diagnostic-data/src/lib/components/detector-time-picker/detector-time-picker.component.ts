@@ -7,6 +7,7 @@ import { DetectorControlService, TimePickerInfo, TimePickerOptions } from '../..
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { Observable } from 'rxjs';
+import { UriUtilities } from '../../utilities/uri-utilities';
 
 const moment = momentNs;
 
@@ -115,20 +116,17 @@ export class DetectorTimePickerComponent implements OnInit {
       if (validUpdate) {
         //Todo, update custom prefill info
       }
-      const queryParams = {...this.activatedRoute.snapshot.queryParams};
-      if(this.detectorControlService.startTime && this.detectorControlService.endTime) {
+      let queryParams = { ...this.activatedRoute.snapshot.queryParams };
+      const isSameStartAndEndTime = this.checkParamIsSameAsMoment(queryParams["startTime"], this.detectorControlService.startTime) && this.checkParamIsSameAsMoment(queryParams["endTime"], this.detectorControlService.endTime);
+      if (this.detectorControlService.startTime && this.detectorControlService.endTime) {
         queryParams["startTime"] = this.detectorControlService.startTime.format('YYYY-MM-DDTHH:mm');
         queryParams["endTime"] = this.detectorControlService.endTime.format('YYYY-MM-DDTHH:mm');
       }
-      if(this.detectorControlService.changeFromTimePicker) {
-        delete queryParams.startTimeChildDetector;
-        delete queryParams.endTimeChildDetector;
+      if (this.detectorControlService.changeFromTimePicker) {
+        queryParams = UriUtilities.removeChildDetectorStartAndEndTime(queryParams);
       }
 
-      //Temporary solution to get rid of route twice within main.component and site-finder.component
-      const url:string = this.router.url.split("?")[0];
-      // if(url !== "/" && !url.startsWith("/sites")){
-      if(!this.disableUpdateQueryParams){
+      if (!this.disableUpdateQueryParams && !isSameStartAndEndTime) {
         this.router.navigate([], { queryParams: queryParams, relativeTo: this.activatedRoute }).then((_) => {
           this.detectorControlService.changeFromTimePicker = false;
         });
@@ -243,6 +241,11 @@ export class DetectorTimePickerComponent implements OnInit {
     const hour = Number.parseInt(time.split(':')[0]) < 10 ? `0${Number.parseInt(time.split(':')[0])}` : `${Number.parseInt(time.split(':')[0])}`;
     const minute = Number.parseInt(time.split(':')[1]) < 10 ? `0${Number.parseInt(time.split(':')[1])}` : `${Number.parseInt(time.split(':')[1])}`;
     return `${dateString} ${hour}:${minute}`;
+  }
+
+  private checkParamIsSameAsMoment(param: string, moment: momentNs.Moment): boolean {
+    const m = momentNs.utc(param);
+    return m.isSame(moment);
   }
 
 
