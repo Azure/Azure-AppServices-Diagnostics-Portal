@@ -4,7 +4,7 @@ import { TimeSeriesType } from '../../models/detector';
 import HC_exporting from 'highcharts/modules/exporting';
 import AccessibilityModule from 'highcharts/modules/accessibility';
 import { DetectorControlService } from '../../services/detector-control.service';
-import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection,MetricType } from '../../models/time-series';
+import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection, MetricType } from '../../models/time-series';
 import { KeyValue } from '@angular/common';
 import { PointerEventObject } from 'highcharts';
 import { interval, Subscription } from 'rxjs';
@@ -532,12 +532,15 @@ export class HighchartsGraphComponent implements OnInit {
                     }
                     chart.xAxis[0].crosshair = false;
                     this.highChartsHoverService.hoverXAxisValue.next(xAxisValue);
-                    
-                    const yAxisValue = chart.hoverPoint.options.y;
-                    if(xAxisValue != undefined && xAxisValue != null) {
+
+                    let yAxisValue: number = null;
+                    if (chart.hoverPoint && chart.hoverPoint.options) {
+                        yAxisValue = chart.hoverPoint.options.y;
+                    }
+                    if (xAxisValue != undefined && xAxisValue != null && yAxisValue !== null) {
                         this.hoverData.forEach(h => h.isSelect = false);
                         //Find all series with same xAxisValue, its yAxisValue is close(<5% diff), then set metric to select
-                        chart.series.forEach((s,index) => {
+                        chart.series.forEach((s, index) => {
                             const points = s.data;
                             const point = points.find(p => p.options.x === xAxisValue);
                             // if(point && ((point.y - yAxisValue)/yAxisValue < 0.01 || (point.y === 0 && yAxisValue === 0))){
@@ -547,7 +550,6 @@ export class HighchartsGraphComponent implements OnInit {
                             // }
                             this.hoverData[index].isSelect = point && point.y === yAxisValue;
                         });
-                        console.log(this.hoverData);
                     }
                     break;
                 }
@@ -930,7 +932,7 @@ export class HighchartsGraphComponent implements OnInit {
 export class ChartMetricPipe implements PipeTransform {
     transform(num: number): string {
         const decimalLength = 2;
-        const n = Math.floor(num * Math.pow(10,decimalLength))/Math.pow(10,decimalLength);
+        const n = Math.floor(num * Math.pow(10, decimalLength)) / Math.pow(10, decimalLength);
         return `${n.toFixed(2)}`;
     }
 }
