@@ -58,10 +58,10 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   allSolutionsMap: Map<string, Solution[]> = new Map<string, Solution[]>();
   solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   allSolutions: Solution[] = [];
-  solutionTitle:string = "";
+  solutionTitle: string = "";
   loading = LoadingStatus.Loading;
 
-  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService,private _featureNavigationService:FeatureNavigationService) {
+  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _featureNavigationService: FeatureNavigationService) {
     super(telemetryService);
     this.isPublic = this.config && this.config.isPublic;
   }
@@ -103,26 +103,26 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   private getDetectorResponses(): void {
     this._diagnosticService.getDetectors(this.overrideResourceUri).subscribe(detectors => {
       this.startDetectorRendering(detectors, null, false);
-    },(error => {
-        if (this.overrideResourceUri !== "") {
-          const e = JSON.parse(error);
-          let code: string = "";
-          if (e && e.error && e.error.code) {
-            code = e.error.code;
-          }
-          switch (code) {
-            case "InvalidAuthenticationTokenTenant":
-              this.errorMsg = `No Access for resource ${this.resourceType} , please check your access`;
-              break;
-
-            case "":
-              break;
-
-            default:
-              this.errorMsg = code;
-              break;
-          }
+    }, (error => {
+      if (this.overrideResourceUri !== "") {
+        const e = JSON.parse(error);
+        let code: string = "";
+        if (e && e.error && e.error.code) {
+          code = e.error.code;
         }
+        switch (code) {
+          case "InvalidAuthenticationTokenTenant":
+            this.errorMsg = `No Access for resource ${this.resourceType} , please check your access`;
+            break;
+
+          case "":
+            break;
+
+          default:
+            this.errorMsg = code;
+            break;
+        }
+      }
     }));
   }
 
@@ -202,7 +202,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
     this.detectorMetaData = detectorList.filter(detector => this.renderingProperties.detectorIds.indexOf(detector.id) >= 0);
     this.detectorViewModels = this.detectorMetaData.map(detector => this.getDetectorViewModel(detector, this.renderingProperties.additionalParams, this.overrideResourceUri));
-    if(this.detectorViewModels.length === 0) {
+    if (this.detectorViewModels.length === 0) {
       this.loading = LoadingStatus.Success;
     }
     this.detectorViewModels.forEach((viewModel, index) => {
@@ -214,7 +214,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
           if (this.detectorViewModels[index].loadingStatus !== LoadingStatus.Failed) {
             if (this.detectorViewModels[index].status === HealthStatus.Critical || this.detectorViewModels[index].status === HealthStatus.Warning) {
-              this.getInsightSolutions(this.detectorViewModels[index]);
               let insightInfo = this.getDetectorInsightInfo(this.detectorViewModels[index]);
               let issueDetectedViewModel: DetectorViewModeWithInsightInfo = { model: this.detectorViewModels[index], ...insightInfo };
 
@@ -276,7 +275,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   }
 
   getDetectorInsightInfo(viewModel: DetectorViewModel): BasicInsightInfo {
-    let allInsights: Insight[] = InsightUtils.parseAllInsightsFromResponse(viewModel.response);
+    let allInsights: Insight[] = InsightUtils.parseAllInsightsFromResponse(viewModel.response, true);
     let insightInfo: BasicInsightInfo = {
       insightTitle: "",
       insightDescription: ""
@@ -295,22 +294,19 @@ export class DetectorListComponent extends DataRenderBaseComponent {
       insightInfo.insightTitle = detectorInsight.title;
       insightInfo.insightDescription = description;
     }
-    return insightInfo;
-  }
 
-  private getInsightSolutions(viewModel: DetectorViewModel) {
-    let allInsights: Insight[] = InsightUtils.parseAllInsightsFromResponse(viewModel.response);
     const solutions: Solution[] = [];
-      allInsights.forEach(i => {
-        if (i.solutions != null && i.solutions.length > 0) {
-          i.solutions.forEach(s => {
-            if (solutions.findIndex(x => x.Name === s.Name) === -1) {
-              solutions.push(s);
-            }
-          });
-          this.allSolutionsMap.set(viewModel.title, solutions);
-        }
-      });
+    allInsights.forEach(i => {
+      if (i.solutions != null && i.solutions.length > 0) {
+        i.solutions.forEach(s => {
+          if (solutions.findIndex(x => x.Name === s.Name) === -1) {
+            solutions.push(s);
+          }
+        });
+        this.allSolutionsMap.set(viewModel.title, solutions);
+      }
+    });
+    return insightInfo;
   }
 
   public selectDetector(viewModel: DetectorViewModeWithInsightInfo) {
@@ -334,7 +330,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         } else {
           const resourceId = this._diagnosticService.resourceId;
           const routeUrl = this.isPublic ? `resource${resourceId}/detectors/${targetDetector}` : `${resourceId}/detectors/${targetDetector}`;
-          this._router.navigate([routeUrl],{
+          this._router.navigate([routeUrl], {
             queryParams: queryParams
           });
         }
@@ -378,6 +374,6 @@ interface BasicInsightInfo {
   insightDescription: string;
 }
 
-interface DetectorViewModeWithInsightInfo extends BasicInsightInfo{
+interface DetectorViewModeWithInsightInfo extends BasicInsightInfo {
   model: DetectorViewModel;
 }
