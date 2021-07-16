@@ -237,7 +237,7 @@ export class SitesCategoryService extends CategoryService {
           createFlowForCategory: true,
           chatEnabled: false
         }
-      },
+      }
   ];
 
   constructor(private _resourceService: WebSitesService, private _websiteFilter: WebSiteFilter, private _armService: ArmService) {
@@ -266,16 +266,19 @@ export class SitesCategoryService extends CategoryService {
       );
     }
 
-    this._sitesCategories.push(this._getDiagnosticToolsCategory(this._resourceService.resourceIdForRouting));
+ //   this._sitesCategories.push(this._getDiagnosticToolsCategory(this._resourceService.resourceIdForRouting));
+    this._getDiagnosticToolsCategory(this._resourceService.resourceIdForRouting).forEach((diagnosticCategory) => {
+        this._sitesCategories.push(diagnosticCategory);
+    });
 
     this._addCategories(
       this._websiteFilter.transform(this._sitesCategories)
     );
   }
 
-  private _getDiagnosticToolsCategory(siteId: string): SiteFilteredItem<Category> {
-    return <SiteFilteredItem<Category>>{
-      appType: AppType.WebApp | AppType.FunctionApp,
+  private _getDiagnosticToolsCategory(siteId: string): SiteFilteredItem<Category>[] {
+    return <SiteFilteredItem<Category>[]> [{
+      appType: AppType.WebApp,
       platform: OperatingSystem.any,
       stack: '',
       sku: Sku.All,
@@ -290,7 +293,24 @@ export class SitesCategoryService extends CategoryService {
         createFlowForCategory: false,
         overridePath: `resource${siteId}/diagnosticTools`
       }
-    };
+    },
+    {
+        appType: AppType.FunctionApp,
+        platform: OperatingSystem.linux,
+        stack: '',
+        sku: Sku.PaidDedicated,
+        hostingEnvironmentKind: HostingEnvironmentKind.All,
+        item: {
+          id: 'DiagnosticTools',
+          name: 'Diagnostic Tools',
+          overviewDetectorId:'DiagnosticTools',
+          description: 'Run proactive tools to automatically mitigate the app.',
+          keywords: ['Auto-Heal'],
+          color: 'rgb(170, 192, 208)',
+          createFlowForCategory: false,
+          overridePath: `resource${siteId}/diagnosticTools`
+        }
+      }];
   }
 
 }
