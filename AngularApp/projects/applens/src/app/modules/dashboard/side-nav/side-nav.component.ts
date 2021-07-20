@@ -1,6 +1,6 @@
 import { AdalService } from 'adal-angular4';
 import { filter } from 'rxjs/operators';
-import { Component, OnInit, PipeTransform, Pipe, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, PipeTransform, Pipe, ViewChild, ElementRef, HostListener, Input } from '@angular/core';
 import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from '@angular/router';
 import { ResourceService } from '../../../shared/services/resource.service';
 import { CollapsibleMenuItem } from '../../../collapsible-menu/components/collapsible-menu-item/collapsible-menu-item.component';
@@ -20,7 +20,14 @@ import { L2SideNavType } from '../l2-side-nav/l2-side-nav';
 })
 export class SideNavComponent implements OnInit {
 
-  userId: string = "";
+  L2SideNavType = L2SideNavType;
+  type: L2SideNavType;
+
+  get isGroupList() {
+    return this.type === L2SideNavType.Detectors || this.type === L2SideNavType.Gits;
+  }
+
+  // userId: string = "";
 
   detectorsLoading: boolean = true;
 
@@ -45,39 +52,27 @@ export class SideNavComponent implements OnInit {
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService, private _applensGlobal: ApplensGlobal) {
   }
 
-  @HostListener('click',['$event.target'])
-  onHandleClickGroupTitle(ele:HTMLElement) {
+  @HostListener('click', ['$event.target'])
+  onHandleClickGroupTitle(ele: HTMLElement) {
 
     const parentElement = ele.parentElement;
     this.toggleGroupCollapsible(parentElement);
   }
 
-  @HostListener('keydown.Enter',['$event.target'])
-  onHandleEnterGroupTitle(ele:HTMLElement) {
-    if(ele.firstElementChild && ele.firstElementChild.lastElementChild) {
+  @HostListener('keydown.Enter', ['$event.target'])
+  onHandleEnterGroupTitle(ele: HTMLElement) {
+    if (ele.firstElementChild && ele.firstElementChild.lastElementChild) {
       const element = <HTMLElement>ele.firstElementChild.lastElementChild;
       this.toggleGroupCollapsible(element);
     }
   }
-
-  documentation: CollapsibleMenuItem[] = [
-    {
-      label: 'Online Documentation',
-      id: "",
-      onClick: () => { window.open('https://app-service-diagnostics-docs.azurewebsites.net/api/Diagnostics.ModelsAndUtils.Models.Response.html#extensionmethods', '_blank') },
-      expanded: false,
-      subItems: null,
-      isSelected: null,
-      icon: null
-    }
-  ];
 
   createNew: CollapsibleMenuItem[] = [
     {
       label: 'Your Detectors',
       id: "",
       onClick: () => {
-        this.navigateToUserPage();
+        // this.navigateToUserPage();
       },
       expanded: false,
       subItems: null,
@@ -133,9 +128,9 @@ export class SideNavComponent implements OnInit {
   }
 
   selectionMode = SelectionMode.single;
-  checkboxVisibility  = CheckboxVisibility.hidden;
+  checkboxVisibility = CheckboxVisibility.hidden;
 
-  cellStyleProps:IDetailsListProps['cellStyleProps'] = {
+  cellStyleProps: IDetailsListProps['cellStyleProps'] = {
     cellLeftPadding: 0,
     cellRightPadding: 0,
     cellExtraRightPadding: 0
@@ -147,7 +142,10 @@ export class SideNavComponent implements OnInit {
   groups: IGroup[] = [];
 
   ngOnInit() {
-    this.initializeDetectors();
+    this._applensGlobal.openL2SideNavSubject.subscribe(type => {
+      this.type = type;
+      this.initialize();
+    })
 
     this.getCurrentRoutePath();
 
@@ -176,11 +174,81 @@ export class SideNavComponent implements OnInit {
     this._router.navigate(path.split('/'), navigationExtras);
   }
 
-  navigateToUserPage() {
-    this.navigateTo(`users/${this.userId}`);
+  initialize() {
+    switch (this.type) {
+      case L2SideNavType.Detectors:
+        this.initializeDetectors();
+        break;
+      case L2SideNavType.Develop_Detectors:
+        this.initializeCreateDetectors();
+        break;
+      case L2SideNavType.Gits:
+        this.initializeGists();
+        break;
+    }
   }
 
-  initializeDetectors() {
+  private initializeGists() {
+    this._diagnosticApiService.getGists().subscribe(gistList => {
+      if (gistList) {
+        this.addGistCategory();
+        gistList.forEach(element => {
+          let onClick = () => {
+            this.navigateTo(`gists/${element.id}`);
+          };
+
+          let isSelected = () => {
+            return this.currentRoutePath && this.currentRoutePath.join('/') === `gists/${element.id}`;
+          };
+
+          let category = element.category ? element.category.split(",") : ["Uncategorized"];
+          let menuItem = new CollapsibleMenuItem(element.name, element.id, onClick, isSelected);
+
+          category.forEach(c => {
+            let categoryMenuItem = this.gists.find((cat: CollapsibleMenuItem) => cat.label === c);
+            if (!categoryMenuItem) {
+              categoryMenuItem = new CollapsibleMenuItem(c, "", null, null, null, true);
+              this.gists.push(categoryMenuItem);
+            }
+
+            categoryMenuItem.subItems.push(menuItem);
+          });
+        });
+
+        this.initialGroupList(this.gists);
+      }
+    },
+      error => {
+        // TODO: handle detector route not found
+        if (error && error.status === 404) {
+        }
+      });
+  }
+
+  private addGistCategory() {
+    const gistCategory = new CollapsibleMenuItem("Gists", "Gists", null, null, null, true);
+    const createGistItem =
+      new CollapsibleMenuItem("Create Gist",
+        "Create Gist",
+        () => {
+          this.navigateTo('createGist');
+        },
+        () => { },
+        "", true, [], "");
+    const yourGists =
+      new CollapsibleMenuItem("Your Gist",
+        "Your Gist",
+        () => { },
+        () => { },
+        "", true, [], "");
+    gistCategory.subItems = [createGistItem, yourGists];
+    if (this.gists.findIndex(g => g.label === gistCategory.label) < 0) {
+      this.gists.unshift(gistCategory);
+    }
+  }
+
+
+  private initializeDetectors() {
     this._diagnosticApiService.getDetectors().subscribe(detectorList => {
       const analysisMenuItem = new CollapsibleMenuItem("Analysis", "", null, null, null, true);
       if (detectorList) {
@@ -230,11 +298,8 @@ export class SideNavComponent implements OnInit {
           return a.label > b.label ? 1 : -1;
         });
 
-        this.collapsibleItemList = this.flatCategoriesList(this.categories);
-        this.collapsibleItemListCopy = [...this.collapsibleItemList];
+        this.initialGroupList(this.categories);
 
-        this.groups = this.getGroupsFromList(this.collapsibleItemList);
-        
         const analysisGroup = this.groups.find(g => g.name.toLowerCase() === "analysis");
         analysisGroup.isCollapsed = false;
 
@@ -248,47 +313,38 @@ export class SideNavComponent implements OnInit {
           this.getDetectorsRouteNotFound = true;
         }
       });
+  }
 
-    this._diagnosticApiService.getGists().subscribe(gistList => {
-      if (gistList) {
-        gistList.forEach(element => {
-          let onClick = () => {
-            this.navigateTo(`gists/${element.id}`);
-          };
+  private initializeCreateDetectors() {
+    const createNewDetector = new CollapsibleMenuItem("Create Detector",
+      "Create Detector",
+      () => {
+        this.navigateTo('create');
+      },
+      () => { },
+      "", true, [], "");
 
-          let isSelected = () => {
-            return this.currentRoutePath && this.currentRoutePath.join('/') === `gists/${element.id}`;
-          };
-
-          let category = element.category ? element.category.split(",") : ["Uncategorized"];
-          let menuItem = new CollapsibleMenuItem(element.name, element.id, onClick, isSelected);
-
-          category.forEach(c => {
-            let categoryMenuItem = this.gists.find((cat: CollapsibleMenuItem) => cat.label === c);
-            if (!categoryMenuItem) {
-              categoryMenuItem = new CollapsibleMenuItem(c, "", null, null, null, true);
-              this.gists.push(categoryMenuItem);
-            }
-
-            categoryMenuItem.subItems.push(menuItem);
-          });
-        });
-      }
-    },
-      error => {
-        // TODO: handle detector route not found
-        if (error && error.status === 404) {
+    const yourDetectors = new CollapsibleMenuItem("Your Detectors",
+      "Your Detectors",
+      () => {
+        let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
+        const userId:string = alias.replace('@microsoft.com', '');
+        if(userId.length > 0) {
+          this.navigateTo(`users/${userId}/detectors`);
         }
-      });
+      },
+      () => { },
+      "", true, [], "");
+    this.collapsibleItemList = [createNewDetector, yourDetectors];
   }
 
   doesMatchCurrentRoute(expectedRoute: string) {
     return this.currentRoutePath && this.currentRoutePath.join('/') === expectedRoute;
   }
 
-  openDocumentation() {
-    window.open('https://app-service-diagnostics-docs.azurewebsites.net/api/Diagnostics.ModelsAndUtils.Models.Response.html#extensionmethods', '_blank');
-  }
+  // openDocumentation() {
+  //   window.open('https://app-service-diagnostics-docs.azurewebsites.net/api/Diagnostics.ModelsAndUtils.Models.Response.html#extensionmethods', '_blank');
+  // }
 
   updateSearchValue(e: { newValue: string }) {
     const searchValue = e.newValue;
@@ -301,10 +357,10 @@ export class SideNavComponent implements OnInit {
     this.collapsibleItemList = this.collapsibleItemListCopy.filter(item => {
       return item.label.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.id.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.metadata && item.metadata.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0;
     });
-    
+
     this.groups = this.getGroupsFromList(this.collapsibleItemList);
     this.groups.forEach(g => g.isCollapsed = false);
-    
+
 
   }
 
@@ -321,7 +377,6 @@ export class SideNavComponent implements OnInit {
           itemList.push(item);
         }
       }
-      // category.subItems = [];
     }
     return itemList;
   }
@@ -333,7 +388,7 @@ export class SideNavComponent implements OnInit {
     for (let i = 0; i < list.length; i++) {
       const item = list[i];
       const group = groups.find(g => g.name.toLowerCase() === item.group.toLowerCase());
-      if(!group){
+      if (!group) {
         groups.push({
           key: item.group,
           name: item.group,
@@ -341,14 +396,14 @@ export class SideNavComponent implements OnInit {
           count: 1,
           isCollapsed: true
         });
-      }else {
+      } else {
         group.count += 1;
       }
     }
 
     //Add an empty group in last, for fixing toggling last group expand/collapsible all groups bug 
     groups.push({
-      key:"empty",
+      key: "empty",
       name: "empty",
       startIndex: list.length - 1,
       count: 0,
@@ -358,18 +413,24 @@ export class SideNavComponent implements OnInit {
     return groups;
   }
 
-  listInvokedHandler(e: {item:CollapsibleMenuItem}) {
+  private initialGroupList(items: CollapsibleMenuItem[]) {
+    this.collapsibleItemList = this.flatCategoriesList(items);
+    this.collapsibleItemListCopy = [...this.collapsibleItemList];
+    this.groups = this.getGroupsFromList(this.collapsibleItemList);
+  }
+
+  listInvokedHandler(e: { item: CollapsibleMenuItem }) {
     e.item.onClick();
   }
 
-  private toggleGroupCollapsible(ele:HTMLElement) {
+  private toggleGroupCollapsible(ele: HTMLElement) {
 
     const classNameList = ele.className.split(" ");
-    if(classNameList.findIndex(name => name === "ms-GroupHeader-title") === -1) return;
+    if (classNameList.findIndex(name => name === "ms-GroupHeader-title") === -1) return;
     const groupName = ele.firstElementChild.innerHTML;
 
     const groupIndex = this.groups.findIndex(g => g.name.toLowerCase() === groupName.toLowerCase());
-    if(groupIndex > -1) {
+    if (groupIndex > -1) {
       const isCollapsed = this.groups[groupIndex].isCollapsed;
       this.groups[groupIndex].isCollapsed = !isCollapsed;
     }

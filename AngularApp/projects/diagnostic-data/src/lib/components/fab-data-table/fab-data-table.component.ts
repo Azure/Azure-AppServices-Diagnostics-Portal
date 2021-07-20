@@ -277,7 +277,9 @@ export class FabDataTableComponent implements AfterContentInit {
 
   private checkColumIsVisible(name: string): boolean {
     const option = this.getColumnOption(name);
-    return option === null ? true : option.visible;
+    let visible = true;
+    if(option && option.visible === false) visible = false;
+    return option === null ? true : visible;
   }
 
   private getMinOrMaxColumnWidth(name: string, isMinWidth: boolean = true): number {
