@@ -1,4 +1,4 @@
-<div *ngIf="userInfo" class="banner">
+<!-- <div *ngIf="userInfo" class="banner">
   <div>
     <button class="btn back-button" (click)="navigateBack()">&lt; Back</button>
   </div>
@@ -33,13 +33,13 @@
       </div>
     </div>
   </div>
-</div>
-<div *ngIf="userInfo == undefined" class="loading-page">
+</div> -->
+<!-- <div *ngIf="userInfo == undefined" class="loading-page">
     <i class="fa fa-spinner fa-spin fa-4x fa-fw"></i>
-</div>
+</div> -->
 
-<div *ngIf="userInfo != undefined && detectorsOfAuthor !=  undefined" class="detector-list">
-  <div class="flexed-detector card" *ngFor="let detector of detectors; let i=index" (click)="detector.onClick()">
+<div *ngIf="detectorsOfAuthor !=  undefined" class="detector-list">
+  <!-- <div class="flexed-detector card" *ngFor="let detector of detectors; let i=index" (click)="detector.onClick()">
     <div class="detector-top row" (click)="detector.onClick()">
       <div class="col-md-2 detector-icon">
         <img *ngIf="detector.icon != undefined && detector.icon != ''" class="support-topic-l3-icon" src={{detector.icon}} />
@@ -54,7 +54,8 @@
         {{detector.description}}
       </div>
     </div>
-  </div>
+  </div> -->
+  <fab-data-table [table]="table" [allowColumnSearch]="true" [columnOptions]="columnOptions"></fab-data-table>
 </div>
 <div *ngIf="userInfo != undefined && detectorsOfAuthor == undefined" class="loading-page">
   <i class="fa fa-spinner fa-spin fa-4x fa-fw"></i>

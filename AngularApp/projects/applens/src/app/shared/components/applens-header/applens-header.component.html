@@ -4,6 +4,7 @@
       <img [src]="applensLogo" alt="Applens" class="header-logo">
       <span class="ml-3 header-title">AppLens (Preview)</span>
     </div>
+    <div>{{getAppName()}}</div>
     <div *ngIf="userPhotoSource !== ''" style="margin-right: 16px;">
       <img [src]="userPhotoSource" alt="User Profile Photo" class="avatar">
     </div>

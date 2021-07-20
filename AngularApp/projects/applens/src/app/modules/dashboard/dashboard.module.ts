@@ -47,7 +47,7 @@ import { CategoryPageComponent } from './category-page/category-page.component';
 import { AvatarModule } from 'ngx-avatar';
 import { SupportTopicPageComponent } from './support-topic-page/support-topic-page.component';
 import { SelfHelpContentComponent } from './self-help-content/self-help-content.component';
-import { UserProfileComponent } from './user-profile/user-profile.component';
+import { UserDetectorsComponent } from './user-detectors/user-detectors.component';
 import { SearchTermAdditionComponent } from './search-term-addition/search-term-addition.component';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { Sort } from '../../shared/pipes/sort.pipe';
@@ -88,7 +88,18 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
             },
             {
                 path: 'users/:userId',
-                component: UserProfileComponent,
+                children: [
+                    {
+                        path: 'detectors',
+                        component: UserDetectorsComponent,
+                        data: { isDetector: true }
+                    },
+                    {
+                        path: 'gists',
+                        component: UserDetectorsComponent,
+                        data: { isDetector: false }
+                    }
+                ]
             },
             {
                 path: 'categories/:category',
@@ -345,6 +356,6 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         SearchMenuPipe, TabDataComponent, TabDevelopComponent, TabCommonComponent, TabDataSourcesComponent, TabMonitoringComponent,
         TabMonitoringDevelopComponent, TabAnalyticsDevelopComponent, TabAnalyticsDashboardComponent, GistComponent, TabGistCommonComponent,
         TabGistDevelopComponent, TabChangelistComponent, GistChangelistComponent, TabAnalysisComponent, CategoryPageComponent, SupportTopicPageComponent,
-        SelfHelpContentComponent, UserProfileComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent, L2SideNavComponent, ApplensDocsComponent]
+        SelfHelpContentComponent, UserDetectorsComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent, L2SideNavComponent, ApplensDocsComponent]
 })
 export class DashboardModule { }

@@ -1,8 +1,7 @@
 <aside>
   <section class="sidebar" style="height: 100vh;">
-    <collapsible-menu theme="light">
-      <div style="display: flex;align-items: center; margin: 16px 8px;justify-content: space-between;">
-        <fab-search-box #fabSearchBox [value]="searchValue" (onChange)="updateSearchValue($event)" [styles]="searchBoxStyles" (onFocus)="focusSearchBox()" placeHolder="Search detector"></fab-search-box>
+      <div style="display: flex;align-items: center; margin: 16px 8px;justify-content: flex-end;">
+        <fab-search-box *ngIf="isGroupList" #fabSearchBox [value]="searchValue" (onChange)="updateSearchValue($event)" [styles]="searchBoxStyles" (onFocus)="focusSearchBox()" placeHolder="Search detector"></fab-search-box>
         <div class="icon-colleapse-side-nav" (keyup.enter)="dismissL2SideNav()" (click)="dismissL2SideNav()" tabindex="0" aria-label="Close side nav">
           <fab-icon [iconName]="'DoubleChevronLeft'" contentClass="ml-3"></fab-icon>
         </div>
@@ -36,7 +35,8 @@
         </section-divider> -->
         
         <!-- <collapsible-menu-item *ngFor="let category of categories" [searchValue]="searchValue" [menuItem]="category"></collapsible-menu-item> -->
-        <fab-details-list [isHeaderVisible]="false" [selectionMode]="selectionMode" [items]="collapsibleItemList" (onItemInvoked)="listInvokedHandler($event)" [compact]="true" [indentWidth]="10" [checkboxVisibility]="checkboxVisibility" [cellStyleProps]="cellStyleProps" [onShouldVirtualize]="onShouldVirtualize">
+        
+        <fab-details-list *ngIf="isGroupList" [isHeaderVisible]="false" [selectionMode]="selectionMode" [items]="collapsibleItemList" (onItemInvoked)="listInvokedHandler($event)" [compact]="true" [indentWidth]="10" [checkboxVisibility]="checkboxVisibility" [cellStyleProps]="cellStyleProps" [onShouldVirtualize]="onShouldVirtualize">
           <groups>
             <fab-group-item *ngFor="let group of groups" [name]="group.name" [id]="group.id" [ariaLabel]="group.name" [startIndex]="group.startIndex" [count]="group.count" [isCollapsed]="group.isCollapsed"></fab-group-item>
           </groups>
@@ -50,6 +50,17 @@
             </fab-details-list-column>
           </columns>
         </fab-details-list>
-    </collapsible-menu>
+
+        <fab-details-list *ngIf="!isGroupList" [isHeaderVisible]="false" [selectionMode]="selectionMode" [items]="collapsibleItemList" (onItemInvoked)="listInvokedHandler($event)" [compact]="true" [checkboxVisibility]="checkboxVisibility" [cellStyleProps]="cellStyleProps" [onShouldVirtualize]="onShouldVirtualize">
+          <columns>
+            <fab-details-list-column>
+              <render>
+                <ng-template let-item="item" let-index="index">
+                  <collapsible-menu-item [searchValue]="searchValue" [menuItem]="item"></collapsible-menu-item>
+                </ng-template>
+              </render>
+            </fab-details-list-column>
+          </columns>
+        </fab-details-list>
   </section>
 </aside>
