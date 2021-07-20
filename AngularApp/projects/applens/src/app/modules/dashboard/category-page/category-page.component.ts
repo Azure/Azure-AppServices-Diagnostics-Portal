@@ -12,7 +12,7 @@ import { ApplensSupportTopicService } from '../services/applens-support-topic.se
 import { Location } from '@angular/common';
 import { DetectorType } from '../../../../../../diagnostic-data/src/lib/models/detector';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
-import {TelemetryEventNames} from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
+import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
 
 
 @Component({
@@ -85,7 +85,7 @@ export class CategoryPageComponent implements OnInit {
         }));
 
         // Observable to get all the public detectors
-        const publicDetectors = this._diagnosticService.getDetectors("",false).pipe(map((publicDetectors: DetectorMetaData[]) => {
+        const publicDetectors = this._diagnosticService.getDetectors("", false).pipe(map((publicDetectors: DetectorMetaData[]) => {
             this.publicDetectorsList = publicDetectors.filter(detector => detector.category && detector.category.toLowerCase() === this.categoryName.toLowerCase());
         }));
 
@@ -116,20 +116,20 @@ export class CategoryPageComponent implements OnInit {
                     this.filterdDetectors.forEach((detector) => {
                         this._supportTopicService.getCategoryImage(detector.name).subscribe((iconString) => {
                             let onClick = () => {
-                                this._telemetryService.logEvent(TelemetryEventNames.DetectorCardClicked, { "detector": detector.id});
+                                this._telemetryService.logEvent(TelemetryEventNames.DetectorCardClicked, { "detector": detector.id });
                                 if (detector.type === DetectorType.Analysis) {
                                     this.navigateTo(`../../analysis/${detector.id}`);
-                                  }
-                                  else {
+                                }
+                                else {
                                     this.navigateTo(`../../detectors/${detector.id}`);
-                                  }
+                                }
                             };
 
                             let detectorUsersImages: { [name: string]: string } = {};
                             if (detector.author != undefined) {
                                 let authors = detector.author.toLowerCase();
                                 const separators = [' ', ',', ';', ':'];
-                                let detectorAuthors = authors.split(new RegExp(separators.join('|'), 'g')).filter(author=> author != '');
+                                let detectorAuthors = authors.split(new RegExp(separators.join('|'), 'g')).filter(author => author != '');
                                 detectorAuthors.forEach(author => {
                                     if (!this.filterdDetectorAuthors.find(existingAuthor => existingAuthor === author)) {
                                         this.filterdDetectorAuthors.push(author);
@@ -152,7 +152,7 @@ export class CategoryPageComponent implements OnInit {
 
                         this.filteredDetectorsLoaded = true;
                     });
-                    this._telemetryService.logPageView(TelemetryEventNames.CategoryPageLoaded, {"numDetectors": this.filterdDetectors.length.toString(), "categoryName": this.categoryName});
+                    this._telemetryService.logPageView(TelemetryEventNames.CategoryPageLoaded, { "numDetectors": this.filterdDetectors.length.toString(), "categoryName": this.categoryName });
 
                     this.detectorsNumber = this.filterdDetectors.length;
                     this.supportTopicsNumber = this.supportTopicIdMapping.length;
@@ -190,8 +190,9 @@ export class DetectorItem {
     userImages: any;
     supportTopics: any[] = [];
     onClick: Function;
+    category: string;
 
-    constructor(name: string, description: string, icon: string, authorString: string, authors: any[], userImages: any, supportTopics: any[], onClick: Function) {
+    constructor(name: string, description: string, icon: string, authorString: string, authors: any[], userImages: any, supportTopics: any[], onClick: Function, category: string = "") {
         this.name = name;
 
         if (description == undefined || description === "") {
@@ -204,6 +205,7 @@ export class DetectorItem {
         this.userImages = userImages;
         this.supportTopics = supportTopics;
         this.onClick = onClick;
+        this.category = category;
     }
 }
 

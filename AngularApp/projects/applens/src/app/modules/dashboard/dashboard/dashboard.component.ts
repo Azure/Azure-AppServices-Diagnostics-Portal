@@ -6,7 +6,6 @@ import * as momentNs from 'moment';
 import { DetectorControlService, FeatureNavigationService, DetectorMetaData, DetectorType } from 'diagnostic-data';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from '@angular/router';
-import { UserInfo } from '../user-profile/user-profile.component';
 import { SearchService } from '../services/search.service';
 import { environment } from '../../../../environments/environment';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
@@ -17,6 +16,7 @@ import { L2SideNavType } from '../l2-side-nav/l2-side-nav';
 import { l1SideNavCollapseWidth, l1SideNavExpandWidth } from '../../../shared/components/l1-side-nav/l1-side-nav';
 import { filter } from 'rxjs/operators';
 import { StartupService } from '../../../shared/services/startup.service';
+import { UserInfo } from '../user-detectors/user-detectors.component';
 
 @Component({
   selector: 'dashboard',

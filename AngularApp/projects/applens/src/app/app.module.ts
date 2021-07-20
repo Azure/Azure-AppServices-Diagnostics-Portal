@@ -125,8 +125,7 @@ export const Routes = RouterModule.forRoot([
     AppComponent,
     UnauthorizedComponent,
     AuthRequestFailedComponent,
-    TokenInvalidComponent,
-    ApplensHeaderComponent
+    TokenInvalidComponent
   ],
   imports: [
     AngularReactBrowserModule,

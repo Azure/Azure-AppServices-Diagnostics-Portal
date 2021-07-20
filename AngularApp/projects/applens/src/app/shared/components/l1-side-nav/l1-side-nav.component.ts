@@ -6,6 +6,7 @@ import { ApplensGlobal } from '../../../applens-global';
 import { ApplensDocsComponent } from '../../../modules/dashboard/applens-docs/applens-docs.component';
 import { DashboardContainerComponent } from '../../../modules/dashboard/dashboard-container/dashboard-container.component';
 import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-nav';
+import { OnboardingFlowComponent } from '../../../modules/dashboard/onboarding-flow/onboarding-flow.component';
 import { l1SideNavExpandWidth, l1SideNavCollapseWidth,L1SideNavItemType } from './l1-side-nav';
 
 const iconBasePath = "assets/img/applens-skeleton/side-nav";
@@ -64,7 +65,7 @@ export class L1SideNavComponent implements OnInit {
         },
         {
           type: L1SideNavItemType.Gits,
-          displayName: "Code Library(Gists)",
+          displayName: "Code Library (Gists)",
           iconPath: `${iconBasePath}/gists.svg`,
           click: () => {
             this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.Gits);
@@ -123,6 +124,8 @@ export class L1SideNavComponent implements OnInit {
       return L1SideNavItemType.Overview;
     } else if (childRoute.component === ApplensDocsComponent) {
       return L1SideNavItemType.Docs;
+    } else if (childRoute.component === OnboardingFlowComponent) {
+      return L1SideNavItemType.Develop_Detectors;
     }
 
     return null;

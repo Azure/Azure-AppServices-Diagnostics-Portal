@@ -33,8 +33,8 @@ import { L1SideNavComponent } from './components/l1-side-nav/l1-side-nav.compone
     FabDialogModule,
     FabButtonModule
   ],
-  declarations: [TreeViewComponent, ApplensBannerComponent, LoginComponent, L1SideNavComponent],
-  exports: [TreeViewComponent, ApplensBannerComponent, L1SideNavComponent]
+  declarations: [TreeViewComponent, LoginComponent, ApplensBannerComponent, L1SideNavComponent, ApplensHeaderComponent],
+  exports: [TreeViewComponent, ApplensBannerComponent, L1SideNavComponent, ApplensHeaderComponent]
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

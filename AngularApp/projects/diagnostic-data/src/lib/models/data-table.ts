@@ -5,13 +5,13 @@ export enum TableFilterSelectionOption {
 }
 
 export interface TableFilter {
-    selectionOption: TableFilterSelectionOption;
+    selectionOption?: TableFilterSelectionOption;
     name: string;
-    defaultSelection: string[];
+    defaultSelection?: string[];
 }
 
 export interface TableColumnOption extends TableFilter {
-    minWidth: number;
-    maxWidth: number;
-    visible: boolean;
+    minWidth?: number;
+    maxWidth?: number;
+    visible?: boolean;
 }
