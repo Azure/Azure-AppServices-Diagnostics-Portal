@@ -60,12 +60,13 @@ import { L2SideNavComponent } from './l2-side-nav/l2-side-nav.component';
 import { ApplensCommandBarService } from './services/applens-command-bar.service';
 import { ApplensGlobal as ApplensGlobals } from '../../applens-global';
 import { ApplensDocsComponent } from './applens-docs/applens-docs.component';
+import { ResourceInfo } from '../../shared/models/resources';
 
 @Injectable()
-export class InitResolver implements Resolve<Observable<boolean>>{
+export class InitResolver implements Resolve<Observable<ResourceInfo>>{
     constructor(private _resourceService: ResourceService, private _detectorControlService: DetectorControlService) { }
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ResourceInfo> {
         this._detectorControlService.setCustomStartEnd(route.queryParams['startTime'], route.queryParams['endTime']);
         return this._resourceService.waitForInitialization();
     }
