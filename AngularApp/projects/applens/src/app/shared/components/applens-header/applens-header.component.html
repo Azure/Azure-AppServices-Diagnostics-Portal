@@ -1,12 +1,19 @@
 <header>
   <nav class="navbar-fixed-top header-nav" role="navigation">
-    <div style="margin-left: 24px;">
-      <img [src]="applensLogo" alt="Applens" class="header-logo">
-      <span class="ml-3 header-title">AppLens (Preview)</span>
+    <div style="display: flex;">
+      <div class="header-title">
+        <img [src]="applensLogo" alt="Applens" class="header-img">
+        <div class="ml-3" style="font-weight: 600;">AppLens (Preview)</div>
+      </div>
+      <div class="resource-info">
+        <img *ngIf="resourceInfo.imgSrc" class="header-img ml-3" [src]="resourceInfo.imgSrc" [alt]="resourceInfo.searchSuffix">
+        <span *ngIf="resourceInfo.resourceName" class="ml-3" style="font-weight: 600;">{{resourceInfo.resourceName}}</span>
+        <span *ngIf="resourceInfo.searchSuffix" class="ml-3" style="color: #605E5C;">{{resourceInfo.searchSuffix}}</span>
+      </div>
     </div>
-    <div>{{getAppName()}}</div>
+
     <div *ngIf="userPhotoSource !== ''" style="margin-right: 16px;">
-      <img [src]="userPhotoSource" alt="User Profile Photo" class="avatar">
+      <img [src]="userPhotoSource" alt="User Profile Photo" class="avatar header-img">
     </div>
   </nav>
 </header>

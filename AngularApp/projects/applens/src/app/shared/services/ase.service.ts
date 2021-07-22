@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { Inject, Injectable } from '@angular/core';
-import { RESOURCE_SERVICE_INPUTS, ResourceServiceInputs } from '../models/resources';
+import { RESOURCE_SERVICE_INPUTS, ResourceServiceInputs, ResourceInfo } from '../models/resources';
 import { ObserverService } from './observer.service';
 import { ResourceService } from './resource.service';
 
@@ -22,7 +22,7 @@ export class AseService extends ResourceService {
         map((observerResponse: Observer.ObserverAseResponse) => {
         this._hostingEnvironmentResource = observerResponse.details;
         this._currentResource.next(observerResponse.details);
-        return true;
+        return new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix);
       }));
   }
 
