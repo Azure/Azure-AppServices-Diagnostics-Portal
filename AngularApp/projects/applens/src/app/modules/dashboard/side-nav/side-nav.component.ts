@@ -238,7 +238,13 @@ export class SideNavComponent implements OnInit {
     const yourGists =
       new CollapsibleMenuItem("Your Gist",
         "Your Gist",
-        () => { },
+        () => {
+          let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
+          const userId: string = alias.replace('@microsoft.com', '');
+          if (userId.length > 0) {
+            this.navigateTo(`users/${userId}/gists`);
+          }
+        },
         () => { },
         "", true, [], "");
     gistCategory.subItems = [createGistItem, yourGists];
@@ -328,8 +334,8 @@ export class SideNavComponent implements OnInit {
       "Your Detectors",
       () => {
         let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
-        const userId:string = alias.replace('@microsoft.com', '');
-        if(userId.length > 0) {
+        const userId: string = alias.replace('@microsoft.com', '');
+        if (userId.length > 0) {
           this.navigateTo(`users/${userId}/detectors`);
         }
       },

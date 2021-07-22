@@ -8,28 +8,21 @@ import { l1SideNavCollapseWidth, l1SideNavExpandWidth } from "./shared/component
 
 
 
+// @Injectable({
+//     providedIn:"root"
+// })
 @Injectable()
 export class ApplensGlobal {
     constructor(private _route: ActivatedRoute, private _adalService: AdalService) { }
     openL2SideNavSubject: BehaviorSubject<L2SideNavType> = new BehaviorSubject<L2SideNavType>(L2SideNavType.None);
     expandL1SideNavSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-    dashboardTitleSubject: BehaviorSubject<string> = new BehaviorSubject<string>("");
+    headerTitleSubject: BehaviorSubject<string> = new BehaviorSubject<string>("");
 
     showCommAlertSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
 
     openFeedback: boolean = false;
-    getDetectorName(): string {
-        const detectorId = this._route.firstChild.firstChild.firstChild.firstChild.firstChild.snapshot.params["detector"];
-        return detectorId;
-    }
-
-    getUserAlias(): string {
-        const alias: string = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
-        return alias;
-    }
-
     private calcSideNavOverallWidth(isL1Expand: boolean, isL2Open: boolean): number {
         const l1Width = isL1Expand ? l1SideNavExpandWidth : l1SideNavCollapseWidth;
         const l2Width = isL2Open ? l2SideNavWidth : 0;
