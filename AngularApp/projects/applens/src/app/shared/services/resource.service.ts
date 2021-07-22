@@ -1,7 +1,7 @@
 
 import {of as observableOf,  Observable } from 'rxjs';
-import { Injectable, Inject } from '@angular/core';
-import { ArmResource, ResourceServiceInputs, RESOURCE_SERVICE_INPUTS } from '../models/resources';
+import { Injectable, Inject, Optional } from '@angular/core';
+import { ArmResource, ResourceInfo, ResourceServiceInputs, RESOURCE_SERVICE_INPUTS } from '../models/resources';
 
 @Injectable()
 export class ResourceService {
@@ -18,7 +18,7 @@ export class ResourceService {
 
   protected _observerResource: any = null;
   protected _armResource: ArmResource;
-  protected _initialized: Observable<boolean>;
+  protected _initialized: Observable<ResourceInfo>;
 
   constructor(@Inject(RESOURCE_SERVICE_INPUTS) inputs: ResourceServiceInputs) {
     this._armResource = inputs.armResource;
@@ -34,10 +34,10 @@ export class ResourceService {
   }
 
   public startInitializationObservable() {
-    this._initialized = observableOf(true);
+    this._initialized = observableOf(new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix));
   }
 
-  public waitForInitialization(): Observable<boolean> {
+  public waitForInitialization(): Observable<ResourceInfo> {
     return this._initialized;
   }
 

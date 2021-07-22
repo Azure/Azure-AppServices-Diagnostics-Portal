@@ -37,26 +37,9 @@
 <!-- <div *ngIf="userInfo == undefined" class="loading-page">
     <i class="fa fa-spinner fa-spin fa-4x fa-fw"></i>
 </div> -->
-
-<div *ngIf="detectorsOfAuthor !=  undefined" class="detector-list">
-  <!-- <div class="flexed-detector card" *ngFor="let detector of detectors; let i=index" (click)="detector.onClick()">
-    <div class="detector-top row" (click)="detector.onClick()">
-      <div class="col-md-2 detector-icon">
-        <img *ngIf="detector.icon != undefined && detector.icon != ''" class="support-topic-l3-icon" src={{detector.icon}} />
-        <ngx-avatar *ngIf="detector.icon == undefined || detector.icon === ''" [name]="detector.name" [round]="true" initialsSize="2"></ngx-avatar>
-      </div>
-      <div class="col-md-10 detector-name">
-        {{detector.name}}
-      </div>
-    </div>
-    <div class="detector-bottom">
-      <div class="detector-description" (click)="detector.onClick()">
-        {{detector.description}}
-      </div>
-    </div>
-  </div> -->
+<div *ngIf="table" class="detector-list">
   <fab-data-table [table]="table" [allowColumnSearch]="true" [columnOptions]="columnOptions"></fab-data-table>
 </div>
-<div *ngIf="userInfo != undefined && detectorsOfAuthor == undefined" class="loading-page">
+<!-- <div *ngIf="userInfo != undefined && detectorsOfAuthor == undefined" class="loading-page">
   <i class="fa fa-spinner fa-spin fa-4x fa-fw"></i>
-</div>
+</div> -->

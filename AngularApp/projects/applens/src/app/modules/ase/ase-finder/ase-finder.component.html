@@ -1,4 +1,5 @@
-<div class="container-fluid main-container">
+<applens-header></applens-header>
+<div class="container-fluid main-container content-under-header">
     <div class="big-text" *ngIf="loading">Searching for ASE ...</div>
     <div class="big-text" *ngIf="!loading && error">{{error}}</div>
     <div class="big-text" *ngIf="!loading && !error">Redirecting to ASE {{hostingEnvironment}}</div>

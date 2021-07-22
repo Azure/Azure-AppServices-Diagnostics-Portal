@@ -21,8 +21,10 @@ export class FabDataTableComponent implements AfterContentInit {
   table:DataTableResponseObject;
 
   @Input("table") private set _table(t: DataTableResponseObject) {
-    this.table = t;
-    this.tableObserve.next(t);
+    if(!!t) {
+      this.table = t;
+      this.tableObserve.next(t);
+    }
   };
   @Input() columnOptions: TableColumnOption[] = [];
   @Input() descriptionColumnName: string = "";

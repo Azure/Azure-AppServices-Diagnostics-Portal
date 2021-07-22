@@ -215,3 +215,9 @@ fab-command-bar .ms-SearchBox {
   padding: 0px !important;
   margin-top: 16px;
 }
+
+.content-under-header {
+  position: relative;
+  top: 50px;
+  height: calc(100% - 50px);
+}

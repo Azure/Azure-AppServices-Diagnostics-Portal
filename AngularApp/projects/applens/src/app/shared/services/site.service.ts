@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { Inject, Injectable } from '@angular/core';
-import { RESOURCE_SERVICE_INPUTS, ResourceServiceInputs } from '../models/resources';
+import { RESOURCE_SERVICE_INPUTS, ResourceServiceInputs, ResourceInfo } from '../models/resources';
 import { ObserverService } from './observer.service';
 import { ResourceService } from './resource.service';
 import { HttpResponse } from '@angular/common/http';
@@ -23,7 +23,7 @@ export class SiteService extends ResourceService {
         this._observerResource = this._siteObject = this.getSiteFromObserverResponse(observerResponse);
         this._currentResource.next(this._siteObject);
         this.updatePesIdAndImgSrc();
-        return true;
+        return new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix);
       }))
   }
 
