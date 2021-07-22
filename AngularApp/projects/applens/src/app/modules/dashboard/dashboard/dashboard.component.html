@@ -1,5 +1,6 @@
-<l1-side-nav></l1-side-nav>
 <fabric-feedback></fabric-feedback>
+<applens-header></applens-header>
+<l1-side-nav></l1-side-nav>
 <!-- <header class="main-header">
   <nav class="navbar navbar-fixed-top" role="navigation">
     <a (click)="reloadHome()" class="logo">
@@ -34,39 +35,15 @@
     </div>
   </nav>
 </header> -->
-<div class="dashboard-container" [ngStyle]="getContainerStyle()">
-  <!-- <section class="sidebar">
-      <div class="user-panel" [class.active]="doesMatchCurrentRoute('home')">
-        <div class="pull-left image" (click)="navigateTo('home/category')">
-          <img [src]="resourceService.imgSrc" class="resource-logo" style="max-width:25px">
-        </div>
-        <div class="info" (click)="navigateTo('home/category')">
-          <p>{{resourceService.getResourceName() | formatResourceName}}</p>
-        </div>
-        <div class='resource-summary' (click)="openResourceInfoModal()">
-          <i class="fa fa-info-circle" aria-hidden="true"></i>
-        </div>
-      </div>
-    </section> -->
-  <!-- <side-nav></side-nav> -->
+<div class="dashboard-container content-under-header" [ngStyle]="getContainerStyle()">
   <div class="dashboard-content">
     <comm-alert></comm-alert>
     <l2-side-nav></l2-side-nav>
-    <div *ngIf="showTitle" style="display: flex;">
-      <div style="margin: auto 10px auto 0px;">
-        <img [src]="resourceService.imgSrc" class="resource-logo" [alt]="resourceService.searchSuffix">
-      </div>
-      <div>
-        <div style="font-size: 24px;">
-          <span style="font-weight: 600;">{{resourceService.getResourceName()}}</span>
-          <span>&nbsp;| {{getTitle()}}</span>
-        </div>
-        <div style="font-size: 12px;" class="sub-title">{{resourceService.searchSuffix}}</div>
-      </div>
+    <div *ngIf="showTitle" style="font-size: 24px;font-weight: 800;">
+      {{getTitle()}}
     </div>
     <div [class.content-with-side-nav]="showL2SideNav" class="mt-3">
       <router-outlet></router-outlet>
     </div>
   </div>
-
 </div>

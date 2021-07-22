@@ -30,6 +30,18 @@ export interface ArmResource {
     resourceName: string;
 }
 
+export class ResourceInfo {
+    resourceName: string;
+    imgSrc: string;
+    searchSuffix: string;
+
+    constructor(resourceName = "",imgSrc = "",searchSuffix = "") {
+        this.resourceName = resourceName;
+        this.imgSrc = imgSrc;
+        this.searchSuffix = searchSuffix;
+    }
+}
+
 export interface ResourceServiceInputsJsonResponse{
     enabledResourceTypes : ResourceServiceInputs[];
 }
