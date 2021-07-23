@@ -219,6 +219,13 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                 ]
             },
             {
+                path: 'detectors/all',
+                component: UserDetectorsComponent,
+                data: {
+                    isDetector: true
+                }
+            },
+            {
                 path: 'detectors/:detector',
                 component: TabCommonComponent,
                 data: {

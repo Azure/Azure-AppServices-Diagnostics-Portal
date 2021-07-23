@@ -62,6 +62,16 @@ export class ApplensDiagnosticService {
         internalClient);
   }
 
+  getDetectorsWithExtendDefinition(internalClient: boolean = true): Observable<any[]> {
+    let resourceId = this._resourceService.getCurrentResourceId(true);
+    if(!resourceId.startsWith('/')) resourceId = '/' + resourceId;
+
+    let versionPrefix = this._resourceService.versionPrefix;
+    if(versionPrefix.endsWith('/')) versionPrefix = versionPrefix.substring(0,versionPrefix.length - 1);
+
+    return this._diagnosticApi.getDetectorsWithExtendDefinition(versionPrefix,resourceId,null,internalClient);
+  }
+
   getDetectorsSearch(query: string, internalClient: boolean = true): Observable<DetectorMetaData[]> {
     var queryParams: any[] = null;
     if (query != null)

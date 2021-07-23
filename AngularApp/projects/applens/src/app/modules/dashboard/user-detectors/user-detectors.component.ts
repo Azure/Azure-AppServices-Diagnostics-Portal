@@ -4,6 +4,8 @@ import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { DataTableResponseColumn, DataTableResponseObject, DetectorMetaData, SupportTopic, TableColumnOption, TableFilterSelectionOption } from 'diagnostic-data';
 import { ApplensSupportTopicService } from '../services/applens-support-topic.service';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'user-detectors',
@@ -14,6 +16,7 @@ export class UserDetectorsComponent implements OnInit {
 
   userId: string = "";
   isDetector: boolean = true;
+  allItems: boolean = true;
   detectorsNumber: number = 0;
   isCurrentUser: boolean = false;
   table: DataTableResponseObject = null;
@@ -25,20 +28,26 @@ export class UserDetectorsComponent implements OnInit {
     }
   ];
 
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, private _supportTopicService: ApplensSupportTopicService) { }
+  constructor(private _activatedRoute: ActivatedRoute, private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, private _supportTopicService: ApplensSupportTopicService) { }
 
   ngOnInit() {
     this.isDetector = this._activatedRoute.snapshot.data["isDetector"];
     this.checkIsCurrentUser();
 
     if (this.isDetector) {
-      this._supportTopicService.getSupportTopics().subscribe(supportTopics => {
+      this._supportTopicService.getSupportTopics().pipe(catchError(err => of([]))).subscribe(supportTopics => {
         this.supportTopics = supportTopics;
         this._diagnosticService.getDetectors().subscribe((detectors: DetectorMetaData[]) => {
           const detectorsOfAuthor = detectors.filter(detector => detector.author && detector.author.toLowerCase().indexOf(this.userId.toLowerCase()) > -1);
-          this.table = this.generateDetectorTable(detectorsOfAuthor);
+          // this.table = this.generateDetectorTable(detectorsOfAuthor);
+          this.table = this.generateDetectorTable(detectors);
         });
       });
+
+      //Fetch detectorMetaData from storage, get isInternalOnly props and match with each detector
+      this._diagnosticService.getDetectorsWithExtendDefinition().subscribe(l => {
+        console.log(l);
+      })
     } else {
       this._diagnosticService.getGists().subscribe(gists => {
         const gistsOfAuthor = gists.filter(gist => gist.author && gist.author.toLowerCase().indexOf(this.userId.toLowerCase()) > -1);
@@ -61,8 +70,9 @@ export class UserDetectorsComponent implements OnInit {
 
     let rows: any[][] = [];
 
+    const resourceId = this._diagnosticService.resourceId;
     rows = detectors.map(detector => {
-      let path = `../../../detectors/${detector.id}`;
+      let path = `${resourceId}/detectors/${detector.id}`;
       if (this.isCurrentUser) {
         path = path + "/edit";
       }
@@ -91,8 +101,9 @@ export class UserDetectorsComponent implements OnInit {
 
     let rows: any[][] = [];
 
+    const resourceId = this._diagnosticService.resourceId;
     rows = gists.map(gist => {
-      let path = `../../../gists/${gist.id}`;
+      let path = `${resourceId}/gists/${gist.id}`;
       if (this.isCurrentUser) {
         path = path + "/edit";
       }
@@ -112,7 +123,7 @@ export class UserDetectorsComponent implements OnInit {
   }
 
   private checkIsCurrentUser() {
-    this.userId = this._activatedRoute.snapshot.params['userId'];
+    this.userId = this._activatedRoute.snapshot.params['userId'] ? this._activatedRoute.snapshot.params['userId'] : '';
     let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
     let currentUser = alias.replace('@microsoft.com', '');
     this.isCurrentUser = currentUser.toLowerCase() === this.userId;
