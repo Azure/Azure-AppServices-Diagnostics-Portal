@@ -93,12 +93,18 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                     {
                         path: 'detectors',
                         component: UserDetectorsComponent,
-                        data: { isDetector: true }
+                        data: { 
+                            isDetector: true,
+                            allItems: false
+                        }
                     },
                     {
                         path: 'gists',
                         component: UserDetectorsComponent,
-                        data: { isDetector: false }
+                        data: { 
+                            isDetector: false,
+                            allItems: false
+                        }
                     }
                 ]
             },
@@ -222,7 +228,8 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                 path: 'detectors/all',
                 component: UserDetectorsComponent,
                 data: {
-                    isDetector: true
+                    isDetector: true,
+                    allItems: true
                 }
             },
             {
