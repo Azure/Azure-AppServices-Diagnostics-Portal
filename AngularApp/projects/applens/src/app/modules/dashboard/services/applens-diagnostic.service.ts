@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ResourceService } from '../../../shared/services/resource.service';
-import { DetectorResponse, DetectorMetaData } from 'diagnostic-data';
+import { DetectorResponse, DetectorMetaData, ExtendDetectorMetaData } from 'diagnostic-data';
 import { Observable } from 'rxjs';
 import { QueryResponse } from 'diagnostic-data';
 import { Package } from '../../../shared/models/package';
@@ -62,7 +62,7 @@ export class ApplensDiagnosticService {
         internalClient);
   }
 
-  getDetectorsWithExtendDefinition(internalClient: boolean = true): Observable<any[]> {
+  getDetectorsWithExtendDefinition(internalClient: boolean = true): Observable<ExtendDetectorMetaData[]> {
     let resourceId = this._resourceService.getCurrentResourceId(true);
     if(!resourceId.startsWith('/')) resourceId = '/' + resourceId;
 

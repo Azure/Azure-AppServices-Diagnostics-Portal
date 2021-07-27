@@ -1,5 +1,5 @@
 import { AdalService } from 'adal-angular4';
-import { DetectorMetaData, DetectorResponse, QueryResponse, TelemetryService } from 'diagnostic-data';
+import { DetectorMetaData, DetectorResponse, ExtendDetectorMetaData, QueryResponse, TelemetryService } from 'diagnostic-data';
 import { map, retry, catchError, tap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
@@ -56,10 +56,10 @@ export class DiagnosticApiService {
     return this.invoke<DetectorResponse[]>(path, HttpMethod.POST, body, true, false, internalClient).pipe(retry(1), map(response => response.map(detector => detector.metadata)));
   }
 
-  public getDetectorsWithExtendDefinition(version: string, resourceId: string, body?: any, internalClient: boolean = true): Observable<any[]> {
-    let path = `${version}${resourceId}/detectorsWithExtendDefinition`;
-
-    return this.invoke<any[]>(path, HttpMethod.POST, body, true, false, internalClient);
+  public getDetectorsWithExtendDefinition(version: string, resourceId: string, body?: any, internalClient: boolean = true): Observable<ExtendDetectorMetaData[]> {
+    // let path = `${version}${resourceId}/detectorsWithExtendDefinition`;
+    let path = `${version}${resourceId}/internal/detectors`;
+    return this.invoke<ExtendDetectorMetaData[]>(path, HttpMethod.POST, body, true, false, internalClient);
   }
 
   public getUserPhoto(userId: string, useCache: boolean = true, invalidateCache: boolean = false): Observable<any> {

@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
-import { DataTableResponseColumn, DataTableResponseObject, DetectorMetaData, SupportTopic, TableColumnOption, TableFilterSelectionOption } from 'diagnostic-data';
+import { DataTableResponseColumn, DataTableResponseObject, DetectorMetaData, ExtendDetectorMetaData as ExtendedDetectorMetaData, SupportTopic, TableColumnOption, TableFilterSelectionOption } from 'diagnostic-data';
 import { ApplensSupportTopicService } from '../services/applens-support-topic.service';
 import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { of,forkJoin as observableForkJoin } from 'rxjs';
 
 @Component({
   selector: 'user-detectors',
@@ -16,14 +16,21 @@ export class UserDetectorsComponent implements OnInit {
 
   userId: string = "";
   isDetector: boolean = true;
-  allItems: boolean = true;
-  detectorsNumber: number = 0;
+
+  //If true, list all detectors/gists. Otherwise only list items created by current user
+  allItems: boolean = false;
+  // detectorsNumber: number = 0;
   isCurrentUser: boolean = false;
   table: DataTableResponseObject = null;
   supportTopics: any[] = [];
+  internalOnlyMap: Map<string, boolean> = new Map<string, boolean>();
   columnOptions: TableColumnOption[] = [
     {
       name: "Category",
+      selectionOption: TableFilterSelectionOption.Multiple
+    },
+    {
+      name: "View",
       selectionOption: TableFilterSelectionOption.Multiple
     }
   ];
@@ -32,26 +39,29 @@ export class UserDetectorsComponent implements OnInit {
 
   ngOnInit() {
     this.isDetector = this._activatedRoute.snapshot.data["isDetector"];
+    this.allItems = this._activatedRoute.snapshot.data["allItems"];
     this.checkIsCurrentUser();
 
     if (this.isDetector) {
       this._supportTopicService.getSupportTopics().pipe(catchError(err => of([]))).subscribe(supportTopics => {
         this.supportTopics = supportTopics;
-        this._diagnosticService.getDetectors().subscribe((detectors: DetectorMetaData[]) => {
-          const detectorsOfAuthor = detectors.filter(detector => detector.author && detector.author.toLowerCase().indexOf(this.userId.toLowerCase()) > -1);
-          // this.table = this.generateDetectorTable(detectorsOfAuthor);
-          this.table = this.generateDetectorTable(detectors);
+        this._diagnosticService.getDetectors().subscribe(allDetectors => {
+          this._diagnosticService.getDetectorsWithExtendDefinition().pipe(catchError(err => of([]))).subscribe(extendMetadata => {
+
+            this.internalOnlyMap = this.initialInternalOnlyMap(extendMetadata);
+            const detectorsOfAuthor = allDetectors.filter(detector => detector.author && detector.author.toLowerCase().indexOf(this.userId.toLowerCase()) > -1);
+            const selectedDetectors = this.allItems ? allDetectors : detectorsOfAuthor;
+            this.table = this.generateDetectorTable(selectedDetectors);
+          });
         });
       });
 
-      //Fetch detectorMetaData from storage, get isInternalOnly props and match with each detector
-      this._diagnosticService.getDetectorsWithExtendDefinition().subscribe(l => {
-        console.log(l);
-      })
+      
     } else {
-      this._diagnosticService.getGists().subscribe(gists => {
-        const gistsOfAuthor = gists.filter(gist => gist.author && gist.author.toLowerCase().indexOf(this.userId.toLowerCase()) > -1);
-        this.table = this.generateGistsTable(gistsOfAuthor);
+      this._diagnosticService.getGists().subscribe(allGists => {
+        const gistsOfAuthor = allGists.filter(gist => gist.author && gist.author.toLowerCase().indexOf(this.userId.toLowerCase()) > -1);
+        const selectedGists = this.allItems ? allGists : gistsOfAuthor;
+        this.table = this.generateGistsTable(selectedGists);
       });
     }
 
@@ -65,7 +75,8 @@ export class UserDetectorsComponent implements OnInit {
     const columns: DataTableResponseColumn[] = [
       { columnName: "Name" },
       { columnName: "Category" },
-      { columnName: "Support topic" }
+      { columnName: "Support topic" },
+      { columnName: "View" }
     ];
 
     let rows: any[][] = [];
@@ -82,7 +93,12 @@ export class UserDetectorsComponent implements OnInit {
         </markdown>`;
       const category = detector.category ? detector.category : "None";
       const supportTopics = this.getSupportTopicName(detector.supportTopicList);
-      return [name, category, supportTopics];
+      let view = "Unknown";
+      if (this.internalOnlyMap.has(detector.id)) {
+        const internalOnly = this.internalOnlyMap.get(detector.id);
+        view = internalOnly ? "Internal Only" : "Internal & External";
+      }
+      return [name, category, supportTopics, view];
     });
     const dataTableObject: DataTableResponseObject = {
       columns: columns,
@@ -122,6 +138,16 @@ export class UserDetectorsComponent implements OnInit {
     return dataTableObject;
   }
 
+  private initialInternalOnlyMap(list: ExtendedDetectorMetaData[]) {
+    const map: Map<string, boolean> = new Map();
+    list.forEach(metaData => {
+      map.set(metaData.id, metaData.internalOnly);
+    });
+    return map;
+  }
+
+  
+
   private checkIsCurrentUser() {
     this.userId = this._activatedRoute.snapshot.params['userId'] ? this._activatedRoute.snapshot.params['userId'] : '';
     let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
@@ -137,10 +163,10 @@ export class UserDetectorsComponent implements OnInit {
         l2NameSet.add(topic.supportTopicL2Name);
       }
     });
-    const supportTopicNames = new Array(l2NameSet);
+    const supportTopicNames = Array.from(l2NameSet);
 
     if (l2NameSet.size === 0) return "None";
-    return supportTopicNames.join(";");
+    return supportTopicNames.join("; ");
   }
 }
 

@@ -27,14 +27,14 @@ export class SideNavComponent implements OnInit {
     return this.type === L2SideNavType.Detectors || this.type === L2SideNavType.Gits;
   }
 
-  // userId: string = "";
 
   detectorsLoading: boolean = true;
 
   currentRoutePath: string[];
 
   categories: CollapsibleMenuItem[] = [];
-  analysisTypes: CollapsibleMenuItem[] = [];
+  // analysisTypes: CollapsibleMenuItem[] = [];
+  topList: CollapsibleMenuItem[] = [];
 
   gists: CollapsibleMenuItem[] = [];
 
@@ -127,6 +127,17 @@ export class SideNavComponent implements OnInit {
     }
   }
 
+  get searchPlaceHolder() {
+    switch (this.type) {
+      case L2SideNavType.Detectors:
+        return "Search detectors";
+      case L2SideNavType.Gits:
+        return "Search code library";
+      default:
+        return "Search";
+    }
+  }
+
   selectionMode = SelectionMode.single;
   checkboxVisibility = CheckboxVisibility.hidden;
 
@@ -175,14 +186,19 @@ export class SideNavComponent implements OnInit {
   }
 
   initialize() {
+    this.topList = [];
+    this.collapsibleItemList = [];
+    this.collapsibleItemListCopy = [];
     switch (this.type) {
       case L2SideNavType.Detectors:
+        this.initializeListAllDetectors();
         this.initializeDetectors();
         break;
       case L2SideNavType.Develop_Detectors:
         this.initializeCreateDetectors();
         break;
       case L2SideNavType.Gits:
+        this.initializeCreateGist();
         this.initializeGists();
         break;
     }
@@ -191,7 +207,6 @@ export class SideNavComponent implements OnInit {
   private initializeGists() {
     this._diagnosticApiService.getGists().subscribe(gistList => {
       if (gistList) {
-        this.addGistCategory();
         gistList.forEach(element => {
           let onClick = () => {
             this.navigateTo(`gists/${element.id}`);
@@ -225,8 +240,8 @@ export class SideNavComponent implements OnInit {
       });
   }
 
-  private addGistCategory() {
-    const gistCategory = new CollapsibleMenuItem("Gists", "Gists", null, null, null, true);
+  private initializeCreateGist() {
+    // const gistCategory = new CollapsibleMenuItem("Gists", "Gists", null, null, null, true);
     const createGistItem =
       new CollapsibleMenuItem("Create Gist",
         "Create Gist",
@@ -247,10 +262,11 @@ export class SideNavComponent implements OnInit {
         },
         () => { },
         "", true, [], "");
-    gistCategory.subItems = [createGistItem, yourGists];
-    if (this.gists.findIndex(g => g.label === gistCategory.label) < 0) {
-      this.gists.unshift(gistCategory);
-    }
+    // gistCategory.subItems = [createGistItem, yourGists];
+    // if (this.gists.findIndex(g => g.label === gistCategory.label) < 0) {
+    //   this.gists.unshift(gistCategory);
+    // }
+    this.topList = [createGistItem,yourGists];
   }
 
 
@@ -321,6 +337,18 @@ export class SideNavComponent implements OnInit {
       });
   }
 
+  private initializeListAllDetectors() {
+    const allDetectors = new CollapsibleMenuItem(
+      "All Detector List",
+      "All Detector List",
+      () => {
+        this.navigateTo("detectors/all");
+      },
+      () => { },
+      "", true, [], "");
+    this.topList = [allDetectors];
+  }
+
   private initializeCreateDetectors() {
     const createNewDetector = new CollapsibleMenuItem("Create Detector",
       "Create Detector",
@@ -341,7 +369,7 @@ export class SideNavComponent implements OnInit {
       },
       () => { },
       "", true, [], "");
-    this.collapsibleItemList = [createNewDetector, yourDetectors];
+    this.topList = [createNewDetector, yourDetectors];
   }
 
   doesMatchCurrentRoute(expectedRoute: string) {

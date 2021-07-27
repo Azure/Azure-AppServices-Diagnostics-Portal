@@ -48,17 +48,23 @@ export interface DataTableResponseColumn {
     columnType?: string;
 }
 
-export interface DetectorMetaData {
-    id: string;
-    name: string;
-    description: string;
-    author: string;
+export interface DetectorMetaData extends DetectorMetaDataBase {
     supportTopicList: SupportTopic[];
     analysisTypes: string[];
     type: DetectorType;
     category: string;
     score: number;
-    internalOnly:boolean;
+}
+
+interface DetectorMetaDataBase {
+    id: string;
+    name: string;
+    description: string;
+    author: string;
+}
+
+export interface ExtendDetectorMetaData extends DetectorMetaDataBase {
+    internalOnly: boolean;
 }
 
 export interface DataProviderMetadata {
