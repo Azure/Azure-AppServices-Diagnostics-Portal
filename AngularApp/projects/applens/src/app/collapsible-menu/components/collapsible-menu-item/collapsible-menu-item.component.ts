@@ -26,7 +26,8 @@ export class CollapsibleMenuItemComponent {
   @Input() set searchValue(value) {
     this._searchValueSubject.next(value);
   };
-  @Input() focusable: boolean = true;
+  //if alwaysShowItem is true, item will show even searchTerm is not matched
+  @Input() alwaysShowItem: boolean = false;
 
   children: CollapsibleMenuItem[];
 

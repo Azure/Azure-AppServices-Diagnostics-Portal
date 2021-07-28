@@ -1,4 +1,4 @@
-<div *ngIf="matchesSearchTerm">
+<div *ngIf="matchesSearchTerm || alwaysShowItem">
     <div class="menu-item" (click)="handleClick()" (keyup.enter)="handleClick()">
       <!-- <div class="mr-3" *ngIf=" menuItem.subItems && menuItem.subItems.length > 0">
         <fab-icon [iconName]="iconName"></fab-icon>
