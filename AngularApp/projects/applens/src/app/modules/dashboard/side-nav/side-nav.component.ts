@@ -189,6 +189,7 @@ export class SideNavComponent implements OnInit {
     this.topList = [];
     this.collapsibleItemList = [];
     this.collapsibleItemListCopy = [];
+    this.searchValue = "";
     switch (this.type) {
       case L2SideNavType.Detectors:
         this.initializeListAllDetectors();
@@ -207,6 +208,7 @@ export class SideNavComponent implements OnInit {
   private initializeGists() {
     this._diagnosticApiService.getGists().subscribe(gistList => {
       if (gistList) {
+        this.gists = [];
         gistList.forEach(element => {
           let onClick = () => {
             this.navigateTo(`gists/${element.id}`);
@@ -272,6 +274,7 @@ export class SideNavComponent implements OnInit {
 
   private initializeDetectors() {
     this._diagnosticApiService.getDetectors().subscribe(detectorList => {
+      this.categories = [];
       const analysisMenuItem = new CollapsibleMenuItem("Analysis", "", null, null, null, true);
       if (detectorList) {
         detectorList.forEach(element => {
