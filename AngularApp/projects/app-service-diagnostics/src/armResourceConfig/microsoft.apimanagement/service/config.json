@@ -8,7 +8,7 @@
   "searchSuffix": "AZURE API MANAGEMENT SERVICE",
   "azureServiceName": "API Management",
   "armApiConfig": {
-    "armApiVersion": "2018-06-01-preview"
+    "armApiVersion": "2021-01-01-preview"
   },
   "isSearchEnabled": true,
   "keystoneDetectorId": "",
