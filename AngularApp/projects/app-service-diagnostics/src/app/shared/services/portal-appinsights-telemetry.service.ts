@@ -101,7 +101,11 @@ export class PortalAppInsightsTelemetryService implements ITelemetryProvider {
 
     public logException(exception: Error, handledAt?: string, properties?: any, severityLevel?: SeverityLevel) {
         const mergedProperties = { handledAt: handledAt, ...properties };
-        const exceptionTelemetry = { exception, severityLevel, mergedProperties } as IExceptionTelemetry;
+        const exceptionTelemetry: IExceptionTelemetry = {
+            error: exception,
+            severityLevel: severityLevel,
+            properties: mergedProperties
+        };
 
         if (this.appInsights) {
             this.appInsights.trackException(exceptionTelemetry);
