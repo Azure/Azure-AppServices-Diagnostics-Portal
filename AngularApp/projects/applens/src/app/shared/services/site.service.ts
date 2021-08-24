@@ -23,7 +23,7 @@ export class SiteService extends ResourceService {
         this._observerResource = this._siteObject = this.getSiteFromObserverResponse(observerResponse);
         this._currentResource.next(this._siteObject);
         this.updatePesIdAndImgSrc();
-        return new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix);
+        return new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix,this.getCurrentResourceId(),this._siteObject.Kind);
       }))
   }
 

@@ -1,20 +1,20 @@
 <applens-header></applens-header>
 <div class="main-container content-under-header">
-  <div class="main-row">
+  <div class="main-row" style="margin: 0px auto;width: 1240px;">
     <div *ngIf="userGivenName" class="welcome-word">Welcome to Applens, {{userGivenName}}!</div>
-    <div class="main-content">
+    <div class="main-content main-card" style="width: 100%;margin-bottom: 15px;">
       <div class="main-content-header">
         <img src="assets/img/applens-skeleton/main/troubleshoot.svg" alt="troubleshoot" class="mr-3">
         <h3>Select a resource to begin troubleshooting:</h3>
       </div>
-      <div>
+      <div style="width: 50%;">
         <div class="section">
           <label for="landing-page-service-type">
             Service type <span class="required">*</span>
           </label>
           <div id="landing-page-service-type">
             <fab-dropdown [options]="fabDropdownOptions" [defaultSelectedKey]="fabDropdownOptions[0].key"
-              (onChange)="selectDropdownKey($event)"></fab-dropdown>
+              (onChange)="selectDropdownKey($event)" [styles]="fabDropdownStyles"></fab-dropdown>
           </div>
         </div>
         <div class="section">
@@ -44,15 +44,58 @@
             Continue</fab-primary-button>
         </div>
       </div>
-
-
     </div>
+
+    <div style="display: flex;min-height: 300px;justify-content: space-between;">
+      <div class="main-card" style="width: 920px;">
+        <div class="main-content-header">
+          <img src="assets/img/applens-skeleton/main/recent_resources.svg" alt="recent resources" class="mr-3">
+          <h3>Recent Resources</h3>
+        </div>
+        <!-- <fab-data-table [table]="table" [tableHeight]="'200px'"></fab-data-table> -->
+        <table style="width: 100%;">
+          <thead>
+            <tr style="border-bottom: 1px solid #EDEBE9;">
+              <th>Name</th>
+              <th>Service Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngIf="table&&table.length > 0;else noRecentResource">
+              <tr *ngFor="let item of table" style="border-bottom: 1px solid #EDEBE9;">
+                <th style="padding: 7px 0px;"><img [src]="item.imgSrc" style="height: 15px;width: 15px;"
+                    [alt]="item.type" class="mr-3" /><a tabindex="0"
+                    (click)="clickRecentResourceHandler($event,item)">{{item.name}}</a></th>
+                <th style="padding: 7px 0px;">{{item.type}}</th>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+      <div style="width: 300px;" class="main-card">
+        <div class="main-content-header">
+          <img src="assets/img/applens-skeleton/main/documents.svg" alt="documentations" class="mr-3">
+          <h3>Documentations</h3>
+        </div>
+        <div class="mb-3" *ngFor="let doc of applensDocs">
+          <a [href]="doc.link">{{doc.name}}<i class="hyper-link-icon ml-1" aria-hidden="true"></i></a>
+        </div>
+      </div>
+    </div>
+
+
+
     <div class="col-md-6" *ngIf="showCaseCleansingOption">
       <a (click)="caseCleansingNavigate()">Review case tagging</a>
     </div>
+
   </div>
 </div>
 
 <detector-time-picker [target]="'#landing-page-time-picker'" [openTimePickerCalloutObservable]="openTimePickerSubject"
   [disableUpdateQueryParams]="true">
 </detector-time-picker>
+
+<ng-template #noRecentResource>
+  <tr>No Recent Resource</tr>
+</ng-template>
