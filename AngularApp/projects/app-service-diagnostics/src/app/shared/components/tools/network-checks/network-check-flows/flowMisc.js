@@ -462,7 +462,7 @@ export async function checkDnsSettingV2Async(siteInfo, diagProvider, flowMgr, is
                 var dnsCheck = wordings.dnsCheckResult.get(dnsCheckResult, subChecks);
                 views = [dnsCheck, ...views];
             } else {
-                views.push(wordings.cannotCheckWithoutKudu.get());
+                views.push(wordings.cannotCheckWithoutKudu.get("DNS settings"));
             }
         }else{
             isContinue = true;

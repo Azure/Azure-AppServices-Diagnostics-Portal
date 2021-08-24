@@ -31,6 +31,12 @@ export var functionsFlow = {
             dnsServers = [""]; //default Azure DNS
         }
 
+        if (!await isKuduAccessiblePromise)
+        {
+            flowMgr.addView(new VnetDnsWordings().cannotCheckWithoutKudu.get("Functions settings"));
+            return;
+        }
+
         /**
          * Functions specific checks
          **/
