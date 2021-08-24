@@ -22,7 +22,7 @@ export class AseService extends ResourceService {
         map((observerResponse: Observer.ObserverAseResponse) => {
         this._hostingEnvironmentResource = observerResponse.details;
         this._currentResource.next(observerResponse.details);
-        return new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix);
+        return new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix,this.getCurrentResourceId());
       }));
   }
 
