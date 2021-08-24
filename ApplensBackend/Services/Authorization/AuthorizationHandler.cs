@@ -86,11 +86,11 @@ namespace AppLensV3.Authorization
         private readonly string graphUrl = "https://graph.microsoft.com/v1.0/users/{0}/checkMemberGroups";
         private readonly int loggedInUserCacheClearIntervalInMs = 60 * 60 * 1000; // 1 hour
         private readonly int loggedInUserExpiryIntervalInSeconds = 6 * 60 * 60; // 6 hours
-        private ICosmosDBHandler<TemporaryAccessUser> _cosmosDBHandler;
+        private ICosmosDBHandlerBase<TemporaryAccessUser> _cosmosDBHandler;
         private readonly long temporaryAccessExpiryInSeconds;
         private readonly int temporaryAccessDays = 7;
 
-        public SecurityGroupHandler(IHttpContextAccessor httpContextAccessor, IConfiguration configuration, ICosmosDBHandler<TemporaryAccessUser> cosmosDBHandler)
+        public SecurityGroupHandler(IHttpContextAccessor httpContextAccessor, IConfiguration configuration, ICosmosDBHandlerBase<TemporaryAccessUser> cosmosDBHandler)
         {
             loggedInUsersCache = new Dictionary<string, Dictionary<string, CachedUser>>();
             var applensAccess = new SecurityGroupConfig();
