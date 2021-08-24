@@ -59,16 +59,26 @@ import { DashboardContainerComponent } from './dashboard-container/dashboard-con
 import { L2SideNavComponent } from './l2-side-nav/l2-side-nav.component';
 import { ApplensCommandBarService } from './services/applens-command-bar.service';
 import { ApplensGlobal as ApplensGlobals } from '../../applens-global';
-import { ApplensDocsComponent } from './applens-docs/applens-docs.component';
 import { ResourceInfo } from '../../shared/models/resources';
+import { map } from 'rxjs/operators';
+import { RecentResource } from '../../shared/models/user-setting';
+import { UserSettingService } from './services/user-setting.service';
+import { ApplensDocsComponent } from '../../shared/components/applens-docs/applens-docs.component';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
-    constructor(private _resourceService: ResourceService, private _detectorControlService: DetectorControlService) { }
+    constructor(private _resourceService: ResourceService, private _detectorControlService: DetectorControlService,private _userInfoService:UserSettingService) { }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ResourceInfo> {
         this._detectorControlService.setCustomStartEnd(route.queryParams['startTime'], route.queryParams['endTime']);
-        return this._resourceService.waitForInitialization();
+        return this._resourceService.waitForInitialization().pipe(map(resourceInfo => {
+            const recentResource: RecentResource = {
+                resourceUri: resourceInfo.resourceUri,
+                kind: resourceInfo.kind
+            }
+            this._userInfoService.updateRecentResource(recentResource).subscribe();
+            return resourceInfo;
+        }));
     }
 }
 
@@ -371,6 +381,6 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         SearchMenuPipe, TabDataComponent, TabDevelopComponent, TabCommonComponent, TabDataSourcesComponent, TabMonitoringComponent,
         TabMonitoringDevelopComponent, TabAnalyticsDevelopComponent, TabAnalyticsDashboardComponent, GistComponent, TabGistCommonComponent,
         TabGistDevelopComponent, TabChangelistComponent, GistChangelistComponent, TabAnalysisComponent, CategoryPageComponent, SupportTopicPageComponent,
-        SelfHelpContentComponent, UserDetectorsComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent, L2SideNavComponent, ApplensDocsComponent]
+        SelfHelpContentComponent, UserDetectorsComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent, L2SideNavComponent]
 })
 export class DashboardModule { }
