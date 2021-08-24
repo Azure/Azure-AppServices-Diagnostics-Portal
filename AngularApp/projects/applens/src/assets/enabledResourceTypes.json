@@ -80,7 +80,7 @@
             "azureCommImpactedServicesList": "openShiftClusters",
             "pesId": "16734",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Red Hat Open Shift Cluster"
+            "searchSuffix": "Azure Red Hat OpenShift Cluster"
         },
         {
             "service": "ResourceService",
