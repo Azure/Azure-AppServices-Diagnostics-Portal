@@ -278,6 +278,9 @@ export class SideNavComponent implements OnInit {
       const analysisMenuItem = new CollapsibleMenuItem("Analysis", "", null, null, null, true);
       if (detectorList) {
         detectorList.forEach(element => {
+          //Not show CategoryOverview in side-nav for safety purpose
+          if(element.type === DetectorType.CategoryOverview) return;
+          
           let onClick = () => {
             this._telemetryService.logEvent(TelemetryEventNames.SideNavigationItemClicked, { "elementId": element.id });
             this.navigateTo(`detectors/${element.id}`);

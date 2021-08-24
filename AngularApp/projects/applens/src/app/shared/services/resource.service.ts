@@ -34,7 +34,7 @@ export class ResourceService {
   }
 
   public startInitializationObservable() {
-    this._initialized = observableOf(new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix));
+    this._initialized = observableOf(new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix,this.getCurrentResourceId()));
   }
 
   public waitForInitialization(): Observable<ResourceInfo> {

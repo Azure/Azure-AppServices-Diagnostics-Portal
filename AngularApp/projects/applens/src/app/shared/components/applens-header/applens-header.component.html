@@ -1,7 +1,7 @@
 <header>
   <nav class="navbar-fixed-top header-nav" role="navigation">
     <div style="display: flex;">
-      <div class="header-title">
+      <div class="header-title" role="button" (click)="navigateToLandingPage()" (keyup.enter)="navigateToLandingPage()">
         <img [src]="applensLogo" alt="Applens" class="header-img">
         <div class="ml-3" style="font-weight: 600;">AppLens (Preview)</div>
       </div>

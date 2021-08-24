@@ -6,7 +6,7 @@ using Microsoft.Azure.Documents;
 
 namespace AppLensV3.Services
 {
-    public interface ICosmosDBHandler<T> where T : class
+    public interface ICosmosDBHandlerBase<T> where T : class
     {
         Task<Document> CreateItemAsync(T item);
         Task<T> GetItemAsync(string id, string partitionKey);

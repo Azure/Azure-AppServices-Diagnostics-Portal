@@ -13,10 +13,10 @@ namespace AppLensV3.Controllers
     [Authorize(Policy = "DefaultAccess")]
     public class TemporaryAccessController : Controller
     {
-        ICosmosDBHandler<TemporaryAccessUser> _cosmosDBHandler;
+        ICosmosDBHandlerBase<TemporaryAccessUser> _cosmosDBHandler;
         long temporaryAccessDurationInSeconds = 7 * 24 * 60 * 60;
 
-        public TemporaryAccessController(ICosmosDBHandler<TemporaryAccessUser> cosmosDBHandler, IConfiguration configuration)
+        public TemporaryAccessController(ICosmosDBHandlerBase<TemporaryAccessUser> cosmosDBHandler, IConfiguration configuration)
         {
             _cosmosDBHandler = cosmosDBHandler;
             var accessDurationInDays = configuration["ApplensTemporaryAccess:AccessDurationInDays"];

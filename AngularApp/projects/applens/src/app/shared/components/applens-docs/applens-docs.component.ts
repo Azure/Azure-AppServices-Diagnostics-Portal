@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { applensDocs } from '../../utilities/applens-docs-constant';
 
 @Component({
   selector: 'applens-docs',
@@ -6,6 +7,6 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./applens-docs.component.scss']
 })
 export class ApplensDocsComponent {
-
+  applensDocs = applensDocs;
   constructor() { }
 }

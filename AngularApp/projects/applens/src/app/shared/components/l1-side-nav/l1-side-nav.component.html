@@ -16,7 +16,7 @@
   </div>
 </nav>
 
-<fab-dialog [hidden]="!showDialog" (onDismiss)="dismissDialog()">
+<!-- <fab-dialog [hidden]="!showDialog" (onDismiss)="dismissDialog()">
   <fab-dialog-content [title]="dialogTitle" [subText]="dialogSubText" [styles]="dialogContentStyles">
   </fab-dialog-content>
   <fab-dialog-footer>
@@ -25,7 +25,7 @@
       <fab-default-button (onClick)="dismissDialog()">Cancel</fab-default-button>
     </div>
   </fab-dialog-footer>
-</fab-dialog>
+</fab-dialog> -->
 
 <ng-template #sideItem let-item="item">
   <div class="side-item" [class.side-item-expand]="isExpand" [class.side-item-collapse]="!isExpand" (click)="clickSideItem(item)" type="button" (keyup.enter)="clickSideItem(item)" tabindex="0"

@@ -22,6 +22,8 @@ import { ApplensHeaderComponent } from './components/applens-header/applens-head
 import { ApplensDiagnosticService } from '../modules/dashboard/services/applens-diagnostic.service';
 import { FabButtonModule, FabDialogModule, FabPanelModule } from '@angular-react/fabric';
 import { L1SideNavComponent } from './components/l1-side-nav/l1-side-nav.component';
+import { UserSettingService } from '../modules/dashboard/services/user-setting.service';
+import { ApplensDocsComponent } from './components/applens-docs/applens-docs.component';
 
 @NgModule({
   imports: [
@@ -33,8 +35,8 @@ import { L1SideNavComponent } from './components/l1-side-nav/l1-side-nav.compone
     FabDialogModule,
     FabButtonModule
   ],
-  declarations: [TreeViewComponent, LoginComponent, ApplensBannerComponent, L1SideNavComponent, ApplensHeaderComponent],
-  exports: [TreeViewComponent, ApplensBannerComponent, L1SideNavComponent, ApplensHeaderComponent]
+  declarations: [TreeViewComponent, LoginComponent, ApplensBannerComponent, L1SideNavComponent, ApplensHeaderComponent, ApplensDocsComponent],
+  exports: [TreeViewComponent, ApplensBannerComponent, L1SideNavComponent, ApplensHeaderComponent, ApplensDocsComponent]
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {
@@ -52,7 +54,8 @@ export class SharedModule {
         GithubApiService,
         CacheService,
         AadAuthGuard,
-        CaseCleansingApiService
+        CaseCleansingApiService,
+        UserSettingService
       ]
     }
   }

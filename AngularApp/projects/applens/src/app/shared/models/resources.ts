@@ -34,11 +34,15 @@ export class ResourceInfo {
     resourceName: string;
     imgSrc: string;
     searchSuffix: string;
+    resourceUri: string;
+    kind: string;
 
-    constructor(resourceName = "",imgSrc = "",searchSuffix = "") {
+    constructor(resourceName = "",imgSrc = "",searchSuffix = "", resourceUri:string = "",kind: string = "") {
         this.resourceName = resourceName;
         this.imgSrc = imgSrc;
         this.searchSuffix = searchSuffix;
+        this.resourceUri = resourceUri;
+        this.kind = kind;
     }
 }
 

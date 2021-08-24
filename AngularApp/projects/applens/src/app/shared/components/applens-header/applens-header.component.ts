@@ -25,4 +25,8 @@ export class ApplensHeaderComponent implements OnInit {
       this.resourceInfo = this._activatedRoute.snapshot.data["info"];
     }
   }
+
+  navigateToLandingPage() {
+    window.location.href = "/"
+  }
 }

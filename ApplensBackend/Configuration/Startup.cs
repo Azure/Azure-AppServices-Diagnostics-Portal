@@ -64,12 +64,13 @@ namespace AppLensV3
             services.AddSingleton<ISupportTopicService, SupportTopicService>();
             services.AddSingleton<ISelfHelpContentService, SelfHelpContentService>();
             services.AddSingleton<IFreshChatClientService, FreshChatClientService>();
-            services.AddSingleton<ICosmosDBHandler<TemporaryAccessUser>, CosmosDBHandler<TemporaryAccessUser>>();
-            services.AddSingleton<ICosmosDBHandler<ResourceConfig>, CosmosDBHandler<ResourceConfig>>();
+            services.AddSingleton<ICosmosDBHandlerBase<TemporaryAccessUser>, CosmosDBHandler<TemporaryAccessUser>>();
+            services.AddSingleton<ICosmosDBHandlerBase<ResourceConfig>, CosmosDBHandler<ResourceConfig>>();
             services.AddSingleton<IIncidentAssistanceService, IncidentAssistanceService>();
             services.AddSingleton<IResourceConfigService, ResourceConfigService>();
             services.AddSingleton<IHealthCheckService, HealthCheckService>();
             services.AddSingleton<ISurveysService, SurveysService>();
+            services.AddSingleton<ICosmosDBUserSettingHandler, CosmosDBUserSettingHandler>();
 
             services.AddMemoryCache();
             services.AddMvc();

@@ -12,11 +12,11 @@ namespace AppLensV3.Services
         private readonly int refreshIntervalInSeconds;
         private readonly string serverMode;
         private List<ResourceConfig> resourceConfigList;
-        private ICosmosDBHandler<ResourceConfig> resourceConfigDBHandler;
+        private ICosmosDBHandlerBase<ResourceConfig> resourceConfigDBHandler;
         private Task<List<ResourceConfig>> fetchConfigFromDBTask;
         private bool configFetchedAtleastOnce;
 
-        public ResourceConfigService(ICosmosDBHandler<ResourceConfig> cosmosDbHandler, IConfiguration configuration)
+        public ResourceConfigService(ICosmosDBHandlerBase<ResourceConfig> cosmosDbHandler, IConfiguration configuration)
         {
             resourceConfigDBHandler = cosmosDbHandler;
             refreshIntervalInSeconds = configuration.GetValue("ResourceConfig:RefreshIntervalInSeconds", 1800);
