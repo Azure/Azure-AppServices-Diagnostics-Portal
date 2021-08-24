@@ -3,10 +3,10 @@ import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { UriUtilities } from 'diagnostic-data';
 import { IDialogContentProps, IPanelProps, PanelType } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';
-import { ApplensDocsComponent } from '../../../modules/dashboard/applens-docs/applens-docs.component';
 import { DashboardContainerComponent } from '../../../modules/dashboard/dashboard-container/dashboard-container.component';
 import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-nav';
 import { OnboardingFlowComponent } from '../../../modules/dashboard/onboarding-flow/onboarding-flow.component';
+import { ApplensDocsComponent } from '../applens-docs/applens-docs.component';
 import { l1SideNavExpandWidth, l1SideNavCollapseWidth,L1SideNavItemType } from './l1-side-nav';
 
 const iconBasePath = "assets/img/applens-skeleton/side-nav";
@@ -150,10 +150,10 @@ export class L1SideNavComponent implements OnInit {
     this.showDialog = false;
   }
 
-  navigateToLandingPage() {
-    window.location.href = "/"
-    this.dismissDialog();
-  }
+  // navigateToLandingPage() {
+  //   window.location.href = "/"
+  //   this.dismissDialog();
+  // }
 
   dismissL2SideNav() {
     this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.None);
