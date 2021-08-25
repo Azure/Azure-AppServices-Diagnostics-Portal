@@ -6,4 +6,8 @@ export class UriUtilities {
             `/?websitesextension_ext=asd.featurePath%3Ddetectors%2F${detectorId}#@microsoft.onmicrosoft.com` +
             `/resource/${StringUtilities.TrimBoth(resourceUri, '/')}/troubleshoot`
     }
+
+    static buildSlotLink(resourceUri: string, isPreview: boolean): string {
+        return `https://portal.azure.com/?websitesextension_ext=asd.ispreview%3D${isPreview}#@microsoft.onmicrosoft.com/resource/${StringUtilities.TrimBoth(resourceUri, '/')}/troubleshoot`;
+    }
 }

@@ -28,7 +28,7 @@ export class PortalService {
     private sendChatUrlObservable: ReplaySubject<any>;
     private getBladeReturnValueObservable: ReplaySubject<KeyValuePair>;
     private setBladeReturnValueObservable: ReplaySubject<any>;
-
+    private sendIFrameInfoObservable: ReplaySubject<any>;
 
     public shellSrc: string;
     private tokenObservable: ReplaySubject<string>;
@@ -43,6 +43,7 @@ export class PortalService {
         this.appInsightsResourceObservable = new ReplaySubject<any>(1);
 
         this.isIFrameForCaseSubmissionSolution = new ReplaySubject<boolean>(1);
+        this.sendIFrameInfoObservable = new ReplaySubject<any>(1);
 
         //CXP Chat messages
         this.sendChatAvailabilityObservable = new ReplaySubject<any>(1);
@@ -51,7 +52,6 @@ export class PortalService {
 
         this.getBladeReturnValueObservable = new ReplaySubject<KeyValuePair>(1);
         this.setBladeReturnValueObservable = new ReplaySubject<any>(1);
-
         if (this.inIFrame()) {
             this.initializeIframe();
         }
@@ -89,6 +89,9 @@ export class PortalService {
         return this.getBladeReturnValueObservable;
     }
 
+    getIFrameInfo(): ReplaySubject<any> {
+        return this.sendIFrameInfoObservable;
+    }
     public setBladeReturnValue(dataToSet: KeyValuePair): ReplaySubject<any> {
         if (!!dataToSet) {
             this.postMessage(Verbs.setBladeReturnValue, JSON.stringify(dataToSet));
@@ -218,6 +221,9 @@ export class PortalService {
             } else if (methodName == Verbs.sendToken) {
                 const token = data;
                 this.tokenObservable.next(token);
+            } else if (methodName == Verbs.sendIFrameInfo) {
+                const iFrameInfo = data;
+                this.sendIFrameInfoObservable.next(iFrameInfo);
             }
         });
     }

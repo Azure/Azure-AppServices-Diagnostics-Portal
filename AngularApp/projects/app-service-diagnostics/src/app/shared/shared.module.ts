@@ -132,6 +132,7 @@ import { RiskAlertsPanelComponent } from './components/risk-alerts-panel/risk-al
 import { IntegratedSolutionsViewComponent } from './components/integrated-solutions-view/integrated-solutions-view.component';
 import { MarkdownModule } from 'ngx-markdown';
 import { NetworkCheckComponent } from './components/tools/network-checks/network-checks.component';
+import { ABTestingService } from './services/abtesting.service';
 
 @NgModule({
     declarations: [
@@ -335,7 +336,8 @@ export class SharedModule {
                 BackendCtrlService,
                 GenericCommsService,
                 GroupByPipe,
-                LocalBackendService
+                LocalBackendService,
+                ABTestingService
             ]
         };
     }

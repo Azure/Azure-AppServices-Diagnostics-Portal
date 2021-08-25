@@ -89,12 +89,14 @@ export class Verbs {
     public static sendStartupInfo = 'send-startup-info';
     public static sendSessionId = 'send-sessionId';
     public static sendToken = 'send-token';
+    public static sendIFrameInfo = 'send-iframe-info';
 
     // Blade-specific Requests from iframe
     public static openScaleUpBlade = 'open-scaleup-blade';
     public static openSupportRequestBlade = 'open-support-request-inputs';
     public static getAppInsightsResource = 'get-appinsights-resource';
     public static sendAppInsightsResource = 'send-appinsights-resource';
+
 
     //CXP Live Chat Requests from iframe
     public static getChatAvailability = 'get-chat-availability';

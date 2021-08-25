@@ -1,3 +1,9 @@
+<ng-container *ngIf="abTestingService.enableABTesting">
+  {{abTestingService.slotType}}
+  <a href="" (click)="switchSlot($event)">Switch</a>
+  <a [href]="abTestingService.generateSlotLink()" target="_blank">Open In New Tab</a>
+</ng-container>
+
 <ng-container *ngIf="initializedPortalVersion === 'v3'&&showSwitchBanner">
   <div *ngIf="useLegacy" class="switch2new-context-text">
     <i class="fa fa-info-circle info-banner-icon"></i>

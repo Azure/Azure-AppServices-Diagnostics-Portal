@@ -26,6 +26,7 @@ import { RiskHelper, RiskTile } from '../../models/risk';
 import { OperatingSystem } from '../../../shared/models/site';
 import { RiskAlertService } from '../../../shared-v2/services/risk-alert.service';
 import { mergeMap } from 'rxjs-compat/operator/mergeMap';
+import { ABTestingService } from '../../../shared/services/abtesting.service';
 
 @Component({
     selector: 'home',
@@ -78,7 +79,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     constructor(private _resourceService: ResourceService, private _categoryService: CategoryService, private _notificationService: NotificationService, private _router: Router,
         private _detectorControlService: DetectorControlService, private _featureService: FeatureService, private _logger: LoggingV2Service, private _authService: AuthService,
         private _navigator: FeatureNavigationService, private _activatedRoute: ActivatedRoute, private armService: ArmService, private _telemetryService: TelemetryService, private _diagnosticService: DiagnosticService, private _portalService: PortalActionService, private globals: Globals,
-        private versionTestService: VersionTestService, private subscriptionPropertiesService: SubscriptionPropertiesService, private _quickLinkService: QuickLinkService, private _riskAlertService: RiskAlertService) {
+        private versionTestService: VersionTestService, private subscriptionPropertiesService: SubscriptionPropertiesService, private _quickLinkService: QuickLinkService, private _riskAlertService: RiskAlertService,public abTestingService:ABTestingService) {
 
         this.subscriptionId = this._activatedRoute.snapshot.params['subscriptionid'];
         this.versionTestService.isLegacySub.subscribe(isLegacy => this.useLegacy = isLegacy);
@@ -378,5 +379,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
             switchToLegacy: this.useLegacy.toString(),
         };
         this._telemetryService.logEvent('SwitchView',eventProps);
+    }
+
+    switchSlot(event: Event) {
+        event.stopPropagation();
+        this.abTestingService.navigate();
     }
 }
