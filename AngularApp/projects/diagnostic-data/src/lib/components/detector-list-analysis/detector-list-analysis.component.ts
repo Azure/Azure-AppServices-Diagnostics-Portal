@@ -292,7 +292,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
             this._activatedRoute.paramMap.subscribe(params => {
                 this.analysisId = (this.analysisId != 'searchResultsAnalysis' && !!params.get('analysisId')) ? params.get('analysisId') : this.analysisId;
                 this.detectorId = params.get(this.detectorParmName) === null ? "" : params.get(this.detectorParmName);
-                if (this.detectorId == "" && !!this._activatedRoute.firstChild && this._activatedRoute.firstChild.snapshot.paramMap.has(this.detectorParmName) && this._activatedRoute.firstChild.snapshot.paramMap.get(this.detectorParmName).length > 1) {
+                if (this.detectorId == "" && !!this._activatedRoute.firstChild && this._activatedRoute.firstChild.snapshot && this._activatedRoute.firstChild.snapshot.paramMap.has(this.detectorParmName) && this._activatedRoute.firstChild.snapshot.paramMap.get(this.detectorParmName).length > 1) {
                     this.detectorId = this._activatedRoute.firstChild.snapshot.paramMap.get(this.detectorParmName);
                 }
                 if (this.analysisId != 'searchResultsAnalysis' && this.detectorId == "") this.goBackToAnalysis();
