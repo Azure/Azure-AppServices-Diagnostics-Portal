@@ -17,7 +17,7 @@
       </fab-primary-button>
     </div>
   </div>
-  <div *ngIf="showDownTimeButton" class="ml-3">
+  <div *ngIf="isAnalysisView && supportsDownTime" class="ml-3">
     <fab-primary-button id="detector-view-downtime" (onClick)="showDowntimeCallout = true;" [styles]="buttonStyle" [disabled]="downtimeFilterDisabled">
       <fab-icon [iconName]="'Clock'" [styles]="iconStyles"></fab-icon>
       <span class="ml-3 control-pill-text">
