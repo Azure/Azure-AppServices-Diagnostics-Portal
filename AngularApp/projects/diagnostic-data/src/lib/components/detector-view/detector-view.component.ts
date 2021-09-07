@@ -69,12 +69,6 @@ export class DetectorViewComponent implements OnInit {
   fabDropdownWidth: number;
   showDowntimeCallout: boolean = false;
   fabChoiceGroupOptions: IChoiceGroupOption[] = [];
-  disableDowntimeButton: boolean = false;
-  get showDownTimeButton() {
-    // if (this.downtimeButtonStr === "") return false;
-    const isAnalysisWithDowntime = this.isAnalysisView && this.supportsDownTime;
-    return isAnalysisWithDowntime || this.disableDowntimeButton;
-  }
   downtimeButtonStr: string = "";
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   timePickerButtonStr: string = "";
@@ -403,7 +397,6 @@ export class DetectorViewComponent implements OnInit {
     this.supportsDownTime = false;
     this.xAxisPlotBands = [];
     this.zoomBehavior = zoomBehaviors.Zoom;
-    this.disableDowntimeButton = false;
     this.populateFabricDowntimeDropDown(this.downTimes);
     this.updateDownTimeErrorMessage("");
   }
@@ -531,13 +524,13 @@ export class DetectorViewComponent implements OnInit {
         this.selectedDownTime = this.fabChoiceGroupOptions.length > 1 ? this.downTimes[0] : this.getDefaultDowntimeEntry();
       }
 
-      if (this.isAnalysisView) {
-        this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
-        this.disableDowntimeButton = false;
-      } else if(this.checkHaveDownTimeForDetector(this._route.snapshot.queryParams)){
-        this.disableDowntimeButton = true;
-        this.downtimeButtonStr = this.getDownTimeButtonStrForDetector(this._route.snapshot.queryParams);
-      }
+      // if (this.isAnalysisView) {
+      //   this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
+      // } 
+      this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
+      // else if(this.checkHaveDownTimeForDetector(this._route.snapshot.queryParams)){
+      //   this.downtimeButtonStr = this.getDownTimeButtonStrForDetector(this._route.snapshot.queryParams);
+      // }
     }
   }
 
@@ -813,14 +806,6 @@ export class DetectorViewComponent implements OnInit {
       buttonStr = this.prepareCustomDowntimeLabel(qStartTime, qEndTime);
     }
     return buttonStr;
-  }
-
-  checkHaveDownTimeForDetector(queryParams: Params):boolean {
-    if(!!queryParams["startTimeChildDetector"] && momentNs.utc(queryParams["startTimeChildDetector"]).isValid() && !!queryParams["endTimeChildDetector"] && momentNs.utc(queryParams["endTimeChildDetector"]).isValid()){
-      return true;
-    }
-
-    return false;
   }
 
   //Merge all child detectors and put it into last place

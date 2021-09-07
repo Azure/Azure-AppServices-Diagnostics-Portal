@@ -186,7 +186,7 @@ export class CategoryNavComponent implements OnInit {
         this.toolCategoriesFilteredByStack = this.transform(this.toolCategories);
 
         this.categoryService.categories.subscribe(categories => {
-            let decodedCategoryName  = "";
+            let decodedCategoryName = "";
             this._activatedRoute.params.subscribe(params => {
                 this.detectorList = [];
                 decodedCategoryName = params.category.toLowerCase();
@@ -196,7 +196,7 @@ export class CategoryNavComponent implements OnInit {
                 this.categoryId = this.category.id;
                 this.isDiagnosticTools = this.category.id === "DiagnosticTools";
 
-                this.orphanDetectorList = this._detectorCategorization.detectorlistCategories[this.category.id] ? this._detectorCategorization.detectorlistCategories[this.category.id]: [];
+                this.orphanDetectorList = this._detectorCategorization.detectorlistCategories[this.category.id] ? this._detectorCategorization.detectorlistCategories[this.category.id] : [];
 
                 this._authService.getStartupInfo().subscribe(startupInfo => {
                     this.resourceId = startupInfo.resourceId;
@@ -232,17 +232,17 @@ export class CategoryNavComponent implements OnInit {
                         if (!(evt.url.split("/").length > 14 && evt.url.split("/")[12].toLowerCase() === "analysis" && (evt.url.split("/")[14].toLowerCase() === "detectors" || evt.url.split("/")[14].toLowerCase() === "analysis"))) {
                             if (evt.url.split("/").length > 12) {
                                 if (evt.url.split("/")[12].toLowerCase() === "detectors") {
-                                    itemId = evt.url.split("detectors/")[1].split("?")[0];
+                                    itemId = decodeURI(evt.url.split("detectors/")[1].split("?")[0]);
                                 }
                                 else if (evt.url.split("/")[12].toLowerCase() === "analysis") {
-                                    itemId = evt.url.split("analysis/")[1].split("?")[0];
+                                    itemId = decodeURI(evt.url.split("analysis/")[1].split("?")[0]);
                                     routePath = "analysis";
                                 }
                             }
 
                             let item = this.detectorDataLocalCopy.find(metadata => metadata.id.toLowerCase() === itemId.toLowerCase());
-
-                            if (item && (item.category == undefined || item.category == "") && !this.detectorList.find((detector) => detector.label === item.id)) {
+                            //If navigate to detector which is not belong to current category, we will also add it into orphanDetectorList 
+                            if (item && (item.category == undefined || item.category == "" || this.checkIsFromAnotherCategory(categories, item, decodedCategoryName)) && !this.detectorList.find((detector) => detector.label === item.id)) {
                                 if (!this.orphanDetectorList || !this.orphanDetectorList.find((orphan) => (orphan.label) === item.name)) {
                                     let isSelected = () => {
                                         return this._route.url.includes(`detectors/${item.id}`) || this._route.url.includes(`analysis/${item.id}`);
@@ -253,7 +253,6 @@ export class CategoryNavComponent implements OnInit {
                                         this._route.navigate([dest1]);
                                     };
                                     let orphanMenuItem = new CollapsibleMenuItem(item.name, onClick, isSelected, icon);
-
                                     if (!this.orphanDetectorList || !this.orphanDetectorList.find((item1 => item1.label === orphanMenuItem.label))) {
                                         this._detectorCategorization.detectorlistCategories[this.category.id].push(orphanMenuItem);
                                     }
@@ -281,10 +280,15 @@ export class CategoryNavComponent implements OnInit {
             (!this.toolsAlreadyAdded(item.item));
     }
 
-    private checkIsSelected(id:string) {
+    private checkIsSelected(id: string) {
         //check if base url is ends with id
         const url = this._route.url;
         const baseUrl = url.split('?')[0];
         return baseUrl.endsWith('/' + id);
+    }
+
+    private checkIsFromAnotherCategory(categories: Category[], detector: DetectorMetaData, currentCategoryId: string): boolean {
+        const detectorCategory = categories.find(c => c.name.toLowerCase() === detector.category.toLowerCase());
+        return detectorCategory === undefined || detectorCategory.id.toLowerCase() !== currentCategoryId.toLowerCase();
     }
 }

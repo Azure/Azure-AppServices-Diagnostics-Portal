@@ -13,6 +13,11 @@ import { Inject } from '@angular/core';
 import { FeatureNavigationService } from '../../services/feature-navigation.service';
 const moment = momentNs;
 
+const hideTimePickerDetectors: string[] = [
+  'eventviewer',
+  'LinuxLogViewer'
+];
+
 @Component({
   selector: 'detector-container',
   templateUrl: './detector-container.component.html',
@@ -46,9 +51,9 @@ export class DetectorContainerComponent implements OnInit {
   @Input() isAnalysisView: boolean = false;
   @Input() overWriteDetectorDescription: string = "";
 
-  private _downtimeZoomBehavior:zoomBehaviors = zoomBehaviors.Zoom;
-  @Input() public set downtimeZoomBehavior(zoomBehavior:zoomBehaviors) {
-    if(!!zoomBehavior) {
+  private _downtimeZoomBehavior: zoomBehaviors = zoomBehaviors.Zoom;
+  @Input() public set downtimeZoomBehavior(zoomBehavior: zoomBehaviors) {
+    if (!!zoomBehavior) {
       this._downtimeZoomBehavior = zoomBehavior;
     }
     else {
@@ -72,7 +77,7 @@ export class DetectorContainerComponent implements OnInit {
 
 
   constructor(private _route: ActivatedRoute, private _diagnosticService: DiagnosticService,
-    public detectorControlService: DetectorControlService, private versionService: VersionService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig,private featureNavigationService:FeatureNavigationService,private router:Router) {
+    public detectorControlService: DetectorControlService, private versionService: VersionService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private featureNavigationService: FeatureNavigationService, private router: Router) {
     this.isPublic = config && config.isPublic;
   }
 
@@ -110,6 +115,12 @@ export class DetectorContainerComponent implements OnInit {
         this.detectorName = detector;
         this.refresh(false);
       }
+      
+      
+      //For now hard code detectors which are not show time picker, next step is to read it from detector definition
+      if (detector && hideTimePickerDetectors.find(d => d.toLowerCase() === detector.toLowerCase())) {
+        this.hideDetectorControl = true;
+      }
     });
 
     const component: any = this._route.component;
@@ -133,7 +144,7 @@ export class DetectorContainerComponent implements OnInit {
     });
 
     this._route.params.subscribe(param => {
-      if(!this.featureNavigationService.lastIsAnalysisView && !param["analysisId"]) {
+      if (!this.featureNavigationService.lastIsAnalysisView && !param["analysisId"]) {
         // this.removeQueryParam();
       }
       this.featureNavigationService.lastIsAnalysisView = !!param["analysisId"];
@@ -148,40 +159,40 @@ export class DetectorContainerComponent implements OnInit {
 
   public get getStartTime(): Moment {
     let startTime: Moment = this.detectorControlService.startTime;
-    const startTimeChildDetector: string = this._route.snapshot.queryParams['startTimeChildDetector'];
-    //If it is analysisView or no startTimeChildDetector query param -> use startTime
-    if (this.isAnalysisView || !startTimeChildDetector) {
-      return startTime;
-    }
+    // const startTimeChildDetector: string = this._route.snapshot.queryParams['startTimeChildDetector'];
+    // //If it is analysisView or no startTimeChildDetector query param -> use startTime
+    // if (this.isAnalysisView || !startTimeChildDetector) {
+    //   return startTime;
+    // }
 
-    if (!!startTimeChildDetector && startTimeChildDetector.length > 1 && moment.utc(startTimeChildDetector).isValid()) {
-      startTime = moment.utc(startTimeChildDetector);
-      this.startTimeChildDetector = startTime;
-    }
-    else {
-      if (!!this.startTimeChildDetector && this.startTimeChildDetector.isValid()) {
-        startTime = this.startTimeChildDetector;
-      }
-    }
+    // if (!!startTimeChildDetector && startTimeChildDetector.length > 1 && moment.utc(startTimeChildDetector).isValid()) {
+    //   startTime = moment.utc(startTimeChildDetector);
+    //   this.startTimeChildDetector = startTime;
+    // }
+    // else {
+    //   if (!!this.startTimeChildDetector && this.startTimeChildDetector.isValid()) {
+    //     startTime = this.startTimeChildDetector;
+    //   }
+    // }
     return startTime;
   }
 
   public get getEndTime(): Moment {
     let endTime: Moment = this.detectorControlService.endTime;
-    let endTimeChildDetector: string = this._route.snapshot.queryParams['endTimeChildDetector'];
-    if (this.isAnalysisView || !endTimeChildDetector) {
-      return endTime;
-    }
+    // let endTimeChildDetector: string = this._route.snapshot.queryParams['endTimeChildDetector'];
+    // if (this.isAnalysisView || !endTimeChildDetector) {
+    //   return endTime;
+    // }
 
-    if (!!endTimeChildDetector && endTimeChildDetector.length > 1 && moment.utc(endTimeChildDetector).isValid()) {
-      endTime = moment.utc(endTimeChildDetector);
-      this.endTimeChildDetector = endTime;
-    }
-    else {
-      if (!!this.endTimeChildDetector && this.endTimeChildDetector.isValid()) {
-        endTime = this.endTimeChildDetector;
-      }
-    }
+    // if (!!endTimeChildDetector && endTimeChildDetector.length > 1 && moment.utc(endTimeChildDetector).isValid()) {
+    //   endTime = moment.utc(endTimeChildDetector);
+    //   this.endTimeChildDetector = endTime;
+    // }
+    // else {
+    //   if (!!this.endTimeChildDetector && this.endTimeChildDetector.isValid()) {
+    //     endTime = this.endTimeChildDetector;
+    //   }
+    // }
     return endTime;
   }
 
@@ -218,17 +229,17 @@ export class DetectorContainerComponent implements OnInit {
     });
 
     //If not in analysis view and not change from time picker(change from time picker will remove startTimeChildDetector/endTimeChildDetector) => replace XXXTimeChildDetector to startTime/endTime
-    if (!this.isAnalysisView && !this.detectorControlService.changeFromTimePicker && allRouteQueryParams['startTimeChildDetector'] && allRouteQueryParams['endTimeChildDetector']) {
-      const startTimeChildDetector: string = allRouteQueryParams['startTimeChildDetector'];
-      const endTimeChildDetector: string = allRouteQueryParams['endTimeChildDetector'];
-      if (startTimeChildDetector != null) {
-        startTime = startTimeChildDetector;
-      }
+    // if (!this.isAnalysisView && !this.detectorControlService.changeFromTimePicker && allRouteQueryParams['startTimeChildDetector'] && allRouteQueryParams['endTimeChildDetector']) {
+    //   const startTimeChildDetector: string = allRouteQueryParams['startTimeChildDetector'];
+    //   const endTimeChildDetector: string = allRouteQueryParams['endTimeChildDetector'];
+    //   if (startTimeChildDetector != null) {
+    //     startTime = startTimeChildDetector;
+    //   }
 
-      if (endTimeChildDetector != null) {
-        endTime = endTimeChildDetector;
-      }
-    }
+    //   if (endTimeChildDetector != null) {
+    //     endTime = endTimeChildDetector;
+    //   }
+    // }
 
     this._diagnosticService.getDetector(this.detectorName, startTime, endTime,
       invalidateCache, this.detectorControlService.isInternalView, additionalQueryString)
