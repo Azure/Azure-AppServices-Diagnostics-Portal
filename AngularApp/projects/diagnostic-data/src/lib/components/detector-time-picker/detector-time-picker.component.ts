@@ -175,7 +175,7 @@ export class DetectorTimePickerComponent implements OnInit {
         endDate: infoEndDate
       };
     } else {
-      const localEndTime = this.today;
+      const localEndTime = new Date();
       const localStartTime = new Date(localEndTime.getTime() - this.hourDiff * 60 * 60 * 1000);
       startDateWithTime = this.convertLocalDateToUTC(localStartTime);
       endDateWithTime = this.convertLocalDateToUTC(localEndTime);

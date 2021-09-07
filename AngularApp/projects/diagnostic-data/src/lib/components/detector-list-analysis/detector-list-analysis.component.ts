@@ -4,7 +4,7 @@ import { Component, OnInit, Input, Inject, EventEmitter, Output } from '@angular
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { LoadingStatus } from '../../models/loading';
 import { StatusStyles } from '../../models/styles';
-import { DetectorControlService } from '../../services/detector-control.service';
+import { DetectorControlService, TimePickerOptions } from '../../services/detector-control.service';
 import { DiagnosticService } from '../../services/diagnostic.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
@@ -80,7 +80,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     loadingChildDetectors: boolean = false;
     appInsights: any;
     allSolutions: Solution[] = [];
-    allSolutionsMap: Map<string, Solution[]> = new Map<string,Solution[]>();
+    allSolutionsMap: Map<string, Solution[]> = new Map<string, Solution[]>();
     loadingMessages: string[] = [];
     loadingMessageIndex: number = 0;
     loadingMessageTimer: any;
@@ -689,7 +689,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
             insight = { title: detectorInsight.title, description: description };
 
             // now populate solutions for all the insights
-            const solutions:Solution[] = [];
+            const solutions: Solution[] = [];
             allInsights.forEach(i => {
                 if (i.solutions != null && i.solutions.length > 0) {
                     i.solutions.forEach(s => {
@@ -828,7 +828,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                 if (this.analysisId === "searchResultsAnalysis" && this.searchTerm && this.searchTerm.length > 0) {
                     //If in homepage then open second blade for Diagnostic Tool and second blade will continue to open third blade for
                     if (this.withinGenie) {
-                        const isHomepage = !(!!this._activatedRoute.root.firstChild && !!this._activatedRoute.root.firstChild.firstChild && !!this._activatedRoute.root.firstChild.firstChild.firstChild && !!this._activatedRoute.root.firstChild.firstChild.firstChild.firstChild && !!this._activatedRoute.root.firstChild.firstChild.firstChild.firstChild.snapshot && !!this._activatedRoute.root.firstChild.firstChild.firstChild.firstChild.snapshot.params["category"]);
+                        const isHomepage = !(!!this._activatedRoute.root.firstChild && !!this._activatedRoute.root.firstChild.firstChild && !!this._activatedRoute.root.firstChild.firstChild.firstChild && !!this._activatedRoute.root.firstChild.firstChild.firstChild.firstChild && !!this._activatedRoute.root.firstChild.firstChild.firstChild.firstChild.firstChild && !!this._activatedRoute.root.firstChild.firstChild.firstChild.firstChild.firstChild.snapshot && !!this._activatedRoute.root.firstChild.firstChild.firstChild.firstChild.firstChild.snapshot.params["category"]);
                         if (detectorId == 'appchanges' && !this._detectorControl.internalClient) {
                             this.portalActionService.openChangeAnalysisBlade(this._detectorControl.startTimeString, this._detectorControl.endTimeString);
                             return;
@@ -855,24 +855,15 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                         //TODO, For D&S blade, need to add a service to find category and navigate to detector
                         if (viewModel.model.startTime != null && viewModel.model.endTime != null) {
                             this.analysisContainsDowntime().subscribe(containsDowntime => {
-                                if (containsDowntime) {
-                                    this._router.navigate([`../../detectors/${detectorId}`], {
-                                        relativeTo: this._activatedRoute,
-                                        queryParams: 
-                                        { 
-                                            startTimeChildDetector: viewModel.model.startTime, 
-                                            endTimeChildDetector: viewModel.model.endTime 
-                                        },
-                                        queryParamsHandling: 'merge'
-                                    });
-                                }
-                                else {
-                                    this._router.navigate([`../../detectors/${detectorId}`], {
-                                        relativeTo: this._activatedRoute,
-                                        queryParams: { startTime: viewModel.model.startTime, endTime: viewModel.model.endTime },
-                                        queryParamsHandling: 'merge'
-                                    });
-                                }
+                                this._detectorControl.setCustomStartEnd(viewModel.model.startTime, viewModel.model.endTime);
+                                //Todo, detector control service should able to read and infer TimePickerOptions from startTime and endTime
+                                this._detectorControl.updateTimePickerInfo({
+                                    selectedKey: TimePickerOptions.Custom,
+                                    selectedText: TimePickerOptions.Custom,
+                                    startDate: new Date(viewModel.model.startTime),
+                                    endDate: new Date(viewModel.model.endTime)
+                                });
+                                this._router.navigate([`../../detectors/${detectorId}`], { relativeTo: this._activatedRoute });
                             });
                         }
                         else {
