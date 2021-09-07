@@ -6,7 +6,9 @@
     <section [ngClass]="{'content' : category,'content-hide-nav' : !category}" class="mainContentSection">
       <div class="col-md col-ms col-lg" style="width:98%; display: inline-block;">
         <detector-command-bar (openPanel)="setFocusOnCallpsibleButton()"></detector-command-bar>
-        <router-outlet></router-outlet>
+        <div style="padding-left: 20px;">
+          <router-outlet></router-outlet>
+        </div>
       </div>
       <div id="collapse-genie-button button-container" class="col-md col-sm col-lg" class="collapsible-button"
         style=" float: right; height: 100vh; border-left:1px solid #cccccc; " (click)="openGeniePanel()" tabindex="0"

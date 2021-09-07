@@ -59,6 +59,6 @@ export class GenericDetectorComponent implements OnDestroy {
     }
 
     ngOnDestroy() {
-        this.navigateSub.unsubscribe();
+        // this.navigateSub.unsubscribe();
     }
 }
