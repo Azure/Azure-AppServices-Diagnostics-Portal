@@ -55,7 +55,6 @@ import { RiskTileComponent } from './components/risk-tile/risk-tile.component';
 import { IntegratedSolutionsViewComponent } from '../shared/components/integrated-solutions-view/integrated-solutions-view.component';
 import { HomeContainerComponent } from './components/home-container/home-container.component';
 import {SolutionOrchestratorComponent} from "diagnostic-data";
-import { RedirectResolver } from './resolvers/redirect.resolver';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -499,8 +498,7 @@ export const HomeRoutes = RouterModule.forChild([
                 },
                 resolve: {
                     time: TimeControlResolver,
-                    navigationTitle: TabTitleResolver,
-                    redirect: RedirectResolver
+                    navigationTitle: TabTitleResolver
                 }
             },
             {
@@ -648,8 +646,7 @@ export const HomeRoutes = RouterModule.forChild([
             { provide: GenericContentService, useExisting: ContentService },
             { provide: GenericDocumentsSearchService, useExisting: DocumentSearchService },
             { provide: CXPChatService, useExisting: CXPChatCallerService },
-            { provide: GenericResourceService, useExisting: ResourceService },
-            RedirectResolver
+            { provide: GenericResourceService, useExisting: ResourceService }
         ],
 })
 export class HomeModule { }
