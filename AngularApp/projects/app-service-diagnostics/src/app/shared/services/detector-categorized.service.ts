@@ -16,35 +16,32 @@ import { CollapsibleMenuItem } from '../../home/components/collapsible-menu-item
 export class DetectorCategorizationService {
 
     resourceId: string;
-    detectorCategories: any = {};
-    detectorlistCategories: any = {};
+    detectorCategories: { [id: string]: string[] } = {};
+    detectorlistCategories: { [id: string]: CollapsibleMenuItem[] } = {};
     orphanDetectorList: CollapsibleMenuItem[] = [];
 
     constructor(private categoryService: CategoryService, private _armService: ArmService, private _authService: AuthService) {
         this.categoryService.categories.subscribe(categories => {
             categories.forEach((category) => {
-                if (!this.detectorCategories.hasOwnProperty(category.id))
-                {
-                    this.detectorCategories[category.id]=[];
+                if (!this.detectorCategories.hasOwnProperty(category.id)) {
+                    this.detectorCategories[category.id] = [];
                 }
             })
         });
 
-        this.detectorlistCategories["AvailabilityAndPerformanceWindows"]=[];
-        this.detectorlistCategories["ConfigurationAndManagement"]=[];
-        this.detectorlistCategories["SSLandDomains"]=[];
-        this.detectorlistCategories["RiskAssessments"]=[];
-        this.detectorlistCategories["navigator"]=[];
-        this.detectorlistCategories["DiagnosticTools"]=[];
+        this.detectorlistCategories["AvailabilityAndPerformanceWindows"] = [];
+        this.detectorlistCategories["ConfigurationAndManagement"] = [];
+        this.detectorlistCategories["SSLandDomains"] = [];
+        this.detectorlistCategories["RiskAssessments"] = [];
+        this.detectorlistCategories["navigator"] = [];
+        this.detectorlistCategories["DiagnosticTools"] = [];
     }
 
     public addDetectorToCategory(detectorId: string, categoryId: string) {
-        if (!this.detectorCategories.hasOwnProperty(categoryId))
-        {
-            this.detectorCategories[categoryId]=[detectorId];
+        if (!this.detectorCategories.hasOwnProperty(categoryId)) {
+            this.detectorCategories[categoryId] = [detectorId];
         }
-        else
-        {
+        else if (!this.detectorCategories[categoryId].find(id => detectorId === id)) {
             this.detectorCategories[categoryId].push(detectorId);
         }
     }
@@ -54,10 +51,9 @@ export class DetectorCategorizationService {
     }
 
     public getlist(categoryId: string): CollapsibleMenuItem[] {
-        if (this.detectorlistCategories.hasOwnProperty(categoryId) )
-        return this.detectorlistCategories[categoryId];
-        else
-        {
+        if (this.detectorlistCategories.hasOwnProperty(categoryId))
+            return this.detectorlistCategories[categoryId];
+        else {
             this.detectorlistCategories[categoryId] = [];
             return this.detectorlistCategories[categoryId];
         }
@@ -65,27 +61,23 @@ export class DetectorCategorizationService {
     }
 
     public pushDetectorToCategory(item: CollapsibleMenuItem, categoryId: string) {
-        if (!this.detectorlistCategories.hasOwnProperty(categoryId))
-        {
-            this.detectorlistCategories[categoryId]=[item];
+        if (!this.detectorlistCategories.hasOwnProperty(categoryId)) {
+            this.detectorlistCategories[categoryId] = [item];
         }
-        else
-        {
+        else {
             this.detectorlistCategories[categoryId].push(item);
         }
     }
 
     public addlistToCategory(list: CollapsibleMenuItem[], categoryId: string) {
-        this.detectorlistCategories[categoryId]=list;
+        this.detectorlistCategories[categoryId] = list;
     }
 
     public getOrphanDetectors(categoryId: string) {
-        if (!this.detectorCategories.hasOwnProperty(categoryId))
-        {
+        if (!this.detectorCategories.hasOwnProperty(categoryId)) {
             return [];
         }
-        else
-        {
+        else {
             return this.detectorCategories[categoryId];
         }
     }

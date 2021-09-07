@@ -105,11 +105,14 @@ export class SummaryCardsComponent extends DataRenderBaseComponent {
   navigate(card: SummaryCard): void {
     //for now only navigate to detectors which are under same category
     if (this.isPublic) {
+      const url = this._router.url.split("?")[0];
+      let path = url.endsWith("/overview") ? `../` : `../../`;
       if (card.isDetector) {
-        this._router.navigate([`../detectors/${card.link}`],{relativeTo: this._activatedRoute,queryParamsHandling:'merge'});
+        path += `detectors/${card.link}`;
       } else {
-        this._router.navigate([`../analysis/${card.link}`],{relativeTo: this._activatedRoute,queryParamsHandling:'merge'});
+        path += `analysis/${card.link}`;
       }
+      this._router.navigate([path],{relativeTo: this._activatedRoute,queryParamsHandling:'merge'});
     } else {
       this._navigator.NavigateToDetector(this._activatedRoute.snapshot.params['detector'], card.link);
     }

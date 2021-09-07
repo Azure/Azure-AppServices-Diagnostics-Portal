@@ -319,7 +319,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           'ChildDetectorId': viewModel.model.metadata.id,
           'IsExpanded': true,
           'Status': viewModel.model.status,
-          // 'SearchMode': this.searchMode
         };
 
         // Log children detectors click
@@ -329,9 +328,17 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           this._portalActionService.openChangeAnalysisBlade(this._detectorControl.startTimeString, this._detectorControl.endTimeString);
         } else {
           const resourceId = this._diagnosticService.resourceId;
-          const routeUrl = this.isPublic ? `resource${resourceId}/detectors/${targetDetector}` : `${resourceId}/detectors/${targetDetector}`;
+          const url = this._router.url.split("?")[0];
+          //const routeUrl = url.endsWith("/overview") && this.isPublic ? `../detectors/${targetDetector}` : `../../detectors/${targetDetector}`;
+
+          //For test purpose
+          const detectorId = Math.random() > 0.5 ? `WebJobs Details` : `AutoHealCheckForBestPractice`;
+          const routeUrl = url.endsWith("/overview") && this.isPublic ? `../detectors/${detectorId}` : `../../detectors/${detectorId}`;
+
+
           this._router.navigate([routeUrl], {
-            queryParams: queryParams
+            queryParams: queryParams,
+            relativeTo: this._activatedRoute
           });
         }
       }
