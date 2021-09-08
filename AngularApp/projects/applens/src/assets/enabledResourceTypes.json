@@ -419,6 +419,17 @@
             "pesId": "",
             "staticSelfHelpContent": "",
             "searchSuffix": "Azure Network Function Manager"
-        }
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.AzureStack/registrations",
+            "templateFileName": "AzureStackHub",
+            "imgSrc": "assets/img/Azure-Stack-Hub-Logo.svc",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "",
+            "pesId": "",
+            "staticSelfHelpContent": "",
+            "searchSuffix": "Azure Stack Hub"
+        }        
     ]
 }
