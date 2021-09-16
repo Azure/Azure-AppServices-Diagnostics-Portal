@@ -159,11 +159,11 @@ export class DynamicDataComponent implements OnInit {
       case RenderingType.Email:
         return EmailComponent;
       case RenderingType.Insights:
-        return InsightsV4Component;
+        return this.isLegacy ? InsightsComponent : InsightsV4Component;
       case RenderingType.TimeSeriesPerInstance:
         return TimeSeriesInstanceGraphComponent;
       case RenderingType.DynamicInsight:
-        return DynamicInsightV4Component;
+        return this.isLegacy ? DynamicInsightComponent : DynamicInsightV4Component;
       case RenderingType.Markdown:
         return MarkdownViewComponent;
       case RenderingType.DetectorList:

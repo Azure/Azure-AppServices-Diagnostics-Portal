@@ -1,5 +1,6 @@
-<div class="container-fluid main-container">
-  <div class="big-text" *ngIf="loading">Searching for containerapp ...</div>
+<applens-header></applens-header>
+<div class="container-fluid main-container content-under-header">
+  <div class="big-text" *ngIf="loading">Searching for workerapp ...</div>
   <div class="big-text" *ngIf="!loading && error">{{error}}</div>
   <div class="big-text" *ngIf="!loading && !error && matchingSites.length == 1">Redirecting to {{siteName}}</div>
   <div *ngIf="!loading && !error && matchingSites.length > 0">
