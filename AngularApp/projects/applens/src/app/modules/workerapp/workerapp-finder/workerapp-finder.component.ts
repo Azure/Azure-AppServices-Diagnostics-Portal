@@ -52,8 +52,8 @@ export class WorkerAppFinderComponent implements OnInit {
       'providers', 'Microsoft.Web',
       'workerApps', matchingSite.WorkerAppName];
 
-    resourceArray.push('home');
-    resourceArray.push('category');
+    // resourceArray.push('home');
+    // resourceArray.push('category');
 
     this._router.navigate(resourceArray, { queryParamsHandling: 'preserve' });
   }
