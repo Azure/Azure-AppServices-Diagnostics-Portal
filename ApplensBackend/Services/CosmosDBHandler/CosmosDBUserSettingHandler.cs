@@ -11,21 +11,12 @@ namespace AppLensV3.Services
 {
     public class CosmosDBUserSettingHandler : CosmosDBHandlerBase<UserSetting>, ICosmosDBUserSettingHandler
     {
-        const string endPoint = "https://xiaoxu-comsmos.documents.azure.com:443/";
-        const string key = "sWcLThKUDVjYs1flIN80SbnmLhRCc4Ijkw4zlmCRySjTEEGk9RaxwPQb4QMfhRAjG4mNFJFlrNWvxxPllghJzA==";
-        const string dataBaseId = "userinfo";
-        const string collectionId = "recent";
+        const string collectionId = "UserInfo";
         private UserSetting _userSetting;
         public CosmosDBUserSettingHandler(IConfiguration configration) : base(configration)
         {
-            Endpoint = endPoint;
-            Key = key;
-            DatabaseId = dataBaseId;
             CollectionId = collectionId;
-            //Inital(configration);
-            this.client = new DocumentClient(new Uri(Endpoint), Key);
-            CreateDatabaseIfNotExistsAsync().Wait();
-            CreateCollectionIfNotExistsAsync().Wait();
+            Inital(configration).Wait();
         }
 
         public async Task<UserSetting> UpdateRecentResources(UserSetting userSetting)
