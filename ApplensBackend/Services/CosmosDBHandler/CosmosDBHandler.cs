@@ -7,7 +7,8 @@ namespace AppLensV3.Services
         public CosmosDBHandler(IConfiguration configuration)
             : base(configuration)
         {
-            Inital(configuration);
+            CollectionId = configuration["ApplensTemporaryAccess:CollectionId"];
+            Inital(configuration).Wait();
         }
     }
 }
