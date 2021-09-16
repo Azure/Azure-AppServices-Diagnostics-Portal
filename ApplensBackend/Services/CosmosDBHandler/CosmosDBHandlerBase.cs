@@ -26,18 +26,6 @@ namespace AppLensV3.Services
             Endpoint = configuration["ApplensTemporaryAccess:Endpoint"];
             Key = configuration["ApplensTemporaryAccess:Key"];
             DatabaseId = configuration["ApplensTemporaryAccess:DatabaseId"];
-            //CollectionId = configuration["ApplensTemporaryAccess:CollectionId"];
-
-            //if (configuration["ServerMode"].Equals("internal", StringComparison.OrdinalIgnoreCase)
-            //    && (string.IsNullOrWhiteSpace(Endpoint) || string.IsNullOrWhiteSpace(Key)))
-            //{
-            //    // For internal server mode, if the cosmos db settings are not present, then skip the initialization part.
-            //    return;
-            //}
-
-            //this.client = new DocumentClient(new Uri(Endpoint), Key);
-            //CreateDatabaseIfNotExistsAsync().Wait();
-            //CreateCollectionIfNotExistsAsync().Wait();
         }
 
         protected async Task Inital(IConfiguration configuration)
