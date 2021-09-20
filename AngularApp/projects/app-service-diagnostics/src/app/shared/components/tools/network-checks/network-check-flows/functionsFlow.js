@@ -188,7 +188,7 @@ export var functionsFlow = {
                     var connectionString = binding.connectionString;
                     // An undefined connectionStringType parameter causes the old tcpping validation to apply
                     var connectionStringType = isDaasExtAccessible ? bindingTypeToConnectionStringType(binding.type) : undefined;
-                    if (connectionString != undefined) {
+                    if (connectionString != undefined && connectionString != "") {
                         (await networkCheckConnectionString(binding.connectionStringProperty, 
                                                             connectionString, 
                                                             connectionStringType, 
@@ -242,7 +242,7 @@ export var functionsFlow = {
                 + "\r\n\r\n" + "-  There were authentication issues and the credentials involved have expired or are invalid. Only network connectivity was tested."
                 + "\r\n\r\n" + "-  The application setting was configured as a key vault reference and this diagnostics tool does not retrieve secrets from Key Vault.  Check application logs to debug further."
                 + "\r\n\r\n" + "-  The target endpoint/service is not available intermittently."
-                + "\r\n\r\n" + "Note: If a resource has a private endpoint setup, the resource's endpoint is not publicly addressable (DNS lookup fails) and the network connectivity test will report a \"Resource not found\"."
+                + "\r\n\r\n" + "Note: If a resource has a private endpoint setup, the resource's endpoint is not publicly addressable (DNS lookup fails) and if the private endpoint does not allow network connectivity from this Function App the network connectivity test will report a \"Resource not found\"."
         }));
     }
 };
@@ -496,7 +496,9 @@ async function validateConnectionStringAsync(propertyName, connectionString, typ
                 break;
             case "Forbidden":
                 // Some authentication failures come through as Forbidden so check the exception data
-                if(checkConnectionStringResult.Exception.RequestInformation != undefined && 
+                if(checkConnectionStringResult.Exception != undefined && 
+                   checkConnectionStringResult.Exception.RequestInformation != undefined && 
+                   typeof(checkConnectionStringResult.Exception.RequestInformation) == "string" &&
                    checkConnectionStringResult.Exception.RequestInformation.includes("AuthenticationFailed")) {
                     title = "Authentication failure";
                     detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
