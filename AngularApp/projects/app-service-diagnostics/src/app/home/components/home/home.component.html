@@ -1,18 +1,14 @@
-<ng-container *ngIf="abTestingService.enableABTesting">
-  {{abTestingService.slotType}}
-  <a href="" (click)="switchSlot($event)">Switch</a>
-  <a [href]="abTestingService.generateSlotLink()" target="_blank">Open In New Tab</a>
-</ng-container>
-
 <ng-container *ngIf="initializedPortalVersion === 'v3'&&showSwitchBanner">
-  <div *ngIf="useLegacy" class="switch2new-context-text">
+  <div *ngIf="useLegacy" class="switch2new-context-text home-banner">
     <i class="fa fa-info-circle info-banner-icon"></i>
     We have recently launched the new version of {{homePageText.title}}.
-    <a (click)="switchView()" tabindex="0" (keyup.enter)="switchView()" aria-label="switch to the new version">Click here to checkout the new version.</a>
+    <a (click)="switchView()" tabindex="0" (keyup.enter)="switchView()" aria-label="switch to the new version">Click
+      here to checkout the new version.</a>
   </div>
 </ng-container>
 
 <div *ngIf="useLegacy else newHomePage" class="home-container">
+  <ng-container *ngTemplateOutlet="previewBanner"></ng-container>
   <div class="input-group input-group-lg search-input-group" (keyup.escape)="clearSearch()" role="search"
     *ngIf="!isAKSOnNationalCloud">
     <input tabindex="0" type="search" class="form-control" placeholder="{{searchPlaceHolder}}" [ngModel]="searchValue"
@@ -118,26 +114,30 @@
     <items>
       <fab-command-bar-item key="askGenie" text="Ask Genie" [iconProps]="{ iconName: 'ChatInviteFriend' }"
         (click)="openGeniePanel()" data-track-type="run"></fab-command-bar-item>
-      <fab-command-bar-item *ngIf="showRiskSection" key="refresh1" text="Refresh" [iconProps]="{ iconName: 'Refresh' }" (click)="refreshPage()">
+      <fab-command-bar-item *ngIf="showRiskSection" key="refresh1" text="Refresh" [iconProps]="{ iconName: 'Refresh' }"
+        (click)="refreshPage()">
       </fab-command-bar-item>
       <fab-command-bar-item key="sendFeedback" text="Feedback" [iconProps]="{ iconName: 'Emoji2' }"
         (click)="openFeedbackPanel()"></fab-command-bar-item>
     </items>
   </fab-command-bar>
+  <ng-container *ngTemplateOutlet="previewBanner"></ng-container>
   <risk-alerts-notification></risk-alerts-notification>
 
   <ng-container *ngIf="initializedPortalVersion === 'v3'&&showSwitchBanner">
-    <div *ngIf="!useLegacy" class="switch2old-context-text">
+    <div *ngIf="!useLegacy" class="switch2old-context-text home-banner">
       <i class="fa fa-info-circle info-banner-icon"></i>
       Welcome to the new {{homePageText.title}}.
-      <a (click)="switchView()" class="old-version-link" tabindex="0" (keyup.enter)="switchView()" aria-label="switch to the old version">Click here to go back to the old version.</a>
+      <a (click)="switchView()" class="old-version-link" tabindex="0" (keyup.enter)="switchView()"
+        aria-label="switch to the old version">Click here to go back to the old version.</a>
     </div>
   </ng-container>
 
   <div class="home-main-area">
     <div class="home-title-container">
-      <h2><span tabindex="0" id="homepage-title" class="blade-title">{{homePageText.title}}</span><span class="blade-description"> - {{homePageText.description}}
-          </span>
+      <h2><span tabindex="0" id="homepage-title" class="blade-title">{{homePageText.title}}</span><span
+          class="blade-description"> - {{homePageText.description}}
+        </span>
       </h2>
       <div class="home-search">
         <fabric-search-results></fabric-search-results>
@@ -165,8 +165,9 @@
       </div>
     </div>
 
-    <div class="section-container" >
-      <h2 *ngIf="!loadingQuickLinks && quickLinkFeatures.length > 0" class="section-title">Popular troubleshooting tools</h2>
+    <div class="section-container">
+      <h2 *ngIf="!loadingQuickLinks && quickLinkFeatures.length > 0" class="section-title">Popular troubleshooting tools
+      </h2>
       <div *ngIf="!loadingQuickLinks else loading">
         <div class="quick-link" *ngFor="let feature of quickLinkFeatures">
           <a tabindex="0" (click)="clickQuickLink(feature)" (keyup.enter)="clickQuickLink(feature)">{{feature.name}}</a>
@@ -185,6 +186,21 @@
   <div class="home-spinner">
     <fab-spinner [ariaLabel]="'Loading Quick Links'"></fab-spinner>
   </div>
+</ng-template>
+
+<ng-template #previewBanner>
+  <ng-container *ngIf="enableABTesting && !showSwitchBanner">
+    <div [ngStyle]="{'background-color': isPreview ? '#F0F6FF' : '#F9F3FC'}" class="home-banner">
+      <i class="ib-purplerocket"></i>
+      <i class="ib-info"></i>
+      <span>{{abTestingBannerText}}, click&nbsp;</span>
+      <a (click)="openSlotInNewTab($event)"
+        [attr.aria-label]="isPreview ? 'Open old experience in new tab':'Open new experience in new tab'">here
+        <img src="assets/img/redirect-link.svg" alt="" style="margin-bottom: 5px;">
+      </a>
+      <span>&nbsp;. This will open in a new tab.</span>
+    </div>
+  </ng-container>
 </ng-template>
 
 <risk-alerts-panel></risk-alerts-panel>

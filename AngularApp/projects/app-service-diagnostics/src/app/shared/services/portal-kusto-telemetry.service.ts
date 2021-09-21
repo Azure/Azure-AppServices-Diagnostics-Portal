@@ -1,16 +1,25 @@
 import { PortalService } from './../../startup/services/portal.service';
 import { Injectable } from '@angular/core';
 import { ITelemetryProvider } from 'diagnostic-data';
+import { SlotType } from '../models/slottypes';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PortalKustoTelemetryService implements ITelemetryProvider {
-
+  private enableLogging: boolean = true;
   constructor(private _portalService: PortalService) {
+    this._portalService.getIFrameInfo().subscribe(info => {
+      const slot: string = info.slot;
+      const slotType = SlotType[slot];
+      this.enableLogging = slotType === SlotType.Preview || slotType === SlotType.PreviewStaging;
+    });
   }
 
   logEvent(eventMessage: string, properties: { [name: string]: string }, measurements?: any) {
+    if (!this.enableLogging) {
+      return;
+    }
     this._portalService.logAction('diagnostic-data', eventMessage, {
       ...properties,
       'measurements': measurements
@@ -18,6 +27,9 @@ export class PortalKustoTelemetryService implements ITelemetryProvider {
   }
 
   logException(exception: Error, handledAt?: string, properties?: { [name: string]: string }, measurements?: any, severityLevel?: any) {
+    if (!this.enableLogging) {
+      return;
+    }
     this._portalService.logAction('diagnostic-data-exception', exception.message, {
       ...properties,
       'handledAt': handledAt,
@@ -27,6 +39,9 @@ export class PortalKustoTelemetryService implements ITelemetryProvider {
   }
 
   logPageView(name: string, url: string, properties?: { [name: string]: string }, measurements?: any, duration?: number) {
+    if (!this.enableLogging) {
+      return;
+    }
     this._portalService.logAction('diagnostic-data-pageview', name, {
       ...properties,
       'url': url,
@@ -36,6 +51,9 @@ export class PortalKustoTelemetryService implements ITelemetryProvider {
   }
 
   logTrace(message: string, customProperties?: { [name: string]: string }, customMetrics?: any) {
+    if (!this.enableLogging) {
+      return;
+    }
     this._portalService.logAction('diagnostic-data-trace', message, {
       ...customProperties,
       'customMetrics': customMetrics
@@ -43,6 +61,9 @@ export class PortalKustoTelemetryService implements ITelemetryProvider {
   }
 
   logMetric(name: string, average: number, sampleCount: number, min: number, max: number, properties?: any) {
+    if (!this.enableLogging) {
+      return;
+    }
     this._portalService.logAction('diagnostic-data-metric', name, {
       ...properties,
       'average': average,

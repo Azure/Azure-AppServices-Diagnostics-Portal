@@ -7,7 +7,7 @@ export class UriUtilities {
             `/resource/${StringUtilities.TrimBoth(resourceUri, '/')}/troubleshoot`
     }
 
-    static buildSlotLink(resourceUri: string, isPreview: boolean): string {
-        return `https://portal.azure.com/?websitesextension_ext=asd.ispreview%3D${isPreview}#@microsoft.onmicrosoft.com/resource/${StringUtilities.TrimBoth(resourceUri, '/')}/troubleshoot`;
+    static buildSlotLink(resourceUri: string, isTargetingPreview: boolean): string {
+        return `https://portal.azure.com/?websitesextension_ext=asd.ispreview%3D${isTargetingPreview}#@microsoft.onmicrosoft.com/resource/${StringUtilities.TrimBoth(resourceUri, '/')}/troubleshoot`;
     }
 }

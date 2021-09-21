@@ -1,4 +1,5 @@
 @import "../../../../styles/global.scss";
+@import "../../../../styles/icons.scss";
 
 .home-container {
     padding: 30px 40px;
@@ -118,6 +119,10 @@
 
 .switch2new-context-text, .switch2old-context-text{
   background: #b3d6f2;
+}
+
+.home-banner {
+  font-size: 12px;
   line-height: 30px;
-  padding: 2px;
+  padding: 2px 5px;
 }
