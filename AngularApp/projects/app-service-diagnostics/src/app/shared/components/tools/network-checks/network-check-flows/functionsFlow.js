@@ -498,8 +498,7 @@ async function validateConnectionStringAsync(propertyName, connectionString, typ
                 // Some authentication failures come through as Forbidden so check the exception data
                 if(checkConnectionStringResult.Exception != undefined && 
                    checkConnectionStringResult.Exception.RequestInformation != undefined && 
-                   typeof(checkConnectionStringResult.Exception.RequestInformation) == "string" &&
-                   checkConnectionStringResult.Exception.RequestInformation.includes("AuthenticationFailed")) {
+                   JSON.stringify(checkConnectionStringResult.Exception.RequestInformation).includes("AuthenticationFailed")) {
                     title = "Authentication failure";
                     detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
                 } else {
