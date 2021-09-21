@@ -166,7 +166,7 @@ export class DetectorControlService {
     return returnValue;
   }
 
-  public setCustomStartEnd(start?: string, end?: string): void {
+  public setCustomStartEnd(start?: string, end?: string, refreshInstanceId?: string): void {
     this.timeRangeDefaulted = false;
     this._duration = null;
     let startTime, endTime: momentNs.Moment;
@@ -207,7 +207,13 @@ export class DetectorControlService {
     if (this.getTimeDurationError(start, end) === '') {
       this._startTime = startTime;
       this._endTime = endTime;
-      this._refreshData("V3ControlRefresh");
+      if (!!refreshInstanceId)
+      {
+        this._refreshData(refreshInstanceId)
+      }
+      else{
+        this._refreshData("V3ControlRefresh");
+      }
     }
     else {
       this.timeRangeDefaulted = true;

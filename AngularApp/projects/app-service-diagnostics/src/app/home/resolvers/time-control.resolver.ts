@@ -12,7 +12,7 @@ export class TimeControlResolver implements Resolve<Observable<boolean>> {
         let endTime = route.queryParams['endTime'];
         if (!!startTime && !!endTime)
         {
-            this._detectorControlService.setCustomStartEnd(startTime, endTime);
+            this._detectorControlService.setCustomStartEnd(startTime, endTime, "TimeControlResolver");
         }
 
         if (!this._detectorControlService.startTime) {
