@@ -13,7 +13,8 @@ export const allowV3PResourceTypeList: { type: string, allowSwitchBack: boolean 
     { type: "microsoft.signalrservice/signalr", allowSwitchBack: false },
     { type: "microsoft.logic/workflows", allowSwitchBack: false},
     { type: "microsoft.logic/integrationserviceenvironments", allowSwitchBack: false},
-    { type: "microsoft.web/hostingenvironments", allowSwitchBack: false }
+    { type: "microsoft.web/hostingenvironments", allowSwitchBack: false },
+    { type: "microsoft.web/sites", allowSwitchBack: true }
 ];
 
 
