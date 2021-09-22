@@ -30,7 +30,7 @@ export class SitesCategoryService extends CategoryService {
         chatEnabled: false
       }
     },
-    // Linux
+    // Linux App Service
     {
       appType: AppType.WebApp,
       platform: OperatingSystem.linux,
@@ -38,11 +38,11 @@ export class SitesCategoryService extends CategoryService {
       sku: Sku.All,
       hostingEnvironmentKind: HostingEnvironmentKind.All,
       item: {
-        id: 'LinuxAvailabilityAndPerformance',
+        id: 'availabilityandperformancelinux',
         name: 'Availability and Performance',
         overviewDetectorId: 'LinuxAvailabilityAndPerformance',
-        description: 'Is your app experiencing downtime or slowness? Discover issues that may impact SLA, caused by your app itself or Azure.',
-        keywords: ['Downtime', '5xx Errors', '4xx Errors', 'CPU', 'Memory','SNAT'],
+        description: 'Check your app’s health and discover app or platform issues.',
+        keywords: ['Downtime', '5xx', '4xx', 'CPU', 'Memory','SNAT'],
         color: 'rgb(208, 175, 239)',
         createFlowForCategory: false,
         chatEnabled: false
@@ -50,7 +50,7 @@ export class SitesCategoryService extends CategoryService {
     },
     {
       appType: AppType.WebApp,
-      platform: OperatingSystem.windows | OperatingSystem.linux | OperatingSystem.HyperV,
+      platform: OperatingSystem.windows | OperatingSystem.HyperV,
       stack: '',
       sku: Sku.All,
       hostingEnvironmentKind: HostingEnvironmentKind.All,
@@ -58,6 +58,24 @@ export class SitesCategoryService extends CategoryService {
         id: 'ConfigurationAndManagement',
         name: 'Configuration and Management',
         overviewDetectorId: 'ConfigurationAndManagement',
+        description: 'Find out if your app service features are misconfigured.',
+        keywords: ['Backups', 'Slots', 'Swaps', 'Scaling','IP Config'],
+        color: 'rgb(249, 213, 180)',
+        createFlowForCategory: true,
+        chatEnabled: false
+      }
+    },
+    // Linux App Service 
+    {
+      appType: AppType.WebApp,
+      platform: OperatingSystem.linux,
+      stack: '',
+      sku: Sku.All,
+      hostingEnvironmentKind: HostingEnvironmentKind.All,
+      item: {
+        id: 'configurationandmanagementlinux',
+        name: 'Configuration and Management',
+        overviewDetectorId: 'linuxconfigurationandmanagement',
         description: 'Find out if your app service features are misconfigured.',
         keywords: ['Backups', 'Slots', 'Swaps', 'Scaling','IP Config'],
         color: 'rgb(249, 213, 180)',
@@ -82,10 +100,10 @@ export class SitesCategoryService extends CategoryService {
         chatEnabled: true
       }
     },
-    //Windows and Linux
+    // Windows
     {
       appType: AppType.WebApp,
-      platform: OperatingSystem.windows | OperatingSystem.linux | OperatingSystem.HyperV,
+      platform: OperatingSystem.windows | OperatingSystem.HyperV,
       stack: '',
       sku: Sku.All,
       hostingEnvironmentKind: HostingEnvironmentKind.All,
@@ -93,6 +111,24 @@ export class SitesCategoryService extends CategoryService {
         id: 'RiskAssessments',
         name: 'Risk Assessments',
         overviewDetectorId: 'BestPractices',
+        description: 'Analyze your app for optimal performance and configurations.',
+        keywords: ['Autoscale','AlwaysOn','Density','ARR','Health Check'],
+        color: 'rgb(208, 228, 176)',
+        createFlowForCategory: true,
+        chatEnabled: false
+      }
+    },
+    // Linux App Service
+    {
+      appType: AppType.WebApp,
+      platform: OperatingSystem.linux,
+      stack: '',
+      sku: Sku.All,
+      hostingEnvironmentKind: HostingEnvironmentKind.All,
+      item: {
+        id: 'riskassessmentslinux',
+        name: 'Risk Assessments',
+        overviewDetectorId: 'LinuxBestPractices',
         description: 'Analyze your app for optimal performance and configurations.',
         keywords: ['Autoscale','AlwaysOn','Density','ARR','Health Check'],
         color: 'rgb(208, 228, 176)',
@@ -279,7 +315,7 @@ export class SitesCategoryService extends CategoryService {
   private _getDiagnosticToolsCategory(siteId: string): SiteFilteredItem<Category>[] {
     return <SiteFilteredItem<Category>[]> [{
       appType: AppType.WebApp,
-      platform: OperatingSystem.any,
+      platform: OperatingSystem.windows | OperatingSystem.HyperV,
       stack: '',
       sku: Sku.All,
       hostingEnvironmentKind: HostingEnvironmentKind.All,
@@ -294,6 +330,24 @@ export class SitesCategoryService extends CategoryService {
         overridePath: `resource${siteId}/diagnosticTools`
       }
     },
+    // Linux App Service                                       
+    {
+        appType: AppType.WebApp,
+        platform: OperatingSystem.linux,
+        stack: '',
+        sku: Sku.All,
+        hostingEnvironmentKind: HostingEnvironmentKind.All,
+        item: {
+          id: 'diagnostictoolslinux',
+          name: 'Diagnostic Tools',
+          overviewDetectorId:'LinuxDiagnosticTools',
+          description: 'Run proactive tools to automatically mitigate the app.',
+          keywords: ['Auto-Heal'],
+          color: 'rgb(170, 192, 208)',
+          createFlowForCategory: false,
+          overridePath: `resource${siteId}/diagnosticTools`
+        }
+      },
     // For Function App on Linux, "Diagnostic Tools" is only enabled for Paid Dedicated sku
     {
         appType: AppType.FunctionApp,
