@@ -54,7 +54,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
     showRiskSection: boolean = true;
     private _showSwitchBanner: boolean = false;
     get showSwitchBanner():boolean {
-        const typeSwitchItem = allowV3PResourceTypeList.find(item => this._resourceService.resource && this._resourceService.resource.type && this._resourceService.resource.type.toLowerCase() === item.type.toLowerCase());
+        //Enable banner for Linux Web App
+        if(this.isLinuxApp && this.isWebApp) return true;
+        const typeSwitchItem = allowV3PResourceTypeList.find(item => this._resourceService.resource && this._resourceService.resource.type.toLowerCase() === item.type.toLowerCase());
         const allowResourceTypeSwitch = typeSwitchItem === undefined ? false : typeSwitchItem.allowSwitchBack;
         return allowResourceTypeSwitch && this._showSwitchBanner;
     }
@@ -240,6 +242,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
             && ResourceDescriptor.parseResourceUri(this._resourceService.resourceIdForRouting).provider.toLowerCase() == 'microsoft.containerservice';
     }
 
+    public get isLinuxApp(): boolean {
+        return this._resourceService && this._resourceService instanceof WebSitesService && this._resourceService.platform === OperatingSystem.linux;
+    }
+
+    public get isWebApp(): boolean {
+        return this._resourceService && this._resourceService instanceof WebSitesService && (this._resourceService as WebSitesService).appType === AppType.WebApp;
+    }
+
     onSearchBoxFocus(event: any): void {
         this.searchBoxFocus = true;
     }
@@ -370,4 +380,3 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this._telemetryService.logEvent('SwitchView',eventProps);
     }
 }
-
