@@ -38,7 +38,7 @@ export class SitesCategoryService extends CategoryService {
       sku: Sku.All,
       hostingEnvironmentKind: HostingEnvironmentKind.All,
       item: {
-        id: 'availabilityandperformancelinux',
+        id: 'AvailabilityAndPerformanceLinux',
         name: 'Availability and Performance',
         overviewDetectorId: 'LinuxAvailabilityAndPerformance',
         description: 'Check your app’s health and discover app or platform issues.',
@@ -338,7 +338,7 @@ export class SitesCategoryService extends CategoryService {
         sku: Sku.All,
         hostingEnvironmentKind: HostingEnvironmentKind.All,
         item: {
-          id: 'diagnostictoolslinux',
+          id: 'DiagnosticTools',
           name: 'Diagnostic Tools',
           overviewDetectorId:'LinuxDiagnosticTools',
           description: 'Run proactive tools to automatically mitigate the app.',

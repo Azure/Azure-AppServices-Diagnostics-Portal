@@ -15,7 +15,7 @@ export class LinuxAvailabilityPerformanceFlow extends IMessageFlowProvider {
 
         const messageGroupList: MessageGroup[] = [];
 
-        const availailabilityPerformance: MessageGroup = new MessageGroup('welcome-LinuxAvailabilityAndPerformance', [], () => 'availability-menu');
+        const availailabilityPerformance: MessageGroup = new MessageGroup('welcome-AvailabilityAndPerformanceLinux', [], () => 'availability-menu');
         availailabilityPerformance.messages.push(new TextMessage('Hello! Welcome to App Service Diagnostics! My name is Genie and I\'m here to help you diagnose and solve problems with your app.', MessageSender.System));
         availailabilityPerformance.messages.push(new TextMessage('Here are some issues related to Availability and Performance. Please select the tile that best describes your issue.', MessageSender.System, 2000));
 
