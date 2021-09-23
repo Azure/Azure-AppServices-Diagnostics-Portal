@@ -12,9 +12,7 @@ export const allowV3PResourceTypeList: { type: string, allowSwitchBack: boolean 
     { type: "microsoft.apimanagement/service", allowSwitchBack: false },
     { type: "microsoft.signalrservice/signalr", allowSwitchBack: false },
     { type: "microsoft.logic/workflows", allowSwitchBack: false},
-    { type: "microsoft.logic/integrationserviceenvironments", allowSwitchBack: false},
-    { type: "microsoft.web/hostingenvironments", allowSwitchBack: false },
-    { type: "microsoft.web/sites", allowSwitchBack: true }
+    { type: "microsoft.logic/integrationserviceenvironments", allowSwitchBack: false}
 ];
 
 
@@ -78,10 +76,11 @@ export class VersionTestService {
     }
 
     // This is the resource type that we migrate to new diagnose and solve experience but still offer the option to switch back to the old experience
-    // Resource types that are currently using new D&S: windows web app, function app
+    // Resource types that are currently using new D&S: windows web app, function app, Linux web app
     private isVnextResourceType(site: Site, resourceType: ResourceType): boolean {
         let isLinuxPlatform = site && site.kind && site.kind.toLowerCase().indexOf('linux') >= 0;
-        return resourceType === ResourceType.Site && site && (site.appType === AppType.WebApp || site.appType == AppType.FunctionApp) && !isLinuxPlatform;
+        // return resourceType === ResourceType.Site && site && (site.appType === AppType.WebApp || site.appType == AppType.FunctionApp) && !isLinuxPlatform;
+        return resourceType === ResourceType.Site && site && (site.appType === AppType.WebApp || (site.appType == AppType.FunctionApp && !isLinuxPlatform));
     }
 
     private isVnextSubscription(subscriptionId: string, percentageToRelease: number = 0.1): boolean {
