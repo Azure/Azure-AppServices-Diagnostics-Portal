@@ -117,7 +117,7 @@ export class MainComponent implements OnInit {
     this._http.get<ResourceServiceInputsJsonResponse>('assets/enabledResourceTypes.json').subscribe(jsonResponse => {
       this.enabledResourceTypes = <ResourceServiceInputs[]>jsonResponse.enabledResourceTypes;
       this.enabledResourceTypes.forEach(type => {
-        if (!this.resourceTypes.find(resource => resource.displayName.toLowerCase() === type.searchSuffix.toLowerCase())) {
+        if (!this.resourceTypes.find(resource => resource.displayName && type.searchSuffix && resource.displayName.toLowerCase() === type.searchSuffix.toLowerCase())) {
           this.resourceTypes.push({
             resourceType: null,
             resourceTypeLabel: 'ARM resource ID',
