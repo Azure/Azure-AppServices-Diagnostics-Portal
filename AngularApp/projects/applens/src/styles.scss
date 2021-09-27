@@ -210,11 +210,18 @@ fab-command-bar .ms-SearchBox {
 }
 
 .fab-command-bar-class {
-  border-bottom: 1px solid #D6D6D6 !important;
-  font-size: 12px !important;
-  padding: 0px !important;
-  margin-top: 16px;
+  // border-bottom: 1px solid #D6D6D6 !important;
+  // font-size: 12px !important;
+  // padding: 0px !important;
+  // margin-top: 16px;
+  // height: 34px;
+  border-bottom: 1px solid rgb(204, 204, 204)!important;
+  font-size: 12px!important;
   height: 34px;
+}
+
+.fab-command-bar-class .ms-CommandBar {
+  height: 33px;
 }
 
 .content-under-header {
