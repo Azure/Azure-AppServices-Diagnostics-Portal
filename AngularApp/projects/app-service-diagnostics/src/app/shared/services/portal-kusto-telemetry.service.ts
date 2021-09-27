@@ -12,7 +12,7 @@ export class PortalKustoTelemetryService implements ITelemetryProvider {
     this._portalService.getIFrameInfo().subscribe(info => {
       const slot: string = info.slot;
       const slotType = SlotType[slot];
-      this.enableLogging = slotType === SlotType.Preview || slotType === SlotType.PreviewStaging;
+      this.enableLogging = slotType === SlotType.Preview || slotType === SlotType.Prod;
     });
   }
 
