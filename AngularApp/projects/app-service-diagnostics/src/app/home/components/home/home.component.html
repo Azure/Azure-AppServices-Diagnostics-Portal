@@ -6,9 +6,12 @@
       here to checkout the new version.</a>
   </div>
 </ng-container>
+<ng-container *ngIf="useLegacy">
+  <ng-container *ngTemplateOutlet="previewBanner"></ng-container>
+</ng-container>
+
 
 <div *ngIf="useLegacy else newHomePage" class="home-container">
-  <ng-container *ngTemplateOutlet="previewBanner"></ng-container>
   <div class="input-group input-group-lg search-input-group" (keyup.escape)="clearSearch()" role="search"
     *ngIf="!isAKSOnNationalCloud">
     <input tabindex="0" type="search" class="form-control" placeholder="{{searchPlaceHolder}}" [ngModel]="searchValue"
@@ -191,8 +194,8 @@
 <ng-template #previewBanner>
   <ng-container *ngIf="enableABTesting && !showSwitchBanner">
     <div [ngStyle]="{'background-color': isPreview ? '#F0F6FF' : '#F9F3FC'}" class="home-banner">
-      <i class="ib-purplerocket"></i>
-      <i class="ib-info"></i>
+      <i *ngIf="isPreview" class="ib-blueinfo mr-3"></i>
+      <i *ngIf="!isPreview" class="ib-purplerocket mr-3"></i>
       <span>{{abTestingBannerText}}, click&nbsp;</span>
       <a (click)="openSlotInNewTab($event)"
         [attr.aria-label]="isPreview ? 'Open old experience in new tab':'Open new experience in new tab'">here
