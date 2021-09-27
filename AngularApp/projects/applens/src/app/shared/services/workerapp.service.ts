@@ -1,10 +1,9 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { Inject, Injectable } from '@angular/core';
-import { RESOURCE_SERVICE_INPUTS, ResourceServiceInputs } from '../models/resources';
+import { RESOURCE_SERVICE_INPUTS, ResourceServiceInputs,ResourceInfo } from '../models/resources';
 import { ObserverService } from './observer.service';
 import { ResourceService } from './resource.service';
-import { HttpResponse } from '@angular/common/http';
 
 @Injectable()
 export class WorkerAppService extends ResourceService {
@@ -22,7 +21,7 @@ export class WorkerAppService extends ResourceService {
       .pipe(map((observerResponse: Observer.ObserverWorkerAppResponse) => {
         this._observerResource = this._workerAppObject = this.getWorkerAppFromObserverResponse(observerResponse);
         this._currentResource.next(this._workerAppObject);
-        return true;
+        return new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix,this.getCurrentResourceId());
       }))
   }
 
