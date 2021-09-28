@@ -15,7 +15,6 @@ export class PortalAppInsightsTelemetryService implements ITelemetryProvider {
     instrumentationKey: string;
     environment: string = "";
     websiteHostName: string = "";
-    enableLogging: boolean = true;
 
     constructor(private _backendCtrlService: BackendCtrlService, private _versionTestService: VersionTestService, private _portalService: PortalService) {
         const appInsightsRequest = this._backendCtrlService.get<string>(`api/appsettings/ApplicationInsights:InstrumentationKey`).pipe(
@@ -38,12 +37,6 @@ export class PortalAppInsightsTelemetryService implements ITelemetryProvider {
             }),
             retry(2)
         );
-
-        this._portalService.getIFrameInfo().subscribe(info => {
-            const slot: string = info.slot;
-            const slotType = SlotType[slot];
-            this.enableLogging = slotType === SlotType.Preview || slotType === SlotType.Prod;
-        });
 
         appInsightsRequest.subscribe(() => {
             envConfigRequest.subscribe(() => {
@@ -83,9 +76,6 @@ export class PortalAppInsightsTelemetryService implements ITelemetryProvider {
     }
 
     public logPageView(name?: string, url?: string, properties?: any, duration?: number) {
-        if (!this.enableLogging) {
-            return;
-        }
         properties = properties || {};
         properties.duration = duration === undefined || duration === null ? 0 : duration;
 
@@ -100,9 +90,6 @@ export class PortalAppInsightsTelemetryService implements ITelemetryProvider {
     }
 
     public logEvent(message?: string, properties?: any, measurements?: any) {
-        if (!this.enableLogging) {
-            return;
-        }
         const mergedProperties = { ...properties, ...measurements };
         const eventTelemetry: IEventTelemetry = {
             name: message,
@@ -115,9 +102,6 @@ export class PortalAppInsightsTelemetryService implements ITelemetryProvider {
     }
 
     public logException(exception: Error, handledAt?: string, properties?: any, severityLevel?: SeverityLevel) {
-        if (!this.enableLogging) {
-            return;
-        }
         const mergedProperties = { handledAt: handledAt, ...properties };
         const exceptionTelemetry: IExceptionTelemetry = {
             error: exception,
@@ -131,9 +115,6 @@ export class PortalAppInsightsTelemetryService implements ITelemetryProvider {
     }
 
     public logTrace(message: string, properties?: any, severityLevel?: SeverityLevel) {
-        if (!this.enableLogging) {
-            return;
-        }
         severityLevel = severityLevel == undefined || severityLevel == null ? SeverityLevel.Information : severityLevel;
         const traceTelemetry = { message, severityLevel: severityLevel, properties: properties } as ITraceTelemetry;
 
@@ -143,9 +124,6 @@ export class PortalAppInsightsTelemetryService implements ITelemetryProvider {
     }
 
     public logMetric(name: string, average: number, sampleCount?: number, min?: number, max?: number, properties?: any) {
-        if (!this.enableLogging) {
-            return;
-        }
         const metricTelemetry = { name, average, sampleCount, min, max, properties } as IMetricTelemetry;
         if (this.appInsights) {
             this.appInsights.trackMetric(metricTelemetry);
