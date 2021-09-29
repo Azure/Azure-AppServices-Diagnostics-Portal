@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,10 +14,7 @@ namespace AppLensV3.Services.DiagnosticClientService
     public class DiagnosticClient : IDiagnosticClientService
     {
         private IConfiguration _configuration;
-        private IEmailNotificationService _emailService;
         private HttpClient _client { get; set; }
-
-        private List<string> _nonPassThroughResourceProviderList { get; set; }
 
         public string DiagnosticServiceEndpoint
         {
@@ -32,8 +27,7 @@ namespace AppLensV3.Services.DiagnosticClientService
         public DiagnosticClient(IConfiguration configuration)
         {
             _configuration = configuration;
-            _client = InitializeClient();
-            _nonPassThroughResourceProviderList = new List<string>() { "microsoft.web/sites", "microsoft.web/hostingenvironments" };
+            _client = InitializeClient();     
         }
 
         private HttpClient InitializeClient()
@@ -81,16 +75,6 @@ namespace AppLensV3.Services.DiagnosticClientService
             response = await _client.SendAsync(requestMessage);
             return response;
         }
-
-        private bool HitPassThroughApi(string path)
-        {
-            return !_nonPassThroughResourceProviderList.Exists(p => path.ToLower().Contains(p))
-                || new Regex("/detectors/[^/]*/statistics").IsMatch(path.ToLower())
-                || path.ToLower().Contains("/diagnostics/publish")
-                || path.ToLower().StartsWith("observer")
-                || (path.ToLower().Contains("insights?") || path.ToLower().EndsWith("insights"));
-        }
-
         private void AddAdditionalHeaders(HttpRequestHeaders additionalHeaders, ref HttpRequestMessage request)
         {
             foreach (var header in additionalHeaders)
