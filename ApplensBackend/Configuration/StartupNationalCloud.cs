@@ -102,10 +102,7 @@ namespace AppLensV3.Configuration
             services.AddSingleton<IAuthorizationHandler, SecurityGroupHandlerNationalCloud>();
 
             // If we are using runtime host directly
-            if (configuration.GetValue<bool>("DiagnosticRole:UseAppService"))
-            {
-                DiagnosticClientToken.Instance.Initialize(configuration);
-            }
+            DiagnosticClientToken.Instance.Initialize(configuration);
 
             if (env.IsEnvironment("NationalCloud"))
             {

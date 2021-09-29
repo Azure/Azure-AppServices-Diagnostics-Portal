@@ -78,10 +78,7 @@ namespace AppLensV3
             KustoTokenRefreshService.Instance.Initialize(Configuration);
 
             // If we are using runtime host directly
-            if (Configuration.GetValue<bool>("DiagnosticRole:UseAppService"))
-            {
-                DiagnosticClientToken.Instance.Initialize(Configuration);
-            }
+            DiagnosticClientToken.Instance.Initialize(Configuration);
 
             services.AddAuthentication(auth =>
             {
