@@ -26,9 +26,10 @@
           [routerLinkActiveOptions]="{exact:true}">Detector Usage and Analytics</a>
       </li>
     </ul>
-  </div>
-  <div class="tab-container">
-    <router-outlet></router-outlet>
-  </div>
+  </div> 
 </div> -->
+<fab-pivot (onLinkClick)="navigateToData($event)" [defaultSelectedKey]="defaultTabKey">
+  <fab-pivot-item *ngFor="let tab of tabs" [headerText]="tab.headerText" [itemKey]="tab.itemKey">
+  </fab-pivot-item>
+</fab-pivot>
 <router-outlet></router-outlet>
