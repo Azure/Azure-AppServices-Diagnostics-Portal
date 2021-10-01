@@ -276,15 +276,15 @@
       <split-area size="60">
         <split direction="vertical" gutterSize="8" gutterColor="rgb(249, 233, 212)">
           <split-area size="85">
-            <detector-control *ngIf="mode === DevelopMode.Create || mode === DevelopMode.Edit">
-            </detector-control>
-            <div class="code-container-header">
+            <!-- <detector-control *ngIf="mode === DevelopMode.Create || mode === DevelopMode.Edit">
+            </detector-control> -->
+            <!-- <div class="code-container-header">
 
               <div class="file-tab active">
                 {{fileName}}
               </div>
 
-              <div (click)="checkAccessAndConfirmPublish()" class="action-button publish-button"
+              <div (click)="showPublishDialog()" class="action-button publish-button"
                 [class.disabled]="publishButtonDisabled">
                 <i class="fa fa-cloud-upload"></i>
                 {{publishButtonText}}
@@ -306,7 +306,7 @@
                 <i class="fa fa-cubes"></i>
                 Manage Package
               </div>
-            </div>
+            </div> -->
 
             <ngx-monaco-editor style="height:calc(100%)" [options]="editorOptions" [(ngModel)]="code">
             </ngx-monaco-editor>
@@ -343,7 +343,7 @@
             (click)="queryResponse ? showDataSources=true : false">
             Data Sources
           </div>
-        </div>
+        </div> -->
 
         <div style="padding:10px">
           <!-- <detector-view *ngIf="queryResponse && !showDataSources" [detectorResponse]="queryResponse.invocationOutput"
