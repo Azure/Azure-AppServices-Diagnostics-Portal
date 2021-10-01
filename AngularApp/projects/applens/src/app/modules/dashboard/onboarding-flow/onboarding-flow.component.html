@@ -208,7 +208,7 @@
         [iconProps]="{ iconName: 'Upload' }" (click)="showPublishDialog()" [buttonStyles]="publishButtonStyle">
       </fab-command-bar-item>
       <fab-command-bar-item key="download" text="Download" [iconProps]="{ iconName: 'Download' }"
-        (click)="saveProgress() //getDevOptions()"></fab-command-bar-item>
+        (click)="getDevOptions()"></fab-command-bar-item>
       <fab-command-bar-item key="gistVersion" text="Gist version" [iconProps]="{ iconName: 'BackToWindow' }"
         (click)="showGistDialog()"></fab-command-bar-item>
       <fab-command-bar-item key="internal" [text]="internalExternalText" [iconProps]="{ iconName: 'View' }"
