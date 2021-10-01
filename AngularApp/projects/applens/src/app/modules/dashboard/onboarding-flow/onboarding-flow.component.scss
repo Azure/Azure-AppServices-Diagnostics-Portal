@@ -22,6 +22,7 @@ body {
 .onboarding-container {
     height: 100%;
     background-color: white;
+    margin-top: 10px;
 }
 
 .custom-btn {
@@ -351,6 +352,21 @@ span.rotate {
 [tooltip]:hover:before {
     visibility: visible;
     opacity: 1;
+}
+
+
+.panel-text {
+    font-size: 12px;
+    line-height: 16px;
+    margin-left: 20px;
+    font-weight: 400;
+}
+
+.submitted-panel-text {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0px;
+    font-size: 14px;
 }
 
 .publishAccessDenied .modal-header {
