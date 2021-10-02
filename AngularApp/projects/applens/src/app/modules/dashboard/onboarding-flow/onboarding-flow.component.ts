@@ -5,8 +5,8 @@ import {
 import * as momentNs from 'moment';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import { forkJoin, Observable, of } from 'rxjs';
-import { flatMap, map } from 'rxjs/operators';
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { flatMap, map, tap } from 'rxjs/operators';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Package } from '../../../shared/models/package';
 import { GithubApiService } from '../../../shared/services/github-api.service';
 import { ResourceService } from '../../../shared/services/resource.service';
@@ -24,6 +24,48 @@ import { Commit } from '../../../shared/models/commit';
 
 const moment = momentNs;
 const newDetectorId: string = "NEW_DETECTOR";
+
+// const commandbaritems: ICommandBarItemProps[] = [
+//   {
+//     key: 'newItem',
+//     text: 'New',
+//     cacheKey: 'myCacheKey', // changing this key will invalidate this item's cache
+//     iconProps: { iconName: 'Add' },
+//     subMenuProps: {
+//       items: [
+//         {
+//           key: 'emailMessage',
+//           text: 'Email message',
+//           iconProps: { iconName: 'Mail' },
+//           ['data-automation-id']: 'newEmailButton', // optional
+//         },
+//         {
+//           key: 'calendarEvent',
+//           text: 'Calendar event',
+//           iconProps: { iconName: 'Calendar' },
+//         },
+//       ],
+//     },
+//   },
+//   {
+//     key: 'upload',
+//     text: 'Upload',
+//     iconProps: { iconName: 'Upload' },
+//     href: 'https://developer.microsoft.com/en-us/fluentui',
+//   },
+//   {
+//     key: 'share',
+//     text: 'Share',
+//     iconProps: { iconName: 'Share' },
+//     onClick: () => console.log('Share'),
+//   },
+//   {
+//     key: 'download',
+//     text: 'Download',
+//     iconProps: { iconName: 'Download' },
+//     onClick: () => console.log('Download'),
+//   },
+// ];
 
 export enum DevelopMode {
   Create,
@@ -372,9 +414,9 @@ export class OnboardingFlowComponent implements OnInit {
         key: String(g),
         text: String(g)
       });
-    });
-    if (this.gists.length == 0) {
-      this.gistUpdateTitle = "no gists available";
+    });    
+    if (this.gists.length == 0){
+      this.gistUpdateTitle = "No gists available";
     }
     else {
       this.gistUpdateTitle = "Update Gist version"
@@ -992,6 +1034,11 @@ export class OnboardingFlowComponent implements OnInit {
       this.showAlertBox('alert-danger', 'Publishing failed. Please try again after some time.');
       this.publishFailed = true;
     });
+
+    // this.diagnosticApiService.pushDetectorChanges(this.Branch, this.code, "/test/fromapplens.csx", "test", "edit").subscribe(resPush => {
+    //     console.log(resPush);
+    //   },error => {
+    //     console.log(error);});
   }
 
   /*gradPublish(publishingPackage: Package){
