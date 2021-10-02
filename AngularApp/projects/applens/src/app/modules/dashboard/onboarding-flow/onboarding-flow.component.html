@@ -151,10 +151,10 @@
   </fab-dialog>
 
   <fab-dialog [hidden]="gistDialogHidden" (onDismiss)="dismissGistDialog()">
-    <fab-dialog-content [title]="gistUpdateTitle" subText="tempSubText">
+    <fab-dialog-content [title]="gistUpdateTitle">
       <fab-dropdown *ngIf="gists.length > 0" label="Gist name" placeholder="Field value"
         [options]="gistsDropdownOptions" (onChange)="updateGistVersionOptions($event)"></fab-dropdown>
-      <fab-dropdown *ngIf="gistName" label="Gist version" (onChange)="gistVersionOnChange($event)" placeholder="Field value" [options]="gistVersionOptions">
+      <fab-dropdown [disabled]="!gistName" label="Gist version" (onChange)="gistVersionOnChange($event)" placeholder="Field value" [options]="gistVersionOptions">
       </fab-dropdown>
       <div class="mt-5">
         <fab-primary-button *ngIf="gists.length > 0" text="Update" (onClick)="gistVersionChange()" class="mr-3"></fab-primary-button>
@@ -208,7 +208,7 @@
         [iconProps]="{ iconName: 'Upload' }" (click)="showPublishDialog()" [buttonStyles]="publishButtonStyle">
       </fab-command-bar-item>
       <fab-command-bar-item key="download" text="Download" [iconProps]="{ iconName: 'Download' }"
-        (click)="saveProgress() //getDevOptions()"></fab-command-bar-item>
+        (click)="getDevOptions()"></fab-command-bar-item>
       <fab-command-bar-item key="gistVersion" text="Gist version" [iconProps]="{ iconName: 'BackToWindow' }"
         (click)="showGistDialog()"></fab-command-bar-item>
       <fab-command-bar-item key="internal" [text]="internalExternalText" [iconProps]="{ iconName: 'View' }"
@@ -276,15 +276,15 @@
       <split-area size="60">
         <split direction="vertical" gutterSize="8" gutterColor="rgb(249, 233, 212)">
           <split-area size="85">
-            <detector-control *ngIf="mode === DevelopMode.Create || mode === DevelopMode.Edit">
-            </detector-control>
-            <div class="code-container-header">
+            <!-- <detector-control *ngIf="mode === DevelopMode.Create || mode === DevelopMode.Edit">
+            </detector-control> -->
+            <!-- <div class="code-container-header">
 
               <div class="file-tab active">
                 {{fileName}}
               </div>
 
-              <div (click)="checkAccessAndConfirmPublish()" class="action-button publish-button"
+              <div (click)="showPublishDialog()" class="action-button publish-button"
                 [class.disabled]="publishButtonDisabled">
                 <i class="fa fa-cloud-upload"></i>
                 {{publishButtonText}}
@@ -306,7 +306,7 @@
                 <i class="fa fa-cubes"></i>
                 Manage Package
               </div>
-            </div>
+            </div> -->
 
             <ngx-monaco-editor (onInit)="onInit($event)" style="height:calc(100% - 100px)" [options]="editorOptions" [(ngModel)]="code">
             </ngx-monaco-editor>
@@ -357,7 +357,7 @@
             (click)="queryResponse ? showDataSources=true : false">
             Data Sources
           </div>
-        </div>
+        </div> -->
 
         <div style="padding:10px">
           <!-- <detector-view *ngIf="queryResponse && !showDataSources" [detectorResponse]="queryResponse.invocationOutput"
