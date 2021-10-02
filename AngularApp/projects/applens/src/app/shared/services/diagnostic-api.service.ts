@@ -166,7 +166,7 @@ export class DiagnosticApiService {
     return this._cacheService.get(this.getCacheKey(method, path), request, true);
   }
 
-  public verfifyPublishingDetectorAccess(resourceType: string, detectorCode: string, isOriginalCodeMarkedPublic: boolean): Observable<any> {
+  public  verfifyPublishingDetectorAccess(resourceType: string, detectorCode: string, isOriginalCodeMarkedPublic: boolean) : Observable<any> {
     let url: string = `${this.diagnosticApi}api/publishingaccess`;
     var body =
     {
@@ -319,7 +319,8 @@ export class DiagnosticApiService {
     return `${HttpMethod[method]}-${path}`;
   }
 
-  private isLocalizationApplicable(locale: string): boolean {
+  private isLocalizationApplicable(locale: string): boolean
+  {
     return locale != null && locale != "" && locale != "en" && !locale.startsWith("en");
   }
 
@@ -352,8 +353,9 @@ export class DiagnosticApiService {
       headers = headers.set('x-ms-location', encodeURI(this.Location));
     }
 
-    if (this.isLocalizationApplicable(this.effectiveLocale)) {
-      headers = headers.set('x-ms-localization-language', encodeURI(this.effectiveLocale.toLowerCase()));
+    if (this.isLocalizationApplicable(this.effectiveLocale))
+    {
+        headers = headers.set('x-ms-localization-language', encodeURI(this.effectiveLocale.toLowerCase()));
     }
 
     if (additionalHeaders) {
@@ -400,7 +402,7 @@ export class DiagnosticApiService {
     return request.pipe(map(res => <UserSetting>res));
     // return this.get(`api/recent/${userId}`);
   }
-
+  
   public updateUserSetting(userSettings: UserSetting):Observable<UserSetting> {
     //let url = `${this.diagnosticApi}api/recent/${userInfo.id}`;
     let url = `${this.diagnosticApi}api/usersetting`;
@@ -409,5 +411,28 @@ export class DiagnosticApiService {
     });
     // return this._cacheService.get(this.getCacheKey(HttpMethod.POST, url), request, false);
     return request.pipe(map(res => <UserSetting>res));
+  }
+
+  public getDetectorCode(detectorPath: string){
+
+    let path = "devops/getCode?organization="+"&detectorPath="+detectorPath;
+    return this.invoke(path, HttpMethod.GET);
+  }
+
+  public pushDetectorChanges(branch: string, file: string, repoPath: string, comment: string, changeType: string){
+
+    let path = "devops/push?organization="+"&branch="+branch+"&file="+file+"&repoPath="+repoPath+"&comment="+comment+"&changeType="+changeType;
+    return this.invoke(path, HttpMethod.GET);
+  }
+
+  public makePullRequest(sourceBranch: string, targetBranch: string, title: string){
+
+    let path = "devops/makePR?organization="+"&sourceBranch="+sourceBranch+"&targetBranch="+targetBranch+"&title="+title;
+    return this.invoke(path, HttpMethod.GET);
+  }
+
+  public getBranches(resourceId: string): Observable<string []>{
+    let path = "devops/getBranches?resourceURI=" + resourceId;
+    return this.invoke(path, HttpMethod.GET);
   }
 }
