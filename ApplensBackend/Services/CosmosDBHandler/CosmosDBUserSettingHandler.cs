@@ -26,6 +26,10 @@ namespace AppLensV3.Services
 
         private async Task<UserSetting> UpdateUserInfoInternal(UserSetting user)
         {
+            if(string.IsNullOrEmpty(DatabaseId))
+            {
+                return null;
+            }
             Document doc;
             if (_userSetting == null)
             {
