@@ -45,6 +45,10 @@ namespace AppLensV3.Services
         {
             try
             {
+                if (string.IsNullOrEmpty(DatabaseId))
+                {
+                    return null;
+                }
                 Document document = await client.ReadDocumentAsync(
                     UriFactory.CreateDocumentUri(DatabaseId, CollectionId, id),
                     new RequestOptions { PartitionKey = new PartitionKey(partitionKey) });
