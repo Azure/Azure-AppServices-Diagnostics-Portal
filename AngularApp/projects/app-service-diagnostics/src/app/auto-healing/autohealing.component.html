@@ -207,8 +207,8 @@
     </div>
   </div>
   <div id="autoHealingHistoryTabControls" *ngIf="selectedTab === 'autoHealingHistory'"
-    [attr.aria-expanded]="selectedTab === 'autoHealingHistory'" style="border: 1px solid #adb0b7;min-height: 300px;">
-    <detector-container detector="AutoHeal">
+    [attr.aria-expanded]="selectedTab === 'autoHealingHistory'" style="border: 1px solid #adb0b7;min-height: 300px;padding: 5px 10px;">
+    <detector-container detector="AutoHeal" [hideDetectorControl]="true">
     </detector-container>
   </div>
 </div>
