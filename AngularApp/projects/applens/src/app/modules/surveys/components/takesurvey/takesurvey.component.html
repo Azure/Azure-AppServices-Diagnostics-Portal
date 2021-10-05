@@ -1,64 +1,72 @@
 <div class="main-container">
-    <div class="top-banner">
-      <div class="banner-text"><span style="color:#ffb353;">App</span>Lens Case Surveys</div>
-    </div>
-    <div *ngIf="alternateContent!=null" class="row main-row" style="margin-left:25px;text-align: center;">
-      {{alternateContent}}
-    </div>
-    <div *ngIf="!alternateContent" class="row main-row">
-      <div>
-        <div *ngIf="displayLoader" class="loader-block">
-          <i class="fa fa-spinner fa-spin loader-icon"></i>
+  <div class="top-banner">
+    <div class="banner-text"><span style="color:#ffb353;">App</span>Lens Case Surveys</div>
+  </div>
+  <div *ngIf="alternateContent!=null" class="row main-row" style="margin-left:25px;text-align: center;">
+    {{alternateContent}}
+  </div>
+  <div *ngIf="!alternateContent" class="row main-row">
+    <div>
+      <div *ngIf="displayLoader" class="loader-block">
+        <i class="fa fa-spinner fa-spin loader-icon"></i>
+      </div>
+      <div class="card-box" *ngIf="!pageLoading">
+        <div class="box-header with-border">
+          <h3 class="box-title">Case {{surveyInfo.caseInfo.caseId}}: &nbsp; {{surveyInfo.caseInfo.caseTitle}}</h3>
+          <span class="case-details" (click)="showDetails($event)">View case information in sidebar</span>
         </div>
-        <div class="card-box" *ngIf="!pageLoading">
-          <div class="box-header with-border">
-            <h3 class="box-title">Case {{surveyInfo.caseInfo.caseId}}: &nbsp; {{surveyInfo.caseInfo.caseTitle}}</h3>
-            <span class="case-details" (click)="showDetails($event)">View case information in sidebar</span>
-          </div>
-  
-          <div style="height: calc(100vh - 140px);">
-            <fab-panel [isOpen]="showCaseDetails" (onDismiss)="hideDetails()" [type]="panelType">
+
+        <div style="height: calc(100vh - 140px);">
+          <fab-panel [isOpen]="showCaseDetails" (onDismiss)="hideDetails()" [type]="panelType">
+            <div class="panel-padding">
               <div style="display:block">
-              <h3 class="panel-title">Case <a href="{{'https://azuresupportcenter.msftcloudes.com/ticketdetails?srId=' + surveyInfo.caseInfo.caseId}}" target="_blank">{{surveyInfo.caseInfo.caseId}}<i class="fa fa-external-link" style="padding-left: 5px;font-size: 12px;" aria-hidden="true"></i></a></h3>
+                <h3 class="panel-title">Case <a
+                    href="{{'https://azuresupportcenter.msftcloudes.com/ticketdetails?srId=' + surveyInfo.caseInfo.caseId}}"
+                    target="_blank">{{surveyInfo.caseInfo.caseId}}<i class="fa fa-external-link"
+                      style="padding-left: 5px;font-size: 12px;" aria-hidden="true"></i></a></h3>
               </div>
               <p><b>Title:</b>&nbsp;&nbsp;{{surveyInfo.caseInfo.caseTitle}}</p><br><br>
               <b>Cause:</b>&nbsp;&nbsp;<div [innerHTML]="surveyInfo.caseInfo.caseCause"></div><br><br>
               <b>Resolution:</b>&nbsp;&nbsp;<div [innerHTML]="surveyInfo.caseInfo.caseResText"></div><br><br>
               <b>Description:</b>&nbsp;&nbsp;<div [innerHTML]="surveyInfo.caseInfo.caseDescription"></div><br><br>
-            </fab-panel>
-            <div class="form-group form-content">
-              <div class="form-row">
-                <fab-choice-group label="Did you find a solution?" [styles]="choiceGroupStyle" [selectedKey]="solutionFound && solutionFound.key" [options]="solutionFoundOptions" (onChange)="solutionFoundOptionChange($event)"></fab-choice-group>
-              </div>
-              <div class="form-row" *ngIf="solutionFound.key=='y'">
-                <fab-choice-group label="Did any detectors resolve the customer problem?" [styles]="choiceGroupStyle" [selectedKey]="detectorHelped && detectorHelped.key" [options]="detectorHelpedOptions" (onChange)="detectorHelpedOptionChange($event)"></fab-choice-group>
-              </div>
-              <div class="form-row" *ngIf="solutionFound.key=='y' && detectorHelped.key=='y'">
-                <fab-dropdown
-                  role="combobox"
-                  [styles]="dropDownStyle"
-                  [label]="'Which of these recently used detectors resolved the customer problem?'"
-                  [placeholder]="'Select detectors from the list'"
-                  [multiSelect]="true"
-                  [defaultSelectedKeys]="selectedDetectors"
-                  [options]="surveyInfo.detectorsShown"
-                  (onChange)="setSelectedDetectors($event)"
-                ></fab-dropdown>
-              </div>
-              <div class="form-row" *ngIf="solutionFound.key=='y' && detectorHelped.key=='n'">
-                <fab-text-field maxLength="500" [styles]="textFieldStyle" [rows]="4" [multiline]="true" [(value)]="customSolution" [label]="'What specific resources helped you resolve the customer problem? (e.g. link to documentation, wiki, etc.)'"></fab-text-field>
-              </div>
             </div>
-            <div class="form-group go-form">
-              <fab-primary-button contentStyle="margin-top: 20px; margin-left: 10px;"
-                  type="Submit" text='Submit Feedback' (click)="onSubmit()" [disabled]="submitButtonDisabled">
-              </fab-primary-button>
+          </fab-panel>
+          <div class="form-group form-content">
+            <div class="form-row">
+              <fab-choice-group label="Did you find a solution?" [styles]="choiceGroupStyle"
+                [selectedKey]="solutionFound && solutionFound.key" [options]="solutionFoundOptions"
+                (onChange)="solutionFoundOptionChange($event)"></fab-choice-group>
             </div>
-            <div *ngIf="footerMessage && footerMessage.length>0" [class.success-message]="footerMessageType=='success'" [class.failed-message]="footerMessageType=='error'">
-              {{footerMessage}}<div *ngIf="footerMessageType=='error'" [innerHTML]="backupLink"></div>
+            <div class="form-row" *ngIf="solutionFound.key=='y'">
+              <fab-choice-group label="Did any detectors resolve the customer problem?" [styles]="choiceGroupStyle"
+                [selectedKey]="detectorHelped && detectorHelped.key" [options]="detectorHelpedOptions"
+                (onChange)="detectorHelpedOptionChange($event)"></fab-choice-group>
             </div>
+            <div class="form-row" *ngIf="solutionFound.key=='y' && detectorHelped.key=='y'">
+              <fab-dropdown role="combobox" [styles]="dropDownStyle"
+                [label]="'Which of these recently used detectors resolved the customer problem?'"
+                [placeholder]="'Select detectors from the list'" [multiSelect]="true"
+                [defaultSelectedKeys]="selectedDetectors" [options]="surveyInfo.detectorsShown"
+                (onChange)="setSelectedDetectors($event)"></fab-dropdown>
+            </div>
+            <div class="form-row" *ngIf="solutionFound.key=='y' && detectorHelped.key=='n'">
+              <fab-text-field maxLength="500" [styles]="textFieldStyle" [rows]="4" [multiline]="true"
+                [(value)]="customSolution"
+                [label]="'What specific resources helped you resolve the customer problem? (e.g. link to documentation, wiki, etc.)'">
+              </fab-text-field>
+            </div>
+          </div>
+          <div class="form-group go-form">
+            <fab-primary-button contentStyle="margin-top: 20px; margin-left: 10px;" type="Submit" text='Submit Feedback'
+              (click)="onSubmit()" [disabled]="submitButtonDisabled">
+            </fab-primary-button>
+          </div>
+          <div *ngIf="footerMessage && footerMessage.length>0" [class.success-message]="footerMessageType=='success'"
+            [class.failed-message]="footerMessageType=='error'">
+            {{footerMessage}}<div *ngIf="footerMessageType=='error'" [innerHTML]="backupLink"></div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 </div>

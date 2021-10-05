@@ -115,9 +115,11 @@ export class DetectorViewComponent implements OnInit {
   @Input() isAnalysisView: boolean = false;
   @Input() isPopoutFromAnalysis: boolean = false;
   @Input() hideDetectorHeader: boolean = false;
+  @Input() hideDetectorControl: boolean = false;
   @Input() isKeystoneView: boolean = false;
   @Input() isRiskAlertDetector: boolean = false;
   @Input() overWriteDetectorDescription: string = "";
+  @Input() overWriteDetectorName:string = "";
   feedbackButtonLabel: string = 'Send Feedback';
   hideShieldComponent: boolean = false;
 
@@ -164,7 +166,6 @@ export class DetectorViewComponent implements OnInit {
   }
 
   @Output() downTimeChanged: EventEmitter<DownTime> = new EventEmitter<DownTime>();
-  hideDetectorControl: boolean = false;
   private isLegacy: boolean;
 
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private telemetryService: TelemetryService,
@@ -194,11 +195,11 @@ export class DetectorViewComponent implements OnInit {
     // If it is using the new route, don't show those buttons
     // this.hideDetectorControl = this._route.snapshot.parent.url.findIndex((x: UrlSegment) => x.path === 'categories') > -1;
     //Remove after A/B Test
-    if (this.isLegacy) {
-      this.hideDetectorControl = false;
-    } else {
-      this.hideDetectorControl = this._route.snapshot.parent.url.findIndex((x: UrlSegment) => x.path === 'categories') > -1;
-    }
+    // if (this.isLegacy) {
+    //   this.hideDetectorControl = false;
+    // } else {
+    //   this.hideDetectorControl = this._route.snapshot.parent.url.findIndex((x: UrlSegment) => x.path === 'categories') > -1;
+    // }
 
     // The detector name can be retrieved from  url column of application insight resource pageviews table.
     if (!this.insideDetectorList) {
@@ -352,11 +353,11 @@ export class DetectorViewComponent implements OnInit {
 
         //After loading detectors, foucs indicator will land into detector title
         //For now asynchronouslly to foucs after render, it should have better solution
-        setTimeout(() => {
-          if (document.getElementById("detector-name")) {
-            document.getElementById("detector-name").focus();
-          }
-        });
+        // setTimeout(() => {
+        //   if (document.getElementById("detector-name")) {
+        //     document.getElementById("detector-name").focus();
+        //   }
+        // });
       }
     });
   }

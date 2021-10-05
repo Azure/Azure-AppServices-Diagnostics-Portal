@@ -339,7 +339,7 @@
           <fab-pivot-item [headerText]="'Data'">
             <detector-view *ngIf="queryResponse" [detectorResponse]="queryResponse.invocationOutput"
               [startTime]="startTime" [endTime]="endTime" [error]="errorState" [showEdit]="false"
-              [developmentMode]="true" [script]="code" [compilationPackage]="compilationPackage" [hideDetectorHeader]="true"></detector-view>
+              [developmentMode]="true" [script]="code" [compilationPackage]="compilationPackage" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
           </fab-pivot-item>
           <fab-pivot-item [headerText]="'Data source'">
             <tab-data-sources *ngIf="queryResponse" [onboardingMode]="true"

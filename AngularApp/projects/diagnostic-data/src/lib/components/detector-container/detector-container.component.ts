@@ -15,7 +15,9 @@ const moment = momentNs;
 
 const hideTimePickerDetectors: string[] = [
   'eventviewer',
-  'LinuxLogViewer'
+  'LinuxLogViewer',
+  'DiagnosticTools',
+  'LinuxDiagnosticTools'
 ];
 
 @Component({
@@ -32,6 +34,7 @@ export class DetectorContainerComponent implements OnInit {
   endTimeChildDetector: Moment = null;
 
   @Input() hideDetectorControl: boolean = false;
+  @Input() hideDetectorHeader: boolean = false;
   @Input() isKeystoneSolution: boolean = false;
   hideTimerPicker: boolean = false;
 
@@ -50,6 +53,7 @@ export class DetectorContainerComponent implements OnInit {
   @Input() analysisMode: boolean = false;
   @Input() isAnalysisView: boolean = false;
   @Input() overWriteDetectorDescription: string = "";
+  @Input() overWriteDetectorName: string = "";
 
   private _downtimeZoomBehavior: zoomBehaviors = zoomBehaviors.Zoom;
   @Input() public set downtimeZoomBehavior(zoomBehavior: zoomBehaviors) {

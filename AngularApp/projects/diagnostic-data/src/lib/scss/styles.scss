@@ -1,1 +1,33 @@
-@import "../../../app-service-diagnostics/src/styles/main.scss";
+@import"../../../../app-service-diagnostics/src/styles/main.scss";
+
+$panel-padding-left: 20px;
+$panel-padding-right: 20px;
+//For clean fabric panel padding
+::ng-deep .ms-Panel-content {
+    // padding-left: $panel-padding-left;
+    // padding-right: $panel-padding-right;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+::ng-deep .ms-Panel-footerInner {
+    padding-left: $panel-padding-left;
+    padding-right: $panel-padding-right;
+}
+
+::ng-deep {
+    .ms-Panel-header {
+        padding-left: $panel-padding-left;
+        padding-right: $panel-padding-right;
+    }
+
+    .ms-Panel-headerText {
+        font-weight: 600;
+    }
+}
+
+//Default margin
+.panel-padding {
+    margin-left: 20px;
+    margin-right: 20px;
+}

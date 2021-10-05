@@ -1,6 +1,7 @@
-<span *ngIf="showPreLoadingError" style="margin-left:30px;margin-top:10px;">{{preLoadingErrorMessage}}</span>
-<span *ngIf="showPreLoader"><i class="fa fa-circle-o-notch fa-2x fa-spin preloading-icon"></i></span>
-<!-- <div *ngIf="searchMode != SearchAnalysisMode.Genie && inDrillDownMode && this.isPublic">
+<div style="margin: 0px 20px;">
+  <span *ngIf="showPreLoadingError" style="margin-left:30px;margin-top:10px;">{{preLoadingErrorMessage}}</span>
+  <span *ngIf="showPreLoader"><i class="fa fa-circle-o-notch fa-2x fa-spin preloading-icon"></i></span>
+  <!-- <div *ngIf="searchMode != SearchAnalysisMode.Genie && inDrillDownMode && this.isPublic">
   <div>
     <div style="display: inline-block;margin-left: 20px">
       <h2>{{ detectorName }}</h2>
@@ -11,7 +12,7 @@
     </div>
   </div>
 </div> -->
-<!-- <div *ngIf="inDrillDownMode && !this.isPublic">
+  <!-- <div *ngIf="inDrillDownMode && !this.isPublic">
   <div style="margin-left:20px" class="tab-container">
     <div style="margin-left:20px;margin-bottom: 10px">
       <div style="display: inline-block">
@@ -30,129 +31,132 @@
   </div>
 </div> -->
 
-<div *ngIf="getPendingDetectorCount() > 0" style="margin-bottom: 30px">
-  <div class="dot-flashing"></div>
-</div>
+  <div *ngIf="getPendingDetectorCount() > 0" style="margin-bottom: 30px">
+    <div class="dot-flashing"></div>
+  </div>
 
-<div>
-  <div
-    *ngIf="detectors.length > 0 && (issueDetectedViewModels.length > 0 || successfulViewModels.length > 0) || (getPendingDetectorCount() === 0 && loadingChildDetectors)"
-    [ngClass]="{'list-wrapper-genie': withinGenie}">
-    <div class="list-item-wrapper" *ngIf="issueDetectedViewModels.length > 0">
-      <div>
-        <div class="list-text">
-          <div *ngIf="issueDetectedViewModels.length === 0 && getPendingDetectorCount() === 0">
-            <div class="success-msg">We could not identify any issues that caused availability drops to your
-              app
+  <div>
+    <div
+      *ngIf="detectors.length > 0 && (issueDetectedViewModels.length > 0 || successfulViewModels.length > 0) || (getPendingDetectorCount() === 0 && loadingChildDetectors)"
+      [ngClass]="{'list-wrapper-genie': withinGenie}">
+      <div class="list-item-wrapper" *ngIf="issueDetectedViewModels.length > 0">
+        <div>
+          <div class="list-text">
+            <div *ngIf="issueDetectedViewModels.length === 0 && getPendingDetectorCount() === 0">
+              <div class="success-msg">We could not identify any issues that caused availability drops to your
+                app
+              </div>
             </div>
-          </div>
-          <div *ngIf="issueDetectedViewModels.length > 0 || getPendingDetectorCount() > 0">
-            <collapsible-list-fabric [collapsed]="false" [title]="'Observation and Solutions'">
-              <collapsible-list-item body>
-                <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
-                  <fab-card [expanded]="false" [isExpandable]="!!viewModel.insightDescription">
-                    <div header>
-                      <div style="display: flex;align-items: center;min-height: 40px;">
-                        <status-icon class="mr-3" [status]="viewModel.model.status"></status-icon>
-                        <div style="color: #323130;font-weight:600;">{{viewModel.model.title}}</div>
+            <div *ngIf="issueDetectedViewModels.length > 0 || getPendingDetectorCount() > 0">
+              <collapsible-list-fabric [collapsed]="false"
+                [title]="'Observation and Solutions (' + issueDetectedViewModels.length + ')'">
+                <collapsible-list-item body>
+                  <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
+                    <fab-card [expanded]="false" [isExpandable]="!!viewModel.insightDescription" [isAlign]="true">
+                      <div header>
+                        <div style="display: flex;align-items: center;min-height: 40px;">
+                          <status-icon class="mr-3" [status]="viewModel.model.status"></status-icon>
+                          <div style="color: #323130;font-weight:600;">{{viewModel.model.title}}</div>
+                        </div>
+                        <div style="margin: 12px 0px 16px 0px;">{{viewModel.insightTitle}}</div>
                       </div>
-                      <div style="margin: 12px 0px 16px 0px;">{{viewModel.insightTitle}}</div>
-                    </div>
-                    <div body>
-                      <markdown [data]="viewModel.insightDescription"></markdown>
-                    </div>
-                    <div footer>
-                      <div style="display: flex;align-items: center;margin-bottom:15px;">
-                        <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" contentClass="mr-5"
-                          (onClick)="openSolutionPanel(viewModel.model.title)">View Solutions</fab-primary-button>
-                        <fab-link (onClick)="selectDetector(viewModel)">Go to detector</fab-link>
+                      <div body>
+                        <markdown [data]="viewModel.insightDescription"></markdown>
                       </div>
-                    </div>
-                  </fab-card>
-                </div>
-              </collapsible-list-item>
-            </collapsible-list-fabric>
+                      <div footer>
+                        <div style="display: flex;align-items: center;margin-bottom:15px;">
+                          <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" contentClass="mr-5"
+                            (onClick)="openSolutionPanel(viewModel.model.title)"
+                            contentStyle="border-radius: 2px;font-size: 13px;">View Solutions</fab-primary-button>
+                          <fab-link (onClick)="selectDetector(viewModel)">Go to detector</fab-link>
+                        </div>
+                      </div>
+                    </fab-card>
+                  </div>
+                </collapsible-list-item>
+              </collapsible-list-fabric>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div *ngIf="showAppInsightsSection && isAppInsightsEnabled" class="list-item-wrapper">
-      <div class="stepper-circle stepper-circle-purple">
-        <img src="assets/img/appinsights.png" class="app-insights-image">
-      </div>
-      <div class="list-item">
-        <div class="list-title">Application Insights Analysis</div>
-        <div *ngIf="isPublic">
-          <div class="list-text">
-            <div *ngIf="loadingAppInsightsResource" class="loading-status-container">
-              <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-              <span class="loading-status">Checking Application Insights Status...</span>
-            </div>
-            <div *ngIf="!loadingAppInsightsResource && !isAppInsightsEnabled">
-              <div class="success-msg">Application insights is not enabled for your resource.
-                <div class="loading-status-container">
-                  <div class="app-insights-disabled">
-                    Looks like there is no application insights resource associated with your app.
-                    <br />Using application insights will help you detect and diagnose issues in
-                    your web application
-                    code easily.
-                  </div>
-                  <div class="app-insights-blade-link">
-                    <a (keyup.enter)="this._appInsightsService.openAppInsightsBlade()" tabindex="0" role="button"
-                      aria-label="Enable Application Insights link"
-                      (click)="this._appInsightsService.openAppInsightsBlade()">
-                      Enable Application Insights
-                      <i class="fa fa-arrow-circle-o-right"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div *ngIf="isAppInsightsEnabled === true">We have run the following application insights
-              analysis for you</div>
-            <div *ngIf="isAppInsightsEnabled === true" class="analysis-content">
-              <div *ngIf="loadingAppInsightsQueryData" class="loading-status-container">
+      <div *ngIf="showAppInsightsSection && isAppInsightsEnabled" class="list-item-wrapper">
+        <div class="stepper-circle stepper-circle-purple">
+          <img src="assets/img/appinsights.png" class="app-insights-image">
+        </div>
+        <div class="list-item">
+          <div class="list-title">Application Insights Analysis</div>
+          <div *ngIf="isPublic">
+            <div class="list-text">
+              <div *ngIf="loadingAppInsightsResource" class="loading-status-container">
                 <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-                <span class="loading-status">Loading...</span>
+                <span class="loading-status">Checking Application Insights Status...</span>
               </div>
-              <div *ngIf="!loadingAppInsightsQueryData">
-                <div *ngFor="let data of appInsightDataList;let i = index" class="dynamic-data-container">
-                  <data-container [title]="data.title" [description]="data.description" class="app-insights-container"
-                    [applicationInsightContainerStyle]="2">
-                    <dynamic-data [diagnosticData]="data.diagnosticData" [startTime]="startTime" [endTime]="endTime">
-                    </dynamic-data>
+              <div *ngIf="!loadingAppInsightsResource && !isAppInsightsEnabled">
+                <div class="success-msg">Application insights is not enabled for your resource.
+                  <div class="loading-status-container">
+                    <div class="app-insights-disabled">
+                      Looks like there is no application insights resource associated with your app.
+                      <br />Using application insights will help you detect and diagnose issues in
+                      your web application
+                      code easily.
+                    </div>
                     <div class="app-insights-blade-link">
-                      <a aria-label="Link to open Application Insights blade" tabindex="0" role="button"
-                        (keyup.enter)="_appInsightsService.openAppInsightsExtensionBlade(data.poralBladeInfo.bladeName)"
-                        (click)="_appInsightsService.openAppInsightsExtensionBlade(data.poralBladeInfo.bladeName)">
-                        {{data.poralBladeInfo.description}}
+                      <a (keyup.enter)="this._appInsightsService.openAppInsightsBlade()" tabindex="0" role="button"
+                        aria-label="Enable Application Insights link"
+                        (click)="this._appInsightsService.openAppInsightsBlade()">
+                        Enable Application Insights
                         <i class="fa fa-arrow-circle-o-right"></i>
                       </a>
                     </div>
-                  </data-container>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="isAppInsightsEnabled === true">We have run the following application insights
+                analysis for you</div>
+              <div *ngIf="isAppInsightsEnabled === true" class="analysis-content">
+                <div *ngIf="loadingAppInsightsQueryData" class="loading-status-container">
+                  <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+                  <span class="loading-status">Loading...</span>
+                </div>
+                <div *ngIf="!loadingAppInsightsQueryData">
+                  <div *ngFor="let data of appInsightDataList;let i = index" class="dynamic-data-container">
+                    <data-container [title]="data.title" [description]="data.description" class="app-insights-container"
+                      [applicationInsightContainerStyle]="2">
+                      <dynamic-data [diagnosticData]="data.diagnosticData" [startTime]="startTime" [endTime]="endTime">
+                      </dynamic-data>
+                      <div class="app-insights-blade-link">
+                        <a aria-label="Link to open Application Insights blade" tabindex="0" role="button"
+                          (keyup.enter)="_appInsightsService.openAppInsightsExtensionBlade(data.poralBladeInfo.bladeName)"
+                          (click)="_appInsightsService.openAppInsightsExtensionBlade(data.poralBladeInfo.bladeName)">
+                          {{data.poralBladeInfo.description}}
+                          <i class="fa fa-arrow-circle-o-right"></i>
+                        </a>
+                      </div>
+                    </data-container>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div *ngIf="!isPublic">
-          <div>We will run the following application insights analysis in Azure Portal.</div>
-          <div class="list-text">
-            <div class="analysis-content">
-              <div>
-                <div *ngFor="let metadata of appInsightQueryMetaDataList;let i = index" class="dynamic-data-container">
-                  <markdown [data]="getMetaDataMarkdown(metadata)"></markdown>
+          <div *ngIf="!isPublic">
+            <div>We will run the following application insights analysis in Azure Portal.</div>
+            <div class="list-text">
+              <div class="analysis-content">
+                <div>
+                  <div *ngFor="let metadata of appInsightQueryMetaDataList;let i = index"
+                    class="dynamic-data-container">
+                    <markdown [data]="getMetaDataMarkdown(metadata)"></markdown>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <!-- Solution,Need to move to panel -->
-    <!-- <ng-container *ngIf="!withinGenie">
+      <!-- Solution,Need to move to panel -->
+      <!-- <ng-container *ngIf="!withinGenie">
       <div class="list-item-wrapper" *ngIf="allSolutions.length > 0">
         <div class="stepper-circle stepper-circle-brown">
           <i aria-hidden="true" class="fa fa-wrench"></i>
@@ -179,68 +183,71 @@
         </div>
       </div>
     </ng-container> -->
-    <div class="list-item-wrapper" *ngIf="successfulViewModels.length > 0">
-      <div>
-        <collapsible-list-fabric [collapsed]="issueDetectedViewModels.length > 0 ||  getPendingDetectorCount() > 0" [title]="'Successful Checks'">
-          <collapsible-list-item body>
-            <div class="list-text">
-              <div *ngFor="let viewModel of successfulViewModels" style="margin-bottom: 8px;">
-                <fab-card [expanded]="false">
-                  <div header>
-                    <div style="display: flex;align-items: center;min-height: 40px;">
-                      <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus"
-                        [status]="viewModel.model.status"></status-icon>
-                      <div style="color: #323130;font-weight:600;">{{viewModel.model.title}}</div>
+      <div class="list-item-wrapper" *ngIf="successfulViewModels.length > 0">
+        <div>
+          <collapsible-list-fabric [collapsed]="issueDetectedViewModels.length > 0 ||  getPendingDetectorCount() > 0"
+            [title]="'Successful Checks (' + successfulViewModels.length + ')'">
+            <collapsible-list-item body>
+              <div class="list-text">
+                <div *ngFor="let viewModel of successfulViewModels" style="margin-bottom: 8px;">
+                  <fab-card [expanded]="false">
+                    <div header>
+                      <div style="display: flex;align-items: center;min-height: 40px;">
+                        <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus"
+                          [status]="viewModel.model.status"></status-icon>
+                        <div style="color: #323130;font-weight:600;">{{viewModel.model.title}}</div>
+                      </div>
                     </div>
-                  </div>
-                  <div body>
-                    <span>{{viewModel.insightTitle}}</span>
-                  </div>
-                  <div footer>
-                    <div style="margin-bottom:15px;">
-                      <fab-link (onClick)="selectDetector(viewModel)">Go to detector</fab-link>
+                    <div body>
+                      <div style="margin-bottom: 10px;">{{viewModel.insightTitle}}</div>
                     </div>
-                  </div>
-                </fab-card>
+                    <div footer>
+                      <div style="margin-bottom:15px;">
+                        <fab-link (onClick)="selectDetector(viewModel)">Go to detector</fab-link>
+                      </div>
+                    </div>
+                  </fab-card>
+                </div>
               </div>
-            </div>
-          </collapsible-list-item>
-        </collapsible-list-fabric>
+            </collapsible-list-item>
+          </collapsible-list-fabric>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div *ngIf="!isDynamicAnalysis && isSearchEmbedded" style="margin-left:30px;">
-    <detector-search [detector]="analysisId" [diagnosticData]="searchDiagnosticData"></detector-search>
-  </div>
-  <div *ngIf="isDynamicAnalysis && ((!showPreLoader && getPendingDetectorCount() === 0) || showWebSearch)"
-    style="margin-left:80px;margin-top:20px;">
-    <web-search [searchTerm]="searchTerm" [searchId]="searchId" [isChildComponent]="true">
-    </web-search>
-  </div>
+    <div *ngIf="!isDynamicAnalysis && isSearchEmbedded" style="margin-left:30px;">
+      <detector-search [detector]="analysisId" [diagnosticData]="searchDiagnosticData"></detector-search>
+    </div>
+    <div *ngIf="isDynamicAnalysis && ((!showPreLoader && getPendingDetectorCount() === 0) || showWebSearch)"
+      style="margin-left:80px;margin-top:20px;">
+      <web-search [searchTerm]="searchTerm" [searchId]="searchId" [isChildComponent]="true">
+      </web-search>
+    </div>
 
-  <div *ngIf="isDynamicAnalysis && ((!showPreLoader && getPendingDetectorCount() === 0) || showWebSearch)"
-    style="margin-left:80px;margin-top:20px;">
-    <documents-search [searchTerm]="searchTerm" [searchId]="searchId" [isChildComponent]="true"
-      [numDocumentsExpanded]=2>
-    </documents-search>
-  </div>
+    <div *ngIf="isDynamicAnalysis && ((!showPreLoader && getPendingDetectorCount() === 0) || showWebSearch)"
+      style="margin-left:80px;margin-top:20px;">
+      <documents-search [searchTerm]="searchTerm" [searchId]="searchId" [isChildComponent]="true"
+        [numDocumentsExpanded]=2>
+      </documents-search>
+    </div>
 
-  <div *ngIf="supportDocumentRendered">
-    <div class="list-item-wrapper" *ngIf="supportDocumentRendered">
-      <div class="stepper-circle stepper-circle-dark-blue">
-        <i aria-hidden="true" class="fa fa-file-text-o"></i>
-      </div>
-      <div class="list-item">
-        <div class="list-title">Recommended Docs</div>
-        <div>Documents to aid in troubleshooting</div>
-        <div class="support-doc-section">
-          <markdown *ngIf="supportDocumentContent.length>0" [data]="supportDocumentContent"></markdown>
+    <div *ngIf="supportDocumentRendered">
+      <div class="list-item-wrapper" *ngIf="supportDocumentRendered">
+        <div class="stepper-circle stepper-circle-dark-blue">
+          <i aria-hidden="true" class="fa fa-file-text-o"></i>
         </div>
-        <div class="white-line" [ngClass]="{'remove-padding':withinDiagnoseAndSolve}"></div>
+        <div class="list-item">
+          <div class="list-title">Recommended Docs</div>
+          <div>Documents to aid in troubleshooting</div>
+          <div class="support-doc-section">
+            <markdown *ngIf="supportDocumentContent.length>0" [data]="supportDocumentContent"></markdown>
+          </div>
+          <div class="white-line" [ngClass]="{'remove-padding':withinDiagnoseAndSolve}"></div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<solutions-panel [isPanelOpenObservable]="solutionPanelOpenSubject" [solutions]="allSolutions" [title]="solutionTitle"></solutions-panel>
+<solutions-panel [isPanelOpenObservable]="solutionPanelOpenSubject" [solutions]="allSolutions" [title]="solutionTitle">
+</solutions-panel>

@@ -1,4 +1,4 @@
-<div *ngIf="title" class="row" [ngClass]="{'collapsable-list-less-margin': lessMargin, 'collapsable-list': !lessMargin}">
+<div *ngIf="title" class="row pb-3" [ngClass]="{'collapsable-list-less-margin': lessMargin, 'collapsable-list': !lessMargin}">
   <button class="btn-outer" [attr.aria-expanded]="collapsed ?'false':'true'" (click)="clickHandler()"
     class="list-header" [attr.aria-label]="title">
     <span class="btn-inner" tabindex="-1">

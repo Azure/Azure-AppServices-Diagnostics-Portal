@@ -329,12 +329,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         } else {
           const resourceId = this._diagnosticService.resourceId;
           const url = this._router.url.split("?")[0];
-          //const routeUrl = url.endsWith("/overview") && this.isPublic ? `../detectors/${targetDetector}` : `../../detectors/${targetDetector}`;
-
-          //For test purpose
-          const detectorId = Math.random() > 0.5 ? `WebJobs Details` : `AutoHealCheckForBestPractice`;
-          const routeUrl = url.endsWith("/overview") && this.isPublic ? `../detectors/${detectorId}` : `../../detectors/${detectorId}`;
-
+          const routeUrl = url.endsWith("/overview") && this.isPublic ? `../detectors/${targetDetector}` : `../../detectors/${targetDetector}`;
 
           this._router.navigate([routeUrl], {
             queryParams: queryParams,

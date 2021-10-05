@@ -1,7 +1,7 @@
 <fab-panel [isOpen]="globals.openRiskAlertsPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
   [styles]="styles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
   (onDismissed)="dismissedHandler()">
-  <div>
+  <div class="panel-padding">
     <div class="row">
       <div>
         <div style="margin-bottom: 10px">
@@ -17,7 +17,7 @@
         <detector-view *ngIf="currentRiskPanelContentId === item.key" [analysisMode]="false" [isKeystoneView]="false"
           [isAnalysisView]="false" [detectorResponse]="item.value" [error]="error" [startTime]="startTime"
           [endTime]="endTime" [developmentMode]="false" [detector]="item.key" [hideDetectorHeader]="true"
-          [isRiskAlertDetector]="true">
+          [isRiskAlertDetector]="true" [hideDetectorControl]="true">
         </detector-view>
       </div>
     </ng-container>

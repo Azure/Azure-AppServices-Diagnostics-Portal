@@ -6,7 +6,7 @@
     </div>
   </div>
 
-  <div body>
+  <div body style="margin-bottom: 10px;">
     <div *ngIf="insight.description" [innerHtml]="insight.description"></div>
     <dynamic-data [diagnosticData]="insight.innerDiagnosticData" [startTime]="startTime" [endTime]="endTime">
     </dynamic-data>
