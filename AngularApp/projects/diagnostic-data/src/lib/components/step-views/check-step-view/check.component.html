@@ -18,7 +18,7 @@
   <fab-panel *ngIf="check.detailsMarkdown!=null" [isOpen]="detailsPanelOpened" [type]="7" customWidth="fit-content" [isHiddenOnDismiss]="true"
   [styles]="{overlay:{visibility: 'hidden'}, content:{minWidth:'300px', maxWidth:'60vw'}}" [isLightDismiss]="true" [hasCloseButton]="false" 
   (onDismissed)="detailsPanelDismissedHandler()">
-    <div class="check-markdown">
+    <div class="check-markdown panel-padding">
       <div class="markdown-container">
         <div class="markdown"><markdown ngPreserveWhitespaces [data]="check.detailsMarkdown"></markdown></div>
       </div>
