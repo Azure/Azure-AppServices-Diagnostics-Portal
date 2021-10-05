@@ -137,6 +137,9 @@ namespace AppLensV3.Services.DiagnosticClientService
                 if (certCollection.Count > 0)
                 {
                     Cert = certCollection[0];
+                } else
+                {
+                    throw new Exception("Certificate was not found");
                 }
             }
             catch (Exception ex)
