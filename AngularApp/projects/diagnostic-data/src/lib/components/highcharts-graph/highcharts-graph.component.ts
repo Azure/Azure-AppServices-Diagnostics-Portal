@@ -573,7 +573,7 @@ export class HighchartsGraphComponent implements OnInit {
     }
 
     private renderTooltipCallback: Highcharts.TooltipFormatterCallbackFunction = function (tooltip) {
-        const formattedDate = moment.utc(this.x).format("MM-DD,HH:mm");
+        const formattedDate = moment.utc(this.x).format("MMM DD h:mm A[,UTC]");
         return formattedDate;
     }
 
