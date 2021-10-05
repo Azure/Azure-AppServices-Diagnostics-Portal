@@ -8,13 +8,20 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AppLensV3.Helpers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using System.Security.Cryptography.X509Certificates;
 
 namespace AppLensV3.Services.DiagnosticClientService
 {
     public class DiagnosticClient : IDiagnosticClientService
     {
         private IConfiguration _configuration;
+
+        private IHostingEnvironment environment;
+
         private HttpClient _client { get; set; }
+
+        private X509Certificate2 Cert { get; set; }
 
         public string DiagnosticServiceEndpoint
         {
@@ -24,9 +31,18 @@ namespace AppLensV3.Services.DiagnosticClientService
             }
         }
 
-        public DiagnosticClient(IConfiguration configuration)
+        public string CertificateSubjectName
+        {
+            get
+            {
+                return _configuration["DiagnosticRole:CertSubjectName"];
+            }
+        }
+
+        public DiagnosticClient(IConfiguration configuration, IHostingEnvironment hostEnv)
         {
             _configuration = configuration;
+            environment = hostEnv;
             _client = InitializeClient();     
         }
 
@@ -42,6 +58,13 @@ namespace AppLensV3.Services.DiagnosticClientService
 
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("User-Agent", "AppLens");
+
+            if ((environment.IsProduction() || environment.IsStaging()) && !environment.IsEnvironment("NationalCloud"))
+            {
+                LoadCert();
+                byte[] certContent = Cert.Export(X509ContentType.Cert);
+                client.DefaultRequestHeaders.Add("x-ms-diagcert", Convert.ToBase64String(certContent));
+            }
 
             return client;
         }
@@ -83,6 +106,46 @@ namespace AppLensV3.Services.DiagnosticClientService
                 {
                     request.Headers.Add(header.Key, header.Value);
                 }
+            }
+        }
+
+        private void LoadCert()
+        {
+            X509Store certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+            certStore.Open(OpenFlags.ReadOnly);
+
+            try
+            {
+                string subjectNameToSearch = CertificateSubjectName;
+
+                if (string.IsNullOrWhiteSpace(subjectNameToSearch))
+                {
+                    throw new ArgumentException("Certicate Subject name cannot be empty");
+                }
+
+                if (!string.IsNullOrWhiteSpace(subjectNameToSearch) && subjectNameToSearch.StartsWith("CN=", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    subjectNameToSearch = subjectNameToSearch.Substring(3);
+                }
+
+                X509Certificate2Collection certCollection = certStore.Certificates.Find(
+                                                            X509FindType.FindBySubjectName,
+                                                            subjectNameToSearch,
+                                                            true);
+
+                // Get the first cert with the subject name
+                if (certCollection.Count > 0)
+                {
+                    Cert = certCollection[0];
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                certStore.Close();
             }
         }
     }
