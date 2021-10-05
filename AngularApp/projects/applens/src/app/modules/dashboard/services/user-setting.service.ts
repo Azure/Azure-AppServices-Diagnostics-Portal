@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { AdalService } from "adal-angular4";
 import { map, flatMap, catchError, tap } from "rxjs/operators";
 import { of } from "rxjs";
-import { RecentResource, UserSetting,  } from "../../../shared/models/user-setting";
+import { RecentResource, UserSetting, } from "../../../shared/models/user-setting";
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
 
 const maxRecentResourceLength = 5;
@@ -15,6 +15,11 @@ export class UserSettingService {
         this.userId = alias.replace('@microsoft.com', '');
         this._diagnosticApiService.getUserSetting(this.userId).subscribe(userInfo => {
             this.userSetting = userInfo;
+        }, err => {
+            if (err.status === 404) {
+                const userSetting = new UserSetting(this.userId);
+                this.userSetting = userSetting;
+            }
         });
     }
 
