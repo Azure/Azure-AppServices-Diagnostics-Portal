@@ -55,10 +55,10 @@
 </div>
 <!-- <ng-container *ngIf="!inDrillDownMode else drilldownTemplate"> -->
 <div *ngIf="issueDetectedViewModels.length > 0">
-  <collapsible-list-fabric [collapsed]="false" [title]="'Observation and Solutions'">
+  <collapsible-list-fabric [collapsed]="false" [title]="'Observation and Solutions (' + issueDetectedViewModels.length + ')'">
     <collapsible-list-item body>
       <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
-        <fab-card [expanded]="false" [isExpandable]="!!viewModel.insightDescription">
+        <fab-card [expanded]="false" [isExpandable]="!!viewModel.insightDescription" [isAlign]="true">
           <div header>
             <div style="display: flex;align-items: center;min-height: 40px;">
               <status-icon class="mr-3" [status]="viewModel.model.status"></status-icon>
@@ -72,7 +72,7 @@
           <div footer>
             <div style="display: flex;align-items: center;margin-bottom: 15px;">
               <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" contentClass="mr-5"
-                (onClick)="openSolutionPanel(viewModel.model.title)">View Solutions</fab-primary-button>
+                (onClick)="openSolutionPanel(viewModel.model.title)" contentStyle="border-radius: 2px;font-size: 13px;">View Solutions</fab-primary-button>
               <fab-link (onClick)="selectDetector(viewModel)">Go to detector</fab-link>
             </div>
           </div>
@@ -84,7 +84,7 @@
 
 <br />
 <div *ngIf="successfulViewModels.length > 0">
-  <collapsible-list-fabric [collapsed]="issueDetectedViewModels.length > 0 || loading === LoadingStatus.Loading" [title]="'Successful Checks'">
+  <collapsible-list-fabric [collapsed]="issueDetectedViewModels.length > 0 || loading === LoadingStatus.Loading" [title]="'Successful Checks (' + successfulViewModels.length + ')'">
     <collapsible-list-item body>
       <div class="list-text">
         <div *ngFor="let viewModel of successfulViewModels" style="margin-bottom: 8px;">
@@ -96,10 +96,10 @@
               </div>
             </div>
             <div body>
-              <span>{{viewModel.insightTitle}}</span>
+              <div style="margin-bottom: 10px;">{{viewModel.insightTitle}}</div>
             </div>
             <div footer>
-              <div style="margin-bottom: 15px;">
+              <div style="margin-bottom: 12px;">
                 <fab-link (onClick)="selectDetector(viewModel)">Go to detector
                 </fab-link>
               </div>
