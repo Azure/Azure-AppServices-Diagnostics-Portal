@@ -25,6 +25,7 @@ export class DetectorCategorizationService {
             categories.forEach((category) => {
                 if (!this.detectorCategories.hasOwnProperty(category.id)) {
                     this.detectorCategories[category.id] = [];
+                    this.detectorlistCategories[category.id] = [];
                 }
             })
         });
