@@ -573,7 +573,7 @@ export class HighchartsGraphComponent implements OnInit {
     }
 
     private renderTooltipCallback: Highcharts.TooltipFormatterCallbackFunction = function (tooltip) {
-        const formattedDate = moment.utc(this.x).format("MMM DD h:mm A[,UTC]");
+        const formattedDate = moment.utc(this.x).format("MMM DD h:mm A[ UTC]");
         return formattedDate;
     }
 
@@ -931,9 +931,9 @@ export class HighchartsGraphComponent implements OnInit {
 @Pipe({ name: "chartMetricPipe" })
 export class ChartMetricPipe implements PipeTransform {
     transform(num: number): string {
-        const decimalLength = 2;
+        const decimalLength = 0;
         const n = Math.floor(num * Math.pow(10, decimalLength)) / Math.pow(10, decimalLength);
-        return `${n.toFixed(2)}`;
+        return `${n.toFixed(decimalLength)}`;
     }
 }
 

@@ -12,6 +12,7 @@ export class FabCardComponent {
   @Input() expanded: boolean = true;
   @Input() ariaLabel: string = "";
   @Input() background: string = "";
+  @Input() hideBorder: boolean = false;
   get ariaExpaned() {
     if(!this.isExpandable) return null;
     return this.expanded ? "true" : "false";
