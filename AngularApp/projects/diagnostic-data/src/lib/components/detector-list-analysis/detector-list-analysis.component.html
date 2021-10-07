@@ -121,8 +121,9 @@
                 </div>
                 <div *ngIf="!loadingAppInsightsQueryData">
                   <div *ngFor="let data of appInsightDataList;let i = index" class="dynamic-data-container">
-                    <data-container [title]="data.title" [description]="data.description" class="app-insights-container"
-                      [applicationInsightContainerStyle]="2">
+                    <div>
+                      <div style="font-size: 13px; font-weight: 700;" class="mb-3">{{data.title}}</div>
+                      <div style="font-size: 13px;">{{data.description}}</div>
                       <dynamic-data [diagnosticData]="data.diagnosticData" [startTime]="startTime" [endTime]="endTime">
                       </dynamic-data>
                       <div class="app-insights-blade-link">
@@ -133,7 +134,7 @@
                           <i class="fa fa-arrow-circle-o-right"></i>
                         </a>
                       </div>
-                    </data-container>
+                    </div>
                   </div>
                 </div>
               </div>

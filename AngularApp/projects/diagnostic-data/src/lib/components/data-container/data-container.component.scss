@@ -1,3 +1,4 @@
+@import "../fab-card/fab-card.component.scss";
 .no-padding {
     padding: 0px;
 }
@@ -10,17 +11,15 @@
 }
 
 .data-container-header {
-    background-color: rgba(1, 77, 183, 0.1);
-    color:#012b65;
+    background-color: white;
+    color: black;
     font-size: 16px;
     min-height: 42px;
-    border-bottom: 1px solid #c0d3eb;
+    font-weight: 700;
 }
 
 .data-container-card {
-    border: 1px solid #c0d3eb;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    width: 100%;
+    @extend .card-border;
 }
 
 .data-container-header-appinsight {
