@@ -7,21 +7,45 @@
   <ng-content></ng-content>
 </ng-template>
 
-<div *ngIf="title || headerTemplate || !hideIfNoTitle else nobox" class="panel panel-default" [class.data-container-card]="applicationInsightContainerStyle === 0"
+<!-- <div *ngIf="title || headerTemplate || !hideIfNoTitle else nobox" [class.data-container-card]="applicationInsightContainerStyle === 0"
   [class.data-container-card-appinsight]="applicationInsightContainerStyle === 1" [class.data-container-card-appinsight-analysis]="applicationInsightContainerStyle === 2">
-    <div *ngIf="title || headerTemplate" class="panel-heading" [class.data-container-header]="applicationInsightContainerStyle === 0"
+    <div *ngIf="title || headerTemplate" [class.data-container-header]="applicationInsightContainerStyle === 0"
       [class.data-container-header-appinsight]="applicationInsightContainerStyle === 1" [class.data-container-header-appinsight-analysis]="applicationInsightContainerStyle === 2">
       <ng-container *ngTemplateOutlet="headerTemplate ? headerTemplate : defaultHeader">
       </ng-container>
     </div>
-    <div *ngIf="description" class="panel-heading text-muted card-description" [class.with-top-border]="!title">
+    <div *ngIf="description" class="text-muted card-description" [class.with-top-border]="!title">
       <markdown-text [markdownData]="description"></markdown-text>
     </div>
     <div class="panel-body" [class.data-container-body]="applicationInsightContainerStyle === 0" [class.data-container-body-appinsight]="applicationInsightContainerStyle === 1"
       [class.no-padding]="noBodyPadding" [class.with-top-border]="!title && !description">
       <ng-container *ngTemplateOutlet="content"></ng-container>
     </div>
-</div>
+</div> -->
+
+<fab-card *ngIf="title || headerTemplate || !hideIfNoTitle else nobox" [isExpandable]="false" [hideBorder]="applicationInsightContainerStyle !== 0">
+  <div header>
+    <div *ngIf="title || headerTemplate" [class.data-container-header]="applicationInsightContainerStyle === 0"
+      [class.data-container-header-appinsight]="applicationInsightContainerStyle === 1"
+      [class.data-container-header-appinsight-analysis]="applicationInsightContainerStyle === 2">
+      <ng-container *ngTemplateOutlet="headerTemplate ? headerTemplate : defaultHeader">
+      </ng-container>
+    </div>
+  </div>
+  <div body>
+    <div *ngIf="description" class="text-muted card-description" [class.with-top-border]="!title">
+      <markdown-text [markdownData]="description"></markdown-text>
+    </div>
+    <div class="panel-body" [class.data-container-body]="applicationInsightContainerStyle === 0"
+      [class.data-container-body-appinsight]="applicationInsightContainerStyle === 1" [class.no-padding]="noBodyPadding"
+      [class.with-top-border]="!title && !description">
+      <ng-container *ngTemplateOutlet="content"></ng-container>
+    </div>
+  </div>
+</fab-card>
+
+
+
 <ng-template #nobox>
   <ng-container *ngTemplateOutlet="content"></ng-container>
 </ng-template>
