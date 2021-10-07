@@ -448,7 +448,7 @@
             "templateFileName": "ArcAppliance",
             "imgSrc": "assets/img/ArcK8s-Logo.svg",
             "versionPrefix": "",
-            "azureCommImpactedServicesList": ""
+            "azureCommImpactedServicesList": "Azure Arc Appliance"
         }
     ]
 }
