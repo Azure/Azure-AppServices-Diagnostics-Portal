@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, SimpleChanges, OnChanges, Pipe, PipeTransform, OnDestroy } from '@angular/core';
-import { Session, SessionStatus, Log } from '../../models/daas';
+import { Session, SessionStatus, Log, SessionV2, LogFile, ReportV2, DiagnosisStatus, Diagnoser, SessionMode, SessionMaster, SessionFile, SessionModeV2 } from '../../models/daas';
 import { WindowService } from '../../../startup/services/window.service';
 import { ServerFarmDataService } from '../../services/server-farm-data.service';
 import { DaasService } from '../../services/daas.service';
 import { SiteDaasInfo } from '../../models/solution-metadata';
-import { Subscription, Observable, interval } from 'rxjs';
+import { Subscription, Observable, interval, of } from 'rxjs';
 import { retry } from 'rxjs/operators';
 import { FormatHelper } from '../../utilities/formattingHelper';
 import { ActivatedRoute } from '@angular/router';
@@ -12,239 +12,415 @@ import { Globals } from '../../../globals';
 import { TelemetryService } from 'diagnostic-data';
 import { ITooltipOptions } from '@angular-react/fabric';
 import { DirectionalHint } from 'office-ui-fabric-react';
+import { WebSitesService } from '../../../resources/web-sites/services/web-sites.service';
+import { OperatingSystem } from '../../models/site';
 
 @Component({
-    selector: 'daas-sessions',
-    templateUrl: 'daas-sessions.component.html',
-    styleUrls: ['daas-sessions.component.scss']
+  selector: 'daas-sessions',
+  templateUrl: 'daas-sessions.component.html',
+  styleUrls: ['daas-sessions.component.scss']
 })
 
 export class DaasSessionsComponent implements OnChanges, OnDestroy {
 
-    checkingExistingSessions: boolean;
-    sessions: Session[] = [];
+  checkingExistingSessions: boolean;
+  sessions: SessionMaster[] = [];
 
-    @Input() public diagnoserNameLookup: string = '';
-    @Input() public siteToBeDiagnosed: SiteDaasInfo;
-    @Input() public scmPath: string;
-    @Input() public showDetailsLink: boolean = true;
+  @Input() public diagnoserNameLookup: string = '';
+  @Input() public siteToBeDiagnosed: SiteDaasInfo;
+  @Input() public scmPath: string;
+  @Input() public showDetailsLink: boolean = true;
 
-    DiagnoserHeading: string;
-    supportedTier: boolean = false;
-    enableSessionsPanel: boolean = false;
+  DiagnoserHeading: string;
+  supportedTier: boolean = false;
+  enableSessionsPanel: boolean = false;
 
-    @Input() refreshSessions: boolean = false;
-    showDetailedView: boolean = false;
-    allSessions: string = '../../diagnosticTools';
-    subscription: Subscription;
+  @Input() refreshSessions: boolean = false;
+  showDetailedView: boolean = false;
+  allSessions: string = '../../diagnosticTools';
+  subscription: Subscription;
+  initializedOnce: boolean = false;
 
-    // For tooltip display
-    directionalHint = DirectionalHint.rightTopEdge;
-    toolTipStyles = { 'backgroundColor': 'black', 'color': 'white', 'border': '0px' };
+  // For tooltip display
+  directionalHint = DirectionalHint.rightTopEdge;
+  toolTipStyles = { 'backgroundColor': 'black', 'color': 'white', 'border': '0px' };
 
-    toolTipOptionsValue: ITooltipOptions = {
-        calloutProps: {
-            styles: {
-                beak: this.toolTipStyles,
-                beakCurtain: this.toolTipStyles,
-                calloutMain: this.toolTipStyles
-            }
-        },
-        styles: {
-            content: this.toolTipStyles,
-            root: this.toolTipStyles,
-            subText: this.toolTipStyles
+  toolTipOptionsValue: ITooltipOptions = {
+    calloutProps: {
+      styles: {
+        beak: this.toolTipStyles,
+        beakCurtain: this.toolTipStyles,
+        calloutMain: this.toolTipStyles
+      }
+    },
+    styles: {
+      content: this.toolTipStyles,
+      root: this.toolTipStyles,
+      subText: this.toolTipStyles
+    }
+  }
+
+  isWindowsApp: boolean = true;
+
+  constructor(private _windowService: WindowService, private _serverFarmService: ServerFarmDataService,
+    private _daasService: DaasService, protected _route: ActivatedRoute, public globals: Globals,
+    public telemetryService: TelemetryService, private _webSiteService: WebSitesService) {
+    this._serverFarmService.siteServerFarm.subscribe(serverFarm => {
+      if (serverFarm) {
+        if (serverFarm.sku.tier === 'Standard' || serverFarm.sku.tier === 'Basic' || serverFarm.sku.tier.indexOf('Isolated') > -1 || serverFarm.sku.tier.indexOf('Premium') > -1) {
+          this.supportedTier = true;
         }
+      }
+    }, error => {
+      //TODO: handle error
+    });
+    this.enableSessionsPanel = this._route.snapshot.params['category'] != null || this._route.parent.snapshot.params['category'] != null;
+    this.isWindowsApp = this._webSiteService.platform === OperatingSystem.windows;
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['refreshSessions']) {
+      this.checkSessions();
+    }
+  }
+
+  ngOnInit(): void {
+    if (this.diagnoserNameLookup === '') {
+      this.showDetailedView = true;
+    }
+    this.initHeading();
+    if (this.showDetailedView) {
+      this.checkSessions();
+      this.subscription = interval(30000).subscribe(res => {
+        this.checkSessions();
+      });
+
+    }
+  }
+
+  initHeading() {
+    if (this.diagnoserNameLookup.indexOf('Profiler') > -1) {
+      this.DiagnoserHeading = 'profiling sessions';
+    } else if (this.diagnoserNameLookup.indexOf('Memory Dump') > -1 || this.diagnoserNameLookup.indexOf('MemoryDump') > -1) {
+      this.DiagnoserHeading = 'dumps collected';
+    } else {
+      this.DiagnoserHeading = 'diagnostic sessions';
+    }
+  }
+
+  reducedSession(obj: SessionMaster) {
+    return { sessionId: obj.sessionId, tool: obj.tool, status: obj.status };
+  }
+
+  getDaasSessionsV1(): Observable<Session[]> {
+    if (this.isWindowsApp) {
+      return this._daasService.getDaasSessionsWithDetails(this.siteToBeDiagnosed).pipe(retry(2))
+    } else {
+      let session: Session[] = [];
+      return of(session);
+    }
+  }
+
+  getDaasSessionsV2(): Observable<SessionV2[]> {
+    return this._daasService.getSessionsV2(this.siteToBeDiagnosed).pipe(retry(2))
+  }
+
+  checkSessions() {
+    if (!this.initializedOnce) {
+      this.initializedOnce = true;
+      this.checkingExistingSessions = true;
     }
 
-    constructor(private _windowService: WindowService, private _serverFarmService: ServerFarmDataService, private _daasService: DaasService, protected _route: ActivatedRoute, public globals: Globals, public telemetryService: TelemetryService) {
-        this._serverFarmService.siteServerFarm.subscribe(serverFarm => {
-            if (serverFarm) {
-                if (serverFarm.sku.tier === 'Standard' || serverFarm.sku.tier === 'Basic' || serverFarm.sku.tier.indexOf('Isolated') > -1 || serverFarm.sku.tier.indexOf('Premium') > -1) {
-                    this.supportedTier = true;
-                }
-            }
-        }, error => {
-            //TODO: handle error
+    Observable.combineLatest(
+      this.getDaasSessionsV1(),
+      this.getDaasSessionsV2())
+      .subscribe(results => {
+        let sessions: SessionMaster[] = [];
+        let sessionsV1 = results[0];
+        let sessionsV2 = results[1];
+
+        if (this.isArrayWithItems(sessionsV2)) {
+          sessionsV2.forEach(session => {
+            sessions.push(this.getSessionMasterFromV2(session));
+          });
+        }
+
+        if (this.isArrayWithItems(sessionsV1)) {
+          sessionsV1.forEach(session => {
+            sessions.push(this.getSessionMasterFromV1(session));
+          });
+        }
+
+        this.mergeSessions(sessions);
+        this.sessions = this.sessions
+          .sort((a, b) => { return new Date(a.startDate) < new Date(b.startDate) ? 1 : -1; });
+
+        if (!this.showDetailedView) {
+          this.sessions = this.takeTopFiveDiagnoserSessions(sessions);
+        }
+
+        if (this.checkingExistingSessions) {
+          this.checkingExistingSessions = false;
+        }
+      })
+  }
+
+  isArrayWithItems(obj: any): boolean {
+    if (obj && Array.isArray(obj) && obj.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  getSessionMasterFromV1(session: Session): SessionMaster {
+    let sessionMaster: SessionMaster = new SessionMaster();
+    sessionMaster.sessionId = session.SessionId;
+    sessionMaster.startDate = session.StartTime;
+    sessionMaster.mode = (session.Status === SessionStatus.CollectedLogsOnly ? SessionModeV2.Collect : SessionModeV2.CollectAndAnalyze);
+    sessionMaster.status = session.Status;
+    if (this.isArrayWithItems(session.DiagnoserSessions)) {
+      let diagnoser = session.DiagnoserSessions[0];
+      sessionMaster.tool = diagnoser.Name;
+      diagnoser.Logs.forEach(log => {
+        let file: SessionFile = new SessionFile();
+        file.name = log.FileName;
+        file.relativePath = (session.HasBlobSasUri ? log.FullPermanentStoragePath : `https://${this.scmPath}/api/vfs/data/DaaS/${log.RelativePath}`);
+        sessionMaster.logs.push(file);
+      });
+
+      diagnoser.Reports.forEach(report => {
+        let file: SessionFile = new SessionFile();
+        file.name = report.FileName;
+        file.relativePath = `https://${this.scmPath}/api/vfs/data/DaaS/${report.RelativePath}`;
+        sessionMaster.reports.push(file);
+      });
+
+      sessionMaster.analyzerStatus = diagnoser.AnalyzerStatus;
+      sessionMaster.collectorStatus = diagnoser.CollectorStatus;
+      sessionMaster.collectorErrors = diagnoser.CollectorErrors;
+      sessionMaster.analyzerErrors = diagnoser.AnalyzerErrors;
+    }
+
+    return sessionMaster;
+  }
+
+  getSessionMasterFromV2(session: SessionV2): SessionMaster {
+    let sessionMaster: SessionMaster = new SessionMaster();
+    sessionMaster.sessionId = session.SessionId;
+    sessionMaster.tool = session.Tool;
+    sessionMaster.toolParams = session.ToolParams;
+    sessionMaster.startDate = session.StartTime;
+    sessionMaster.mode = session.Mode;
+    if (session.Status === "Active") {
+      sessionMaster.status = SessionStatus.Active;
+    } else if (session.Status === "Completed") {
+      sessionMaster.status = SessionStatus.Complete;
+    }
+
+    let logFiles: LogFile[] = [];
+    if (this.isArrayWithItems(session.ActiveInstances)) {
+      session.ActiveInstances.forEach(activeInstance => {
+        if (this.isArrayWithItems(activeInstance.Logs)) {
+          logFiles = logFiles.concat(activeInstance.Logs);
+        }
+
+        if (this.isArrayWithItems(activeInstance.CollectorErrors)) {
+          sessionMaster.collectorErrors = sessionMaster.collectorErrors.concat(activeInstance.CollectorErrors);
+          sessionMaster.status = SessionStatus.Error;
+        }
+        if (this.isArrayWithItems(activeInstance.AnalyzerErrors)) {
+          sessionMaster.analyzerErrors = sessionMaster.analyzerErrors.concat(activeInstance.AnalyzerErrors);
+          sessionMaster.status = SessionStatus.Error;
+        }
+      });
+    }
+
+    let size = 0;
+    logFiles.forEach(logFile => {
+      let file: SessionFile = new SessionFile();
+      file.name = logFile.Name;
+      file.relativePath = logFile.RelativePath;
+      sessionMaster.logs.push(file);
+      if (logFile.Size > 0) {
+        size += logFile.Size;
+      }
+
+      if (this.isArrayWithItems(logFile.Reports)) {
+
+        logFile.Reports.forEach(report => {
+          let file: SessionFile = new SessionFile();
+          file.name = report.Name;
+          file.relativePath = report.RelativePath;
+          sessionMaster.reports.push(file);
         });
-        this.enableSessionsPanel = this._route.snapshot.params['category'] != null || this._route.parent.snapshot.params['category'] != null;
+      }
+    });
+
+    sessionMaster.size = size;
+    return sessionMaster;
+  }
+
+  mergeSessions(sessions: SessionMaster[]) {
+    if (sessions != null && Array.isArray(sessions)) {
+      const newSessions = sessions.map(this.reducedSession);
+      const existingSessions = this.sessions.map(this.reducedSession);
+      let anySessionUpdated = newSessions.filter(newSession => existingSessions.findIndex(session => JSON.stringify(session) === JSON.stringify(newSession)) === -1).length > 0;
+      if (newSessions.length !== existingSessions.length || anySessionUpdated) {
+        this.sessions = this.setExpanded(sessions);
+      }
+    }
+  }
+
+  getSessionsV1(sessions: Session[]): SessionMaster[] {
+    let sessionMasterSessions: SessionMaster[] = [];
+    sessions.forEach(session => {
+      sessionMasterSessions.push(this.getSessionMasterFromV1(session));
+    });
+    return sessionMasterSessions;
+  }
+
+  getSessionsV2(sessions: SessionV2[]): SessionMaster[] {
+    let sessionMasterSessions: SessionMaster[] = [];
+    sessions.forEach(session => {
+      sessionMasterSessions.push(this.getSessionMasterFromV2(session));
+    });
+    return sessionMasterSessions;
+  }
+
+  takeTopFiveDiagnoserSessions(sessions: SessionMaster[]): SessionMaster[] {
+    let arrayToReturn = new Array<SessionMaster>();
+    sessions.forEach(session => {
+      if (session.tool.indexOf(this.diagnoserNameLookup) > -1) {
+        arrayToReturn.push(session);
+      }
+    });
+
+    if (arrayToReturn.length > 5) {
+      arrayToReturn = arrayToReturn.slice(0, 5);
+    }
+    return arrayToReturn;
+  }
+
+  getInstanceNameFromReport(reportName: string): string {
+    if (!this.diagnoserNameLookup.indexOf('Profiler')) {
+      return reportName;
     }
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes['refreshSessions']) {
-            this.populateSessions();
-        }
+    const reportNameArray = reportName.split('_');
+    if (reportNameArray.length > 0) {
+      return reportNameArray[0];
+    } else {
+      return reportName;
     }
+  }
 
-    ngOnInit(): void {
+  toggleExpanded(i: number): void {
+    this.sessions[i].expanded = !this.sessions[i].expanded;
+  }
 
-        if (this.diagnoserNameLookup === '') {
-            this.showDetailedView = true;
-        }
+  hasErrors(session: SessionMaster): boolean {
+    return session.status == SessionStatus.Error;
+  }
 
-        this.populateSessions();
-        if (this.showDetailedView) {
-            this.subscription = interval(30000).subscribe(res => {
-                this.checkSessions();
-            });
+  hasDifferentBlobStorage(log: SessionFile, session: SessionMaster) {
+    return session.blobStorageHostName && log.relativePath && log.relativePath.toLowerCase().indexOf('https://' + session.blobStorageHostName.toLowerCase()) === -1;
+  }
 
-        }
+  isCollectingData(session: SessionMaster) {
+    return session.collectorStatus == DiagnosisStatus.InProgress;
+  }
+
+  isAnalysisRequested(session: SessionMaster) {
+    return session.mode === SessionModeV2.CollectAndAnalyze;
+  }
+
+  setExpanded(sessions: SessionMaster[]): SessionMaster[] {
+    const maxValue = (sessions.length > 3 ? 3 : sessions.length);
+    let counter = 0;
+    while (counter < maxValue) {
+      sessions[counter].expanded = true;
+      counter++;
     }
+    return sessions;
+  }
 
-    reducedSession(obj: Session) {
-        return { SessionId: obj.SessionId, DiagnoserSessions: obj.DiagnoserSessions, Status: obj.Status };
+  deleteSession(sessionIndex: number) {
+    if (sessionIndex > -1) {
+      const sessionToDelete = this.sessions[sessionIndex];
+      sessionToDelete.expanded = true;
+      sessionToDelete.deletingFailure = '';
+      sessionToDelete.deleting = true;
+      if (this.isWindowsApp) {
+        this.deleteWindowsSession(sessionToDelete, sessionIndex);
+      } else {
+        this.deleteLinuxSession(sessionToDelete, sessionIndex);
+      }
     }
+  }
 
-    checkSessions() {
-        this._daasService.getDaasSessionsWithDetails(this.siteToBeDiagnosed).pipe(retry(2))
-            .subscribe(sessions => {
-                if (sessions != null && Array.isArray(sessions)) {
-                    const newSessions = sessions.map(this.reducedSession);
-                    if (this.sessions != null) {
-                        const existingSessions = this.sessions.map(this.reducedSession);
-                        let anySessionUpdated = newSessions.filter(newSession => existingSessions.findIndex(session => JSON.stringify(session) === JSON.stringify(newSession)) === -1).length > 0;
-                        if (newSessions.length !== existingSessions.length || anySessionUpdated) {
-                            this.sessions = this.setExpanded(sessions);
-                        }
-                    }
-                    else {
-                        this.sessions = this.setExpanded(sessions);
-                    }
-                }
-            });
+  deleteWindowsSession(sessionToDelete: SessionMaster, sessionIndex: number) {
+    this._daasService.deleteDaasSession(this.siteToBeDiagnosed, sessionToDelete.sessionId)
+      .subscribe(resp => {
+        sessionToDelete.deleting = false;
+        this.sessions.splice(sessionIndex, 1);
+      }, err => {
+        sessionToDelete.deleting = false;
+        sessionToDelete.deletingFailure = 'Failed while deleting the session with an error : ' + err;
+      });
+  }
+
+  deleteLinuxSession(sessionToDelete: SessionMaster, sessionIndex: number) {
+    this._daasService.deleteDaasSessionV2(this.siteToBeDiagnosed, sessionToDelete.sessionId)
+      .subscribe(resp => {
+        sessionToDelete.deleting = false;
+        this.sessions.splice(sessionIndex, 1);
+      }, err => {
+        sessionToDelete.deleting = false;
+        sessionToDelete.deletingFailure = 'Failed while deleting the session with an error : ' + err;
+      });
+  }
+
+  isSessionInProgress(session: SessionMaster): boolean {
+    return session.status === SessionStatus.Active;
+  }
+
+  getAnalyzerStatus(session: SessionMaster): string {
+    if (session.analyzerStatus === DiagnosisStatus.InProgress) {
+      return "In Progress...";
+    } else if (session.analyzerStatus === DiagnosisStatus.WaitingForInputs) {
+      return "Waiting...";
     }
+  }
 
-    populateSessions() {
-        if (this.diagnoserNameLookup.startsWith('CLR Profiler')) {
-            this.DiagnoserHeading = 'profiling sessions';
-        } else if (this.diagnoserNameLookup === 'Memory Dump') {
-            this.DiagnoserHeading = 'dumps collected';
-        } else {
-            this.DiagnoserHeading = 'diagnostic sessions';
-        }
-
-        this.checkingExistingSessions = true;
-        this._daasService.getDaasSessionsWithDetails(this.siteToBeDiagnosed).pipe(retry(2))
-            .subscribe(sessions => {
-                this.checkingExistingSessions = false;
-                if (this.showDetailedView) {
-                    this.sessions = this.setExpanded(sessions);
-                } else {
-                    this.sessions = this.takeTopFiveDiagnoserSessions(sessions);
-                }
-
-            });
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
     }
+  }
 
-    takeTopFiveDiagnoserSessions(sessions: Session[]): Session[] {
-        let arrayToReturn = new Array<Session>();
-        sessions.forEach(session => {
-            session.DiagnoserSessions.forEach(diagnoser => {
-                if (diagnoser.Name.startsWith(this.diagnoserNameLookup)) {
-                    arrayToReturn.push(session);
-                }
-            });
-        });
+  convertUtcIfNeeded(dateString: string): string {
+    return dateString.toUpperCase().endsWith('Z') ? dateString : dateString += 'Z';;
+  }
 
-        if (arrayToReturn.length > 5) {
-            arrayToReturn = arrayToReturn.slice(0, 5);
-        }
-        return arrayToReturn;
-    }
+  toggleSessionPanel() {
+    this.globals.openSessionPanel = !this.globals.openSessionPanel;
+    this.telemetryService.logEvent("OpenSesssionsPanel");
+    this.telemetryService.logPageView("SessionsPanelView");
+  }
 
-    getInstanceNameFromReport(reportName: string): string {
+  openUrl(url: string) {
+    this._windowService.open(url);
+  }
 
-        if (!this.diagnoserNameLookup.startsWith('CLR Profiler')) {
-            return reportName;
-        }
-
-        const reportNameArray = reportName.split('_');
-        if (reportNameArray.length > 0) {
-            return reportNameArray[0];
-        } else {
-            return reportName;
-        }
-    }
-
-    openLog(log: Log, hasBlobSasUri: boolean) {
-        if (hasBlobSasUri) {
-            this._windowService.open(`${log.FullPermanentStoragePath}`);
-        } else {
-            this._windowService.open(`https://${this.scmPath}/api/vfs/data/DaaS/${log.RelativePath}`);
-        }
-
-    }
-
-    openReport(url: string) {
-        this._windowService.open(`https://${this.scmPath}/api/vfs/data/DaaS/${url}`);
-    }
-
-    toggleExpanded(i: number): void {
-        this.sessions[i].Expanded = !this.sessions[i].Expanded;
-    }
-
-    hasErrors(session: Session): boolean {
-        return session.Status == SessionStatus.Error;
-    }
-
-    isSessionInProgress(session: Session): boolean {
-        return session.Status == SessionStatus.Active;
-    }
-
-    setExpanded(sessions: Session[]): Session[] {
-        const maxValue = (sessions.length > 3 ? 3 : sessions.length);
-        let counter = 0;
-        while (counter < maxValue) {
-            sessions[counter].Expanded = true;
-            counter++;
-        }
-        return sessions;
-    }
-
-    deleteSession(sessionIndex: number) {
-        if (sessionIndex > -1) {
-            const sessionToDelete = this.sessions[sessionIndex];
-            sessionToDelete.Expanded = true;
-            sessionToDelete.DeletingFailure = '';
-            sessionToDelete.Deleting = true;
-            this._daasService.deleteDaasSession(this.siteToBeDiagnosed, sessionToDelete.SessionId)
-                .subscribe(resp => {
-                    sessionToDelete.Deleting = false;
-                    this.sessions.splice(sessionIndex, 1);
-                }, err => {
-                    sessionToDelete.Deleting = false;
-                    sessionToDelete.DeletingFailure = 'Failed while deleting the session with an error : ' + err;
-                });
-        }
-    }
-
-    ngOnDestroy(): void {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-    }
-
-    getSessionSize(session: Session) {
-        if (session.LogFilesSize && session.LogFilesSize > 0) {
-            return " (" + FormatHelper.formatBytes(session.LogFilesSize, 2) + ")";
-        }
-    }
-
-    convertUtcIfNeeded(datestring: string): string {
-        return datestring.toUpperCase().endsWith('Z') ? datestring : datestring += 'Z';;
-    }
-
-    toggleSessionPanel() {
-        this.globals.openSessionPanel = !this.globals.openSessionPanel;
-        this.telemetryService.logEvent("OpenSesssionsPanel");
-        this.telemetryService.logPageView("SessionsPanelView");
-    }
+  getSessionSize(session: SessionMaster) {
+    return " (" + FormatHelper.formatBytes(session.size, 2) + ")";
+  }
 }
 
 @Pipe({ name: 'datetimediff' })
 export class DateTimeDiffPipe implements PipeTransform {
-    transform(datetime: string): string {
-        let utc = new Date().toUTCString();
-        return FormatHelper.getDurationFromDate(datetime, utc);
-    }
+  transform(datetime: string): string {
+    let utc = new Date().toUTCString();
+    return FormatHelper.getDurationFromDate(datetime, utc);
+  }
 }

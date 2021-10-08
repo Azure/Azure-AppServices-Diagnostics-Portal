@@ -38,6 +38,9 @@ export class UriElementsService {
 
     private _supportApi: string = 'https://support-bay-api.azurewebsites.net/';
     private _killw3wpUrlFormat: string = this._supportApi + 'sites/{subscriptionId}/{resourceGroup}/{siteName}/killsiteprocess';
+
+    private _instances: string = "/instances"
+
     /*
         TODO : Need to add start time and end time parameters
     */
@@ -66,7 +69,14 @@ export class UriElementsService {
     private _networkTraceStartPath = '/networkTrace/start';
     private _webjobsPath: string = '/webjobs';
 
-    getDiagnosticsDiagnosersUrl(site: SiteDaasInfo) {
+    private _v2diagnosticsPath = '/extensions/daas';
+    private _v2diagnosticsSessionsPath = this._v2diagnosticsPath + '/sessions';
+    private _v2diagnosticsActiveSession = this._v2diagnosticsSessionsPath + '/active';
+    private _v2diagnosticsActiveSessionLinuxPath = this._v2diagnosticsPath + '/activesession';
+    private _v2diagnosticsSingleSessionPath = this._v2diagnosticsSessionsPath + '/{sessionId}';
+    private _v2diagnosticsDiagnosersPath = this._v2diagnosticsPath + '/diagnosers';
+
+    getDiagnosticsDiagnosersUrl(site: SiteDaasInfo, isWindowsApp: boolean = true) {
         return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsDiagnosersPath;
     }
 
@@ -78,9 +88,26 @@ export class UriElementsService {
         return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsSessionsPath;
     }
 
+    getDiagnosticsSessionsV2Url(site: SiteDaasInfo) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._v2diagnosticsSessionsPath;
+    }
+
     getDiagnosticsSessionsDetailsUrl(site: SiteDaasInfo, type: string, detailed: boolean) {
         return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsSessionsDetailsPath.replace('{type}', type)
             .replace('{details}', detailed.toString());
+    }
+
+    getActiveDiagnosticsSessionV2Url(site: SiteDaasInfo) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._v2diagnosticsActiveSession;
+    }
+
+    getActiveDiagnosticsSessionV2LinuxUrl(site: SiteDaasInfo) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._v2diagnosticsActiveSessionLinuxPath;
+    }
+
+    getDiagnosticSessionV2Url(site: SiteDaasInfo, sessionId: string) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._v2diagnosticsSingleSessionPath
+            .replace('{sessionId}', sessionId);
     }
 
     getDiagnosticsInstancesUrl(site: SiteDaasInfo) {
@@ -103,6 +130,11 @@ export class UriElementsService {
 
     getDiagnosticsSingleSessionDeleteUrl(site: SiteDaasInfo, sessionId: string) {
         return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsSingleSessionDeletePath
+            .replace('{sessionId}', sessionId);
+    }
+
+    getDiagnosticsSingleSessionDeleteV2Url(site: SiteDaasInfo, sessionId: string) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._v2diagnosticsSingleSessionPath
             .replace('{sessionId}', sessionId);
     }
 
@@ -240,7 +272,7 @@ export class UriElementsService {
     }
 
     getStorageContainerUrl(storageAccountId: string, containerName: string): string {
-        return storageAccountId+ this._storageContainerFormatUrl.replace('{containerName}', containerName);
+        return storageAccountId + this._storageContainerFormatUrl.replace('{containerName}', containerName);
     }
 
     createSasUri(storageResourceUri: string): string {
@@ -249,6 +281,10 @@ export class UriElementsService {
 
     getStorageAccountKeyUrl(storageAccountId: string): string {
         return storageAccountId + this._listStorageKeys;
+    }
+
+    getInstances(site: SiteDaasInfo) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._instances;
     }
 
     private _getSiteResourceUrl(subscriptionId: string, resourceGroup: string, siteName: string, slot: string = '') {

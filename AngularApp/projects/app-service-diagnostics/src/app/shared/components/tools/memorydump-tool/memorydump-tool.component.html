@@ -3,16 +3,33 @@
     <p tabindex="0">{{ description }}</p>
     <div class="wizardcontainer">
 
-        <daas [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName" (SessionsEvent)="updateSessions($event)">
-        </daas>
-    </div>
+        <div *ngIf="isWindowsApp; else linuxApp">
+            <daas [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName"
+                (SessionsEvent)="updateSessions($event)">
+            </daas>
+        </div>
+        <ng-template #linuxApp>
+            <daas-v2 [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName"
+                (SessionsEvent)="updateSessions($event)">
+            </daas-v2>
+        </ng-template>
 
+    </div>
     <h3>What you should know before collecting a Memory Dump</h3>
-    <ul>
+    <ul *ngIf="isWindowsApp">
         <li *ngFor="let statement of thingsToKnowBefore">{{statement}}</li>
+    </ul>
+    <ul *ngIf="!isWindowsApp">
+        <li>While collecting the memory dump, the process is paused for some time so site availability <i>may be</i>
+            impacted slightly.</li>
+        <li>Memory dumps collected via this tool are collected using the <a target="_blank"
+                href='https://github.com/dotnet/dotnet-monitor'>dotnet-monitor</a> tool.</li>
+        <li>Visual Studio can be used to analyze the memory dumps. For best support, use the latest <a target="_blank"
+                href='https://visualstudio.microsoft.com/vs/preview/'>preview version of Visual Studio</a>.</li>
     </ul>
 
     <div class="sessions">
-        <daas-sessions [refreshSessions]="refreshSessions" diagnoserNameLookup="Memory Dump" [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed"></daas-sessions>
+        <daas-sessions [refreshSessions]="refreshSessions" [diagnoserNameLookup]="diagnoserNameLookup"
+            [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed"></daas-sessions>
     </div>
 </div>

@@ -38,7 +38,6 @@ export const icons: Set<string> = new Set(
         'memorydump',
         'databasetester',
         'networktrace',
-        'phploganalyzer',
         'javamemorydump',
         'javathreaddump',
         'javaflightrecorder',

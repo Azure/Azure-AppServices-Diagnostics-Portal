@@ -7,6 +7,8 @@ import { SiteDaasInfo } from '../../models/solution-metadata';
 import { DiagnoserDefinition, DaasValidationResult } from '../../models/daas';
 import { SiteService } from '../../services/site.service';
 import { catchError, retry, map, retryWhen, delay, take, concat } from 'rxjs/operators';
+import { WebSitesService } from '../../../resources/web-sites/services/web-sites.service';
+import { OperatingSystem } from '../../models/site';
 
 @Component({
   selector: 'daas-validator',
@@ -33,8 +35,11 @@ export class DaasValidatorComponent implements OnInit {
   validationResult: DaasValidationResult = new DaasValidationResult();
   diagnosers: DiagnoserDefinition[];
   daasAppSettingsCheck: DaasAppSettingsCheck;
+  isWindowsApp: boolean = false;
 
-  constructor(private _serverFarmService: ServerFarmDataService, private _siteService: SiteService, private _daasService: DaasService) {
+  constructor(private _serverFarmService: ServerFarmDataService,
+    private _siteService: SiteService, private _daasService: DaasService,
+    private _webSiteService: WebSitesService) {
   }
 
   validateDaasSettings() {
@@ -45,6 +50,7 @@ export class DaasValidatorComponent implements OnInit {
     this.checkingDaasWebJobStatus = false;
     this.checkingSupportedTier = true;
     this.foundDiagnoserWarnings = false;
+    this.isWindowsApp = this._webSiteService.platform === OperatingSystem.windows;
 
     combineLatest(
       this._serverFarmService.siteServerFarm.pipe(catchError(err => {
@@ -57,7 +63,7 @@ export class DaasValidatorComponent implements OnInit {
         this.error = `Failed with an error while checking Always On setting - ${JSON.stringify(err)}`;
         return of(err);
       })),
-      this._daasService.getDiagnosers(this.siteToBeDiagnosed).pipe(
+      this.getDiagnosers().pipe(
         retry(2),
         catchError(err => {
           this.error = `Failed with an error while retrieving DaaS settings - ${JSON.stringify(err)}`;
@@ -89,6 +95,16 @@ export class DaasValidatorComponent implements OnInit {
         // If AlwaysOn is set to TRUE, we can be sure that the site is running in a
         // supported tier as AlwaysOn is not available in BASIC SKU
         this.supportedTier = true;
+
+        //
+        // For Linux Apps, no need to check the rest, just return true
+        //
+
+        if (!this.isWindowsApp) {
+          this.validationResult.Validated = true;
+          this.DaasValidated.emit(this.validationResult);
+          return;
+        }
       }
 
       if (this.daasAppSettingsCheck.DaasDisabled || this.daasAppSettingsCheck.LocalCacheEnabled || this.daasAppSettingsCheck.WebjobsStopped) {
@@ -106,13 +122,20 @@ export class DaasValidatorComponent implements OnInit {
     });
   }
 
+  getDiagnosers(): Observable<DiagnoserDefinition[]> {
+    if (this.isWindowsApp) {
+      return this._daasService.getDiagnosers(this.siteToBeDiagnosed);
+    }
+    return of(null);
+  }
+
   validateAppSettings(site: SiteDaasInfo): Observable<DaasAppSettingsCheck> {
 
     return this._siteService.getSiteAppSettings(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot).pipe(map(settingsResponse => {
 
       let daasAppSettingsCheck: DaasAppSettingsCheck = new DaasAppSettingsCheck();
 
-      if (settingsResponse && settingsResponse.properties) {
+      if (settingsResponse && settingsResponse.properties && this.isWindowsApp) {
 
         if (settingsResponse.properties["WEBSITE_LOCAL_CACHE_OPTION"] != null
           && settingsResponse.properties["WEBSITE_LOCAL_CACHE_OPTION"].toString().toLowerCase() === "Always".toLowerCase()) {

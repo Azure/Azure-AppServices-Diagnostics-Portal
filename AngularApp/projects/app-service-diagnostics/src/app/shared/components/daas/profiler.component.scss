@@ -1,18 +1,23 @@
 td {
-    padding-right:10px;
-    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+th {
+    padding-right: 10px;
+    padding-bottom: 10px;
 }
 
 .status-box {
     border: 1px solid #ebebeb;
-    padding:15px;
-    margin-top:20px;
+    padding: 15px;
+    margin-top: 20px;
 }
 
 .action-box {
     border: 1px solid #ebebeb;
-    padding:15px;
-    background-color: #f9f9f9
+    padding: 15px;
+    background-color: #f9f9f9;
 }
 
 .highlight-blue {
@@ -21,11 +26,11 @@ td {
 
 .panel-heading {
     cursor: pointer;
-  }
-  
-  .panel-body {
-    background-color: #f9f9f9
-  }
+}
+
+.panel-body {
+    background-color: #f9f9f9;
+}
 
 .unbold {
     font-weight: normal;

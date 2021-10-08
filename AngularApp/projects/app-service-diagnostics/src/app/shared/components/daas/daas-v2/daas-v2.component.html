@@ -1,0 +1,167 @@
+<daas-validator [sessionInProgress]="sessionInProgress" [siteToBeDiagnosed]="siteToBeDiagnosed"
+  [diagnoserName]="diagnoserName" (DaasValidated)="onDaasValidated($event)"></daas-validator>
+<div *ngIf="validationResult.Validated">
+  <div class="action-box" *ngIf="siteToBeDiagnosed">
+    <div>
+      <table role="presentation" class="table table-borderless">
+        <tr>
+          <th tabindex="0" class="unbold" scope="row">App: </th>
+          <td tabindex="0" class="highlight-blue">
+            <b>{{siteToBeDiagnosed.siteName}}</b>
+          </td>
+        </tr>
+        <tr *ngIf="isWindowsApp">
+          <th tabindex="0" class="unbold" scope="row">Mode: </th>
+          <td>
+            <div class="btn-group" role="radiogroup">
+              <button [disabled]="sessionInProgress" role="radio" type="button" class="btn btn-default btn-xs"
+                [ngClass]="{'btn-primary':collectionMode === sessionMode.CollectAndAnalyze}"
+                (click)="selectMode(sessionMode.CollectAndAnalyze);"
+                (keyup.enter)="selectMode(sessionMode.CollectAndAnalyze);"
+                (keyup.space)="selectMode(sessionMode.CollectAndAnalyze);">
+                Collect and Analyze Data
+              </button>
+              <button [disabled]="sessionInProgress" role="radio" type="button" class="btn btn-default btn-xs"
+                [ngClass]="{'btn-primary':collectionMode === sessionMode.Collect}"
+                (click)="selectMode(sessionMode.Collect);" (keyup.enter)="selectMode(sessionMode.Collect);"
+                (keyup.space)="selectMode(sessionMode.Collect);">
+                Collect Data Only
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="!isWindowsApp && diagnoserName.startsWith('MemoryDump')">
+          <th tabindex="0" class="unbold" scope="row">DumpType: </th>
+          <td>
+            <select [(ngModel)]="linuxDumpType">
+              <option>Mini</option>
+              <option>Full</option>
+              <option>Triage</option>
+              <option>WithHeap</option>
+            </select>
+          </td>
+        </tr>
+        <tr *ngIf="!error">
+          <th tabindex="0" class="unbold" valign="top" scope="row">
+            Instance(s):
+            <div class="tool-tip">
+              <i class="fa fa-info-circle" style="color:rgb(84, 143, 255)"></i>
+              <span class="tool-tip-text" style="width:250px;left:5px"> It may take up to 10 minutes for
+                the instances to update if you recently Scaled-Up or Scaled-down
+                the App Service Plan.
+              </span>
+            </div>
+          </th>
+          <td tabindex="0" class="highlight-blue">
+            <div *ngFor="let instance of instancesSelected;let i = index">
+              <input type="checkbox" [attr.aria-label]="instance.InstanceName" [disabled]="sessionInProgress"
+                value="{{ instance.InstanceName }}" name="{{ instance.InstanceName }}"
+                [(ngModel)]="instancesSelected[i].Selected" />
+              {{
+              instance.InstanceName}}
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <div style="text-align:right">
+        <div class="col" *ngIf="operationInProgress">
+          <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+          {{ operationStatus }}
+        </div>
+
+        <button
+          [disabled]="getSelectedInstanceCount() === 0 || sessionInProgress || operationInProgress || retrievingInstancesFailed || showInstanceWarning"
+          [hidden]="sessionCompleted" class="btn btn-primary" (click)="collectDiagnoserData(true)">Collect {{
+          diagnoserName }}</button>
+        <div *ngIf="getSelectedInstanceCount() === 0"
+          style="font-size: smaller;color: red;margin-top: 5px;margin-right: 20px;">* Choose at least one
+          instance</div>
+      </div>
+      <div *ngIf="showInstanceWarning" style="margin-top: 10px;padding: 15px;">
+        <div style="margin-bottom:10px"><strong>CAUTION:</strong> You are choosing to run diagnostics on more
+          than 50% of the instances
+          serving your app. If you already know a particular instance is misbehaving, you can choose to run
+          Diagnostic only on that instance. Running diagnostic tools on all instances simultaneously can cause
+          significant downtime for your web app. Are you sure you want to continue ?</div>
+        <button type="button" class="btn btn-default btn-xs" (click)="collectDiagnoserData(false)">
+          Yes
+        </button>
+        <button type="button" class="btn btn-default btn-xs" (click)="showInstanceWarning = false">
+          No
+        </button>
+      </div>
+
+      <div class="status-box" *ngIf="sessionInProgress">
+        <div *ngIf="!cancellingSession">
+          <select id="selectInstances" (change)="onInstanceChange($event.target.value)">
+            <option *ngFor="let instancestatus of instancesStatus | mapValues" value={{instancestatus.key}}>
+              {{instancestatus.key}}
+            </option>
+          </select>
+          <step-wizard [CurrentStep]="sessionStatus" [WizardSteps]="WizardSteps" [WizardStepStatus]="WizardStepStatus">
+          </step-wizard>
+          <div *ngIf="sessionStatus >= 3 " style="text-align:right">
+            <button class="btn btn-primary btn-sm" (click)="cancelSession()" *ngIf="!cancellingSession">Cancel</button>
+          </div>
+        </div>
+        <div *ngIf="cancellingSession">
+          <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+          Cancelling...
+        </div>
+      </div>
+    </div>
+    <div class="focus-box focus-box-warning" style="margin-top:20px;word-wrap: break-word" *ngIf="error">
+      <div *ngIf="error.code === 'GatewayTimeout'">
+        <strong>Error</strong> - Failed to fetch instances for the Web App. The instance may fail to respond to
+        any diagnostic
+        calls under high CPU situations. Please retry this investigation after some time.
+      </div>
+      <div *ngIf="error.code != 'GatewayTimeout'">
+        <strong>Error</strong> - {{ error }}
+      </div>
+    </div>
+    <div class="focus-box focus-box-warning" style="margin-top:20px" *ngIf="instancesChanged">
+      <strong>Error</strong> - We detected that instances serving the Web App has changed so please re-select the
+      instances and run diagnostics again.
+    </div>
+  </div>
+
+  <div style="margin-top:10px;" *ngIf="logFiles.length > 0">
+    <table class="table table-bordered table-responsive">
+      <thead class="thead-light">
+        <tr>
+          <th>Data</th>
+          <th *ngIf="collectionMode === sessionMode.CollectAndAnalyze">Reports</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let logFile of logFiles">
+          <td>
+            <ul style="list-style: none;padding:0">
+              <li>
+                <a (click)="openLog(logFile, sessionHasBlobSasUri)" style="cursor: pointer">
+                  {{ logFile.Name }}
+                </a>
+              </li>
+            </ul>
+          </td>
+          <td *ngIf="collectionMode === sessionMode.CollectAndAnalyze">
+            <ul *ngIf="logFile.Reports && logFile.Reports.length > 0" style="list-style: none;padding:0">
+              <li *ngFor="let report of logFile.Reports">
+                {{ getInstanceNameFromReport(report.Name) }}
+                <a (click)="openFile(report.RelativePath)" style="cursor: pointer">
+                  <i class="fa fa-external-link" aria-hidden="true"></i>
+                </a>
+              </li>
+            </ul>
+            <div *ngIf="sessionStatus >= 2 && sessionInProgress">
+              <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+              {{ sessionStatus === 2 ? 'Waiting...' : 'Analyzing...' }}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

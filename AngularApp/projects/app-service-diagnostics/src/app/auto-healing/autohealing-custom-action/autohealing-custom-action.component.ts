@@ -62,7 +62,7 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
 
   makeDaasWarmupCall(): any {
     this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(siteDaasInfo => {
-      this._daasService.getInstances(siteDaasInfo).subscribe(resp => {
+      this._daasService.getInstances(siteDaasInfo, true).subscribe(resp => {
         //do nothing with resp
       });
     });

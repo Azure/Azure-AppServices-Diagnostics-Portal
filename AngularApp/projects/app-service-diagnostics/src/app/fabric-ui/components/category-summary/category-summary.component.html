@@ -14,7 +14,7 @@
         <i class="fa fa-angle-double-left" style="margin: 5px;font-size:13px;"></i>
       </div>
     </section>
-    <ng-container *ngIf="_checkIsWindowsApp()">
+    <ng-container *ngIf="_checkIsWindowsOrLinuxApp()">
       <diagostic-sessions-panel></diagostic-sessions-panel>
       <create-storage-account-panel></create-storage-account-panel>
       <callstack-panel></callstack-panel>

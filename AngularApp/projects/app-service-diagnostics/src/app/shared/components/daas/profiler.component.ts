@@ -33,7 +33,7 @@ export class ProfilerComponent extends DaasComponent implements OnInit, OnDestro
 
         super(_serverFarmServiceLocal, _siteServiceLocal, _daasServiceLocal, _windowServiceLocal, _loggerLocal);
         this.diagnoserName = 'CLR Profiler';
-        this.diagnoserNameLookup = 'CLR Profiler';
+        this.diagnoserNameLookup = 'Profiler';
     }
 
     ngOnInit(): void {

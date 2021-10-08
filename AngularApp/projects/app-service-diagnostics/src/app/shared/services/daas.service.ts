@@ -7,7 +7,7 @@ import { SiteDaasInfo } from '../models/solution-metadata';
 import { ArmService } from './arm.service';
 import { AuthService } from '../../startup/services/auth.service';
 import { UriElementsService } from './urielements.service';
-import { Session, DiagnoserDefinition, DatabaseTestConnectionResult, MonitoringSession, MonitoringLogsPerInstance, ActiveMonitoringSession, DaasAppInfo, DaasSettings, DaasSasUri, ValidateSasUriResponse } from '../models/daas';
+import { Session, DiagnoserDefinition, DatabaseTestConnectionResult, MonitoringSession, MonitoringLogsPerInstance, ActiveMonitoringSession, DaasAppInfo, DaasSettings, DaasSasUri, ValidateSasUriResponse, SessionV2 } from '../models/daas';
 import { SiteInfoMetaData } from '../models/site';
 import { SiteService } from './site.service';
 
@@ -42,6 +42,11 @@ export class DaasService {
         return <Observable<string>>(this._armClient.postResource(resourceUri, session, null, true));
     }
 
+    submitDaasSessionV2(site: SiteDaasInfo, session: SessionV2) {
+        const resourceUri: string = this._uriElementsService.getDiagnosticsSessionsV2Url(site);
+        return <Observable<string>>(this._armClient.postResource(resourceUri, session, null, true));
+    }
+
     cancelDaasSession(site: SiteDaasInfo, sessionId: string): Observable<boolean> {
         const resourceUri: string = this._uriElementsService.getDiagnosticsSingleSessionUrl(site, sessionId, 'cancel');
         return <Observable<boolean>>(this._armClient.postResource(resourceUri, null, null, true));
@@ -57,14 +62,48 @@ export class DaasService {
         return <Observable<Session[]>>this._armClient.getResourceWithoutEnvelope<Session[]>(resourceUri, null, true);
     }
 
+    getActiveSession(site: SiteDaasInfo, isWindowsApp: boolean): Observable<SessionV2> {
+        let resourceUri: string = this._uriElementsService.getActiveDiagnosticsSessionV2Url(site);
+        if (!isWindowsApp) {
+            resourceUri = this._uriElementsService.getActiveDiagnosticsSessionV2LinuxUrl(site);
+        }
+        return <Observable<SessionV2>>this._armClient.getResourceWithoutEnvelope<SessionV2>(resourceUri, null, true);
+    }
+
+    getSessionsV2(site: SiteDaasInfo): Observable<SessionV2[]> {
+        const resourceUri: string = this._uriElementsService.getDiagnosticsSessionsV2Url(site);
+        return <Observable<SessionV2[]>>this._armClient.getResourceWithoutEnvelope<SessionV2>(resourceUri, null, true);
+    }
+
+    getSession(site: SiteDaasInfo, sessionId: string): Observable<SessionV2> {
+        const resourceUri: string = this._uriElementsService.getDiagnosticSessionV2Url(site, sessionId);
+        return <Observable<SessionV2>>this._armClient.getResourceWithoutEnvelope<SessionV2>(resourceUri, null, true);
+    }
+
     getDaasSessionWithDetails(site: SiteDaasInfo, sessionId: string): Observable<Session> {
         const resourceUri: string = this._uriElementsService.getDiagnosticsSingleSessionUrl(site, sessionId, true);
         return <Observable<Session>>this._armClient.getResourceWithoutEnvelope<Session>(resourceUri, null, true);
     }
 
-    getInstances(site: SiteDaasInfo): Observable<string[]> {
-        const resourceUri: string = this._uriElementsService.getDiagnosticsInstancesUrl(site);
-        return <Observable<string[]>>this._armClient.getResourceWithoutEnvelope<string[]>(resourceUri, null, true);
+    getInstances(site: SiteDaasInfo, isWindowsApp: boolean = true): Observable<string[]> {
+
+        if (isWindowsApp) {
+            const resourceUri: string = this._uriElementsService.getDiagnosticsInstancesUrl(site);
+            return <Observable<string[]>>this._armClient.getResourceWithoutEnvelope<string[]>(resourceUri, null, true);
+        }
+
+        const resourceUri: string = this._uriElementsService.getInstances(site);
+        return this._armClient.getResourceCollection<any>(resourceUri, null, true).pipe(map(response => {
+            if (Array.isArray(response) && response.length > 0) {
+                let machineNames: string[] = [];
+                response.forEach(instance => {
+                    if (instance && instance.properties && instance.properties["machineName"]) {
+                        machineNames.push(instance.properties["machineName"]);
+                    }
+                });
+                return machineNames;
+            }
+        }));
     }
 
     getDiagnosers(site: SiteDaasInfo): Observable<DiagnoserDefinition[]> {
@@ -94,6 +133,11 @@ export class DaasService {
 
     deleteDaasSession(site: SiteDaasInfo, sessionId: string): Observable<any> {
         const resourceUri: string = this._uriElementsService.getDiagnosticsSingleSessionDeleteUrl(site, sessionId);
+        return <Observable<any>>(this._armClient.deleteResource(resourceUri, null, true));
+    }
+
+    deleteDaasSessionV2(site: SiteDaasInfo, sessionId: string): Observable<any> {
+        const resourceUri: string = this._uriElementsService.getDiagnosticsSingleSessionDeleteV2Url(site, sessionId);
         return <Observable<any>>(this._armClient.deleteResource(resourceUri, null, true));
     }
 

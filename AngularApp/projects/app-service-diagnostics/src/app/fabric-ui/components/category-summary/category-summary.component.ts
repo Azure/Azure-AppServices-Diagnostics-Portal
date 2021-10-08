@@ -69,8 +69,10 @@ export class CategorySummaryComponent implements OnInit {
         this.selectedCategoryIndex = categoryIndex;
       }
 
-    public _checkIsWindowsApp(): boolean {
-        return this._resourceService && this._resourceService instanceof WebSitesService && (this._resourceService as WebSitesService).platform === OperatingSystem.windows;
+    public _checkIsWindowsOrLinuxApp(): boolean {
+        let webSiteService = this._resourceService as WebSitesService;
+        return this._resourceService && this._resourceService instanceof WebSitesService 
+        && (webSiteService.platform === OperatingSystem.windows || webSiteService.platform === OperatingSystem.linux)
     }
 
     constructor(protected _diagnosticApiService: DiagnosticService, private _route: Router, private _injector: Injector, private _activatedRoute: ActivatedRoute, private categoryService: CategoryService,

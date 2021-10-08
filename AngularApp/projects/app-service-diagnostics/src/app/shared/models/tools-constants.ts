@@ -7,8 +7,6 @@ export class ToolNames {
     public static JavaThreadDump: string = 'Collect Java Thread Dump';
     public static JavaMemoryDump: string = 'Collect Java Memory Dump';
     public static JavaFlightRecorder: string = 'Collect Java Flight Recorder Trace';
-    public static HttpLogAnalyzer: string = 'Analyze HTTP Logs';
-    public static PHPLogAnalyzer: string = 'Analyze PHP Logs';
     public static DatabaseTester: string = 'Check Connection Strings';
     public static NetworkTrace: string = 'Collect Network Trace';
     public static AutoHealing: string = 'Auto-Heal';
@@ -31,8 +29,6 @@ export class ToolIds {
     public static JavaThreadDump: string = 'javathreaddump';
     public static JavaMemoryDump: string = 'javamemorydump';
     public static JavaFlightRecorder: string = 'javaflightrecorder';
-    public static HttpLogAnalyzer: string = 'Analyze HTTP Logs';
-    public static PHPLogAnalyzer: string = 'phploganalyzer';
     public static DatabaseTester: string = 'databasetester';
     public static NetworkTrace: string = 'networktrace';
     public static AutoHealing: string = 'mitigate';

@@ -267,17 +267,6 @@ export class CategoriesService {
         });
 
         tools.Subcategories.push({
-            Name: ToolNames.PHPLogAnalyzer,
-            BgColor: 'rgb(153, 69, 0)',
-            TextColor: 'White',
-            Href: 'tools/phploganalyzer',
-            OperatingSystem: OperatingSystem.windows,
-            AppType: AppType.WebApp | AppType.FunctionApp,
-            Sku: Sku.NotDynamic,
-            AppStack : 'PHP'
-        });
-
-        tools.Subcategories.push({
             Name: ToolNames.JavaMemoryDump,
             BgColor: 'rgb(153, 69, 0)',
             TextColor: 'White',

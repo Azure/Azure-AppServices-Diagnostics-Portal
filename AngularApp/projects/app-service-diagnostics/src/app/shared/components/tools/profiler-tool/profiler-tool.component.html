@@ -3,19 +3,30 @@
     <p tabindex="0">{{ description }}</p>
 
     <div class="wizardcontainer">
-
-        <profiler [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" (SessionsEvent)="updateSessions($event)">
-        </profiler>
-
+        <div *ngIf="isWindowsApp; else linuxApp">
+            <profiler [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed"
+                (SessionsEvent)="updateSessions($event)">
+            </profiler>
+        </div>
+        <ng-template #linuxApp>
+            <profiler-v2 [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed"
+                (SessionsEvent)="updateSessions($event)">
+            </profiler-v2>
+        </ng-template>
     </div>
 
     <h3>What you should know before collecting a Profiler trace</h3>
-    <ul>
+    <ul *ngIf="isWindowsApp">
         <li *ngFor="let statement of thingsToKnowBefore">{{statement}}</li>
+    </ul>
+    <ul *ngIf="!isWindowsApp">
+        <li>Once the profiler trace is started, reproduce the issue by browsing to the web app.</li>
+        <li>Your web app will not be restarted as a result of running the profiler.</li>
+        <li>To analyze the profiler traces, use the latest version of PerfView tool from <a target="_blank" href="https://github.com/microsoft/perfview/releases">PerfView Github releases</a> page.</li>
     </ul>
 
     <div class="sessions">
-        <daas-sessions [refreshSessions]="refreshSessions" diagnoserNameLookup="CLR Profiler" [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed"></daas-sessions>
+        <daas-sessions [refreshSessions]="refreshSessions" diagnoserNameLookup="Profiler" [scmPath]="scmPath"
+            [siteToBeDiagnosed]="siteToBeDiagnosed"></daas-sessions>
     </div>
-
 </div>

@@ -1,17 +1,14 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { SiteDaasInfo } from '../../../models/solution-metadata';
-import { Session } from '../../../models/daas';
-import { SiteInfoMetaData } from '../../../models/site';
 import { SiteService } from '../../../services/site.service';
-import { DaasService } from '../../../services/daas.service';
-import { WindowService } from '../../../../startup/services/window.service';
-import { AvailabilityLoggingService } from '../../../services/logging/availability.logging.service';
+import { WebSitesService } from '../../../../resources/web-sites/services/web-sites.service';
+import { DaasBaseComponent } from '../daas-base/daas-base.component';
 
 @Component({
     templateUrl: 'profiler-tool.component.html',
     styleUrls: ['../styles/daasstyles.scss']
 })
-export class ProfilerToolComponent implements OnInit {
+export class ProfilerToolComponent extends DaasBaseComponent implements OnInit {
 
     title: string = 'Collect a Profiler Trace';
     description: string = 'If your app is down or performing slow, you can collect a profiling trace to identify the root cause of the issue. Profiling is light weight and is designed for production scenarios.';
@@ -25,25 +22,11 @@ export class ProfilerToolComponent implements OnInit {
         'A profiler trace will help to identify issues in an ASP.NET or ASP.NET Core application.',
     ];
 
-    siteToBeDiagnosed: SiteDaasInfo;
-    scmPath: string;
-    couldNotFindSite: boolean = false;
-
-    refreshSessions: boolean = false;
-
-    constructor(private _siteService: SiteService, private _daasService: DaasService, private _windowService: WindowService, private _logger: AvailabilityLoggingService) {
-
-        this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(site => {
-            this.siteToBeDiagnosed = site;
-        });
+    constructor(private _siteServiceLocal: SiteService, private _webSiteServiceLocal: WebSitesService) {
+        super(_siteServiceLocal, _webSiteServiceLocal);
     }
 
     ngOnInit(): void {
-
-        this.scmPath = this._siteService.currentSiteStatic.enabledHostNames.find(hostname => hostname.indexOf('.scm.') > 0);
-    }
-
-    updateSessions(event) {
-        this.refreshSessions = event;
+        this.scmPath = this._siteServiceLocal.currentSiteStatic.enabledHostNames.find(hostname => hostname.indexOf('.scm.') > 0);
     }
 }

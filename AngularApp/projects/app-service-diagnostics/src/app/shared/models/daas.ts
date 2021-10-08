@@ -61,12 +61,75 @@ export class Session {
     TimeSpan: string;
     DiagnoserSessions: Diagnoser[];
     Status: SessionStatus;
-    Expanded: boolean;
-    Deleting: boolean = false;
-    DeletingFailure: string = '';
     LogFilesSize: number;
     BlobSasUri: string;
     HasBlobSasUri: boolean = false;
+}
+
+export enum SessionModeV2 {
+    Collect = "Collect",
+    CollectAndAnalyze = "CollectAndAnalyze"
+}
+
+export class SessionV2 {
+    Mode: SessionModeV2;
+    SessionId: string;
+    Status: string;
+    StartTime: string;
+    Tool: string;
+    ToolParams: string;
+    Instances: string[];
+    ActiveInstances: ActiveInstance[];
+}
+
+export interface ActiveInstance {
+    Name: string;
+    Logs: LogFile[];
+    CollectorErrors: string[];
+    AnalyzerErrors: string[];
+    Status: string;
+    CollectorStatusMessages: string[];
+    AnalyzerStatusMessages: string[];
+}
+
+export class LogFile {
+    StartTime: string;
+    Name: string;
+    Size: number;
+    Reports: ReportV2[];
+    RelativePath: string;
+}
+
+export class ReportV2 {
+    Name: string;
+    RelativePath: string;
+}
+
+export class SessionFile {
+    name: string;
+    relativePath: string;
+}
+
+export class SessionMaster {
+    mode: SessionModeV2;
+    sessionId: string;
+    startDate: string;
+    tool: string;
+    toolParams: string;
+    logs: SessionFile[] = [];
+    reports: SessionFile[] = [];
+    collectorErrors: string[] = [];
+    analyzerErrors: string[] = [];
+    status: SessionStatus;
+    collectorStatus: DiagnosisStatus;
+    analyzerStatus: DiagnosisStatus;
+    hasBlobSasUri: boolean = false;
+    blobStorageHostName: string = "";
+
+    expanded: boolean = true;
+    deleting: boolean = false;
+    deletingFailure: string = "";
+    size: number = 0;
 }
 
 export interface DiagnoserDefinition {
@@ -203,7 +266,7 @@ export class CrashMonitoringSettings {
 export interface ValidateSasUriResponse {
     Exception: string;
     IsValid: boolean;
-    StorageAccount:string;
+    StorageAccount: string;
     SpecifiedAt: string;
     ExtendedError: StorageExtendError;
 }

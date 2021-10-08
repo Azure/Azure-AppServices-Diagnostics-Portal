@@ -50,9 +50,7 @@ export class AutohealingComponent implements OnInit {
     private globals: Globals, private telemetryService: TelemetryService,
     private _logger: AvailabilityLoggingService, protected _route: ActivatedRoute,
     private _webSiteService: WebSitesService) {
-    if (this._webSiteService.platform !== OperatingSystem.windows) {
-      this.isWindowsApp = false;
-    }
+    this.isWindowsApp = this._webSiteService.platform === OperatingSystem.windows;
   }
 
   ngOnInit() {

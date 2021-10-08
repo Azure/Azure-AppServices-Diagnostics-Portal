@@ -1,0 +1,225 @@
+<daas-validator [siteToBeDiagnosed]="siteToBeDiagnosed" diagnoserName="CLR Profiler"
+  (DaasValidated)="onDaasValidated($event)"></daas-validator>
+<div *ngIf="validationResult.Validated">
+  <div class="col" *ngIf="siteToBeDiagnosed && checkingAppInfo">
+    <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+    Checking ASP.NET version
+  </div>
+  <div class="action-box" *ngIf="siteToBeDiagnosed && !checkingAppInfo">
+    <div>
+      <table role="presentation" class="table table-borderless">
+        <tr>
+          <th tabindex="0" class="unbold" scope="row">App: </th>
+          <td tabindex="0" class="highlight-blue">
+            <b>{{siteToBeDiagnosed.siteName}}</b>
+          </td>
+        </tr>
+        <tr *ngIf="isWindowsApp">
+          <th tabindex="0" class="unbold" scope="row">Mode: </th>
+          <td>
+            <div class="btn-group" role="radiogroup">
+              <button tabindex="0" [disabled]="sessionInProgress" role="radio" class="btn btn-default btn-xs"
+                [ngClass]="{'btn-primary':collectionMode === sessionMode.CollectAndAnalyze}" (click)="selectMode(0);"
+                [attr.aria-checked]="collectionMode === sessionMode.CollectAndAnalyze">
+                Collect and Analyze Data
+              </button>
+              <button tabindex="0" [disabled]="sessionInProgress" role="radio" class="btn btn-default btn-xs"
+                [ngClass]="{'btn-primary':collectionMode === sessionMode.Collect}" (click)="selectMode(1);"
+                [attr.aria-checked]="collectionMode === sessionMode.Collect">
+                Collect Data Only
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="!isWindowsApp">
+          <th tabindex="0" class="unbold" scope="row">Duration: </th>
+          <td>
+            <select [(ngModel)]="linuxProfileDuration">
+              <option value="30">30 seconds</option>
+              <option value="45">45 seconds</option>
+              <option value="60">60 seconds</option>
+              <option value="90">90 seconds</option>
+              <option value="120">120 seconds</option>
+            </select>
+          </td>
+        </tr>
+        <tr *ngIf="!error">
+          <th tabindex="0" class="unbold" scope="row" valign="top">
+            Instance(s):
+            <div class="tool-tip">
+              <i class="fa fa-info-circle" style="color:rgb(84, 143, 255)"></i>
+              <span class="tool-tip-text" style="width:250px;left:5px"> It may take up to 10 minutes for
+                the instances to update if you recently Scaled-Up or Scaled-down
+                the App Service Plan.
+              </span>
+            </div>
+          </th>
+          <td tabindex="0" class="highlight-blue">
+            <div *ngFor="let instance of instancesSelected;let i = index">
+              <input [attr.aria-label]="instance.InstanceName" type="checkbox" [disabled]="sessionInProgress"
+                value="{{ instance.InstanceName }}" name="{{ instance.InstanceName }}"
+                [(ngModel)]="instancesSelected[i].Selected" />
+              {{
+              instance.InstanceName}}
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <div *ngIf="isAspNetCoreLowerVersion" style="margin-top:25px">
+        <div class="panel panel-default">
+          <div class="panel-heading" (click)="toggleExpanded()">
+            <span style="padding: 0px 10px 0px 0px">
+              <i class="fa health-icon fa-info-circle warning-icon-color" aria-hidden="true"></i>
+            </span>
+            <b>ASP.NET Core Requirements</b>
+            <span class="pull-right">
+              <i class="fa fa-plus" *ngIf="!aspNetCoreWarningExpanded" aria-hidden="true"></i>
+              <i class="fa fa-minus" *ngIf="aspNetCoreWarningExpanded" aria-hidden="true"></i>
+            </span>
+          </div>
+          <div class="panel-body" *ngIf="aspNetCoreWarningExpanded">
+            We detected that the app is using <strong>ASP.NET Core {{ netCoreVersion }}</strong>
+            and to use this profiler effectively with ASP.NET Core apps, you need to do two things :-
+            <ol style="margin-top:10px">
+              <li>
+                Ensure that you have the below code in your app's <strong>Program.cs</strong> as
+                mentioned
+                in
+                <a target="_blank"
+                  href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-2.2">Logging
+                  in ASP.NET Core article</a>.
+
+                <pre style="margin-top:10px;border-radius: 0px">logging.AddEventSourceLogger();</pre>
+              </li>
+              <li>
+                Update the default <strong>LogLevel</strong> in appsettings.json to <strong>Information</strong>,
+                like below
+                <pre style="margin-top:10px;border-radius: 0px">
+"Logging": {{ '{' }}
+    LogLevel": {{ '{' }}
+        Default": "Information"
+        {{ '}' }}
+    {{ '}' }}</pre>
+              </li>
+            </ol>
+
+            <div class="focus-box focus-box-warning" style="margin-top:20px;margin-bottom:10px;padding-right: 5px;">
+              Without
+              these
+              changes, the profiler cannot identify slow or failed requests from the trace. Please ensure
+              these changes are in place before collecting the Profiler trace.</div>
+          </div>
+        </div>
+
+      </div>
+      <div style="text-align:right">
+        <div class="col" *ngIf="operationInProgress">
+          <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+          {{ operationStatus }}
+        </div>
+
+        <button
+          [disabled]="getSelectedInstanceCount() === 0 || sessionInProgress || operationInProgress || retrievingInstancesFailed"
+          [hidden]="sessionCompleted" class="btn btn-primary" (click)="collectProfilerTrace()"
+          (keyup.enter)="collectProfilerTrace()" (keyup.space)="collectProfilerTrace()">Collect
+          Profiler Trace</button>
+        <div *ngIf="getSelectedInstanceCount() === 0"
+          style="font-size: smaller;color: red;margin-top: 5px;margin-right: 10px;">* Choose at least one instance</div>
+        <div *ngIf="isWindowsApp && !isAspNetCore" style="margin-top:5px">
+          <input type="checkbox" [attr.aria-label]="'Add thread report'" [(ngModel)]="collectStackTraces"
+            [disabled]="sessionInProgress" /> Add
+          thread report
+          <div class="tool-tip" style="z-index:2">
+            <i class="fa fa-info-circle" style="color:rgb(84, 143, 255)"></i>
+            <span class="tool-tip-text">If this option is enabled, then along with the profiler trace, a
+              thread report of all the threads
+              in the process is also collected at the end of the profiler trace. This is useful
+              especially
+              if you are troubleshooting totally hung processes, deadlocks or requests taking more than
+              60
+              seconds. This will pause your process for a few seconds until the thread dump is generated.
+              <div style="margin-top:10px">
+                CAUTION: This option is NOT recommended if you are experiencing high CPU on the
+                instance.
+              </div>
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="status-box" *ngIf="sessionInProgress">
+        <div *ngIf="!cancellingSession">
+          <select id="selectInstances" (change)="onInstanceChange($event.target.value)">
+            <option *ngFor="let instancestatus of instancesStatus | mapValues" value={{instancestatus.key}}>
+              {{instancestatus.key}}
+            </option>
+          </select>
+          <step-wizard [CurrentStep]="sessionStatus" [WizardSteps]="WizardSteps" [WizardStepStatus]="WizardStepStatus">
+          </step-wizard>
+          <div *ngIf="sessionStatus >= 4 " style="text-align:right">
+            <button class="btn btn-primary btn-sm" (click)="cancelSession()" *ngIf="!cancellingSession">Cancel</button>
+          </div>
+        </div>
+        <div *ngIf="cancellingSession">
+          <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+          Cancelling...
+        </div>
+      </div>
+    </div>
+    <div class="focus-box focus-box-warning" style="margin-top:20px;word-wrap: break-word;" *ngIf="error">
+      <div *ngIf="error.code === 'GatewayTimeout'">
+        <strong>Error</strong> - Failed to fetch instances for the Web App. The instance may fail to respond to
+        any diagnostic
+        calls under high CPU situations. Please retry this investigation after some time.
+      </div>
+      <div *ngIf="error.code != 'GatewayTimeout'">
+        <strong>Error</strong> - {{ error }}
+      </div>
+    </div>
+    <div class="focus-box focus-box-warning" style="margin-top:20px" *ngIf="instancesChanged">
+      <strong>Error</strong> - We detected that instances serving the Web App has changed so please re-select the
+      instances
+      and run diagnostics again.
+    </div>
+  </div>
+
+  <div style="margin-top:10px;" *ngIf="logFiles.length > 0">
+    <table class="table table-bordered table-responsive">
+      <thead class="thead-light">
+        <tr>
+          <th>Data</th>
+          <th *ngIf="collectionMode === sessionMode.CollectAndAnalyze">Reports</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let logFile of logFiles">
+          <td>
+            <ul style="list-style: none;padding:0">
+              <li>
+                <a (click)="openLog(logFile, sessionHasBlobSasUri)" style="cursor: pointer">
+                  {{ logFile.Name }}
+                </a>
+              </li>
+            </ul>
+          </td>
+          <td *ngIf="collectionMode === sessionMode.CollectAndAnalyze">
+            <ul *ngIf="logFile.Reports && logFile.Reports.length > 0" style="list-style: none;padding:0">
+              <li *ngFor="let report of logFile.Reports">
+                {{ getInstanceNameFromReport(report.Name) }}
+                <a (click)="openFile(report.RelativePath)" style="cursor: pointer">
+                  <i class="fa fa-external-link" aria-hidden="true"></i>
+                </a>
+              </li>
+            </ul>
+            <div *ngIf="sessionStatus >= 2 && sessionInProgress">
+              <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+              {{ sessionStatus === 3 ? 'Waiting...' : 'Analyzing...' }}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,12 +1,7 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { SiteDaasInfo } from '../../../models/solution-metadata';
-import { Session } from '../../../models/daas';
-import { SiteInfoMetaData } from '../../../models/site';
 import { DaasBaseComponent } from '../daas-base/daas-base.component';
 import { SiteService } from '../../../services/site.service';
-import { DaasService } from '../../../services/daas.service';
-import { WindowService } from '../../../../startup/services/window.service';
-import { AvailabilityLoggingService } from '../../../services/logging/availability.logging.service';
+import { WebSitesService } from '../../../../resources/web-sites/services/web-sites.service';
 
 @Component({
     templateUrl: 'java-threaddump-tool.component.html',
@@ -24,14 +19,11 @@ export class JavaThreadDumpToolComponent extends DaasBaseComponent implements On
         'Your App will not be restarted as a result of collecting the jStack logs.'
     ];
 
-    constructor(private _siteServiceLocal: SiteService, private _daasServiceLocal: DaasService, private _windowServiceLocal: WindowService, private _loggerLocal: AvailabilityLoggingService) {
-        super(_siteServiceLocal, _daasServiceLocal, _windowServiceLocal, _loggerLocal);
+    constructor(private _siteServiceLocal: SiteService, private _webSiteServiceLocal: WebSitesService) {
+        super(_siteServiceLocal, _webSiteServiceLocal);
     }
     ngOnInit(): void {
-
         this.diagnoserName = 'JAVA Thread Dump';
         this.scmPath = this._siteServiceLocal.currentSiteStatic.enabledHostNames.find(hostname => hostname.indexOf('.scm.') > 0);
-
     }
-
 }

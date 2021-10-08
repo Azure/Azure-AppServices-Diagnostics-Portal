@@ -350,28 +350,6 @@ export class SiteFeatureService extends FeatureService {
         platform: OperatingSystem.windows,
         sku: Sku.NotDynamic,
         hostingEnvironmentKind: HostingEnvironmentKind.All,
-        stack: 'PHP',
-        item: {
-          id: ToolIds.PHPLogAnalyzer,
-          name: ToolNames.PHPLogAnalyzer,
-          category: 'Diagnostic Tools',
-          description: '',
-          featureType: FeatureTypes.Tool,
-          clickAction: this._createFeatureAction(ToolNames.PHPLogAnalyzer, 'Diagnostic Tools', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/phploganalyzer`);
-            } else {
-              this.navigateTo(resourceId, ToolIds.PHPLogAnalyzer);
-            }
-          })
-        }
-      },
-      {
-        appType: AppType.WebApp | AppType.FunctionApp,
-        platform: OperatingSystem.windows,
-        sku: Sku.NotDynamic,
-        hostingEnvironmentKind: HostingEnvironmentKind.All,
         stack: 'Java',
         item: {
           id: ToolIds.JavaMemoryDump,
