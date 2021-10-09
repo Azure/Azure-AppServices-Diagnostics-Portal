@@ -162,7 +162,10 @@ export class OnboardingFlowComponent implements OnInit {
     root: { cursor: "default" }
   };
   publishButtonStyle: any = {
-    root: { cursor: "not-allowed" }
+    root: {
+      cursor: "not-allowed",
+      color: "grey"
+    }
   };
 
 
@@ -204,6 +207,15 @@ export class OnboardingFlowComponent implements OnInit {
     root: {
     }
   }
+
+  runIcon: any = { iconName: 'Play' };
+
+  publishIcon: any = {
+    iconName: 'Upload',
+    styles: {
+      root: { color: "grey" }
+    }
+  };
 
   submittedPanelStyles: IPanelProps["styles"] = {
     root: {
@@ -354,14 +366,19 @@ export class OnboardingFlowComponent implements OnInit {
   updateGistVersionOptions(event: string) {
     this.gistName = event["option"].text;
     this.gistVersionOptions = [];
+    var tempList = [];
     this.githubService.getChangelist(this.gistName)
       .subscribe((version: Commit[]) => {
-        version.forEach(v => this.gistVersionOptions.push({
+        version.forEach(v => tempList.push({
           key: String(`${v["sha"]}`),
           text: String(`${v["author"]}: ${v["dateTime"]}`),
           title: String(`${this.gistName}`)
         }));
+        this.gistVersionOptions = tempList.reverse();
+        //this.gistVersionOptions = tempList.sort((a, b) => a.text.substring(a.text.indexOf(":")) < b.text.substring(b.text.indexOf(":")) ? -1 : 1);
+        if (this.gistVersionOptions.length > 10) { this.gistVersionOptions = this.gistVersionOptions.slice(0, 10); }
       });
+
   }
 
   gistVersionOnChange(event: string) {
@@ -382,14 +399,34 @@ export class OnboardingFlowComponent implements OnInit {
   disableRunButton() {
     this.runButtonDisabled = true;
     this.runButtonStyle = {
-      root: { cursor: "not-allowed" }
+      root: {
+        cursor: "not-allowed",
+        color: "grey"
+      }
+    };
+    this.runIcon = {
+      iconName: 'Play',
+      styles: {
+        root: {
+          color: 'grey'
+        }
+      }
     };
   }
 
   disablePublishButton() {
     this.publishButtonDisabled = true;
     this.publishButtonStyle = {
-      root: { cursor: "not-allowed" }
+      root: {
+        cursor: "not-allowed",
+        color: "grey"
+      }
+    };
+    this.publishIcon = {
+      iconName: 'Upload',
+      styles: {
+        root: { color: "grey" }
+      }
     };
   }
 
@@ -398,6 +435,7 @@ export class OnboardingFlowComponent implements OnInit {
     this.runButtonStyle = {
       root: { cursor: "default" }
     };
+    this.runIcon = { iconName: 'Play' };
   }
 
   enablePublishButton() {
@@ -405,6 +443,7 @@ export class OnboardingFlowComponent implements OnInit {
     this.publishButtonStyle = {
       root: { cursor: "default" }
     };
+    this.publishIcon = { iconName: 'Upload' };
   }
 
   showGistDialog() {
@@ -415,8 +454,8 @@ export class OnboardingFlowComponent implements OnInit {
         key: String(g),
         text: String(g)
       });
-    });    
-    if (this.gists.length == 0){
+    });
+    if (this.gists.length == 0) {
       this.gistUpdateTitle = "No gists available";
     }
     else {
@@ -1000,7 +1039,7 @@ export class OnboardingFlowComponent implements OnInit {
     this.currentTime = moment(Date.now()).format("hh:mm A");
     this.submittedPanelTimer = setTimeout(() => {
       this.dismissPublishSuccessHandler();
-    }, 3000);
+    }, 100000);
   }
 
   dismissPublishSuccessHandler() {
@@ -1244,9 +1283,9 @@ export class OnboardingFlowComponent implements OnInit {
         });
       }
 
-      if (!this.hideModal && !this.gistMode) {
-        this.ngxSmartModalService.getModal('devModeModal').open();
-      }
+      // if (!this.hideModal && !this.gistMode) {
+      //   this.ngxSmartModalService.getModal('devModeModal').open();
+      // }
     });
   }
 

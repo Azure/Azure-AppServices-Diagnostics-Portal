@@ -17,7 +17,7 @@ import { ResourceService } from '../../shared/services/resource.service';
 import { ResourceServiceFactory } from '../../shared/providers/resource.service.provider';
 import { ResourceHomeComponent } from './resource-home/resource-home.component';
 import { OnboardingFlowComponent } from './onboarding-flow/onboarding-flow.component';
-import { TabCommonComponent, TabKey } from './tabs/tab-common/tab-common.component';
+import { TabCommonComponent } from './tabs/tab-common/tab-common.component';
 import { TabDataComponent } from './tabs/tab-data/tab-data.component';
 import { TabDevelopComponent } from './tabs/tab-develop/tab-develop.component';
 import { ApplensDiagnosticService } from './services/applens-diagnostic.service';
@@ -64,6 +64,7 @@ import { map } from 'rxjs/operators';
 import { RecentResource } from '../../shared/models/user-setting';
 import { UserSettingService } from './services/user-setting.service';
 import { ApplensDocsComponent } from '../../shared/components/applens-docs/applens-docs.component';
+import { TabKey } from './tabs/tab-key';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -156,15 +157,24 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                     {
                         path: '',
                         component: TabGistDevelopComponent,
+                        data: {
+                            tabKey: TabKey.Develop
+                        }
                     }, {
                         path: 'edit',
                         redirectTo: ''
                     }, {
                         path: 'changelist',
-                        component: TabChangelistComponent
+                        component: TabChangelistComponent, 
+                        data: {
+                            tabKey: TabKey.CommitHistory
+                        }
                     }, {
                         path: 'changelist/:sha',
-                        component: TabChangelistComponent
+                        component: TabChangelistComponent,
+                        data: {
+                            tabKey: TabKey.CommitHistory
+                        }
                     }
                 ]
             },

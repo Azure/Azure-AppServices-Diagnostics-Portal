@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { distinct } from 'rxjs-compat/operator/distinct';
+import { filter } from 'rxjs/operators';
+import { Tab, TabKey } from '../tab-key';
 
 @Component({
   selector: 'tab-common',
@@ -9,19 +11,25 @@ import { distinct } from 'rxjs-compat/operator/distinct';
 })
 export class TabCommonComponent implements OnInit {
 
-  tabs: { headerText: string, itemKey: string }[] = [
+  tabs: Tab[] = [
     { headerText: "Data", itemKey: TabKey.Data },
     { headerText: "Develop", itemKey: TabKey.Develop }
   ];
 
-  defaultTabKey:string;
+  selectedTabKey:string;
 
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute) {
+    this._activatedRoute.firstChild.data.subscribe(data => {
+      const key:string = data["tabKey"];
+      this.selectedTabKey = key ? key : this.tabs[0].itemKey;
+    }); 
   }
 
   ngOnInit() {
-    const key:string = this._activatedRoute.firstChild.snapshot.data["tabKey"];
-    this.defaultTabKey = key ? key : this.tabs[0].itemKey;
+    this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(e => {
+      const key:string = this._activatedRoute.firstChild.snapshot.data["tabKey"];
+      this.selectedTabKey = key ? key : this.tabs[0].itemKey;
+    }); 
   }
 
   navigateToData(ev: any) {
@@ -42,7 +50,4 @@ export class TabCommonComponent implements OnInit {
   }
 }
 
-export enum TabKey {
-  Data = "Data",
-  Develop = "Develop"
-}
+
