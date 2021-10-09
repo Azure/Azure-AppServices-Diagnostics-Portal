@@ -6,6 +6,8 @@
       </fab-command-bar-item>
       <fab-command-bar-item key="emailToAuthor" text="Email Author" [iconProps]="{ iconName: 'Mail' }" (click)="emailToAuthor()">
       </fab-command-bar-item>
+      <fab-command-bar-item key="internal" [text]="internalExternalText" [iconProps]="{ iconName: 'View' }"
+        (click)="internalExternalToggle()"></fab-command-bar-item>
     </items>
   </fab-command-bar>
 <detector-container [analysisMode]="analysisMode" [detector]="detector"></detector-container>
