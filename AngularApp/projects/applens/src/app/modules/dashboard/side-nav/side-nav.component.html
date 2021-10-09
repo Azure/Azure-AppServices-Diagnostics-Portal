@@ -1,5 +1,5 @@
 <aside>
-  <section class="sidebar" style="height: 100vh;">
+  <section class="sidebar" style="height: 84vh; border-right: 5px solid grey">
       <div style="display: flex;align-items: center; margin: 16px 8px;justify-content: flex-end;">
         <fab-search-box *ngIf="isGroupList" #fabSearchBox [value]="searchValue" (onChange)="updateSearchValue($event)" [styles]="searchBoxStyles" (onFocus)="focusSearchBox()" [placeholder]="searchPlaceHolder"></fab-search-box>
         <div class="icon-colleapse-side-nav" (keyup.enter)="dismissL2SideNav()" (click)="dismissL2SideNav()" tabindex="0" aria-label="Close side nav">
