@@ -26,6 +26,11 @@ export class TabDataComponent implements OnInit {
   hideDetectorControl: boolean = false;
 
   detectors: DetectorMetaData[] = [];
+
+  internalExternalText: string = "";
+  internalViewText: string = "Internal view";
+  externalViewText: string = "Customer view";
+
   ngOnInit() {
 
     this._route.params.subscribe((params: Params) => {
@@ -44,6 +49,12 @@ export class TabDataComponent implements OnInit {
     this._diagnosticApiService.getDetectors().subscribe(detectors => {
       this.detectors = detectors;
     });
+    if (this._detectorControlService.isInternalView){
+      this.internalExternalText = this.internalViewText;
+    }
+    else{
+      this.internalExternalText = this.externalViewText;
+    }
   }
 
   refresh() {
@@ -62,5 +73,17 @@ export class TabDataComponent implements OnInit {
 
   openFeedback() {
     this._applensGlobal.openFeedback = true;
+  }
+
+  internalExternalToggle(){
+    if (this.internalExternalText === this.externalViewText){
+      this.internalExternalText = this.internalViewText;
+    }
+    else{
+      this.internalExternalText = this.externalViewText;
+    }
+
+    this._detectorControlService.toggleInternalExternal();
+    this.refreshPage();
   }
 }
