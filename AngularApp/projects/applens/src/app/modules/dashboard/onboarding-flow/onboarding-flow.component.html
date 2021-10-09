@@ -165,14 +165,14 @@
 
 
   <fab-panel [isOpen]="publishSuccess || publishFailed" [isLightDismiss]="true" [type]="PanelType.custom"
-    [customWidth]="'315px'" [isHiddenOnDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
+    [customWidth]="'auto'" [isHiddenOnDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
     [styles]="submittedPanelStyles" [isBlocking]="false" (onDismissed)="dismissPublishSuccessHandler()"
     (onOpen)="onOpenPublishSuccessPanel()">
     <div class="submitted-panel-text panel-text">
-      <div style="display: flex;align-items: baseline;">
+      <div style="display: flex;align-items: center; margin-left: 4px; margin-right: 8px;">
         <ng-container *ngIf="publishSuccess">
           <status-icon [status]="HealthStatus.Success" class="mr-3"></status-icon>
-          <div>Your detector {{detectorName}} was saved</div>
+          <div><h5>Your detector {{detectorName}} was saved</h5></div>
         </ng-container>
 
         <ng-container *ngIf="publishFailed">
@@ -181,9 +181,9 @@
         </ng-container>
 
       </div>
-      <div>{{currentTime}}</div>
+      <div style="margin-top: auto; margin-bottom: auto; margin-right: 20px"><h5>{{currentTime}}</h5></div>
     </div>
-    <div *ngIf="publishSuccess">You can find it in "Your detectors" later.</div>
+    <div *ngIf="publishSuccess" style="margin-left: 4px;">You can find it in "Your detectors" later.</div>
   </fab-panel>
 
 
@@ -199,20 +199,20 @@
   <fab-command-bar [attr.id]="'fab-command-bar'"
     contentStyle="border-bottom:1px solid gray;font-weight:12px; height:40px" contentClass="fab-command-bar-class">
     <items>
-      <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="{ iconName: 'Play' }"
+      <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon"
         (click)="runCompilation()" [buttonStyles]="runButtonStyle"></fab-command-bar-item>
       <fab-command-bar-item *ngIf="!detectorGraduation" key="publish" [text]="modalPublishingButtonText"
-        [iconProps]="{ iconName: 'Upload' }" (click)="publish()" [buttonStyles]="publishButtonStyle">
+        [iconProps]="publishIcon" (click)="publish()" [buttonStyles]="publishButtonStyle">
       </fab-command-bar-item>
       <fab-command-bar-item *ngIf="detectorGraduation" key="publishGrad" [text]="modalPublishingButtonText"
-        [iconProps]="{ iconName: 'Upload' }" (click)="showPublishDialog()" [buttonStyles]="publishButtonStyle">
+        [iconProps]="publishIcon" (click)="showPublishDialog()" [buttonStyles]="publishButtonStyle">
       </fab-command-bar-item>
       <fab-command-bar-item key="download" text="Download" [iconProps]="{ iconName: 'Download' }"
         (click)="getDevOptions()"></fab-command-bar-item>
       <fab-command-bar-item key="gistVersion" text="Gist version" [iconProps]="{ iconName: 'BackToWindow' }"
         (click)="showGistDialog()"></fab-command-bar-item>
-      <fab-command-bar-item key="internal" [text]="internalExternalText" [iconProps]="{ iconName: 'View' }"
-        (click)="internalExternalToggle()"></fab-command-bar-item>
+      <!-- <fab-command-bar-item key="internal" [text]="internalExternalText" [iconProps]="{ iconName: 'View' }"
+        (click)="internalExternalToggle()"></fab-command-bar-item> -->
       <far-items>
         <fab-command-bar-item *ngIf="detectorGraduation" key="custom1" text="custom text">
           <render>
@@ -308,7 +308,7 @@
               </div>
             </div> -->
 
-            <ngx-monaco-editor (onInit)="onInit($event)" style="height:calc(100% - 100px)" [options]="editorOptions" [(ngModel)]="code">
+            <ngx-monaco-editor (onInit)="onInit($event)" style="height:calc(98%)" [options]="editorOptions" [(ngModel)]="code">
             </ngx-monaco-editor>
 
           </split-area>
