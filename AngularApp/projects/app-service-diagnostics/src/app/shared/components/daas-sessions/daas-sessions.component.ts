@@ -178,6 +178,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     sessionMaster.startDate = session.StartTime;
     sessionMaster.mode = (session.Status === SessionStatus.CollectedLogsOnly ? SessionModeV2.Collect : SessionModeV2.CollectAndAnalyze);
     sessionMaster.status = session.Status;
+    sessionMaster.blobStorageHostName = session.BlobStorageHostName;
     if (this.isArrayWithItems(session.DiagnoserSessions)) {
       let diagnoser = session.DiagnoserSessions[0];
       sessionMaster.tool = diagnoser.Name;
@@ -212,6 +213,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     sessionMaster.startDate = session.StartTime;
     sessionMaster.mode = session.Mode;
     sessionMaster.instances = session.Instances;
+    sessionMaster.blobStorageHostName = session.BlobStorageHostName;
 
     if (sessionMaster.mode === SessionModeV2.CollectAndAnalyze) {
       sessionMaster.analyzerStatus = DiagnosisStatus.WaitingForInputs;

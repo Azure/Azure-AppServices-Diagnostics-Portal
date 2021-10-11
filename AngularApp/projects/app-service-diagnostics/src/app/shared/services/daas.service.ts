@@ -227,7 +227,8 @@ export class DaasService {
                 if (daasSasUri && daasSasUri.SasUri) {
                     return of(daasSasUri);
                 } else {
-                    return this._getSasUriFromDaasApi(site);
+                    let daasSasUri: DaasSasUri = { IsAppSetting: false, SasUri:''};
+                    return of(daasSasUri);
                 }
             }));
     }

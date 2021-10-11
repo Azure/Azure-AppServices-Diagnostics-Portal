@@ -64,6 +64,7 @@ export class Session {
     LogFilesSize: number;
     BlobSasUri: string;
     HasBlobSasUri: boolean = false;
+    BlobStorageHostName: string;
 }
 
 export enum SessionModeV2 {
@@ -80,6 +81,8 @@ export class SessionV2 {
     ToolParams: string;
     Instances: string[];
     ActiveInstances: ActiveInstance[];
+    BlobStorageHostName: string;
+    DefaultScmHostName: string;
 }
 
 export interface ActiveInstance {
