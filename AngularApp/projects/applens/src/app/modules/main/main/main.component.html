@@ -2,7 +2,7 @@
 <div class="main-container content-under-header">
   <applens-preview-banner></applens-preview-banner>
   <div class="main-row" style="margin: 0px auto;width: 1240px;">
-    <div *ngIf="userGivenName" class="welcome-word">Welcome to Applens, {{userGivenName}}!</div>
+    <div *ngIf="userGivenName" class="welcome-word">Welcome to AppLens, {{userGivenName}}!</div>
     <div class="main-content main-card" style="width: 100%;margin-bottom: 15px;">
       <div class="main-content-header">
         <img src="assets/img/applens-skeleton/main/troubleshoot.svg" alt="troubleshoot" class="mr-3">
@@ -53,7 +53,6 @@
           <img src="assets/img/applens-skeleton/main/recent_resources.svg" alt="recent resources" class="mr-3">
           <h3>Recent Resources</h3>
         </div>
-        <!-- <fab-data-table [table]="table" [tableHeight]="'200px'"></fab-data-table> -->
         <table style="width: 100%;">
           <thead>
             <tr style="border-bottom: 1px solid #EDEBE9;">
@@ -64,8 +63,10 @@
           <tbody>
             <ng-container *ngIf="table&&table.length > 0;else noRecentResource">
               <tr *ngFor="let item of table" style="border-bottom: 1px solid #EDEBE9;">
-                <th style="padding: 7px 0px;"><img [src]="item.imgSrc" style="height: 15px;width: 15px;"
-                    [alt]="item.type" class="mr-3" /><a tabindex="0"
+                <th style="padding: 7px 0px;">
+                  <img [src]="item.imgSrc" style="height: 15px;width: 15px;"
+                    [alt]="item.type" class="mr-3" />
+                    <a tabindex="0" class="recent-resource"
                     (click)="clickRecentResourceHandler($event,item)">{{item.name}}</a></th>
                 <th style="padding: 7px 0px;">{{item.type}}</th>
               </tr>
@@ -76,7 +77,7 @@
       <div style="width: 300px;" class="main-card">
         <div class="main-content-header">
           <img src="assets/img/applens-skeleton/main/documents.svg" alt="documentations" class="mr-3">
-          <h3>Documentations</h3>
+          <h3>Documentation</h3>
         </div>
         <div class="mb-3" *ngFor="let doc of applensDocs">
           <a [href]="doc.link" target="_blank">{{doc.name}}<i class="hyper-link-icon ml-1" aria-hidden="true"></i></a>

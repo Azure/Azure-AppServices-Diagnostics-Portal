@@ -116,8 +116,26 @@ export class MainComponent implements OnInit {
     // TODO: Use this to restrict access to routes that don't match a supported resource type
     this._http.get<ResourceServiceInputsJsonResponse>('assets/enabledResourceTypes.json').subscribe(jsonResponse => {
       this.enabledResourceTypes = <ResourceServiceInputs[]>jsonResponse.enabledResourceTypes;
+      // this.enabledResourceTypes.forEach(type => {
+      //   const searchSuffix = type.searchSuffix;
+      //   if (searchSuffix && searchSuffix.length > 0 && !this.resourceTypes.find(resource => resource.displayName && searchSuffix && resource.displayName.toLowerCase() === searchSuffix.toLowerCase())) {
+      //     this.resourceTypes.push({
+      //       resourceType: null,
+      //       resourceTypeLabel: 'ARM resource ID',
+      //       routeName: (name) => `${name}`,
+      //       displayName: `${searchSuffix}`,
+      //       enabled: true,
+      //       caseId: false
+      //     });
+      //   }
+      // });
+      const set = new Set<string>();
+      this.resourceTypes.forEach(resource => {
+        if (resource && resource.displayName) set.add(resource.displayName.toLowerCase());
+      });
       this.enabledResourceTypes.forEach(type => {
-        if (!this.resourceTypes.find(resource => resource.displayName && type.searchSuffix && resource.displayName.toLowerCase() === type.searchSuffix.toLowerCase())) {
+        if (type && type.searchSuffix && !set.has(type.searchSuffix.toLowerCase())) {
+          set.add(type.searchSuffix.toLowerCase());
           this.resourceTypes.push({
             resourceType: null,
             resourceTypeLabel: 'ARM resource ID',
@@ -139,10 +157,10 @@ export class MainComponent implements OnInit {
       });
 
       this._userInfoService.getRecentResources().subscribe(userInfo => {
-        if(userInfo && userInfo.resources) {
+        if (userInfo && userInfo.resources) {
           this.table = this.generateDataTable(userInfo.resources);
         }
-      },err => {
+      }, err => {
         console.log(err);
       });
     });
@@ -267,8 +285,8 @@ export class MainComponent implements OnInit {
         kind: recentResource.kind,
         resourceUri: recentResource.resourceUri
       }
-      if(type === "microsoft.web/sites") {
-        this.updateDisplayWithKind(recentResource.kind,display);
+      if (type === "microsoft.web/sites") {
+        this.updateDisplayWithKind(recentResource.kind, display);
       }
       return display;
     });
@@ -306,12 +324,12 @@ export class MainComponent implements OnInit {
     this._router.navigate([route], navigationExtras);
   }
 
-  clickRecentResourceHandler(event: Event,recentResource: RecentResourceDisplay) {
+  clickRecentResourceHandler(event: Event, recentResource: RecentResourceDisplay) {
     event.stopPropagation();
     this.onNavigateRecentResource(recentResource);
   }
 
-  
+
 }
 
 interface RecentResourceDisplay extends RecentResource {
