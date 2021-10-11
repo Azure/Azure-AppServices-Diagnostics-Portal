@@ -18,36 +18,34 @@ export class L2SideNavComponent implements OnInit {
   }
   openL2SideNav: boolean = false;
   panelMarginTop: number = 130;
-  panelStyles: IPanelProps['styles'] = {
-    root: {
-      marginLeft: l1SideNavCollapseWidth,
-    },
-    main: {
-      boxShadow: "none"
-    }
-  }
+  panelStyles: IPanelProps['styles'];
 
   panelFocusTrapZoneProps: IPanelProps["focusTrapZoneProps"] = {
     disabled: true
   }
 
-  @ViewChild(FabPanelComponent, {static: false}) fabPanelComponent: FabPanelComponent;
   constructor(private _applensGlobal: ApplensGlobal) { }
 
   ngOnInit() {
     this._applensGlobal.openL2SideNavSubject.subscribe(type => {
       this.type = type;
     });
+
     this._applensGlobal.showCommAlertSubject.subscribe(showCommAlert => {
-      this.panelMarginTop = showCommAlert ? 200 : 130;
-      this.panelStyles["root"].marginTop = `${this.panelMarginTop}px`;
-    });
-    this._applensGlobal.expandL1SideNavSubject.subscribe(isExpand => {
-      const styles = {...this.panelStyles};
-      styles["root"].marginLeft = isExpand ? l1SideNavExpandWidth : l1SideNavCollapseWidth;
-      if(this.fabPanelComponent && this.fabPanelComponent.styles){
-        this.fabPanelComponent.styles = styles;
-      }
+      this._applensGlobal.expandL1SideNavSubject.subscribe(isExpand => {
+        const panelMarginTop = showCommAlert ? 200 : 130;
+        const panelMarginLeft = isExpand ? l1SideNavExpandWidth : l1SideNavCollapseWidth;
+        this.panelStyles = {
+          root: {
+            marginTop: `${panelMarginTop}px`,
+            marginLeft: `${panelMarginLeft}px`,
+          },
+          main: {
+            boxShadow: "none",
+            borderRight: "5px solid grey"
+          }
+        }
+      });
     });
   }
 
