@@ -101,7 +101,7 @@
           </select>
           <step-wizard [CurrentStep]="sessionStatus" [WizardSteps]="WizardSteps" [WizardStepStatus]="WizardStepStatus">
           </step-wizard>
-          <div *ngIf="sessionStatus >= 3 " style="text-align:right">
+          <div *ngIf="sessionStatus >= 3 && showCancelButton" style="text-align:right">
             <button class="btn btn-primary btn-sm" (click)="cancelSession()" *ngIf="!cancellingSession">Cancel</button>
           </div>
         </div>
@@ -155,7 +155,7 @@
                 </a>
               </li>
             </ul>
-            <div *ngIf="sessionStatus >= 2 && sessionInProgress">
+            <div *ngIf="sessionStatus >= 2 && sessionInProgress && logFile.Reports.length === 0">
               <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
               {{ sessionStatus === 2 ? 'Waiting...' : 'Analyzing...' }}
             </div>

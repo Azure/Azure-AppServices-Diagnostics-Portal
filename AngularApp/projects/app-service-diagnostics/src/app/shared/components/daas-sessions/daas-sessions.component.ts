@@ -109,7 +109,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
   }
 
   reducedSession(obj: SessionMaster) {
-    return { sessionId: obj.sessionId, tool: obj.tool, status: obj.status };
+    return { sessionId: obj.sessionId, tool: obj.tool, status: obj.status, collectorStatus: obj.collectorStatus, analyzerStatus: obj.analyzerStatus };
   }
 
   getDaasSessionsV1(): Observable<Session[]> {
@@ -211,6 +211,14 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     sessionMaster.toolParams = session.ToolParams;
     sessionMaster.startDate = session.StartTime;
     sessionMaster.mode = session.Mode;
+    sessionMaster.instances = session.Instances;
+
+    if (sessionMaster.mode === SessionModeV2.CollectAndAnalyze) {
+      sessionMaster.analyzerStatus = DiagnosisStatus.WaitingForInputs;
+    } else {
+      sessionMaster.analyzerStatus = DiagnosisStatus.NotRequested;
+    }
+
     if (session.Status === "Active") {
       sessionMaster.status = SessionStatus.Active;
     } else if (session.Status === "Completed") {
@@ -218,8 +226,18 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     }
 
     let logFiles: LogFile[] = [];
+    let collectedInstances: string[] = [];
     if (this.isArrayWithItems(session.ActiveInstances)) {
       session.ActiveInstances.forEach(activeInstance => {
+
+        if (activeInstance.Status === "Analyzing") {
+          sessionMaster.analyzerStatus = DiagnosisStatus.InProgress;
+        }
+
+        if (activeInstance.Status != "Started") {
+          collectedInstances.push(activeInstance.Name);
+        }
+
         if (this.isArrayWithItems(activeInstance.Logs)) {
           logFiles = logFiles.concat(activeInstance.Logs);
         }
@@ -233,6 +251,12 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
           sessionMaster.status = SessionStatus.Error;
         }
       });
+    }
+
+    if (this.isEqualArray(sessionMaster.instances, collectedInstances)) {
+      sessionMaster.collectorStatus = DiagnosisStatus.Complete;
+    } else {
+      sessionMaster.collectorStatus = DiagnosisStatus.InProgress;
     }
 
     let size = 0;
@@ -260,6 +284,15 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     return sessionMaster;
   }
 
+  isEqualArray(array1: string[], array2: string[]) {
+    array1.sort();
+    array2.sort();
+    for (var i = 0; i < array1.length; i++) {
+      if (array1[i] !== array2[i]) return false;
+    }
+    return true;
+  }
+
   mergeSessions(sessions: SessionMaster[]) {
     if (sessions != null && Array.isArray(sessions)) {
       const newSessions = sessions.map(this.reducedSession);
@@ -271,26 +304,10 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     }
   }
 
-  getSessionsV1(sessions: Session[]): SessionMaster[] {
-    let sessionMasterSessions: SessionMaster[] = [];
-    sessions.forEach(session => {
-      sessionMasterSessions.push(this.getSessionMasterFromV1(session));
-    });
-    return sessionMasterSessions;
-  }
-
-  getSessionsV2(sessions: SessionV2[]): SessionMaster[] {
-    let sessionMasterSessions: SessionMaster[] = [];
-    sessions.forEach(session => {
-      sessionMasterSessions.push(this.getSessionMasterFromV2(session));
-    });
-    return sessionMasterSessions;
-  }
-
   takeTopFiveDiagnoserSessions(sessions: SessionMaster[]): SessionMaster[] {
     let arrayToReturn = new Array<SessionMaster>();
     sessions.forEach(session => {
-      if (session.tool.indexOf(this.diagnoserNameLookup) > -1) {
+      if (this.isMatchingDiagnoser(session)) {
         arrayToReturn.push(session);
       }
     });
@@ -299,6 +316,17 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
       arrayToReturn = arrayToReturn.slice(0, 5);
     }
     return arrayToReturn;
+  }
+
+  isMatchingDiagnoser(session: SessionMaster): boolean {
+    if (this.diagnoserNameLookup.indexOf("MemoryDump") > -1 || this.diagnoserNameLookup.indexOf("Memory Dump") > -1) {
+      if (session.tool.indexOf("MemoryDump") > -1 || session.tool.indexOf("Memory Dump") > -1) {
+        return true;
+      }
+    } else {
+      return session.tool.indexOf(this.diagnoserNameLookup) > -1
+    }
+    return false;
   }
 
   getInstanceNameFromReport(reportName: string): string {
@@ -322,12 +350,12 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     return session.status == SessionStatus.Error;
   }
 
-  hasDifferentBlobStorage(log: SessionFile, session: SessionMaster) {
+  hasDifferentBlobStorage(log: SessionFile, session: SessionMaster): boolean {
     return session.blobStorageHostName && log.relativePath && log.relativePath.toLowerCase().indexOf('https://' + session.blobStorageHostName.toLowerCase()) === -1;
   }
 
-  isCollectingData(session: SessionMaster) {
-    return session.collectorStatus == DiagnosisStatus.InProgress;
+  isCollectingData(session: SessionMaster): boolean {
+    return session.collectorStatus === DiagnosisStatus.InProgress;
   }
 
   isAnalysisRequested(session: SessionMaster) {

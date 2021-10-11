@@ -61,6 +61,7 @@ export class DaasV2Component implements OnInit, OnDestroy {
   logFiles: LogFile[] = [];
   isWindowsApp: boolean = true;
   linuxDumpType: string = "Full";
+  showCancelButton: boolean = false;
 
   constructor(private _serverFarmService: ServerFarmDataService, private _siteService: SiteService,
     private _daasService: DaasService, private _windowService: WindowService,

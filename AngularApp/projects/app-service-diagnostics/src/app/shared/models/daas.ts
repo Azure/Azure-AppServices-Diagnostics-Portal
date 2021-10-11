@@ -114,6 +114,7 @@ export class SessionMaster {
     mode: SessionModeV2;
     sessionId: string;
     startDate: string;
+    instances: string[] = [];
     tool: string;
     toolParams: string;
     logs: SessionFile[] = [];
