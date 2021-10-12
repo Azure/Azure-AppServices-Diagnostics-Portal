@@ -18,6 +18,7 @@ export class PortalService {
     public sessionId = '';
     private portalSignature: string = 'FxFrameBlade';
     private iFrameSignature: string = 'AppServiceDiagnosticsIFrame';
+    private slot: string = '';
     private startupInfoObservable: ReplaySubject<StartupInfo>;
     private appInsightsResourceObservable: ReplaySubject<any>;
 
@@ -223,6 +224,7 @@ export class PortalService {
                 this.tokenObservable.next(token);
             } else if (methodName == Verbs.sendIFrameInfo) {
                 const iFrameInfo = data;
+                this.slot = data.slot;
                 this.sendIFrameInfoObservable.next(iFrameInfo);
             }
         });
@@ -347,8 +349,12 @@ export class PortalService {
 
     private logException(exceptionMessage: string, properties?: {[name:string]:string}) {
         properties = properties || {};
-        this.logMessage(LogEntryLevel.Error, exceptionMessage, properties);
-        this.logEvent(TelemetryEventNames.PortalIFrameLoadingException,properties);
+        const eventProps = {
+            ...properties,
+            'slot': this.slot
+        }
+        this.logMessage(LogEntryLevel.Error, exceptionMessage, eventProps);
+        this.logEvent(TelemetryEventNames.PortalIFrameLoadingException, eventProps);
     }
 
     //log into Kusto for portal event
@@ -357,7 +363,8 @@ export class PortalService {
             ...properties,
             'measurements': measurements,
             'url': window.location.href,
-            'origin': this.origin
+            'origin': this.origin,
+            'slot': this.slot
         };
         if (!eventProp["portalSessionId"] && this.sessionId !== "") {
             eventProp["portalSessionId"] = this.sessionId;
