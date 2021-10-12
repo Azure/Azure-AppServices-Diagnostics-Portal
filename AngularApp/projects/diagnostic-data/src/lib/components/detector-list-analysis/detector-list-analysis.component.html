@@ -1,4 +1,4 @@
-<div style="margin: 0px 20px;">
+<div  [ngStyle]="{ 'margin': withinGenie ? '0px' : '0px 20px'}">
   <span *ngIf="showPreLoadingError" style="margin-left:30px;margin-top:10px;">{{preLoadingErrorMessage}}</span>
   <span *ngIf="showPreLoader"><i class="fa fa-circle-o-notch fa-2x fa-spin preloading-icon"></i></span>
   <!-- <div *ngIf="searchMode != SearchAnalysisMode.Genie && inDrillDownMode && this.isPublic">
