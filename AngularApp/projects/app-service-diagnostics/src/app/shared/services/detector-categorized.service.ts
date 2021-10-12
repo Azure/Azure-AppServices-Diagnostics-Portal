@@ -30,12 +30,12 @@ export class DetectorCategorizationService {
             })
         });
 
-        this.detectorlistCategories["AvailabilityAndPerformanceWindows"] = [];
-        this.detectorlistCategories["ConfigurationAndManagement"] = [];
-        this.detectorlistCategories["SSLandDomains"] = [];
-        this.detectorlistCategories["RiskAssessments"] = [];
-        this.detectorlistCategories["navigator"] = [];
-        this.detectorlistCategories["DiagnosticTools"] = [];
+        // this.detectorlistCategories["AvailabilityAndPerformanceWindows"] = [];
+        // this.detectorlistCategories["ConfigurationAndManagement"] = [];
+        // this.detectorlistCategories["SSLandDomains"] = [];
+        // this.detectorlistCategories["RiskAssessments"] = [];
+        // this.detectorlistCategories["navigator"] = [];
+        // this.detectorlistCategories["DiagnosticTools"] = [];
     }
 
     public addDetectorToCategory(detectorId: string, categoryId: string) {
