@@ -1,14 +1,13 @@
 import { PortalService } from './../../startup/services/portal.service';
 import { Injectable } from '@angular/core';
 import { ITelemetryProvider } from 'diagnostic-data';
+import { SlotType } from '../models/slottypes';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PortalKustoTelemetryService implements ITelemetryProvider {
-
-  constructor(private _portalService: PortalService) {
-  }
+  constructor(private _portalService: PortalService) {}
 
   logEvent(eventMessage: string, properties: { [name: string]: string }, measurements?: any) {
     this._portalService.logAction('diagnostic-data', eventMessage, {

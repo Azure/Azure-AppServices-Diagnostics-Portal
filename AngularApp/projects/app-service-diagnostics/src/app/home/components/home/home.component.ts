@@ -26,6 +26,8 @@ import { RiskHelper, RiskTile } from '../../models/risk';
 import { OperatingSystem } from '../../../shared/models/site';
 import { RiskAlertService } from '../../../shared-v2/services/risk-alert.service';
 import { mergeMap } from 'rxjs-compat/operator/mergeMap';
+import { ABTestingService } from '../../../shared/services/abtesting.service';
+import { SlotType } from '../../../shared/models/slottypes';
 
 @Component({
     selector: 'home',
@@ -47,13 +49,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
     providerRegisterUrl: string;
     quickLinkFeatures: Feature[] = [];
     riskAlertNotifications: {} = {};
-    risksPanelContents={};
+    risksPanelContents = {};
     currentRiskPanelContentId: string = null;
     riskAlertConfigs: RiskAlertConfig[];
     loadingQuickLinks: boolean = true;
     showRiskSection: boolean = true;
     private _showSwitchBanner: boolean = false;
-    get showSwitchBanner():boolean {
+    enableABTesting: boolean = false;
+    isPreview: boolean = false;
+    abTestingBannerText: string = "";
+    get showSwitchBanner(): boolean {
         //Enable banner for Linux Web/Function App
         if(this.isLinuxApp) return true;
         const typeSwitchItem = allowV3PResourceTypeList.find(item => this._resourceService.resource && this._resourceService.resource.type && this._resourceService.resource.type.toLowerCase() === item.type.toLowerCase());
@@ -78,7 +83,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     constructor(private _resourceService: ResourceService, private _categoryService: CategoryService, private _notificationService: NotificationService, private _router: Router,
         private _detectorControlService: DetectorControlService, private _featureService: FeatureService, private _logger: LoggingV2Service, private _authService: AuthService,
         private _navigator: FeatureNavigationService, private _activatedRoute: ActivatedRoute, private armService: ArmService, private _telemetryService: TelemetryService, private _diagnosticService: DiagnosticService, private _portalService: PortalActionService, private globals: Globals,
-        private versionTestService: VersionTestService, private subscriptionPropertiesService: SubscriptionPropertiesService, private _quickLinkService: QuickLinkService, private _riskAlertService: RiskAlertService) {
+        private versionTestService: VersionTestService, private subscriptionPropertiesService: SubscriptionPropertiesService, private _quickLinkService: QuickLinkService, private _riskAlertService: RiskAlertService, public abTestingService: ABTestingService) {
 
         this.subscriptionId = this._activatedRoute.snapshot.params['subscriptionid'];
         this.versionTestService.isLegacySub.subscribe(isLegacy => this.useLegacy = isLegacy);
@@ -129,7 +134,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
                 else {
                     this.homePageText = {
                         title: 'App Service Diagnostics',
-                        description: 'Investigate how your app is performing, diagnose issues, and discover how to improve your application.' ,
+                        description: 'Investigate how your app is performing, diagnose issues, and discover how to improve your application.',
                         searchBarPlaceHolder: 'Search App Service Diagnostics'
                     };
                     this.searchPlaceHolder = this.homePageText.searchBarPlaceHolder;
@@ -171,7 +176,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
                 }
             });
         })
-        }
+    }
 
     ngOnInit() {
         this.providerRegisterUrl = `/subscriptions/${this.subscriptionId}/providers/Microsoft.ChangeAnalysis/register`;
@@ -213,8 +218,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
             this._detectorControlService.setDefault();
         }
 
-        this._riskAlertService.getRiskAlertNotificationResponse().subscribe(()=>
-        {
+        this.initalABTestingBanner();
+
+        this._riskAlertService.getRiskAlertNotificationResponse().subscribe(() => {
             this._riskAlertService.riskPanelContentsSub.next(this._riskAlertService.risksPanelContents);
         });
 
@@ -226,7 +232,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         this._telemetryService.logPageView(TelemetryEventNames.HomePageLoaded, { "numCategories": this.categories.length.toString() });
-        if(document.getElementById("homepage-title")){
+        if (document.getElementById("homepage-title")) {
             document.getElementById("homepage-title").focus();
         }
     }
@@ -343,14 +349,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
 
     openFeedbackPanel() {
-        this._telemetryService.logEvent(TelemetryEventNames.OpenFeedbackPanel),{
+        this._telemetryService.logEvent(TelemetryEventNames.OpenFeedbackPanel), {
             'Location': TelemetrySource.LandingPage
         }
         this.globals.openFeedback = true;
     }
 
     clickQuickLink(feature: Feature) {
-        this._telemetryService.logEvent(TelemetryEventNames.QuickLinkClicked,{
+        this._telemetryService.logEvent(TelemetryEventNames.QuickLinkClicked, {
             'id': feature.id,
             'name': feature.name
         });
@@ -358,15 +364,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
 
     refreshPage() {
-        this._telemetryService.logEvent(TelemetryEventNames.RefreshClicked,{
+        this._telemetryService.logEvent(TelemetryEventNames.RefreshClicked, {
             'Location': TelemetrySource.LandingPage
         });
 
-      this._riskAlertService.getRiskAlertNotificationResponse(false, true).subscribe(()=>
-      {
-          this._riskAlertService.riskPanelContentsSub.next(this._riskAlertService.risksPanelContents);
-          this._riskAlertService.isRiskTileRefreshing.next(false);
-      });
+        this._riskAlertService.getRiskAlertNotificationResponse(false, true).subscribe(() => {
+            this._riskAlertService.riskPanelContentsSub.next(this._riskAlertService.risksPanelContents);
+            this._riskAlertService.isRiskTileRefreshing.next(false);
+        });
     }
 
     switchView() {
@@ -377,6 +382,26 @@ export class HomeComponent implements OnInit, AfterViewInit {
             resourceName: this.resourceName,
             switchToLegacy: this.useLegacy.toString(),
         };
-        this._telemetryService.logEvent('SwitchView',eventProps);
+        this._telemetryService.logEvent('SwitchView', eventProps);
+    }
+
+    private initalABTestingBanner() {
+        this.isPreview = this.abTestingService.isPreview;
+        this.enableABTesting = this.abTestingService.enableABTesting;
+        if (this.isPreview) {
+            this.abTestingBannerText = "Welcome to the new and improved version of Diagnose and Solve Problems. If you'd like to switch back to the old experience";
+        } else {
+            this.abTestingBannerText = "You are currently on the old version of the Diagnose and Solve Problems. To explore the latest UI improvements in the new version";
+        }
+
+    }
+
+    openSlotInNewTab(event: Event) {
+        event.stopPropagation();
+        const url = this.abTestingService.generateSlotLink();
+        this._telemetryService.logEvent(TelemetryEventNames.OpenSlotInNewTab,{
+            currentSlot: SlotType[this.abTestingService.slot]
+        });
+        window.open(url);
     }
 }

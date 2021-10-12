@@ -132,6 +132,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { NetworkCheckComponent } from './components/tools/network-checks/network-checks.component';
 import { DaasV2Component } from './components/daas/daas-v2/daas-v2.component';
 import { ProfilerV2Component } from './components/daas/profiler-v2/profiler-v2.component';
+import { ABTestingService } from './services/abtesting.service';
 
 @NgModule({
     declarations: [
@@ -333,7 +334,8 @@ export class SharedModule {
                 BackendCtrlService,
                 GenericCommsService,
                 GroupByPipe,
-                LocalBackendService
+                LocalBackendService,
+                ABTestingService
             ]
         };
     }

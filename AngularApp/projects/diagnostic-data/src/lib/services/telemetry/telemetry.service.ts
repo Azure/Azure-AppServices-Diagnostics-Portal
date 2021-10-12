@@ -14,9 +14,10 @@ export class TelemetryService {
     private telemetryProviders: ITelemetryProvider[] = [];
     eventPropertiesSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
     private eventPropertiesLocalCopy: { [name: string]: string } = {};
+    private slot: string = "";
     private isLegacy: boolean;
     private initializedPortalVersion: string = "v2";
-    private isPublic:boolean;
+    private isPublic: boolean;
     private enabledResourceTypes: { resourceType: string, name: string }[] = [
         {
             resourceType: "Microsoft.Web/sites",
@@ -45,7 +46,7 @@ export class TelemetryService {
         }
     ];
     constructor(private _appInsightsService: AppInsightsTelemetryService, private _kustoService: KustoTelemetryService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _versionService: VersionService, private _activatedRoute: ActivatedRoute, private _router: Router,private _diagnosticSiteService:DiagnosticSiteService) {
+        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _versionService: VersionService, private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticSiteService: DiagnosticSiteService) {
         if (config.useKustoForTelemetry) {
             this.telemetryProviders.push(this._kustoService);
         }
@@ -64,6 +65,7 @@ export class TelemetryService {
         });
         this._versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
         this._versionService.initializedPortalVersion.subscribe(initializedVersion => this.initializedPortalVersion = initializedVersion);
+        this._versionService.slot.subscribe(slot => this.slot = slot);
     }
 
     /**
@@ -80,7 +82,7 @@ export class TelemetryService {
         this.addCommonLoggingProperties(properties);
 
         for (const telemetryProvider of this.telemetryProviders) {
-            if(telemetryProvider) {
+            if (telemetryProvider) {
                 telemetryProvider.logEvent(eventMessage, properties, measurements);
             }
         }
@@ -92,16 +94,16 @@ export class TelemetryService {
             if (!url) {
                 url = window.location.href;
             }
-            if(telemetryProvider) {
+            if (telemetryProvider) {
                 telemetryProvider.logPageView(name, url, properties, measurements, duration);
             }
         }
     }
 
     public logException(exception: Error, handledAt?: string, properties?: any, severityLevel?: SeverityLevel) {
-        try{
+        try {
             this.addCommonLoggingProperties(properties);
-        }catch(e){
+        } catch (e) {
         }
         for (const telemetryProvider of this.telemetryProviders) {
             if (telemetryProvider) {
@@ -113,7 +115,7 @@ export class TelemetryService {
     public logTrace(message: string, properties?: any, severityLevel?: any) {
         this.addCommonLoggingProperties(properties);
         for (const telemetryProvider of this.telemetryProviders) {
-            if(telemetryProvider){
+            if (telemetryProvider) {
                 telemetryProvider.logTrace(message, properties, severityLevel);
             }
         }
@@ -122,7 +124,7 @@ export class TelemetryService {
     public logMetric(name: string, average: number, sampleCount?: number, min?: number, max?: number, properties?: any) {
         this.addCommonLoggingProperties(properties);
         for (const telemetryProvider of this.telemetryProviders) {
-            if(telemetryProvider){
+            if (telemetryProvider) {
                 telemetryProvider.logMetric(name, average, sampleCount, min, max, properties);
             }
         }
@@ -143,12 +145,12 @@ export class TelemetryService {
             }
 
             const s = matched[0].split('/');
-            if(s.length < 3) { 
+            if (s.length < 3) {
                 return "";
             }
             type = `${s[1]}/${s[2]}`;
-        }catch(e) {
-            
+        } catch (e) {
+
         }
         const resourceType = this.enabledResourceTypes.find(t => t.resourceType.toLowerCase() === type.toLowerCase());
         productName = resourceType ? resourceType.name : type;
@@ -166,17 +168,18 @@ export class TelemetryService {
             }
             else if (kind.indexOf('linux') >= 0) {
                 productName = "Azure Linux App";
-            }else if (kind.indexOf('functionapp') >= 0) {
+            } else if (kind.indexOf('functionapp') >= 0) {
                 productName = "Azure Function App";
             }
         }
-        
+
         return productName;
     }
 
-    private addCommonLoggingProperties(properties: { [name: string]: string }):void {
+    private addCommonLoggingProperties(properties: { [name: string]: string }): void {
         properties = properties || {};
         properties["portalVersion"] = this.isLegacy ? 'v2' : 'v3';
+        properties["slot"] = this.slot;
         if (!(properties["url"] || properties["Url"])) {
             properties["url"] = this._router.url;
         }

@@ -4,6 +4,8 @@ import { ITelemetryProvider } from 'diagnostic-data';
 import { BackendCtrlService } from './backend-ctrl.service';
 import { map, retry, catchError } from 'rxjs/operators';
 import { VersionTestService } from '../../fabric-ui/version-test.service';
+import { PortalService } from '../../startup/services/portal.service';
+import { SlotType } from '../models/slottypes';
 
 @Injectable({
     providedIn: 'root',
@@ -14,7 +16,7 @@ export class PortalAppInsightsTelemetryService implements ITelemetryProvider {
     environment: string = "";
     websiteHostName: string = "";
 
-    constructor(private _backendCtrlService: BackendCtrlService,private _versionTestService:VersionTestService) {
+    constructor(private _backendCtrlService: BackendCtrlService, private _versionTestService: VersionTestService, private _portalService: PortalService) {
         const appInsightsRequest = this._backendCtrlService.get<string>(`api/appsettings/ApplicationInsights:InstrumentationKey`).pipe(
             map((value: string) => {
                 this.instrumentationKey = value;
@@ -62,7 +64,7 @@ export class PortalAppInsightsTelemetryService implements ITelemetryProvider {
                             const isLegacy = this._versionTestService.isLegacySub.value;
                             envelop.data["portalVersion"] = isLegacy ? 'v2' : 'v3';
                             envelop.data["initalPortalVersion"] = this._versionTestService.initializedPortalVersion.value;
-                        }catch(e) {
+                        } catch (e) {
                             this.logException(e);
                         }
                     });

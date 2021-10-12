@@ -7,6 +7,7 @@ import { SiteService } from '../shared/services/site.service';
 import { BehaviorSubject } from 'rxjs';
 import { Site } from '../shared/models/site';
 import { ResourceDescriptor } from 'diagnostic-data';
+import { PortalService } from '../startup/services/portal.service';
 
 export const allowV3PResourceTypeList: { type: string, allowSwitchBack: boolean }[] = [
     { type: "microsoft.apimanagement/service", allowSwitchBack: false },
@@ -25,13 +26,13 @@ export class VersionTestService {
     public isVnextSub: boolean = false;
     public isVnextOnlyResource: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     public initializedPortalVersion: BehaviorSubject<string> = new BehaviorSubject<string>("v2");
-
+    public slot:BehaviorSubject<string> = new BehaviorSubject<string>("");
     // If overrideUseLegacy is not set, we still use the logic to return true for windows web app, return false for other resource types
     // If overrideUseLegacy is set, this will take precedence of our existing logic:
     // overrideUseLegacy = 1, we switch to the old experience.
     // overrideUseLegacy = 2, we switch to the new experience.
     public overrideUseLegacy: BehaviorSubject<number> = new BehaviorSubject(0);
-    constructor(private _authService: AuthService, private _siteService: SiteService) {
+    constructor(private _authService: AuthService, private _siteService: SiteService,private _portalService:PortalService) {
         this._authService.getStartupInfo().subscribe(startupInfo => {
             const resourceType = this._authService.resourceType;
             const resourceId = startupInfo.resourceId;
@@ -62,6 +63,10 @@ export class VersionTestService {
                 });
             });
         });
+
+        this._portalService.getIFrameInfo().subscribe(info => {
+            this.slot.next(info.slot);
+        })
     }
 
     // If overrideUseLegacy is set, this will take precedence of our existing logic to determine if we will use new experience.
