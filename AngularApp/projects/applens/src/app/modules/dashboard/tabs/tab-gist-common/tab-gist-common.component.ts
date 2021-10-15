@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { DiagnosticApiService } from 'projects/applens/src/app/shared/services/diagnostic-api.service';
 import { filter } from 'rxjs/operators';
 import { TabKey, Tab } from '../tab-key';
 
@@ -9,7 +10,7 @@ import { TabKey, Tab } from '../tab-key';
   styleUrls: ['./tab-gist-common.component.scss']
 })
 export class TabGistCommonComponent implements OnInit {
-  contentHeight: string;
+  showTabs: boolean = false;
   tabs: Tab[] = [
     {
       headerText: "Develop",
@@ -21,14 +22,16 @@ export class TabGistCommonComponent implements OnInit {
     }
   ];
   selectedTabKey: string;
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute) { }
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _diagnosticApiService: DiagnosticApiService) { }
 
   ngOnInit() {
+    this._diagnosticApiService.getEnableDetectorDevelopment().subscribe(enabledDetectorDevelopment => {
+      this.showTabs = enabledDetectorDevelopment;
+    });
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(e => {
       const key: string = this._activatedRoute.firstChild.snapshot.data["tabKey"];
       this.selectedTabKey = key ? key : this.tabs[0].itemKey;
     });
-    this.contentHeight = (window.innerHeight - 112) + 'px';
   }
 
   navigateToData(ev: any) {
