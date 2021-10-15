@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AppLensV3.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace AppLensV3.Controllers
 {
@@ -22,10 +23,16 @@ namespace AppLensV3.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="GithubController"/> class.
         /// </summary>
+        /// <param name="configuration">configuration object.</param>
         /// <param name="githubService">Github service.</param>
-        public GithubController(IGithubClientService githubService)
+        public GithubController(IConfiguration configuration, IGithubClientService githubService)
         {
             GithubService = githubService;
+            if (bool.TryParse(configuration["DetectorDevelopmentEnabled"], out bool detectorDevelopmentEnabled)
+                && !detectorDevelopmentEnabled)
+            {
+                throw new InvalidOperationException("Calls to this controller are not allowed on this environment");
+            }
         }
 
         /// <summary>
