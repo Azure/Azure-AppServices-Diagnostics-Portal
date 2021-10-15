@@ -41,6 +41,8 @@ namespace AppLensV3.Controllers
         IConfiguration config;
         private readonly string[] forbiddenAscRegions;
         private readonly string forbiddenDiagAscHeaderValue;
+        private readonly bool detectorDevelopmentEnabled;
+        private readonly IList<string> apiEndpointsForDetectorDevelopment;
 
         private class InvokeHeaders
         {
@@ -74,6 +76,13 @@ namespace AppLensV3.Controllers
             this.config = configuration;
             this.resourceConfigService = resConfigService;
             AppSvcUxDiagnosticDataService = appSvcUxDiagnosticDataService;
+
+            if (!bool.TryParse(configuration["DetectorDevelopmentEnabled"], out detectorDevelopmentEnabled))
+            {
+                detectorDevelopmentEnabled = true;
+            }
+
+            apiEndpointsForDetectorDevelopment = new List<string>() { "/diagnostics/query?", "/diagnostics/publish" };
         }
 
         private IDiagnosticClientService DiagnosticClient { get; }
@@ -146,6 +155,11 @@ namespace AppLensV3.Controllers
             if (string.IsNullOrWhiteSpace(invokeHeaders.Path))
             {
                 return BadRequest($"Missing {PathQueryHeader} header");
+            }
+
+            if (!IsApiAllowed(invokeHeaders.Path))
+            {
+                throw new InvalidOperationException("The api is not allowed to be executed in this environment");
             }
 
             string detectorId = null;
@@ -222,6 +236,16 @@ namespace AppLensV3.Controllers
             }
 
             return Ok(JsonConvert.DeserializeObject(await responseTask));
+        }
+
+        private bool IsApiAllowed(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return false;
+            }
+
+            return (detectorDevelopmentEnabled == true) || !apiEndpointsForDetectorDevelopment.Any(p => path.Contains(p));
         }
 
         private async Task<string> GetLocationPlacementId(InvokeHeaders invokeHeaders)
