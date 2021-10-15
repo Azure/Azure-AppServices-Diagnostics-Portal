@@ -435,4 +435,11 @@ export class DiagnosticApiService {
     let path = "devops/getBranches?resourceURI=" + resourceId;
     return this.invoke(path, HttpMethod.GET);
   }
+
+  public getEnableDetectorDevelopment(): Observable<boolean> {
+    const path = "api/appsettings/DetectorDevelopmentEnabled";
+    return this.get<boolean>(path).pipe(map((res:string) => {
+      return res.toLowerCase() === "true";
+    }));
+  }
 }
