@@ -93,8 +93,12 @@ namespace AppLensV3.Services.DiagnosticClientService
                 AddAdditionalHeaders(additionalHeaders, ref requestMessage);
             }
 
-            var authToken = await DiagnosticClientToken.Instance.GetAuthorizationTokenAsync();
-            requestMessage.Headers.Add("Authorization", authToken);
+            if (environment.IsEnvironment("NationalCloud"))
+            {
+                var authToken = await DiagnosticClientToken.Instance.GetAuthorizationTokenAsync();
+                requestMessage.Headers.Add("Authorization", authToken);
+            }
+
             response = await _client.SendAsync(requestMessage);
             return response;
         }
