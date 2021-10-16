@@ -181,6 +181,8 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     sessionMaster.mode = (session.Status === SessionStatus.CollectedLogsOnly ? SessionModeV2.Collect : SessionModeV2.CollectAndAnalyze);
     sessionMaster.status = session.Status;
     sessionMaster.blobStorageHostName = session.BlobStorageHostName;
+    sessionMaster.size = session.LogFilesSize;
+
     if (this.isArrayWithItems(session.DiagnoserSessions)) {
       let diagnoser = session.DiagnoserSessions[0];
       sessionMaster.tool = diagnoser.Name;
