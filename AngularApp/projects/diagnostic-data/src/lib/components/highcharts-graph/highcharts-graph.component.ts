@@ -538,7 +538,7 @@ export class HighchartsGraphComponent implements OnInit {
                         yAxisValue = chart.hoverPoint.options.y;
                     }
                     if (xAxisValue != undefined && xAxisValue != null && yAxisValue !== null) {
-                        this.hoverData.forEach(h => h.isSelect = false);
+                        this.hoverData.forEach(h => { if (h) h.isSelect = false });
                         //Find all series with same xAxisValue, its yAxisValue is close(<5% diff), then set metric to select
                         chart.series.forEach((s, index) => {
                             const points = s.data;
@@ -548,7 +548,9 @@ export class HighchartsGraphComponent implements OnInit {
                             // }else {
                             //     this.hoverData[index].isSelect = false;
                             // }
-                            this.hoverData[index].isSelect = point && point.y === yAxisValue;
+                            if (this.hoverData[index]) {
+                                this.hoverData[index].isSelect = point && point.y === yAxisValue;
+                            }
                         });
                     }
                     break;

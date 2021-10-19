@@ -12,7 +12,6 @@ namespace AppLensV3.Services
     public class CosmosDBUserSettingHandler : CosmosDBHandlerBase<UserSetting>, ICosmosDBUserSettingHandler
     {
         const string collectionId = "UserInfo";
-        private UserSetting _userSetting;
         public CosmosDBUserSettingHandler(IConfiguration configration) : base(configration)
         {
             CollectionId = collectionId;
@@ -26,37 +25,28 @@ namespace AppLensV3.Services
 
         private async Task<UserSetting> UpdateUserInfoInternal(UserSetting user)
         {
-            if(string.IsNullOrEmpty(DatabaseId))
+            if (string.IsNullOrEmpty(DatabaseId))
             {
                 return null;
             }
-            Document doc;
-            if (_userSetting == null)
-            {
-                doc = client.CreateDocumentQuery(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), new FeedOptions { PartitionKey = new PartitionKey(UserSettingConstant.PartitionKey) })
-                          .Where(r => r.Id == user.Id).AsEnumerable().FirstOrDefault();
-            }
 
-            if (_userSetting == null)
+            UserSetting userSetting = await GetItemAsync(user.Id);
+            Document doc;
+            if (userSetting == null)
             {
-                doc = await CreateItemAsync(user);
+               doc = await CreateItemAsync(user);
             }
             else
             {
                 doc = await client.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, user.Id), user, new RequestOptions { PartitionKey = new PartitionKey(UserSettingConstant.PartitionKey) });
             }
 
-            _userSetting = (dynamic)doc;
-            return _userSetting;
+            return (dynamic)doc;
         }
 
         public async Task<UserSetting> GetItemAsync(string id)
         {
-            if (_userSetting == null)
-            {
-                _userSetting = await GetItemAsync(id, UserSettingConstant.PartitionKey);
-            }
-            return _userSetting;
+            return await GetItemAsync(id, UserSettingConstant.PartitionKey);
         }
     }
 }
