@@ -133,11 +133,7 @@ export class PortalReferrerResolverComponent implements OnInit {
 
 
           if (referrerMatch) {
-            if (!! referrerMatch.OverridePath && referrerMatch.OverridePath != "")
-            {
-                path =`${path}${referrerMatch.OverridePath}`;
-            }
-            else if (referrerMatch.DetectorType === DetectorType.Detector) {
+            if (referrerMatch.DetectorType === DetectorType.Detector) {
               path = `${path}/detectors/${referrerMatch.DetectorId}`;
             }
             else if (referrerMatch.DetectorType === DetectorType.Analysis) {
