@@ -29,18 +29,8 @@ namespace AppLensV3.Services
             {
                 return null;
             }
-
-            UserSetting userSetting = await GetItemAsync(user.Id);
             Document doc;
-            if (userSetting == null)
-            {
-               doc = await CreateItemAsync(user);
-            }
-            else
-            {
-                doc = await client.ReplaceDocumentAsync(UriFactory.CreateDocumentUri(DatabaseId, CollectionId, user.Id), user, new RequestOptions { PartitionKey = new PartitionKey(UserSettingConstant.PartitionKey) });
-            }
-
+            doc = await client.UpsertDocumentAsync(UriFactory.CreateDocumentCollectionUri(DatabaseId, CollectionId), user, new RequestOptions { PartitionKey = new PartitionKey(UserSettingConstant.PartitionKey) });
             return (dynamic)doc;
         }
 
