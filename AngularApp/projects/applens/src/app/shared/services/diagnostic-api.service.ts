@@ -396,21 +396,20 @@ export class DiagnosticApiService {
 
   public getUserSetting(userId: string): Observable<UserSetting> {
     let url: string = `${this.diagnosticApi}api/usersetting/${userId}`;
-    let request = this._httpClient.get(url, {
+    let request = this._httpClient.get<UserSetting>(url, {
       headers: this._getHeaders()
     });
-    return request.pipe(map(res => <UserSetting>res));
+    return request;
     // return this.get(`api/recent/${userId}`);
   }
   
   public updateUserSetting(userSettings: UserSetting):Observable<UserSetting> {
-    //let url = `${this.diagnosticApi}api/recent/${userInfo.id}`;
     let url = `${this.diagnosticApi}api/usersetting`;
-    let request = this._httpClient.post(url,userSettings, {
+    let request = this._httpClient.post<UserSetting>(url,userSettings, {
       headers: this._getHeaders()
     });
     // return this._cacheService.get(this.getCacheKey(HttpMethod.POST, url), request, false);
-    return request.pipe(map(res => <UserSetting>res));
+    return request;
   }
 
   public getDetectorCode(detectorPath: string){

@@ -77,7 +77,7 @@ export class InitResolver implements Resolve<Observable<ResourceInfo>>{
                 resourceUri: resourceInfo.resourceUri,
                 kind: resourceInfo.kind
             }
-            this._userInfoService.updateRecentResource(recentResource).subscribe();
+            this._userInfoService.updateRecentResource(recentResource);
             return resourceInfo;
         }));
     }
