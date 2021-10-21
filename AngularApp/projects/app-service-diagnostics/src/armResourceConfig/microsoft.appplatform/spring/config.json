@@ -39,7 +39,7 @@
 		{
 			"id": "networkingspring",
 			"name": "Networking",
-            "description": "Are you having network connectivity issues when Azure Spring Cloud is deployed in your own virtual network? Find out if you misconfigured the Private DNS Zone, Custom DNS Server or blocked required outbound traffic in your VNet injected service instance.",
+            "description": "Discover issues with your own virtual network connectivity.",
             "keywords": [ "Virtual Network", "Custom DNS Server", "Private DNS Zone", "Firewall" ],
 			"color": "rgb(208, 228, 176)",
 			"createFlowForCategory": true,
