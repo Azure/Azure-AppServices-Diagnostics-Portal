@@ -25,7 +25,7 @@ export class MainComponent implements OnInit {
   showCaseCleansingOption = false;
   selectedResourceType: ResourceTypeState;
   resourceName: string;
-  resourceTypes: ResourceTypeState[] = [
+  defaultResourceTypes: ResourceTypeState[] = [
     {
       resourceType: ResourceType.Site,
       resourceTypeLabel: 'App name',
@@ -75,6 +75,7 @@ export class MainComponent implements OnInit {
       caseId: false
     }
   ];
+  resourceTypes: ResourceTypeState[] = [];
 
   startTime: momentNs.Moment;
   endTime: momentNs.Moment;
@@ -111,7 +112,7 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.resourceTypes = [...this.defaultResourceTypes];
     this.selectedResourceType = this.resourceTypes[0];
     // TODO: Use this to restrict access to routes that don't match a supported resource type
     this._http.get<ResourceServiceInputsJsonResponse>('assets/enabledResourceTypes.json').subscribe(jsonResponse => {
@@ -228,7 +229,7 @@ export class MainComponent implements OnInit {
     this.resourceName = this.resourceName.trim();
 
     //If it is ARM resource id
-    if (this.selectedResourceType === this.resourceTypes[2]) {
+    if (this.defaultResourceTypes.findIndex(resource => this.selectedResourceType.displayName === resource.displayName) === -1) {
       this.resourceName = this.normalizeArmUriForRoute(this.resourceName, this.enabledResourceTypes);
     } else {
       this.errorMessage = "";
