@@ -1,11 +1,11 @@
 
-import { throwError as observableThrowError, ReplaySubject, Observable } from 'rxjs';
+import { throwError as observableThrowError, ReplaySubject, Observable, throwError, timer } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Subscription } from '../models/subscription';
 import { ResponseMessageEnvelope, ResponseMessageCollectionEnvelope } from '../models/responsemessageenvelope';
 import { AuthService } from '../../startup/services/auth.service';
 import { CacheService } from './cache.service';
-import { catchError, retry, map, retryWhen, delay } from 'rxjs/operators';
+import { catchError, retry, map, retryWhen, mergeMap, timeout } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { GenericArmConfigService } from './generic-arm-config.service';
 import { StartupInfo } from '../models/portal';
@@ -188,25 +188,38 @@ export class ArmService {
         const request = this._http.get<ResponseMessageEnvelope<T>>(url, {
             headers: requestHeaders
         }).pipe(
-            retryWhen(err => {
-                let requestId: string = Guid.newGuid();
-                additionalHeaders.set('x-ms-request-id', requestId);
-                requestHeaders = this.getHeaders(null, additionalHeaders);
+            timeout(20000),
+            retryWhen((attempts: Observable<any>) => {
+                let maxRetryAttempts = 3;
+                let scalingDuration = 1000;
+                let excludedErrorNames = ["TimeoutErrors"];
 
-                let retryCount = 0;
-                eventProps.requestId = requestId;
-                eventProps["retryCount"] = retryCount;
+                return attempts.pipe(
+                    mergeMap((error, i) => {
+                        const retryAttempt = i + 1;
+                        // If maximum number of retries have been met
+                        // or response is longer than 20 seconds with TimeoutErrors we don't wish to retry, throw error
+                        let requestId: string = Guid.newGuid();
+                        additionalHeaders.set('x-ms-request-id', requestId);
+                        requestHeaders = this.getHeaders(null, additionalHeaders);
 
-                return err.pipe(delay(1000), map(err => {
-                    if (retryCount++ >= 2) {
-                        this.telemetryService.logEvent("RetryRequestFailed", eventProps);
-                        throw err;
-                    }
-                    this.telemetryService.logEvent("RetryRequestRoutingDetails", eventProps);
-                    return err;
-                }));
+                        eventProps.requestId = requestId;
+                        eventProps["retryCount"] = retryAttempt;
 
-            }),
+                        if (
+                            retryAttempt > maxRetryAttempts ||
+                            excludedErrorNames.find((e) => e === error.name)
+                        ) {
+                            this.telemetryService.logEvent("RetryRequestFailed", eventProps);
+                            return throwError(() => error);
+                        }
+
+                        this.telemetryService.logEvent("RetryRequestRoutingDetails", eventProps);
+                        return timer(retryAttempt * scalingDuration);
+                    })
+                );
+            }
+            ),
             map(r => this.getDecodedDetectorResponseMessageEnvelope<T>(url, resourceUri, r)),
             catchError(this.handleError.bind(this))
         );
