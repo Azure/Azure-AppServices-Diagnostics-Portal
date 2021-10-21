@@ -119,10 +119,10 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                     }
                 ]
             },
-            {
-                path: 'categories/:category',
-                component: CategoryPageComponent,
-            },
+            // {
+            //     path: 'categories/:category',
+            //     component: CategoryPageComponent,
+            // },
             {
                 path: 'supportTopics/:supportTopic',
                 component: SupportTopicPageComponent,
