@@ -17,7 +17,7 @@
 		"supportTopicIds": []
 	},
 	"categories": [{
-			"id": "AvailabilityAndPerformanceSpring",
+			"id": "availabilityandperformancespring",
 			"name": "Availability and Performance",
 			"description": "Investigate and discover issues that may impact your app availability.",
 			"keywords": ["Downtime", "Discovery", "Config Sever", "App Health", "Deploy Jar Artifact"],
@@ -27,7 +27,7 @@
             "overviewDetectorId": "springAvailabilityAndPerformanceOverview"
 		},
 		{
-			"id": "ConfigurationsAndManagementSpring",
+			"id": "configurationsandmanagementspring",
 			"name": "Configurations and Management",
 			"description": "Discover issues with your own virtual network connectivity.",
 			"keywords": ["Log", "Metrics", "Distributed Tracing", "Scaling", "Swap", "Custom Domain", "SSL"],
@@ -37,7 +37,7 @@
 			"overviewDetectorId": "SpringConfigurationsManagementOverview"
 		}, 
 		{
-			"id": "NetworkingSpring",
+			"id": "networkingspring",
 			"name": "Networking",
             "description": "Are you having network connectivity issues when Azure Spring Cloud is deployed in your own virtual network? Find out if you misconfigured the Private DNS Zone, Custom DNS Server or blocked required outbound traffic in your VNet injected service instance.",
             "keywords": [ "Virtual Network", "Custom DNS Server", "Private DNS Zone", "Firewall" ],
