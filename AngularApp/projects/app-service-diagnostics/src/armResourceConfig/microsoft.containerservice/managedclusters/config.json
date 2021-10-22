@@ -18,23 +18,70 @@
 	},
     "categories": [
         {
-            "id": "Cluster Insights",
-            "name": "Cluster Insights",
-            "description": "Is your cluster experiencing failures or unresponsiveness? Investigate and discover issues that may cause your cluster to no longer be manageable.",
-            "keywords": [ "Failed State", "Node Readiness", "Node Health", "Scaling", "CRUD", "Identity", "Certificates" ],
+            "id": "knowissueavailabilityperfaks",
+            "name": "Known Issues, Availability and Performance",
+            "description": "This category help address performance issues that are related latency, upgrade, pods, configuration and scale",
+            "keywords": [ "Tiller", "Helm-2  State", "Scale ", "Upgrade", "OOMKilled pod", "CRUD", "Configuration", "Throttling", "IO saturation", "Latency", "Auto-Scalar", "VMSS", "API Server"],
             "color": "rgb(186, 211, 245)",
             "createFlowForCategory": true,
-            "chatEnabled": false
+            "chatEnabled": false,
+            "overviewDetectorId": "aks-category-availability-perf"
         },
         {
-            "id": "Networking",
-            "name": "Networking",
-            "description": "Are you having networking issues with your cluster? Check out your cluster's network configuration and discover issues that may affect your cluster's traffic.",
-            "keywords": [ "Network Configuration", "Subnet", "DNS", "FQDN", "VNet" ],
+            "id": "connectivityissuesaks",
+            "name": "Connectivity Issues",
+            "description": "This category help address networking and connectivity issues on cluster subnet configuration, DNS, FQDN etc.",
+            "keywords": [ "Network Configuration", "Subnet", "DNS", "FQDN", "VNet", "Network Plugin", "Route Table", "Pod CIDR", "CNI", "Ingress", "Load Balancer", "Network Policy", "Public IP", "Pod Connectivity", "CoreDNS"],
             "color": "rgb(249, 213, 180)",
             "createFlowForCategory": true,
-            "chatEnabled": false
+            "chatEnabled": false,
+            "overviewDetectorId": "aks-category-connectivity"
+        },
+        {
+            "id": "crudaks",
+            "name": "Create, Upgrade, Delete and Scale",
+            "description": "Do you have questions during create, upgrade, delete and scale your clusters? Leverage this category to help you move your cluster smoothly",
+            "keywords": [ "Capacity", "Pod Disruption Budgets", "PDB", "Autoscaler ", "CRUD", "Create", "Read", "Upgrade", "Delete", "API Usage", "VMSS"],
+            "color": "rgb(186, 211, 245)",
+            "createFlowForCategory": true,
+            "chatEnabled": false,
+            "overviewDetectorId": "aks-category-crud"
+        },
+        {
+            "id": "identitysecurityaks",
+            "name": "Identity and Security",
+            "description": "Do you have troubles on identity and security configurations or issues? Check here out to find solutions that help you solve AAD, Certificate, Access or Identity problems.",
+            "keywords": [ "AAD", "Certificates", "RBAC", "Identity", "Security", "Access", "CVE", "Pod identity"],
+            "color": "rgb(186, 211, 245)",
+            "createFlowForCategory": true,
+            "chatEnabled": false,
+            "overviewDetectorId": "aks-category-identity-security"
+        },
+        {
+            "id": "riskassessmentaks",
+            "name": "Best Practices",
+            "description": "This category is showing you best practices for your clusters on auto-scalling, manage security policies, set up DNS and subnets, configure route table and IP ranges, etc..",
+            "keywords": [ "Auto-Scaling", "Load Balancer", "Node Health", "Scaling", "CRUD", "CIDR", "Private IP", "ContainerD", "Version", "Reserved Address Ranges", "Subnet Sharing", "Route table"],
+            "color": "rgb(186, 211, 245)",
+            "createFlowForCategory": true,
+            "chatEnabled": false,
+            "overviewDetectorId": "aks-category-risk-assessment"
+        },
+        {
+            "id": "nodehealthaks",
+            "name": "Node Health",
+            "description": "Is your cluster experiencing failures or unresponsiveness on nodes? Investigate and discover issues that related to nodes, node pools, etc..",
+            "keywords": [ "Node CPU", "Node Readiness", "Node Health", "CPU Utlization", "Memory", "Disk", "DIsk Quques", "IOPS", "Events", "Memory Consumption" ],
+            "color": "rgb(186, 211, 245)",
+            "createFlowForCategory": true,
+            "chatEnabled": false,
+            "overviewDetectorId": "aks-category-node-health"
         }
     ],
+
+    "quickLinks": [
+        "clusterinsights"
+      ],
 	"pesId": "16450"
 }
+

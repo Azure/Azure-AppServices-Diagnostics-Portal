@@ -171,13 +171,27 @@
               </div>
             </div>
 
-            <ngx-monaco-editor style="height:calc(100% - 100px)" [options]="editorOptions" [(ngModel)]="code">
+            <ngx-monaco-editor (onInit)="onInit($event)" style="height:calc(100% - 100px)" [options]="editorOptions" [(ngModel)]="code">
             </ngx-monaco-editor>
 
           </split-area>
           <split-area size="15">
             <div class="compilation-output-container">
-              <div *ngFor="let item of buildOutput" class="compilation-output">{{item}}</div>
+              <div *ngIf="!showDetailedCompilationTraces">
+                <div *ngFor="let item of buildOutput" class="compilation-output">{{item}}</div>
+              </div>
+              <div *ngIf="showDetailedCompilationTraces" class = "compilation-detailed-output-container">
+                <div class = "compilation-detailed-output-rowEntry" *ngFor = "let item of detailedCompilationTraces"
+                [ngClass]="[isCompilationTraceClickable(item)? 'compilation-detailed-output-clickable' : '']" 
+                (click) = navigateToEditorIfApplicable(item) >
+                  <div class="compilation-detailed-output-entryCell compilation-detailed-output-iconCell">
+                    <span class="fa status-icon" [ngClass] = "getfaIconClass(item)"></span>
+                  </div>
+                  <div class="compilation-detailed-output-entryCell">
+                    <span>{{item.message}}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </split-area>
         </split>

@@ -1,3 +1,5 @@
+@import "../../../../../../app-service-diagnostics/src/styles.scss";
+
 body {
     margin: 0;
     padding: 0;
@@ -105,6 +107,65 @@ body {
 
 .compilation-output-container {
     padding: 10px;
+}
+
+.compilation-detailed-output-container {
+    display: flex; 
+    flex-flow: column nowrap;
+    align-items: flex-start;
+}
+
+.compilation-detailed-output-rowEntry{
+    display: flex;
+    align-items: center;
+    flex-flow: row nowrap;
+    border:none;
+    width: 100%;
+    font-weight: inherit;
+}
+
+.compilation-detailed-output-rowEntry:hover{
+    border-style: dotted;
+    border-color: #94C5EE;
+    border-width: thin;
+    border-spacing: 2px;
+    background-color: #CCE2FF;
+}
+
+.compilation-detailed-output-clickable {
+    cursor: pointer;
+}
+
+.compilation-detailed-output-entryCell {
+    display:flex;
+    flex-flow: row nowrap;
+    padding: 2px;
+}
+
+.compilation-detailed-output-iconCell{
+    width: 2em;
+}
+
+::ng-deep .monaco-editor .codeUnderline {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-decoration-thickness: from-font;
+}
+
+::ng-deep .monaco-editor .codeUnderlineError {
+    text-decoration-color:#ff0000;
+}
+
+::ng-deep .monaco-editor .codeUnderlineWarning {
+    text-decoration-color:#ff9104;
+}
+
+::ng-deep .monaco-editor .codeUnderlineInfo {
+    text-decoration-color:#3a9bc7;
+}
+
+::ng-deep .monaco-editor .codeUnderlineSuccess {
+    text-decoration-color:#3da907;
 }
 
 .compilation-output {

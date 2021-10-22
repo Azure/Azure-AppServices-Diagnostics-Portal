@@ -5,7 +5,7 @@ import { DiagnosticApiService } from './services/diagnostic-api.service';
 import { ModuleWithProviders } from '@angular/compiler/src/core';
 import { HttpClientModule } from '@angular/common/http';
 import { SiteService } from './services/site.service';
-import { WorkerAppService } from "./services/workerapp.service";
+import { ContainerAppService } from "./services/containerapp.service";
 import { FormsModule } from '@angular/forms';
 import { StartupService } from './services/startup.service';
 import { ObserverService } from './services/observer.service';
@@ -36,7 +36,7 @@ export class SharedModule {
         DiagnosticApiService,
         ResourceService,
         SiteService,
-        WorkerAppService,
+        ContainerAppService,
         AseService,
         StartupService,
         ObserverService,

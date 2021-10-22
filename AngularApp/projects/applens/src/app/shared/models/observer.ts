@@ -4,9 +4,9 @@ namespace Observer {
         details: ObserverSiteInfo[];
     }
 
-    export interface ObserverWorkerAppResponse {
-        workerAppName: string;
-        details: ObserverWorkerAppInfo[];
+    export interface ObserverContainerAppResponse {
+        containerAppName: string;
+        details: ObserverContainerAppInfo[];
     }
   
     export interface ObserverSiteInfo {
@@ -26,8 +26,8 @@ namespace Observer {
         WindowsFxVersion: string;
     }
 
-    export interface ObserverWorkerAppInfo {
-        WorkerAppName: string;
+    export interface ObserverContainerAppInfo {
+        ContainerAppName: string;
         Tags: string;
         ResourceGroupName: string;
         SubscriptionName: string;

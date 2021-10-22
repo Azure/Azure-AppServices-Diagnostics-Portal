@@ -54,9 +54,9 @@ namespace AppLensV3
             return GetSiteInternal(null, siteName);
         }
 
-        public async Task<ObserverResponse> GetWorkerApp(string workerAppName)
+        public async Task<ObserverResponse> GetContainerApp(string containerAppName)
         {
-            return await GetWorkerAppInternal(workerAppName);
+            return await GetContainerAppInternal(containerAppName);
         }
 
         public Task<ObserverResponse> GetSite(string stamp, string siteName, bool details = false)
@@ -77,15 +77,15 @@ namespace AppLensV3
             };
         }
 
-        private async Task<ObserverResponse> GetWorkerAppInternal(string workerAppName)
+        private async Task<ObserverResponse> GetContainerAppInternal(string containerAppName)
         {
-            var path = $"partner/workerapp/{workerAppName}";
-            var workerAppDetailsResponse = await ExecuteDiagCall(path);
-            var contentJson = await workerAppDetailsResponse.Content.ReadAsStringAsync();
+            var path = $"partner/containerapp/{containerAppName}";
+            var containerAppDetailsResponse = await ExecuteDiagCall(path);
+            var contentJson = await containerAppDetailsResponse.Content.ReadAsStringAsync();
             var content = JsonConvert.DeserializeObject(contentJson);
             return new ObserverResponse
             {
-                StatusCode = workerAppDetailsResponse.StatusCode,
+                StatusCode = containerAppDetailsResponse.StatusCode,
                 Content = content
             };
         }

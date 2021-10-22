@@ -39,15 +39,15 @@
             "searchSuffix": "Azure Logic App"
         },
         {
-            "service": "WorkerAppService",
-            "resourceType": "Microsoft.Web/workerApps",
-            "templateFileName": "WorkerApp",
+            "service": "ContainerAppService",
+            "resourceType": "Microsoft.Web/containerApps",
+            "templateFileName": "ContainerApp",
             "imgSrc": "assets/img/Azure-Ase-Logo.png",
             "versionPrefix": "",
-            "azureCommImpactedServicesList": "workerapp",
+            "azureCommImpactedServicesList": "containerapp",
             "pesId": "12345",
             "staticSelfHelpContent": "microsoft.web",
-            "searchSuffix": "Azure Worker App"
+            "searchSuffix": "Azure Container App"
         },
         {
             "service": "ResourceService",

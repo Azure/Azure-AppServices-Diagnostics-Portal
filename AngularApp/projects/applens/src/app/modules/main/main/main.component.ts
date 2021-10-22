@@ -63,9 +63,9 @@ export class MainComponent implements OnInit {
       caseId: false
     },
     {
-      resourceType: ResourceType.WorkerApp,
+      resourceType: ResourceType.ContainerApp,
       resourceTypeLabel: 'Container App Name',
-      routeName: (name) => `workerapps/${name}`,
+      routeName: (name) => `containerapps/${name}`,
       displayName: 'Azure Container App',
       enabled: true,
       caseId: false

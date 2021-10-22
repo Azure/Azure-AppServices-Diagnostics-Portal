@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { WorkerAppFinderComponent } from './workerapp-finder.component';
+import { ContainerAppFinderComponent } from './containerapp-finder.component';
 
-describe('WorkerAppFinderComponent', () => {
-  let component: WorkerAppFinderComponent;
-  let fixture: ComponentFixture<WorkerAppFinderComponent>;
+describe('ContainerAppFinderComponent', () => {
+  let component: ContainerAppFinderComponent;
+  let fixture: ComponentFixture<ContainerAppFinderComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WorkerAppFinderComponent ]
+      declarations: [ ContainerAppFinderComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(WorkerAppFinderComponent);
+    fixture = TestBed.createComponent(ContainerAppFinderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

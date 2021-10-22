@@ -1,6 +1,6 @@
 import { StartupService } from "../services/startup.service";
 import { SiteService } from "../services/site.service";
-import { WorkerAppService } from "../services/workerapp.service";
+import { ContainerAppService } from "../services/containerapp.service";
 import { AseService } from "../services/ase.service";
 import { ResourceService } from "../services/resource.service";
 import { ObserverService } from "../services/observer.service";
@@ -19,8 +19,8 @@ export let ResourceServiceFactory = (startupService: StartupService, observerSer
         case 'Microsoft.Web/sites':
             service = new SiteService(serviceInputs, observerService);
             break;
-        case 'Microsoft.Web/workerApps':
-            service = new WorkerAppService(serviceInputs, observerService);
+        case 'Microsoft.Web/containerApps':
+            service = new ContainerAppService(serviceInputs, observerService);
             break;
         default:
             service = new ResourceService(serviceInputs);

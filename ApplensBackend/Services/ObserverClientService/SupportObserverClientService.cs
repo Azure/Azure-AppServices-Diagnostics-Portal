@@ -121,12 +121,12 @@ namespace AppLensV3
         }
 
         /// <summary>
-        /// Get worker app details for workerAppName
+        /// Get container app details for containerAppName
         /// </summary>
-        /// <param name="workerAppName">Worker App Name</param>
-        public async Task<ObserverResponse> GetWorkerApp(string workerAppName)
+        /// <param name="containerAppName">Container App Name</param>
+        public async Task<ObserverResponse> GetContainerApp(string containerAppName)
         {
-            return await GetWorkerAppInternal(SupportObserverApiEndpoint + "partner/workerapp/" + workerAppName);
+            return await GetContainerAppInternal(SupportObserverApiEndpoint + "partner/containerapp/" + containerAppName);
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace AppLensV3
             return res;
         }
 
-        private async Task<ObserverResponse> GetWorkerAppInternal(string endpoint)
+        private async Task<ObserverResponse> GetContainerAppInternal(string endpoint)
         {
             var request = new HttpRequestMessage()
             {
@@ -166,7 +166,7 @@ namespace AppLensV3
             request.Headers.Add("Authorization", await GetSupportObserverAccessToken());
             var response = await _httpClient.SendAsync(request);
 
-            ObserverResponse res = await CreateObserverResponse(response, "GetWorkerApp");
+            ObserverResponse res = await CreateObserverResponse(response, "GetContainerApp");
             return res;
         }
 

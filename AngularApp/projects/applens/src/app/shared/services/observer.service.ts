@@ -23,14 +23,14 @@ export class ObserverService {
       }));
   }
 
-  public getWorkerApp(workerAppName: string): Observable<Observer.ObserverWorkerAppResponse> {
-    return this._diagnosticApiService.get<Observer.ObserverWorkerAppResponse>(`api/workerapps/${workerAppName}`).pipe(
-      map((workerAppRes: Observer.ObserverWorkerAppResponse) => {
-        if (workerAppRes && workerAppRes.details && isArray(workerAppRes.details)) {
-          workerAppRes.details.map(info => info);
+  public getContainerApp(containerAppName: string): Observable<Observer.ObserverContainerAppResponse> {
+    return this._diagnosticApiService.get<Observer.ObserverContainerAppResponse>(`api/containerapps/${containerAppName}`).pipe(
+      map((containerAppRes: Observer.ObserverContainerAppResponse) => {
+        if (containerAppRes && containerAppRes.details && isArray(containerAppRes.details)) {
+          containerAppRes.details.map(info => info);
         }
 
-        return workerAppRes;
+        return containerAppRes;
       }));
   }
 

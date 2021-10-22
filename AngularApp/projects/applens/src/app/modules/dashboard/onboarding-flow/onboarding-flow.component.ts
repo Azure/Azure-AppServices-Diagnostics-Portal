@@ -1,12 +1,12 @@
 import { AdalService } from 'adal-angular4';
 import {
-    CompilationProperties, DetectorControlService, DetectorResponse, QueryResponse
+    CompilationProperties, DetectorControlService, DetectorResponse, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, HealthStatus
 } from 'diagnostic-data';
 import * as momentNs from 'moment';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import { forkJoin, Observable, of } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Package } from '../../../shared/models/package';
 import { GithubApiService } from '../../../shared/services/github-api.service';
 import { ResourceService } from '../../../shared/services/resource.service';
@@ -53,6 +53,8 @@ export class OnboardingFlowComponent implements OnInit {
   queryResponse: QueryResponse<DetectorResponse>;
   errorState: any;
   buildOutput: string[];
+  detailedCompilationTraces: CompilationTraceOutputDetails[];
+  public showDetailedCompilationTraces:boolean = true;
   runButtonDisabled: boolean;
   publishButtonDisabled: boolean;
   localDevButtonDisabled: boolean;
@@ -88,6 +90,9 @@ export class OnboardingFlowComponent implements OnInit {
   private userName: string;
 
   private emailRecipients: string = '';
+  private _monacoEditor:monaco.editor.ICodeEditor = null;
+  private _oldCodeDecorations:string[] = [];
+  
 
   constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService,
     private diagnosticApiService: ApplensDiagnosticService, private resourceService: ResourceService,
@@ -106,6 +111,7 @@ export class OnboardingFlowComponent implements OnInit {
     };
 
     this.buildOutput = [];
+    this.detailedCompilationTraces = [];
     this.localDevButtonDisabled = false;
     this.runButtonDisabled = false;
     this.publishButtonDisabled = true;
@@ -133,10 +139,82 @@ export class OnboardingFlowComponent implements OnInit {
     }
   }
 
+  onInit(editor: any) {
+    this._monacoEditor = editor;    
+ }
+
   ngOnChanges() {
     if (this.initialized) {
       this.initialize();
     }
+  }
+
+  isCompilationTraceClickable(item:CompilationTraceOutputDetails): boolean {
+    return (!!item.location && 
+      item.location.start.linePos > -1 && item.location.start.colPos > -1 && item.location.end.linePos > -1 && item.location.end.colPos > -1 &&
+      (item.location.start.linePos > 0 || item.location.start.colPos > 0 || item.location.end.linePos > 0 || item.location.end.colPos > 0) 
+      )
+  }
+
+  markCodeLinesInEditor(compilerTraces:CompilationTraceOutputDetails[]) {
+    if(!!this._monacoEditor) {
+      if(compilerTraces == null) {
+        //Clear off all code decorations/underlines
+        this._oldCodeDecorations = this._monacoEditor.deltaDecorations(this._oldCodeDecorations, []);
+      }
+      else {
+        let newDecorations = [];
+        compilerTraces.forEach(traceEntry => {
+          if(this.isCompilationTraceClickable(traceEntry)) {
+            let underLineColor = '';
+            if(traceEntry.severity == HealthStatus.Critical) underLineColor = 'codeUnderlineError';          
+            if(traceEntry.severity == HealthStatus.Warning) underLineColor = 'codeUnderlineWarning';
+            if(traceEntry.severity == HealthStatus.Info) underLineColor = 'codeUnderlineInfo';
+            if(traceEntry.severity == HealthStatus.Success) underLineColor = 'codeUnderlineSuccess';
+
+            newDecorations.push({
+              range: new monaco.Range(traceEntry.location.start.linePos+1, traceEntry.location.start.colPos+1, traceEntry.location.end.linePos+1, traceEntry.location.end.colPos+1),
+              options:{
+                isWholeLine: false,
+                inlineClassName: `codeUnderline ${underLineColor}`,
+                hoverMessage:[{
+                  value:traceEntry.message,
+                  isTrusted:true,                  
+                } as monaco.IMarkdownString]
+              }
+            } as monaco.editor.IModelDeltaDecoration);
+          }
+        });
+        if(newDecorations.length>0) {
+          this._oldCodeDecorations = this._monacoEditor.deltaDecorations(this._oldCodeDecorations, newDecorations);
+        }
+      }
+    }
+  }
+
+  navigateToEditorIfApplicable(item:CompilationTraceOutputDetails){
+    if(this.isCompilationTraceClickable(item) && !!this._monacoEditor) {
+      this._monacoEditor.revealRangeInCenterIfOutsideViewport({
+        startLineNumber: item.location.start.linePos+1,
+        startColumn: item.location.start.colPos+1,
+        endLineNumber: item.location.end.linePos+1,
+        endColumn: item.location.end.colPos+1
+      }, 1);
+
+      this._monacoEditor.setPosition({
+        lineNumber:item.location.start.linePos+1,
+        column:item.location.start.colPos+1
+      });
+      this._monacoEditor.focus();
+    }
+  }
+
+  getfaIconClass(item:CompilationTraceOutputDetails): string {
+    if(item.severity == HealthStatus.Critical) return 'fa-exclamation-circle critical-color';
+    if(item.severity == HealthStatus.Warning) return 'fa-exclamation-triangle warning-color';
+    if(item.severity == HealthStatus.Info) return 'fa-info-circle info-color';
+    if(item.severity == HealthStatus.Success) return 'fa-check-circle success-color';
+    return '';
   }
 
   gistVersionChange(event: string) {
@@ -245,7 +323,23 @@ export class OnboardingFlowComponent implements OnInit {
   runCompilation() {
     this.buildOutput = [];
     this.buildOutput.push("------ Build started ------");
+    this.detailedCompilationTraces = [];
+    this.detailedCompilationTraces.push({
+      severity: HealthStatus.None,
+      message: '------ Build started ------',
+      location: {
+        start:{
+          linePos:0,
+          colPos:0
+        } as Position,
+        end :{
+          linePos:0,
+          colPos: 0
+        } as Position
+      } as LocationSpan
+    } as CompilationTraceOutputDetails);
     let currentCode = this.code;
+    this.markCodeLinesInEditor(null);
 
     var body = {
       script: this.code,
@@ -288,6 +382,15 @@ export class OnboardingFlowComponent implements OnInit {
             this.buildOutput.push(element);
           });
         }
+        if(this.queryResponse.compilationOutput.detailedCompilationTraces) {
+          this.showDetailedCompilationTraces = true;
+          this.queryResponse.compilationOutput.detailedCompilationTraces.forEach(traceElement => {
+            this.detailedCompilationTraces.push(traceElement);
+          });
+        }
+        else {
+          this.showDetailedCompilationTraces = false;
+        }
         // If the script etag returned by the server does not match the previous script-etag, update the values in memory
         if (response.headers.get('diag-script-etag') != undefined && this.compilationPackage.scriptETag !== response.headers.get('diag-script-etag')) {
           this.compilationPackage.scriptETag = response.headers.get('diag-script-etag');
@@ -300,11 +403,39 @@ export class OnboardingFlowComponent implements OnInit {
           this.publishButtonDisabled = false;
           this.preparePublishingPackage(this.queryResponse, currentCode);
           this.buildOutput.push("========== Build: 1 succeeded, 0 failed ==========");
+          this.detailedCompilationTraces.push({
+            severity: HealthStatus.None,
+            message: '========== Build: 1 succeeded, 0 failed ==========',
+            location: {
+              start:{
+                linePos:0,
+                colPos:0
+              } as Position,
+              end :{
+                linePos:0,
+                colPos: 0
+              } as Position
+            } as LocationSpan
+          } as CompilationTraceOutputDetails);
         } else {
           this.publishButtonDisabled = true;
           this.publishingPackage = null;
           this.buildOutput.push("========== Build: 0 succeeded, 1 failed ==========");
-        }
+          this.detailedCompilationTraces.push({
+            severity: HealthStatus.None,
+            message: '========== Build: 0 succeeded, 1 failed ==========',
+            location: {
+              start:{
+                linePos:0,
+                colPos:0
+              } as Position,
+              end :{
+                linePos:0,
+                colPos: 0
+              } as Position
+            } as LocationSpan
+          } as CompilationTraceOutputDetails);
+        }        
 
         if (this.queryResponse.runtimeLogOutput) {
           this.queryResponse.runtimeLogOutput.forEach(element => {
@@ -314,9 +445,38 @@ export class OnboardingFlowComponent implements OnInit {
                 element.exception.ClassName + ": " +
                 element.exception.Message + "\r\n" +
                 element.exception.StackTraceString);
+              
+              this.detailedCompilationTraces.push({
+                severity:HealthStatus.Critical,
+                message: `${element.timeStamp}: ${element.message}: ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`,
+                location: {
+                  start: {
+                    linePos:0,
+                    colPos: 0
+                  },
+                  end: {
+                    linePos: 0,
+                    colPos: 0
+                  }
+                }
+              });
             }
             else {
               this.buildOutput.push(element.timeStamp + ": " + element.message);
+              this.detailedCompilationTraces.push({
+                severity:HealthStatus.Info,
+                message: `${element.timeStamp}: ${element.message}`,
+                location: {
+                  start: {
+                    linePos:0,
+                    colPos: 0
+                  },
+                  end: {
+                    linePos: 0,
+                    colPos: 0
+                  }
+                }
+              });
             }
           });
         }
@@ -329,6 +489,7 @@ export class OnboardingFlowComponent implements OnInit {
         )
 
         this.localDevButtonDisabled = false;
+        this.markCodeLinesInEditor(this.detailedCompilationTraces);
       }, ((error: any) => {
         this.runButtonDisabled = false;
         this.publishingPackage = null;
@@ -337,6 +498,35 @@ export class OnboardingFlowComponent implements OnInit {
         this.runButtonIcon = "fa fa-play";
         this.buildOutput.push("Something went wrong during detector invocation.");
         this.buildOutput.push("========== Build: 0 succeeded, 1 failed ==========");
+        this.detailedCompilationTraces.push({
+          severity:HealthStatus.Critical,
+          message: 'Something went wrong during detector invocation.',
+          location: {
+            start: {
+              linePos:0,
+              colPos: 0
+            },
+            end: {
+              linePos: 0,
+              colPos: 0
+            }
+          }
+        });
+        this.detailedCompilationTraces.push({
+          severity:HealthStatus.None,
+          message: '========== Build: 0 succeeded, 1 failed ==========',
+          location: {
+            start: {
+              linePos:0,
+              colPos: 0
+            },
+            end: {
+              linePos: 0,
+              colPos: 0
+            }
+          }
+        });
+        this.markCodeLinesInEditor(this.detailedCompilationTraces);
       }));
   }
 

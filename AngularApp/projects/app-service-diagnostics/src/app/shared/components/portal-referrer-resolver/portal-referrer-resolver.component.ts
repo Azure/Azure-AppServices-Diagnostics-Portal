@@ -6,6 +6,8 @@ import { PortalReferrerMap, PortalReferrerInfo } from '../../models/portal-refer
 import { DetectorType, TelemetryService } from 'diagnostic-data';
 import { ArmService } from '../../services/arm.service';
 import { WebSitesService } from '../../../resources/web-sites/services/web-sites.service';
+import { AppType } from '../../models/portal';
+import { OperatingSystem } from '../../models/site';
 
 @Component({
   selector: 'portal-referrer-resolver',
@@ -53,11 +55,6 @@ export class PortalReferrerResolverComponent implements OnInit {
     let endTimeStr = "";
     let queryParamsJson:{} = { "redirectFrom": "referrer" };
 
-    if (!!referrer.CategoryId) {
-        let categoryId = referrer.CategoryId;
-        path += `/categories/${categoryId}`;
-    }
-
     if (referrer.StartTime && referrer.EndTime)
     {
         startTimeStr = referrer.StartTime;
@@ -65,65 +62,110 @@ export class PortalReferrerResolverComponent implements OnInit {
         queryParamsJson = {...queryParamsJson, startTime: startTimeStr, endTime: endTimeStr};
     }
 
-    if (
-      referrer.DetectorType && (referrer.DetectorType.toLowerCase() === DetectorType.Analysis.toLowerCase() || referrer.DetectorType.toLowerCase() === DetectorType.Detector.toLowerCase()) &&
-      referrer.DetectorId && referrer.DetectorId.length > 1
-    ) {
+    // Map the right "Availability and Performance" overview detector for Load testing resources.
+    if (!!referrer.ExtensionName && !!referrer.BladeName && referrer.ExtensionName === "Microsoft_Azure_CloudNativeTesting" && referrer.BladeName === "ReportsBlade")
+    {
+        if (this._resourceService && this._resourceService instanceof WebSitesService)
+        {
+            let categoryId = "AvailabilityAndPerformanceWindows";
+            if ((this._resourceService as WebSitesService).appType === AppType.FunctionApp)
+            {
+                categoryId = "AvailabilityAndPerformanceFunctionApp";
+            } else if ((this._resourceService as WebSitesService).appType === AppType.WorkflowApp)
+            {
+                categoryId = "AvailabilityAndPerformanceLogicApp";
+            }
 
-      this._logService.logEvent('IntegratedDiagnostics', {
-        details: 'Redirect decided by Ibiza parameters.',
-        referrerInformation: JSON.stringify(referrer),
-        targetType: referrer.DetectorType,
-        target: referrer.DetectorId,
-        startTime: startTimeStr,
-        endTime: endTimeStr
-      });
+            if ((this._resourceService as WebSitesService).platform === OperatingSystem.linux)
+            {
+                categoryId = "AvailabilityAndPerformanceLinux";
+            }
 
-      if (referrer.DetectorType.toLowerCase() === DetectorType.Analysis.toLowerCase()) {
-        path = `${path}/analysis/${referrer.DetectorId}`;
-      } else if (referrer.DetectorType.toLowerCase() === DetectorType.Detector.toLowerCase()) {
-        path = `${path}/detectors/${referrer.DetectorId}`;
-      } else if (referrer.DetectorType.toLowerCase() === DetectorType.DiagnosticTool.toLowerCase()) {
-        path = `${path}/tools/${referrer.DetectorId}`;
-      }
-    }
-    else {
-      var referrerMatch = this.portalReferrerToDetectorMap.find(referrerMap =>
-        referrerMap.ReferrerExtensionName.toLowerCase() === referrer.ExtensionName.toLowerCase() &&
-        referrerMap.ReferrerBladeName.toLowerCase() === referrer.BladeName.toLowerCase() &&
-        referrerMap.ReferrerTabName.toLowerCase() === referrer.TabName.toLowerCase()
-      );
-
-
-      if (referrerMatch) {
-        if (referrerMatch.DetectorType === DetectorType.Detector) {
-          path = `${path}/detectors/${referrerMatch.DetectorId}`;
-        }
-        else if (referrerMatch.DetectorType === DetectorType.Analysis) {
-          path = `${path}/analysis/${referrerMatch.DetectorId}`;
-        }
-        else if (referrerMatch.DetectorType === DetectorType.DiagnosticTool) {
-          path = `${path}/tools/${referrerMatch.DetectorId}`;
+            path += `/categories/${categoryId}/overview`;
         }
 
         this._logService.logEvent('IntegratedDiagnostics', {
-          details: 'Redirect decided by detector map.',
-          referrerInformation: JSON.stringify(referrer),
-          targetType: referrerMatch.DetectorType,
-          target: referrerMatch.DetectorId,
-          startTime: startTimeStr,
-          endTime: endTimeStr
-        });
-      }
-      else {
-        this._logService.logEvent('IntegratedDiagnostics', {
-          details: 'Redirecting to home as detector map did not contain a match and Ibiza did not pass redirect parameters.',
-          referrerInformation: JSON.stringify(referrer),
-          targetType: '',
-          target: ''
-        });
-      }
+            details: 'Redirect from load testing blade.',
+            path: path,
+            referrerInformation: JSON.stringify(referrer),
+            targetType: '',
+            target: '',
+            startTime: startTimeStr,
+            endTime: endTimeStr
+          });
     }
+    else
+    {
+        if (!!referrer.CategoryId) {
+            let categoryId = referrer.CategoryId;
+            path += `/categories/${categoryId}`;
+        }
+
+        if (
+          referrer.DetectorType && (referrer.DetectorType.toLowerCase() === DetectorType.Analysis.toLowerCase() || referrer.DetectorType.toLowerCase() === DetectorType.Detector.toLowerCase()) &&
+          referrer.DetectorId && referrer.DetectorId.length > 1
+        ) {
+
+          this._logService.logEvent('IntegratedDiagnostics', {
+            details: 'Redirect decided by Ibiza parameters.',
+            path: path,
+            referrerInformation: JSON.stringify(referrer),
+            targetType: referrer.DetectorType,
+            target: referrer.DetectorId,
+            startTime: startTimeStr,
+            endTime: endTimeStr
+          });
+
+          if (referrer.DetectorType.toLowerCase() === DetectorType.Analysis.toLowerCase()) {
+            path = `${path}/analysis/${referrer.DetectorId}`;
+          } else if (referrer.DetectorType.toLowerCase() === DetectorType.Detector.toLowerCase()) {
+            path = `${path}/detectors/${referrer.DetectorId}`;
+          } else if (referrer.DetectorType.toLowerCase() === DetectorType.DiagnosticTool.toLowerCase()) {
+            path = `${path}/tools/${referrer.DetectorId}`;
+          }
+        }
+        else {
+          var referrerMatch = this.portalReferrerToDetectorMap.find(referrerMap =>
+            referrerMap.ReferrerExtensionName.toLowerCase() === referrer.ExtensionName.toLowerCase() &&
+            referrerMap.ReferrerBladeName.toLowerCase() === referrer.BladeName.toLowerCase() &&
+            referrerMap.ReferrerTabName.toLowerCase() === referrer.TabName.toLowerCase()
+          );
+
+
+          if (referrerMatch) {
+            if (referrerMatch.DetectorType === DetectorType.Detector) {
+              path = `${path}/detectors/${referrerMatch.DetectorId}`;
+            }
+            else if (referrerMatch.DetectorType === DetectorType.Analysis) {
+              path = `${path}/analysis/${referrerMatch.DetectorId}`;
+            }
+            else if (referrerMatch.DetectorType === DetectorType.DiagnosticTool) {
+              path = `${path}/tools/${referrerMatch.DetectorId}`;
+            }
+
+            this._logService.logEvent('IntegratedDiagnostics', {
+              details: 'Redirect decided by detector map.',
+              path: path,
+              referrerInformation: JSON.stringify(referrer),
+              targetType: referrerMatch.DetectorType,
+              target: referrerMatch.DetectorId,
+              startTime: startTimeStr,
+              endTime: endTimeStr
+            });
+          }
+          else {
+            this._logService.logEvent('IntegratedDiagnostics', {
+              details: 'Redirecting to home as detector map did not contain a match and Ibiza did not pass redirect parameters.',
+              path: path,
+              referrerInformation: JSON.stringify(referrer),
+              targetType: '',
+              target: ''
+            });
+          }
+        }
+    }
+
+
 
     this.isEvaluating = false;
     this._router.navigate([path], { queryParamsHandling: 'merge', queryParams: queryParamsJson });

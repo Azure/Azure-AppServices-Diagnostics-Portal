@@ -5,7 +5,7 @@ import { ServerFarmDataService } from '../../services/server-farm-data.service';
 import { DaasService } from '../../services/daas.service';
 import { SiteDaasInfo } from '../../models/solution-metadata';
 import { Subscription, Observable, interval, of } from 'rxjs';
-import { retry } from 'rxjs/operators';
+import { catchError, retry } from 'rxjs/operators';
 import { FormatHelper } from '../../utilities/formattingHelper';
 import { ActivatedRoute } from '@angular/router';
 import { Globals } from '../../../globals';
@@ -133,13 +133,15 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
 
     Observable.combineLatest(
       this.getDaasSessionsV1(),
-      this.getDaasSessionsV2())
+      this.getDaasSessionsV2().pipe(catchError(err => {
+        return of(err);
+      })))
       .subscribe(results => {
         let sessions: SessionMaster[] = [];
         let sessionsV1 = results[0];
-        let sessionsV2 = results[1];
 
-        if (this.isArrayWithItems(sessionsV2)) {
+        if (this.isArrayWithItems(results[1])) {
+          let sessionsV2: SessionV2[] = results[1];
           sessionsV2.forEach(session => {
             sessions.push(this.getSessionMasterFromV2(session));
           });
@@ -179,6 +181,8 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     sessionMaster.mode = (session.Status === SessionStatus.CollectedLogsOnly ? SessionModeV2.Collect : SessionModeV2.CollectAndAnalyze);
     sessionMaster.status = session.Status;
     sessionMaster.blobStorageHostName = session.BlobStorageHostName;
+    sessionMaster.size = session.LogFilesSize;
+
     if (this.isArrayWithItems(session.DiagnoserSessions)) {
       let diagnoser = session.DiagnoserSessions[0];
       sessionMaster.tool = diagnoser.Name;

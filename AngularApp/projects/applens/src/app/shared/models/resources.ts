@@ -5,7 +5,7 @@ export enum ResourceType {
     Site,
     Function,
     AppServiceEnvironment,
-    WorkerApp
+    ContainerApp
 }
 
 export interface ResourceTypeState {

@@ -22,11 +22,11 @@ namespace AppLensV3
             return await GetSiteInternal(null, siteName);
         }
 
-        [HttpGet("api/workerapps/{workerAppName}")]
-        [HttpOptions("api/workerapps/{workerAppName}")]
-        public async Task<IActionResult> GetWorkerApp(string workerAppName)
+        [HttpGet("api/containerapps/{containerAppName}")]
+        [HttpOptions("api/containerapps/{containerAppName}")]
+        public async Task<IActionResult> GetContainerApp(string containerAppName)
         {
-            return await GetWorkerAppInternal(workerAppName);
+            return await GetContainerAppInternal(containerAppName);
         }
 
         [HttpGet]
@@ -96,18 +96,18 @@ namespace AppLensV3
             return Ok(response);
         }
 
-        private async Task<IActionResult> GetWorkerAppInternal(string workerAppName)
+        private async Task<IActionResult> GetContainerAppInternal(string containerAppName)
         {
-            var workerAppsTask = _observerService.GetWorkerApp(workerAppName);
-            var workerAppsResponse = await workerAppsTask;
+            var containerAppsTask = _observerService.GetContainerApp(containerAppName);
+            var containerAppsResponse = await containerAppsTask;
 
             var response = new
             {
-                WorkerAppName = workerAppName,
-                Details = workerAppsResponse.Content
+                ContainerAppName = containerAppName,
+                Details = containerAppsResponse.Content
             };
 
-            if (workerAppsResponse.StatusCode == HttpStatusCode.NotFound)
+            if (containerAppsResponse.StatusCode == HttpStatusCode.NotFound)
             {
                 return NotFound(response);
             }

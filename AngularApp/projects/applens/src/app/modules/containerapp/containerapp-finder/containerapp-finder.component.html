@@ -1,16 +1,16 @@
 <div class="container-fluid main-container">
-  <div class="big-text" *ngIf="loading">Searching for workerapp ...</div>
+  <div class="big-text" *ngIf="loading">Searching for containerapp ...</div>
   <div class="big-text" *ngIf="!loading && error">{{error}}</div>
   <div class="big-text" *ngIf="!loading && !error && matchingSites.length == 1">Redirecting to {{siteName}}</div>
   <div *ngIf="!loading && !error && matchingSites.length > 0">
     <div class="multiple-sites">
       <div>
-        <h3>Multiple worker apps with the name '{{matchingSites[0].SiteName}}' found. Pick the correct one:</h3>
+        <h3>Multiple container apps with the name '{{matchingSites[0].SiteName}}' found. Pick the correct one:</h3>
       </div>
       <div class="matching-site" *ngFor="let site of matchingSites">
         <div class="panel main-panel">
           <div class="panel-body">
-            <h5 class="panel-title">{{site.WorkerAppName}}
+            <h5 class="panel-title">{{site.ContainerAppName}}
             </h5>
             <p class="panel-text">{{site.SubscriptionName}}</p>
             <p class="panel-text">{{site.ResourceGroupName}}</p>

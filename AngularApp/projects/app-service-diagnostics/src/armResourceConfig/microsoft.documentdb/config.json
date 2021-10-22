@@ -1,0 +1,34 @@
+{
+    "homePageText": {
+        "title": "Azure Cosmos DB Diagnostics",
+        "description": "Use Azure Cosmos DB Diagnostics to investigate performance improvements and troubleshoot issues by running interactive checks on your account.",
+        "searchBarPlaceHolder": "Search a keyword that best describes your issue"
+    },
+    "matchRegEx": "/Microsoft.DocumentDB/databaseAccounts/",
+    "searchSuffix": "Cosmos",
+    "azureServiceName": "Azure Cosmos DB",
+    "armApiConfig": {
+        "armApiVersion": "2021-07-01-preview"
+    },
+    "isSearchEnabled": true,
+    "keystoneDetectorId": "",
+    "liveChatConfig": {
+        "isApplicableForLiveChat": false,
+        "supportTopicIds": []
+    },
+    "categories": [
+        {
+            "id": "Overview",
+            "name": "Overview",
+            "description": "Investigate common issues on your Cosmos DB account.",
+            "keywords": [
+                "SDK Version"
+            ],
+            "color": "rgb(186, 211, 245)",
+            "createFlowForCategory": false,
+            "chatEnabled": false
+        }
+    ],
+    "queryLinks": [],
+    "pesId": "15585"
+}

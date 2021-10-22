@@ -1,11 +1,33 @@
+import { HealthStatus } from "./detector";
+
 export interface CompilerResponse {
     compilationSucceeded: boolean;
     compilationTraces: string[];
+    detailedCompilationTraces: CompilationTraceOutputDetails[];
     references: string[];
     assemblyBytes: string;
     pdbBytes: string;
     assemblyName: string;
     scriptETag: string;
+}
+
+export interface CompilationTraceOutputDetails
+{
+    severity: HealthStatus;
+    message: string;
+    location?: LocationSpan;
+}
+
+export interface LocationSpan
+{
+    start: Position;
+    end: Position;
+}
+
+export interface Position
+{
+    linePos: number;
+    colPos: number;
 }
 
 export interface RuntimeException {
