@@ -134,7 +134,8 @@ export class GenericArmConfigService {
             createFlowForCategory: true,
             chatEnabled: false
           }],
-          quickLinks: []
+          quickLinks: [],
+          disableGenie: false
         }
 
         //currConfig.homePageText.title
@@ -606,6 +607,24 @@ export class GenericArmConfigService {
             });
             throw error;
           }
+
+          //currConfig.disableGenie
+          try {
+            if (this.getValue(this.resourceConfig.disableGenie, this.overrideConfig.disableGenie) != null) {
+              currConfig.disableGenie = this.getValue(this.resourceConfig.disableGenie, this.overrideConfig.disableGenie);
+
+              console.log("get disableGenie value from jsons", currConfig.disableGenie);
+            }
+          } catch (error) {
+            this.logException(error, null, {
+              "resourceUri": resourceUri,
+              "reason": `${TelemetryEventNames.ArmConfigMergeError}: Error while merging armConfig.`,
+              "field": "disableGenie"
+            });
+            throw error;
+          }
+
+          console.log("Final disableGenie value", currConfig.disableGenie);
 
         this.resourceMap.push(currConfig);
         return currConfig;

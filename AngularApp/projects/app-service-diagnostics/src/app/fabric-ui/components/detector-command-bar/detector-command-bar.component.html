@@ -15,7 +15,7 @@
       </render-icon>
 
     </fab-command-bar-item>
-    <fab-command-bar-item key="askGenie" text="Ask Genie" [iconProps]="{ iconName: 'ChatInviteFriend' }"
+    <fab-command-bar-item *ngIf="disableGenie==false" key="askGenie" text="Ask Genie" [iconProps]="{ iconName: 'ChatInviteFriend' }"
       (click)="toggleOpenState()" data-track-type="run"></fab-command-bar-item>
     <fab-command-bar-item key="refresh1" text="Refresh" [iconProps]="{ iconName: 'Refresh' }" (click)="refreshPage()">
     </fab-command-bar-item>

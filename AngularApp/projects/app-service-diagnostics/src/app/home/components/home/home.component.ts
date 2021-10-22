@@ -58,6 +58,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     enableABTesting: boolean = false;
     isPreview: boolean = false;
     abTestingBannerText: string = "";
+    disableGenie: boolean = false;
+
     get showSwitchBanner(): boolean {
         //Enable banner for Linux Web/Function App
         if(this.isLinuxApp) return true;
@@ -89,12 +91,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.versionTestService.isLegacySub.subscribe(isLegacy => this.useLegacy = isLegacy);
         this.versionTestService.initializedPortalVersion.subscribe(v => this.initializedPortalVersion = v);
         this.resourceName = this._resourceService.resource ? this._resourceService.resource.name : "";
+        this.disableGenie = this._resourceService.isGenieDisabled();
+
         let eventProps = {
             subscriptionId: this.subscriptionId,
             resourceName: this.resourceName,
         };
         this._telemetryService.logEvent('DiagnosticsViewLoaded', eventProps);
-        
+
         if (_resourceService.armResourceConfig && _resourceService.armResourceConfig.homePageText
             && _resourceService.armResourceConfig.homePageText.title && _resourceService.armResourceConfig.homePageText.title.length > 1
             && _resourceService.armResourceConfig.homePageText.description && _resourceService.armResourceConfig.homePageText.description.length > 1

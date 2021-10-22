@@ -1,9 +1,10 @@
-import { Component, OnInit, ViewChild, TemplateRef, ElementRef, Renderer2, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, ElementRef, Renderer2, SimpleChanges, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CategoryService } from '../../../shared-v2/services/category.service';
 import { Category } from '../../../shared-v2/models/category';
 import { Globals } from '../../../globals';
 import { TelemetryService, TelemetryEventNames } from 'diagnostic-data';
+import { ResourceService } from '../../../shared-v2/services/resource.service';
 
 const suffix = ' cm';
 
@@ -16,6 +17,7 @@ const suffix = ' cm';
 //extends Renderable
 
 export class CategoryOverviewComponent implements OnInit {
+    disableGenie: boolean=false;
     categoryId: string = "";
     category: Category;
     categoryOverviewDetector: string = "";
@@ -44,11 +46,12 @@ export class CategoryOverviewComponent implements OnInit {
         return value.substr(0, value.length - suffix.length);
     }
 
-    constructor(private _activatedRoute: ActivatedRoute, private _router: Router, private _categoryService: CategoryService, private globals: Globals, private _telemetryService: TelemetryService) {
+    constructor(private _activatedRoute: ActivatedRoute, private _router: Router, private _categoryService: CategoryService, private globals: Globals, private _telemetryService: TelemetryService, private _resourceService: ResourceService) {
     }
 
     ngOnInit() {
         let categoryParam = this._activatedRoute.parent.snapshot.params.category.toLowerCase();
+        this.disableGenie =  this._resourceService.isGenieDisabled();
         this._categoryService.categories.subscribe(categories => {
             this.category = categories.find(category => categoryParam === category.id.toLowerCase() || category.name.replace(/\s/g, '').toLowerCase() === categoryParam);
             if (!!this.category) {

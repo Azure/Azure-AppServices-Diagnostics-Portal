@@ -105,6 +105,9 @@ export class WebSitesService extends ResourceService {
             }
         }));
     }
+    public isGenieDisabled(): boolean{
+        return false;
+    }
 
     public get searchSuffix(): string {
         return this.appType === AppType.WebApp ? this.platform === OperatingSystem.windows ? 'Azure Web App' : 'Azure Web App(Linux)' : 'Azure Function';

@@ -115,7 +115,7 @@
 <ng-template #newHomePage>
   <fab-command-bar tabindex="0" contentClass="fab-command-bar-class">
     <items>
-      <fab-command-bar-item key="askGenie" text="Ask Genie" [iconProps]="{ iconName: 'ChatInviteFriend' }"
+      <fab-command-bar-item *ngIf="disableGenie==false" key="askGenie" text="Ask Genie" [iconProps]="{ iconName: 'ChatInviteFriend' }"
         (click)="openGeniePanel()" data-track-type="run"></fab-command-bar-item>
       <fab-command-bar-item *ngIf="showRiskSection" key="refresh1" text="Refresh" [iconProps]="{ iconName: 'Refresh' }"
         (click)="refreshPage()">
@@ -144,7 +144,7 @@
       </h2>
       <div class="home-search">
         <fabric-search-results></fabric-search-results>
-        <div class="home-search-text">Have questions? <a tabindex="0" (click)="openGeniePanel()"
+        <div *ngIf="disableGenie==false" class="home-search-text">Have questions? <a tabindex="0" (click)="openGeniePanel()"
             (keyup.enter)="openGeniePanel()">Ask Genie</a></div>
       </div>
     </div>

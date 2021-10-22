@@ -17,6 +17,7 @@ export class ArmResourceConfig {
     keystoneDetectorId?: string;
     riskAlertConfigs?: RiskAlertConfig[];
     notificationConfig?: NotificationConfig;
+    disableGenie: boolean=false;
 }
 
 export interface ArmApiConfig {

@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, Input } from '@angular/core';
 import { Globals } from '../../../globals';
 import { DetectorControlService } from 'projects/diagnostic-data/src/lib/services/detector-control.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,6 +10,7 @@ import { TelemetryService,TelemetryEventNames, TelemetrySource } from 'diagnosti
   styleUrls: ['./detector-command-bar.component.scss']
 })
 export class DetectorCommandBarComponent implements AfterViewInit{
+  @Input() disbleGenie:boolean=false;
   time: string;
   constructor(private globals: Globals, private detectorControlService: DetectorControlService, private _route: ActivatedRoute, private router: Router, private telemetryService:TelemetryService) { }
   toggleOpenState() {

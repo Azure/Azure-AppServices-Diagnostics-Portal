@@ -57,6 +57,13 @@ export class ResourceService {
       return of(null);
   }
 
+  public isGenieDisabled(): boolean{
+    if (this.armResourceConfig) {
+        return this.armResourceConfig.disableGenie;
+    }
+    return false;
+}
+
   public get searchSuffix(): string {
     if (this._genericArmConfigService) {
       let currConfig: ArmResourceConfig = this._genericArmConfigService.getArmResourceConfig(this.resource.id);

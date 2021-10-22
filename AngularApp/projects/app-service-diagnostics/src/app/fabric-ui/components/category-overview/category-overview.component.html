@@ -3,7 +3,7 @@
     <h2><span class="blade-title">{{categoryName}}</span><span class="blade-description"> -
         {{categoryDescription}}</span></h2>
     <p class="category-description" *ngIf="categoryId!=='navigator' && categoryId!=='DiagnosticTools'">
-      If you have a specific problem you want to investigate, click a topic in the left navigation or click Ask Genie.
+      If you have a specific problem you want to investigate, click a topic in the left navigation<span *ngIf="disableGenie==false"> or click Ask Genie</span>.
     </p>
   </div>
   <div style="margin-left: -20px;margin-top: 10px;">

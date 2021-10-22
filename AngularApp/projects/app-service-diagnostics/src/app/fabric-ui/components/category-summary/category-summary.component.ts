@@ -51,6 +51,7 @@ export class CategorySummaryComponent implements OnInit {
     selectedCategoryIndex = "1";
 
     openPanel: boolean = false;
+    disableGenie: boolean = false;
 
     setFocusOnCallpsibleButton() {
         document.getElementById("collapse-genie-button").focus();
@@ -71,7 +72,7 @@ export class CategorySummaryComponent implements OnInit {
 
     public _checkIsWindowsOrLinuxApp(): boolean {
         let webSiteService = this._resourceService as WebSitesService;
-        return this._resourceService && this._resourceService instanceof WebSitesService 
+        return this._resourceService && this._resourceService instanceof WebSitesService
         && (webSiteService.platform === OperatingSystem.windows || webSiteService.platform === OperatingSystem.linux)
     }
 
@@ -83,6 +84,9 @@ export class CategorySummaryComponent implements OnInit {
         if(this._resourceService.armResourceConfig){
             this.categoryService.initCategoriesForArmResource(this._resourceService.resource.id);
         }
+
+        this.disableGenie = this._resourceService.isGenieDisabled();
+
         this.categoryService.categories.subscribe(categories => {
           let decodedCategoryName  = "";
           this._activatedRoute.params.subscribe(parmas => {
