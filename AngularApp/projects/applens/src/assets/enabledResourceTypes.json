@@ -42,7 +42,7 @@
             "service": "ContainerAppService",
             "resourceType": "Microsoft.Web/containerApps",
             "templateFileName": "ContainerApp",
-            "imgSrc": "assets/img/Azure-Ase-Logo.png",
+            "imgSrc": "assets/img/Azure-ContainerApp-Logo.png",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "containerapp",
             "pesId": "12345",
