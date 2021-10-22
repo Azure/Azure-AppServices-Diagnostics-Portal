@@ -31,7 +31,7 @@ export class DaasValidatorComponent implements OnInit {
   alwaysOnEnabled: boolean = true;
   error: string = '';
   storageAccountNeeded: boolean = false;
-  diagnosersRequiringStorageAccount: string[] = ['Memory Dump', 'CPU Monitoring','MemoryDump'];
+  diagnosersRequiringStorageAccount: string[] = ['Memory Dump', 'CPU Monitoring', 'MemoryDump'];
   validationResult: DaasValidationResult = new DaasValidationResult();
   diagnosers: DiagnoserDefinition[];
   daasAppSettingsCheck: DaasAppSettingsCheck;
@@ -84,6 +84,14 @@ export class DaasValidatorComponent implements OnInit {
         this.checkingSkuSucceeded = true;
         if (serverFarm.sku.tier === 'Standard' || serverFarm.sku.tier.indexOf('Premium') > -1 || serverFarm.sku.tier.indexOf('Isolated') > -1) {
           this.supportedTier = true;
+
+          //
+          // For Elastic Premium functions, ignore the Always-On check
+          //
+
+          if (serverFarm.sku.tier.indexOf("Elastic") > -1) {
+            this.alwaysOnEnabled = true;
+          }
         } else {
           return;
         }
