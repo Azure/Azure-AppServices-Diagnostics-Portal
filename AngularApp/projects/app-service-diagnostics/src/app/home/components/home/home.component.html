@@ -143,7 +143,7 @@
         </span>
       </h2>
       <div class="home-search">
-        <fabric-search-results></fabric-search-results>
+        <fabric-search-results (disableGenie)="disableGenie"></fabric-search-results>
         <div *ngIf="disableGenie==false" class="home-search-text">Have questions? <a tabindex="0" (click)="openGeniePanel()"
             (keyup.enter)="openGeniePanel()">Ask Genie</a></div>
       </div>

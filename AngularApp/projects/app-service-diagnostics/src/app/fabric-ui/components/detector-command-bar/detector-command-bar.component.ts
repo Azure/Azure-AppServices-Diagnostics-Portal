@@ -10,7 +10,7 @@ import { TelemetryService,TelemetryEventNames, TelemetrySource } from 'diagnosti
   styleUrls: ['./detector-command-bar.component.scss']
 })
 export class DetectorCommandBarComponent implements AfterViewInit{
-  @Input() disbleGenie:boolean=false;
+  @Input() disableGenie:boolean=false;
   time: string;
   constructor(private globals: Globals, private detectorControlService: DetectorControlService, private _route: ActivatedRoute, private router: Router, private telemetryService:TelemetryService) { }
   toggleOpenState() {

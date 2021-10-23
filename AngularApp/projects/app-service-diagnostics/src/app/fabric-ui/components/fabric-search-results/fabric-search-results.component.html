@@ -32,7 +32,7 @@
       <hr>
       <div class="result-count" style="padding-bottom: 8px;">
         {{inputAriaLabel}}
-        <a *ngIf="features.length === 0" tabindex="0" (mousedown)="openGeniePanel()"
+        <a *ngIf="features.length === 0 && disableGenie == false" tabindex="0" (mousedown)="openGeniePanel()"
           (keyup.enter)="openGeniePanel()">Ask chatbot Genie</a>
       </div>
     </div>

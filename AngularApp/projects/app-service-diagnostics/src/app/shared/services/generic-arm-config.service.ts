@@ -612,8 +612,6 @@ export class GenericArmConfigService {
           try {
             if (this.getValue(this.resourceConfig.disableGenie, this.overrideConfig.disableGenie) != null) {
               currConfig.disableGenie = this.getValue(this.resourceConfig.disableGenie, this.overrideConfig.disableGenie);
-
-              console.log("get disableGenie value from jsons", currConfig.disableGenie);
             }
           } catch (error) {
             this.logException(error, null, {
@@ -623,8 +621,6 @@ export class GenericArmConfigService {
             });
             throw error;
           }
-
-          console.log("Final disableGenie value", currConfig.disableGenie);
 
         this.resourceMap.push(currConfig);
         return currConfig;
