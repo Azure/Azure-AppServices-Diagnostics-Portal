@@ -102,21 +102,21 @@ export class DaasComponent implements OnInit, OnDestroy {
             Caption: 'Step 1: Initializing Diagnostics ',
             IconType: 'fa-clock-o',
             AdditionalText: '',
-            CaptionCompleted : 'Step 1: Initialized Diagnostics'
+            CaptionCompleted: 'Step 1: Initialized Diagnostics'
         });
 
         this.WizardSteps.push({
             Caption: 'Step 2: Collecting ' + this.diagnoserName,
             IconType: 'fa-clone',
             AdditionalText: '',
-            CaptionCompleted : 'Step 2: ' + this.diagnoserName + ' Collected'
+            CaptionCompleted: 'Step 2: ' + this.diagnoserName + ' Collected'
         });
 
         this.WizardSteps.push({
             Caption: 'Step 3: Analyzing ' + this.diagnoserName,
             IconType: 'fa-cog',
             AdditionalText: '',
-            CaptionCompleted : 'Step 3: ' + this.diagnoserName + ' Analyzed'
+            CaptionCompleted: 'Step 3: ' + this.diagnoserName + ' Analyzed'
         });
 
     }
@@ -161,9 +161,9 @@ export class DaasComponent implements OnInit, OnDestroy {
         let inProgress = false;
         this._daasService.getDaasSessionWithDetails(this.siteToBeDiagnosed, sessionId)
             .subscribe(runningSession => {
+                this.getDiagnoserStateFromSession(runningSession);
                 if (runningSession.Status === 0) {
                     inProgress = true;
-                    this.getDiagnoserStateFromSession(runningSession);
                 } else {
                     this.sessionInProgress = false;
 
