@@ -320,6 +320,17 @@
             "staticSelfHelpContent": "",
             "searchSuffix": "Azure Signal Service"
         },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.SignalRService/WebPubSub",
+            "templateFileName": "WebPubSubService",
+            "imgSrc": "assets/img/Azure-WebPubSubService-Logo.png",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "WebPubSubService",
+            "pesId": "16477",
+            "staticSelfHelpContent": "",
+            "searchSuffix": "Azure Web PubSub Service"
+        },
         { 
             "service": "ResourceService",  
             "resourceType": "Microsoft.NetApp/netAppAccounts",  
