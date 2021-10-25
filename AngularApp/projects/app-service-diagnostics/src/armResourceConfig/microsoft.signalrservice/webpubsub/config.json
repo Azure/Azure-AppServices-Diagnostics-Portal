@@ -1,0 +1,46 @@
+{
+    "homePageText": {
+        "title": "Azure Web PubSub Services Diagnostics",
+        "description": "Investigate how your Azure Web PubSub Services is performing, diagnose issues, and discover how to improve its reliability.",
+        "searchBarPlaceHolder": "Search for common problems, tools and more"
+    },
+
+    "matchRegEx": "/Microsoft.SignalRService/WebPubSub/",
+    "searchSuffix": "Azure Web PubSub Service",
+    "azureServiceName": "Azure Web PubSub Service",
+    "armApiConfig": {
+        "armApiVersion": "2020-05-01"
+    },
+    "isSearchEnabled": true,
+    "keystoneDetectorId": "",
+    "liveChatConfig": {
+        "isApplicableForLiveChat": false,
+        "supportTopicIds": []
+    },
+    "categories": [
+        {
+            "id": "AvailabilityAndPerformanceWebPubSub",
+            "name": "Availability And Performance",
+            "description": "Investigate common issues impacting the health of your Web Pubsub Service. ",
+            "keywords": [ "Error Rate", "Maintenance", "Deployment", "SKU" ],
+            "color": "rgb(186, 211, 245)",
+            "createFlowForCategory": false,
+            "chatEnabled": false,
+            "overviewDetectorId": "WPSAvailabilityAndPerformanceOverview"
+        },
+        {
+            "id": "ResourcesUsageWebPubSub",
+            "name": "Resources Usage",
+            "description": "Find out the resource usage on your Web PubSub Service.",
+            "keywords": [ "Resources", "Connection Count", "Message Count" ],
+            "color": "rgb(249, 213, 180)",
+            "createFlowForCategory": false,
+            "chatEnabled": false,
+            "overviewDetectorId": "WPSResourceUsageOverview"
+        }
+    ],
+    "quickLinks": [
+        "WPSChecks"
+    ],
+    "pesId": "17465"
+}
