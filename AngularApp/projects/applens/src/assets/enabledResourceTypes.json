@@ -374,7 +374,7 @@
              "imgSrc": "assets/img/StaticSites-Logo.svg",  
              "versionPrefix": "",  
              "azureCommImpactedServicesList": "staticSites",
-            "searchSuffix": "Azure Static Sites" 
+            "searchSuffix": "Azure Static Web Apps" 
          },
         { 
              "service": "ResourceService",  
@@ -429,7 +429,7 @@
             "azureCommImpactedServicesList": "",
             "pesId": "",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Network Function Manager"
+            "searchSuffix": "Azure Network Function Manager Device"
         },
         {
             "service": "ResourceService",
