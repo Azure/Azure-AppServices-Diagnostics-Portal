@@ -15,7 +15,6 @@ export const allowV3PResourceTypeList: { type: string, allowSwitchBack: boolean 
     { type: "microsoft.logic/workflows", allowSwitchBack: false },
     { type: "microsoft.logic/integrationserviceenvironments", allowSwitchBack: false },
     { type: "microsoft.web/hostingenvironments", allowSwitchBack: false },
-    { type: "microsoft.appplatform/spring", allowSwitchBack: false },
     { type: "microsoft.containerservice/managedclusters", allowSwitchBack: false }
 ];
 
