@@ -28,7 +28,7 @@
 </fab-dialog> -->
 
 <ng-template #sideItem let-item="item">
-  <div class="side-item" [class.side-item-expand]="isExpand" [class.side-item-collapse]="!isExpand" (click)="clickSideItem(item)" type="button" (keyup.enter)="clickSideItem(item)" tabindex="0"
+  <div class="side-item" (click)="clickSideItem(item)" type="button" (keyup.enter)="clickSideItem(item)" tabindex="0"
     [attr.aria-label]="item.displayName" [class.highlight-side-item]="currentHightLightItem === item.type">
     <img [src]="item.iconPath" [alt]="item.displayName">
     <div *ngIf="isExpand" class="ml-3">{{item.displayName}}</div>

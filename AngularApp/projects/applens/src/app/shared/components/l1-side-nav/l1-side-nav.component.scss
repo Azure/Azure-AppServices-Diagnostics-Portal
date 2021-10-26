@@ -4,16 +4,10 @@
     align-items: center;
     height: 60px;
     flex-direction: row;
-}
-
-.side-item-expand {
     justify-content: flex-start;
-    padding-left: 14px;
+    padding-left: 20px;
 }
 
-.side-item-collapse {
-    justify-content: center;
-}
 
 .side-item :hover {
     cursor: pointer;
