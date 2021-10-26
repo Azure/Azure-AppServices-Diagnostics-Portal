@@ -52,8 +52,8 @@ export class ContainerAppFinderComponent implements OnInit {
       'providers', 'Microsoft.Web',
       'containerApps', matchingSite.ContainerAppName];
 
-    resourceArray.push('home');
-    resourceArray.push('category');
+    // resourceArray.push('home');
+    // resourceArray.push('category');
 
     this._router.navigate(resourceArray, { queryParamsHandling: 'preserve' });
   }
