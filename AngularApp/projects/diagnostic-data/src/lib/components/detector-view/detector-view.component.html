@@ -3,7 +3,7 @@
     <section class="content-header">
       <h2 style="display: flex;">
         <div *ngIf="!isSystemInvoker && !insideDetectorList" tabindex="0" id="detector-name">{{detectorDataLocalCopy.metadata.name}}</div>
-        <div *ngIf="!isSystemInvoker && !insideDetectorList" class="blade-description">&nbsp;- &nbsp;</div>
+        <div *ngIf="!isSystemInvoker && !insideDetectorList && detectorDataLocalCopy.metadata.description" class="blade-description">&nbsp;- &nbsp;</div>
         <div class="blade-description">{{detectorDataLocalCopy.metadata.description}}</div>
       </h2>
       <section *ngIf="!isPublic">
