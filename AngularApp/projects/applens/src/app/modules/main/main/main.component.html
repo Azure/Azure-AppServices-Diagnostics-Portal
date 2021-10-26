@@ -48,7 +48,7 @@
     </div>
 
     <div style="display: flex;min-height: 300px;justify-content: space-between;">
-      <div class="main-card" style="width: 920px;">
+      <div class="main-card" style="width: 860px;">
         <div class="main-content-header">
           <img src="assets/img/applens-skeleton/main/recent_resources.svg" alt="recent resources" class="mr-3">
           <h3>Recent Resources</h3>
@@ -63,18 +63,18 @@
           <tbody>
             <ng-container *ngIf="table&&table.length > 0;else noRecentResource">
               <tr *ngFor="let item of table" style="border-bottom: 1px solid #EDEBE9;">
-                <th style="padding: 7px 0px;">
-                  <img [src]="item.imgSrc" style="height: 15px;width: 15px;"
-                    [alt]="item.type" class="mr-3" />
-                    <a tabindex="0" class="recent-resource"
-                    (click)="clickRecentResourceHandler($event,item)">{{item.name}}</a></th>
-                <th style="padding: 7px 0px;">{{item.type}}</th>
+                <th style="padding: 7px 0px;font-weight: 400;">
+                  <img [src]="item.imgSrc" style="height: 15px;width: 15px;" [alt]="item.type" class="mr-3" />
+                  <a tabindex="0" class="recent-resource"
+                    (click)="clickRecentResourceHandler($event,item)">{{item.name}}</a>
+                </th>
+                <th style="padding: 7px 0px;font-weight: 400;">{{item.type}}</th>
               </tr>
             </ng-container>
           </tbody>
         </table>
       </div>
-      <div style="width: 300px;" class="main-card">
+      <div style="width: 360px;" class="main-card">
         <div class="main-content-header">
           <img src="assets/img/applens-skeleton/main/documents.svg" alt="documentations" class="mr-3">
           <h3>Documentation</h3>

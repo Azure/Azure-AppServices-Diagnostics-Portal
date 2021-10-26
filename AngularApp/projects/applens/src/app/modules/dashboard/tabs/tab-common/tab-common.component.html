@@ -28,8 +28,10 @@
     </ul>
   </div> 
 </div> -->
-<fab-pivot (onLinkClick)="navigateToData($event)" [selectedKey]="selectedTabKey">
-  <fab-pivot-item *ngFor="let tab of tabs" [headerText]="tab.headerText" [itemKey]="tab.itemKey">
-  </fab-pivot-item>
-</fab-pivot>
+<div class="mb-3">
+  <fab-pivot (onLinkClick)="navigateToData($event)" [selectedKey]="selectedTabKey">
+    <fab-pivot-item *ngFor="let tab of tabs" [headerText]="tab.headerText" [itemKey]="tab.itemKey">
+    </fab-pivot-item>
+  </fab-pivot>
+</div>
 <router-outlet></router-outlet>
