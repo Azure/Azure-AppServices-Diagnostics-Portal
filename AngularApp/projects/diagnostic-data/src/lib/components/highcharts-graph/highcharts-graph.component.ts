@@ -489,8 +489,8 @@ export class HighchartsGraphComponent implements OnInit {
 
 
         setTimeout(() => {
-            let currentCharts = this.el.nativeElement.getElementsByClassName('highcharts-container');
-            const currentChartId = currentCharts[0].id;
+            const currentCharts = this.el.nativeElement.getElementsByClassName('highcharts-container') ? this.el.nativeElement.getElementsByClassName('highcharts-container') : null;
+            const currentChartId = currentCharts && currentCharts[0].id ? currentCharts[0].id : "";
             this.highChartsHoverService.hoverXAxisValue.subscribe(data => {
                 this.updateMetric(data);
             });
@@ -594,8 +594,10 @@ export class HighchartsGraphComponent implements OnInit {
         const xAxisIndex = chart.series[0].xData.findIndex(item => item === xAxisValue);
         if (xAxisIndex < 0) return;
         this.hoverData.forEach((data, legendIndex) => {
-            const value = chart.series[legendIndex].data[xAxisIndex].y
-            data.value = value;
+            if(chart.series[legendIndex] && chart.series[legendIndex].data[xAxisIndex] && chart.series[legendIndex].data[xAxisIndex].y) {
+                const value = chart.series[legendIndex].data[xAxisIndex].y
+                data.value = value;
+            }
         });
     }
 

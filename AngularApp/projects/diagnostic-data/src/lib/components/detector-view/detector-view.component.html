@@ -40,7 +40,7 @@
       </span>
     </fab-primary-button>
     <fab-callout *ngIf="showDowntimeCallout" [setInitialFocus]="true" [target]="'#detector-view-downtime'"
-      (onDismiss)="showDowntimeCallout = false;">
+      (onDismiss)="closeDownTimeCallOut()">
       <div style="max-width: 300px; overflow-y: auto; padding: 16px;">
         <fab-choice-group [options]="fabChoiceGroupOptions" [selectedKey]="selectedKey"></fab-choice-group>
       </div>

@@ -796,6 +796,10 @@ export class DetectorViewComponent implements OnInit {
     mergedResponse.dataset = dataSet;
     return mergedResponse;
   }
+
+  closeDownTimeCallOut() {
+    this.showDowntimeCallout = false;
+  }
 }
 
 @Pipe({
