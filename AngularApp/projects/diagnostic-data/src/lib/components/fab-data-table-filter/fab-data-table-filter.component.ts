@@ -59,7 +59,7 @@ export class FabDataTableFilterComponent implements OnInit {
 
     if (this.filterOption === TableFilterSelectionOption.Single) {
       this.initForSingleSelect();
-      this.displayName = `${this.tableFilter.name} : ${this.selectedKey}`;
+      this.displayName = `${this.tableFilter.name}: ${this.selectedKey}`;
       this.emitSelectedOption();
     } else if (this.filterOption === TableFilterSelectionOption.Multiple) {
       this.initForMultipleSelection();
@@ -158,7 +158,7 @@ export class FabDataTableFilterComponent implements OnInit {
 
   updateText() {
     if (this.filterOption === TableFilterSelectionOption.Single) {
-      this.displayName = `${this.tableFilter.name} : ${this.selectedKey}`;
+      this.displayName = `${this.tableFilter.name}: ${this.selectedKey}`;
     } else if (this.filterOption === TableFilterSelectionOption.Multiple) {
       this.updateMultipleSelectionText();
     }
@@ -167,13 +167,13 @@ export class FabDataTableFilterComponent implements OnInit {
   private updateMultipleSelectionText() {
     if (this.selected.size === 0 || this.selected.size === this.options.length) {
       //Selected nothing will be same as selected all as for display
-      this.displayName = `${this.tableFilter.name} : ${all}`;
+      this.displayName = `${this.tableFilter.name}: ${all}`;
     } else if (this.selected.size == 1) {
       const selectedName = Array.from(this.selected)[0];
       const formattedSelectionName = this.optionsWithFormattedName.find(o => selectedName === o.name).formattedName;
-      this.displayName = `${this.tableFilter.name} : ${formattedSelectionName}`;
+      this.displayName = `${this.tableFilter.name}: ${formattedSelectionName}`;
     } else if (this.selected.size < this.options.length) {
-      this.displayName = `${this.tableFilter.name} : ${this.selected.size} of ${this.options.length} selected`;
+      this.displayName = `${this.tableFilter.name}: ${this.selected.size} of ${this.options.length} selected`;
     }
   }
 
