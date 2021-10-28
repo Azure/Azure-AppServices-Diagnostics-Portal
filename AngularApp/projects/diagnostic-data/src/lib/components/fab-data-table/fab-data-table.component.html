@@ -1,10 +1,10 @@
 <div>
-  <div style="display: flex;align-items: baseline;">
+  <div style="display: flex;align-items: center;margin-bottom: 10px;">
     <div *ngIf="allowColumnSearch" class="text-field">
       <fab-search-box #fabSearchBox [value]="searchValue" (onChange)="updateSearchValue($event)" (onFocus)="focusSearchBox()" [placeholder]="searchPlaceholder"></fab-search-box>
     </div>
     <!-- Filters -->
-    <div *ngIf="tableFilters.length > 0" style="display: flex;">
+    <div *ngIf="tableFilters.length > 0" style="display: flex;margin-top: 5px;">
       <div *ngFor="let filter of tableFilters;let i = index" style="margin-left: 16px;">
         <fab-data-table-filter [tableFilter]="filter" [options]="getOptionsWithColName(filter.name)" (onFilterUpdate)="updateFilter(filter.name,$event)" [index]="i" [tableId]="tableId"></fab-data-table-filter>
       </div>
