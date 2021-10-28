@@ -17,7 +17,7 @@
 		"supportTopicIds": []
 	},
 	"categories": [{
-			"id": "AvailabilityAndPerformanceSpring",
+			"id": "availabilityandperformancespring",
 			"name": "Availability and Performance",
 			"description": "Investigate and discover issues that may impact your app availability.",
 			"keywords": ["Downtime", "Discovery", "App Health", "Deploy Jar Artifact"],
@@ -27,7 +27,7 @@
             "overviewDetectorId": "springAvailabilityAndPerformanceOverview"
 		},
 		{
-			"id": "ConfigurationsAndManagementSpring",
+			"id": "configurationsandmanagementspring",
 			"name": "Configurations and Management",
 			"description": "Find out if you misconfigured some features of Azure Spring Cloud.",
 			"keywords": ["Log", "Metrics", "Distributed Tracing", "Scaling", "Swap", "Custom Domain", "SSL"],
@@ -37,7 +37,7 @@
 			"overviewDetectorId": "SpringConfigurationsManagementOverview"
 		}, 
 		{
-			"id": "NetworkingSpring",
+			"id": "networkingspring",
 			"name": "Networking",
             "description": "Discover issues with your own virtual network connectivity.",
             "keywords": [ "Virtual Network", "Custom DNS Server", "Private DNS Zone", "Firewall" ],
