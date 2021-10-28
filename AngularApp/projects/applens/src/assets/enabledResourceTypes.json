@@ -45,7 +45,7 @@
             "imgSrc": "assets/img/Azure-ContainerApp-Logo.png",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "containerapp",
-            "pesId": "12345",
+            "pesId": "17677",
             "staticSelfHelpContent": "microsoft.web",
             "searchSuffix": "Azure Container App"
         },
