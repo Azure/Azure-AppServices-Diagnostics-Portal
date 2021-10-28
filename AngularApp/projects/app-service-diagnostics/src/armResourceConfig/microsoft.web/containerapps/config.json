@@ -33,5 +33,6 @@
       "overviewDetectorId": "ContainerAppAvailabilityMetrics"
 		}
 	],
+    "disableGenie": true,
 	"pesId": "17677"
 }
