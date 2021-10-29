@@ -289,7 +289,7 @@ export class OnboardingFlowComponent implements OnInit {
     this.displayBranch = this.Branch;
     this.diagnosticApiService.getDetectorCode(`${this.id}/${this.id}.csx`, this.Branch, this.resourceId).subscribe(x => {
       this.code = x;
-    })
+    });
     this.closeCallout();
   }
 
@@ -1261,7 +1261,10 @@ export class OnboardingFlowComponent implements OnInit {
 
     forkJoin(detectorFile, configuration, this.diagnosticApiService.getGists()).subscribe(res => {
       this.codeLoaded = true;
-      this.code = res[0];
+      this.diagnosticApiService.getDetectorCode(`${this.id}/${this.id}.csx`, this.Branch, this.resourceId).subscribe(x => {
+        this.code = x;
+      }); 
+      //this.code = res[0];
       this.originalCode = this.code;
       if (res[1] !== null) {
         this.gists = Object.keys(this.configuration['dependencies']);
