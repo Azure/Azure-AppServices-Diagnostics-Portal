@@ -1261,7 +1261,7 @@ export class OnboardingFlowComponent implements OnInit {
 
     forkJoin(detectorFile, configuration, this.diagnosticApiService.getGists()).subscribe(res => {
       this.codeLoaded = true;
-      if (this.detectorGraduation){
+      if (this.detectorGraduation && !(this.mode == DevelopMode.Create)){
         this.diagnosticApiService.getDetectorCode(`${this.id}/${this.id}.csx`, this.Branch, this.resourceId).subscribe(x => {
           this.code = x;
         }); 
