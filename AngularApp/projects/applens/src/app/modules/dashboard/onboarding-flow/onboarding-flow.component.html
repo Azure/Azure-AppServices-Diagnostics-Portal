@@ -137,14 +137,19 @@
   </ngx-smart-modal>
 
   <fab-dialog [hidden]="publishDialogHidden || !detectorGraduation" (onDismiss)="dismissDialog()">
+    <div class="callout-padding">
     <fab-dialog-content [title]="dialogTitle" [subText]="dialogSubText">
-      <fab-text-field [label]="branchName" [(value)]="Branch" [placeholder]="branchPlaceholder"></fab-text-field>
+      <p>Branch Name: </p><p style="text-decoration: underline; font-weight: bold;">{{Branch}}</p>
+      <!-- <fab-text-field [label]="branchName" [(value)]="Branch" [placeholder]="branchPlaceholder"></fab-text-field> -->
       <fab-text-field [label]="PRName" [(value)]="PRTitle" [placeholder]="PRPlaceholder"></fab-text-field>
-      <fab-text-field [label]="PRDescription" [(value)]="PRDesc" [placeholder]="PRDescriptionPlaceholder"
-        [required]="true" [multiline]="true"></fab-text-field>
-      <fab-primary-button [text]="publishButtonText" (onClick)="publish()"></fab-primary-button>
-      <fab-default-button [text]="cancelButtonText" (onClick)="publishDialogCancel()"></fab-default-button>
+      <!-- <fab-text-field [label]="PRDescription" [(value)]="PRDesc" [placeholder]="PRDescriptionPlaceholder"
+        [required]="true" [multiline]="true"></fab-text-field> -->
+      <div style="border-top: 1px solid gray;" class="pt-3 pb-3 callout-padding">
+        <fab-primary-button [text]="publishButtonText" (onClick)="publish()"></fab-primary-button>
+        <fab-default-button [text]="cancelButtonText" (onClick)="publishDialogCancel()"></fab-default-button>
+      </div>
     </fab-dialog-content>
+    </div>
     <fab-dialog-footer>
 
     </fab-dialog-footer>
@@ -154,10 +159,12 @@
     <fab-dialog-content [title]="gistUpdateTitle">
       <fab-dropdown *ngIf="gists.length > 0" label="Gist name" placeholder="Field value"
         [options]="gistsDropdownOptions" (onChange)="updateGistVersionOptions($event)"></fab-dropdown>
-      <fab-dropdown [disabled]="!gistName" label="Gist version" (onChange)="gistVersionOnChange($event)" placeholder="Field value" [options]="gistVersionOptions">
+      <fab-dropdown [disabled]="!gistName" label="Gist version" (onChange)="gistVersionOnChange($event)"
+        placeholder="Field value" [options]="gistVersionOptions">
       </fab-dropdown>
       <div class="mt-5">
-        <fab-primary-button *ngIf="gists.length > 0" text="Update" (onClick)="gistVersionChange()" class="mr-3"></fab-primary-button>
+        <fab-primary-button *ngIf="gists.length > 0" text="Update" (onClick)="gistVersionChange()" class="mr-3">
+        </fab-primary-button>
         <fab-default-button text="Cancel" (onClick)="dismissGistDialog()"></fab-default-button>
       </div>
     </fab-dialog-content>
@@ -172,7 +179,9 @@
       <div style="display: flex;align-items: center; margin-left: 4px; margin-right: 8px;">
         <ng-container *ngIf="publishSuccess">
           <status-icon [status]="HealthStatus.Success" class="mr-3"></status-icon>
-          <div><h5>Your detector {{detectorName}} was saved</h5></div>
+          <div>
+            <h5>Your detector {{detectorName}} was saved</h5>
+          </div>
         </ng-container>
 
         <ng-container *ngIf="publishFailed">
@@ -181,7 +190,9 @@
         </ng-container>
 
       </div>
-      <div style="margin-top: auto; margin-bottom: auto; margin-right: 20px"><h5>{{currentTime}}</h5></div>
+      <div style="margin-top: auto; margin-bottom: auto; margin-right: 20px">
+        <h5>{{currentTime}}</h5>
+      </div>
     </div>
     <div *ngIf="publishSuccess" style="margin-left: 4px;">You can find it in "Your detectors" later.</div>
   </fab-panel>
@@ -199,13 +210,10 @@
   <fab-command-bar [attr.id]="'fab-command-bar'"
     contentStyle="border-bottom:1px solid gray;font-weight:12px; height:40px" contentClass="fab-command-bar-class">
     <items>
-      <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon"
-        (click)="runCompilation()" [buttonStyles]="runButtonStyle"></fab-command-bar-item>
-      <fab-command-bar-item *ngIf="!detectorGraduation" key="publish" [text]="modalPublishingButtonText"
-        [iconProps]="publishIcon" (click)="publish()" [buttonStyles]="publishButtonStyle">
-      </fab-command-bar-item>
-      <fab-command-bar-item *ngIf="detectorGraduation" key="publishGrad" [text]="modalPublishingButtonText"
-        [iconProps]="publishIcon" (click)="showPublishDialog()" [buttonStyles]="publishButtonStyle">
+      <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"
+        [buttonStyles]="runButtonStyle"></fab-command-bar-item>
+      <fab-command-bar-item key="publishGrad" [text]="modalPublishingButtonText" [iconProps]="publishIcon"
+        (click)="publishButtonOnClick()" [buttonStyles]="publishButtonStyle">
       </fab-command-bar-item>
       <fab-command-bar-item key="download" text="Download" [iconProps]="{ iconName: 'Download' }"
         (click)="getDevOptions()"></fab-command-bar-item>
@@ -214,22 +222,29 @@
       <!-- <fab-command-bar-item key="internal" [text]="internalExternalText" [iconProps]="{ iconName: 'View' }"
         (click)="internalExternalToggle()"></fab-command-bar-item> -->
       <far-items>
-        <fab-command-bar-item *ngIf="detectorGraduation" key="custom1" text="custom text">
+        <fab-command-bar-item *ngIf="detectorGraduation" key="brachSelectorPill" text="custom text">
           <render>
             <ng-template let-item="item">
               <div style="padding-top:1px!important;">
-                <fab-default-button id="develop-tab-branch-selector" (click)="toggleCallout()" [styles]="buttonStyle"
-                  [ariaLabel]="displayName" [iconProps]="{ iconName: 'BranchSearch' }">Branch : </fab-default-button>
+                <fab-default-button id="develop-tab-branch-selector" (click)="branchToggleCallout()"
+                  [styles]="branchButtonStyle" [ariaLabel]="displayName" [iconProps]="{ iconName: 'BranchSearch' }">
+                  Branch: {{displayBranch}}</fab-default-button>
                 <fab-callout *ngIf="isCallOutVisible" (onDismiss)="closeCallout()" [setInitialFocus]="true"
                   [target]="'#develop-tab-branch-selector'">
-                  <div>
-                    <fab-choice-group [options]="optionsForSingleChoice" [selectedKey]="selectedKey"></fab-choice-group>
+                  <div class="callout-padding">
+                    <div>
+                      <fab-choice-group [options]="showBranches" (onChange)="updateTempBranch($event)">
+                      </fab-choice-group>
+                    </div>
+                    <div style="border-top: 1px solid gray;" class="pt-3 pb-3 callout-padding">
+                      <fab-primary-button (onClick)="updateBranch()" (keyup.enter)="updateTableWithOptions()"
+                        [ariaLabel]="'Apply'" contentClass="mr-3 callout-button" contentStyle="border-radius: 2px;">
+                        Apply
+                      </fab-primary-button>
+                      <fab-default-button (onClick)="closeCallout()" (keyup.enter)="closeCallout()"
+                        [ariaLabel]="'Cancel'" contentStyle="border-radius: 2px;">Cancel</fab-default-button>
+                    </div>
                   </div>
-                  <fab-primary-button (onClick)="updateTableWithOptions()" (keyup.enter)="updateTableWithOptions()"
-                    [ariaLabel]="'Apply'" contentClass="mr-3 callout-button" contentStyle="border-radius: 2px;">Apply
-                  </fab-primary-button>
-                  <fab-default-button (onClick)="closeCallout()" (keyup.enter)="closeCallout()" [ariaLabel]="'Cancel'"
-                    contentStyle="border-radius: 2px;">Cancel</fab-default-button>
                 </fab-callout>
               </div>
             </ng-template>
@@ -240,24 +255,14 @@
             </ng-template>
           </render-icon>
         </fab-command-bar-item>
-        <fab-command-bar-item key="custom1" text="custom text">
+        <fab-command-bar-item key="timePickerPill" text="custom text">
           <render>
             <ng-template let-item="item">
               <div style="padding-top:1px!important;">
                 <fab-default-button id="develop-tab-timepicker" (onClick)="openTimePickerSubject.next(true);"
-                  [styles]="buttonStyle" [ariaLabel]="displayName" [iconProps]="{ iconName: 'clock' }">Time range (UTC)
-                  : {{timePickerButtonStr}}</fab-default-button>
-                <fab-callout *ngIf="timeCallOutVisible" (onDismiss)="closeTime()" [setInitialFocus]="true"
-                  [target]="filterSelector">
-                  <div>
-                    <fab-choice-group [options]="optionsForSingleChoice" [selectedKey]="selectedKey"></fab-choice-group>
-                  </div>
-                  <fab-primary-button (onClick)="updateTableWithOptions()" (keyup.enter)="updateTableWithOptions()"
-                    [ariaLabel]="'Apply'" contentClass="mr-3 callout-button" contentStyle="border-radius: 2px;">Apply
-                  </fab-primary-button>
-                  <fab-default-button (onClick)="closeTimeCallout()" (keyup.enter)="closeTimeCallout()"
-                    [ariaLabel]="'Cancel'" contentStyle="border-radius: 2px;">Cancel</fab-default-button>
-                </fab-callout>
+                  [styles]="buttonStyle" [ariaLabel]="displayName" [iconProps]="{ iconName: 'clock' }">Time range (UTC):
+                  {{timePickerButtonStr}}
+                </fab-default-button>
               </div>
             </ng-template>
           </render>
@@ -308,7 +313,8 @@
               </div>
             </div> -->
 
-            <ngx-monaco-editor (onInit)="onInit($event)" style="height:calc(98%)" [options]="editorOptions" [(ngModel)]="code">
+            <ngx-monaco-editor (onInit)="onInit($event)" style="height:calc(98%)" [options]="editorOptions"
+              [(ngModel)]="code">
             </ngx-monaco-editor>
 
           </split-area>
@@ -317,12 +323,12 @@
               <div *ngIf="!showDetailedCompilationTraces">
                 <div *ngFor="let item of buildOutput" class="compilation-output">{{item}}</div>
               </div>
-              <div *ngIf="showDetailedCompilationTraces" class = "compilation-detailed-output-container">
-                <div class = "compilation-detailed-output-rowEntry" *ngFor = "let item of detailedCompilationTraces"
-                [ngClass]="[isCompilationTraceClickable(item)? 'compilation-detailed-output-clickable' : '']" 
-                (click) = navigateToEditorIfApplicable(item) >
+              <div *ngIf="showDetailedCompilationTraces" class="compilation-detailed-output-container">
+                <div class="compilation-detailed-output-rowEntry" *ngFor="let item of detailedCompilationTraces"
+                  [ngClass]="[isCompilationTraceClickable(item)? 'compilation-detailed-output-clickable' : '']"
+                  (click)=navigateToEditorIfApplicable(item)>
                   <div class="compilation-detailed-output-entryCell compilation-detailed-output-iconCell">
-                    <span class="fa status-icon" [ngClass] = "getfaIconClass(item)"></span>
+                    <span class="fa status-icon" [ngClass]="getfaIconClass(item)"></span>
                   </div>
                   <div class="compilation-detailed-output-entryCell">
                     <span>{{item.message}}</span>
@@ -339,7 +345,8 @@
           <fab-pivot-item [headerText]="'Data'">
             <detector-view *ngIf="queryResponse" [detectorResponse]="queryResponse.invocationOutput"
               [startTime]="startTime" [endTime]="endTime" [error]="errorState" [showEdit]="false"
-              [developmentMode]="true" [script]="code" [compilationPackage]="compilationPackage" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
+              [developmentMode]="true" [script]="code" [compilationPackage]="compilationPackage"
+              [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
           </fab-pivot-item>
           <fab-pivot-item [headerText]="'Data source'">
             <tab-data-sources *ngIf="queryResponse" [onboardingMode]="true"
