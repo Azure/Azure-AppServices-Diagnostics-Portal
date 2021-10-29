@@ -18,6 +18,7 @@
               [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
               [getErrorMessage]="getErrorMessageOnTextField" [ariaLabel]="'startTime'" [styles]="maskTextFieldStyles">
             </fab-masked-text-field>
+            <div class="ml-3 date-picker-label">(UTC)</div>
           </div>
   
           <div style="display: flex;" class="ml-3 mt-3">
@@ -31,6 +32,7 @@
               [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
               [getErrorMessage]="getErrorMessageOnTextField" [ariaLabel]="'endTime'" [styles]="maskTextFieldStyles">
             </fab-masked-text-field>
+            <div class="ml-3 date-picker-label">(UTC)</div>
           </div>
         </div>
         <div *ngIf="timeDiffError != ''" style="color:red;">{{timeDiffError}}</div>
