@@ -428,7 +428,6 @@ export class DiagnosticApiService {
     body['resourceUri'] = resourceUri;
 
     let path = "devops/push";
-    //return this.invoke(path, HttpMethod.POST, body);
     return this.invoke<any>(path, HttpMethod.POST, body, false, true, true, true, false);
   }
 
