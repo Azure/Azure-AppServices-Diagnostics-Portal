@@ -412,22 +412,35 @@ export class DiagnosticApiService {
     return request;
   }
 
-  public getDetectorCode(detectorPath: string){
-
-    let path = "devops/getCode?organization="+"&detectorPath="+detectorPath;
+  public getDetectorCode(detectorPath: string, branch: string, resourceUri: string): Observable<string>{
+    let path = `devops/getCode?filePathInRepo=${detectorPath}&branch=${branch}&resourceUri=${resourceUri}`;
     return this.invoke(path, HttpMethod.GET);
   }
 
-  public pushDetectorChanges(branch: string, file: string, repoPath: string, comment: string, changeType: string){
+  public pushDetectorChanges(branch: string, file: string, repoPath: string, comment: string, changeType: string, resourceUri: string){
 
-    let path = "devops/push?organization="+"&branch="+branch+"&file="+file+"&repoPath="+repoPath+"&comment="+comment+"&changeType="+changeType;
-    return this.invoke(path, HttpMethod.GET);
+    var body = {};
+    body['branch'] = branch;
+    body['file'] = file;
+    body['repoPath'] = repoPath;
+    body['comment'] = comment;
+    body['changeType'] = changeType;
+    body['resourceUri'] = resourceUri;
+
+    let path = "devops/push";
+    return this.invoke<any>(path, HttpMethod.POST, body, false, true, true, true, false);
   }
 
-  public makePullRequest(sourceBranch: string, targetBranch: string, title: string){
+  public makePullRequest(sourceBranch: string, targetBranch: string, title: string, resourceUri: string){
 
-    let path = "devops/makePR?organization="+"&sourceBranch="+sourceBranch+"&targetBranch="+targetBranch+"&title="+title;
-    return this.invoke(path, HttpMethod.GET);
+    var body = {};
+    body['sourceBranch'] = sourceBranch;
+    body['targetBranch'] = targetBranch;
+    body['title'] = title;
+    body['resourceUri'] = resourceUri;
+
+    let path = "devops/makePR?"+"&sourceBranch="+sourceBranch+"&targetBranch="+targetBranch+"&title="+title;
+    return this.invoke(path, HttpMethod.POST, body);
   }
 
   public getBranches(resourceId: string): Observable<string []>{
@@ -437,6 +450,12 @@ export class DiagnosticApiService {
 
   public getEnableDetectorDevelopment(): Observable<boolean> {
     const path = "api/appsettings/DetectorDevelopmentEnabled";
+    return this.get<boolean>(path).pipe(map((res:string) => {
+      return res.toLowerCase() === "true";
+    }));
+  }
+  public getDetectorGraduationSetting(): Observable<boolean> {
+    const path = "api/appsettings/DetectorGraduation";
     return this.get<boolean>(path).pipe(map((res:string) => {
       return res.toLowerCase() === "true";
     }));

@@ -4,7 +4,10 @@ import {
 } from 'diagnostic-data';
 import * as momentNs from 'moment';
 import { NgxSmartModalService } from 'ngx-smart-modal';
-import { forkJoin, Observable, of } from 'rxjs';
+import {
+  forkJoin
+  , Observable, of
+} from 'rxjs';
 import { flatMap, map, tap } from 'rxjs/operators';
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Package } from '../../../shared/models/package';
@@ -20,6 +23,7 @@ import { addMonths } from 'office-ui-fabric-react/lib/utilities/dateMath/DateMat
 import { BehaviorSubject } from 'rxjs';
 import { ICommandBarItemOptions } from '@angular-react/fabric/src/lib/components/command-bar/public-api';
 import { Commit } from '../../../shared/models/commit';
+import { Body } from '@angular/http/src/body';
 
 
 const moment = momentNs;
@@ -135,7 +139,9 @@ export class OnboardingFlowComponent implements OnInit {
   PRTitle: string = "";
   PRDesc: string = "";
   Branch: string = "";
-  workingBranch: string = "";
+  tempBranch: string = "";
+  showBranches: IChoiceGroupOption[] = [];
+  displayBranch: string = "";
   optionsForSingleChoice: IChoiceGroupOption[] = [];
   openTimePickerCallout: boolean = false;
   timePickerButtonStr: string = "";
@@ -167,30 +173,8 @@ export class OnboardingFlowComponent implements OnInit {
     }
   };
 
+  detectorGraduation: boolean;
 
-
-  detectorGraduation: boolean = false;
-
-  // today: Date = new Date(Date.now());
-  // maxDate: Date = this.convertUTCToLocalDate(this.today);
-  // minDate: Date = this.convertUTCToLocalDate(addMonths(this.today, -1));
-
-  // startDate: Date;
-  // endDate: Date;
-  // //set Last xx hours
-  // hourDiff: number;
-
-  // startClock: string;
-  // endClock: string;
-  // timeDiffError: string = "";
-  // choiceGroupOptions: IChoiceGroupOption[] =
-  //   [
-  //     { key: TimePickerOptions.Last1Hour, text: TimePickerOptions.Last1Hour, onClick: () => { this.setTime(1) } },
-  //     { key: TimePickerOptions.Last6Hours, text: TimePickerOptions.Last6Hours, onClick: () => { this.setTime(6) } },
-  //     { key: TimePickerOptions.Last12Hour, text: TimePickerOptions.Last12Hour, onClick: () => { this.setTime(12) } },
-  //     { key: TimePickerOptions.Last24Hours, text: TimePickerOptions.Last24Hours, onClick: () => { this.setTime(24) } },
-  //     { key: TimePickerOptions.Custom, text: TimePickerOptions.Custom, onClick: () => { this.selectCustom() } },
-  //   ];
   buttonStyle: IButtonStyles = {
     root: {
       color: "#323130",
@@ -198,6 +182,18 @@ export class OnboardingFlowComponent implements OnInit {
       marginTop: "8px",
       background: "rgba(0, 120, 212, 0.1)",
       fontSize: "13",
+      fontWeight: "600",
+      height: "80%"
+    }
+  }
+  branchButtonDisabled = false;
+  branchButtonStyle: IButtonStyles = {
+    root: {
+      color: "#323130",
+      borderRadius: "12px",
+      marginTop: "8px",
+      background: "rgba(0, 120, 212, 0.1)",
+      fontSize: "10",
       fontWeight: "600",
       height: "80%"
     }
@@ -283,6 +279,54 @@ export class OnboardingFlowComponent implements OnInit {
     this.publishAccessControlResponse = {};
   }
 
+  updateTempBranch(event: any) {
+    //console.log(event);
+    this.tempBranch = event.option.key;
+  }
+
+  updateBranch() {
+    this.Branch = this.tempBranch;
+    this.displayBranch = this.Branch;
+    this.diagnosticApiService.getDetectorCode(`${this.id}/${this.id}.csx`, this.Branch, this.resourceId).subscribe(x => {
+      this.code = x;
+    })
+    this.closeCallout();
+  }
+
+  noBranchesAvailable() {
+    this.displayBranch = "NA (not published)";
+    this.disableBranchButton();
+  }
+
+  disableBranchButton() {
+    this.branchButtonDisabled = true;
+    this.branchButtonStyle = {
+      root: {
+        cursor: "not-allowed",
+        color: "#323130",
+        borderRadius: "12px",
+        marginTop: "8px",
+        background: "#eaeaea",
+        fontSize: "13",
+        fontWeight: "600",
+        height: "80%"
+      }
+    };
+  }
+
+  branchChoiceCharLimit: number = 25;
+  defaultBranch: string;
+
+  publishButtonOnClick() {
+    if (this.detectorGraduation) {
+      this.showPublishDialog();
+    }
+    else {
+      this.publish()
+    }
+  }
+
+
   ngOnInit() {
     if (!this.initialized) {
       this.initialize();
@@ -294,12 +338,11 @@ export class OnboardingFlowComponent implements OnInit {
       this.timePickerButtonStr = s;
     });
 
-    this.diagnosticApiService.getBranches(this.resourceId).subscribe(branches => branches.forEach(option => {
-      this.optionsForSingleChoice.push({
-        key: String(option),
-        text: String(option)
-      });
-    }));
+    this.diagnosticApiService.getDetectorGraduationSetting().subscribe(graduationFlag => {
+      this.detectorGraduation = graduationFlag;
+    });
+
+    this.getBranchList();
 
     if (this._detectorControlService.isInternalView) {
       this.internalExternalText = this.internalViewText;
@@ -307,25 +350,46 @@ export class OnboardingFlowComponent implements OnInit {
     else {
       this.internalExternalText = this.externalViewText;
     }
-    // try{
-    //   this.diagnosticApiService.getDetectorCode("darreldonald", "darreldonald-test-repo", "darreldonald-test-repo", "/5xxdetector/5xxdetector.csx").subscribe((resCode: string) => {
-    //     console.log( );
-    //     this.code = resCode;
-    //   },error => {
-    //     console.log(error);})
-    //   this.diagnosticApiService.pushDetectorChanges("darreldonald", "darreldonald-test-repo", "darreldonald-test-repo", "demo", "thisIsATest", "test/thisIsATest.txt", "comment", "add").subscribe(resPush => {
-    //     console.log(resPush);
-    //   },error => {
-    //     console.log(error);})
-    //   this.diagnosticApiService.makePullRequest("darreldonald", "darreldonald-test-repo", "darreldonald-test-repo", "demo", "master", "title").subscribe(resPR => {
-    //     console.log(resPR);
-    //   },error => {
-    //     console.log(error);})
-    // }
-    // catch(exception){
-    //   console.log(exception)
-    // }
+  }
 
+  getBranchList() {
+    this.optionsForSingleChoice = [];
+    this.showBranches = [];
+
+    this.diagnosticApiService.getBranches(this.resourceId).subscribe(branches => {
+      var branchRegEx = new RegExp(`^dev\/.*\/detector\/${this.id}$`, "i");
+      branches.forEach(option => {
+        this.optionsForSingleChoice.push({
+          key: String(option["item1"]),
+          text: String(option["item1"])
+        });
+        if (option["item2"]) {
+          this.defaultBranch = String(option["item1"]);
+        }
+        if (option["item2"] && !(this.mode == DevelopMode.Create)) {// if main branch and in edit mode
+          this.showBranches.push({
+            key: String(option["item1"]),
+            text: String(option["item1"])
+          });
+        }
+      })
+      this.optionsForSingleChoice.forEach(branch => {
+        if (branchRegEx.test(branch.text) && this.id != "") {
+          this.showBranches.push({
+            key: String(branch.key),
+            text: String(`${branch.text.split("/")[1]} : ${branch.text.split("/")[3]}`)
+          });
+        }
+      });
+      if (this.showBranches.length < 1) {
+        this.noBranchesAvailable();
+      }
+      else {
+        var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id}`
+        this.Branch = this.targetInShowBranches(targetBranch) ? targetBranch : this.showBranches[0].key;
+        this.displayBranch = this.Branch;
+      }
+    });
   }
 
   internalExternalToggle() {
@@ -374,7 +438,6 @@ export class OnboardingFlowComponent implements OnInit {
           title: String(`${this.gistName}`)
         }));
         this.gistVersionOptions = tempList.reverse();
-        //this.gistVersionOptions = tempList.sort((a, b) => a.text.substring(a.text.indexOf(":")) < b.text.substring(b.text.indexOf(":")) ? -1 : 1);
         if (this.gistVersionOptions.length > 10) { this.gistVersionOptions = this.gistVersionOptions.slice(0, 10); }
       });
 
@@ -387,13 +450,6 @@ export class OnboardingFlowComponent implements OnInit {
       this.temporarySelection[event["option"]["title"]]['code'] = x;
     });
   }
-
-  // private convertDateTimeToString(date: Date, time: string): string {
-  //   const dateString = moment(date).format('YYYY-MM-DD');
-  //   const hour = Number.parseInt(time.split(':')[0]) < 10 ? `0${Number.parseInt(time.split(':')[0])}` : `${Number.parseInt(time.split(':')[0])}`;
-  //   const minute = Number.parseInt(time.split(':')[1]) < 10 ? `0${Number.parseInt(time.split(':')[1])}` : `${Number.parseInt(time.split(':')[1])}`;
-  //   return `${dateString} ${hour}:${minute}`;
-  // }
 
   disableRunButton() {
     this.runButtonDisabled = true;
@@ -534,113 +590,6 @@ export class OnboardingFlowComponent implements OnInit {
     if (item.severity == HealthStatus.Success) return 'fa-check-circle success-color';
     return '';
   }
-
-  // //Press Escape,Click Cancel
-  // cancelTimeRange() {
-  //   this.closeTimePicker();
-  // }
-
-  // //Click outside or tab to next component
-  // closeTimePicker() {
-  //   this.openTimePickerCallout = false;
-  //   this.showTimePicker = this.defaultSelectedKey === TimePickerOptions.Custom;
-  // }
-
-  //clickHandler for apply button
-  // applyTimeRange() {
-  //   this._detectorControlService.changeFromTimePicker = true;
-
-  //   let startDateWithTime: string;
-  //   let endDateWithTime: string;
-  //   let timePickerInfo: TimePickerInfo;
-  //   //customize
-  //   if (this.showTimePicker) {
-  //     startDateWithTime = this.convertDateTimeToString(this.startDate, this.startClock);
-  //     endDateWithTime = this.convertDateTimeToString(this.endDate, this.endClock);
-  //     //for timer picker, date and hour,minute
-  //     let infoStartDate = new Date(this.startDate);
-  //     infoStartDate.setHours(Number.parseInt(this.startClock.split(":")[0]), Number.parseInt(this.startClock.split(":")[1]));
-  //     let infoEndDate = new Date(this.endDate);
-  //     infoEndDate.setHours(Number.parseInt(this.endClock.split(":")[0]), Number.parseInt(this.endClock.split(":")[1]));
-  //     timePickerInfo =
-  //     {
-  //       selectedKey: TimePickerOptions.Custom,
-  //       selectedText: TimePickerOptions.Custom,
-  //       startDate: infoStartDate,
-  //       endDate: infoEndDate
-  //     };
-  //   } else {
-  //     const localEndTime = this.today;
-  //     const localStartTime = new Date(localEndTime.getTime() - this.hourDiff * 60 * 60 * 1000);
-  //     startDateWithTime = this.convertLocalDateToUTC(localStartTime);
-  //     endDateWithTime = this.convertLocalDateToUTC(localEndTime);
-
-  //     //find which option contains the hourDiff number
-  //     const infoSelectOption = this.choiceGroupOptions.find(option => option.key.includes(this.hourDiff.toString()))
-  //     timePickerInfo = {
-  //       selectedKey: infoSelectOption.key,
-  //       selectedText: infoSelectOption.text
-  //     };
-  //   }
-
-  //   this.timeDiffError = this._detectorControlService.getTimeDurationError(startDateWithTime, endDateWithTime);
-  //   if (this.timeDiffError === '') {
-  //     this._detectorControlService.setCustomStartEnd(startDateWithTime, endDateWithTime);
-  //     this._detectorControlService.updateTimePickerInfo(timePickerInfo);
-  //   }
-  //   this.openTimePickerCallout = this.timeDiffError !== "";
-
-  //   const eventProperties = {
-  //     'Title': timePickerInfo.selectedKey
-  //   }
-  //   if (timePickerInfo.startDate) {
-  //     const startTimeString = moment(timePickerInfo.startDate).format(this._detectorControlService.stringFormat);
-  //     eventProperties['StartTime'] = startTimeString;
-  //   }
-  //   if (timePickerInfo.endDate) {
-  //     const endTimeString = moment(timePickerInfo.startDate).format(this._detectorControlService.stringFormat);
-  //     eventProperties['EndTime'] = endTimeString;
-  //   }
-  //   this._telemetryService.logEvent(TelemetryEventNames.TimePickerApplied, eventProperties);
-  // }
-
-  // private convertLocalDateToUTC(date: Date): string {
-  //   const moment = momentNs.utc(date.getTime());
-  //   return moment.format(this._detectorControlService.stringFormat);
-  // }
-
-  // setTime(hourDiff: number) {
-  //   this.showTimePicker = false;
-  //   this.timeDiffError = '';
-  //   this.hourDiff = hourDiff;
-  // }
-
-  // private convertUTCToLocalDate(date: Date): Date {
-  //   const moment = momentNs.utc(date);
-  //   return new Date(
-  //     moment.year(), moment.month(), moment.date(),
-  //     moment.hour(), moment.minute()
-  //   );
-  // }
-
-  // selectCustom() {
-  //   this.showTimePicker = true;
-  //   this.timeDiffError = "";
-
-  //   const end = this.today;
-  //   const start = new Date(end.getTime() - this.hourDiff * 60 * 60 * 1000);
-  //   this.startDate = this.convertUTCToLocalDate(start);
-  //   this.endDate = this.convertUTCToLocalDate(end);
-
-  //   //startDate and endDate contains current hour and minute info
-  //   //only need HH:mm
-  //   this.startClock = this.getHourAndMinute(this.startDate);
-  //   this.endClock = this.getHourAndMinute(this.endDate);
-  // }
-
-  // private getHourAndMinute(date: Date): string {
-  //   return moment(date).format('HH:mm');
-  // }
 
   confirm() {
     Object.keys(this.temporarySelection).forEach(id => {
@@ -999,7 +948,39 @@ export class OnboardingFlowComponent implements OnInit {
     this.publishingPackage.metadata = JSON.stringify({ "utterances": this.allUtterances });
   }
 
+  setBranch() {
+    this.Branch;
+  }
+
+  targetInShowBranches(target) {
+    var match;
+    this.showBranches.forEach(x => {
+      if (x.key === target) {
+        match = true;
+      }
+    });
+    return match;
+  }
+
   showPublishDialog() {
+    var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id}`
+    if (this.publishButtonDisabled) {
+      return;
+    }
+    if (this.Branch === this.defaultBranch && this.targetInShowBranches(targetBranch)) {
+      this.Branch = targetBranch;
+      this.displayBranch = `${targetBranch}`;
+    }
+    else if (!(this.showBranches.length > 1) || this.Branch === this.defaultBranch) {
+      this.displayBranch = `${targetBranch} (not published)`;
+      this.Branch = targetBranch;
+    }
+    if (this.mode == DevelopMode.Create) {
+      this.PRTitle = `Creating ${this.id}`;
+    }
+    else {
+      this.PRTitle = `Changes to ${this.id}`;
+    }
     this.publishDialogHidden = false;
   }
 
@@ -1027,6 +1008,8 @@ export class OnboardingFlowComponent implements OnInit {
     this.publishFailed = false;
   }
 
+
+
   publish() {
     if (this.publishButtonDisabled) {
       return;
@@ -1045,58 +1028,88 @@ export class OnboardingFlowComponent implements OnInit {
     this.modalPublishingButtonDisabled = true;
     this.modalPublishingButtonText = "Publishing";
     var isOriginalCodeMarkedPublic: boolean = this.IsDetectorMarkedPublic(this.originalCode);
-    /*if(this.detectorGraduation){
-      this.gradPublish()
-    }*/
-    this.diagnosticApiService.publishDetector(this.emailRecipients, this.publishingPackage, `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`, isOriginalCodeMarkedPublic).subscribe(data => {
-      this.originalCode = this.publishingPackage.codeString;
-      this.deleteProgress();
-      this.utteranceInput = "";
-      this.enableRunButton();
-      this.localDevButtonDisabled = false;
-      this.publishButtonText = "Publish";
-      this.enablePublishButton();
-      this.modalPublishingButtonText = "Publish";
-      this.ngxSmartModalService.getModal('publishModal').close();
-      this.detectorName = this.publishingPackage.id;
-      this.publishSuccess = true;
-      //this.showAlertBox('alert-success', 'Detector published successfully. Changes will be live shortly.');
+    if (this.detectorGraduation) {
+      this.gradPublish(this.publishingPackage);
+    }
+    else {
+      this.diagnosticApiService.publishDetector(this.emailRecipients, this.publishingPackage, `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`, isOriginalCodeMarkedPublic).subscribe(data => {
+        this.originalCode = this.publishingPackage.codeString;
+        this.deleteProgress();
+        this.utteranceInput = "";
+        this.enableRunButton();
+        this.localDevButtonDisabled = false;
+        this.publishButtonText = "Publish";
+        this.enablePublishButton();
+        this.modalPublishingButtonText = "Publish";
+        this.ngxSmartModalService.getModal('publishModal').close();
+        this.detectorName = this.publishingPackage.id;
+        this.publishSuccess = true;
+        //this.showAlertBox('alert-success', 'Detector published successfully. Changes will be live shortly.');
 
-      this._telemetryService.logEvent("SearchTermPublish", { detectorId: this.id, numUtterances: this.allUtterances.length.toString(), ts: Math.floor((new Date()).getTime() / 1000).toString() });
-    }, err => {
-      this.enableRunButton();
-      this.localDevButtonDisabled = false;
-      this.publishButtonText = "Publish";
-      this.enablePublishButton();
-      this.modalPublishingButtonText = "Publish";
-      this.ngxSmartModalService.getModal('publishModal').close();
-      this.showAlertBox('alert-danger', 'Publishing failed. Please try again after some time.');
-      this.publishFailed = true;
-    });
-
-    // this.diagnosticApiService.pushDetectorChanges(this.Branch, this.code, "/test/fromapplens.csx", "test", "edit").subscribe(resPush => {
-    //     console.log(resPush);
-    //   },error => {
-    //     console.log(error);});
+        this._telemetryService.logEvent("SearchTermPublish", { detectorId: this.id, numUtterances: this.allUtterances.length.toString(), ts: Math.floor((new Date()).getTime() / 1000).toString() });
+      }, err => {
+        this.enableRunButton();
+        this.localDevButtonDisabled = false;
+        this.publishButtonText = "Publish";
+        this.enablePublishButton();
+        this.modalPublishingButtonText = "Publish";
+        this.ngxSmartModalService.getModal('publishModal').close();
+        this.showAlertBox('alert-danger', 'Publishing failed. Please try again after some time.');
+        this.publishFailed = true;
+      });
+    }
   }
 
-  /*gradPublish(publishingPackage: Package){
-    if(this.mode != DevelopMode.Create){
-      this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.codeString, `/${publishingPackage.id}/${publishingPackage.id}.csx`, `Editing detector code for ${publishingPackage.id}`, "edit", this.resourceId);
-      this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.codeString, `/${publishingPackage.id}/${publishingPackage.id}.csx`, `Editing metadata.json for ${publishingPackage.id}`, "edit", this.resourceId);
-      this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.codeString, `/${publishingPackage.id}/${publishingPackage.id}.csx`, `Editing package.json for ${publishingPackage.id}`, "edit", this.resourceId);
-    }
-    else{
-      this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.codeString, `/${publishingPackage.id}/${publishingPackage.id}.csx`, `Adding detector code for ${publishingPackage.id}`, "add", this.resourceId);
-      this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.codeString, `/${publishingPackage.id}/${publishingPackage.id}.csx`, `Adding metadata.json for ${publishingPackage.id}`, "add", this.resourceId);
-      this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.codeString, `/${publishingPackage.id}/${publishingPackage.id}.csx`, `Adding package.json for ${publishingPackage.id}`, "add", this.resourceId);
-    }
+  gradPublish(publishingPackage: Package) {
+    this.publishDialogHidden = true;
 
-    //this.diagnosticApiService.makePullRequest()
-  }*/
+    const commitType = this.mode == DevelopMode.Create ? "add" : "edit";
+    const commitMessageStart = this.mode == DevelopMode.Create ? "Adding" : "Editing";
+
+    const DetectorCodeObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.codeString, `/${publishingPackage.id}/${publishingPackage.id}.csx`, `Adding detector code for ${publishingPackage.id}`, "add", this.resourceId);
+    const MetaDataObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.metadata, `/${publishingPackage.id}/metadata.json`, `Adding metadata.json for ${publishingPackage.id}`, "add", this.resourceId);
+    const PackageObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.packageConfig, `/${publishingPackage.id}/package.json`, `Adding package.json for ${publishingPackage.id}`, "add", this.resourceId);
+    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, this.PRTitle, this.resourceId);
+
+    DetectorCodeObservable.subscribe(_ => {
+      MetaDataObservable.subscribe(_ => {
+        PackageObservable.subscribe(_ => {
+          makePullRequestObservable.subscribe(_ => {
+            this.publishSuccess = true;
+            this.postPublish();
+          }, err => {
+            this.publishFailed = true;
+            this.postPublish();
+          });
+        }, err => {
+          this.publishFailed = true;
+          this.postPublish();
+        });
+      }, err => {
+        this.publishFailed = true;
+        this.postPublish();
+      });
+    }, err => {
+      this.publishFailed = true;
+      this.postPublish();
+    });
+  }
+
+  postPublish() {
+    this.modalPublishingButtonText = "Publish";
+    this.getBranchList();
+    this.enablePublishButton();
+    this.enableRunButton();
+  }
 
 
   isCallOutVisible: boolean = false;
+
+  branchToggleCallout() {
+    if (!this.branchButtonDisabled) {
+      this.isCallOutVisible = !this.isCallOutVisible;
+    }
+  }
 
   toggleCallout() {
     this.isCallOutVisible = !this.isCallOutVisible;
