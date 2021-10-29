@@ -1,0 +1,38 @@
+{
+  "homePageText": {
+    "title": "Container Apps Diagnostics",
+    "description": "Investigate how your container app is performing, diagnose issues, and discover how to improve its reliability.",
+    "searchBarPlaceHolder": "Search for common problems or tools"
+  },
+  "matchRegEx": "/Microsoft.Web/containerApps/",
+  "searchSuffix": "Azure Container App",
+  "azureServiceName": "Container Apps",
+  "armApiConfig": {
+    "armApiVersion": "2021-03-01"
+  },
+  "isSearchEnabled": true,
+  "keystoneDetectorId": "",
+  "liveChatConfig": {
+    "isApplicableForLiveChat": false,
+    "supportTopicIds": []
+  },
+  "categories": [
+    {
+      "id": "availabilityandperformanceca",
+      "name": "Availability and Performance",
+      "description": "Check your container app's health and discover performance issues",
+      "keywords": [
+        "Service Down",
+        "Platform Health",
+        "5xx",
+        "4xx"
+      ],
+      "color": "rgb(208, 175, 239)",
+      "createFlowForCategory": true,
+      "chatEnabled": false,
+      "overviewDetectorId": "ContainerAppAvailabilityMetrics"
+		}
+	],
+    "disableGenie": true,
+	"pesId": "17677"
+}
