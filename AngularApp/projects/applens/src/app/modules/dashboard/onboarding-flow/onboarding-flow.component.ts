@@ -174,6 +174,7 @@ export class OnboardingFlowComponent implements OnInit {
   };
 
   detectorGraduation: boolean;
+  autoMerge: boolean = true;
 
   buttonStyle: IButtonStyles = {
     root: {
@@ -328,6 +329,10 @@ export class OnboardingFlowComponent implements OnInit {
 
 
   ngOnInit() {
+    this.diagnosticApiService.getDetectorGraduationSetting().subscribe(graduationFlag => {
+      this.detectorGraduation = graduationFlag;
+    
+
     if (!this.initialized) {
       this.initialize();
       this.initialized = true;
@@ -338,10 +343,6 @@ export class OnboardingFlowComponent implements OnInit {
       this.timePickerButtonStr = s;
     });
 
-    this.diagnosticApiService.getDetectorGraduationSetting().subscribe(graduationFlag => {
-      this.detectorGraduation = graduationFlag;
-    });
-
     this.getBranchList();
 
     if (this._detectorControlService.isInternalView) {
@@ -350,6 +351,8 @@ export class OnboardingFlowComponent implements OnInit {
     else {
       this.internalExternalText = this.externalViewText;
     }
+
+  });
   }
 
   getBranchList() {
@@ -1066,21 +1069,41 @@ export class OnboardingFlowComponent implements OnInit {
     const commitType = this.mode == DevelopMode.Create ? "add" : "edit";
     const commitMessageStart = this.mode == DevelopMode.Create ? "Adding" : "Editing";
 
+    if (this.autoMerge){
+      this.Branch = this.defaultBranch;
+    }
+
     const DetectorCodeObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.codeString, `/${publishingPackage.id}/${publishingPackage.id}.csx`, `Adding detector code for ${publishingPackage.id}`, "add", this.resourceId);
     const MetaDataObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.metadata, `/${publishingPackage.id}/metadata.json`, `Adding metadata.json for ${publishingPackage.id}`, "add", this.resourceId);
     const PackageObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.packageConfig, `/${publishingPackage.id}/package.json`, `Adding package.json for ${publishingPackage.id}`, "add", this.resourceId);
     const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, this.PRTitle, this.resourceId);
+    const autoMergeObservable = this.diagnosticApiService.merge(this.Branch, publishingPackage. id,this.resourceId);
 
     DetectorCodeObservable.subscribe(_ => {
       MetaDataObservable.subscribe(_ => {
         PackageObservable.subscribe(_ => {
-          makePullRequestObservable.subscribe(_ => {
-            this.publishSuccess = true;
-            this.postPublish();
-          }, err => {
-            this.publishFailed = true;
-            this.postPublish();
-          });
+          if (!this.autoMerge){
+            makePullRequestObservable.subscribe(_ => {
+              // if (this.autoMerge){
+              //   autoMergeObservable.subscribe(_ => {
+              //     this.publishSuccess = true;
+              //     this.postPublish();
+              //   }, err => {
+              //     this.publishFailed = true;
+              //     this.postPublish();
+              //   });
+              // }
+              // else{
+              //   this.publishSuccess = true;
+              //   this.postPublish();
+              // }
+              this.publishSuccess = true;
+              this.postPublish();
+            }, err => {
+              this.publishFailed = true;
+              this.postPublish();
+            });
+          }
         }, err => {
           this.publishFailed = true;
           this.postPublish();
@@ -1201,12 +1224,22 @@ export class OnboardingFlowComponent implements OnInit {
     let detectorFile: Observable<string>;
     this.recommendedUtterances = [];
     this.utteranceInput = "";
-    this.githubService.getMetadataFile(this.id).subscribe(res => {
-      this.allUtterances = JSON.parse(res).utterances;
-    },
-      (err) => {
-        this.allUtterances = [];
-      });
+    if (this.detectorGraduation){
+      this.diagnosticApiService.getDetectorCode(`${this.id}/metadata.json`, this.Branch, this.resourceId).subscribe(res => {
+        this.allUtterances = JSON.parse(res).utterances;
+      },
+        (err) => {
+          this.allUtterances = [];
+        });
+    }
+    else{
+      this.githubService.getMetadataFile(this.id).subscribe(res => {
+        this.allUtterances = JSON.parse(res).utterances;
+      },
+        (err) => {
+          this.allUtterances = [];
+        });
+    }
     this.compilationPackage = new CompilationProperties();
 
     switch (this.mode) {
@@ -1220,7 +1253,12 @@ export class OnboardingFlowComponent implements OnInit {
       }
       case DevelopMode.Edit: {
         this.fileName = `${this.id}.csx`;
-        detectorFile = this.githubService.getSourceFile(this.id);
+        if (this.detectorGraduation){
+          detectorFile = this.diagnosticApiService.getDetectorCode(`${this.id}/${this.id}.csx`, this.Branch, this.resourceId)
+        }
+        else {
+          detectorFile = this.githubService.getSourceFile(this.id);
+        }
         this.startTime = this._detectorControlService.startTime;
         this.endTime = this._detectorControlService.endTime;
         break;

@@ -439,7 +439,18 @@ export class DiagnosticApiService {
     body['title'] = title;
     body['resourceUri'] = resourceUri;
 
-    let path = "devops/makePR?"+"&sourceBranch="+sourceBranch+"&targetBranch="+targetBranch+"&title="+title;
+    let path = `devops/makePR`;
+    return this.invoke(path, HttpMethod.POST, body);
+  }
+
+  public merge(branch: string, detectorName: string, resourceUri: string){
+
+    var body = {};
+    body['branch'] = branch;
+    body['detectorName'] = detectorName;
+    body['resourceUri'] = resourceUri;
+
+    let path = `devops/merge`;
     return this.invoke(path, HttpMethod.POST, body);
   }
 

@@ -197,6 +197,10 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getBranches(resourceId);
   }
 
+  merge(branch: string, detectorName: string, resourceUri: string){
+    return this._diagnosticApi.merge(branch, detectorName, this.resourceId)
+  }
+
   getDetectorGraduationSetting() {
     return this._diagnosticApi.getDetectorGraduationSetting();
   }
