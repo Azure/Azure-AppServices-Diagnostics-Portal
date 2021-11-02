@@ -30,7 +30,7 @@ export class MainComponent implements OnInit {
       resourceType: ResourceType.Site,
       resourceTypeLabel: 'App name',
       routeName: (name) => `sites/${name}`,
-      displayName: 'Azure Web App',
+      displayName: 'App',
       enabled: true,
       caseId: false
     },
@@ -38,7 +38,7 @@ export class MainComponent implements OnInit {
       resourceType: ResourceType.AppServiceEnvironment,
       resourceTypeLabel: 'ASE name',
       routeName: (name) => `hostingEnvironments/${name}`,
-      displayName: 'Azure App Service Environment',
+      displayName: 'App Service Environment',
       enabled: true,
       caseId: false
     },
@@ -54,7 +54,7 @@ export class MainComponent implements OnInit {
       resourceType: null,
       resourceTypeLabel: 'Session Id',
       routeName: (name) => this.getFakeArmResource('Microsoft.AzurePortal', 'sessions', name),
-      displayName: 'Azure Portal Session',
+      displayName: 'Portal Session',
       enabled: true,
       caseId: false
     },
@@ -62,7 +62,7 @@ export class MainComponent implements OnInit {
       resourceType: null,
       resourceTypeLabel: 'Virtual machine Id',
       routeName: (name) => this.getFakeArmResource('Microsoft.Compute', 'virtualMachines', name),
-      displayName: 'Azure Virtual Machine',
+      displayName: 'Virtual Machine',
       enabled: true,
       caseId: false
     },
@@ -70,7 +70,7 @@ export class MainComponent implements OnInit {
       resourceType: ResourceType.ContainerApp,
       resourceTypeLabel: 'Container App Name',
       routeName: (name) => `containerapps/${name}`,
-      displayName: 'Azure Container App',
+      displayName: 'Container App',
       enabled: true,
       caseId: false
     }
@@ -135,13 +135,13 @@ export class MainComponent implements OnInit {
         if (resource && resource.displayName) set.add(resource.displayName.toLowerCase());
       });
       this.enabledResourceTypes.forEach(type => {
-        if (type && type.searchSuffix && !set.has(type.searchSuffix.toLowerCase())) {
-          set.add(type.searchSuffix.toLowerCase());
+        if (type && type.displayName && !set.has(type.displayName.toLowerCase())) {
+          set.add(type.displayName.toLowerCase());
           this.resourceTypes.push({
             resourceType: null,
             resourceTypeLabel: 'ARM resource ID',
             routeName: (name) => `${name}`,
-            displayName: `${type.searchSuffix}`,
+            displayName: `${type.displayName}`,
             enabled: true,
             caseId: false
           });

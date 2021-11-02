@@ -23,6 +23,7 @@ export class CollapsibleMenuItemComponent {
 
   @Input() menuItem: CollapsibleMenuItem;
   @Input() level: number = 0;
+  @Input() boldText: boolean = false;
   @Input() set searchValue(value) {
     this._searchValueSubject.next(value);
   };

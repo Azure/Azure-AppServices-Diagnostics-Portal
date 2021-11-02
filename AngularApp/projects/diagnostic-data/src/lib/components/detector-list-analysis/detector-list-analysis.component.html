@@ -49,7 +49,7 @@
             </div>
             <div *ngIf="issueDetectedViewModels.length > 0 || getPendingDetectorCount() > 0">
               <collapsible-list-fabric [collapsed]="false"
-                [title]="'Observation and Solutions (' + issueDetectedViewModels.length + ')'">
+                [title]="'Observations and Solutions (' + issueDetectedViewModels.length + ')'">
                 <collapsible-list-item body>
                   <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
                     <fab-card [expanded]="false" [isExpandable]="!!viewModel.insightDescription" [isAlign]="true">
