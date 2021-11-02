@@ -417,12 +417,12 @@ export class DiagnosticApiService {
     return this.invoke(path, HttpMethod.GET);
   }
 
-  public pushDetectorChanges(branch: string, file: string, repoPath: string, comment: string, changeType: string, resourceUri: string){
+  public pushDetectorChanges(branch: string, files: string[], repoPaths: string[], comment: string, changeType: string, resourceUri: string){
 
     var body = {};
     body['branch'] = branch;
-    body['file'] = file;
-    body['repoPath'] = repoPath;
+    body['files'] = files;
+    body['repoPaths'] = repoPaths;
     body['comment'] = comment;
     body['changeType'] = changeType;
     body['resourceUri'] = resourceUri;

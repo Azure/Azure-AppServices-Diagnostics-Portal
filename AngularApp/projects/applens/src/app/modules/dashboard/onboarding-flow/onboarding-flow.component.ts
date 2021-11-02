@@ -1073,18 +1073,27 @@ export class OnboardingFlowComponent implements OnInit {
     const commitType = this.mode == DevelopMode.Create ? "add" : "edit";
     const commitMessageStart = this.mode == DevelopMode.Create ? "Adding" : "Editing";
 
+    let gradPublishFiles: string[] = [
+      publishingPackage.codeString,
+      publishingPackage.metadata,
+      publishingPackage.packageConfig
+    ];
+
+
+    let gradPublishFileTitles: string[] = [
+      `/${publishingPackage.id}/${publishingPackage.id}.csx`,
+      `/${publishingPackage.id}/metadata.json`,
+      `/${publishingPackage.id}/package.json`
+    ];
+
     if (this.autoMerge){
       this.Branch = this.defaultBranch;
     }
 
-    const DetectorCodeObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.codeString, `/${publishingPackage.id}/${publishingPackage.id}.csx`, `${commitMessageStart} detector code for ${publishingPackage.id}`, commitType, this.resourceId);
-    const MetaDataObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.metadata, `/${publishingPackage.id}/metadata.json`, `${commitMessageStart} metadata.json for ${publishingPackage.id}`, commitType, this.resourceId);
-    const PackageObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.packageConfig, `/${publishingPackage.id}/package.json`, `${commitMessageStart} package.json for ${publishingPackage.id}`, commitType, this.resourceId);
+    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${publishingPackage.id}`, commitType, this.resourceId);
     const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, this.PRTitle, this.resourceId);
 
-    DetectorCodeObservable.subscribe(_ => {
-      MetaDataObservable.subscribe(_ => {
-        PackageObservable.subscribe(_ => {
+    DetectorObservable.subscribe(_ => {
           if (!this.autoMerge){
             makePullRequestObservable.subscribe(_ => {
               this.publishSuccess = true;
@@ -1098,14 +1107,6 @@ export class OnboardingFlowComponent implements OnInit {
             this.publishSuccess = true;
             this.postPublish();
           }
-        }, err => {
-          this.publishFailed = true;
-          this.postPublish();
-        });
-      }, err => {
-        this.publishFailed = true;
-        this.postPublish();
-      });
     }, err => {
       this.publishFailed = true;
       this.postPublish();
@@ -1293,14 +1294,7 @@ export class OnboardingFlowComponent implements OnInit {
 
     forkJoin(detectorFile, configuration, this.diagnosticApiService.getGists()).subscribe(res => {
       this.codeLoaded = true;
-      if (this.detectorGraduation && !(this.mode == DevelopMode.Create)){
-        this.diagnosticApiService.getDetectorCode(`${this.id}/${this.id}.csx`, this.Branch, this.resourceId).subscribe(x => {
-          this.code = x;
-        }); 
-      }
-      else{
-        this.code = res[0];
-      }
+      this.code = res[0];
       this.originalCode = this.code;
       if (res[1] !== null) {
         this.gists = Object.keys(this.configuration['dependencies']);
