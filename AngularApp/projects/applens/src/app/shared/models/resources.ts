@@ -63,6 +63,7 @@ export interface ResourceServiceInputs {
     altIcons?: { [path: string]: string };
     searchSuffix: string;
     emergingIssuesICMLookupEnabled?: boolean;
+    displayName?: string;
 }
 
 export const RESOURCE_SERVICE_INPUTS = new InjectionToken<ResourceServiceInputs>('ResourceServiceInputs');
