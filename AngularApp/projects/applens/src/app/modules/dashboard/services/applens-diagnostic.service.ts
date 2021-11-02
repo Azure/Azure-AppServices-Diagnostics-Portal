@@ -204,4 +204,8 @@ export class ApplensDiagnosticService {
   getDetectorGraduationSetting() {
     return this._diagnosticApi.getDetectorGraduationSetting();
   }
+
+  getAutoMergeSetting() {
+    return this._diagnosticApi.getAutoMergeSetting();
+  }
 }

@@ -174,7 +174,7 @@ export class OnboardingFlowComponent implements OnInit {
   };
 
   detectorGraduation: boolean;
-  autoMerge: boolean = true;
+  autoMerge: boolean;
 
   buttonStyle: IButtonStyles = {
     root: {
@@ -341,6 +341,10 @@ export class OnboardingFlowComponent implements OnInit {
 
     this._detectorControlService.timePickerStrSub.subscribe(s => {
       this.timePickerButtonStr = s;
+    });
+
+    this.diagnosticApiService.getAutoMergeSetting().subscribe(x => {
+      this.autoMerge = x;
     });
 
     this.getBranchList();
@@ -1073,36 +1077,26 @@ export class OnboardingFlowComponent implements OnInit {
       this.Branch = this.defaultBranch;
     }
 
-    const DetectorCodeObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.codeString, `/${publishingPackage.id}/${publishingPackage.id}.csx`, `Adding detector code for ${publishingPackage.id}`, "add", this.resourceId);
-    const MetaDataObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.metadata, `/${publishingPackage.id}/metadata.json`, `Adding metadata.json for ${publishingPackage.id}`, "add", this.resourceId);
-    const PackageObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.packageConfig, `/${publishingPackage.id}/package.json`, `Adding package.json for ${publishingPackage.id}`, "add", this.resourceId);
+    const DetectorCodeObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.codeString, `/${publishingPackage.id}/${publishingPackage.id}.csx`, `${commitMessageStart} detector code for ${publishingPackage.id}`, commitType, this.resourceId);
+    const MetaDataObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.metadata, `/${publishingPackage.id}/metadata.json`, `${commitMessageStart} metadata.json for ${publishingPackage.id}`, commitType, this.resourceId);
+    const PackageObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, publishingPackage.packageConfig, `/${publishingPackage.id}/package.json`, `${commitMessageStart} package.json for ${publishingPackage.id}`, commitType, this.resourceId);
     const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, this.PRTitle, this.resourceId);
-    const autoMergeObservable = this.diagnosticApiService.merge(this.Branch, publishingPackage. id,this.resourceId);
 
     DetectorCodeObservable.subscribe(_ => {
       MetaDataObservable.subscribe(_ => {
         PackageObservable.subscribe(_ => {
           if (!this.autoMerge){
             makePullRequestObservable.subscribe(_ => {
-              // if (this.autoMerge){
-              //   autoMergeObservable.subscribe(_ => {
-              //     this.publishSuccess = true;
-              //     this.postPublish();
-              //   }, err => {
-              //     this.publishFailed = true;
-              //     this.postPublish();
-              //   });
-              // }
-              // else{
-              //   this.publishSuccess = true;
-              //   this.postPublish();
-              // }
               this.publishSuccess = true;
               this.postPublish();
             }, err => {
               this.publishFailed = true;
               this.postPublish();
             });
+          }
+          else{
+            this.publishSuccess = true;
+            this.postPublish();
           }
         }, err => {
           this.publishFailed = true;

@@ -466,7 +466,13 @@ export class DiagnosticApiService {
     }));
   }
   public getDetectorGraduationSetting(): Observable<boolean> {
-    const path = "api/appsettings/DetectorGraduation";
+    const path = "api/appsettings/DetectorGraduation:GraduationEnabled";
+    return this.get<boolean>(path).pipe(map((res:string) => {
+      return res.toLowerCase() === "true";
+    }));
+  }
+  public getAutoMergeSetting(): Observable<boolean> {
+    const path = "api/appsettings/DetectorGraduation:AutoMergeEnabled";
     return this.get<boolean>(path).pipe(map((res:string) => {
       return res.toLowerCase() === "true";
     }));
