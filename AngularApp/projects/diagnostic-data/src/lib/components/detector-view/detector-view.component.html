@@ -4,7 +4,7 @@
       {{overWriteDetectorName}}
     </span>
   </div>
-  <div *ngIf="!isSystemInvoker && !insideDetectorList" class="blade-description">&nbsp;- &nbsp;</div>
+  <div *ngIf="!isSystemInvoker && !insideDetectorList && !!(overWriteDetectorDescription || detectorDataLocalCopy.metadata.description)" class="blade-description">&nbsp;- &nbsp;</div>
   <div class="blade-description">
     <span *ngIf="overWriteDetectorDescription && overWriteDetectorDescription.length > 0;else detectorDescription">
       {{overWriteDetectorDescription}}
