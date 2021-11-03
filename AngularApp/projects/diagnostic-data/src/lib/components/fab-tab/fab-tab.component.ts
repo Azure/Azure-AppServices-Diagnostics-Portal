@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Icon, IPivotItemProps } from 'office-ui-fabric-react';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { Rendering, DiagnosticData, DataTableResponseObject, TabRendering } from '../../models/detector';
+import { JsonUtilities } from '../../utilities/json-utilities';
 
 @Component({
   selector: 'fab-tab',
@@ -53,8 +54,10 @@ export class FabTabComponent extends DataRenderBaseComponent {
 
       const tabInfo: TabRendering = tabInfoBuilder as TabRendering;
       const data: string = row[valueColumn];
-      const rawJson: any = JSON.parse(data);
-      const diagnosticDataList: DiagnosticData[] = <DiagnosticData[]>rawJson;
+
+      let diagnosticDataList: DiagnosticData[] = JsonUtilities.parseData(data);
+      diagnosticDataList = diagnosticDataList ? diagnosticDataList : [];
+      
       this.contentMapping.set(label, diagnosticDataList);
       this.mappingKeys.push(tabInfo);
 

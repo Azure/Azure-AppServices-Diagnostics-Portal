@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IDropdownOption, IDropdownProps } from 'office-ui-fabric-react';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { Rendering, DiagnosticData, DataTableResponseObject } from '../../models/detector';
+import { JsonUtilities } from '../../utilities/json-utilities';
 
 enum DropdownType {
   Legacy,
@@ -61,8 +62,10 @@ export class DropdownV4Component extends DataRenderBaseComponent {
       const key: string = row[keyColumn];
       const selected: boolean = row[selectedColumn];
       const data: string = row[valueColumn];
-      const rawJson: any = JSON.parse(data);
-      const diagnosticDataList: DiagnosticData[] = <DiagnosticData[]>rawJson;
+      
+
+      let diagnosticDataList: DiagnosticData[] = JsonUtilities.parseData(data);
+      diagnosticDataList = diagnosticDataList ? diagnosticDataList : [];
 
       const dropdownTypeStr: string = row[dropdownTypeColumn];
       this.dropdownType = DropdownType[dropdownTypeStr];
