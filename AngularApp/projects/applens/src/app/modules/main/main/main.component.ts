@@ -282,7 +282,7 @@ export class MainComponent implements OnInit {
       const display: RecentResourceDisplay = {
         name: name,
         imgSrc: resourceType ? resourceType.imgSrc : "",
-        type: resourceType ? resourceType.searchSuffix : "",
+        type: resourceType ? resourceType.displayName : "",
         kind: recentResource.kind,
         resourceUri: recentResource.resourceUri
       }
@@ -298,13 +298,13 @@ export class MainComponent implements OnInit {
   private updateDisplayWithKind(kind: string, recentResourceDisplay: RecentResourceDisplay) {
     if (kind && kind.toLowerCase().indexOf("workflowapp") !== -1) {
       recentResourceDisplay.imgSrc = "assets/img/Azure-LogicAppsPreview-Logo.svg";
-      recentResourceDisplay.type = "Azure Logic App";
+      recentResourceDisplay.type = "Logic App";
     } else if (kind && kind.toLowerCase().indexOf("functionapp") !== -1) {
       recentResourceDisplay.imgSrc = "assets/img/Azure-Functions-Logo.png";
-      recentResourceDisplay.type = "Azure Function App";
+      recentResourceDisplay.type = "Function App";
     } else if (kind && kind.toLowerCase().indexOf("linux") !== -1) {
       recentResourceDisplay.imgSrc = "assets/img/Azure-Tux-Logo.png";
-      recentResourceDisplay.type = "Azure Linux Web App";
+      recentResourceDisplay.type = "Linux Web App";
     }
   }
 

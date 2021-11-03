@@ -172,22 +172,22 @@
 
 
   <fab-panel [isOpen]="publishSuccess || publishFailed" [isLightDismiss]="true" [type]="PanelType.custom"
-    [customWidth]="'auto'" [isHiddenOnDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
+    [customWidth]="'auto'" [isHiddenOnDismiss]="true" [hasCloseButton]="false" [closeButtonAriaLabel]="'close'"
     [styles]="submittedPanelStyles" [isBlocking]="false" (onDismissed)="dismissPublishSuccessHandler()"
-    (onOpen)="onOpenPublishSuccessPanel()">
+    (onOpen)="onOpenPublishSuccessPanel()" >
     <div class="submitted-panel-text panel-text">
       <div style="display: flex;align-items: center; margin-left: 4px; margin-right: 8px;">
-        <ng-container *ngIf="publishSuccess">
+        <div *ngIf="publishSuccess" style="display: flex; align-items: center; padding: 0px 10px;">
           <status-icon [status]="HealthStatus.Success" class="mr-3"></status-icon>
           <div>
-            <h5>Your detector {{detectorName}} was saved</h5>
+            <h5 style="font-weight: 600;">Your detector {{detectorName}} was saved</h5>
           </div>
-        </ng-container>
+        </div>
 
-        <ng-container *ngIf="publishFailed">
+        <div *ngIf="publishFailed" style="display: flex; align-items: center; padding: 0px 10px;">
           <status-icon [status]="HealthStatus.Critical" class="mr-3"></status-icon>
-          <div>Your detector {{detectorName}} publish failed </div>
-        </ng-container>
+          <div style="font-weight: 600;">Your detector {{detectorName}} publish failed </div>
+        </div>
 
       </div>
       <div style="margin-top: auto; margin-bottom: auto; margin-right: 20px">
