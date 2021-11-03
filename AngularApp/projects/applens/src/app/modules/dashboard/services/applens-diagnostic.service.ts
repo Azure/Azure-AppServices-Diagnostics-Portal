@@ -185,8 +185,8 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getDetectorCode(detectorPath, branch, resourceUri);
   }
 
-  pushDetectorChanges(branch: string, file: string, repoPath: string, comment: string, changeType: string, resourceUri: string) {
-    return this._diagnosticApi.pushDetectorChanges(branch, file, repoPath, comment, changeType, resourceUri);
+  pushDetectorChanges(branch: string, files: string[], repoPaths: string[], comment: string, changeType: string, resourceUri: string) {
+    return this._diagnosticApi.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri);
   }
 
   makePullRequest(sourceBranch: string, targetBranch: string, title: string, resourceUri: string) {
@@ -197,7 +197,15 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getBranches(resourceId);
   }
 
+  merge(branch: string, detectorName: string, resourceUri: string){
+    return this._diagnosticApi.merge(branch, detectorName, this.resourceId)
+  }
+
   getDetectorGraduationSetting() {
     return this._diagnosticApi.getDetectorGraduationSetting();
+  }
+
+  getAutoMergeSetting() {
+    return this._diagnosticApi.getAutoMergeSetting();
   }
 }
