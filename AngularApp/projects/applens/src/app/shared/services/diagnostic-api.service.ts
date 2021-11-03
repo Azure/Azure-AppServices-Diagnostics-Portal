@@ -417,12 +417,12 @@ export class DiagnosticApiService {
     return this.invoke(path, HttpMethod.GET);
   }
 
-  public pushDetectorChanges(branch: string, file: string, repoPath: string, comment: string, changeType: string, resourceUri: string){
+  public pushDetectorChanges(branch: string, files: string[], repoPaths: string[], comment: string, changeType: string, resourceUri: string){
 
     var body = {};
     body['branch'] = branch;
-    body['file'] = file;
-    body['repoPath'] = repoPath;
+    body['files'] = files;
+    body['repoPaths'] = repoPaths;
     body['comment'] = comment;
     body['changeType'] = changeType;
     body['resourceUri'] = resourceUri;
@@ -439,7 +439,18 @@ export class DiagnosticApiService {
     body['title'] = title;
     body['resourceUri'] = resourceUri;
 
-    let path = "devops/makePR?"+"&sourceBranch="+sourceBranch+"&targetBranch="+targetBranch+"&title="+title;
+    let path = `devops/makePR`;
+    return this.invoke(path, HttpMethod.POST, body);
+  }
+
+  public merge(branch: string, detectorName: string, resourceUri: string){
+
+    var body = {};
+    body['branch'] = branch;
+    body['detectorName'] = detectorName;
+    body['resourceUri'] = resourceUri;
+
+    let path = `devops/merge`;
     return this.invoke(path, HttpMethod.POST, body);
   }
 
@@ -455,7 +466,13 @@ export class DiagnosticApiService {
     }));
   }
   public getDetectorGraduationSetting(): Observable<boolean> {
-    const path = "api/appsettings/DetectorGraduation";
+    const path = "api/appsettings/DetectorGraduation:GraduationEnabled";
+    return this.get<boolean>(path).pipe(map((res:string) => {
+      return res.toLowerCase() === "true";
+    }));
+  }
+  public getAutoMergeSetting(): Observable<boolean> {
+    const path = "api/appsettings/DetectorGraduation:AutoMergeEnabled";
     return this.get<boolean>(path).pipe(map((res:string) => {
       return res.toLowerCase() === "true";
     }));
