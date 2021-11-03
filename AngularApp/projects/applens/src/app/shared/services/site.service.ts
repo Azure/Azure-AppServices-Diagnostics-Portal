@@ -23,7 +23,7 @@ export class SiteService extends ResourceService {
         this._observerResource = this._siteObject = this.getSiteFromObserverResponse(observerResponse);
         this._currentResource.next(this._siteObject);
         this.updatePesIdAndImgSrc();
-        return new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix,this.getCurrentResourceId(),this._siteObject.Kind);
+        return new ResourceInfo(this.getResourceName(),this.imgSrc,this.displayName,this.getCurrentResourceId(),this._siteObject.Kind);
       }))
   }
 
@@ -50,20 +50,20 @@ export class SiteService extends ResourceService {
             this.pesId = '17378';
             this.imgSrc = 'assets/img/Azure-LogicAppsPreview-Logo.svg';
             this.staticSelfHelpContent = 'microsoft.logicapps';
-            this.searchSuffix = "AZURE Logic APP";
+            this.displayName = "Logic APP";
             this.templateFileName = "WorkflowApp";
         }
         else if (this._siteObject.Kind && this._siteObject.Kind.toString().toLowerCase().indexOf("functionapp") !== -1) {
             this.pesId = '16072';
             this.imgSrc = 'assets/img/Azure-Functions-Logo.png';
             this.staticSelfHelpContent = 'microsoft.function';
-            this.searchSuffix = "AZURE FUNCTION APP";
+            this.displayName = "FUNCTION APP";
             this.templateFileName = "FunctionApp";
         }
         else if (this._siteObject.IsLinux != undefined && this._siteObject.IsLinux) {
             this.pesId = '16170';
             this.imgSrc = 'assets/img/Azure-Tux-Logo.png';
-            this.searchSuffix = "AZURE LINUX WEB APP";
+            this.displayName = "LINUX WEB APP";
             this.templateFileName = "LinuxApp";
         }
     }

@@ -42,7 +42,7 @@ export class L2SideNavComponent implements OnInit {
           },
           main: {
             boxShadow: "none",
-            borderRight: "5px solid grey"
+            borderRight: "1px solid #ccc"
           }
         }
       });

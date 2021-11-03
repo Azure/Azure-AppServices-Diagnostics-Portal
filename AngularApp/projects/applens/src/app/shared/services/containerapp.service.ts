@@ -22,7 +22,7 @@ export class ContainerAppService extends ResourceService {
       .pipe(map((observerResponse: Observer.ObserverContainerAppResponse) => {
         this._observerResource = this._containerAppObject = this.getContainerAppFromObserverResponse(observerResponse);
         this._currentResource.next(this._containerAppObject);
-        return new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix,this.getCurrentResourceId());
+        return new ResourceInfo(this.getResourceName(),this.imgSrc,this.displayName,this.getCurrentResourceId());
       }))
   }
 
