@@ -13,6 +13,7 @@ export class ResourceService {
   public pesId: string;
   public staticSelfHelpContent: string;
   public altIcons: { [path: string]: string };
+  public displayName: string;
   public searchSuffix: string;
   public emergingIssuesICMLookupEnabled: boolean;
 
@@ -29,12 +30,13 @@ export class ResourceService {
     this.pesId = inputs.pesId;
     this.staticSelfHelpContent = inputs.staticSelfHelpContent;
     this.altIcons = inputs.altIcons;
+    this.displayName = inputs.displayName;
     this.searchSuffix = inputs.searchSuffix;
     this.emergingIssuesICMLookupEnabled = (inputs.emergingIssuesICMLookupEnabled !== undefined && inputs.emergingIssuesICMLookupEnabled);
   }
 
   public startInitializationObservable() {
-    this._initialized = observableOf(new ResourceInfo(this.getResourceName(),this.imgSrc,this.searchSuffix,this.getCurrentResourceId()));
+    this._initialized = observableOf(new ResourceInfo(this.getResourceName(),this.imgSrc,this.displayName,this.getCurrentResourceId()));
   }
 
   public waitForInitialization(): Observable<ResourceInfo> {
