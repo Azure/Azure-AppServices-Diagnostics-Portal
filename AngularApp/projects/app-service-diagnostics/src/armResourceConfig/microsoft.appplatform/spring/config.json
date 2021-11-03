@@ -17,29 +17,34 @@
 		"supportTopicIds": []
 	},
 	"categories": [{
-			"id": "AvailabilityAndPerformance",
+			"id": "availabilityandperformancespring",
 			"name": "Availability and Performance",
-			"description": "Is your app experiencing app downtime or slowness? Are your configurations for Config Server experiencing unresponsiveness? Investigate and discover issues that may impact your app availability.",
-			"keywords": ["Downtime", "Discovery", "Config Sever", "App Health", "Deploy Jar Artifact"],
+			"description": "Investigate and discover issues that may impact your app availability.",
+			"keywords": ["Downtime", "Discovery", "App Health", "Deploy Jar Artifact"],
 			"color": "rgb(208, 228, 176)",
-			"createFlowForCategory": false,
-			"chatEnabled": false
-		}, {
-			"id": "ConfigurationsAndManagement",
+			"createFlowForCategory": true,
+			"chatEnabled": false,
+            "overviewDetectorId": "springAvailabilityAndPerformanceOverview"
+		},
+		{
+			"id": "configurationsandmanagementspring",
 			"name": "Configurations and Management",
-			"description": "Are you having issues exporting platform logs or distributed tracing? Are you having issue with some settings that you configured for your app? Find out if you misconfigured some features of Azure Spring Cloud, such as Log Analytics, App Insights, scaling, deployments and domain.",
+			"description": "Find out if you misconfigured some features of Azure Spring Cloud.",
 			"keywords": ["Log", "Metrics", "Distributed Tracing", "Scaling", "Swap", "Custom Domain", "SSL"],
 			"color": "rgb(249, 213, 180)",
-			"createFlowForCategory": false,
-			"chatEnabled": false
-		}, {
-			"id": "Networking",
+			"createFlowForCategory": true,
+			"chatEnabled": false,
+			"overviewDetectorId": "SpringConfigurationsManagementOverview"
+		}, 
+		{
+			"id": "networkingspring",
 			"name": "Networking",
-            "description": "Are you having network connectivity issues when Azure Spring Cloud is deployed in your own virtual network? Find out if you misconfigured the Private DNS Zone, Custom DNS Server or blocked required outbound traffic in your VNet injected service instance.",
+            "description": "Discover issues with your own virtual network connectivity.",
             "keywords": [ "Virtual Network", "Custom DNS Server", "Private DNS Zone", "Firewall" ],
 			"color": "rgb(208, 228, 176)",
-			"createFlowForCategory": false,
-			"chatEnabled": false
+			"createFlowForCategory": true,
+			"chatEnabled": false,
+			"overviewDetectorId": "springNetworkOverview"
 		}
 	],
 	"pesId": "16860"

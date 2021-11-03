@@ -12,8 +12,9 @@
             "altIcons": {
                 "Xenon": "assets/img/WebAppForContainers.svg"
             },
-            "searchSuffix": "Azure Web App",
-            "emergingIssuesICMLookupEnabled": false
+            "searchSuffix": "AZURE WEB APP",
+            "emergingIssuesICMLookupEnabled": false,
+            "displayName": "App"
         },
         {
             "service": "AseService",
@@ -24,8 +25,9 @@
             "azureCommImpactedServicesList": "appservice",
             "pesId": "16533",
             "staticSelfHelpContent": "microsoft.ase",
-            "searchSuffix": "Azure App Service Environment",
-            "emergingIssuesICMLookupEnabled": false
+            "searchSuffix": "AZURE APP SERVICE ENVIRONMENT",
+            "emergingIssuesICMLookupEnabled": false,
+            "displayName": "App Service Environment"
         },
         {
             "service": "ResourceService",
@@ -36,7 +38,8 @@
             "azureCommImpactedServicesList": "logicapp",
             "pesId": "15791",
             "staticSelfHelpContent": "microsoft.logicapps",
-            "searchSuffix": "Azure Logic App"
+            "searchSuffix": "AZURE LOGIC APP",
+            "displayName": "Logic App (Consumption)"
         },
         {
             "service": "ContainerAppService",
@@ -47,7 +50,8 @@
             "azureCommImpactedServicesList": "containerapp",
             "pesId": "17677",
             "staticSelfHelpContent": "microsoft.web",
-            "searchSuffix": "Azure Container App"
+            "searchSuffix": "AZURE CONTAINER APP",
+            "displayName": "Container App"
         },
         {
             "service": "ResourceService",
@@ -58,7 +62,8 @@
             "azureCommImpactedServicesList": "kubernetesservice",
             "pesId": "16450",
             "staticSelfHelpContent": "microsoft.containerservice",
-            "searchSuffix": "Azure Kubernetes Cluster"
+            "searchSuffix": "AZURE KUBERNETES CLUSTER",
+            "displayName": "Kubernetes Service (AKS)"
         },
         {
             "service": "ResourceService",
@@ -69,7 +74,8 @@
             "azureCommImpactedServicesList": "openShiftManagedClusters",
             "pesId": "",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Insights for Containers"
+            "searchSuffix": "AZURE INSIGHTS FOR CONTAINERS",
+            "displayName": "Insights for Containers"
         },
         {
             "service": "ResourceService",
@@ -80,7 +86,8 @@
             "azureCommImpactedServicesList": "openShiftClusters",
             "pesId": "16734",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Red Hat OpenShift Cluster"
+            "searchSuffix": "AZURE RED HAT OPENSHIFT CLUSTER",
+            "displayName": "Red Hat OpenShift Cluster"
         },
         {
             "service": "ResourceService",
@@ -89,7 +96,8 @@
             "imgSrc": "assets/img/BotService-Logo.png",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "botServices",
-            "searchSuffix": "Azure Bot Service"
+            "searchSuffix": "AZURE BOT SERVICE",
+            "displayName": "Bot Service"
         },
         {
             "service": "ResourceService",
@@ -98,7 +106,8 @@
             "imgSrc": "assets/img/Azure-Service-Fabric-Logo.png",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "serviceFabric",
-            "searchSuffix": "Azure Service Fabric"
+            "searchSuffix": "AZURE SERVICE FABRIC",
+            "displayName": "Service Fabric"
         },
         {
             "service": "ResourceService",
@@ -109,7 +118,8 @@
             "azureCommImpactedServicesList": "API Management",
             "pesId": "15551",
             "staticSelfHelpContent": "microsoft.apim",
-            "searchSuffix": "Azure API Management"
+            "searchSuffix": "AZURE API MANAGEMENT",
+            "displayName": "API Management"
         },
         {
             "service": "ResourceService",
@@ -120,7 +130,8 @@
             "azureCommImpactedServicesList": "",
             "pesId": "16512",
             "staticSelfHelpContent": "microsoft.asc",
-            "searchSuffix": "Azure App Service Certificate"
+            "searchSuffix": "AZURE APP SERVICE CERTIFICATE",
+            "displayName": "App Service Certificate"
         },
         {
             "service": "ResourceService",
@@ -131,7 +142,8 @@
             "azureCommImpactedServicesList": "",
             "pesId": "16513",
             "staticSelfHelpContent": "microsoft.asd",
-            "searchSuffix": "Azure App Service Domain"
+            "searchSuffix": "AZURE APP SERVICE DOMAIN",
+            "displayName": "App Service Domain"
         },
         {
             "service": "ResourceService",
@@ -142,7 +154,8 @@
             "azureCommImpactedServicesList": "",
             "pesId": "",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Spring Cloud Service"
+            "searchSuffix": "AZURE SPRING CLOUD SERVICE",
+            "displayName": "Spring Cloud Service"
         },
         {
             "service": "ResourceService",
@@ -153,7 +166,8 @@
             "azureCommImpactedServicesList": "registries",
             "pesId": "16213",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Container Registry"
+            "searchSuffix": "AZURE CONTAINER REGISTRY",
+            "displayName": "Container Registry (ACR)"
         },
         {
             "service": "ResourceService",
@@ -164,7 +178,8 @@
             "azureCommImpactedServicesList": "AzureAutomation",
             "pesId": "15607",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Automation Account"
+            "searchSuffix": "AZURE AUTOMATION ACCOUNT",
+            "displayName": "Automation Account"
         },
         {
             "service": "ResourceService",
@@ -175,7 +190,8 @@
             "azureCommImpactedServicesList": "MachineLearningServices",
             "pesId": "",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Machine Learning Service"
+            "searchSuffix": "AZURE MACHINE LEARNING SERVICE",
+            "displayName": "Machine Learning Service"
         },
         {
             "service": "ResourceService",
@@ -186,7 +202,8 @@
             "azureCommImpactedServicesList": "containerGroups",
             "pesId": "",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Container Instance"
+            "searchSuffix": "AZURE CONTAINER INSTANCE",
+            "displayName": "Container Instance (ACI)"
         },
         {
             "service": "ResourceService",
@@ -197,7 +214,8 @@
             "azureCommImpactedServicesList": "BatchAI",
             "pesId": "",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Batch AI Service"
+            "searchSuffix": "AZURE BATCH AI SERVICE",
+            "displayName": "Batch AI Service"
         },
         {
             "service": "ResourceService",
@@ -208,7 +226,8 @@
             "azureCommImpactedServicesList": "ISE",
             "pesId": "",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Integration Service Environment"
+            "searchSuffix": "AZURE INTEGRATION SERVICE ENVIRONMENT",
+            "displayName": "Integration Service Environment"
         },
         {
             "service": "ResourceService",
@@ -219,7 +238,8 @@
             "azureCommImpactedServicesList": "BatchAccounts",
             "pesId": "15614",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Batch Account"
+            "searchSuffix": "AZURE BATCH ACCOUNT",
+            "displayName": "Batch Account"
         },
         {
             "service": "ResourceService",
@@ -230,7 +250,8 @@
             "azureCommImpactedServicesList": "StorageAccounts",
             "pesId": "15629",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Storage Account"
+            "searchSuffix": "AZURE STORAGE ACCOUNT",
+            "displayName": "Storage Account"
         },
         {
             "service": "ResourceService",
@@ -241,7 +262,8 @@
             "azureCommImpactedServicesList": "ClassicStorageAccounts",
             "pesId": "15629",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Classic Storage Account"
+            "searchSuffix": "AZURE CLASSIC STORAGE ACCOUNT",
+            "displayName": "Classic Storage Account"
         },
         {
             "service": "ResourceService",
@@ -252,7 +274,8 @@
             "azureCommImpactedServicesList": "ApplicationGateways",
             "pesId": "15922",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Application Gateway"
+            "searchSuffix": "AZURE APPLICATION GATEWAY",
+            "displayName": "Application Gateway"
         },
         {
             "service": "ResourceService",
@@ -263,7 +286,8 @@
             "azureCommImpactedServicesList": "ServiceBus",
             "pesId": "13186",
             "staticSelfHelpContent": "Microsoft.ServiceBus",
-            "searchSuffix": "Azure Service Bus"
+            "searchSuffix": "AZURE SERVICE BUS",
+            "displayName": "Service Bus"
         },
         {
             "service": "ResourceService",
@@ -274,7 +298,8 @@
             "azureCommImpactedServicesList": "EventHub",
             "pesId": "16125",
             "staticSelfHelpContent": "Microsoft.EventHub",
-            "searchSuffix": "Azure Event Hub"
+            "searchSuffix": "AZURE EVENT HUB",
+            "displayName": "Event Hub"
         },
         {
             "service": "ResourceService",
@@ -285,7 +310,8 @@
             "azureCommImpactedServicesList": "EventGrid",
             "pesId": "16263",
             "staticSelfHelpContent": "Microsoft.EventGrid",
-            "searchSuffix": "Azure Event Grid"
+            "searchSuffix": "AZURE EVENT GRID",
+            "displayName": "Event Grid"
         },
         {
             "service": "ResourceService",
@@ -296,7 +322,8 @@
             "azureCommImpactedServicesList": "EventGrid",
             "pesId": "16263",
             "staticSelfHelpContent": "Microsoft.EventGrid",
-            "searchSuffix": "Azure Event Grid"
+            "searchSuffix": "AZURE EVENT GRID DOMAINS",
+            "displayName": "Event Grid Domains"
         },
         {
             "service": "ResourceService",
@@ -307,7 +334,8 @@
             "azureCommImpactedServicesList": "Relay",
             "pesId": "16123",
             "staticSelfHelpContent": "Microsoft.Relay",
-            "searchSuffix": "Azure Relay"
+            "searchSuffix": "AZURE RELAY",
+            "displayName": "Relay"
         },
         {
             "service": "ResourceService",
@@ -318,7 +346,8 @@
             "azureCommImpactedServicesList": "SignalRService",
             "pesId": "16477",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Signal Service"
+            "searchSuffix": "AZURE SIGNAL SERVICE",
+            "displayName": "Azure Signal Service"
         },
         {
             "service": "ResourceService",
@@ -329,7 +358,8 @@
             "azureCommImpactedServicesList": "WebPubSubService",
             "pesId": "17465",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Web PubSub Service"
+            "searchSuffix": "AZURE WEB PUBSUB SERVICE",
+            "displayName": "Web PubSub Service"
         },
         { 
             "service": "ResourceService",  
@@ -339,7 +369,8 @@
             "versionPrefix": "", 
             "pesId": "16469",  
             "azureCommImpactedServicesList": "Azure NetApp Files",
-            "searchSuffix": "Azure NetApp File"
+            "searchSuffix": "AZURE NETAPP FILE",
+            "displayName": "NetApp File"
         },
         { 
             "service": "ResourceService",  
@@ -349,7 +380,8 @@
             "versionPrefix": "", 
             "pesId": "14749",  
             "azureCommImpactedServicesList": "Azure Virtual Machines",
-            "searchSuffix": "Azure Virtual Machine" 
+            "searchSuffix": "AZURE VIRTUAL MACHINE",
+            "displayName": "Virtual Machine"
         },
         { 
              "service": "ResourceService",  
@@ -358,7 +390,8 @@
              "imgSrc": "assets/img/AzurePortal.svg",  
              "versionPrefix": "",  
              "azureCommImpactedServicesList": "azurePortal",
-            "searchSuffix": "Azure Portal Session"  
+            "searchSuffix": "AZURE PORTAL SESSION",
+            "displayName": "Portal Session" 
          },
         { 
              "service": "ResourceService",  
@@ -367,7 +400,8 @@
              "imgSrc": "assets/img/AppInsights-Logo.svg",  
              "versionPrefix": "",  
              "azureCommImpactedServicesList": "appInsights",
-            "searchSuffix": "Azure App Insights" 
+            "searchSuffix": "AZURE APPLICATION INSIGHTS",
+            "displayName": "Application Insights"
          },
         { 
              "service": "ResourceService",  
@@ -376,7 +410,8 @@
              "imgSrc": "assets/img/LogAnalytics-Logo.svg",  
              "versionPrefix": "",  
              "azureCommImpactedServicesList": "logAnalytics",
-            "searchSuffix": "Azure Log Analytics" 
+            "searchSuffix": "AZURE LOG ANALYTICS",
+            "displayName": "Log Analytics"
          },
         { 
              "service": "ResourceService",  
@@ -385,7 +420,8 @@
              "imgSrc": "assets/img/StaticSites-Logo.svg",  
              "versionPrefix": "",  
              "azureCommImpactedServicesList": "staticSites",
-            "searchSuffix": "Azure Static Web Apps" 
+            "searchSuffix": "AZURE STATIC WEB APPS",
+            "displayName": "Static Web Apps"
          },
         { 
              "service": "ResourceService",  
@@ -396,7 +432,8 @@
              "pesId": "15585",
              "staticSelfHelpContent": "microsoft.cosmosdb",
              "azureCommImpactedServicesList": "Azure Cosmos DB",
-            "searchSuffix": "Azure Cosmos DB" 
+            "searchSuffix": "AZURE COSMOS DB",
+            "displayName": "Cosmos DB"
          },
         { 
              "service": "ResourceService",  
@@ -407,7 +444,8 @@
              "pesId": "17112",
              "staticSelfHelpContent": "microsoft.kubernetes",
              "azureCommImpactedServicesList": "Azure Arc enabled Kubernetes",
-            "searchSuffix": "Azure Arc enabled Kubernetes" 
+            "searchSuffix": "AZURE ARC ENABLED KUBERNETES",
+            "displayName": "Arc enabled Kubernetes"
          },
          {
             "service": "ResourceService",
@@ -418,7 +456,8 @@
             "azureCommImpactedServicesList": "",
             "pesId": "",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Media Service"
+            "searchSuffix": "AZURE MEDIA SERVICE",
+            "displayName": "Media Service"
         },
         {
             "service": "ResourceService",
@@ -429,7 +468,8 @@
             "azureCommImpactedServicesList": "",
             "pesId": "",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Network Function Manager"
+            "searchSuffix": "AZURE NETWORK FUNCTION MANAGER",
+            "displayName": "Network Function Manager"
         },
         {
             "service": "ResourceService",
@@ -440,7 +480,8 @@
             "azureCommImpactedServicesList": "",
             "pesId": "",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Network Function Manager Device"
+            "searchSuffix": "AZURE NETWORK FUNCTION MANAGER DEVICE",
+            "displayName": "Network Function Manager Device"
         },
         {
             "service": "ResourceService",
@@ -451,7 +492,8 @@
             "azureCommImpactedServicesList": "",
             "pesId": "",
             "staticSelfHelpContent": "",
-            "searchSuffix": "Azure Stack Hub"
+            "searchSuffix": "AZURE STACK HUB",
+            "displayName": "Stack Hub"
         },
         {
             "service": "ResourceService",
@@ -460,7 +502,8 @@
             "imgSrc": "assets/img/ArcK8s-Logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
-            "searchSuffix": "Azure Arc Appliance"
+            "searchSuffix": "AZURE ARC APPLIANCE",
+            "displayName": "Azure Arc Appliance"
         },
         {
             "service": "ResourceService",
@@ -469,7 +512,8 @@
             "imgSrc": "assets/img/Azure-SQL-Server-Logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
-            "searchSuffix": "Azure SQL Server"
+            "searchSuffix": "AZURE SQL SERVER",
+            "displayName": "Azure SQL Server"
         }  
     ]
 }

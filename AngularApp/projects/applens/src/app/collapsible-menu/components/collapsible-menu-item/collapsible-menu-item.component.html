@@ -4,7 +4,7 @@
         <fab-icon [iconName]="iconName"></fab-icon>
       </div> -->
         <fab-tooltip-host [content]="menuItem.label" [directionalHint]="directionalHint">
-          <div class="menu-label" [innerHtml]="menuItem.label | searchmatch:searchValueLocal" [attr.aria-label]="menuItem.label"></div>
+          <div class="menu-label" [innerHtml]="menuItem.label | searchmatch:searchValueLocal" [attr.aria-label]="menuItem.label" [class.bold]="boldText"></div>
         </fab-tooltip-host>
     </div>
     <!-- <div class="menu-item-children" [@expand]="menuItem.expanded ? 'shown' : 'hidden'">

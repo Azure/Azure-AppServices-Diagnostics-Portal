@@ -244,7 +244,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
                 kubeEnvironmentId: encodeURIComponent(kubeEnvironmentId),
                 fqdn: encodeURIComponent(fqdn)
             };
-            this._router.navigate([``], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', queryParams: containerAppQueryParams });
+            this._router.navigate([], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', queryParams: containerAppQueryParams });
         }
     };
 

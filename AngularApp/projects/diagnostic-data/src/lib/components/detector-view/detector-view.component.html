@@ -4,7 +4,11 @@
       {{overWriteDetectorName}}
     </span>
   </div>
+<<<<<<< HEAD
   <div *ngIf="!isSystemInvoker && !insideDetectorList" class="blade-description">&nbsp;- &nbsp;</div>
+=======
+  <div *ngIf="!isSystemInvoker && !insideDetectorList && !!(overWriteDetectorDescription || detectorDataLocalCopy.metadata.description)" class="blade-description">&nbsp;- &nbsp;</div>
+>>>>>>> ApplensRevamp
   <div class="blade-description">
     <span *ngIf="overWriteDetectorDescription && overWriteDetectorDescription.length > 0;else detectorDescription">
       {{overWriteDetectorDescription}}
@@ -63,7 +67,7 @@
       <h2 style="display: flex;">
         <div *ngIf="!isSystemInvoker && !insideDetectorList &&!isPublic" tabindex="0" id="detector-name">
           {{detectorDataLocalCopy.metadata.name}}</div>
-        <div *ngIf="!isSystemInvoker && !insideDetectorList && !isPublic" class="blade-description">&nbsp;- &nbsp;</div>
+        <div *ngIf="!isSystemInvoker && !insideDetectorList && !isPublic && detectorDataLocalCopy.metadata.description" class="blade-description">&nbsp;- &nbsp;</div>
         <div class="blade-description">
           <span *ngIf="!overWriteDetectorDescription || overWriteDetectorDescription.length === 0;else overwriteDescription">
             {{detectorDataLocalCopy.metadata.description}}
