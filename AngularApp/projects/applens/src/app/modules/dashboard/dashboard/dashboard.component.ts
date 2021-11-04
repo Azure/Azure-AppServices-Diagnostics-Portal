@@ -234,7 +234,6 @@ export class DashboardComponent implements OnDestroy {
     const width = `calc(100% - ${left})`;
 
     return {
-      'position': 'relative',
       'left': left,
       'width': width
     }
