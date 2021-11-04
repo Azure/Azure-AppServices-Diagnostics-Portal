@@ -40,10 +40,10 @@
     <applens-preview-banner></applens-preview-banner>
     <comm-alert></comm-alert>
     <l2-side-nav></l2-side-nav>
-    <div *ngIf="showTitle" style="font-size: 24px;font-weight: 600;">
+    <div *ngIf="showTitle" class="dashboard-title">
       {{getTitle()}}
     </div>
-    <div [class.content-with-side-nav]="showL2SideNav">
+    <div [class.content-with-side-nav]="showL2SideNav" style="padding: 0px 20px;">
       <router-outlet></router-outlet>
     </div>
   </div>
