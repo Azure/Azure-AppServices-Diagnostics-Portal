@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { IButtonProps, IDialogContentProps } from 'office-ui-fabric-react';
 import { DiagnosticApiService } from 'projects/applens/src/app/shared/services/diagnostic-api.service';
+import { combineLatest } from 'rxjs';
 import { distinct } from 'rxjs-compat/operator/distinct';
-import { filter } from 'rxjs/operators';
+import { mergeMap } from 'rxjs-compat/operator/mergeMap';
+import { filter, merge } from 'rxjs/operators';
 import { Tab, TabKey } from '../tab-key';
 
 @Component({
@@ -11,33 +14,24 @@ import { Tab, TabKey } from '../tab-key';
   styleUrls: ['./tab-common.component.scss']
 })
 export class TabCommonComponent implements OnInit {
+  selectedTabKey: string;
+  enabledDetectorDevelopment: boolean = true;
+  TabKey = TabKey;
 
-  tabs: Tab[] = [
-    { headerText: "Data", itemKey: TabKey.Data }
-  ];
-
-  developTab: Tab = {
-    headerText: "Develop", itemKey: TabKey.Develop 
-  }
-
-  selectedTabKey:string;
-
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute,private _diagnosticApiService:DiagnosticApiService) {
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _diagnosticApiService: DiagnosticApiService) {
     this._activatedRoute.firstChild.data.subscribe(data => {
       const key:string = data["tabKey"];
-      this.selectedTabKey = key ? key : this.tabs[0].itemKey;
+      this.selectedTabKey = key;
     }); 
   }
 
   ngOnInit() {
     this._diagnosticApiService.getEnableDetectorDevelopment().subscribe(enabledDetectorDevelopment => {
-      if(enabledDetectorDevelopment) {
-        this.tabs.push(this.developTab);
-      }
+      this.enabledDetectorDevelopment = enabledDetectorDevelopment;
     });
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(e => {
       const key:string = this._activatedRoute.firstChild.snapshot.data["tabKey"];
-      this.selectedTabKey = key ? key : this.tabs[0].itemKey;
+      this.selectedTabKey = key;
     }); 
   }
 
