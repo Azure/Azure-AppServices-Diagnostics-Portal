@@ -172,7 +172,7 @@
 
 
   <fab-panel [isOpen]="publishSuccess || publishFailed" [isLightDismiss]="true" [type]="PanelType.custom"
-    [customWidth]="'auto'" [isHiddenOnDismiss]="true" [hasCloseButton]="false" [closeButtonAriaLabel]="'close'"
+    [customWidth]="'400px'" [isHiddenOnDismiss]="true" [hasCloseButton]="false" [closeButtonAriaLabel]="'close'"
     [styles]="submittedPanelStyles" [isBlocking]="false" (onDismissed)="dismissPublishSuccessHandler()"
     (onOpen)="onOpenPublishSuccessPanel()" >
     <div class="submitted-panel-text panel-text">
@@ -194,7 +194,7 @@
         <h5>{{currentTime}}</h5>
       </div>
     </div>
-    <div *ngIf="publishSuccess" style="margin-left: 4px;">You can find it in "Your detectors" later.</div>
+    <div *ngIf="publishSuccess" style="margin-left: 16px;">You can find it in "Your detectors" later.</div>
   </fab-panel>
 
 
