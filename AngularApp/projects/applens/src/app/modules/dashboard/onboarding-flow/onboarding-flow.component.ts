@@ -216,7 +216,7 @@ export class OnboardingFlowComponent implements OnInit {
 
   submittedPanelStyles: IPanelProps["styles"] = {
     root: {
-      height: "70px",
+      height: "100px",
     },
     content: {
       padding: "0px"
