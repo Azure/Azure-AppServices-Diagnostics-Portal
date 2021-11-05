@@ -29,9 +29,18 @@
   </div> 
 </div> -->
 <div class="mb-3">
-  <fab-pivot (onLinkClick)="navigateToData($event)" [selectedKey]="selectedTabKey">
-    <fab-pivot-item *ngFor="let tab of tabs" [headerText]="tab.headerText" [itemKey]="tab.itemKey">
-    </fab-pivot-item>
-  </fab-pivot>
+  <ng-container *ngIf="enabledDetectorDevelopment else disabledDevelopment">
+    <fab-pivot (onLinkClick)="navigateToData($event)" [selectedKey]="selectedTabKey">
+      <fab-pivot-item headerText="Data" [itemKey]="TabKey.Data"></fab-pivot-item>
+      <fab-pivot-item headerText="Develop" [itemKey]="TabKey.Develop"></fab-pivot-item>
+    </fab-pivot>
+  </ng-container>
 </div>
 <router-outlet></router-outlet>
+
+
+<ng-template #disabledDevelopment>
+  <fab-pivot (onLinkClick)="navigateToData($event)" [selectedKey]="selectedTabKey">
+    <fab-pivot-item headerText="Data" [itemKey]="TabKey.Data"></fab-pivot-item>
+  </fab-pivot>
+</ng-template>
