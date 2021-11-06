@@ -44,6 +44,7 @@
     "@swimlane/ngx-datatable": "^15.0.2",
     "@types/react": "~16.7.13",
     "@types/react-dom": "^16.0.11",
+    "@uifabric/azure-themes": "6.0.1",
     "adal-angular4": "^3.0.16",
     "admin-lte": "^2.4.3",
     "angular-split-ng6": "^1.0.0-rc.5",
