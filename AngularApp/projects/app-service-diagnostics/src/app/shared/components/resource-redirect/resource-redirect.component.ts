@@ -7,6 +7,15 @@ import { StartupInfo } from '../../models/portal';
 import { DemoSubscriptions } from '../../../betaSubscriptions';
 import { DetectorType, TelemetryService } from 'diagnostic-data';
 import { VersionTestService } from '../../../fabric-ui/version-test.service';
+//import { IPartialTheme,  loadTheme } from 'office-ui-fabric-react';
+import { loadTheme, createTheme, Theme } from '@fluentui/react';
+
+import {
+    AzureThemeLight,
+    AzureThemeDark,
+    AzureThemeHighContrastLight,
+    AzureThemeHighContrastDark,
+  } from '@fluentui/azure-themes';
 
 @Component({
   selector: 'resource-redirect',
@@ -16,6 +25,37 @@ import { VersionTestService } from '../../../fabric-ui/version-test.service';
 export class ResourceRedirectComponent implements OnInit {
   private _newVersionEnabled = true;
   private _useLegacyVersion = true;
+  darkTheme: any = {
+    semanticColors: {
+      bodyBackground: 'black',
+      bodyText: 'white',
+    },
+    palette: {
+        themePrimary: '#2b4559',
+themeLighterAlt: '#020304',
+themeLighter: '#070b0e',
+themeLight: '#0d151b',
+themeTertiary: '#1a2936',
+themeSecondary: '#263d4f',
+themeDarkAlt: '#38546a',
+themeDark: '#4e6b81',
+themeDarker: '#738ea2',
+neutralLighterAlt: '#9f7272',
+neutralLighter: '#9c7070',
+neutralLight: '#966c6c',
+neutralQuaternaryAlt: '#8c6464',
+neutralQuaternary: '#856060',
+neutralTertiaryAlt: '#805c5c',
+neutralTertiary: '#193c2f',
+neutralSecondary: '#32795e',
+neutralPrimaryAlt: '#49b189',
+neutralPrimary: '#53c99c',
+neutralDark: '#76d6b1',
+black: '#97e1c5',
+white: '#a37676',
+    }
+  };
+
   constructor(private _authService: AuthService, private _router: Router, private _windowService: WindowService, private _versionTestService: VersionTestService, private _telemetryService: TelemetryService) { }
 
   ngOnInit() {
@@ -32,6 +72,8 @@ export class ResourceRedirectComponent implements OnInit {
             const supportTopicId = info.supportTopicId ? info.supportTopicId : '';
             const sessionId = info.sessionId ? info.sessionId : '';
             const effectiveLocale = !!info.effectiveLocale ? info.effectiveLocale.toLowerCase() : "";
+            const theme = !!info.theme ? info.theme.toLowerCase() : "";
+            const highContrastKey = !!info.highContrastKey ? info.highContrastKey.toString() : "";
 
             const eventProperties: { [name: string]: string } = {
                 'ResourceId': resourceId,
@@ -39,9 +81,17 @@ export class ResourceRedirectComponent implements OnInit {
                 'SupportTopicId': supportTopicId,
                 'PortalSessionId': sessionId,
                 'EffectiveLocale': effectiveLocale,
+                'Theme': theme,
+                'HighContrastKey': highContrastKey
             };
+
+            console.log("get theme", theme, highContrastKey);
             this._telemetryService.eventPropertiesSubject.next(eventProperties);
         }
+
+
+        loadTheme(AzureThemeDark);
+
 
         if (info && info.resourceId && info.token) {
           if (Array.isArray(info.optionalParameters) && info.optionalParameters.find(param => param.key === "categoryId")) {
