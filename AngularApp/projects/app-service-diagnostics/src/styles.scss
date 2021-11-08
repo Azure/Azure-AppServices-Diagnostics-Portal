@@ -1,5 +1,6 @@
 
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "../src/styles/icons.scss";
 .ngx-datatable.bootstrap {
     border: 1px solid #dddddd;
 }
@@ -47,46 +48,7 @@
     }
 }
 
-.critical-color {
-    color: #ff0000;
-}
 
-.warning-color {
-    color: #ff9104;
-}
-
-.success-color {
-    color: #3da907;
-}
-
-.info-color {
-    color: #3a9bc7;
-}
-
-.critical {
-    color: #ff0000;
-}
-.bg-critical{
-    background-color: #ff0000;
-}
-.warning {
-    color: #ff9104;
-}
-.bg-warning {
-    background-color: #ff9104;
-}
-.success {
-    color: #3da907;
-}
-.bg-success {
-    background-color: #3da907;
-}
-.info {
-    color: #3a9bc7;
-}
-.bg-info {
-    background-color: #3a9bc7;
-}
 
 /* highchart container configuration */
 .highcharts-container {
