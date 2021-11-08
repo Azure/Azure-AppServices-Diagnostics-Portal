@@ -53,3 +53,44 @@
     @extend .ib-icon;
     background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 16 16"><path d="M8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16Z" fill="purple"/><path fill="white" d="M12.632,3.37c0,0-1.738-0.082-2.931,1.111C9.689,4.493,7.324,6.858,7.12,7.062c0,0-1.94-0.484-2.889,0.464  L2.038,9.723l3.401-0.96l-1.576,2.162l1.212,1.212l2.169-1.565L6.278,13.96l2.197-2.193c0.961-0.961,0.469-2.893,0.469-2.893  c0.202-0.202,2.563-2.564,2.575-2.575C12.712,5.106,12.632,3.37,12.632,3.37z" /></svg>');
 }
+
+.critical-color {
+    color: #ff0000;
+}
+
+.warning-color {
+    color: #ff9104;
+}
+
+.success-color {
+    color: #3da907;
+}
+
+.info-color {
+    color: #3a9bc7;
+}
+
+.critical {
+    color: #ff0000;
+}
+.bg-critical{
+    background-color: #ff0000;
+}
+.warning {
+    color: #ff9104;
+}
+.bg-warning {
+    background-color: #ff9104;
+}
+.success {
+    color: #3da907;
+}
+.bg-success {
+    background-color: #3da907;
+}
+.info {
+    color: #3a9bc7;
+}
+.bg-info {
+    background-color: #3a9bc7;
+}
