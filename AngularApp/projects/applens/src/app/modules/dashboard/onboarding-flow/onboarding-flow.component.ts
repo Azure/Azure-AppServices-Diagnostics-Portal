@@ -18,13 +18,14 @@ import { RecommendedUtterance } from '../../../../../../diagnostic-data/src/publ
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
 import { environment } from '../../../../environments/environment';
-import {ActivatedRoute, Params} from "@angular/router";
-import { IButtonStyles, IChoiceGroupOption, IDropdownOption, IDropdownProps, IPanelProps, IPivotProps, PanelType } from 'office-ui-fabric-react';
+import { ActivatedRoute, Params } from "@angular/router";
+import { IButtonStyles, IChoiceGroupOption, IContextualMenuItem, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IPanelProps, IPivotProps, PanelType } from 'office-ui-fabric-react';
 import { addMonths } from 'office-ui-fabric-react/lib/utilities/dateMath/DateMath';
 import { BehaviorSubject } from 'rxjs';
 import { ICommandBarItemOptions } from '@angular-react/fabric/src/lib/components/command-bar/public-api';
 import { Commit } from '../../../shared/models/commit';
 import { Body } from '@angular/http/src/body';
+import { ApplensCommandBarService } from '../services/applens-command-bar.service';
 
 
 const moment = momentNs;
@@ -127,7 +128,7 @@ export class OnboardingFlowComponent implements OnInit {
   allUtterances: any[] = [];
   recommendedUtterances: RecommendedUtterance[] = [];
   utteranceInput: string = "";
-  dialogTitle: string = "Publish for review";
+  dialogTitle: string = "Send for review";
   dialogSubText: string = "Changes will be reviewed by team before getting merged. Once published, you will have a link to the PR.";
   branchName: string = "Branch Name";
   branchPlaceholder: string = "Enter Branch name";
@@ -163,7 +164,13 @@ export class OnboardingFlowComponent implements OnInit {
   publishFailed: boolean = false;
   detectorName: string = "";
   submittedPanelTimer: any = null;
+  deleteButtonText: string = "Delete";
+  deleteDialogTitle: string = "Delete Detector";
+  deleteDialogHidden: boolean = true;
+  deleteAvailable: boolean = false;
+  deletingDetector: boolean = false;
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  failureMessage: string = "";
   runButtonStyle: any = {
     root: { cursor: "default" }
   };
@@ -173,9 +180,10 @@ export class OnboardingFlowComponent implements OnInit {
       color: "grey"
     }
   };
+  PRLink: string = "";
 
-  detectorGraduation: boolean;
-  autoMerge: boolean;
+  detectorGraduation: boolean = true;
+  autoMerge: boolean = false;
 
   buttonStyle: IButtonStyles = {
     root: {
@@ -226,6 +234,15 @@ export class OnboardingFlowComponent implements OnInit {
     }
   }
 
+  publishDialogStyles: IDialogContentProps['styles'] = {
+    inner: {
+      padding: "0px"
+    },
+    innerContent: {
+      padding: "0px"
+    }
+  }
+
   modalPublishingButtonText: string;
   modalPublishingButtonDisabled: boolean;
   publishAccessControlResponse: any;
@@ -250,7 +267,7 @@ export class OnboardingFlowComponent implements OnInit {
   constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService,
     private diagnosticApiService: ApplensDiagnosticService, private resourceService: ResourceService,
     private _detectorControlService: DetectorControlService, private _adalService: AdalService,
-    public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute) {
+    public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute, private _applensCommandBarService: ApplensCommandBarService) {
     this.editorOptions = {
       theme: 'vs',
       language: 'csharp',
@@ -274,14 +291,22 @@ export class OnboardingFlowComponent implements OnInit {
     this.devOptionsIcon = "fa fa-download";
     this.runButtonText = "Run";
     this.runButtonIcon = "fa fa-play";
-    this.publishButtonText = "Publish";
-    this.modalPublishingButtonText = "Publish";
+    this.publishButtonText = "Create";
+    this.modalPublishingButtonText = this.detectorGraduation ? "Create PR" : "Publish";
     this.modalPublishingButtonDisabled = false;
     this.showAlert = false;
 
     this.userName = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
     this.emailRecipients = this.userName.replace('@microsoft.com', '');
     this.publishAccessControlResponse = {};
+  }
+
+  showDeleteDialog() {
+    this.deleteDialogHidden = false;
+  }
+
+  dismissDeleteDialog() {
+    this.deleteDialogHidden = true;
   }
 
   updateTempBranch(event: any) {
@@ -331,36 +356,39 @@ export class OnboardingFlowComponent implements OnInit {
     }
   }
 
+  ableToDelete() {
+    return this.detectorGraduation && this.mode !== DevelopMode.Create;
+  }
 
   ngOnInit() {
     this.diagnosticApiService.getDetectorGraduationSetting().subscribe(graduationFlag => {
       this.detectorGraduation = graduationFlag;
-    
 
-    if (!this.initialized) {
-      this.initialize();
-      this.initialized = true;
-      this._telemetryService.logPageView(TelemetryEventNames.OnboardingFlowLoaded, {});
-    }
 
-    this._detectorControlService.timePickerStrSub.subscribe(s => {
-      this.timePickerButtonStr = s;
+      if (!this.initialized) {
+        this.initialize();
+        this.initialized = true;
+        this._telemetryService.logPageView(TelemetryEventNames.OnboardingFlowLoaded, {});
+      }
+
+      this._detectorControlService.timePickerStrSub.subscribe(s => {
+        this.timePickerButtonStr = s;
+      });
+
+      this.diagnosticApiService.getAutoMergeSetting().subscribe(x => {
+        this.autoMerge = x;
+      });
+
+      this.getBranchList();
+
+      if (this._detectorControlService.isInternalView) {
+        this.internalExternalText = this.internalViewText;
+      }
+      else {
+        this.internalExternalText = this.externalViewText;
+      }
+
     });
-
-    this.diagnosticApiService.getAutoMergeSetting().subscribe(x => {
-      this.autoMerge = x;
-    });
-
-    this.getBranchList();
-
-    if (this._detectorControlService.isInternalView) {
-      this.internalExternalText = this.internalViewText;
-    }
-    else {
-      this.internalExternalText = this.externalViewText;
-    }
-
-  });
   }
 
   getBranchList() {
@@ -765,71 +793,167 @@ export class OnboardingFlowComponent implements OnInit {
         serializedParams = "&" + serializedParams;
       };
       this.diagnosticApiService.getCompilerResponse(body, isSystemInvoker, this.id, this._detectorControlService.startTimeString,
-      this._detectorControlService.endTimeString, this.dataSource, this.timeRange, {
+        this._detectorControlService.endTimeString, this.dataSource, this.timeRange, {
         scriptETag: this.compilationPackage.scriptETag,
         assemblyName: this.compilationPackage.assemblyName,
         formQueryParams: serializedParams,
         getFullResponse: true
       }, this.getDetectorId())
-      .subscribe((response: any) => {
-        this.queryResponse = response.body;
-        if (this.queryResponse.invocationOutput && this.queryResponse.invocationOutput.metadata && this.queryResponse.invocationOutput.metadata.id && !isSystemInvoker) {
-          this.id = this.queryResponse.invocationOutput.metadata.id;
-        }
-        if (this.queryResponse.invocationOutput.suggestedUtterances && this.queryResponse.invocationOutput.suggestedUtterances.results) {
-          this.recommendedUtterances = this.queryResponse.invocationOutput.suggestedUtterances.results;
-          this._telemetryService.logEvent("SuggestedUtterances", { detectorId: this.queryResponse.invocationOutput.metadata.id, detectorDescription: this.queryResponse.invocationOutput.metadata.description, numUtterances: this.allUtterances.length.toString(), numSuggestedUtterances: this.recommendedUtterances.length.toString(), ts: Math.floor((new Date()).getTime() / 1000).toString() });
-        }
-        else {
-          this._telemetryService.logEvent("SuggestedUtterancesNull", { detectorId: this.queryResponse.invocationOutput.metadata.id, detectorDescription: this.queryResponse.invocationOutput.metadata.description, numUtterances: this.allUtterances.length.toString(), ts: Math.floor((new Date()).getTime() / 1000).toString() });
-        }
-        this.enableRunButton();
-        this.runButtonText = "Run";
-        this.runButtonIcon = "fa fa-play";
-        if (this.queryResponse.compilationOutput.compilationTraces) {
-          this.queryResponse.compilationOutput.compilationTraces.forEach(element => {
-            this.buildOutput.push(element);
-          });
-        }
-        if (this.queryResponse.compilationOutput.detailedCompilationTraces) {
-          this.showDetailedCompilationTraces = true;
-          this.queryResponse.compilationOutput.detailedCompilationTraces.forEach(traceElement => {
-            this.detailedCompilationTraces.push(traceElement);
-          });
-        }
-        else {
-          this.showDetailedCompilationTraces = false;
-        }
-        // If the script etag returned by the server does not match the previous script-etag, update the values in memory
-        if (response.headers.get('diag-script-etag') != undefined && this.compilationPackage.scriptETag !== response.headers.get('diag-script-etag')) {
-          this.compilationPackage.scriptETag = response.headers.get('diag-script-etag');
-          this.compilationPackage.assemblyName = this.queryResponse.compilationOutput.assemblyName;
-          this.compilationPackage.assemblyBytes = this.queryResponse.compilationOutput.assemblyBytes;
-          this.compilationPackage.pdbBytes = this.queryResponse.compilationOutput.pdbBytes;
-        }
+        .subscribe((response: any) => {
+          this.queryResponse = response.body;
+          if (this.queryResponse.invocationOutput && this.queryResponse.invocationOutput.metadata && this.queryResponse.invocationOutput.metadata.id && !isSystemInvoker) {
+            this.id = this.queryResponse.invocationOutput.metadata.id;
+          }
+          if (this.queryResponse.invocationOutput.suggestedUtterances && this.queryResponse.invocationOutput.suggestedUtterances.results) {
+            this.recommendedUtterances = this.queryResponse.invocationOutput.suggestedUtterances.results;
+            this._telemetryService.logEvent("SuggestedUtterances", { detectorId: this.queryResponse.invocationOutput.metadata.id, detectorDescription: this.queryResponse.invocationOutput.metadata.description, numUtterances: this.allUtterances.length.toString(), numSuggestedUtterances: this.recommendedUtterances.length.toString(), ts: Math.floor((new Date()).getTime() / 1000).toString() });
+          }
+          else {
+            this._telemetryService.logEvent("SuggestedUtterancesNull", { detectorId: this.queryResponse.invocationOutput.metadata.id, detectorDescription: this.queryResponse.invocationOutput.metadata.description, numUtterances: this.allUtterances.length.toString(), ts: Math.floor((new Date()).getTime() / 1000).toString() });
+          }
+          this.enableRunButton();
+          this.runButtonText = "Run";
+          this.runButtonIcon = "fa fa-play";
+          if (this.queryResponse.compilationOutput.compilationTraces) {
+            this.queryResponse.compilationOutput.compilationTraces.forEach(element => {
+              this.buildOutput.push(element);
+            });
+          }
+          if (this.queryResponse.compilationOutput.detailedCompilationTraces) {
+            this.showDetailedCompilationTraces = true;
+            this.queryResponse.compilationOutput.detailedCompilationTraces.forEach(traceElement => {
+              this.detailedCompilationTraces.push(traceElement);
+            });
+          }
+          else {
+            this.showDetailedCompilationTraces = false;
+          }
+          // If the script etag returned by the server does not match the previous script-etag, update the values in memory
+          if (response.headers.get('diag-script-etag') != undefined && this.compilationPackage.scriptETag !== response.headers.get('diag-script-etag')) {
+            this.compilationPackage.scriptETag = response.headers.get('diag-script-etag');
+            this.compilationPackage.assemblyName = this.queryResponse.compilationOutput.assemblyName;
+            this.compilationPackage.assemblyBytes = this.queryResponse.compilationOutput.assemblyBytes;
+            this.compilationPackage.pdbBytes = this.queryResponse.compilationOutput.pdbBytes;
+          }
 
-        if (this.queryResponse.compilationOutput.compilationSucceeded === true) {
-          this.publishButtonDisabled = false;
-          this.preparePublishingPackage(this.queryResponse, currentCode);
-          this.buildOutput.push("========== Build: 1 succeeded, 0 failed ==========");
+          if (this.queryResponse.compilationOutput.compilationSucceeded === true) {
+            this.publishButtonDisabled = false;
+            this.preparePublishingPackage(this.queryResponse, currentCode);
+            this.buildOutput.push("========== Build: 1 succeeded, 0 failed ==========");
+            this.detailedCompilationTraces.push({
+              severity: HealthStatus.None,
+              message: '========== Build: 1 succeeded, 0 failed ==========',
+              location: {
+                start: {
+                  linePos: 0,
+                  colPos: 0
+                } as Position,
+                end: {
+                  linePos: 0,
+                  colPos: 0
+                } as Position
+              } as LocationSpan
+            } as CompilationTraceOutputDetails);
+          } else {
+            this.publishButtonDisabled = true;
+            this.publishingPackage = null;
+            this.buildOutput.push("========== Build: 0 succeeded, 1 failed ==========");
+            this.detailedCompilationTraces.push({
+              severity: HealthStatus.None,
+              message: '========== Build: 0 succeeded, 1 failed ==========',
+              location: {
+                start: {
+                  linePos: 0,
+                  colPos: 0
+                } as Position,
+                end: {
+                  linePos: 0,
+                  colPos: 0
+                } as Position
+              } as LocationSpan
+            } as CompilationTraceOutputDetails);
+          }
+
+          if (this.queryResponse.runtimeLogOutput) {
+            this.queryResponse.runtimeLogOutput.forEach(element => {
+              if (element.exception) {
+                this.buildOutput.push(element.timeStamp + ": " +
+                  element.message + ": " +
+                  element.exception.ClassName + ": " +
+                  element.exception.Message + "\r\n" +
+                  element.exception.StackTraceString);
+
+                this.detailedCompilationTraces.push({
+                  severity: HealthStatus.Critical,
+                  message: `${element.timeStamp}: ${element.message}: ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`,
+                  location: {
+                    start: {
+                      linePos: 0,
+                      colPos: 0
+                    },
+                    end: {
+                      linePos: 0,
+                      colPos: 0
+                    }
+                  }
+                });
+              }
+              else {
+                this.buildOutput.push(element.timeStamp + ": " + element.message);
+                this.detailedCompilationTraces.push({
+                  severity: HealthStatus.Info,
+                  message: `${element.timeStamp}: ${element.message}`,
+                  location: {
+                    start: {
+                      linePos: 0,
+                      colPos: 0
+                    },
+                    end: {
+                      linePos: 0,
+                      colPos: 0
+                    }
+                  }
+                });
+              }
+            });
+          }
+
+          if ((
+            !this.gistMode && this.queryResponse.runtimeSucceeded != null && !this.queryResponse.runtimeSucceeded
+          ) || (
+              this.gistMode && this.queryResponse.compilationOutput != null &&
+              !this.queryResponse.compilationOutput.compilationSucceeded
+            )) {
+            this.disablePublishButton();
+          }
+          else {
+            this.enablePublishButton();
+          }
+
+          this.localDevButtonDisabled = false;
+          this.markCodeLinesInEditor(this.detailedCompilationTraces);
+        }, ((error: any) => {
+          this.enableRunButton();
+          this.publishingPackage = null;
+          this.localDevButtonDisabled = false;
+          this.runButtonText = "Run";
+          this.runButtonIcon = "fa fa-play";
+          this.buildOutput.push("Something went wrong during detector invocation.");
+          this.buildOutput.push("========== Build: 0 succeeded, 1 failed ==========");
           this.detailedCompilationTraces.push({
-            severity: HealthStatus.None,
-            message: '========== Build: 1 succeeded, 0 failed ==========',
+            severity: HealthStatus.Critical,
+            message: 'Something went wrong during detector invocation.',
             location: {
               start: {
                 linePos: 0,
                 colPos: 0
-              } as Position,
+              },
               end: {
                 linePos: 0,
                 colPos: 0
-              } as Position
-            } as LocationSpan
-          } as CompilationTraceOutputDetails);
-        } else {
-          this.publishButtonDisabled = true;
-          this.publishingPackage = null;
-          this.buildOutput.push("========== Build: 0 succeeded, 1 failed ==========");
+              }
+            }
+          });
           this.detailedCompilationTraces.push({
             severity: HealthStatus.None,
             message: '========== Build: 0 succeeded, 1 failed ==========',
@@ -837,111 +961,15 @@ export class OnboardingFlowComponent implements OnInit {
               start: {
                 linePos: 0,
                 colPos: 0
-              } as Position,
+              },
               end: {
                 linePos: 0,
                 colPos: 0
-              } as Position
-            } as LocationSpan
-          } as CompilationTraceOutputDetails);
-        }
-
-        if (this.queryResponse.runtimeLogOutput) {
-          this.queryResponse.runtimeLogOutput.forEach(element => {
-            if (element.exception) {
-              this.buildOutput.push(element.timeStamp + ": " +
-                element.message + ": " +
-                element.exception.ClassName + ": " +
-                element.exception.Message + "\r\n" +
-                element.exception.StackTraceString);
-
-              this.detailedCompilationTraces.push({
-                severity: HealthStatus.Critical,
-                message: `${element.timeStamp}: ${element.message}: ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`,
-                location: {
-                  start: {
-                    linePos: 0,
-                    colPos: 0
-                  },
-                  end: {
-                    linePos: 0,
-                    colPos: 0
-                  }
-                }
-              });
-            }
-            else {
-              this.buildOutput.push(element.timeStamp + ": " + element.message);
-              this.detailedCompilationTraces.push({
-                severity: HealthStatus.Info,
-                message: `${element.timeStamp}: ${element.message}`,
-                location: {
-                  start: {
-                    linePos: 0,
-                    colPos: 0
-                  },
-                  end: {
-                    linePos: 0,
-                    colPos: 0
-                  }
-                }
-              });
+              }
             }
           });
-        }
-
-        if ((
-          !this.gistMode && this.queryResponse.runtimeSucceeded != null && !this.queryResponse.runtimeSucceeded
-        ) || (
-            this.gistMode && this.queryResponse.compilationOutput != null &&
-            !this.queryResponse.compilationOutput.compilationSucceeded
-          )) {
-          this.disablePublishButton();
-        }
-        else {
-          this.enablePublishButton();
-        }
-
-        this.localDevButtonDisabled = false;
-        this.markCodeLinesInEditor(this.detailedCompilationTraces);
-      }, ((error: any) => {
-        this.enableRunButton();
-        this.publishingPackage = null;
-        this.localDevButtonDisabled = false;
-        this.runButtonText = "Run";
-        this.runButtonIcon = "fa fa-play";
-        this.buildOutput.push("Something went wrong during detector invocation.");
-        this.buildOutput.push("========== Build: 0 succeeded, 1 failed ==========");
-        this.detailedCompilationTraces.push({
-          severity: HealthStatus.Critical,
-          message: 'Something went wrong during detector invocation.',
-          location: {
-            start: {
-              linePos: 0,
-              colPos: 0
-            },
-            end: {
-              linePos: 0,
-              colPos: 0
-            }
-          }
-        });
-        this.detailedCompilationTraces.push({
-          severity: HealthStatus.None,
-          message: '========== Build: 0 succeeded, 1 failed ==========',
-          location: {
-            start: {
-              linePos: 0,
-              colPos: 0
-            },
-            end: {
-              linePos: 0,
-              colPos: 0
-            }
-          }
-        });
-        this.markCodeLinesInEditor(this.detailedCompilationTraces);
-      }));
+          this.markCodeLinesInEditor(this.detailedCompilationTraces);
+        }));
     });
   }
 
@@ -1030,7 +1058,7 @@ export class OnboardingFlowComponent implements OnInit {
     this.currentTime = moment(Date.now()).format("hh:mm A");
     this.submittedPanelTimer = setTimeout(() => {
       this.dismissPublishSuccessHandler();
-    }, 100000);
+    }, 10000);
   }
 
   dismissPublishSuccessHandler() {
@@ -1056,10 +1084,10 @@ export class OnboardingFlowComponent implements OnInit {
     this.disableRunButton();
     this.disablePublishButton();
     this.modalPublishingButtonDisabled = true;
-    this.modalPublishingButtonText = "Publishing";
+    this.modalPublishingButtonText = this.detectorGraduation ? "Sending PR" : "Publishing";
     var isOriginalCodeMarkedPublic: boolean = this.IsDetectorMarkedPublic(this.originalCode);
     if (this.detectorGraduation) {
-      this.gradPublish(this.publishingPackage);
+      this.gradPublish();
     }
     else {
       this.diagnosticApiService.publishDetector(this.emailRecipients, this.publishingPackage, `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`, isOriginalCodeMarkedPublic).subscribe(data => {
@@ -1068,9 +1096,8 @@ export class OnboardingFlowComponent implements OnInit {
         this.utteranceInput = "";
         this.enableRunButton();
         this.localDevButtonDisabled = false;
-        this.publishButtonText = "Publish";
         this.enablePublishButton();
-        this.modalPublishingButtonText = "Publish";
+        this.modalPublishingButtonText = this.detectorGraduation ? "Create PR" : "Publish";
         this.ngxSmartModalService.getModal('publishModal').close();
         this.detectorName = this.publishingPackage.id;
         this.publishSuccess = true;
@@ -1080,9 +1107,8 @@ export class OnboardingFlowComponent implements OnInit {
       }, err => {
         this.enableRunButton();
         this.localDevButtonDisabled = false;
-        this.publishButtonText = "Publish";
         this.enablePublishButton();
-        this.modalPublishingButtonText = "Publish";
+        this.modalPublishingButtonText = this.detectorGraduation ? "Create PR" : "Publish";
         this.ngxSmartModalService.getModal('publishModal').close();
         this.showAlertBox('alert-danger', 'Publishing failed. Please try again after some time.');
         this.publishFailed = true;
@@ -1090,54 +1116,106 @@ export class OnboardingFlowComponent implements OnInit {
     }
   }
 
-  gradPublish(publishingPackage: Package) {
+  gradPublish() {
     this.publishDialogHidden = true;
 
     const commitType = this.mode == DevelopMode.Create ? "add" : "edit";
     const commitMessageStart = this.mode == DevelopMode.Create ? "Adding" : "Editing";
 
     let gradPublishFiles: string[] = [
-      publishingPackage.codeString,
-      publishingPackage.metadata,
-      publishingPackage.packageConfig
+      this.publishingPackage.codeString,
+      this.publishingPackage.metadata,
+      this.publishingPackage.packageConfig
     ];
 
 
     let gradPublishFileTitles: string[] = [
-      `/${publishingPackage.id}/${publishingPackage.id}.csx`,
-      `/${publishingPackage.id}/metadata.json`,
-      `/${publishingPackage.id}/package.json`
+      `/${this.publishingPackage.id}/${this.publishingPackage.id}.csx`,
+      `/${this.publishingPackage.id}/metadata.json`,
+      `/${this.publishingPackage.id}/package.json`
     ];
 
-    if (this.autoMerge){
+    if (this.autoMerge) {
       this.Branch = this.defaultBranch;
     }
 
-    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${publishingPackage.id}`, commitType, this.resourceId);
+    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id}`, commitType, this.resourceId);
     const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, this.PRTitle, this.resourceId);
 
     DetectorObservable.subscribe(_ => {
-          if (!this.autoMerge){
-            makePullRequestObservable.subscribe(_ => {
-              this.publishSuccess = true;
-              this.postPublish();
-            }, err => {
-              this.publishFailed = true;
-              this.postPublish();
-            });
-          }
-          else{
-            this.publishSuccess = true;
-            this.postPublish();
-          }
+      if (!this.autoMerge) {
+        makePullRequestObservable.subscribe(_ => {
+          this.PRLink = `${_["item2"]["webUrl"]}/pullrequest/${_["item1"]["pullRequestId"]}`
+          this.publishSuccess = true;
+          this.postPublish();
+          this._applensCommandBarService.refreshPage();
+        }, err => {
+          this.publishFailed = true;
+          this.postPublish();
+        });
+      }
+      else {
+        this.publishSuccess = true;
+        this.postPublish();
+        this._applensCommandBarService.refreshPage();
+      }
     }, err => {
       this.publishFailed = true;
       this.postPublish();
     });
+
+
+  }
+
+  deleteDetector() {
+    this.deletingDetector = true;
+
+    let gradPublishFiles: string[] = [
+      "delete code",
+      "delete metadata",
+      "delete package"
+    ];
+
+
+    let gradPublishFileTitles: string[] = [
+      `/${this.id}/${this.id}.csx`,
+      `/${this.id}/metadata.json`,
+      `/${this.id}/package.json`
+    ];
+
+    if (this.autoMerge) {
+      this.Branch = this.defaultBranch;
+    }
+
+    const deleteDetectorFiles = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `deleteing detector: ${this.id}`, "delete", this.resourceId);
+    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, this.PRTitle, this.resourceId);
+    deleteDetectorFiles.subscribe(_ => {
+      if (!this.autoMerge) {
+        makePullRequestObservable.subscribe(_ => {
+          this.PRLink = `${_["repository"]["webUrl"]}/pullrequest/${_["pullRequestId"]}`
+          this.publishSuccess = true;
+          this.postPublish();
+        }, err => {
+          this.publishFailed = true;
+          this.postPublish();
+        });
+      }
+      else {
+        this.publishSuccess = true;
+        this.postPublish();
+      }
+    }, err => {
+      this.publishFailed = true;
+      this.postPublish();
+    });
+
+
+    this.dismissDeleteDialog();
+    this.deletingDetector = false
   }
 
   postPublish() {
-    this.modalPublishingButtonText = "Publish";
+    this.modalPublishingButtonText = this.detectorGraduation ? "Create PR" : "Publish";
     this.getBranchList();
     this.enablePublishButton();
     this.enableRunButton();
@@ -1242,7 +1320,7 @@ export class OnboardingFlowComponent implements OnInit {
     let detectorFile: Observable<string>;
     this.recommendedUtterances = [];
     this.utteranceInput = "";
-    if (this.detectorGraduation){
+    if (this.detectorGraduation) {
       this.diagnosticApiService.getDetectorCode(`${this.id}/metadata.json`, this.Branch, this.resourceId).subscribe(res => {
         this.allUtterances = JSON.parse(res).utterances;
       },
@@ -1250,7 +1328,7 @@ export class OnboardingFlowComponent implements OnInit {
           this.allUtterances = [];
         });
     }
-    else{
+    else {
       this.githubService.getMetadataFile(this.id).subscribe(res => {
         this.allUtterances = JSON.parse(res).utterances;
       },
@@ -1271,7 +1349,8 @@ export class OnboardingFlowComponent implements OnInit {
       }
       case DevelopMode.Edit: {
         this.fileName = `${this.id}.csx`;
-        if (this.detectorGraduation){
+        if (this.detectorGraduation) {
+          this.deleteAvailable = true;
           detectorFile = this.diagnosticApiService.getDetectorCode(`${this.id}/${this.id}.csx`, this.Branch, this.resourceId)
         }
         else {
