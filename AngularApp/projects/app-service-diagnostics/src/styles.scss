@@ -1,6 +1,11 @@
 
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "../src/styles/icons.scss";
+
+body {
+    background-color: var(--bodyBackground)!important;
+  }
+
 .ngx-datatable.bootstrap {
     border: 1px solid #dddddd;
 }

@@ -7,15 +7,16 @@ import { StartupInfo } from '../../models/portal';
 import { DemoSubscriptions } from '../../../betaSubscriptions';
 import { DetectorType, TelemetryService } from 'diagnostic-data';
 import { VersionTestService } from '../../../fabric-ui/version-test.service';
-//import { IPartialTheme,  loadTheme } from 'office-ui-fabric-react';
-import { loadTheme, createTheme, Theme } from '@fluentui/react';
+import { IPartialTheme,  loadTheme } from 'office-ui-fabric-react';
+//import { loadTheme, createTheme } from '@uifabric/styling';
 
 import {
     AzureThemeLight,
     AzureThemeDark,
     AzureThemeHighContrastLight,
-    AzureThemeHighContrastDark,
-  } from '@fluentui/azure-themes';
+     AzureThemeHighContrastDark
+  } from '@uifabric/azure-themes';
+import { ThemeService } from '../../../theme/theme.service';
 
 @Component({
   selector: 'resource-redirect',
@@ -56,7 +57,7 @@ white: '#a37676',
     }
   };
 
-  constructor(private _authService: AuthService, private _router: Router, private _windowService: WindowService, private _versionTestService: VersionTestService, private _telemetryService: TelemetryService) { }
+  constructor(private _authService: AuthService, private _router: Router, private _windowService: WindowService, private _versionTestService: VersionTestService, private _telemetryService: TelemetryService, private _themeService: ThemeService) { }
 
   ngOnInit() {
     this._versionTestService.isLegacySub.subscribe(useLegacyVersion => this._useLegacyVersion = useLegacyVersion);
@@ -86,11 +87,23 @@ white: '#a37676',
             };
 
             console.log("get theme", theme, highContrastKey);
+            if (!!theme)
+            {
+                this._themeService.currentTheme.next(theme);
+                console.log("resourceRedirect: get theme", theme, highContrastKey);
+            };
+
+            if (!!highContrastKey)
+            {
+                this._themeService.currentHighContrastKey.next(highContrastKey);
+                console.log("resourceRedirect: get highcontrastkey", theme, highContrastKey);
+            }
+
             this._telemetryService.eventPropertiesSubject.next(eventProperties);
         }
 
 
-        loadTheme(AzureThemeDark);
+
 
 
         if (info && info.resourceId && info.token) {

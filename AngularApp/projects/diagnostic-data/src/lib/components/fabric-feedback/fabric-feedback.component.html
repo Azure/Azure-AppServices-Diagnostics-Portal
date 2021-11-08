@@ -1,6 +1,6 @@
 <div>
   <fab-panel [isOpen]="globals.openFeedback" [type]="type" [customWidth]="panelWidth" [isHiddenOnDismiss]="true"
-    [hasCloseButton]="true" [closeButtonAriaLabel]="'close'" (onDismissed)="dismissedFeedbackHandler()"
+    [hasCloseButton]="true" [closeButtonAriaLabel]="'close'" (onDismiss)="dismissedFeedbackHandler()"
     (onOpen)="onOpenFeedbackPanel()" [renderFooterContent]="feedbackFooter" [isFooterAtBottom]="true" [headerText]="'Feedback'" [isLightDismiss]="true" (onLightDismissClick)="dismissedFeedbackHandler()">
 
     <!-- Feedback Panel Content -->

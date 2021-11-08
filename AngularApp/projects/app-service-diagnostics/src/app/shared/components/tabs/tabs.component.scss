@@ -1,7 +1,26 @@
 @import '../../../../styles/main.scss';
 
+.panel {
+    background-color: var(--bodyBackground);
+    color: var(--bodyText);
+}
+
+a, .link{
+    cursor: pointer;
+    color: var(--link);
+
+    &:hover{
+        color: var(--linkHovered);
+    }
+}
+
+.body {
+    color: var(--bodyText);
+}
+
+
 .app-nav-bar {
-    background-color: #ffffff;
+    background-color: var(--bodyBackground);
     padding: 5px 5px 0;
 }
 

@@ -93,7 +93,7 @@
 }
 
 .home-tiles {
-  display: flex; 
+  display: flex;
   flex-wrap: wrap;
   align-content: center;
 }
@@ -125,4 +125,12 @@
   font-size: 12px;
   line-height: 30px;
   padding: 2px 5px 2px 30px;
+}
+
+.home-banner-preview {
+    background-color: var(--homeBannerPreview);
+}
+
+.home-banner-prod {
+    background-color: var(--homeBannerProd);
 }

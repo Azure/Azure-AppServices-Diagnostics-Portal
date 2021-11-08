@@ -46,6 +46,7 @@ import { PortalActionService} from './shared/services/portal-action.service';
 import { FabricModule } from './fabric-ui/fabric.module';
 import { QuickLinkService } from './shared-v2/services/quick-link.service';
 import { RiskAlertService } from './shared-v2/services/risk-alert.service';
+import { ThemeService } from './theme/theme.service';
 
 @NgModule({
   imports: [
@@ -108,7 +109,8 @@ import { RiskAlertService } from './shared-v2/services/risk-alert.service';
     { provide: BackendCtrlQueryService, useExisting: BackendCtrlService },
     { provide: PortalActionGenericService, useExisting: PortalActionService},
     QuickLinkService,
-    RiskAlertService
+    RiskAlertService,
+    ThemeService
   ],
   bootstrap: [AppComponent]
 })
