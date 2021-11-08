@@ -136,10 +136,10 @@
     </div>
   </ngx-smart-modal>
 
-  <fab-dialog [hidden]="publishDialogHidden || !detectorGraduation" (onDismiss)="dismissDialog()">
+  <fab-dialog [hidden]="publishDialogHidden || !detectorGraduation" (onDismiss)="publishDialogCancel()">
     <div class="callout-padding">
-    <fab-dialog-content [title]="dialogTitle" [subText]="dialogSubText">
-      <p>Branch Name: </p><p style="text-decoration: underline; font-weight: bold;">{{Branch}}</p>
+    <fab-dialog-content [title]="dialogTitle" [subText]="dialogSubText" [styles]="publishDialogStyles">
+      <p>Branch Name: </p><p style="text-decoration: underline; font-weight: bold; word-wrap: break-word;">{{Branch}}</p>
       <!-- <fab-text-field [label]="branchName" [(value)]="Branch" [placeholder]="branchPlaceholder"></fab-text-field> -->
       <fab-text-field [label]="PRName" [(value)]="PRTitle" [placeholder]="PRPlaceholder"></fab-text-field>
       <!-- <fab-text-field [label]="PRDescription" [(value)]="PRDesc" [placeholder]="PRDescriptionPlaceholder"
@@ -155,6 +155,17 @@
     </fab-dialog-footer>
   </fab-dialog>
 
+  <fab-dialog [hidden]="deleteDialogHidden" (onDismiss)="dismissDeleteDialog()">
+    <fab-dialog-content [title]="deleteDialogTitle">
+      <p>This action will remove the detector from the repo. Are you sure you want to delete?</p>
+      <div class="mt-5">
+        <fab-primary-button text="Delete" (onClick)="deleteDetector()" contentClass="mr-3">
+        </fab-primary-button>
+        <fab-default-button text="Cancel" (onClick)="dismissDeleteDialog()"></fab-default-button>
+      </div>
+    </fab-dialog-content>
+  </fab-dialog>
+
   <fab-dialog [hidden]="gistDialogHidden" (onDismiss)="dismissGistDialog()">
     <fab-dialog-content [title]="gistUpdateTitle">
       <fab-dropdown *ngIf="gists.length > 0" label="Gist name" placeholder="Field value"
@@ -163,7 +174,7 @@
         placeholder="Field value" [options]="gistVersionOptions">
       </fab-dropdown>
       <div class="mt-5">
-        <fab-primary-button *ngIf="gists.length > 0" text="Update" (onClick)="gistVersionChange()" class="mr-3">
+        <fab-primary-button *ngIf="gists.length > 0" text="Update" (onClick)="gistVersionChange()" contentClass="mr-3">
         </fab-primary-button>
         <fab-default-button text="Cancel" (onClick)="dismissGistDialog()"></fab-default-button>
       </div>
@@ -177,16 +188,28 @@
     (onOpen)="onOpenPublishSuccessPanel()" >
     <div class="submitted-panel-text panel-text">
       <div style="display: flex;align-items: center; margin-left: 4px; margin-right: 8px;">
-        <div *ngIf="publishSuccess" style="display: flex; align-items: center; padding: 0px 10px;">
+        <div *ngIf="publishSuccess && !detectorGraduation" style="display: flex; align-items: center; padding: 0px 10px;">
           <status-icon [status]="HealthStatus.Success" class="mr-3"></status-icon>
           <div>
             <h5 style="font-weight: 600;">Your detector {{detectorName}} was saved</h5>
           </div>
         </div>
 
-        <div *ngIf="publishFailed" style="display: flex; align-items: center; padding: 0px 10px;">
+        <div *ngIf="publishFailed && !detectorGraduation" style="display: flex; align-items: center; padding: 0px 10px;">
           <status-icon [status]="HealthStatus.Critical" class="mr-3"></status-icon>
           <div style="font-weight: 600;">Your detector {{detectorName}} publish failed </div>
+        </div>
+
+        <div *ngIf="publishSuccess && detectorGraduation" style="display: flex; align-items: center; padding: 0px 10px;">
+          <status-icon [status]="HealthStatus.Success" class="mr-3"></status-icon>
+          <div>
+            <h5 style="font-weight: 600;">Pull request sent successfully</h5>
+          </div>
+        </div>
+
+        <div *ngIf="publishFailed && detectorGraduation" style="display: flex; align-items: center; padding: 0px 10px;">
+          <status-icon [status]="HealthStatus.Critical" class="mr-3"></status-icon>
+          <div style="font-weight: 600;">Pull request failed to send</div>
         </div>
 
       </div>
@@ -194,7 +217,8 @@
         <h5>{{currentTime}}</h5>
       </div>
     </div>
-    <div *ngIf="publishSuccess" style="margin-left: 16px;">You can find it in "Your detectors" later.</div>
+    <div *ngIf="publishSuccess && !detectorGraduation" style="margin-left: 4px;">You can find it in "Your detectors" later.</div>
+    <div *ngIf="publishSuccess && detectorGraduation" style="margin-left: 4px;">You can view your PR <a [href]="PRLink">here</a>.</div>
   </fab-panel>
 
 
@@ -206,9 +230,7 @@
   </div>
   <loader-view *ngIf="!codeLoaded" message="Starting onboarding flow ..."></loader-view>
 
-
-  <fab-command-bar [attr.id]="'fab-command-bar'"
-    contentStyle="border-bottom:1px solid gray;font-weight:12px; height:40px" contentClass="fab-command-bar-class">
+  <fab-command-bar [attr.id]="'fab-command-bar'" contentClass="fab-command-bar-class">
     <items>
       <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"
         [buttonStyles]="runButtonStyle"></fab-command-bar-item>
@@ -219,6 +241,11 @@
         (click)="getDevOptions()"></fab-command-bar-item>
       <fab-command-bar-item key="gistVersion" text="Gist version" [iconProps]="{ iconName: 'BackToWindow' }"
         (click)="showGistDialog()"></fab-command-bar-item>
+      <ng-container *ngIf="ableToDelete()">
+        <fab-command-bar-item key="delete" text="Delete" [iconProps]="{iconName: 'Delete'}"
+        (click)="showDeleteDialog()"></fab-command-bar-item>
+      </ng-container>
+      
       <!-- <fab-command-bar-item key="internal" [text]="internalExternalText" [iconProps]="{ iconName: 'View' }"
         (click)="internalExternalToggle()"></fab-command-bar-item> -->
       <far-items>
