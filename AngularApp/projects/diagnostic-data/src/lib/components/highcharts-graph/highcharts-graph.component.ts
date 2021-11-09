@@ -6,7 +6,7 @@ import AccessibilityModule from 'highcharts/modules/accessibility';
 import { DetectorControlService } from '../../services/detector-control.service';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection, MetricType } from '../../models/time-series';
 import { KeyValue } from '@angular/common';
-import { PointerEventObject } from 'highcharts';
+import { PointerEventObject, theme} from 'highcharts';
 import { interval, Subscription } from 'rxjs';
 import { HighChartsHoverService } from '../../services/highcharts-hover.service';
 

@@ -851,3 +851,7 @@ hr {
         background-color: #ebe6ff;
     }
 }
+
+label, .text-label{
+    color: var(----labelText);
+}

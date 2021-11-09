@@ -140,9 +140,13 @@ export class FabricSearchResultsComponent {
     });
   }
 
-  updateSearchValue(searchValue: { newValue: string }) {
+  updateSearchValue(searchValue: { newValue: any }) {
     this.showSearchResults = !this.isEscape;
-    this.searchValue = searchValue.newValue;
+
+    if (!!searchValue.newValue && !!searchValue.newValue.nativeEvent)
+    {
+        this.searchValue = searchValue.newValue.nativeEvent.data;
+    }
 
     if (this.searchLogTimout) {
       clearTimeout(this.searchLogTimout);

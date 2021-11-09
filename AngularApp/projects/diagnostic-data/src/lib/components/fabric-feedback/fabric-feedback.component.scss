@@ -16,7 +16,6 @@
 .hover-item .tooltiptext {
     display:none;
     background: white;
-    // color: black;
 }
 
 .hover-item:hover .tooltiptext {
@@ -30,6 +29,7 @@
     border: 1px solid black;
     padding: 3px;
     font-size: 12px;
+    color: var(--bodyText);
 }
 
 .panel-close :hover {
@@ -39,7 +39,7 @@
 .panel-close {
     position: absolute;
     top:10px;right:10px;
-    height: 35px; 
+    height: 35px;
     width: 35px;
 }
 
@@ -50,27 +50,10 @@
     font-weight: 400;
 }
 
-.feedback-panel-header {
-    position: absolute; 
-    left: $panel-padding-left; 
-    right: $panel-padding-right; 
-    height: 32px;
-}
-
-.feedback-panel-header > h3 {
-    font-size: 24px; 
-    line-height: 32px; 
-    font-weight: 600;
-}
-
-.feedback-panel-header > p {
-    color: #605E5C;
-}
-
 .feedback-panel-icons {
-    margin-top: 5px; 
+    margin-top: 5px;
     margin-bottom: 5px;
-    display: flex; 
+    display: flex;
     font-size: 25px;
 }
 

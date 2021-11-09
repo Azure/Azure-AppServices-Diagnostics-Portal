@@ -35,10 +35,12 @@ export class ThemeService {
   }
 
   setDarkTheme(): void {
+      loadTheme(AzureThemeDark);
     this.setActiveTheme(dark);
   }
 
   setLightTheme(): void {
+    loadTheme(AzureThemeLight);
     this.setActiveTheme(light);
   }
 
@@ -69,13 +71,25 @@ export class ThemeService {
                 this.currentTheme.next(theme);
                 console.log("_themeService: get theme", theme, highContrastKey);
 
-                loadTheme(AzureThemeDark);
-                console.log("theme", AzureThemeDark);
-                this.setDarkTheme();
+                if (theme === "dark")
+                {
+                    console.log("theme", theme);
+                    this.setDarkTheme();
+                }
+                else
+                {
+                    console.log("theme", theme);
+                    this.setLightTheme();
+                }
             };
 
             if (!!highContrastKey)
             {
+                if (highContrastKey.toString() === "2")
+                {
+                    console.log("theme and highContrast", theme, highContrastKey);
+                    this.setDarkTheme();
+                }
                 this.currentHighContrastKey.next(highContrastKey);
                 console.log("_themeService: get highcontrastkey", theme, highContrastKey);
             }

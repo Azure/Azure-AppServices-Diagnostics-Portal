@@ -10,7 +10,7 @@ import { ThemeService } from './theme/theme.service';
 export class AppComponent implements OnInit {
 
     private _newVersionEnabled = true;
-    public theme = "dark";
+    public theme = "light";
     public get newVersionEnabled() { return this._newVersionEnabled; }
 
     public set newVersionEnabled(value: boolean) {
