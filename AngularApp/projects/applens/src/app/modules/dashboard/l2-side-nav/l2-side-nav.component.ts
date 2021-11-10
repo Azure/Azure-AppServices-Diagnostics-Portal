@@ -33,7 +33,9 @@ export class L2SideNavComponent implements OnInit {
 
     this._applensGlobal.showCommAlertSubject.subscribe(showCommAlert => {
       this._applensGlobal.expandL1SideNavSubject.subscribe(isExpand => {
-        const panelMarginTop = showCommAlert ? 200 : 130;
+        //const panelMarginTop = showCommAlert ? 200 : 130;
+        //Use above once banner is removed
+        const panelMarginTop = showCommAlert ? 240 : 170;
         const panelMarginLeft = isExpand ? l1SideNavExpandWidth : l1SideNavCollapseWidth;
         this.panelStyles = {
           root: {
