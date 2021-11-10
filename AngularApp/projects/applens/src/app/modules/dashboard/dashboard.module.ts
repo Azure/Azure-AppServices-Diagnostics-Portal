@@ -95,7 +95,8 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
             },
             {
                 path: 'home/:viewType',
-                component: ResourceHomeComponent,
+                // component: ResourceHomeComponent,
+                redirectTo: '',
                 pathMatch: 'full'
             },
             {

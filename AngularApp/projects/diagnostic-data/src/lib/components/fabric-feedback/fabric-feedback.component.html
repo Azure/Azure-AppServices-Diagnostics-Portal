@@ -23,13 +23,15 @@
   <fab-panel [isOpen]="submitted" [isLightDismiss]="true" [type]="type" [customWidth]="'400px'"
     [isHiddenOnDismiss]="true" [hasCloseButton]="false" [closeButtonAriaLabel]="'close'" [styles]="submittedPanelStyles"
     [isBlocking]="false" (onDismissed)="dismissedSubmittedHandler()" (onOpen)="onOpenSubmittedPanel()">
-    <div class="submitted-panel-text panel-text">
-      <div>
-        <span class="fa fa-check-circle submitted-panel-icon"></span> Feedback sent!
+    <div style="padding: 5px 20px;">
+      <div class="submitted-panel-text panel-text">
+        <div>
+          <span class="fa fa-check-circle submitted-panel-icon"></span> Feedback sent!
+        </div>
+        <div>{{currentTime}}</div>
       </div>
-      <div>{{currentTime}}</div>
+      <p>Thank you for your feedback</p>
     </div>
-    <p>Thank you for your feedback</p>
   </fab-panel>
 </div>
 
