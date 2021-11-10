@@ -89,13 +89,13 @@ white: '#a37676',
             console.log("get theme", theme, highContrastKey);
             if (!!theme)
             {
-                this._themeService.currentTheme.next(theme);
+                this._themeService.currentThemeSub.next(theme);
                 console.log("resourceRedirect: get theme", theme, highContrastKey);
             };
 
             if (!!highContrastKey)
             {
-                this._themeService.currentHighContrastKey.next(highContrastKey);
+                this._themeService.currentHighContrastKeySub.next(highContrastKey);
                 console.log("resourceRedirect: get highcontrastkey", theme, highContrastKey);
             }
 

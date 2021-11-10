@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { AuthService } from "../startup/services/auth.service";
-import { Theme, light, dark } from "./theme";
+import { Theme, light, dark, highContrastDark, highContrastLight} from "./theme";
 import { IPartialTheme,  loadTheme } from 'office-ui-fabric-react';
+import { CommonSemanticColors, DarkSemanticColors, FontSizes, LightSemanticColors, HighContrastLightSemanticColors, HighContrastDarkSemanticColors} from '@uifabric/azure-themes';
 
 import {
     AzureThemeLight,
@@ -10,6 +11,7 @@ import {
     AzureThemeHighContrastLight,
      AzureThemeHighContrastDark
   } from '@uifabric/azure-themes';
+import { IAzureSemanticColors } from "@uifabric/azure-themes/lib/azure/IAzureSemanticColors";
 
 
 
@@ -19,8 +21,10 @@ import {
 export class ThemeService {
   private active: Theme = light;
   private availableThemes: Theme[] = [light, dark];
-  public currentTheme: BehaviorSubject<string> = new BehaviorSubject<string>("light");
-  public currentHighContrastKey: BehaviorSubject<string> = new BehaviorSubject<string>("");
+  public currentThemeSub: BehaviorSubject<string> = new BehaviorSubject<string>("light");
+  public currentHighContrastKeySub: BehaviorSubject<string> = new BehaviorSubject<string>("");
+  public currentThemeValue: string = "light";
+  public currentHighContrastKeyValue: string = "";
 
   getAvailableThemes(): Theme[] {
     return this.availableThemes;
@@ -35,16 +39,16 @@ export class ThemeService {
   }
 
   setDarkTheme(): void {
-      loadTheme(AzureThemeDark);
-    this.setActiveTheme(dark);
+    loadTheme(AzureThemeDark);
+    this.setActiveDomTheme(dark);
   }
 
   setLightTheme(): void {
     loadTheme(AzureThemeLight);
-    this.setActiveTheme(light);
+    this.setActiveDomTheme(light);
   }
 
-  setActiveTheme(theme: Theme): void {
+  setActiveDomTheme(theme: Theme): void {
     this.active = theme;
 
     Object.keys(this.active.properties).forEach(property => {
@@ -55,43 +59,64 @@ export class ThemeService {
       var c =    document.documentElement.style.getPropertyValue(
         property.toString()
       );
-     console.log(property, c);
     });
   }
 
+  // This method will set theme for fluent ui components (loadTheme) and non-fluent ui components(setActiveDomTheme).
+  setActiveTheme(theme: string, highContrastKey: string=""): void {
+    console.log("Loading theme and high contrast", theme);
+      if(highContrastKey === "" || highContrastKey === "0")
+      {
+          switch (theme.toLocaleLowerCase()) {
+            case 'dark':
+                loadTheme(AzureThemeDark);
+                this.setActiveDomTheme(dark);
+                break;
+            default:
+                loadTheme(AzureThemeLight);
+                this.setActiveDomTheme(light);
+                break;
+          }
+      }
+      else if (highContrastKey === "2")
+      {
+        loadTheme(AzureThemeHighContrastDark);
+        this.setActiveDomTheme(highContrastDark);
+      }
+      else
+      {
+        loadTheme(AzureThemeHighContrastLight);
+        this.setActiveDomTheme(highContrastLight);
+      }
+  }
 
   constructor(private _authService: AuthService) {
+    this.setActiveTheme(this.currentThemeValue, this.currentHighContrastKeyValue);
     this._authService.getStartupInfo().subscribe(startupInfo => {
         if (startupInfo)
         {
             const theme = !!startupInfo.theme ? startupInfo.theme.toLowerCase() : "";
             const highContrastKey = !!startupInfo.highContrastKey ? startupInfo.highContrastKey.toString() : "";
-            if (!!theme)
-            {
-                this.currentTheme.next(theme);
-                console.log("_themeService: get theme", theme, highContrastKey);
 
-                if (theme === "dark")
-                {
-                    console.log("theme", theme);
-                    this.setDarkTheme();
-                }
-                else
-                {
-                    console.log("theme", theme);
-                    this.setLightTheme();
-                }
-            };
-
-            if (!!highContrastKey)
+            if (!!theme || !!highContrastKey)
             {
-                if (highContrastKey.toString() === "2")
+                if (!!theme && theme !== this.currentThemeValue)
                 {
-                    console.log("theme and highContrast", theme, highContrastKey);
-                    this.setDarkTheme();
+                    this.currentThemeSub.next(theme);
+                    this.currentThemeValue = theme;
+
+                    console.log("_themeService: get theme", theme, highContrastKey);
+
+                };
+
+                if (!!highContrastKey && highContrastKey !== this.currentThemeValue)
+                {
+                    console.log("_themeService: get highcontrastkey", theme, highContrastKey);
+                    this.currentHighContrastKeySub.next(highContrastKey);
+                    this.currentHighContrastKeyValue = highContrastKey;
                 }
-                this.currentHighContrastKey.next(highContrastKey);
-                console.log("_themeService: get highcontrastkey", theme, highContrastKey);
+
+                this.setActiveTheme(this.currentThemeValue, this.currentHighContrastKeyValue);
             }
         }
     });

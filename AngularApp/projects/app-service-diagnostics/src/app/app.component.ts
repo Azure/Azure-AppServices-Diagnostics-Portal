@@ -18,7 +18,9 @@ export class AppComponent implements OnInit {
      }
 
     constructor(private _router: Router, private _themeService: ThemeService) {
-        this._themeService.currentTheme.subscribe(currentTheme => this.theme = currentTheme);
+        this._themeService.currentThemeSub.subscribe(currentTheme => {
+            this.theme = currentTheme;
+        });
     }
 
     ngOnInit() {
