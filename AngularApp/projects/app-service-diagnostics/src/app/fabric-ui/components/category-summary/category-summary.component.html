@@ -8,7 +8,7 @@
         <detector-command-bar [disableGenie]="disableGenie"></detector-command-bar>
         <router-outlet></router-outlet>
       </div>
-      <div id="collapse-genie-button button-container" class="col-md col-sm col-lg" class="collapsible-button"
+      <div *ngIf="!disableGenie" id="collapse-genie-button button-container" class="col-md col-sm col-lg" class="collapsible-button"
         style=" float: right; height: 100vh; border-left:1px solid #cccccc; " (click)="openGeniePanel()" tabindex="0"
         aria-label="Open Genie Panel" (keydown.enter)="openGeniePanel()">
         <i class="fa fa-angle-double-left" style="margin: 5px;font-size:13px;"></i>
