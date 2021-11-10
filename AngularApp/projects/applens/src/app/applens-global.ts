@@ -36,4 +36,14 @@ export class ApplensGlobal {
         }));
         return mergeSideNavSub;
     }
+
+    getDetectorName(): string {
+        const detectorId = this._route.firstChild.firstChild.firstChild.firstChild.firstChild.snapshot.params["detector"];
+        return detectorId;
+    }
+
+    getUserAlias(): string {
+        const alias: string = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
+        return alias;
+    }
 }
