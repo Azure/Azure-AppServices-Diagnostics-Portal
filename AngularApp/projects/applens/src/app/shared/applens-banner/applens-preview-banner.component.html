@@ -2,7 +2,7 @@
   <ng-container *ngIf="isPreview else oldApplensBanner">
     <i class="ib-purplerocket mr-3"></i>
     <span><a (click)="switchView($event)">Click here</a> to switch back to the old experience. Please email
-      applensv2team with any issues you’ve found.</span>
+      <a (click)="emailToApplensTeam($event)">applensv2team</a> with any issues you’ve found.</span>
   </ng-container>
 </div>
 
