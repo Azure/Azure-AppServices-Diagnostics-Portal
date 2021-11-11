@@ -5,7 +5,7 @@ import {
   ResourceServiceInputs, ResourceType, ResourceTypeState, ResourceServiceInputsJsonResponse
 } from '../../../shared/models/resources';
 import { HttpClient } from '@angular/common/http';
-import { IDropdownOption, IDropdownProps } from 'office-ui-fabric-react';
+import { DropdownMenuItemType, IDropdownOption, IDropdownProps } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
 import { DataTableResponseObject, DetectorControlService, HealthStatus } from 'diagnostic-data';
 import { AdalService } from 'adal-angular4';
@@ -27,7 +27,7 @@ export class MainComponent implements OnInit {
   resourceName: string;
   defaultResourceTypes: ResourceTypeState[] = [
     {
-      resourceType: ResourceType.Site,
+      resourceType: null,
       resourceTypeLabel: 'App name',
       routeName: (name) => `sites/${name}`,
       displayName: 'App',
@@ -35,7 +35,7 @@ export class MainComponent implements OnInit {
       caseId: false
     },
     {
-      resourceType: ResourceType.AppServiceEnvironment,
+      resourceType: null,
       resourceTypeLabel: 'ASE name',
       routeName: (name) => `hostingEnvironments/${name}`,
       displayName: 'App Service Environment',
@@ -67,7 +67,7 @@ export class MainComponent implements OnInit {
       caseId: false
     },
     {
-      resourceType: ResourceType.ContainerApp,
+      resourceType: null,
       resourceTypeLabel: 'Container App Name',
       routeName: (name) => `containerapps/${name}`,
       displayName: 'Container App',
@@ -85,11 +85,10 @@ export class MainComponent implements OnInit {
   status = HealthStatus.Critical;
 
   fabDropdownOptions: IDropdownOption[] = [];
-  fabDropdownStyles: any = {
-    callout: {
-      maxHeight: 200,
-      overflowY: 'overlay'
-    }
+  fabDropdownStyles: IDropdownProps["styles"] = {
+    dropdownItemsWrapper: {
+      maxHeight: '20vh'
+    },
   }
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   timePickerStr: string = "";
@@ -114,6 +113,23 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this.resourceTypes = [...this.defaultResourceTypes];
     this.selectedResourceType = this.resourceTypes[0];
+
+
+    this.fabDropdownOptions.push({
+      key: "Provide Resource Name",
+      text: "Provide Resource Name",
+      ariaLabel: "Provide Resource Name",
+      itemType: DropdownMenuItemType.Header
+    });
+
+    this.defaultResourceTypes.forEach(resource => {
+      this.fabDropdownOptions.push({
+        key: resource.displayName,
+        text: resource.displayName,
+        ariaLabel: resource.displayName
+      });
+    });
+
     // TODO: Use this to restrict access to routes that don't match a supported resource type
     this._http.get<ResourceServiceInputsJsonResponse>('assets/enabledResourceTypes.json').subscribe(jsonResponse => {
       this.enabledResourceTypes = <ResourceServiceInputs[]>jsonResponse.enabledResourceTypes;
@@ -130,39 +146,53 @@ export class MainComponent implements OnInit {
       //     });
       //   }
       // });
-      const set = new Set<string>();
-      this.resourceTypes.forEach(resource => {
-        if (resource && resource.displayName) set.add(resource.displayName.toLowerCase());
-      });
-      this.enabledResourceTypes.forEach(type => {
-        if (type && type.displayName && !set.has(type.displayName.toLowerCase())) {
-          set.add(type.displayName.toLowerCase());
-          this.resourceTypes.push({
-            resourceType: null,
-            resourceTypeLabel: 'ARM resource ID',
-            routeName: (name) => `${name}`,
-            displayName: `${type.displayName}`,
-            enabled: true,
-            caseId: false
-          });
-        }
+      this.fabDropdownOptions.push(
+        { key: 'divider_1', text: '-', itemType: DropdownMenuItemType.Divider },
+        { key: 'Provide ARM Id', text: 'Provide ARM Id', itemType: DropdownMenuItemType.Header }
+      );
+
+      const list = this.enabledResourceTypes.filter(type => this.defaultResourceTypes.findIndex(defaultResource => defaultResource.displayName === type.displayName) === -1);
+
+      list.sort((a,b) => {
+        return a.displayName.localeCompare(b.displayName);
+      })
+
+      list.forEach(resource => {
+        this.resourceTypes.push({
+          resourceType: resource.resourceType,
+          resourceTypeLabel: 'ARM resource ID',
+          routeName: (name) => `${name}`,
+          displayName: `${resource.displayName}`,
+          enabled: true,
+          caseId: false
+        });
+
+        this.fabDropdownOptions.push(
+          {
+            key: resource.displayName,
+            text: resource.displayName,
+            ariaLabel: resource.displayName
+          }
+        )
       });
 
-      this.resourceTypes.forEach(resource => {
-        const displayName = resource.displayName;
-        this.fabDropdownOptions.push({
-          key: displayName,
-          text: displayName,
-          ariaLabel: displayName
-        });
-      });
+
+
+
+
+      // this.resourceTypes.forEach(resource => {
+      //   const displayName = resource.displayName;
+      //   this.fabDropdownOptions.push({
+      //     key: displayName,
+      //     text: displayName,
+      //     ariaLabel: displayName
+      //   });
+      // });
 
       this._userInfoService.getRecentResources().subscribe(userInfo => {
         if (userInfo && userInfo.resources) {
           this.table = this.generateDataTable(userInfo.resources);
         }
-      }, err => {
-        console.log(err);
       });
     });
 
@@ -184,7 +214,8 @@ export class MainComponent implements OnInit {
   }
 
   selectDropdownKey(e: { option: IDropdownOption, index: number }) {
-    this.selectResourceType(this.resourceTypes[e.index]);
+    const resourceType = this.resourceTypes.find(resource => resource.displayName === e.option.key);
+    this.selectResourceType(resourceType);
   }
 
   private normalizeArmUriForRoute(resourceURI: string, enabledResourceTypes: ResourceServiceInputs[]): string {
@@ -218,8 +249,8 @@ export class MainComponent implements OnInit {
       return routeString;
     } else {
       this.errorMessage = "Invalid ARM resource id. Resource id must be of the following format:\n" +
-        "  /subscriptions/SUBSCRIPTION_ID/resourceGroups/MY_RG/providers/Microsoft.ContainerService/" +
-        "managedClusters/RESOURCE_NAME";
+        `  /subscriptions/<sub id>/resourceGroups/<resource group>/providers/${this.selectedResourceType.resourceType}/` +
+        "<resource name>";
 
       return resourceURI;
     }

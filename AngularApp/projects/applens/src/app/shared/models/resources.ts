@@ -11,7 +11,7 @@ export enum ResourceType {
 export interface ResourceTypeState {
     displayName: string;
     routeName: Function;
-    resourceType: ResourceType;
+    resourceType: string;
     resourceTypeLabel?: string;
     enabled: boolean;
     caseId: boolean;
