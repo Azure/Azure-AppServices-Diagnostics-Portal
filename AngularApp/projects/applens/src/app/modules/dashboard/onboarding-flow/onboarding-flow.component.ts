@@ -242,7 +242,7 @@ export class OnboardingFlowComponent implements OnInit {
     }
   }
 
-  modalPublishingButtonText: string;
+  modalPublishingButtonText: string = "Publish";
   modalPublishingButtonDisabled: boolean;
   publishAccessControlResponse: any;
 
@@ -292,7 +292,6 @@ export class OnboardingFlowComponent implements OnInit {
     this.runButtonText = "Run";
     this.runButtonIcon = "fa fa-play";
     this.publishButtonText = "Create";
-    this.modalPublishingButtonText = this.detectorGraduation? "Create PR" : "Publish";
     this.modalPublishingButtonDisabled = false;
     this.showAlert = false;
 
@@ -363,7 +362,7 @@ export class OnboardingFlowComponent implements OnInit {
   ngOnInit() {
     this.diagnosticApiService.getDetectorGraduationSetting().subscribe(graduationFlag => {
       this.detectorGraduation = graduationFlag;
-
+      this.modalPublishingButtonText = this.detectorGraduation? "Create PR" : "Publish";
 
       if (!this.initialized) {
         this.initialize();
