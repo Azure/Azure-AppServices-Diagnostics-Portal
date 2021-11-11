@@ -14,7 +14,7 @@
             Service type <span class="required">*</span>
           </label>
           <div id="landing-page-service-type">
-            <fab-dropdown [options]="fabDropdownOptions" [defaultSelectedKey]="fabDropdownOptions[0].key"
+            <fab-dropdown [options]="fabDropdownOptions" [defaultSelectedKey]="defaultResourceTypes[0].displayName"
               (onChange)="selectDropdownKey($event)" [styles]="fabDropdownStyles"></fab-dropdown>
           </div>
         </div>
