@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import {AadAuthGuard} from './shared/auth/aad-auth-guard.service';
 import { environment } from '../environments/environment';
-import * as Highcharts from 'highcharts';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 
 @Component({

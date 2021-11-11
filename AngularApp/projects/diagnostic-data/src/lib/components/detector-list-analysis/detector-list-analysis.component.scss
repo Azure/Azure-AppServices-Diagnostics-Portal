@@ -148,7 +148,7 @@
     border-top-right-radius: 0px !important;
     border-top-left-radius: 0px !important;
  }
- 
+
 .special .list-group-item:last-child {
    border-bottom-right-radius: 0px !important;
    border-bottom-left-radius: 0px !important;
@@ -160,8 +160,8 @@
  }
 
 .app-insights-image {
-    width:18px; 
-    height: 18px; 
+    width:18px;
+    height: 18px;
     margin-top:-3px;
 }
 
@@ -192,7 +192,7 @@
     width:100%;
     text-align:right;
     font-size:13px;
-    padding:3px; 
+    padding:3px;
     margin:12px 0px;
 }
 
@@ -224,7 +224,7 @@
 
 .expand-icon{
     background-color: white;
-    color: black;   
+    color: black;
 }
 
 .successful-check{
@@ -237,7 +237,7 @@
     opacity: 0;
     visibility: hidden;
     height: 0;
-    
+
 }
 
 .list-wrapper-genie {
@@ -246,4 +246,9 @@
 
 .dot-flashing {
     @include dot-flashing(14);
+}
+
+.list-view-title {
+    color: var(--cardViewTitle);
+    font-weight:600;
 }

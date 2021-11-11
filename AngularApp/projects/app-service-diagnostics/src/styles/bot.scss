@@ -43,7 +43,7 @@ textarea {
     @extend %chat-message;
 
     max-width: 80%;
-    background-color: $chat-message-system-color;
+    background-color: var(--genieSystemMessageBackgroundColor);
     border-bottom-left-radius: 0;
     border: $chat-message-system-border;
     float: left;

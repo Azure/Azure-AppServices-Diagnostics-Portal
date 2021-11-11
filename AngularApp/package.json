@@ -42,6 +42,7 @@
     "@microsoft/applicationinsights-web": "^2.5.4",
     "@ng-select/ng-select": "^2.16.0",
     "@swimlane/ngx-datatable": "^15.0.2",
+    "@types/highcharts": "^7.0.0",
     "@types/react": "~16.8.6",
     "@types/react-dom": "^16.8.6",
     "@uifabric/azure-themes": "7.3.0",

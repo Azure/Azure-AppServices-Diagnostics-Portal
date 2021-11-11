@@ -47,6 +47,7 @@ import { FabricModule } from './fabric-ui/fabric.module';
 import { QuickLinkService } from './shared-v2/services/quick-link.service';
 import { RiskAlertService } from './shared-v2/services/risk-alert.service';
 import { ThemeService } from './theme/theme.service';
+import { GenericThemeService } from 'diagnostic-data';
 
 @NgModule({
   imports: [
@@ -110,7 +111,8 @@ import { ThemeService } from './theme/theme.service';
     { provide: PortalActionGenericService, useExisting: PortalActionService},
     QuickLinkService,
     RiskAlertService,
-    ThemeService
+    ThemeService,
+    { provide: GenericThemeService, useExisting: ThemeService },
   ],
   bootstrap: [AppComponent]
 })

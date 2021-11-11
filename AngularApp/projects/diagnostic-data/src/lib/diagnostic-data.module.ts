@@ -3,6 +3,7 @@ import 'nvd3';
 import { DetectorControlService } from './services/detector-control.service';
 import { DiagnosticService } from './services/diagnostic.service';
 import { GenericSupportTopicService } from './services/generic-support-topic.service';
+import { GenericThemeService } from './services/generic-theme.service';
 import { GenericContentService } from './services/generic-content.service';
 import { GenericDocumentsSearchService } from './services/generic-documents-search.service';
 import { TelemetryService } from './services/telemetry/telemetry.service';
@@ -262,6 +263,7 @@ export class DiagnosticDataModule {
       providers: [
         DiagnosticService,
         GenericSupportTopicService,
+        GenericThemeService,
         GenericContentService,
         GenericDocumentsSearchService,
         { provide: DIAGNOSTIC_DATA_CONFIG, useValue: config },

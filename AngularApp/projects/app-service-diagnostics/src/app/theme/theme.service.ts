@@ -22,16 +22,11 @@ export class ThemeService {
   private active: Theme = light;
   private availableThemes: Theme[] = [light, dark];
   public currentThemeSub: BehaviorSubject<string> = new BehaviorSubject<string>("light");
-  public currentHighContrastKeySub: BehaviorSubject<string> = new BehaviorSubject<string>("");
   public currentThemeValue: string = "light";
   public currentHighContrastKeyValue: string = "";
 
   getAvailableThemes(): Theme[] {
     return this.availableThemes;
-  }
-
-  getActiveTheme(): Theme {
-    return this.active;
   }
 
   isDarkTheme(): boolean {
@@ -64,15 +59,16 @@ export class ThemeService {
 
   // This method will set theme for fluent ui components (loadTheme) and non-fluent ui components(setActiveDomTheme).
   setActiveTheme(theme: string, highContrastKey: string=""): void {
-    console.log("Loading theme and high contrast", theme);
       if(highContrastKey === "" || highContrastKey === "0")
       {
           switch (theme.toLocaleLowerCase()) {
             case 'dark':
+                this.currentThemeSub.next('dark');
                 loadTheme(AzureThemeDark);
                 this.setActiveDomTheme(dark);
                 break;
             default:
+                this.currentThemeSub.next('light');
                 loadTheme(AzureThemeLight);
                 this.setActiveDomTheme(light);
                 break;
@@ -80,11 +76,13 @@ export class ThemeService {
       }
       else if (highContrastKey === "2")
       {
+        this.currentThemeSub.next('highContrastDark');
         loadTheme(AzureThemeHighContrastDark);
         this.setActiveDomTheme(highContrastDark);
       }
       else
       {
+        this.currentThemeSub.next('highContrastLight');
         loadTheme(AzureThemeHighContrastLight);
         this.setActiveDomTheme(highContrastLight);
       }
@@ -102,17 +100,11 @@ export class ThemeService {
             {
                 if (!!theme && theme !== this.currentThemeValue)
                 {
-                    this.currentThemeSub.next(theme);
                     this.currentThemeValue = theme;
-
-                    console.log("_themeService: get theme", theme, highContrastKey);
-
                 };
 
                 if (!!highContrastKey && highContrastKey !== this.currentThemeValue)
                 {
-                    console.log("_themeService: get highcontrastkey", theme, highContrastKey);
-                    this.currentHighContrastKeySub.next(highContrastKey);
                     this.currentHighContrastKeyValue = highContrastKey;
                 }
 
@@ -121,5 +113,4 @@ export class ThemeService {
         }
     });
 }
-
 }

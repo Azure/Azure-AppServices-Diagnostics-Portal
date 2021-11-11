@@ -86,25 +86,8 @@ white: '#a37676',
                 'HighContrastKey': highContrastKey
             };
 
-            console.log("get theme", theme, highContrastKey);
-            if (!!theme)
-            {
-                this._themeService.currentThemeSub.next(theme);
-                console.log("resourceRedirect: get theme", theme, highContrastKey);
-            };
-
-            if (!!highContrastKey)
-            {
-                this._themeService.currentHighContrastKeySub.next(highContrastKey);
-                console.log("resourceRedirect: get highcontrastkey", theme, highContrastKey);
-            }
-
             this._telemetryService.eventPropertiesSubject.next(eventProperties);
         }
-
-
-
-
 
         if (info && info.resourceId && info.token) {
           if (Array.isArray(info.optionalParameters) && info.optionalParameters.find(param => param.key === "categoryId")) {
