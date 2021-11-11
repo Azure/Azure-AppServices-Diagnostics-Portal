@@ -182,7 +182,7 @@ export class OnboardingFlowComponent implements OnInit {
   };
   PRLink: string = "";
 
-  detectorGraduation: boolean = true;
+  detectorGraduation: boolean = false;
   autoMerge: boolean = false;
 
   buttonStyle: IButtonStyles = {
@@ -244,6 +244,11 @@ export class OnboardingFlowComponent implements OnInit {
   }
 
   modalPublishingButtonText: string;
+
+  // get modalPublishingButtonText() {
+  //   return this.detectorGraduation ? "Create PR" : "Publish";
+  // }
+
   modalPublishingButtonDisabled: boolean;
   publishAccessControlResponse: any;
 
@@ -387,7 +392,6 @@ export class OnboardingFlowComponent implements OnInit {
       else {
         this.internalExternalText = this.externalViewText;
       }
-
     });
   }
 
@@ -1208,7 +1212,6 @@ export class OnboardingFlowComponent implements OnInit {
       this.publishFailed = true;
       this.postPublish();
     });
-
 
     this.dismissDeleteDialog();
     this.deletingDetector = false
