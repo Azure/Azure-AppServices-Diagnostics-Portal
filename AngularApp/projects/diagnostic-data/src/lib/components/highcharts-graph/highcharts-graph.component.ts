@@ -9,9 +9,9 @@ import { KeyValue } from '@angular/common';
 import { PointerEventObject} from 'highcharts';
 import { interval, Subscription } from 'rxjs';
 import { HighChartsHoverService } from '../../services/highcharts-hover.service';
-import DarkUnicaTheme  from 'highcharts/themes/dark-unica';
-import HighContrastDarkTheme from 'highcharts/themes/high-contrast-dark';
-import HighContrastLightTheme from 'highcharts/themes/high-contrast-dark';
+import highchartsDarkTheme from 'highcharts/themes/dark-unica';
+import highchartsHighContrastDarkTheme from 'highcharts/themes/high-contrast-dark';
+import highchartsHighContrastLightTheme from 'highcharts/themes/high-contrast-light';
 import { GenericThemeService } from '../../services/generic-theme.service';
 
 declare var require: any
@@ -243,7 +243,6 @@ export class HighchartsGraphComponent implements OnInit {
             chart.customNamespace = {};
             chart.customNamespace["toggleSelectionButton"] = chart.renderer.button(
                 "None", null, -10, function () {
-                    // console.log("chart width", `${chart.plotWidth - 20}`);
                     var series = chart.series;
                     var statusToSet = this.text && this.text.textStr && this.text.textStr === "All" ? true : false;
                     for (var i = 0; i < series.length; i++) {
@@ -481,26 +480,24 @@ export class HighchartsGraphComponent implements OnInit {
     }
 
     constructor(private el: ElementRef<HTMLElement>, private highChartsHoverService: HighChartsHoverService, private themeService: GenericThemeService) {
-        this.themeService.currentThemeSub.subscribe((theme)=>{
-            console.log("highchart genericTheme get theme", theme);
-            this.updateHighChartTheme(theme);
-        })
+                // Update highchart theme based on ibiza theme attributes
+                this.themeService.currentThemeSub.subscribe((theme)=>{
+                    this.updateHighChartTheme(theme);
+                })
     }
 
-    private updateHighChartTheme(theme: string)
-    {
-        if(theme !==this.currentTheme)
-        {
-            this.currentTheme = theme;
+    private updateHighChartTheme(theme: string) {
+        if (!!theme && !!this.themeService && this.currentTheme && theme.toLocaleLowerCase() !== this.currentTheme) {
+            this.currentTheme= theme.toLocaleLowerCase();
             switch (this.currentTheme) {
                 case 'dark':
-                   DarkUnicaTheme(Highcharts);
+                    highchartsDarkTheme(Highcharts);
                     break;
-                case 'highContrastLight':
-                    HighContrastLightTheme(Highcharts);
+                case 'high-contrast-light':
+                    highchartsHighContrastLightTheme(Highcharts);
                     break;
-                case 'highContrastDark':
-                    HighContrastDarkTheme(Highcharts);
+                case 'high-contrast-dark':
+                    highchartsHighContrastDarkTheme(Highcharts);
                     break;
                 default:
                     Highcharts.setOptions(Highcharts.getOptions());
@@ -520,7 +517,6 @@ export class HighchartsGraphComponent implements OnInit {
         setTimeout(() => {
             this.loading = false;
         }, 100);
-
 
         setTimeout(() => {
             const currentCharts = this.el.nativeElement.getElementsByClassName('highcharts-container') ? this.el.nativeElement.getElementsByClassName('highcharts-container') : null;
@@ -610,7 +606,6 @@ export class HighchartsGraphComponent implements OnInit {
         const formattedDate = moment.utc(this.x).format("MMM DD h:mm A[ UTC]");
         return formattedDate;
     }
-
 
     private updateMetric(xAxisValue: number) {
         if (this.metricType === MetricType.None) return;

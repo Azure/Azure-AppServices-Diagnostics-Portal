@@ -11,19 +11,18 @@ import {
     AzureThemeHighContrastLight,
      AzureThemeHighContrastDark
   } from '@uifabric/azure-themes';
-import { IAzureSemanticColors } from "@uifabric/azure-themes/lib/azure/IAzureSemanticColors";
 
 
 
 @Injectable({
   providedIn: "root"
 })
-export class ThemeService {
+export class ThemeService{
   private active: Theme = light;
-  private availableThemes: Theme[] = [light, dark];
+  private availableThemes: Theme[] = [light, dark, highContrastLight, highContrastDark];
   public currentThemeSub: BehaviorSubject<string> = new BehaviorSubject<string>("light");
-  public currentThemeValue: string = "light";
-  public currentHighContrastKeyValue: string = "";
+  private currentThemeValue: string = "light";
+  private currentHighContrastKeyValue: string = "";
 
   getAvailableThemes(): Theme[] {
     return this.availableThemes;
@@ -51,9 +50,6 @@ export class ThemeService {
         property.toString(),
         this.active.properties[property]
       );
-      var c =    document.documentElement.style.getPropertyValue(
-        property.toString()
-      );
     });
   }
 
@@ -76,13 +72,13 @@ export class ThemeService {
       }
       else if (highContrastKey === "2")
       {
-        this.currentThemeSub.next('highContrastDark');
+        this.currentThemeSub.next('high-contrast-dark');
         loadTheme(AzureThemeHighContrastDark);
         this.setActiveDomTheme(highContrastDark);
       }
       else
       {
-        this.currentThemeSub.next('highContrastLight');
+        this.currentThemeSub.next('high-contrast-light');
         loadTheme(AzureThemeHighContrastLight);
         this.setActiveDomTheme(highContrastLight);
       }

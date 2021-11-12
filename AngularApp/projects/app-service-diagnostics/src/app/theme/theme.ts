@@ -12,6 +12,8 @@ export const light: Theme = {
     name: "light",
     properties: {
         "--color": LightSemanticColors.background,
+        "--sectionTitle": "#323130",
+        "--summaryText": "#605E5C",
         "--cardHovered": "#323130",
         "--cardTileKeywords": "#605E5C",
         "--tileHomepageHoverBackground": "#f3f2f1",
@@ -142,6 +144,8 @@ export const dark: Theme = {
     name: "dark",
     properties: {
         "--color": DarkSemanticColors.background,
+        "--sectionTitle": "white",
+        "--summaryText": "white",
         "--cardHovered": "#323130",
         "--cardTileKeywords": "white",
         "--tileHomepageHoverBackground": "#323130",
@@ -272,6 +276,8 @@ export const highContrastDark: Theme = {
     name: "highContrastDark",
     properties: {
         "--color": HighContrastDarkSemanticColors.background,
+        "--sectionTitle": "white",
+        "--summaryText": "white",
         "--cardHovered": "#323130",
         "--cardTileKeywords": "white",
         "--tileHomepageHoverBackground": "#323130",
@@ -402,6 +408,8 @@ export const highContrastLight: Theme = {
     name: "highContrastLight",
     properties: {
         "--color": HighContrastLightSemanticColors.background,
+        "--sectionTitle": "#323130",
+        "--summaryText": "#605E5C",
         "--cardHovered": "#323130",
         "--cardTileKeywords": "#605E5C",
         "--tileHomepageHoverBackground": "#f3f2f1",

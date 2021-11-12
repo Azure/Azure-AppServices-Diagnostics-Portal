@@ -143,10 +143,10 @@ export class FabricSearchResultsComponent {
   updateSearchValue(searchValue: { newValue: any }) {
     this.showSearchResults = !this.isEscape;
 
-    if (!!searchValue.newValue && !!searchValue.newValue.nativeEvent)
-    {
-        this.searchValue = searchValue.newValue.nativeEvent.data;
-    }
+   if (!!searchValue.newValue.currentTarget && !!searchValue.newValue.currentTarget.value)
+   {
+        this.searchValue = searchValue.newValue.currentTarget.value;
+   }
 
     if (this.searchLogTimout) {
       clearTimeout(this.searchLogTimout);
@@ -157,7 +157,6 @@ export class FabricSearchResultsComponent {
     }, 5000);
     this.features = this.featureService.getFeatures(this.searchValue);
     this.isEscape = false;
-
 
     //remove tab for right Cross in search bar
     //need async so when type first letter we can wait cross show up then disable it
