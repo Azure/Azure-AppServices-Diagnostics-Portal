@@ -7,16 +7,6 @@ import { StartupInfo } from '../../models/portal';
 import { DemoSubscriptions } from '../../../betaSubscriptions';
 import { DetectorType, TelemetryService } from 'diagnostic-data';
 import { VersionTestService } from '../../../fabric-ui/version-test.service';
-import { IPartialTheme,  loadTheme } from 'office-ui-fabric-react';
-//import { loadTheme, createTheme } from '@uifabric/styling';
-
-import {
-    AzureThemeLight,
-    AzureThemeDark,
-    AzureThemeHighContrastLight,
-     AzureThemeHighContrastDark
-  } from '@uifabric/azure-themes';
-import { ThemeService } from '../../../theme/theme.service';
 
 @Component({
   selector: 'resource-redirect',
@@ -26,38 +16,8 @@ import { ThemeService } from '../../../theme/theme.service';
 export class ResourceRedirectComponent implements OnInit {
   private _newVersionEnabled = true;
   private _useLegacyVersion = true;
-  darkTheme: any = {
-    semanticColors: {
-      bodyBackground: 'black',
-      bodyText: 'white',
-    },
-    palette: {
-        themePrimary: '#2b4559',
-themeLighterAlt: '#020304',
-themeLighter: '#070b0e',
-themeLight: '#0d151b',
-themeTertiary: '#1a2936',
-themeSecondary: '#263d4f',
-themeDarkAlt: '#38546a',
-themeDark: '#4e6b81',
-themeDarker: '#738ea2',
-neutralLighterAlt: '#9f7272',
-neutralLighter: '#9c7070',
-neutralLight: '#966c6c',
-neutralQuaternaryAlt: '#8c6464',
-neutralQuaternary: '#856060',
-neutralTertiaryAlt: '#805c5c',
-neutralTertiary: '#193c2f',
-neutralSecondary: '#32795e',
-neutralPrimaryAlt: '#49b189',
-neutralPrimary: '#53c99c',
-neutralDark: '#76d6b1',
-black: '#97e1c5',
-white: '#a37676',
-    }
-  };
 
-  constructor(private _authService: AuthService, private _router: Router, private _windowService: WindowService, private _versionTestService: VersionTestService, private _telemetryService: TelemetryService, private _themeService: ThemeService) { }
+  constructor(private _authService: AuthService, private _router: Router, private _windowService: WindowService, private _versionTestService: VersionTestService, private _telemetryService: TelemetryService) { }
 
   ngOnInit() {
     this._versionTestService.isLegacySub.subscribe(useLegacyVersion => this._useLegacyVersion = useLegacyVersion);

@@ -28,20 +28,6 @@ export class ThemeService{
     return this.availableThemes;
   }
 
-  isDarkTheme(): boolean {
-    return this.active.name === dark.name;
-  }
-
-  setDarkTheme(): void {
-    loadTheme(AzureThemeDark);
-    this.setActiveDomTheme(dark);
-  }
-
-  setLightTheme(): void {
-    loadTheme(AzureThemeLight);
-    this.setActiveDomTheme(light);
-  }
-
   setActiveDomTheme(theme: Theme): void {
     this.active = theme;
 
@@ -89,21 +75,13 @@ export class ThemeService{
     this._authService.getStartupInfo().subscribe(startupInfo => {
         if (startupInfo)
         {
-            const theme = !!startupInfo.theme ? startupInfo.theme.toLowerCase() : "";
-            const highContrastKey = !!startupInfo.highContrastKey ? startupInfo.highContrastKey.toString() : "";
+            const theme = startupInfo.theme != undefined ? startupInfo.theme.toLowerCase() : "";
+            const highContrastKey = startupInfo.highContrastKey != undefined ? startupInfo.highContrastKey.toString() : "";
 
-            if (!!theme || !!highContrastKey)
+            if (theme !== this.currentThemeValue || highContrastKey !== this.currentHighContrastKeyValue)
             {
-                if (!!theme && theme !== this.currentThemeValue)
-                {
-                    this.currentThemeValue = theme;
-                };
-
-                if (!!highContrastKey && highContrastKey !== this.currentThemeValue)
-                {
-                    this.currentHighContrastKeyValue = highContrastKey;
-                }
-
+                this.currentThemeValue = theme !== this.currentThemeValue? theme : this.currentThemeValue;
+                this.currentHighContrastKeyValue = highContrastKey !== this.currentHighContrastKeyValue ? highContrastKey : this.currentHighContrastKeyValue;
                 this.setActiveTheme(this.currentThemeValue, this.currentHighContrastKeyValue);
             }
         }
