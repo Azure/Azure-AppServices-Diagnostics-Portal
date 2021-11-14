@@ -39,6 +39,10 @@ export class ThemeService{
     });
   }
 
+  getPropertyValue(key: string): string {
+    return this.active && Object.keys(this.active.properties).findIndex(property => property === key) >= 0 ? this.active.properties[key] : "";
+  }
+
   // This method will set theme for fluent ui components (loadTheme) and non-fluent ui components(setActiveDomTheme).
   setActiveTheme(theme: string, highContrastKey: string=""): void {
       if(highContrastKey === "" || highContrastKey === "0")

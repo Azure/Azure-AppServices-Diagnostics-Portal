@@ -12,6 +12,9 @@ export const light: Theme = {
     name: "light",
     properties: {
         "--color": LightSemanticColors.background,
+        "--proactiveTopMenuButton": "#ddd",
+        "--notificationBarBackground": '#FEF0F1',
+        "--listAnalysisBackground": "#f9f9f9",
         "--sectionTitle": "#323130",
         "--summaryText": "#605E5C",
         "--cardHovered": "#323130",
@@ -144,6 +147,9 @@ export const dark: Theme = {
     name: "dark",
     properties: {
         "--color": DarkSemanticColors.background,
+        "--proactiveTopMenuButton": "#605e5c",
+        "--notificationBarBackground": '#323130',
+        "--listAnalysisBackground": DarkSemanticColors.background,
         "--sectionTitle": "white",
         "--summaryText": "white",
         "--cardHovered": "#323130",
@@ -276,6 +282,9 @@ export const highContrastDark: Theme = {
     name: "highContrastDark",
     properties: {
         "--color": HighContrastDarkSemanticColors.background,
+        "--proactiveTopMenuButton": "#605e5c",
+        "--notificationBarBackground": '#323130',
+        "--listAnalysisBackground": HighContrastDarkSemanticColors.background,
         "--sectionTitle": "white",
         "--summaryText": "white",
         "--cardHovered": "#323130",
@@ -408,6 +417,9 @@ export const highContrastLight: Theme = {
     name: "highContrastLight",
     properties: {
         "--color": HighContrastLightSemanticColors.background,
+        "--proactiveTopMenuButton": "#ddd",
+        "--notificationBarBackground": '#FEF0F1',
+        "--listAnalysisBackground": "#f9f9f9",
         "--sectionTitle": "#323130",
         "--summaryText": "#605E5C",
         "--cardHovered": "#323130",
