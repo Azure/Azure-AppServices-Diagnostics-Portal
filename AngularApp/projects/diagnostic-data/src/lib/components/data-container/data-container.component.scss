@@ -11,8 +11,8 @@
 }
 
 .data-container-header {
-    background-color: white;
-    color: black;
+    background-color: var(--bodyBackground);
+    color: var(--bodyText);
     font-size: 16px;
     min-height: 42px;
     font-weight: 700;
@@ -32,8 +32,8 @@
 
 .data-container-header-appinsight-analysis {
     border: none!important;
-      background-color:white;
-      color:black;
+      background-color:var(--bodyBackground);
+      color:var(--bodyText);
       font-size: 13px;
       min-height: 30px;
       border: none;

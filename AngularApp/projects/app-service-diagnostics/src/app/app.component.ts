@@ -1,6 +1,7 @@
 import { Component, OnInit, isDevMode } from '@angular/core';
 import { Router } from '@angular/router';
 import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
+import { ThemeService } from './theme/theme.service';
 
 @Component({
     selector: 'sc-app',
@@ -9,13 +10,17 @@ import { initializeIcons } from 'office-ui-fabric-react/lib/Icons';
 export class AppComponent implements OnInit {
 
     private _newVersionEnabled = true;
+    public theme = "light";
     public get newVersionEnabled() { return this._newVersionEnabled; }
 
     public set newVersionEnabled(value: boolean) {
         this._newVersionEnabled = value;
      }
 
-    constructor(private _router: Router) {
+    constructor(private _router: Router, private _themeService: ThemeService) {
+        this._themeService.currentThemeSub.subscribe(currentTheme => {
+            this.theme = currentTheme;
+        });
     }
 
     ngOnInit() {

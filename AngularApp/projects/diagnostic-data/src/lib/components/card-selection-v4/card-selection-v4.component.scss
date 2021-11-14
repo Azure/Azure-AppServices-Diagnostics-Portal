@@ -3,7 +3,7 @@
 //Style is align with category tiles in home page
 
 .card-tiles {
-  display: flex; 
+  display: flex;
   flex-wrap: wrap;
   align-content: center;
   margin-top: -15px;
@@ -21,7 +21,7 @@
 }
 
 .card-tile :hover {
-    background-color: $tile-homepage-hover-background;
+    background-color: var(--tileHomepageHoverBackground);
 }
 
 .card-tile-image {

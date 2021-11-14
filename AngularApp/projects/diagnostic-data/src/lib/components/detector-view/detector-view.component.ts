@@ -74,7 +74,7 @@ export class DetectorViewComponent implements OnInit {
   timePickerButtonStr: string = "";
   buttonStyle: IButtonStyles = {
     root: {
-      color: "#323130",
+     // color: "#323130",
       borderRadius: "12px",
       margin: " 0px 5px",
       background: "rgba(0, 120, 212, 0.1)",
@@ -497,7 +497,7 @@ export class DetectorViewComponent implements OnInit {
 
       // if (this.isAnalysisView) {
       //   this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
-      // } 
+      // }
       this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
       // else if(this.checkHaveDownTimeForDetector(this._route.snapshot.queryParams)){
       //   this.downtimeButtonStr = this.getDownTimeButtonStrForDetector(this._route.snapshot.queryParams);
@@ -769,7 +769,7 @@ export class DetectorViewComponent implements OnInit {
   //Merge all child detectors and put it into last place
   private mergeDetectorListResponse(response: DetectorResponse):DetectorResponse {
     if(!response || !response.dataset || !response.dataset.find(d => d.renderingProperties.type === RenderingType.DetectorList)) return response;
-    
+
     const mergedResponse = {...response};
     let lastIndex = 0;
     const detectorIds:string[] = [];

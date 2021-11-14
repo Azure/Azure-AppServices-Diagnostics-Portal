@@ -8,42 +8,23 @@
     position: relative;
 }
 
-:host-context(.light-theme) .menu-item:hover,
-:host-context(.light-theme) .menu-item.selected {
-    background-color: rgba(0,137,250,.1);
+.menu-item:hover {
+    background-color: var(--listItemBackgroundHovered)
+}
+
+.menu-item.selected {
+    background-color: var(--listItemBackgroundSelected)!important;
 }
 
 .expand-icon {
-    /* float: right; */
     min-width: 10px;
     font-size: 12px;
 }
 
-/* DARK THEME */
-
-:host-context(.dark-theme) .menu-item {
-    color:#e2e2e2;
-    padding: 5px 5px 5px 30px;
-    font-size: 14px;
-}
-
-:host-context(.dark-theme) .menu-item:hover,
-:host-context(.dark-theme) .menu-item.selected {
-    color:#fff;
-    background-color: #222222;
-}
-
-/* LIGHT THEME */
-:host-context(.light-theme) .menu-item {
-    color:#1d1d1d;
+.menu-item {
+    color:var(--menuItemText);
     font-size: 12px;
     padding: 10px 5px 9px 35px;
-}
-
-:host-context(.light-theme) .menu-item:hover,
-:host-context(.light-theme) .menu-item.selected {
-    //background-color: rgba(0,137,250,.1);
-    background-color: #edebe9;
 }
 
 .menu-label > b {
@@ -72,12 +53,12 @@
 .menu-item:hover .tooltiptext {
     display: block;
     opacity: 1;
-    background: white!important;
+    background:  var(--bodyBackground)!important;
     width: 85%;
     z-index: 999;
     margin-top: 6px;
     position: absolute;
-    border: 1px solid black;
+    border: 1px solid var(--inputBorder);
     padding: 3px;
     font-size: 12px;
     bottom: -60%;
