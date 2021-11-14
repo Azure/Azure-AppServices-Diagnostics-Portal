@@ -7,6 +7,7 @@ export * from './lib/services/generic-support-topic.service';
 export * from './lib/services/generic-content.service';
 export * from './lib/services/generic-documents-search.service';
 export * from './lib/services/generic-resource-service';
+export * from './lib/services/generic-theme.service';
 export * from './lib/services/comms.service';
 export * from './lib/services/cxp-chat.service';
 export * from './lib/services/telemetry/telemetry.service';
@@ -25,7 +26,6 @@ export * from './lib/services/backend-ctrl-query.service';
 export * from './lib/services/portal-action.service';
 export * from './lib/config/diagnostic-data-config';
 export * from './lib/diagnostic-data.module';
-export * from './lib/components/fab-nav/fab-nav.module';
 
 
 export * from './lib/models/detector';

@@ -17,7 +17,7 @@
         </div>
 
         <div style="height: calc(100vh - 140px);">
-          <fab-panel [isOpen]="showCaseDetails" (onDismiss)="hideDetails()" [type]="panelType">
+          <fab-panel [isOpen]="showCaseDetails" [isBlocking]="false" (onDismiss)="hideDetails()" [type]="panelType">
             <div class="panel-padding">
               <div style="display:block">
                 <h3 class="panel-title">Case <a

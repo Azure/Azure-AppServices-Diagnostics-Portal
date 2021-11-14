@@ -779,14 +779,14 @@ hr {
     font-family: 'Segoe UI';
     font-size: 16px;
     font-weight: 600;
-    color: #323130;
+    color: var(--bodyText);
 }
 
 .blade-description {
     font-family: 'Segoe UI';
     font-weight: 400;
     font-size: 13px;
-    color: #323130;
+    color: var(--bodyText);
 }
 
 
@@ -850,4 +850,8 @@ hr {
     100% {
         background-color: #ebe6ff;
     }
+}
+
+label, .text-label{
+    color: var(----labelText);
 }

@@ -14,7 +14,7 @@
 }
 
 .category-tile :hover {
-    background-color: $tile-homepage-hover-background;
+    background-color: var(--tileHomepageHoverBackground);
 }
 
 .tile-content {
@@ -44,6 +44,7 @@
 
 .tile-keywords {
     font-size: 12px;
-    color: #605E5C;
+    //color: #605E5C;
+    color: var(--cardTileKeywords);
     font-weight: 400;
 }

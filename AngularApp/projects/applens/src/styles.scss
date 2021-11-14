@@ -50,7 +50,7 @@
 body {
   margin: 0px;
   color: #323130;
-  //Use segoe UI in all components 
+  //Use segoe UI in all components
   font-family: 'Segoe UI' !important;
 }
 
@@ -218,6 +218,7 @@ fab-command-bar .ms-SearchBox {
   border-bottom: 1px solid rgb(204, 204, 204)!important;
   font-size: 12px!important;
   height: 40px;
+  background-color: var(--bodyBackground)!important;
 }
 
 .fab-command-bar-class .ms-CommandBar {

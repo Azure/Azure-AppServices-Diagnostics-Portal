@@ -1,26 +1,32 @@
 <div class="check-container">
   <div class="status-icon">
-      <status-icon [loading]="1" [status]="check.level | convertLevelToHealthStatus"></status-icon>
+    <status-icon [loading]="1" [status]="check.level | convertLevelToHealthStatus"></status-icon>
   </div>
   <div class="check-content">
-    <div class="check-title {{bold ? 'bold':''}}" [innerHtml]="check.title"> <!-- Angular strips risky html contents like <script> out, see https://angular.io/guide/security#preventing-cross-site-scripting-xss-->
+    <div class="check-title {{bold ? 'bold':''}}" [innerHtml]="check.title">
+      <!-- Angular strips risky html contents like <script> out, see https://angular.io/guide/security#preventing-cross-site-scripting-xss-->
     </div>
-    <span class="expand-icon" *ngIf="check.subChecks?.length>0; else elseBlock"> <a tabindex="0" (click)="toggleSubChecks()"> <i class="ms-Icon ms-Icon--{{expanded ? 'ChevronUpMed' : 'ChevronDownMed'}} "></i> </a></span>
+    <span class="expand-icon" *ngIf="check.subChecks?.length>0; else elseBlock"> <a tabindex="0"
+        (click)="toggleSubChecks()"> <i class="ms-Icon ms-Icon--{{expanded ? 'ChevronUpMed' : 'ChevronDownMed'}} "></i>
+      </a></span>
     <ng-template #elseBlock>
-      <span class="details-link" *ngIf="check.detailsMarkdown!=null"> <a tabindex="0" (click)="toggleDetails()">details</a></span>
+      <span class="details-link" *ngIf="check.detailsMarkdown!=null"> <a tabindex="0"
+          (click)="toggleDetails()">details</a></span>
     </ng-template>
   </div>
   <div class="subchecks-container" *ngIf="expanded">
     <div class="sub-check" *ngFor="let subCheck of check.subChecks; let i = index">
-      <check [check]="subCheck"></check> 
+      <check [check]="subCheck"></check>
     </div>
   </div>
-  <fab-panel *ngIf="check.detailsMarkdown!=null" [isOpen]="detailsPanelOpened" [type]="7" customWidth="fit-content" [isHiddenOnDismiss]="true"
-  [styles]="{overlay:{visibility: 'hidden'}, content:{minWidth:'300px', maxWidth:'60vw'}}" [isLightDismiss]="true" [hasCloseButton]="false" 
-  (onDismissed)="detailsPanelDismissedHandler()">
+  <fab-panel *ngIf="check.detailsMarkdown!=null" [isOpen]="detailsPanelOpened" [type]="7" customWidth="fit-content"
+    [isHiddenOnDismiss]="true" [styles]="{overlay:{visibility: 'hidden'}, content:{minWidth:'300px', maxWidth:'60vw'}}"
+    [isLightDismiss]="true" [isBlocking]="false" [hasCloseButton]="false" (onDismiss)="detailsPanelDismissedHandler()">
     <div class="check-markdown panel-padding">
       <div class="markdown-container">
-        <div class="markdown"><markdown ngPreserveWhitespaces [data]="check.detailsMarkdown"></markdown></div>
+        <div class="markdown">
+          <markdown ngPreserveWhitespaces [data]="check.detailsMarkdown"></markdown>
+        </div>
       </div>
     </div>
   </fab-panel>

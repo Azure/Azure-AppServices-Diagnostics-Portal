@@ -10,6 +10,7 @@ import { RiskHelper } from '../../../home/models/risk';
 import { ResourceService } from '../../../shared-v2/services/resource.service';
 import { RiskAlertService } from '../../../shared-v2/services/risk-alert.service';
 import { AuthService } from '../../../startup/services/auth.service';
+import { ThemeService } from '../../../theme/theme.service';
 
 
 @Component({
@@ -28,16 +29,18 @@ export class RiskAlertsNotificationComponent implements OnInit {
     riskAlertChecksHealthy: boolean = false;
     riskAlertDetectorId: string = "";
     riskAlertMessage: string = "We detected missing configurations in your application that will increase risk of a downtime.";
-    styles: IMessageBarStyles = {
+    styles: any = {
         root: {
             height: '49px',
             backgroundColor: '#FEF0F1',
             marginBottom: '13px'
         }
     }
-    constructor(private _resourceService: ResourceService, private globals: Globals, private _authService: AuthService, public telemetryService: TelemetryService, public _activatedRoute: ActivatedRoute, protected _router: Router, private _riskAlertService: RiskAlertService) { }
+    constructor(private _resourceService: ResourceService, private globals: Globals, private _authService: AuthService, public telemetryService: TelemetryService, public _activatedRoute: ActivatedRoute, protected _router: Router, private _riskAlertService: RiskAlertService, private _themeService: ThemeService) { }
 
     ngOnInit() {
+        var notificationBarBackground = this._themeService.getPropertyValue("--notificationBarBackground");
+        this.styles.root.backgroundColor = notificationBarBackground !== "" ? notificationBarBackground : '#FEF0F1';
 
         if (this._resourceService.armResourceConfig) {
             this._riskAlertService.initRiskAlertsForArmResource(this._resourceService.resource.id);

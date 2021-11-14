@@ -3,6 +3,7 @@ import 'nvd3';
 import { DetectorControlService } from './services/detector-control.service';
 import { DiagnosticService } from './services/diagnostic.service';
 import { GenericSupportTopicService } from './services/generic-support-topic.service';
+import { GenericThemeService } from './services/generic-theme.service';
 import { GenericContentService } from './services/generic-content.service';
 import { GenericDocumentsSearchService } from './services/generic-documents-search.service';
 import { TelemetryService } from './services/telemetry/telemetry.service';
@@ -82,7 +83,6 @@ import { DetectorListAnalysisComponent } from './components/detector-list-analys
 import { AppDependenciesComponent } from './components/app-dependencies/app-dependencies.component';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { ChartMetricPipe, HighchartsGraphComponent } from './components/highcharts-graph/highcharts-graph.component';
-import { FabNavModule } from './components/fab-nav/fab-nav.module';
 import { FabPanelModule, FabIconModule, FabChoiceGroupModule, FabSearchBoxModule, FabDropdownModule, FabDetailsListModule, FabTextFieldModule, FabMessageBarModule, FabButtonModule, FabTooltipModule, FabSpinnerModule, FabCalloutModule, FabCheckboxModule, FabPivotModule, FabLinkModule, FabDatePickerModule, FabCalendarModule, FabCommandBarModule, FabBreadcrumbModule } from '@angular-react/fabric';
 import { SummaryCardsComponent } from './components/summary-cards/summary-cards.component';
 import { InsightsV4Component } from './components/insights-v4/insights-v4.component';
@@ -231,7 +231,6 @@ import { FabricFeedbackComponent } from './components/fabric-feedback/fabric-fee
     ChangesViewComponent,
     DetectorListAnalysisComponent,
     AppInsightsMarkdownComponent,
-    FabNavModule,
     FeedbackComponent,
     CxpChatLauncherComponent,
     AppInsightsEnablementComponent,
@@ -264,6 +263,7 @@ export class DiagnosticDataModule {
       providers: [
         DiagnosticService,
         GenericSupportTopicService,
+        GenericThemeService,
         GenericContentService,
         GenericDocumentsSearchService,
         { provide: DIAGNOSTIC_DATA_CONFIG, useValue: config },
@@ -277,7 +277,6 @@ export class DiagnosticDataModule {
         FeatureNavigationService,
         AppInsightsQueryService,
         ParseResourceService,
-        FabNavModule,
         HighChartsHoverService
       ]
     };
