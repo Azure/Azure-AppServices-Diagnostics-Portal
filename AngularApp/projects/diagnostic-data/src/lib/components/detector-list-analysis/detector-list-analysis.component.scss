@@ -18,7 +18,7 @@
     line-height: 30px;
     border-radius: 100px;
     font-weight: 700;
-    color: white;
+    color: var(--bodyText);
     text-align: center;
 }
 .stepper-circle {
@@ -58,7 +58,6 @@
 
 
 .list-item {
-    // display: table-row;
     vertical-align: middle;
     margin-left: 50px;
 }
@@ -104,20 +103,20 @@
 }
 
 .detector-list {
-    background: #f9f9f9;
+    background: var(--listAnalysisBackground);
     border: 1px solid #ebebeb;
     width: 98%;
 }
 
 .support-doc-section{
-    background: #f9f9f9;
+    background: var(--listAnalysisBackground);
     border: 1px solid #ebebeb;
     width: 98%;
     padding: 8px;
 }
 
 .success-msg{
-    background: #f9f9f9;
+    background: var(--listAnalysisBackground);
     border: 1px solid #ebebeb;
     width: 98%;
     padding:10px;
@@ -134,7 +133,7 @@
 
 .loading-message {
     margin: 10px;
-    color: black;
+    color: var(--bodyText);
     font-size: 20px;
     font-weight: lighter;
   }
@@ -148,7 +147,7 @@
     border-top-right-radius: 0px !important;
     border-top-left-radius: 0px !important;
  }
- 
+
 .special .list-group-item:last-child {
    border-bottom-right-radius: 0px !important;
    border-bottom-left-radius: 0px !important;
@@ -160,8 +159,8 @@
  }
 
 .app-insights-image {
-    width:18px; 
-    height: 18px; 
+    width:18px;
+    height: 18px;
     margin-top:-3px;
 }
 
@@ -184,7 +183,7 @@
 .app-insights-disabled-site
 {
     font-weight:500;
-    color:black;
+    color:var(--bodyText);
 }
 
 .app-insights-blade-link
@@ -192,7 +191,7 @@
     width:100%;
     text-align:right;
     font-size:13px;
-    padding:3px; 
+    padding:3px;
     margin:12px 0px;
 }
 
@@ -223,8 +222,8 @@
 }
 
 .expand-icon{
-    background-color: white;
-    color: black;   
+    background-color: var(--bodyBackground);
+    color: var(--bodyText);
 }
 
 .successful-check{
@@ -237,7 +236,7 @@
     opacity: 0;
     visibility: hidden;
     height: 0;
-    
+
 }
 
 .list-wrapper-genie {
@@ -246,4 +245,9 @@
 
 .dot-flashing {
     @include dot-flashing(14);
+}
+
+.list-view-title {
+    color: var(--cardViewTitle);
+    font-weight:600;
 }

@@ -82,7 +82,7 @@
 .section-title {
   font-size: 16px;
   font-weight: 600;
-  color: #323130;
+  color:var(--sectionTitle);
   outline: none;
 }
 
@@ -93,7 +93,7 @@
 }
 
 .home-tiles {
-  display: flex; 
+  display: flex;
   flex-wrap: wrap;
   align-content: center;
 }
@@ -114,7 +114,7 @@
 }
 
 .home-main-area a {
-  color: #0078D4;;
+  color: var(--link);
 }
 
 .switch2new-context-text, .switch2old-context-text{
@@ -125,4 +125,12 @@
   font-size: 12px;
   line-height: 30px;
   padding: 2px 5px 2px 30px;
+}
+
+.home-banner-preview {
+    background-color: var(--homeBannerPreview);
+}
+
+.home-banner-prod {
+    background-color: var(--homeBannerProd);
 }

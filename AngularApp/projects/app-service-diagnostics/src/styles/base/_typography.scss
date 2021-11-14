@@ -9,7 +9,7 @@ body #app-root[theme=dark]{
 }
 
 #app-root[theme=dark] a{
-    color: $primary-color-dark;
+    color: var(--link)
 }
 
 h1, h2, h3, h4, h5{
@@ -39,13 +39,13 @@ h2{
     line-height: 30px;
     display: inline-block;
     max-width: 100%;
-    color: $heading-text-color;
+    color: var(--bodyText);
 }
 
 h3{
     font-size: 15px;
     font-weight: lighter;
-    color: $heading-text-color;
+    color: var(--bodyText);
 }
 
 h4{
@@ -58,7 +58,7 @@ h5{
 
 a, .link{
     cursor: pointer;
-    color: $primary-color;
+    color: var(--link);
 
     &:hover{
         color: $primary-color-hover;
@@ -79,7 +79,7 @@ label, .text-label {
 
 .text-list-col-heading {
     font-size: 10px;
-    color: $value-text-color;
+    color: var(--bodyText);
     font-weight: bold;
 }
 
@@ -99,7 +99,7 @@ label, .text-label {
 
 #app-root[theme=dark]{
     h1{
-        color: $default-text-color-dark;
+        color: var(--bodyText);
     }
 
     h2,h3,h4{
@@ -112,7 +112,7 @@ label, .text-label {
 
     .link{
         color: $primary-color-dark;
-    
+
         &:hover{
             color: $primary-color-hover-dark;
         }

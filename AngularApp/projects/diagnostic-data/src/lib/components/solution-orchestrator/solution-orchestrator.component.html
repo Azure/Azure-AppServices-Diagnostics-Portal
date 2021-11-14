@@ -1,5 +1,5 @@
 <div class="col-md col-ms col-lg" style="padding: 5px 25px;width: 100%;min-height: 70vh;display: inline-block;">
-  <fab-panel [isOpen]="isPanelOpen" (onDismiss)="closePanel()" [type]="panelType" [headerText]="panelHeaderText" [closeButtonAriaLabel]="'Close'">
+  <fab-panel [isOpen]="isPanelOpen" (onDismiss)="closePanel()" [type]="panelType" [headerText]="panelHeaderText" [isBlocking]="false" [closeButtonAriaLabel]="'Close'">
     <div style="padding: 10px">
       <solution-view-container *ngFor="let sol of panelSolutions" [solutionTitle]="sol.Title" [detector]="'solutionorchestrator'"
         [isAnalysisView]="false" [isKeystoneDetector]="false" [showFeedbackQuestion]="false">

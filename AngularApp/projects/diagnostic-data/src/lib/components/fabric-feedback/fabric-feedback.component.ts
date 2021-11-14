@@ -124,7 +124,6 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
     this.globals.openFeedback = false;
   }
 
-
   dismissedFeedbackHandler() {
     if (this.feedbackPanelConfig.notResetOnDismissed) {
       this.globals.openFeedback = false;

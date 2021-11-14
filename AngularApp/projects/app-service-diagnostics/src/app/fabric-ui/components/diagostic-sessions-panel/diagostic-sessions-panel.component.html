@@ -1,5 +1,5 @@
 <fab-panel [isOpen]="globals.openSessionPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-  [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'" (onDismissed)="dismissedHandler()">
+  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'" (onDismiss)="dismissedHandler()">
   <div class="row panel-padding">
     <div style="margin-bottom: 10px">
       <div

@@ -15,7 +15,7 @@
           <div class="box-header with-border">
             <h3 class="box-title">Incident <a href="{{'https://portal.microsofticm.com/imp/v3/incidents/details/' + incidentInfo.incidentId + '/home'}}" target="_blank">{{incidentInfo.incidentId}}</a> &nbsp; {{incidentInfo.title}}</h3>
           </div>
-  
+
           <div style="max-height: calc(100vh - 140px);">
             <div class="form-group form-content">
               <div class="form-row" *ngFor="let field of incidentInfo.validationResults;">
@@ -44,7 +44,7 @@
             </div>
           </div>
         </div>
-        <fab-panel [isOpen]="showSolutions" (onDismiss)="hideSolutions()" [type]="panelType" [customWidth]="'60vw'">
+        <fab-panel [isOpen]="showSolutions" (onDismiss)="hideSolutions()" [type]="panelType" [isBlocking]="false" [customWidth]="'60vw'">
           <div class="panel-padding">
             <div>
             <svg style="vertical-align: text-bottom; height: 25px;" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 18 18">

@@ -23,6 +23,8 @@ export interface StartupInfo {
     optionalParameters?: Array<KeyValuePair>;
     effectiveLocale: string;
     isIFrameForCaseSubmissionSolution: boolean;
+    theme?: string;
+    highContrastKey?: number;
 }
 
 export enum ResourceType {

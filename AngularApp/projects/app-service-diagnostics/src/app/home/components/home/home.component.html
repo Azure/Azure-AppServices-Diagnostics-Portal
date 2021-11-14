@@ -1,3 +1,4 @@
+<div class="home-body-container">
 <ng-container *ngIf="initializedPortalVersion === 'v3'&&showSwitchBanner">
   <div *ngIf="useLegacy" class="switch2new-context-text home-banner">
     <i class="fa fa-info-circle info-banner-icon"></i>
@@ -193,7 +194,7 @@
 
 <ng-template #previewBanner>
   <ng-container *ngIf="enableABTesting && !showSwitchBanner">
-    <div [ngStyle]="{'background-color': isPreview ? '#F0F6FF' : '#F9F3FC'}" class="home-banner">
+    <div [ngClass]="{'home-banner-preview': isPreview, 'home-banner-prod': !isPreview}" class="home-banner">
       <i *ngIf="isPreview" class="ib-blueinfo mr-3"></i>
       <i *ngIf="!isPreview" class="ib-purplerocket mr-3"></i>
       <span>{{abTestingBannerText}}, click&nbsp;</span>
@@ -207,3 +208,4 @@
 </ng-template>
 
 <risk-alerts-panel></risk-alerts-panel>
+</div>

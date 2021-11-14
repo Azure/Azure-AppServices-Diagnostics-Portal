@@ -1,6 +1,11 @@
 
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "../src/styles/icons.scss";
+
+body {
+    background-color: var(--bodyBackground)!important;
+  }
+
 .ngx-datatable.bootstrap {
     border: 1px solid #dddddd;
 }
@@ -96,7 +101,7 @@ fab-command-bar .ms-SearchBox {
     height: 34px;
 }
 .ms-CommandBar, .ms-Button--commandBar{
-    background-color: white!important;
+    background-color: var(--bodyBackground)!important;
 }
 
 .ms-Button--commandBar:hover {
@@ -114,6 +119,7 @@ fab-command-bar {
     border-bottom: 1px solid rgb(204, 204, 204)!important;
     font-size: 12px!important;
     height: 34px;
+    background-color: var(--bodyBackground)!important;
 }
 
 
@@ -121,6 +127,21 @@ fab-command-bar {
     height: 33px;
 }
 
+.ms-Fabric {
+    color: var(--bodyText);
+}
+
+.ms-Panel-content textarea {
+    background-color: var(--bodyBackground);
+    color: var(--bodyText);
+  }
 
 
+.ms-Panel-content textarea::placeholder{
+    color: var(--inputPlaceholderText);
+}
+
+.ms-Panel-main {
+    border: 1px solid var(--panelBorder)
+}
 

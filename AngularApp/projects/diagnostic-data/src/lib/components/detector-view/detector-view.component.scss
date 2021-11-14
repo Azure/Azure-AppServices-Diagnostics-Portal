@@ -8,6 +8,11 @@
 
 .control-pill-text {
     font-size: 13px;
+    color: var(--bodyText);
+}
+
+.control-pill-text:hover{
+    color: var(--bodyBackground);
 }
 
 .control-pill-text :first-child {
@@ -81,13 +86,4 @@
 .errorMessage {
     padding-top: 10px;
     color: $error-color;
-}
-
-.time-button {
-    color: #323130; 
-    border-radius: 12px; 
-    margin:0px 5px;
-    background:rgba(0, 120, 212, 0.1);
-    font-size:13;
-    font-weight:600;
 }
