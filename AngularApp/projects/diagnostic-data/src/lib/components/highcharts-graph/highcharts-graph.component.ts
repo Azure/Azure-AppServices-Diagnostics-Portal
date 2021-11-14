@@ -6,9 +6,13 @@ import AccessibilityModule from 'highcharts/modules/accessibility';
 import { DetectorControlService } from '../../services/detector-control.service';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection, MetricType } from '../../models/time-series';
 import { KeyValue } from '@angular/common';
-import { PointerEventObject } from 'highcharts';
+import { PointerEventObject} from 'highcharts';
 import { interval, Subscription } from 'rxjs';
 import { HighChartsHoverService } from '../../services/highcharts-hover.service';
+import highchartsDarkTheme from 'highcharts/themes/dark-unica';
+import highchartsHighContrastDarkTheme from 'highcharts/themes/high-contrast-dark';
+import highchartsHighContrastLightTheme from 'highcharts/themes/high-contrast-light';
+import { GenericThemeService } from '../../services/generic-theme.service';
 
 declare var require: any
 var Highcharts = require('highcharts'),
@@ -26,7 +30,6 @@ const moment = momentNs;
 export class HighchartsGraphComponent implements OnInit {
     Highcharts: typeof Highcharts = Highcharts;
     options: any;
-
     MetricType = MetricType;
 
     @Input() HighchartData: any = [];
@@ -54,6 +57,8 @@ export class HighchartsGraphComponent implements OnInit {
     public get xAxisPlotBands() {
         return this._xAxisPlotBands;
     }
+
+    public currentTheme: string="light";
 
     public hoverData: { name: string, value: number, color: string, isSelect: boolean, defaultValue: number }[] = [];
     public static chartProperties: { [chartContainerId: string]: KeyValue<string, any>[] } = {};
@@ -238,7 +243,6 @@ export class HighchartsGraphComponent implements OnInit {
             chart.customNamespace = {};
             chart.customNamespace["toggleSelectionButton"] = chart.renderer.button(
                 "None", null, -10, function () {
-                    // console.log("chart width", `${chart.plotWidth - 20}`);
                     var series = chart.series;
                     var statusToSet = this.text && this.text.textStr && this.text.textStr === "All" ? true : false;
                     for (var i = 0; i < series.length; i++) {
@@ -475,10 +479,38 @@ export class HighchartsGraphComponent implements OnInit {
         }
     }
 
-    constructor(private el: ElementRef<HTMLElement>, private highChartsHoverService: HighChartsHoverService) {
+    constructor(private el: ElementRef<HTMLElement>, private highChartsHoverService: HighChartsHoverService, private themeService: GenericThemeService) {
+                // Update highchart theme based on ibiza theme attributes
+                this.themeService.currentThemeSub.subscribe((theme)=>{
+                    this.updateHighChartTheme(theme);
+                })
+    }
+
+    private updateHighChartTheme(theme: string) {
+        if (!!theme && !!this.themeService && this.currentTheme && theme.toLocaleLowerCase() !== this.currentTheme) {
+            this.currentTheme= theme.toLocaleLowerCase();
+            switch (this.currentTheme) {
+                case 'dark':
+                    highchartsDarkTheme(Highcharts);
+                    break;
+                case 'high-contrast-light':
+                    highchartsHighContrastLightTheme(Highcharts);
+                    break;
+                case 'high-contrast-dark':
+                    highchartsHighContrastDarkTheme(Highcharts);
+                    break;
+                default:
+                    Highcharts.setOptions(Highcharts.getOptions());
+                    break;
+            }
+        }
     }
 
     ngOnInit() {
+        this.initializeChart();
+    }
+
+    private initializeChart() {
         this._setOptions();
         this._updateOptions();
 
@@ -486,16 +518,12 @@ export class HighchartsGraphComponent implements OnInit {
             this.loading = false;
         }, 100);
 
-
-
         setTimeout(() => {
             const currentCharts = this.el.nativeElement.getElementsByClassName('highcharts-container') ? this.el.nativeElement.getElementsByClassName('highcharts-container') : null;
             const currentChartId = currentCharts && currentCharts[0].id ? currentCharts[0].id : "";
             this.highChartsHoverService.hoverXAxisValue.subscribe(data => {
                 this.updateMetric(data);
             });
-
-
 
             const chart = <Highcharts.Chart>Highcharts.charts.find(c => c && c.container.id === currentChartId);
             if (!chart) return;
@@ -578,7 +606,6 @@ export class HighchartsGraphComponent implements OnInit {
         const formattedDate = moment.utc(this.x).format("MMM DD h:mm A[ UTC]");
         return formattedDate;
     }
-
 
     private updateMetric(xAxisValue: number) {
         if (this.metricType === MetricType.None) return;

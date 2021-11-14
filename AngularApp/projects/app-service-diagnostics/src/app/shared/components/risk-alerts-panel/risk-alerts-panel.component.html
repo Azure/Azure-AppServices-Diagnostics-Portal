@@ -1,6 +1,6 @@
 <fab-panel [isOpen]="globals.openRiskAlertsPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-  [styles]="styles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
-  (onDismissed)="dismissedHandler()">
+  [styles]="styles" [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'"
+  (onDismiss)="dismissedHandler()">
   <div class="panel-padding">
     <div class="row">
       <div>

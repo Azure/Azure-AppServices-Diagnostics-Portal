@@ -36,7 +36,7 @@
     padding-left: 10px;
     width: 70px;
     height:100%;
-    
+
 }
 
 .fa-circle-o-notch {
@@ -62,7 +62,7 @@
 .list-item-wrapper {
     margin-top: 10px;
     position: relative;
-    margin-left: 20px; 
+    margin-left: 20px;
     display: flex;
 }
 
@@ -74,23 +74,28 @@
 
 .resource-icon {
     height: 30px;
-    width: 30px; 
+    width: 30px;
     margin-left: -20px;
 }
 
 .error-msg {
     text-align: center;
     font-size: 18px;
-    color: red; 
+    color: red;
     margin-left: 20px;
 }
 
 .resource-text {
-    font-size: 14px; 
+    font-size: 14px;
     margin-bottom: 15px;
 }
 
 
 .dot-flashing {
     @include dot-flashing(14);
+}
+
+.list-view-title {
+    color: var(--cardViewTitle);
+    font-weight:600;
 }

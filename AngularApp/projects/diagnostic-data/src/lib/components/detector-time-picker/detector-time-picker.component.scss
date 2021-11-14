@@ -1,16 +1,15 @@
 .time-picker-container {
     position: absolute;
     z-index: 1000;
-    background: #ffffff;
     border-radius: 2px;
     box-shadow: 0 8px 16px rgba(0,0,0,.16);
-    // overflow-y: hidden!important;
     right: 20px!important;
     top: 40px!important;
     padding: 10px!important;
     left: unset!important;
-    background-color: white!important;
+    background-color: var(--bodyBackground);
     width: 350px;
+    border: 1px solid var(--borderBottom)
 }
 
 .date-picker-label {

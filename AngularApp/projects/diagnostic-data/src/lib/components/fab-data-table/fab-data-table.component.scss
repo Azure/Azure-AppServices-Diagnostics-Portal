@@ -6,10 +6,12 @@
     overflow-y: scroll;
     border-radius: 0px;
     white-space: pre-wrap;
+    background-color: var(--bodyBackground);
+    color: var(--bodyText);
   }
 
   .text-field{
-    max-width: 300px; 
+    max-width: 300px;
     min-width: 250px;
   }
 
@@ -21,4 +23,3 @@
   ::ng-deep .ms-DetailsHeader-cell{
     font-weight: 600;
   }
-  

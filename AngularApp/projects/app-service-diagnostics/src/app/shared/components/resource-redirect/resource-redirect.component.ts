@@ -16,6 +16,7 @@ import { VersionTestService } from '../../../fabric-ui/version-test.service';
 export class ResourceRedirectComponent implements OnInit {
   private _newVersionEnabled = true;
   private _useLegacyVersion = true;
+
   constructor(private _authService: AuthService, private _router: Router, private _windowService: WindowService, private _versionTestService: VersionTestService, private _telemetryService: TelemetryService) { }
 
   ngOnInit() {
@@ -32,6 +33,8 @@ export class ResourceRedirectComponent implements OnInit {
             const supportTopicId = info.supportTopicId ? info.supportTopicId : '';
             const sessionId = info.sessionId ? info.sessionId : '';
             const effectiveLocale = !!info.effectiveLocale ? info.effectiveLocale.toLowerCase() : "";
+            const theme = !!info.theme ? info.theme.toLowerCase() : "";
+            const highContrastKey = !!info.highContrastKey ? info.highContrastKey.toString() : "";
 
             const eventProperties: { [name: string]: string } = {
                 'ResourceId': resourceId,
@@ -39,7 +42,10 @@ export class ResourceRedirectComponent implements OnInit {
                 'SupportTopicId': supportTopicId,
                 'PortalSessionId': sessionId,
                 'EffectiveLocale': effectiveLocale,
+                'Theme': theme,
+                'HighContrastKey': highContrastKey
             };
+
             this._telemetryService.eventPropertiesSubject.next(eventProperties);
         }
 

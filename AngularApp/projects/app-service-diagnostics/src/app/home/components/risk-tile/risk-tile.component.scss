@@ -2,7 +2,7 @@
 
 
 .risk-tile :hover {
-  background-color: $tile-homepage-hover-background;
+  background-color: var(--tileHomepageHoverBackground);
 }
 
 .risk-tile-container {
@@ -16,7 +16,7 @@
     margin-top: 7px;
     margin-bottom: 7px;
   }
-  
+
 .risk-title {
     font-size: 14px;
     font-weight: 600;

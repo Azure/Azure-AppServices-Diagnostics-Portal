@@ -1,7 +1,7 @@
 .banner {
-  background-color: #eff6fc;
+  background-color: var(--homeBannerProd);
   min-height: 48px;
-  color: #333;
+  color: var(--bodyText);
   display: table;
 }
 

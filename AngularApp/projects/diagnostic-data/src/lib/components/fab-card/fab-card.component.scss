@@ -1,11 +1,11 @@
 .card-border {
-    background: #ffffff;
-    border: 1px solid rgba(204, 204, 204, 0.5);
+    background: var(--bodyBackground);
+    border: 1px solid var(--inputBorder);
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 .card {
     height: 100%;
-    display: flex; 
+    display: flex;
     flex-direction: row;
     align-items: baseline;
     width: 100%;
