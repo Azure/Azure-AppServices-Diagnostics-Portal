@@ -5,7 +5,7 @@
         <div tabindex="0" role="button" (keyup.enter)="handleClick()" [attr.aria-label]="menuItem.label" type="button">
             <i class="fa expand-icon" *ngIf=" menuItem.subItems && menuItem.subItems.length > 0"
                 [class.fa-caret-right]="!menuItem.expanded" [class.fa-caret-down]="menuItem.expanded"></i>
-            <img class="category-icon" [src]="menuItem.icon" />
+            <img class="category-icon" role="presentation" [src]="menuItem.icon" />
             <span class="menu-label" style="font-size: 13px!important;"
                 [innerHtml]="menuItem.label | searchmatch:searchValueLocal"></span>
         </div>

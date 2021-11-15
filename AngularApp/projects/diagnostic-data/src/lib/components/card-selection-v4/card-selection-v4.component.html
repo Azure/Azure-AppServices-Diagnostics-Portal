@@ -2,7 +2,7 @@
   <div *ngFor="let card of cardSelections" class="card-tile">
     <div (click)="selectCard(card)" tabindex="0" (keyup.enter)="selectCard(card)" role="button" class="card-tile-container">
       <div *ngIf="isPublic">
-        <img class="card-tile-image" [src]="getImagePath(card.linkValue)">
+        <img class="card-tile-image" role="presentation" [src]="getImagePath(card.linkValue)">
       </div>
       <div>
         <h3 class="card-tile-title">{{card.title}}</h3>

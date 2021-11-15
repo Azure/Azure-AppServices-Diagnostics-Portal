@@ -147,7 +147,7 @@ export class DaasV2Component implements OnInit, OnDestroy {
       .subscribe(activeSession => {
         this.operationInProgress = false;
         this.operationStatus = '';
-        if (activeSession) {
+        if (activeSession && activeSession.Tool === this.diagnoserName) {
           this.sessionInProgress = true;
           this.initWizard();
           this.updateInstanceInformationOnLoad();
@@ -163,7 +163,7 @@ export class DaasV2Component implements OnInit, OnDestroy {
   pollRunningSession(sessionId: string) {
     this._daasService.getSession(this.siteToBeDiagnosed, sessionId)
       .subscribe(activeSession => {
-        if (activeSession != null) {
+        if (activeSession != null && activeSession.Tool === this.diagnoserName) {
           this.populateSessionInformation(activeSession);
 
           if (activeSession.Status != "Active") {
@@ -200,20 +200,23 @@ export class DaasV2Component implements OnInit, OnDestroy {
 
     if (activeInstance.Status == "Started") {
       this.sessionStatus = 2;
-      let messageCount = activeInstance.CollectorStatusMessages.length;
-      if (messageCount > 0) {
-        this.WizardStepStatus = activeInstance.CollectorStatusMessages[messageCount - 1];
-      } else {
-        this.WizardStepStatus = "";
+      if (Array.isArray(activeInstance.CollectorStatusMessages)) {
+        let messageCount = activeInstance.CollectorStatusMessages.length;
+        if (messageCount > 0) {
+          this.WizardStepStatus = activeInstance.CollectorStatusMessages[messageCount - 1];
+        } else {
+          this.WizardStepStatus = "";
+        }
       }
     } else if (activeInstance.Status == "Analyzing") {
       this.sessionStatus = 3;
-      this.activeInstance = activeInstance;
-      let messageCount = activeInstance.AnalyzerStatusMessages.length;
-      if (messageCount > 0) {
-        this.WizardStepStatus = activeInstance.CollectorStatusMessages[messageCount - 1];
-      } else {
-        this.WizardStepStatus = "";
+      if (Array.isArray(activeInstance.AnalyzerStatusMessages)) {
+        let messageCount = activeInstance.AnalyzerStatusMessages.length;
+        if (messageCount > 0) {
+          this.WizardStepStatus = activeInstance.CollectorStatusMessages[messageCount - 1];
+        } else {
+          this.WizardStepStatus = "";
+        }
       }
     }
 
