@@ -4,12 +4,14 @@
   a rule to mitigate the issue or collect diagnostic data to identify the root cause of the problem.
 
   <div class="rule-button">
-    <button #addRuleButton type="button" class="btn btn-primary btn-sm" (click)="addNewRule()">
+    <button tabindex="0" type="button" #addRuleButton class="btn btn-primary btn-sm" (click)="addNewRule()">
       Add Slow Request rule
     </button>
   </div>
-  <div aria-live="polite" class="mt-1" [style.visibility]="displayDeleteRuleMessage ? 'visibile' : 'hidden'">
-    Rule Deleted
+  <div tabindex="0" aria-atomic="true" aria-live="polite" class="mt-1">
+    <div [style.visibility]="displayDeleteRuleMessage ? 'visible' : 'hidden'">
+      Rule Deleted
+    </div>
   </div>
 </div>
 

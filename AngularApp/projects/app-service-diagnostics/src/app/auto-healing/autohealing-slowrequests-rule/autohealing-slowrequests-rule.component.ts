@@ -43,6 +43,7 @@ export class AutohealingSlowrequestsRuleComponent extends AutohealingRuleCompone
   deleteSingleRule() {
     this.rule.slowRequests = null;
     this.ruleChange.emit(this.rule);
+    this.displayRuleDeleted();
   }
 
   editSingleRule() {
@@ -55,6 +56,7 @@ export class AutohealingSlowrequestsRuleComponent extends AutohealingRuleCompone
     if (i > -1) {
       this.rule.slowRequestsWithPath.splice(i, 1);
       this.ruleChange.emit(this.rule);
+      this.displayRuleDeleted();
     }
   }
 

@@ -59,6 +59,7 @@ export class AutohealingStatuscodesRuleComponent extends AutohealingRuleComponen
     if (i > -1) {
       this.rule.statusCodes.splice(i, 1);
       this.ruleChange.emit(this.rule);
+      this.displayRuleDeleted();
     }
   }
 
@@ -76,6 +77,7 @@ export class AutohealingStatuscodesRuleComponent extends AutohealingRuleComponen
     if (i > -1) {
       this.rule.statusCodesRange.splice(i, 1);
       this.ruleChange.emit(this.rule);
+      this.displayRuleDeleted();
     }
   }
 
@@ -126,7 +128,10 @@ export class AutohealingStatuscodesRuleComponent extends AutohealingRuleComponen
       if (!this.isValidUrlPattern(this.currentStatusCodeRule.path)) {
         return false;
       }
-      return this.currentStatusCodeRule.count > 0 && this.currentStatusCodeRule.status > 100 && this.currentStatusCodeRule.status < 530 && (this.currentStatusCodeRule.timeInterval && this.currentStatusCodeRule.timeInterval && FormatHelper.timespanToSeconds(this.currentStatusCodeRule.timeInterval) > 0);
+      return this.currentStatusCodeRule.count > 0 && this.currentStatusCodeRule.status > 100
+        && this.currentStatusCodeRule.status < 530
+        && !(this.currentStatusCodeRule.status === 500 && this.currentStatusCodeRule.subStatus == 121)
+        && (this.currentStatusCodeRule.timeInterval && this.currentStatusCodeRule.timeInterval && FormatHelper.timespanToSeconds(this.currentStatusCodeRule.timeInterval) > 0);
     }
   }
 
@@ -146,7 +151,7 @@ export class AutohealingStatuscodesRuleComponent extends AutohealingRuleComponen
     if (!range) {
       return false;
     }
-    
+
     this.statusCodeRangeError = '';
     if (range.indexOf('.') > -1) {
       this.statusCodeRangeError = "HTTP Status code range cannot contain '.'";

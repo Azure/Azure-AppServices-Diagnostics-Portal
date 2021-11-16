@@ -2,12 +2,14 @@
   Configure a rule based on number of requests served by the App. This is useful in case your app to take an action when it
   has served X number of requests in Y amount of time.
   <div class="rule-button">
-    <button type="button" class="btn btn-primary btn-sm" (click)="addNewRule()">
+    <button tabindex="0" type="button" class="btn btn-primary btn-sm" (click)="addNewRule()">
       Configure Request Count rule
     </button>
   </div>
-  <div aria-live="polite" class="mt-1" [style.visibility]="displayDeleteRuleMessage ? 'visibile' : 'hidden'">
-    Rule Deleted
+  <div tabindex="0" aria-atomic="true" aria-live="polite" class="mt-1">
+    <div [style.visibility]="displayDeleteRuleMessage ? 'visible' : 'hidden'">
+      Rule Deleted
+    </div>
   </div>
 </div>
 

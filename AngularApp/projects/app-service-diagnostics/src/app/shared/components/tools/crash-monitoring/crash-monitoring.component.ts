@@ -40,7 +40,7 @@ export class CrashMonitoringComponent implements OnInit {
   today: Date = new Date(Date.now());
   memoryDumpOptions: IDropdownOption[] = [];
 
-  maxDate: Date = this.convertUTCToLocalDate(addMonths(this.today, 1));
+  maxDate: Date = this.convertUTCToLocalDate(addMonths(this.today, 3));
   minDate: Date = this.convertUTCToLocalDate(this.today);
   startDate: Date = this.minDate;
   endDate: Date = addDays(this.startDate, 15);
@@ -128,7 +128,7 @@ export class CrashMonitoringComponent implements OnInit {
   resetGlobals() {
     this.today = new Date(Date.now());
 
-    this.maxDate = this.convertUTCToLocalDate(addMonths(this.today, 1));
+    this.maxDate = this.convertUTCToLocalDate(addMonths(this.today, 3));
     this.minDate = this.convertUTCToLocalDate(this.today)
     this.startDate = this.minDate;
     this.endDate = addDays(this.startDate, 15);

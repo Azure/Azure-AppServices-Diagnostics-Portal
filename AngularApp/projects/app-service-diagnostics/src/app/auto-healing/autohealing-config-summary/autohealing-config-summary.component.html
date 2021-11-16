@@ -1,17 +1,28 @@
 <div *ngIf="settingsSummary !=null ">
-  <div style="margin-top: 10px" *ngIf="settingsSummary.Conditions !=null && settingsSummary.Conditions.length > 0 && settingsSummary.Action !== ''">
-    {{ settingsSummary.Action }}
-    <span class="actionExe" *ngIf="settingsSummary.ActionExe !==''">{{ settingsSummary.ActionExe }}</span>    
-    when
+  <div style="margin-top: 10px"
+    *ngIf="settingsSummary.Conditions !=null && settingsSummary.Conditions.length > 0 && settingsSummary.Action !== ''">
+
+    <div *ngIf="settingsSummary.ActionType == 1">
+      Log an event in the <a (click)="openEventViewer()" (keyup.enter)="openEventViewer()">Event Viewer</a> when
+    </div>
+
+    <div *ngIf="settingsSummary.ActionType != 1">
+      {{ settingsSummary.Action }}
+      <span class="actionExe" *ngIf="settingsSummary.ActionExe !==''">{{ settingsSummary.ActionExe }}</span>
+      when
+    </div>
+
     <ul>
       <li *ngFor="let condition of settingsSummary.Conditions;let i = index;">
         {{ condition }}
         <span *ngIf="i < (settingsSummary.Conditions.length -1)"> or,</span>
       </li>
     </ul>
-    <span style="font-style: italic" *ngIf="settingsSummary.ProcessStartupLabel !=''">The rule will be activated {{ settingsSummary.ProcessStartupLabel }}.</span>
+    <span style="font-style: italic" *ngIf="settingsSummary.ProcessStartupLabel !=''">The rule will be activated {{
+      settingsSummary.ProcessStartupLabel }}.</span>
   </div>
 </div>
-<div *ngIf="!(settingsSummary != null && settingsSummary.Conditions != null && settingsSummary.Action != null && settingsSummary.Conditions.length > -1 && settingsSummary.Action != '')">
+<div
+  *ngIf="!(settingsSummary != null && settingsSummary.Conditions != null && settingsSummary.Action != null && settingsSummary.Conditions.length > -1 && settingsSummary.Action != '')">
   No rule configured!
 </div>

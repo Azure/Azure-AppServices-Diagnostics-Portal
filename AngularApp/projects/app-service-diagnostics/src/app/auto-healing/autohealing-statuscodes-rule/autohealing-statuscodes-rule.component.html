@@ -4,12 +4,14 @@
   to identify the root cause of the problem. You can configure rules on more than one HTTP Status code condition.
 
   <div class="rule-button">
-    <button type="button" #addRuleButton class="btn btn-primary btn-sm" (click)="addNewRule()">
+    <button tabindex="0" type="button" #addRuleButton class="btn btn-primary btn-sm" (click)="addNewRule()">
       Add Status Codes rule
     </button>
   </div>
-  <div aria-live="polite" class="mt-1" [style.visibility]="displayDeleteRuleMessage ? 'visibile' : 'hidden'">
-    Rule Deleted
+  <div tabindex="0" aria-atomic="true" aria-live="polite" class="mt-1">
+    <div [style.visibility]="displayDeleteRuleMessage ? 'visible' : 'hidden'">
+      Rule Deleted
+    </div>
   </div>
 </div>
 
@@ -48,8 +50,8 @@
           <button class="image-btn" *ngIf="!editMode" (click)="editStatusCodeRule(i)" title="Edit rule" name="editRule">
             <i class="fa fa-edit"></i>
           </button>
-          <button class="image-btn" *ngIf="!editMode" (click)="deleteStatusCodeRule(i);addRuleButton.focus()" title="Delete rule"
-            name="deleteStatusCodeRule">
+          <button class="image-btn" *ngIf="!editMode" (click)="deleteStatusCodeRule(i);addRuleButton.focus()"
+            title="Delete rule" name="deleteStatusCodeRule">
             <i class="fa fa-trash"></i>
           </button>
         </td>
@@ -65,8 +67,8 @@
           <button class="image-btn" *ngIf="!editMode" (click)="editRangeRule(i)" title="Edit rule" name="editRangeRule">
             <i class="fa fa-edit"></i>
           </button>
-          <button class="image-btn" *ngIf="!editMode" (click)="deleteRangeRule(i);addRuleButton.focus()" title="Delete rule"
-            name="deleteRangeRule">
+          <button class="image-btn" *ngIf="!editMode" (click)="deleteRangeRule(i);addRuleButton.focus()"
+            title="Delete rule" name="deleteRangeRule">
             <i class="fa fa-trash"></i>
           </button>
         </td>
@@ -96,7 +98,7 @@
           <input aria-required="true" type="number" id="requestCount" placeholder="Enter request count"
             [(ngModel)]="currentStatusCodeRule.count" min="1" max="4294967295">
           <span style="color:red">*</span>
-          <div *ngIf="currentStatusCodeRule.count <=0" class="alert alert-danger" role="alert" style="margin-top:5px">
+          <div *ngIf="currentStatusCodeRule.count <=0" class="alert alert-danger mt-2" role="alert">
             Request count should be more than zero
           </div>
         </div>
@@ -110,7 +112,7 @@
             [(ngModel)]="currentStatusCodeRule.status">
           <span style="color:red">*</span>
           <div *ngIf="currentStatusCodeRule.status < 100 || currentStatusCodeRule.status > 530"
-            class="alert alert-danger" role="alert" style="margin-top:5px">
+            class="alert alert-danger mt-2" role="alert">
             Valid HTTP Status codes range from HTTP 100 to HTTP 530 only.
           </div>
         </div>
@@ -123,6 +125,11 @@
         <div class="col-sm-4">
           <input aria-required="false" type="number" min="0" max="500" id="subStatusCode" placeholder="e.g. 0"
             [(ngModel)]="currentStatusCodeRule.subStatus">
+          <div *ngIf="currentStatusCodeRule.status === 500 && currentStatusCodeRule.subStatus === 121"
+            class="alert alert-danger mt-2" role="alert">
+            Auto-Heal module cannot detect 500.121 error. Configure a <strong>Request Duration</strong> rule instead
+            with a time taken more than 180 seconds.
+          </div>
         </div>
       </div>
       <div class="row">
@@ -152,7 +159,7 @@
         <div class="col-sm-4">
           <input type="text" aria-required="false" id="requestPath" placeholder="e.g. /default*.aspx"
             [(ngModel)]="currentStatusCodeRule.path">
-          <div *ngIf="!isValidUrlPattern(currentStatusCodeRule.path)" role="alert" class="alert alert-danger" style="margin-top:5px">
+          <div *ngIf="!isValidUrlPattern(currentStatusCodeRule.path)" role="alert" class="alert alert-danger mt-2">
             Path can contain letters, alphabets, *, -, period, _ and forward slashes only
           </div>
         </div>
@@ -168,7 +175,7 @@
           <input aria-required="true" type="number" id="requestCount" placeholder="Enter request count"
             [(ngModel)]="currentRangeRule.count" min="1" max="4294967295">
           <span style="color:red">*</span>
-          <div *ngIf="currentRangeRule.count <=0" class="alert alert-danger" role="alert" style="margin-top:5px">
+          <div *ngIf="currentRangeRule.count <=0" class="alert alert-danger mt-2" role="alert">
             Request count should be more than zero
           </div>
         </div>
@@ -181,7 +188,7 @@
           <input type="text" aria-required="true" id="statusCodesRange" placeholder="e.g. 400-500"
             [(ngModel)]="currentRangeRule.statusCodes">
           <span style="color:red">*</span>
-          <div *ngIf="statusCodeRangeError.length > 0" class="alert alert-danger" role="alert" style="margin-top:5px">
+          <div *ngIf="statusCodeRangeError.length > 0" class="alert alert-danger mt-2" role="alert">
             {{statusCodeRangeError}}
           </div>
         </div>
@@ -203,7 +210,7 @@
         <div class="col-sm-4">
           <input type="text" aria-required="false" id="requestPath" placeholder="e.g. /default*.aspx"
             [(ngModel)]="currentRangeRule.path">
-          <div *ngIf="!isValidUrlPattern(currentRangeRule.path)" class="alert alert-danger" role="alert" style="margin-top:5px">
+          <div *ngIf="!isValidUrlPattern(currentRangeRule.path)" class="alert alert-danger mt-2" role="alert">
             Path can contain letters, alphabets, asterisk, dashes, period, underscore and forward slashes only
           </div>
         </div>
@@ -212,7 +219,8 @@
 
     <div class="row">
       <div class="col-sm-4">
-        <button type="button" class="btn btn-primary btn-sm" [disabled]="!isValid()" (click)="saveRule();addRuleButton.focus()">Ok</button>
+        <button type="button" class="btn btn-primary btn-sm" [disabled]="!isValid()"
+          (click)="saveRule();addRuleButton.focus()">Ok</button>
       </div>
     </div>
   </div>

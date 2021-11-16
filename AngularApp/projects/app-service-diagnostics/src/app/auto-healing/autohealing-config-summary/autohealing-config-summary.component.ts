@@ -1,6 +1,8 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AutoHealActionType, AutoHealSettings } from '../../shared/models/autohealing';
 import { FormatHelper } from '../../shared/utilities/formattingHelper';
+import { AuthService } from '../../startup/services/auth.service';
 
 @Component({
   selector: 'autohealing-config-summary',
@@ -9,12 +11,18 @@ import { FormatHelper } from '../../shared/utilities/formattingHelper';
 })
 export class AutohealingConfigSummaryComponent implements OnInit, OnChanges {
 
-  constructor() { }
+  constructor(private _authService: AuthService, private _router: Router) { }
 
   @Input() autohealSettings: string;
   initialized: boolean = false;
+  eventViewerLink: string = '';
+  resourceId: string = '';
 
   ngOnInit() {
+    this._authService.getStartupInfo().subscribe(startupInfo => {
+      this.resourceId = startupInfo.resourceId;
+    });
+
     if (this.initialized === false) {
       this.updateComponent();
       this.initialized = true;
@@ -103,10 +111,12 @@ export class AutohealingConfigSummaryComponent implements OnInit, OnChanges {
         }
       }
 
+      let actionType: AutoHealActionType;
       let action: string = '';
       let actionExe: string = '';
       this.processStartupLabel = '';
       if (conditions.length > 0 && this.actualhealSettings.autoHealRules.actions != null) {
+        actionType = this.actualhealSettings.autoHealRules.actions.actionType;
         if (this.actualhealSettings.autoHealRules.actions.actionType === AutoHealActionType.Recycle) {
           action = 'Recycle the process';
         } else if (this.actualhealSettings.autoHealRules.actions.actionType === AutoHealActionType.LogEvent) {
@@ -125,7 +135,11 @@ export class AutohealingConfigSummaryComponent implements OnInit, OnChanges {
         }
       }
 
-      this.settingsSummary = { Action: action, ActionExe: actionExe, Conditions: conditions, ProcessStartupLabel: this.processStartupLabel };
+      this.settingsSummary = { ActionType: actionType, Action: action, ActionExe: actionExe, Conditions: conditions, ProcessStartupLabel: this.processStartupLabel };
     }
+  }
+
+  openEventViewer() {
+    this._router.navigateByUrl(`/resource${this.resourceId}/categories/DiagnosticTools/tools/eventviewer`);
   }
 }

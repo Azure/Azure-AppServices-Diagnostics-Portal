@@ -262,6 +262,7 @@ export class AutohealingComponent implements OnInit {
       case 0: {
         this.autohealingSettings.autoHealRules.triggers.slowRequests = ruleEvent.slowRequests;
         this.autohealingSettings.autoHealRules.triggers.slowRequestsWithPath = ruleEvent.slowRequestsWithPath;
+        this.slowRequestRules = this.getSlowRequestRules();
         break;
       }
       case 1: {
@@ -276,6 +277,7 @@ export class AutohealingComponent implements OnInit {
       case 3: {
         this.autohealingSettings.autoHealRules.triggers.statusCodes = ruleEvent.statusCodes;
         this.autohealingSettings.autoHealRules.triggers.statusCodesRange = ruleEvent.statusCodesRange;
+        this.statusCodeRules = this.getStatusCodeRules();
         break;
       }
     }
@@ -368,7 +370,7 @@ export class AutohealingComponent implements OnInit {
     const diagnosticToolChosenCustom: string = 'You have chosen a custom action to execute whenever mitigation kicks in.';
     const diagnosticToolChosen: string = ' If this is a production app, please ensure that you try this out on a deployment slot first to protect against any downtimes to your application.';
     const diagnosticJavaToolChosen: string = 'The Java diagnostic tools use either jMap or jStack process to collect dumps. Both of these tools freeze the process while collecting data. As a result, the app cannot serve any requests during this time and performance will be impacted. It may take longer to collect these dumps if the process is consuming high memory or has a high number of active threads.';
-    const diagnosticMemoryDumpChosen: string = 'You have chosen to collect a memory dump of the process. Please ensure that the storage acccount has enough space to copy memory dumps.';
+    const diagnosticMemoryDumpChosen: string = 'You have chosen to collect a memory dump of the process. Please ensure that the storage account has enough space to copy memory dumps.';
     const diagnosticProfilerWithThreadStacksChosen: string = 'When the profiler is chosen along with thread stacks option, the process is frozen for a few seconds to dump all raw thread stacks. This option is advisable if you are experiencing long delays (in minutes) to serve the requests or if the application is experiencing deadlocks. During this time, the process cannot serve any requests and application performance will be impacted.';
     const diagnosticProfilerChosen: string = 'The profiling tool is light weight but incurs some CPU overhead during the data collection process.';
 

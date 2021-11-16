@@ -2,12 +2,14 @@
   Configure a rule based on the private byte consumption of the process serving your web app. This is useful in case your app
   is consuming high memory and you want to quickly recycle or collect some data to identify the root cause.
   <div class="rule-button">
-    <button type="button" class="btn btn-primary btn-sm" (click)="addNewRule()">
+    <button tabindex="0" type="button" class="btn btn-primary btn-sm" (click)="addNewRule()">
       Configure Private Bytes rule
     </button>
   </div>
-  <div aria-live="polite" class="mt-1" [style.visibility]="displayDeleteRuleMessage ? 'visibile' : 'hidden'">
-    Rule Deleted
+  <div tabindex="0" aria-atomic="true" aria-live="polite" class="mt-1">
+    <div [style.visibility]="displayDeleteRuleMessage ? 'visible' : 'hidden'">
+      Rule Deleted
+    </div>
   </div>
 </div>
 

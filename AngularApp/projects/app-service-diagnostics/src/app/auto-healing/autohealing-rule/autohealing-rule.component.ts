@@ -20,10 +20,14 @@ export abstract class AutohealingRuleComponent implements OnInit {
   }
 
   deleteRule() {
-    this.displayDeleteRuleMessage = true;
     this.rule = null;
     this.ruleCopy = null;
     this.ruleChange.emit(this.rule);
+    this.displayRuleDeleted();
+  }
+
+  displayRuleDeleted() {
+    this.displayDeleteRuleMessage = true;
     setTimeout(() => {
       this.displayDeleteRuleMessage = false;
     }, 5000);
