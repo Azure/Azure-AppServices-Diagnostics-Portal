@@ -45,6 +45,7 @@ export * from './lib/models/documents-search-config';
 export * from './lib/models/styles';
 export * from './lib/models/resiliencyReportData';
 export * from './lib/models/data-table';
+export * from './lib/models/theme';
 
 export * from './lib/components/detector-list-analysis/detector-list-analysis.component'
 
