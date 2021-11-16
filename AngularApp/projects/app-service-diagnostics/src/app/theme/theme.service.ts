@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { AuthService } from "../startup/services/auth.service";
-import { Theme, light, dark, highContrastDark, highContrastLight} from "./theme";
+import { Theme, light, dark, highContrastDark, highContrastLight} from "diagnostic-data";
 import { IPartialTheme,  loadTheme } from 'office-ui-fabric-react';
 import { CommonSemanticColors, DarkSemanticColors, FontSizes, LightSemanticColors, HighContrastLightSemanticColors, HighContrastDarkSemanticColors} from '@uifabric/azure-themes';
 

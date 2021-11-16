@@ -13,7 +13,7 @@ import { AadAuthGuard } from './shared/auth/aad-auth-guard.service';
 import { LoginComponent } from './shared/components/login/login.component';
 import { AdalService, AdalGuard, AdalInterceptor } from 'adal-angular4';
 import { CustomUrlSerializerService } from './shared/services/custom-url-serializer.service';
-import { DiagnosticDataModule } from 'diagnostic-data';
+import { DiagnosticDataModule, GenericThemeService } from 'diagnostic-data';
 import { UnhandledExceptionHandlerService, AppInsightsTelemetryService } from 'diagnostic-data';
 import { CustomMaterialModule } from './material-module';
 import { HighchartsChartModule } from 'highcharts-angular';
@@ -22,6 +22,7 @@ import { AuthRequestFailedComponent } from './shared/components/auth-request-fai
 import { TokenInvalidComponent } from './shared/components/tokeninvalid/tokeninvalid.component';
 import { AngularReactBrowserModule } from '@angular-react/core';
 import { ApplensAppinsightsTelemetryService } from './shared/services/applens-appinsights-telemetry.service';
+import { ApplensThemeService } from './shared/services/applens-theme.service';
 import { ApplensHeaderComponent } from './shared/components/applens-header/applens-header.component';
 import { FabButtonModule, FabDialogModule, FabPanelModule } from '@angular-react/fabric';
 
@@ -150,7 +151,8 @@ export const Routes = RouterModule.forRoot([
     {
       provide: ErrorHandler,
       useClass: UnhandledExceptionHandlerService
-    }
+    },
+    { provide: GenericThemeService, useExisting: ApplensThemeService }
   ],
   bootstrap: [AppComponent]
 })

@@ -1,6 +1,4 @@
-import { createTheme } from 'office-ui-fabric-react';
 import { CommonSemanticColors, DarkSemanticColors, FontSizes, LightSemanticColors, HighContrastLightSemanticColors, HighContrastDarkSemanticColors } from '@uifabric/azure-themes';
-//import { FontSizes } from './AzureType';
 import * as StyleConstants from '@uifabric/azure-themes/lib/azure/Constants';
 
 export interface Theme {
