@@ -101,7 +101,7 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
 
     timeoutToShowSolutions: number = 10000;
     showSolutionsTimedout: boolean = false;
-    
+
     startTime: Moment;
     endTime: Moment;
     isPublic: boolean;
@@ -112,10 +112,10 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
         this.articleSectionExpanded = !this.articleSectionExpanded;
         if (this.articleSectionExpanded) {
             this.logEvent(TelemetryEventNames.MoreWebResultsClicked,
-                { 
-                    searchId: this.searchId, 
-                    searchTerm: this.searchTerm, 
-                    ts: Math.floor((new Date()).getTime() / 1000).toString() 
+                {
+                    searchId: this.searchId,
+                    searchTerm: this.searchTerm,
+                    ts: Math.floor((new Date()).getTime() / 1000).toString()
                 }
             );
         }
@@ -128,7 +128,7 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
                 marginLeft: "11px",
                 fontSize: "16px"
             }
-        }      
+        }
     };
     observationSectionIcon: any = {
         iconName: "StatusErrorFull",
@@ -150,7 +150,7 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
             }
         }
     }
-    
+
     supportDocumentContent: string = "";
     supportDocumentRendered: boolean = false;
     searchId: string = null;
@@ -285,14 +285,16 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
         this.startDetectorRendering(null, false);
     }
 
-    updateSearchTerm(searchValue: { newValue: string }) {
-        this.searchTermDisplayed = searchValue.newValue;
+    updateSearchTerm(searchValue: { newValue: any }) {
+        if (!!searchValue.newValue.currentTarget && !!searchValue.newValue.currentTarget.value) {
+            this.searchTermDisplayed = searchValue.newValue.currentTarget.value;
+        }
     }
 
     getPesId(){
         this._resourceService.getPesId().subscribe(pesId => {
             this.pesId = pesId;
-        });    
+        });
     }
 
     onSearchBoxFocus(){}
@@ -395,13 +397,13 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
                 searchTaskPrefsComplete = true;
                 postFinish();
             });
-        }        
+        }
     }
 
     displayWebResults(results) {
         this.documentsShowLoader = false;
         if (results && results.webPages && results.webPages.value && results.webPages.value.length > 0) {
-            
+
             var webSearchResults = results.webPages.value;
             this.webDocuments = webSearchResults.map(result => {
                 return {
