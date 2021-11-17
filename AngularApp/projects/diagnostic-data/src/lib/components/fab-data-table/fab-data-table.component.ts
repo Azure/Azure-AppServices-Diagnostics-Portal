@@ -77,9 +77,9 @@ export class FabDataTableComponent implements AfterContentInit {
 
   ngAfterContentInit() {
     this.tableObserve.subscribe(t => {
-      
+
       this.initFabricTableColumns(t);
-      
+
 
       if (this.columnOptions && this.columnOptions.length > 0) {
         this.columnOptions.forEach((option) => {
@@ -91,12 +91,12 @@ export class FabDataTableComponent implements AfterContentInit {
       }
 
       this.createFabricDataTableObjects(t);
-      
+
 
       this.fabDetailsList.selectionMode = this.descriptionColumnName !== "" ? SelectionMode.single : SelectionMode.none;
       this.fabDetailsList.selection = this.selection;
 
-      //Ideally,it should be enable if table is too large. 
+      //Ideally,it should be enable if table is too large.
       //But for now, if enabled, it will show only 40 rows
       this.fabDetailsList.onShouldVirtualize = (list: IListProps<any>) => {
         // return this.rows.length > this.rowLimit ? true : false;
@@ -194,18 +194,21 @@ export class FabDataTableComponent implements AfterContentInit {
     return false;
   }
 
-  updateSearchValue(e: { event: Event, newValue?: string }) {
-    this.searchValue = e.newValue;
-    const val = e.newValue.toLowerCase();
-    if (this.searchTimeout) {
-      clearTimeout(this.searchTimeout);
+  updateSearchValue(e: { newValue: any }) {
+    if (!!e.newValue.currentTarget && !!e.newValue.currentTarget.value)
+    {
+         this.searchValue = e.newValue.currentTarget.value;
+         const val = this.searchValue.toLowerCase();
+        if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout);
+        }
+        this.searchTimeout = setTimeout(() => {
+        this.telemetryService.logEvent("TableSearch", {
+            'SearchValue': val
+        });
+        }, 5000);
+        this.updateTable();
     }
-    this.searchTimeout = setTimeout(() => {
-      this.telemetryService.logEvent("TableSearch", {
-        'SearchValue': val
-      });
-    }, 5000);
-    this.updateTable();
   }
 
   focusSearchBox() {
