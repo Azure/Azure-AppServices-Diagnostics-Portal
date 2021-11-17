@@ -38,7 +38,7 @@ export class SideNavComponent implements OnInit {
 
   gists: CollapsibleMenuItem[] = [];
 
-  searchValue: string;
+  searchValue: string="";
 
   contentHeight: string;
 
@@ -280,7 +280,7 @@ export class SideNavComponent implements OnInit {
         detectorList.forEach(element => {
           //Not show CategoryOverview in side-nav for safety purpose
           if(element.type === DetectorType.CategoryOverview) return;
-          
+
           let onClick = () => {
             this._telemetryService.logEvent(TelemetryEventNames.SideNavigationItemClicked, { "elementId": element.id });
             this.navigateTo(`detectors/${element.id}`);
@@ -386,12 +386,14 @@ export class SideNavComponent implements OnInit {
   //   window.open('https://app-service-diagnostics-docs.azurewebsites.net/api/Diagnostics.ModelsAndUtils.Models.Response.html#extensionmethods', '_blank');
   // }
 
-  updateSearchValue(e: { newValue: string }) {
-    const searchValue = e.newValue;
-    this.searchValue = searchValue;
-    this.updateListGroups(searchValue);
-
+  updateSearchValue(e: { newValue: any }) {
+    if (!!e.newValue.currentTarget && !!e.newValue.currentTarget.value)
+    {
+        this.searchValue = e.newValue.currentTarget.value;
+        this.updateListGroups(this.searchValue);
+    }
   }
+
 
   updateListGroups(searchValue: string) {
     this.collapsibleItemList = this.collapsibleItemListCopy.filter(item => {
@@ -441,7 +443,7 @@ export class SideNavComponent implements OnInit {
       }
     }
 
-    //Add an empty group in last, for fixing toggling last group expand/collapsible all groups bug 
+    //Add an empty group in last, for fixing toggling last group expand/collapsible all groups bug
     groups.push({
       key: "empty",
       name: "empty",

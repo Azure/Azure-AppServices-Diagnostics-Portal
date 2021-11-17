@@ -520,7 +520,7 @@ export class HighchartsGraphComponent implements OnInit {
 
         setTimeout(() => {
             const currentCharts = this.el.nativeElement.getElementsByClassName('highcharts-container') ? this.el.nativeElement.getElementsByClassName('highcharts-container') : null;
-            const currentChartId = currentCharts && currentCharts[0].id ? currentCharts[0].id : "";
+            const currentChartId = currentCharts && currentCharts[0] && currentCharts[0].id ? currentCharts[0].id : "";
             this.highChartsHoverService.hoverXAxisValue.subscribe(data => {
                 this.updateMetric(data);
             });
