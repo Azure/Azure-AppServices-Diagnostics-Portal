@@ -18,7 +18,12 @@
       <div *ngFor="let key of keys" class="info-item">
         <div class="info-item-key sub-title">{{key}}</div>
         <div class="info-item-splitter">:</div>
-        <div class="info-item-value">{{resource[key]}}</div>
+        <div class="info-item-value">
+          {{resource[key]}}
+        </div>
+        <div class="info-item-copy">
+          <img *ngIf="resource[key] !== null && resource[key] !== undefined" src="/assets/img/copy-icon.png" style="height: 12px;" (click)="copyToClipboard(resource[key], $event)" alt="Copy to clipboard" />
+        </div>
       </div>
     </div>
   </collapsible-list-item>

@@ -16,21 +16,29 @@
 }
 
 .info-item-key {
-    width: 160px;
-    flex: 0 0 auto;
+    flex: 0 0 160px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
 }
 
 .info-item-value {
+    //flex: 1 0 auto;
     color: #323130;
-    flex: 1 0 auto;
+    flex: 0 0 400px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .info-item-splitter {
     flex: 0 0 15px;
     text-align: center;
+}
+
+.info-item-copy {
+    flex: 0 0 15px;
+    padding: 0px 15px;
 }
 
 .observer-link > a:focus {

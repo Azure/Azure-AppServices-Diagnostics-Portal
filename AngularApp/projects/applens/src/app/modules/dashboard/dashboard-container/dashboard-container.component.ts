@@ -85,4 +85,12 @@ export class DashboardContainerComponent implements OnInit {
     this._applensGlobal.openFeedback = true;
   }
 
+  copyToClipboard(item, event) {
+    navigator.clipboard.writeText(item).then(_ => {
+      event.target.src = "/assets/img/copy-icon-copied.png";
+    });
+    setTimeout(() => {
+      event.target.src = "/assets/img/copy-icon.png";
+    }, 3000);
+  }
 }
