@@ -30,7 +30,7 @@ export class GenieChatFlow extends IMessageFlowProvider {
 
   constructor(private _router: Router, private _authService: AuthService, private _activatedRoute: ActivatedRoute, private _diagnosticApiService: DiagnosticService, private _resourceService: ResourceService, public globals: Globals, private _genericArmConfigService?: GenericArmConfigService) {
     super();
-    let welcomeMessage: string = "Hello, Welcome to App Service Diagnostics. My name is Genie and I am here to help you answer any questions you may have about diagnosing and solving your problems with your app. Please describe the issue of your app.";
+    let welcomeMessage: string = "Hello, my name is Genie. I am here to help answer any questions you may have about diagnosing and solving problems with your resource. Please describe the issue of your resource.";
 
     const welcomeMessageGroup: MessageGroup = new MessageGroup('welcome', [], () => '');
     welcomeMessageGroup.messages.push(new TextMessage(welcomeMessage, MessageSender.System, 200));
@@ -98,7 +98,7 @@ export class GenieChatFlow extends IMessageFlowProvider {
       const mainMenuId: string = `main-menu-${category.id}`;
 
       let serviceName: string = 'App Service Diagnostics';
-      let welcomeMessage = "genie-Welcome to App Service Diagnostics. My name is Genie and I am here to help you answer any questions you may have about diagnosing and solving your problems with your app. Please describe the issue of your app.";
+      let welcomeMessage = "genie-Hello, my name is Genie. I am here to help answer any questions you may have about diagnosing and solving problems with your resource. Please describe the issue of your resource.";
 
       if (this._resourceService.armResourceConfig
         && this._resourceService.armResourceConfig.homePageText
