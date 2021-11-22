@@ -84,8 +84,6 @@ export class LoaderDetectorViewComponent implements OnInit {
 
     ngAfterViewInit() {
         this.startLoadingTimeInMilliSeconds = Date.now();
-        let startLoadingTimeISOString = new Date().toISOString();
-        this.telemetryService.logEvent(TelemetryEventNames.LoadingDetectorViewStarted, { "TrackingEventId": this.trackingEventId, "StartLoadingTime": startLoadingTimeISOString });
     }
 }
 
