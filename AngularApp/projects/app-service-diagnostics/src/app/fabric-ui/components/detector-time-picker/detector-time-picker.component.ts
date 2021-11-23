@@ -19,7 +19,7 @@ export class DetectorTimePickerComponent implements OnInit {
 
   today: Date = new Date(Date.now());
   maxDate: Date = this.convertUTCToLocalDate(this.today);
-  minDate: Date = this.convertUTCToLocalDate(addMonths(this.today, -1));
+  minDate: Date = this.convertUTCToLocalDate(addDays(this.today, -30));
 
   set time(value: string) {
     this.updateTimerMessage.next(value);
@@ -168,6 +168,7 @@ export class DetectorTimePickerComponent implements OnInit {
         endDate: infoEndDate
       };
     } else {
+      this.today = new Date();
       const localEndTime = this.today;
       const localStartTime = new Date(localEndTime.getTime() - this.hourDiff * 60 * 60 * 1000);
       startDateWithTime = this.convertLocalDateToUTC(localStartTime);
