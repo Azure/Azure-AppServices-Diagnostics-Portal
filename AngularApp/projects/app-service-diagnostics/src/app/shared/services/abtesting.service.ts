@@ -8,7 +8,7 @@ import { Location } from "@angular/common";
 
 @Injectable()
 export class ABTestingService {
-    enableABTesting: boolean = true;
+    enableABTesting: boolean = false;
     slot: SlotType;
     resourceUri: string = "";
     isPreview: boolean = false;
