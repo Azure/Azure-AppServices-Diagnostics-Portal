@@ -1,6 +1,6 @@
 import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { DetectorControlService } from 'diagnostic-data';
+import { DetectorControlService, TimePickerOptions } from 'diagnostic-data';
 import { Observable, of } from 'rxjs';
 
 @Injectable()
@@ -13,6 +13,12 @@ export class TimeControlResolver implements Resolve<Observable<boolean>> {
         if (!!startTime && !!endTime)
         {
             this._detectorControlService.setCustomStartEnd(startTime, endTime, "TimeControlResolver");
+            this._detectorControlService.updateTimePickerInfo({
+                selectedKey: TimePickerOptions.Custom,
+                selectedText: TimePickerOptions.Custom,
+                startDate: new Date(startTime),
+                endDate: new Date(endTime)
+            });
         }
 
         if (!this._detectorControlService.startTime) {
