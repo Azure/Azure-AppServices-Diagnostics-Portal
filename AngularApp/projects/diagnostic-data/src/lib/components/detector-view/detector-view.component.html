@@ -4,7 +4,9 @@
       {{overWriteDetectorName}}
     </span>
   </div>
-  <div *ngIf="!isSystemInvoker && !insideDetectorList && !!(overWriteDetectorDescription || detectorDataLocalCopy.metadata.description)" class="blade-description">&nbsp;- &nbsp;</div>
+  <div
+    *ngIf="!isSystemInvoker && !insideDetectorList && !!(overWriteDetectorDescription || detectorDataLocalCopy.metadata.description)"
+    class="blade-description">&nbsp;- &nbsp;</div>
   <div class="blade-description">
     <span *ngIf="overWriteDetectorDescription && overWriteDetectorDescription.length > 0;else detectorDescription">
       {{overWriteDetectorDescription}}
@@ -21,18 +23,11 @@
   <!-- <div>supportsDownTime {{supportsDownTime}}</div> -->
 
   <div *ngIf="!hideDetectorControl">
-    <div>
-      <fab-primary-button id="time-picker-button" [styles]="buttonStyle" (onClick)="openTimePickerSubject.next(true);">
-        <fab-icon [iconName]="'Clock'" [styles]="iconStyles"></fab-icon>
-        <span class="ml-3 control-pill-text">
-          <span>Time Range (UTC): </span>
-          {{timePickerButtonStr}}
-        </span>
-      </fab-primary-button>
-    </div>
+    <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>
   </div>
   <div *ngIf="isAnalysisView && supportsDownTime" class="ml-3">
-    <fab-primary-button id="detector-view-downtime" (onClick)="showDowntimeCallout = true;" [styles]="buttonStyle" [disabled]="downtimeFilterDisabled">
+    <fab-primary-button id="detector-view-downtime" (onClick)="showDowntimeCallout = true;" [styles]="buttonStyle"
+      [disabled]="downtimeFilterDisabled">
       <fab-icon [iconName]="'Clock'" [styles]="iconStyles"></fab-icon>
       <span class="ml-3 control-pill-text">
         <span>Downtime(UTC): </span>
@@ -164,10 +159,14 @@
 <loader-detector-view style="margin-top:300px" *ngIf="!detectorDataLocalCopy && !errorState"></loader-detector-view>
 
 <ng-container *ngIf="!detectorDataLocalCopy && errorState">
-  <span class="critical-color" *ngIf="errorState.error && !isPublic"> Error: {{errorState.error}}</span>
-  <span class="critical-color" *ngIf="isPublic && errorState || !errorState.error">Sorry, an error occurred. Please
-    refresh the page and try again.</span>
+  <div class="mt-3">
+    <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>
+    <span class="critical-color" *ngIf="errorState.error && !isPublic"> Error: {{errorState.error}}</span>
+    <span class="critical-color" *ngIf="isPublic && errorState || !errorState.error">Sorry, an error occurred. Please
+      refresh the page and try again.</span>
+  </div>
 </ng-container>
+
 
 <ng-template #detectorName>
   <span>{{detectorDataLocalCopy.metadata.name}}</span>
@@ -175,6 +174,18 @@
 
 <ng-template #detectorDescription>
   <span>{{detectorDataLocalCopy.metadata.description}}</span>
+</ng-template>
+
+<ng-template #detectorTimePickerPill>
+  <div>
+    <fab-primary-button id="time-picker-button" [styles]="buttonStyle" (onClick)="openTimePickerSubject.next(true);">
+      <fab-icon [iconName]="'Clock'" [styles]="iconStyles"></fab-icon>
+      <span class="ml-3 control-pill-text">
+        <span>Time Range (UTC): </span>
+        {{timePickerButtonStr}}
+      </span>
+    </fab-primary-button>
+  </div>
 </ng-template>
 
 <detector-time-picker [target]="'#time-picker-button'" [openTimePickerCalloutObservable]="openTimePickerSubject">
