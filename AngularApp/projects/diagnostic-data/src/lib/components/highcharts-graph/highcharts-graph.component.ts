@@ -241,37 +241,37 @@ export class HighchartsGraphComponent implements OnInit {
         return function (e) {
             var chart: any = this;
             chart.customNamespace = {};
-            chart.customNamespace["toggleSelectionButton"] = chart.renderer.button(
-                "None", null, -10, function () {
-                    var series = chart.series;
-                    var statusToSet = this.text && this.text.textStr && this.text.textStr === "All" ? true : false;
-                    for (var i = 0; i < series.length; i++) {
-                        series[i].setVisible(statusToSet, false);
-                    }
-                    _this.hoverData.forEach(d => d.isSelect = statusToSet);
-                    statusToSet = !statusToSet;
-                    var textStr = statusToSet ? "All" : "None";
-                    var ariaLabel = statusToSet ? "Select all the series" : "Deselect all the series";
-                    this.attr({
-                        role: 'button',
-                        text: textStr,
-                        "aria-label": ariaLabel,
-                    });
-                }, {
-                fill: 'none',
-                stroke: 'none',
-                'stroke-width': 0,
-                style: {
-                    color: '#015cda'
-                }
-            }, {
-                fill: 'grey',
-                stroke: 'none',
-                'stroke-width': 0,
-                style: {
-                    color: '#015cda'
-                }
-            }, null, null, null, true).add();
+            // chart.customNamespace["toggleSelectionButton"] = chart.renderer.button(
+            //     "None", null, -10, function () {
+            //         var series = chart.series;
+            //         var statusToSet = this.text && this.text.textStr && this.text.textStr === "All" ? true : false;
+            //         for (var i = 0; i < series.length; i++) {
+            //             series[i].setVisible(statusToSet, false);
+            //         }
+            //         _this.hoverData.forEach(d => d.isSelect = statusToSet);
+            //         statusToSet = !statusToSet;
+            //         var textStr = statusToSet ? "All" : "None";
+            //         var ariaLabel = statusToSet ? "Select all the series" : "Deselect all the series";
+            //         this.attr({
+            //             role: 'button',
+            //             text: textStr,
+            //             "aria-label": ariaLabel,
+            //         });
+            //     }, {
+            //     fill: 'none',
+            //     stroke: 'none',
+            //     'stroke-width': 0,
+            //     style: {
+            //         color: '#015cda'
+            //     }
+            // }, {
+            //     fill: 'grey',
+            //     stroke: 'none',
+            //     'stroke-width': 0,
+            //     style: {
+            //         color: '#015cda'
+            //     }
+            // }, null, null, null, true).add();
 
             var namespace = chart.customNamespace || {};
             if (namespace["toggleSelectionButton"]) {
@@ -784,11 +784,11 @@ export class HighchartsGraphComponent implements OnInit {
                     selection: this.customChartSelectionCallbackFunction,
                     load: this.highchartCallback(),
                     render: function () {
-                        var chart: any = this;
-                        chart.customNamespace["toggleSelectionButton"].attr({
-                            x: this.plotWidth - 20,
-                            // x:0
-                        });
+                        // var chart: any = this;
+                        // chart.customNamespace["toggleSelectionButton"].attr({
+                        //     x: this.plotWidth - 20,
+                        //     // x:0
+                        // });
                     },
                 },
             },
