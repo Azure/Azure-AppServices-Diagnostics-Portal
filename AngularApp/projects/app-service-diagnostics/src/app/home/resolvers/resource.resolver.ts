@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { ResourceService } from '../../shared-v2/services/resource.service';
 import { ArmResource } from '../../shared-v2/models/arm';
-import { DetectorControlService, TelemetryService } from 'diagnostic-data';
+import { DetectorControlService, TelemetryService, TimePickerOptions } from 'diagnostic-data';
 
 @Injectable()
 export class ResourceResolver implements Resolve<Observable<{} | ArmResource>> {
@@ -16,6 +16,12 @@ export class ResourceResolver implements Resolve<Observable<{} | ArmResource>> {
         if (!!startTime && !!endTime)
         {
             this._detectorControlService.setCustomStartEnd(startTime, endTime);
+            this._detectorControlService.updateTimePickerInfo({
+                selectedKey: TimePickerOptions.Custom,
+                selectedText: TimePickerOptions.Custom,
+                startDate: new Date(startTime),
+                endDate: new Date(endTime)
+            });
         }
 
         if (!this._detectorControlService.startTime) {
