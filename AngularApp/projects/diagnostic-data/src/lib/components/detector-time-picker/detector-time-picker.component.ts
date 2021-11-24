@@ -71,7 +71,7 @@ export class DetectorTimePickerComponent implements OnInit {
     weekNumberFormatString: 'Week number {0}',
   };
 
-  maskTextFieldStyles: Partial<ITextFieldStyles> = { fieldGroup: { width: "100px" } };
+  maskTextFieldStyles: Partial<ITextFieldStyles> = { fieldGroup: { width: "80px" } };
 
   constructor(private activatedRoute: ActivatedRoute, private detectorControlService: DetectorControlService, private router: Router, private telemetryService: TelemetryService) {
   }

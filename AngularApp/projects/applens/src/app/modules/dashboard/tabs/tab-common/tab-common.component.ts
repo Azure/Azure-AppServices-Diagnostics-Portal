@@ -49,6 +49,16 @@ export class TabCommonComponent implements OnInit {
           relativeTo: this._activatedRoute
         });
         break;
+      case TabKey.DataSources:
+        this._router.navigate(["datasource"], {
+          relativeTo: this._activatedRoute
+        });
+        break;
+      case TabKey.CommitHistory:
+        this._router.navigate(["changelist"], {
+          relativeTo: this._activatedRoute
+        });
+        break;
     }
   }
 }

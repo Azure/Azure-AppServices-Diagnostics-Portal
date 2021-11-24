@@ -2,7 +2,7 @@
   <!-- <div class="time-picker-container" *ngIf="globals.openTimePicker" (keydown.escape)="escapeHandler($event)" (keydown.Tab)="tabHandler($event)"> -->
   <fab-callout *ngIf="openTimePickerCallout" [setInitialFocus]="true" [target]="target"
     (onDismiss)="cancelTimeRange()" [isBeakVisible]="false">
-    <div style="width: 300px;">
+    <div style="width: 320px;">
       <div class="callout-padding">
         <fab-choice-group [options]="choiceGroupOptions" [defaultSelectedKey]="defaultSelectedKey">
         </fab-choice-group>
@@ -12,7 +12,7 @@
             <fab-date-picker contentClass="col-md-8" [minDate]="minDate" [maxDate]="maxDate"
               placeholder="Select a date..." ariaLabel="Select start date" allowTextInput="true"
               showMonthPickerAsOverlay="true" (onSelectDate)="onSelectStartDateHandler($event)" [formatDate]="formatDate"
-              [value]="startDate" contentStyle="width:100px;margin-right:4px">
+              [value]="startDate" contentStyle="width:120px;">
             </fab-date-picker>
             <fab-masked-text-field contentClass="col-md-4" maxLength="6" [(value)]="startClock"
               [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
@@ -26,7 +26,7 @@
             <fab-date-picker contentClass="col-md-8" [minDate]="minDate" [maxDate]="maxDate"
               placeholder="Select a date..." ariaLabel="Select end date" allowTextInput="true"
               showMonthPickerAsOverlay="true" (onSelectDate)="onSelectEndDateHandler($event)" [formatDate]="formatDate"
-              [value]="endDate" contentStyle="width:100px;margin-right:4px">
+              [value]="endDate" contentStyle="width:120px">
             </fab-date-picker>
             <fab-masked-text-field contentClass="col-md-4" maxLength="6" [(value)]="endClock"
               [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
