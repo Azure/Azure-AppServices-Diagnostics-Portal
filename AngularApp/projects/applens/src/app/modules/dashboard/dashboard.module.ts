@@ -279,11 +279,17 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                         }
                     }, {
                         path: 'changelist',
-                        component: TabChangelistComponent
+                        component: TabChangelistComponent,
+                        data: {
+                            tabKey: TabKey.CommitHistory
+                        }
                     },
                     {
                         path: 'datasource',
-                        component: TabDataSourcesComponent
+                        component: TabDataSourcesComponent,
+                        data: {
+                            tabKey: TabKey.DataSources
+                        }
                     },
                     {
                         path: 'monitoring',
