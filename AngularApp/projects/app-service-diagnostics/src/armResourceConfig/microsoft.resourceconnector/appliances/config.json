@@ -1,0 +1,65 @@
+{
+  "homePageText": {
+    "title": "Azure Arc Appliance Diagnostics",
+    "description": "Use Azure Arc Appliance Diagnostics to investigate the status of your Appliance.",
+    "searchBarPlaceHolder": "Search a keyword that best describes your issue"
+  },
+  "matchRegEx": "/Microsoft.ResourceConnector/appliances/",
+  "searchSuffix": "Appliance",
+  "azureServiceName": "Azure Arc Appliance",
+  "armApiConfig": {
+    "armApiVersion": "2021-10-31-preview"
+  },
+  "isSearchEnabled": true,
+  "keystoneDetectorId": "",
+  "liveChatConfig": {
+    "isApplicableForLiveChat": false,
+    "supportTopicIds": []
+  },
+  "categories": [
+    {
+      "id": "alertsaa",
+      "name": "Alerts",
+      "description": "View and gain information on alerts emitted by your Appliance.",
+      "keywords": [
+        "Alerts",
+        "Metrics",
+        "Critical",
+        "Warning"
+      ],
+      "color": "rgb(127, 188, 0)",
+      "createFlowForCategory": false,
+      "chatEnabled": false,
+      "overviewDetectorId": "alerts_category"
+    },
+    {
+      "id": "applianceextensioninsightsaa",
+      "name": "Appliance Extension Insights",
+      "description": "Discover issues related to extensions installed on your Appliance.",
+      "keywords": [
+        "Extensions"
+      ],
+      "color": "rgb(255, 186, 1)",
+      "createFlowForCategory": true,
+      "chatEnabled": false,
+      "overviewDetectorId": "appliance_extensions_status"
+    },
+    {
+      "id": "applianceinsightsaa",
+      "name": "Appliance Insights",
+      "description": "Investigate issues related to core functionalities of your Appliance.",
+      "keywords": [
+        "Connectivity",
+        "Agent",
+        "Version",
+        "Upgrade"
+      ],
+      "color": "rgb(1, 166, 240)",
+      "createFlowForCategory": true,
+      "chatEnabled": false,
+      "overviewDetectorId": "appliance_insights_category"
+    }
+  ],
+  "queryLinks": [],
+  "pesId": "17501"
+}
