@@ -37,7 +37,11 @@
       "name": "Appliance Extension Insights",
       "description": "Discover issues related to extensions installed on your Appliance.",
       "keywords": [
-        "Extensions"
+        "Extensions",
+        "VMware",
+        "HCI",
+        "AVS"
+          
       ],
       "color": "rgb(255, 186, 1)",
       "createFlowForCategory": true,
