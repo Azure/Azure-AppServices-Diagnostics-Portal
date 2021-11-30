@@ -18,7 +18,8 @@ export const allowV3PResourceTypeList: { type: string, allowSwitchBack: boolean 
     { type: "microsoft.appplatform/spring", allowSwitchBack: false },
     { type: "microsoft.containerservice/managedclusters", allowSwitchBack: false },
     { type: "microsoft.web/containerapps", allowSwitchBack: false },
-    { type: "microsoft.servicefabric/clusters", allowSwitchBack: false }
+    { type: "microsoft.servicefabric/clusters", allowSwitchBack: false },
+    { type: "microsoft.resourceconnector/appliances", allowSwitchBack: false }
 ];
 
 
