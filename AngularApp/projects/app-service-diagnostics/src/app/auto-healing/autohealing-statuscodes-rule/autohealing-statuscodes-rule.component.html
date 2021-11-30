@@ -96,7 +96,7 @@
         </div>
         <div class="col-sm-4">
           <input aria-required="true" type="number" id="requestCount" placeholder="Enter request count"
-            [(ngModel)]="currentStatusCodeRule.count" min="1" max="4294967295">
+            [(ngModel)]="currentStatusCodeRule.count" min="1" max="4294967295" class="autoheal-rule-input">
           <span style="color:red">*</span>
           <div *ngIf="currentStatusCodeRule.count <=0" class="alert alert-danger mt-2" role="alert">
             Request count should be more than zero
@@ -109,7 +109,7 @@
         </div>
         <div class="col-sm-4">
           <input aria-required="true" type="number" id="statusCode" placeholder="e.g. 500" min="100" max="500"
-            [(ngModel)]="currentStatusCodeRule.status">
+            [(ngModel)]="currentStatusCodeRule.status" class="autoheal-rule-input">
           <span style="color:red">*</span>
           <div *ngIf="currentStatusCodeRule.status < 100 || currentStatusCodeRule.status > 530"
             class="alert alert-danger mt-2" role="alert">
@@ -124,7 +124,7 @@
 
         <div class="col-sm-4">
           <input aria-required="false" type="number" min="0" max="500" id="subStatusCode" placeholder="e.g. 0"
-            [(ngModel)]="currentStatusCodeRule.subStatus">
+            [(ngModel)]="currentStatusCodeRule.subStatus" class="autoheal-rule-input">
           <div *ngIf="currentStatusCodeRule.status === 500 && currentStatusCodeRule.subStatus === 121"
             class="alert alert-danger mt-2" role="alert">
             Auto-Heal module cannot detect 500.121 error. Configure a <strong>Request Duration</strong> rule instead
@@ -138,7 +138,7 @@
         </div>
         <div class="col-sm-4">
           <input aria-required="false" type="number" min="0" max="4294967295" id="win32StatusCode" placeholder="e.g. 0"
-            [(ngModel)]="currentStatusCodeRule.win32Status">
+            [(ngModel)]="currentStatusCodeRule.win32Status" class="autoheal-rule-input">
         </div>
       </div>
       <div class="row">
@@ -158,7 +158,7 @@
         </div>
         <div class="col-sm-4">
           <input type="text" aria-required="false" id="requestPath" placeholder="e.g. /default*.aspx"
-            [(ngModel)]="currentStatusCodeRule.path">
+            [(ngModel)]="currentStatusCodeRule.path" class="autoheal-rule-input">
           <div *ngIf="!isValidUrlPattern(currentStatusCodeRule.path)" role="alert" class="alert alert-danger mt-2">
             Path can contain letters, alphabets, *, -, period, _ and forward slashes only
           </div>
@@ -173,7 +173,7 @@
         </div>
         <div class="col-sm-4">
           <input aria-required="true" type="number" id="requestCount" placeholder="Enter request count"
-            [(ngModel)]="currentRangeRule.count" min="1" max="4294967295">
+            [(ngModel)]="currentRangeRule.count" min="1" max="4294967295" class="autoheal-rule-input">
           <span style="color:red">*</span>
           <div *ngIf="currentRangeRule.count <=0" class="alert alert-danger mt-2" role="alert">
             Request count should be more than zero
@@ -186,7 +186,7 @@
         </div>
         <div class="col-sm-4">
           <input type="text" aria-required="true" id="statusCodesRange" placeholder="e.g. 400-500"
-            [(ngModel)]="currentRangeRule.statusCodes">
+            [(ngModel)]="currentRangeRule.statusCodes" class="autoheal-rule-input">
           <span style="color:red">*</span>
           <div *ngIf="statusCodeRangeError.length > 0" class="alert alert-danger mt-2" role="alert">
             {{statusCodeRangeError}}
