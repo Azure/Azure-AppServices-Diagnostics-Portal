@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { OperatingSystem, SiteExtensions } from '../../shared/models/site';
 import { WindowService } from '../../startup/services/window.service';
 import { SiteService } from '../../shared/services/site.service';

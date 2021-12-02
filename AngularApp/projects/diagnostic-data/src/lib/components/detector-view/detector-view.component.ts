@@ -1,7 +1,7 @@
 import { Moment } from 'moment';
 import { BehaviorSubject } from 'rxjs';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Inject, Input, OnInit, Output, EventEmitter, Pipe, PipeTransform, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, Inject, Input, OnInit, Output, EventEmitter, Pipe, PipeTransform, SimpleChanges } from '@angular/core';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 import { DetectorResponse, Rendering, RenderingType, DataTableResponseObject, DownTime, DowntimeInteractionSource, DetectorMetaData, DetectorType, DiagnosticData } from '../../models/detector';
 import { DetectorControlService } from '../../services/detector-control.service';
@@ -9,12 +9,15 @@ import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { CompilationProperties } from '../../models/compilation-properties';
 import { GenericSupportTopicService } from '../../services/generic-support-topic.service';
-import { ActivatedRoute, Params, Router, UrlSegment } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { VersionService } from '../../services/version.service';
 import { CXPChatService } from '../../services/cxp-chat.service';
 import * as momentNs from 'moment';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection } from '../../models/time-series';
-import { IButtonProps, IButtonStyles, IChoiceGroupOption, IDropdownOption, IIconProps } from 'office-ui-fabric-react';
+import { IButtonStyles } from 'office-ui-fabric-react/lib/components/Button';
+import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/components/ChoiceGroup';
+import { IDropdownOption } from 'office-ui-fabric-react/lib/components/Dropdown';
+import { IIconProps } from 'office-ui-fabric-react/lib/components/Icon';
 
 const moment = momentNs;
 const minSupportedDowntimeDuration: number = 10;
@@ -487,21 +490,14 @@ export class DetectorViewComponent implements OnInit {
 
       this.fabChoiceGroupOptions.push(this.getDefaultFabricDownTimeEntry());
       const defaultDowntime = this.downTimes.find(x => x.isSelected);
-      if (defaultDowntime != null) {
+      if(defaultDowntime != null) {
         this.selectedKey = this.getKeyForDownTime(defaultDowntime);
         this.selectedDownTime = defaultDowntime;
-      } else if (this.fabChoiceGroupOptions.length > 0) {
+      } else if(this.fabChoiceGroupOptions.length > 0) {
         this.selectedKey = this.fabChoiceGroupOptions[0].key;
         this.selectedDownTime = this.fabChoiceGroupOptions.length > 1 ? this.downTimes[0] : this.getDefaultDowntimeEntry();
       }
-
-      // if (this.isAnalysisView) {
-      //   this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
-      // }
       this.downtimeButtonStr = this.selectedDownTime.downTimeLabel;
-      // else if(this.checkHaveDownTimeForDetector(this._route.snapshot.queryParams)){
-      //   this.downtimeButtonStr = this.getDownTimeButtonStrForDetector(this._route.snapshot.queryParams);
-      // }
     }
   }
 

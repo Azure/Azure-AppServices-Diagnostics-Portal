@@ -6,7 +6,6 @@ import { SolutionsModule } from '../solutions/solutions.module';
 
 import { StartupMessages } from './message-flow/startup/startupmessages';
 import { MainMenuMessageFlow } from './message-flow/main-menu/mainmenumessageflow';
-import { HealthCheckMessageFlow } from './message-flow/health-check/healthcheckmessageflow';
 import { FeedbackMessageFlow } from './message-flow/feedback/feedbackmessageflow';
 import { MessageProcessor } from './message-processor.service';
 
@@ -17,7 +16,6 @@ import { TextMessageComponent } from './common/text-message/text-message.compone
 import { ButtonMessageComponent } from './common/button-message/button-message.component';
 import { LoadingMessageComponent } from './common/loading-message/loading-message.component';
 import { MainMenuComponent } from './message-flow/main-menu/main-menu.component';
-import { HealthCheckComponent } from './message-flow/health-check/health-check.component';
 import { TalkToAgentMessageComponent } from './message-flow/talk-to-agent/talk-to-agent-message.component';
 import { FeedbackComponent } from './message-flow/feedback/feedback.component';
 import { SolutionsMessageComponent } from './common/solutions-message/solutions-message.component';
@@ -33,7 +31,6 @@ import { SharedV2Module } from '../shared-v2/shared-v2.module';
 import { DiagnosticDataModule } from 'diagnostic-data';
 import { GenericCategoryFlow } from './message-flow/v2-flows/generic-category.flow';
 import { AvailabilityPerformanceFlow } from './message-flow/v2-flows/availability-performance.flow';
-import { HealthCheckV3Component } from './message-flow/health-check-v3/health-check-v3.component';
 import { LinuxAvailabilityPerformanceFlow } from './message-flow/v2-flows/linux-availability-performance.flow';
 
 @NgModule({
@@ -45,7 +42,6 @@ import { LinuxAvailabilityPerformanceFlow } from './message-flow/v2-flows/linux-
         LoadingMessageComponent,
         MainMenuComponent,
         ButtonMessageComponent,
-        HealthCheckComponent,
         TalkToAgentMessageComponent,
         FeedbackComponent,
         SolutionsMessageComponent,
@@ -54,8 +50,7 @@ import { LinuxAvailabilityPerformanceFlow } from './message-flow/v2-flows/linux-
         CategoryMenuComponent,
         DetectorSummaryComponent,
         DocumentSearchComponent,
-        DocumentSearchResultsComponent,
-        HealthCheckV3Component
+        DocumentSearchResultsComponent
     ],
     imports: [
         SharedModule,
@@ -73,7 +68,6 @@ import { LinuxAvailabilityPerformanceFlow } from './message-flow/v2-flows/linux-
     providers: [
         StartupMessages,
         MainMenuMessageFlow,
-        HealthCheckMessageFlow,
         FeedbackMessageFlow,
         CpuAnalysisChatFlow,
         MessageProcessor,

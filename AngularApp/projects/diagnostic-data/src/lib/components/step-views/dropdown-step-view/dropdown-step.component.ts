@@ -1,6 +1,7 @@
 
 import { Component, Pipe, PipeTransform, Inject, OnInit, Input, ViewEncapsulation, AfterViewInit, AfterContentInit } from '@angular/core';
-import { IDropdown, IDropdownOption, ISelectableOption, RefObject } from 'office-ui-fabric-react';
+import { IDropdown, IDropdownOption } from 'office-ui-fabric-react/lib/components/Dropdown';
+import { ISelectableOption } from 'office-ui-fabric-react/lib/utilities/selectableOption';
 import { TelemetryService } from '../../../services/telemetry/telemetry.service';
 import { DropdownStepView, StepViewContainer } from '../step-view-lib';
 

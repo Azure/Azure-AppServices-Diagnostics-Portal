@@ -8,7 +8,6 @@ import { CardSelectionComponent } from '../card-selection/card-selection.compone
 import { AppInsightsMarkdownComponent } from '../app-insights-markdown/app-insights-markdown.component';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { DataSummaryComponent } from '../data-summary/data-summary.component';
-import { DataTableComponent } from '../data-table/data-table.component';
 import { DetectorListComponent } from '../detector-list/detector-list.component';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { DynamicInsightComponent } from '../dynamic-insight/dynamic-insight.component';
@@ -53,7 +52,7 @@ import { ButtonStepComponent } from '../step-views/button-step-view/button-step.
   templateUrl: './dynamic-data.component.html',
   styleUrls: ['./dynamic-data.component.scss'],
   entryComponents: [
-    TimeSeriesGraphComponent, DataTableComponent, DataSummaryComponent, EmailComponent,
+    TimeSeriesGraphComponent, DataSummaryComponent, EmailComponent,
     InsightsComponent, TimeSeriesInstanceGraphComponent, DynamicInsightComponent, MarkdownViewComponent,
     DetectorListComponent, DropdownComponent, CardSelectionComponent, SolutionComponent, GuageControlComponent, FormComponent,
     ChangeAnalysisOnboardingComponent, ChangesetsViewComponent, AppDependenciesComponent, AppInsightsMarkdownComponent, DetectorListAnalysisComponent, ConnectAppInsightsComponent, DetectorSearchComponent, SummaryCardsComponent, InsightsV4Component, DropdownV4Component, CardSelectionV4Component, DynamicInsightV4Component, DataTableV4Component, KeystoneInsightComponent, NotificationRenderingComponent, FabTabComponent, SectionsComponent,

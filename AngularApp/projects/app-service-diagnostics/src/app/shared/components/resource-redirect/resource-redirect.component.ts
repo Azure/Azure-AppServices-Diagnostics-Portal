@@ -49,8 +49,8 @@ export class ResourceRedirectComponent implements OnInit {
             this._telemetryService.eventPropertiesSubject.next(eventProperties);
         }
 
-        if (info && info.resourceId && info.token) {
-          if (Array.isArray(info.optionalParameters) && info.optionalParameters.find(param => param.key === "categoryId")) {
+        if (!!info && !!info.resourceId && !!info.token) {
+          if (!!info.optionalParameters && Array.isArray(info.optionalParameters) && info.optionalParameters.find(param => param.key === "categoryId")) {
             //  Open the new experience since we are navigating to a specific category
             this._versionTestService.setLegacyFlag(2);
           }
@@ -80,9 +80,18 @@ export class ResourceRedirectComponent implements OnInit {
 
             var referrerParam = info.optionalParameters.find(param => param.key.toLowerCase() === "referrer");
             if (referrerParam) {
+             let referrerValue = referrerParam.value;
               path += `/portalReferrerResolver`;
+
+              if (referrerValue.StartTime && referrerValue.EndTime)
+              {
+                  let startTimeStr = referrerValue.StartTime;
+                  let endTimeStr = referrerValue.EndTime;
+                  navigationExtras.queryParams = {...navigationExtras.queryParams, startTime: startTimeStr, endTime: endTimeStr};
+              }
+
               this._router.navigateByUrl(
-                this._router.createUrlTree([path])
+                this._router.createUrlTree([path], navigationExtras)
               );
             }
           }

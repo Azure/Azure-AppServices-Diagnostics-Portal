@@ -284,7 +284,7 @@ export class DetectorTimePickerComponent implements OnInit {
 
   tabHandler(e: KeyboardEvent) {
     const ele = <HTMLElement>e.target;
-    //Tab to Cancel button will close 
+    //Tab to Cancel button will close
     if (ele.innerText.toLowerCase() === 'cancel') {
       this.closeTimePicker();
     }

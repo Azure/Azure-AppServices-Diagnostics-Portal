@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { AutohealingRuleComponent } from '../autohealing-rule/autohealing-rule.component';
 import { StatusCodeRules, StatusCodesBasedTrigger, StatusCodesRangeBasedTrigger } from '../../shared/models/autohealing';
 import { FormatHelper } from '../../shared/utilities/formattingHelper';
-import { IChoiceGroupOption } from 'office-ui-fabric-react';
+import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/components/ChoiceGroup';
 
 @Component({
   selector: 'autohealing-statuscodes-rule',

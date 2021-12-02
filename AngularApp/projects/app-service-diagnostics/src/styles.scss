@@ -6,47 +6,6 @@ body {
     background-color: var(--bodyBackground)!important;
   }
 
-.ngx-datatable.bootstrap {
-    border: 1px solid #dddddd;
-}
-
-.ngx-datatable.bootstrap .datatable-body .datatable-body-row .datatable-body-cell {
-    padding-right: 15px;
-}
-
-.ngx-datatable.bootstrap .datatable-body .datatable-body-row.datatable-row-even {
-    background-color: rgba(0, 0, 0, 0);
-}
-
-.ngx-datatable.bootstrap .datatable-body .datatable-body-row:hover {
-    background-color: rgba(182, 235, 255, 0.22);
-}
-
-.ngx-datatable.bootstrap .datatable-footer {
-    border-top: 1px solid #d0d0d0;
-}
-
-.ngx-datatable.bootstrap .datatable-footer .datatable-pager ul li:not(.disabled).active a {
-    background-color: #aeaeae;
-}
-
-.ngx-datatable.bootstrap .datatable-header .datatable-header-cell {
-    padding: 0.15rem 0.75rem;
-    border-bottom: none;
-}
-
-.ngx-datatable.bootstrap .datatable-header,
-.ngx-datatable.bootstrap .datatable-footer {
-    background-color: #eaeaea;
-    font-weight: 600;
-}
-
-.ngx-datatable.bootstrap .datatable-footer,
-.ngx-datatable.bootstrap .datatable-footer .datatable-pager a,
-.ngx-datatable.bootstrap .datatable-header .datatable-header-cell .datatable-header-cell-label {
-    color: #3a3a3a;
-}
-
 .btn {
     & + & {
         margin-left:5px;

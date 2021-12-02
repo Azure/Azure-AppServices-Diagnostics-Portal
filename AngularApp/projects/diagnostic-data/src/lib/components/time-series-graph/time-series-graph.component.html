@@ -1,9 +1,3 @@
-<ng-template #graphView>
-  <nvd3-graph [chartData]="selectedSeries" [chartType]="renderingProperties.graphType" [chartOptions]="graphOptions"
-    *ngIf="selectedSeries" [startTime]="startTime" [endTime]="endTime"></nvd3-graph>
-  <div *ngIf="!selectedSeries">Loading Data...</div>
-</ng-template>
-
 <ng-template #highchartGraphView>
 <highcharts-graph [HighchartData]="selectedHighChartSeries" [chartDescription]="renderingProperties.description" [chartType]="renderingProperties.graphType" [chartOptions]="graphOptions"
 [xAxisPlotBands]="xAxisPlotBands" [zoomBehavior] = "zoomBehavior" (XAxisSelection)="onXAxisSelection($event)" [metricType]="metricType">
@@ -11,23 +5,10 @@
   <div *ngIf="!selectedSeries">Loading Data...</div>
 </ng-template>
 
-<div *ngIf="!useHighchart">
-<data-container *ngIf="renderingProperties.title; else noContainer" [title]="renderingProperties.title"
-    [description]="renderingProperties.description">
-  <ng-container *ngTemplateOutlet="graphView"></ng-container>
-</data-container>
-</div>
-
-<div *ngIf="useHighchart">
 <data-container *ngIf="renderingProperties.title; else noContainerHighChart" [title]="renderingProperties.title"
     [description]="renderingProperties.description">
   <ng-container *ngTemplateOutlet="highchartGraphView"></ng-container>
 </data-container>
-</div>
-
-<ng-template #noContainer>
-  <ng-container *ngTemplateOutlet="graphView"></ng-container>
-</ng-template>
 
 <ng-template #noContainerHighChart>
   <ng-container *ngTemplateOutlet="highchartGraphView"></ng-container>

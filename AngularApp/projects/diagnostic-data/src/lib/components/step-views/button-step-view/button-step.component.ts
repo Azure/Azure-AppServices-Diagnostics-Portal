@@ -1,8 +1,7 @@
 
-import { Component, Pipe, PipeTransform, Inject, OnInit, Input, ViewEncapsulation, AfterViewInit, AfterContentInit } from '@angular/core';
-import { IDropdown, IDropdownOption, ISelectableOption, RefObject } from 'office-ui-fabric-react';
+import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 import { TelemetryService } from '../../../services/telemetry/telemetry.service';
-import { ButtonStepView, DropdownStepView, StepViewContainer } from '../step-view-lib';
+import { ButtonStepView, StepViewContainer } from '../step-view-lib';
 
 @Component({
   selector: 'button-step',
@@ -13,7 +12,7 @@ import { ButtonStepView, DropdownStepView, StepViewContainer } from '../step-vie
 export class ButtonStepComponent implements OnInit {
   @Input() viewModel: StepViewContainer;
   buttonStepView: ButtonStepView;
-  
+
 
   constructor(private _telemetryService: TelemetryService) {
   }
