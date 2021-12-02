@@ -191,7 +191,7 @@
         <button type="button" class="btn btn-sm btn-primary" [disabled]="!saveEnabled"
           (click)="saveChanges()">Save</button>
         <button type="button" class="btn btn-sm btn-primary" [disabled]="!saveEnabled" (click)="reset()">Cancel</button>
-        <button *ngIf="isWindowsApp" type="button" class="btn btn-sm btn-primary" (click)="toggleSessionPanel()">View
+        <button *ngIf="isWindowsApp || isLinuxDotNetApp" type="button" class="btn btn-sm btn-primary" (click)="toggleSessionPanel()">View
           All Sessions</button>
         <div *ngIf="savingAutohealSettings" class="inline ml-3">
           <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
