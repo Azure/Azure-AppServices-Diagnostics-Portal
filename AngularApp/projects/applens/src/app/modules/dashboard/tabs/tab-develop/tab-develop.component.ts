@@ -16,6 +16,6 @@ export class TabDevelopComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.id = this._route.parent.snapshot.params['detector'].toLowerCase();
+    this.id = this._route.parent.snapshot.params['detector'];
   }
 }

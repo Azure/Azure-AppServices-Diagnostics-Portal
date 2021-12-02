@@ -141,7 +141,7 @@
     <fab-dialog-content [title]="dialogTitle" [subText]="dialogSubText" [styles]="publishDialogStyles">
       <p>Branch Name: </p><p style="text-decoration: underline; font-weight: bold; word-wrap: break-word;">{{Branch}}</p>
       <!-- <fab-text-field [label]="branchName" [(value)]="Branch" [placeholder]="branchPlaceholder"></fab-text-field> -->
-      <fab-text-field [label]="PRName" [(value)]="PRTitle" [placeholder]="PRPlaceholder"></fab-text-field>
+      <fab-text-field [label]="PRName" [(value)]="PRTitle" [placeholder]="PRPlaceholder" [required]="true"></fab-text-field>
       <!-- <fab-text-field [label]="PRDescription" [(value)]="PRDesc" [placeholder]="PRDescriptionPlaceholder"
         [required]="true" [multiline]="true"></fab-text-field> -->
       <div style="border-top: 1px solid gray;" class="pt-3 pb-3 callout-padding">
@@ -232,19 +232,26 @@
 
   <fab-command-bar [attr.id]="'fab-command-bar'" contentClass="fab-command-bar-class">
     <items>
+      <!-- do not use *ngIf on these buttons  -->
       <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"
+      [disabled]="runButtonDisabled"></fab-command-bar-item>
+      <fab-command-bar-item key="publishGrad" [text]="modalPublishingButtonText" [iconProps]="publishIcon"
+          (click)="publishButtonOnClick()" [disabled]="publishButtonDisabled">
+        </fab-command-bar-item>
+
+      <!-- <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"
         [buttonStyles]="runButtonStyle"></fab-command-bar-item>
       <fab-command-bar-item key="publishGrad" [text]="modalPublishingButtonText" [iconProps]="publishIcon"
-        (click)="publishButtonOnClick()" [buttonStyles]="publishButtonStyle">
-      </fab-command-bar-item>
+          (click)="publishButtonOnClick()" [buttonStyles]="publishButtonStyle">
+        </fab-command-bar-item> -->
+
       <fab-command-bar-item key="download" text="Download" [iconProps]="{ iconName: 'Download' }"
         (click)="getDevOptions()"></fab-command-bar-item>
       <fab-command-bar-item key="gistVersion" text="Gist version" [iconProps]="{ iconName: 'BackToWindow' }"
         (click)="showGistDialog()"></fab-command-bar-item>
-      <ng-container *ngIf="ableToDelete()">
-        <fab-command-bar-item key="delete" text="Delete" [iconProps]="{iconName: 'Delete'}"
+      
+      <fab-command-bar-item [style]="deleteVisibilityStyle" key="delete" text="Delete" [iconProps]="{iconName: 'Delete'}"
         (click)="showDeleteDialog()"></fab-command-bar-item>
-      </ng-container>
       <!-- <fab-command-bar-item key="internal" [text]="internalExternalText" [iconProps]="{ iconName: 'View' }"
         (click)="internalExternalToggle()"></fab-command-bar-item> -->
       <far-items>
