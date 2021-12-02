@@ -10,6 +10,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 export class TabGistDevelopComponent implements OnInit {
   DevelopMode = DevelopMode;
   id: string;
+  gradId: string;
 
   constructor(private _route: ActivatedRoute) {
   }
@@ -22,5 +23,6 @@ export class TabGistDevelopComponent implements OnInit {
 
   refresh() {
     this.id = this._route.snapshot.params["gist"].toLowerCase();
+    this.gradId = this._route.snapshot.params["gist"];
   }
 }

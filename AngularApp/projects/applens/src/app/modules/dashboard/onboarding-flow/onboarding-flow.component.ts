@@ -196,6 +196,7 @@ export class OnboardingFlowComponent implements OnInit {
 
   detectorGraduation: boolean = false;
   autoMerge: boolean = false;
+  disableDelete: boolean = false;
 
   buttonStyle: IButtonStyles = {
     root: {
@@ -256,11 +257,6 @@ export class OnboardingFlowComponent implements OnInit {
   }
 
   modalPublishingButtonText: string;
-
-  // get modalPublishingButtonText() {
-  //   return this.detectorGraduation ? "Create PR" : "Publish";
-  // }
-
   modalPublishingButtonDisabled: boolean;
   publishAccessControlResponse: any;
 
@@ -323,6 +319,7 @@ export class OnboardingFlowComponent implements OnInit {
 
   showDeleteDialog() {
     this.deleteDialogHidden = false;
+    this.setTargetBranch();
   }
 
   dismissDeleteDialog() {
@@ -330,7 +327,6 @@ export class OnboardingFlowComponent implements OnInit {
   }
 
   updateTempBranch(event: any) {
-    //console.log(event);
     this.tempBranch = event.option.key;
   }
 
@@ -376,13 +372,16 @@ export class OnboardingFlowComponent implements OnInit {
     }
   }
 
-  ableToDelete() {
-    return this.detectorGraduation && this.mode !== DevelopMode.Create;
-  }
+  ableToDelete: boolean = false;
+  deleteVisibilityStyle = {};
 
   ngOnInit() {
+    this.detectorGraduation = true;
     this.diagnosticApiService.getDetectorGraduationSetting().subscribe(graduationFlag => {
       this.detectorGraduation = graduationFlag;
+      this.deleteVisibilityStyle = !(this.detectorGraduation === true && this.mode !== DevelopMode.Create) ? {display: "none"} : {};
+
+      this.modalPublishingButtonText = this.detectorGraduation ? "Create PR" : "Publish";
 
 
       if (!this.initialized) {
@@ -415,7 +414,7 @@ export class OnboardingFlowComponent implements OnInit {
     this.showBranches = [];
 
     this.diagnosticApiService.getBranches(this.resourceId).subscribe(branches => {
-      var branchRegEx = new RegExp(`^dev\/.*\/detector\/${this.id}$`, "i");
+      var branchRegEx = new RegExp(`^dev\/.*\/detector\/${this.id}$`);
       branches.forEach(option => {
         this.optionsForSingleChoice.push({
           key: String(option["item1"]),
@@ -756,24 +755,24 @@ export class OnboardingFlowComponent implements OnInit {
 
   /*downloadCode(){
     var a = document.getElementById("a");
-    var file = new Blob([this.id], {type: type});
+    var file = new Blob([this.id.toLowerCase()], {type: type});
     a.href = URL.createObjectURL(file);
     a.download = name;
   }*/
 
   saveProgress() {
-    localStorage.setItem(`${this.id}_code`, this.code);
+    localStorage.setItem(`${this.id.toLowerCase()}_code`, this.code);
   }
 
   retrieveProgress() {
-    let savedCode: string = localStorage.getItem(`${this.id}_code`)
+    let savedCode: string = localStorage.getItem(`${this.id.toLowerCase()}_code`)
     if (savedCode) {
       this.code = savedCode;
     }
   }
 
   deleteProgress() {
-    localStorage.removeItem(`${this.id}_code`);
+    localStorage.removeItem(`${this.id.toLowerCase()}_code`);
   }
 
   ngAfterViewInit() {
@@ -807,7 +806,7 @@ export class OnboardingFlowComponent implements OnInit {
 
     localStorage.setItem("localdevmodal.hidden", this.hideModal === true ? "true" : "false");
 
-    this.diagnosticApiService.prepareLocalDevelopment(body, this.id, this._detectorControlService.startTimeString,
+    this.diagnosticApiService.prepareLocalDevelopment(body, this.id.toLowerCase(), this._detectorControlService.startTimeString,
       this._detectorControlService.endTimeString, this.dataSource, this.timeRange)
       .subscribe((response: string) => {
         this.localDevButtonDisabled = false;
@@ -889,7 +888,7 @@ export class OnboardingFlowComponent implements OnInit {
       if (serializedParams && serializedParams.length > 0) {
         serializedParams = "&" + serializedParams;
       };
-      this.diagnosticApiService.getCompilerResponse(body, isSystemInvoker, this.id, this._detectorControlService.startTimeString,
+      this.diagnosticApiService.getCompilerResponse(body, isSystemInvoker, this.id.toLowerCase(), this._detectorControlService.startTimeString,
         this._detectorControlService.endTimeString, this.dataSource, this.timeRange, {
         scriptETag: this.compilationPackage.scriptETag,
         assemblyName: this.compilationPackage.assemblyName,
@@ -1072,7 +1071,7 @@ export class OnboardingFlowComponent implements OnInit {
 
   getDetectorId(): string {
     if (this.mode === DevelopMode.Edit) {
-      return this.id;
+      return this.id.toLowerCase();
     } else if (this.mode === DevelopMode.Create) {
       return newDetectorId;
     }
@@ -1117,11 +1116,9 @@ export class OnboardingFlowComponent implements OnInit {
     return match;
   }
 
-  showPublishDialog() {
-    var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id}`
-    if (this.publishButtonDisabled) {
-      return;
-    }
+  setTargetBranch(){
+    var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id}`;
+
     if (this.Branch === this.defaultBranch && this.targetInShowBranches(targetBranch)) {
       this.Branch = targetBranch;
       this.displayBranch = `${targetBranch}`;
@@ -1130,6 +1127,15 @@ export class OnboardingFlowComponent implements OnInit {
       this.displayBranch = `${targetBranch} (not published)`;
       this.Branch = targetBranch;
     }
+  }
+
+  showPublishDialog() {
+    if (this.publishButtonDisabled) {
+      return;
+    }
+
+    this.setTargetBranch();
+    
     if (this.mode == DevelopMode.Create) {
       this.PRTitle = `Creating ${this.id}`;
     }
@@ -1198,9 +1204,7 @@ export class OnboardingFlowComponent implements OnInit {
         this.ngxSmartModalService.getModal('publishModal').close();
         this.detectorName = this.publishingPackage.id;
         this.publishSuccess = true;
-        //this.showAlertBox('alert-success', 'Detector published successfully. Changes will be live shortly.');
-
-        this._telemetryService.logEvent("SearchTermPublish", { detectorId: this.id, numUtterances: this.allUtterances.length.toString(), ts: Math.floor((new Date()).getTime() / 1000).toString() });
+        this._telemetryService.logEvent("SearchTermPublish", { detectorId: this.id.toLowerCase(), numUtterances: this.allUtterances.length.toString(), ts: Math.floor((new Date()).getTime() / 1000).toString() });
       }, err => {
         this.enableRunButton();
         this.localDevButtonDisabled = false;
@@ -1425,7 +1429,7 @@ export class OnboardingFlowComponent implements OnInit {
         });
     }
     else {
-      this.githubService.getMetadataFile(this.id).subscribe(res => {
+      this.githubService.getMetadataFile(this.id.toLowerCase()).subscribe(res => {
         this.allUtterances = JSON.parse(res).utterances;
       },
         (err) => {
@@ -1444,13 +1448,14 @@ export class OnboardingFlowComponent implements OnInit {
         break;
       }
       case DevelopMode.Edit: {
-        this.fileName = `${this.id}.csx`;
         if (this.detectorGraduation) {
+          this.fileName = `${this.id}.csx`;
           this.deleteAvailable = true;
           detectorFile = this.diagnosticApiService.getDetectorCode(`${this.id}/${this.id}.csx`, this.Branch, this.resourceId)
         }
         else {
-          detectorFile = this.githubService.getSourceFile(this.id);
+          this.fileName = `${this.id.toLowerCase()}.csx`;
+          detectorFile = this.githubService.getSourceFile(this.id.toLowerCase());
         }
         this.startTime = this._detectorControlService.startTime;
         this.endTime = this._detectorControlService.endTime;
@@ -1469,8 +1474,8 @@ export class OnboardingFlowComponent implements OnInit {
     }
 
     let configuration = of(null);
-    if (this.id !== '') {
-      configuration = this.githubService.getConfiguration(this.id).pipe(
+    if (this.id.toLowerCase() !== '') {
+      configuration = this.githubService.getConfiguration(this.id.toLowerCase()).pipe(
         map(config => {
           if (!('dependencies' in config)) {
             config['dependencies'] = {};
@@ -1523,8 +1528,4 @@ export class OnboardingFlowComponent implements OnInit {
 
     return false;
   }
-
-  // ngOnDestroy() {
-
-  // }
 }
