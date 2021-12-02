@@ -54,6 +54,12 @@ export class AutohealingComponent implements OnInit {
     this.isWindowsApp = this._webSiteService.platform === OperatingSystem.windows;
     this.isLinuxDotNetApp = this._webSiteService.platform === OperatingSystem.linux
       && this._webSiteService.linuxFxVersion.startsWith("DOTNETCORE");
+
+    //
+    // Disable AutoHeal temporarily because Cloud Services in ANT96 are still pointing to old KuduLite bits
+    // Will remove this check after ANT 96.1 is deployed (Rough ETA is first week of Jan)
+    //
+      this.isLinuxDotNetApp = false;
   }
 
   ngOnInit() {
