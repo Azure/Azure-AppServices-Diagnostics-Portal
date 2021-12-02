@@ -5,7 +5,7 @@
 </ng-container>
 
 <fab-panel [isOpen]="isAlertExpanded" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true" [styles]="panelStyles"
-  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'">
+  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'" (onDismiss)="dismissPanel()">
   <div class="panel-padding">
     <div>
       <div>
