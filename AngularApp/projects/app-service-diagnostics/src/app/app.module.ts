@@ -7,7 +7,6 @@ import {
 import { SiteService } from 'projects/app-service-diagnostics/src/app/shared/services/site.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { environment } from '../environments/environment';

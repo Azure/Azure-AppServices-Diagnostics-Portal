@@ -7,7 +7,6 @@ import { BroadcastService } from './services/broadcast.service';
 import { AuthService } from './services/auth.service';
 import { StartupMessages } from '../supportbot/message-flow/startup/startupmessages';
 import { MainMenuMessageFlow } from '../supportbot/message-flow/main-menu/mainmenumessageflow';
-import { HealthCheckMessageFlow } from '../supportbot/message-flow/health-check/healthcheckmessageflow';
 import { FeedbackMessageFlow } from '../supportbot/message-flow/feedback/feedbackmessageflow';
 import { MessageProcessor } from '../supportbot/message-processor.service';
 import { GenieMessageProcessor } from '../genie/message-processor.service';
@@ -34,7 +33,6 @@ export class StartupModule {
             AuthService,
             StartupMessages,
             MainMenuMessageFlow,
-            HealthCheckMessageFlow,
             FeedbackMessageFlow,
             CpuAnalysisChatFlow,
             MessageProcessor,

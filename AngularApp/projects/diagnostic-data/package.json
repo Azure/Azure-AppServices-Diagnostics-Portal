@@ -4,7 +4,6 @@
   "peerDependencies": {
     "@angular/common": "8.0.2",
     "@angular/core": "8.0.2",
-    "@swimlane/ngx-datatable": "^13.1.0",
     "copy-html-to-clipboard": "^4.0.1",
     "@microsoft/applicationinsights-web": "^2.5.4",
     "ngx-monaco-editor": "^6.0.0"
@@ -19,7 +18,6 @@
     "office-ui-fabric-react": "5.82.4",
     "@angular/common": "8.0.2",
     "@angular/core": "8.0.2",
-    "@swimlane/ngx-datatable": "^13.1.0",
     "@microsoft/applicationinsights-web": "^2.5.4",
     "copy-html-to-clipboard": "^4.0.1",
     "ngx-monaco-editor": "^6.0.0"

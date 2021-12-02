@@ -246,7 +246,7 @@ export class CategoryNavComponent implements OnInit {
                             }
 
                             let item = this.detectorDataLocalCopy.find(metadata => metadata.id.toLowerCase() === itemId.toLowerCase());
-                            //If navigate to detector which is not belong to current category, we will also add it into orphanDetectorList 
+                            //If navigate to detector which is not belong to current category, we will also add it into orphanDetectorList
                             if (item && (item.category == undefined || item.category == "" || this.checkIsFromAnotherCategory(categories, item, decodedCategoryName)) && !this.detectorList.find((detector) => detector.label === item.name)) {
                                 if (!this.orphanDetectorList || !this.orphanDetectorList.find((orphan) => (orphan.label) === item.name)) {
                                     let isSelected = () => {

@@ -1,4 +1,3 @@
-import { GraphSeries } from '../components/nvd3-graph/nvd3-graph.component';
 import { HighchartGraphSeries } from '../components/highcharts-graph/highcharts-graph.component';
 import * as momentNs from 'moment';
 
@@ -109,3 +108,14 @@ export enum MetricType {
   Max,
   Sum,
 }
+
+export interface GraphPoint {
+    x: momentNs.Moment;
+    y: number;
+  }
+
+  export interface GraphSeries {
+    key: string;
+    values: GraphPoint[];
+  }
+

@@ -5,7 +5,6 @@ import { IMessageFlowProvider } from '../../interfaces/imessageflowprovider';
 import { RegisterMessageFlowWithFactory } from '../message-flow.factory';
 import { MessageSender, ButtonActionType } from '../../models/message-enums';
 import { CategoryMenuMessage } from '../category-menu/category-menu.component';
-import { HealthCheckMessage } from '../health-check/healthcheckmessageflow';
 
 @Injectable()
 @RegisterMessageFlowWithFactory()

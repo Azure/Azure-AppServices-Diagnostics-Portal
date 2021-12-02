@@ -119,8 +119,8 @@ export class DetectorContainerComponent implements OnInit {
         this.detectorName = detector;
         this.refresh(false);
       }
-      
-      
+
+
       //For now hard code detectors which are not show time picker, next step is to read it from detector definition
       if (detector && hideTimePickerDetectors.find(d => d.toLowerCase() === detector.toLowerCase())) {
         this.hideDetectorControl = true;
@@ -214,7 +214,7 @@ export class DetectorContainerComponent implements OnInit {
     return !(this.analysisMode && analysisId != this.detectorName);
   }
 
-  //Need to tweak 
+  //Need to tweak
   getDetectorResponse(hardRefresh: boolean) {
     let startTime = this.detectorControlService.startTimeString;
     let endTime = this.detectorControlService.endTimeString;

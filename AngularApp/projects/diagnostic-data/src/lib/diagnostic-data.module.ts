@@ -1,5 +1,3 @@
-import 'd3';
-import 'nvd3';
 import { DetectorControlService } from './services/detector-control.service';
 import { DiagnosticService } from './services/diagnostic.service';
 import { GenericSupportTopicService } from './services/generic-support-topic.service';
@@ -8,13 +6,11 @@ import { GenericContentService } from './services/generic-content.service';
 import { GenericDocumentsSearchService } from './services/generic-documents-search.service';
 import { TelemetryService } from './services/telemetry/telemetry.service';
 import { GenieGlobals } from './services/genie.service';
-import { NvD3Module } from 'ng2-nvd3';
 import { MarkdownModule } from 'ngx-markdown';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { CardSelectionComponent } from './components/card-selection/card-selection.component';
 import { CommAlertComponent } from './components/comm-alert/comm-alert.component';
 import {
@@ -23,7 +19,6 @@ import {
 import { DataContainerComponent } from './components/data-container/data-container.component';
 import { DataRenderBaseComponent } from './components/data-render-base/data-render-base.component';
 import { DataSummaryComponent } from './components/data-summary/data-summary.component';
-import { DataTableComponent } from './components/data-table/data-table.component';
 import {
   DetectorContainerComponent
 } from './components/detector-container/detector-container.component';
@@ -43,7 +38,6 @@ import { InsightsComponent } from './components/insights/insights.component';
 import { LoaderViewComponent } from './components/loader-view/loader-view.component';
 import { MarkdownEditorComponent } from './components/markdown-editor/markdown-editor.component';
 import { MarkdownViewComponent } from './components/markdown-view/markdown-view.component';
-import { Nvd3GraphComponent } from './components/nvd3-graph/nvd3-graph.component';
 import {
   StarRatingFeedbackComponent
 } from './components/star-rating-feedback/star-rating-feedback.component';
@@ -132,8 +126,6 @@ import { FabricFeedbackComponent } from './components/fabric-feedback/fabric-fee
 @NgModule({
   imports: [
     CommonModule,
-    NvD3Module,
-    NgxDatatableModule,
     MarkdownModule.forRoot(),
     FormsModule,
     MonacoEditorModule.forRoot(),
@@ -168,7 +160,7 @@ import { FabricFeedbackComponent } from './components/fabric-feedback/fabric-fee
     ClipboardService
   ],
   declarations: [
-    Nvd3GraphComponent, TimeSeriesGraphComponent, DataTableComponent, DynamicDataComponent,
+    TimeSeriesGraphComponent, DynamicDataComponent,
     DataRenderBaseComponent, DataContainerComponent, TimeSeriesInstanceGraphComponent, DetectorViewComponent, DetectorSearchComponent,
     DataSummaryComponent, EmailComponent, InsightsComponent, LoaderViewComponent, DynamicInsightComponent,
     MarkdownViewComponent, DetectorListComponent, DetectorOrderPipe, StarRatingComponent, StarRatingFeedbackComponent,
@@ -226,7 +218,7 @@ import { FabricFeedbackComponent } from './components/fabric-feedback/fabric-fee
   ],
   entryComponents: [DetectorListAnalysisComponent],
   exports: [
-    FormsModule, TimeSeriesGraphComponent, DataTableComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent,
+    FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent,
     DataSummaryComponent, LoaderViewComponent, LoaderDetectorViewComponent, StatusIconComponent, DetectorControlComponent,
     DetectorContainerComponent, InternalPipe, CommAlertComponent, GuageControlComponent, SolutionComponent,
     FormComponent, VerticalDisplayListComponent, VerticalDisplayListItemComponent, SolutionTypeTagComponent, DataContainerComponent,
@@ -258,9 +250,9 @@ import { FabricFeedbackComponent } from './components/fabric-feedback/fabric-fee
     FabCoachmarkModule,
     FabTeachingBubbleModule,
     FabTabComponent,
-    DetectorTimePickerComponent,
+    FabricFeedbackComponent,
     FabDataTableComponent,
-    FabricFeedbackComponent
+    DetectorTimePickerComponent
   ],
 })
 export class DiagnosticDataModule {

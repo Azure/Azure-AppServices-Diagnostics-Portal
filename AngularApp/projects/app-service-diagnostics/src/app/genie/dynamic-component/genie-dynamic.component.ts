@@ -24,11 +24,10 @@ import {
 } from '../message-flow/talk-to-agent/talk-to-agent-message.component';
 import { Message } from '../models/message';
 import { takeUntil } from 'rxjs/operators';
-import { HealthCheckV3Component } from '../message-flow/health-check-v3/health-check-v3.component';
 
 @Component({
     selector: 'dynamic-component-genie',
-    entryComponents: [GenieTextMessageComponent, ButtonMessageComponent, FeedbackButtonMessageComponent, HealthCheckV3Component,
+    entryComponents: [GenieTextMessageComponent, ButtonMessageComponent, FeedbackButtonMessageComponent,
         GenieFeedbackComponent, SolutionsMessageComponent, GraphMessageComponent, TalkToAgentMessageComponent,
         DetectorSummaryComponent, DocumentSearchComponent, DocumentSearchResultsComponent, DynamicAnalysisComponent],
     template: `

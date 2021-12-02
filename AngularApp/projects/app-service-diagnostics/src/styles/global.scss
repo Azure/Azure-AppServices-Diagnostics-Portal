@@ -120,46 +120,6 @@ body{
     }
 }
 
-@media screen and (-ms-high-contrast: black-on-white) {
-    .nvd3 text {
-        fill: #000 !important;
-        font-size: 12px !important;
-        font-weight: 400 !important;
-        font-family: inherit !important;
-    }
-
-    .nvd3.nv-noData text {
-        font-size: 18px;
-        font-weight: 700;
-        fill: #000 !important;
-    }
-}
-@media screen and (-ms-high-contrast: white-on-black) {
-    .nvd3 text {
-        fill: #fff !important;
-        font-size: 12px !important;
-        font-weight: 400 !important;
-        font-family: inherit !important;
-    }
-
-    .nvd3.nv-noData text {
-        font-size: 18px;
-        font-weight: 700;
-        fill: #fff !important;
-    }
-}
-
-.nvd3 text {
-    font-size: 12px !important;
-    font-weight: 400 !important;
-    font-family: inherit !important;
-}
-
-.nvd3 .nv-axislabel {
-    font-weight: 600 !important;
-    font-size: 13px !important;
-}
-
 //Remove after A/B Test
 .row {
     margin-left:-5px;

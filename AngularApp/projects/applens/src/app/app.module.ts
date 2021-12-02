@@ -15,7 +15,6 @@ import { AdalService, AdalGuard, AdalInterceptor } from 'adal-angular4';
 import { CustomUrlSerializerService } from './shared/services/custom-url-serializer.service';
 import { DiagnosticDataModule, GenericThemeService } from 'diagnostic-data';
 import { UnhandledExceptionHandlerService, AppInsightsTelemetryService } from 'diagnostic-data';
-import { CustomMaterialModule } from './material-module';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { UnauthorizedComponent } from './shared/components/unauthorized/unauthorized.component';
 import { AuthRequestFailedComponent } from './shared/components/auth-request-failed/auth-request-failed.component';
@@ -135,7 +134,6 @@ export const Routes = RouterModule.forRoot([
     DiagnosticDataModule.forRoot(),
     Routes,
     SharedModule.forRoot(),
-    CustomMaterialModule,
     FabPanelModule,
     FabDialogModule,
     FabButtonModule

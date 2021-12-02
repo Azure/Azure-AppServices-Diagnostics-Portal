@@ -19,18 +19,16 @@ import {
 } from '../message-flow/document-search-results/document-search-results.component';
 import { DocumentSearchComponent } from '../message-flow/document-search/document-search.component';
 import { FeedbackComponent } from '../message-flow/feedback/feedback.component';
-import { HealthCheckComponent } from '../message-flow/health-check/health-check.component';
 import { MainMenuComponent } from '../message-flow/main-menu/main-menu.component';
 import {
     TalkToAgentMessageComponent
 } from '../message-flow/talk-to-agent/talk-to-agent-message.component';
 import { Message } from '../models/message';
 import { takeUntil } from 'rxjs/operators';
-import { HealthCheckV3Component } from '../message-flow/health-check-v3/health-check-v3.component';
 
 @Component({
     selector: 'dynamic-component',
-    entryComponents: [TextMessageComponent, MainMenuComponent, ButtonMessageComponent, HealthCheckComponent, HealthCheckV3Component, FeedbackComponent,
+    entryComponents: [TextMessageComponent, MainMenuComponent, ButtonMessageComponent, FeedbackComponent,
         SolutionsMessageComponent, GraphMessageComponent, ProblemStatementMessageComponent, TalkToAgentMessageComponent, CategoryMenuComponent,
         DetectorSummaryComponent, DocumentSearchComponent, DocumentSearchResultsComponent],
     template: `

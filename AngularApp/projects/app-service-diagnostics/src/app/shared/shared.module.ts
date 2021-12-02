@@ -5,7 +5,6 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { LimitToFilter } from './utilities/limitToFilter.pipe';
-import { nvD3 } from './utilities/nvd3graph.component';
 import { MarkupPipe } from './pipes/markup.pipe';
 import { BlogComponent } from './components/blog/blog.component';
 import { OpenTicketComponent } from './components/open-ticket/open-ticket.component';
@@ -94,9 +93,7 @@ import { CrashMonitoringComponent } from './components/tools/crash-monitoring/cr
 import {
     FabButtonModule,
     FabCheckboxModule,
-    FabComboBoxModule,
     FabDatePickerModule,
-    FabDividerModule,
     FabFabricModule,
     FabDropdownModule,
     FabGroupModule,
@@ -105,23 +102,17 @@ import {
     FabIconModule,
     FabImageModule,
     FabLinkModule,
-    FabMarqueeSelectionModule,
     FabMessageBarModule,
     FabModalModule,
     FabPanelModule,
-    FabPersonaModule,
     FabPivotModule,
     FabSearchBoxModule,
-    FabShimmerModule,
     FabSliderModule,
     FabSpinnerModule,
     FabToggleModule,
     FabTooltipModule,
     FabSpinButtonModule,
     FabTextFieldModule,
-    FabPeoplePickerModule,
-    FabTagPickerModule,
-    FabProgressIndicatorModule,
     FabContextualMenuModule
 } from '@angular-react/fabric';
 import { CrashMonitoringAnalysisComponent } from './components/tools/crash-monitoring/crash-monitoring-analysis/crash-monitoring-analysis.component';
@@ -137,7 +128,6 @@ import { ABTestingService } from './services/abtesting.service';
 @NgModule({
     declarations: [
         LimitToFilter,
-        nvD3,
         MarkupPipe,
         GroupByPipe,
         MapValuesPipe,
@@ -220,29 +210,21 @@ import { ABTestingService } from './services/abtesting.service';
         FabDropdownModule,
         FabPanelModule,
         FabCheckboxModule,
-        FabComboBoxModule,
         FabGroupedListModule,
         FabDatePickerModule,
-        FabDividerModule,
         FabSpinnerModule,
         FabToggleModule,
-        FabPersonaModule,
         FabPivotModule,
         FabLinkModule,
         FabMessageBarModule,
         FabHoverCardModule,
         FabModalModule,
         FabTooltipModule,
-        FabShimmerModule,
         FabSliderModule,
         FabSearchBoxModule,
         FabGroupModule,
-        FabMarqueeSelectionModule,
         FabSpinButtonModule,
         FabTextFieldModule,
-        FabPeoplePickerModule,
-        FabTagPickerModule,
-        FabProgressIndicatorModule,
         FabContextualMenuModule,
         MarkdownModule.forRoot()
     ],
@@ -252,7 +234,6 @@ import { ABTestingService } from './services/abtesting.service';
         HttpClientModule,
         LimitToFilter,
         RouterModule,
-        nvD3,
         MarkupPipe,
         GroupByPipe,
         MapValuesPipe,

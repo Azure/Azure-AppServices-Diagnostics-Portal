@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DataTableDataType, DiagnosticData, TimeSeriesRendering, DataTableResponseObject, RenderingType } from '../../models/detector';
-import { GraphSeries, GraphPoint } from '../nvd3-graph/nvd3-graph.component';
 import { HighchartsData, HighchartGraphSeries } from '../highcharts-graph/highcharts-graph.component';
 import { DataRenderBaseComponent, DataRenderer } from '../data-render-base/data-render-base.component';
-import { TimeSeries, TablePoint, HighChartTimeSeries, MetricType } from '../../models/time-series';
+import { TimeSeries, TablePoint, HighChartTimeSeries, MetricType,GraphSeries, GraphPoint } from '../../models/time-series';
 import * as momentNs from 'moment';
 import { TimeUtilities } from '../../utilities/time-utilities';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
@@ -38,7 +37,6 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
     defaultValue: number = 0;
     graphOptions: any;
     customizeXAxis: boolean;
-    useHighchart: boolean = true;
 
     timeGrain: momentNs.Duration;
     metricType: MetricType = MetricType.Avg;
@@ -49,9 +47,6 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
             this.renderingProperties = <TimeSeriesRendering>data.renderingProperties;
             this.defaultValue = this.renderingProperties.defaultValue !== null ? this.renderingProperties.defaultValue : this.defaultValue;
             this.graphOptions = this.renderingProperties.graphOptions;
-            if (this.graphOptions != undefined && this.graphOptions.useHighchart != undefined) {
-                this.useHighchart = this.graphOptions && this.graphOptions.useHighchart && this.graphOptions.useHighchart === "true";
-            }
 
             if(this.renderingProperties.metricType != undefined) {
                 this.metricType = this.renderingProperties.metricType;

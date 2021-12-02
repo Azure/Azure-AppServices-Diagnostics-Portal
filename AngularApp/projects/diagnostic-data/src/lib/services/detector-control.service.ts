@@ -324,7 +324,7 @@ export class DetectorControlService {
   public get effectiveLocale(): string {
       return this._effectiveLocale;
   }
-  
+
   public updateTimePickerInfo(updatedInfo: TimePickerInfo) {
     this.timePickerInfoSub.next(updatedInfo);
     if (updatedInfo && updatedInfo.selectedKey !== TimePickerOptions.Custom) {
@@ -360,4 +360,4 @@ export enum TimePickerOptions {
   Last12Hour = "Last 12 Hours",
   Last24Hours = "Last 24 Hours",
   Custom = "Custom"
-} 
+}
