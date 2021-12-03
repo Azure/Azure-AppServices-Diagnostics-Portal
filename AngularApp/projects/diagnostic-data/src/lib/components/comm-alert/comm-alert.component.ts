@@ -112,4 +112,8 @@ export class CommAlertComponent implements OnInit {
             this.impactedRegions = uniqueRegions && uniqueRegions.toString();
         }
     }
+
+    dismissPanel() {
+        this.isAlertExpanded = false;
+    }
 }
