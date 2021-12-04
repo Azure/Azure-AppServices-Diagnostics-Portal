@@ -185,7 +185,7 @@
   <fab-panel [isOpen]="publishSuccess || publishFailed" [isLightDismiss]="true" [type]="PanelType.custom"
     [customWidth]="'400px'" [isHiddenOnDismiss]="true" [hasCloseButton]="false" [closeButtonAriaLabel]="'close'"
     [styles]="submittedPanelStyles" [isBlocking]="false" (onDismissed)="dismissPublishSuccessHandler()"
-    (onOpen)="onOpenPublishSuccessPanel()" >
+    (onOpened)="onOpenPublishSuccessPanel()" >
     <div class="submitted-panel-text panel-text">
       <div style="display: flex;align-items: center; margin-left: 4px; margin-right: 8px;">
         <div *ngIf="publishSuccess && !detectorGraduation" style="display: flex; align-items: center; padding: 0px 10px;">
