@@ -12,7 +12,7 @@
       "ssl-local": "npm run ssl -- -c local",
       "asd": "concurrently -k \"npm run ssl\" \"npm run lib\"",
       "build-lib": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build diagnostic-data",
-      "build-applens": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build applens --prod --deploy-url https://app-service-diagnostics-portal.azureedge.net/",
+      "build-applens": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build applens --prod",
       "build-ncloud-applens-prod": "ng build applens --configuration=nationalcloud-production",
       "build-ncloud-applens-local": "ng build applens --configuration=nationalcloud-local",
       "build-asd": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build app-service-diagnostics --prod --deploy-url https://app-service-diagnostics-portal.azureedge.net/ --sourceMap=true",
