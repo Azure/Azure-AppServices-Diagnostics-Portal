@@ -6,7 +6,7 @@
     <ng-template ngFor let-formInput [ngForOf]="element.formInputs">
       <div class="form-group row" *ngIf="isText(formInput.inputType) && formInput.isVisible">
         <div class="col-sm-8">
-          <label class="col-sm-4 col-md-2 col-form-label"> {{formInput.inputLabel}}
+          <label class="col-sm-4 col-md-2 col-form-label" [for]="formInput.internalId"> {{formInput.inputLabel}}
             <fab-tooltip-host  *ngIf="formInput.tooltip != ''" [content]="formInput.tooltip" [directionalHint]="directionalHint">
               <span class="fa form-tooltip" [ngClass]="formInput.tooltipIcon"></span>
             </fab-tooltip-host>
