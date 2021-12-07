@@ -13,6 +13,15 @@ body {
   font-family: 'Segoe UI' !important;
 }
 
+a {
+  color: var(--link);
+}
+
+a:hover {
+  color: var(--linkHovered);
+  background-color: (--linkBackgroundHovered);
+}
+
 .sub-title {
   color: #605E5C;
 }
@@ -73,6 +82,19 @@ body {
 
 .nav > li > a {
   padding: 5px 15px;
+}
+
+/********************************************************************/
+/*** BOOTSTRAP PRIMARY BUTTON ***/
+.btn-primary {
+  color: var(--primaryButtonText);
+  background-color: var(--primaryButtonBackground);
+  border-color: var(--primaryButtonBorder);
+}
+
+.btn-primary:hover {
+  color: var(-primaryButtonTextHovered);
+  background-color: var(--primaryButtonBackgroundHovered);
 }
 
 /********************************************************************/
