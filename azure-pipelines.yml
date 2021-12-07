@@ -12,8 +12,13 @@ pool:
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '12.x'
+    versionSpec: '14.18.x'
   displayName: 'Install Node.js'
+
+- task: npmAuthenticate@0
+  inputs:
+    workingFile: './AngularApp/.npmrc'
+  displayName: 'NPM Authenticate'
 
 - script: |
     cd AngularApp
