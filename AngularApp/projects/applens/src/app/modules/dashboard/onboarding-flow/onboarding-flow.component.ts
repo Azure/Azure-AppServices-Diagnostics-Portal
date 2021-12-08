@@ -1420,7 +1420,7 @@ export class OnboardingFlowComponent implements OnInit {
     let detectorFile: Observable<string>;
     this.recommendedUtterances = [];
     this.utteranceInput = "";
-    if (this.detectorGraduation) {
+    if (this.detectorGraduation && this.mode != DevelopMode.Create) {
       this.diagnosticApiService.getDetectorCode(`${this.id}/metadata.json`, this.Branch, this.resourceId).subscribe(res => {
         this.allUtterances = JSON.parse(res).utterances;
       },
