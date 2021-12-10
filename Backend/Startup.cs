@@ -11,15 +11,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Backend.Models;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Backend
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
 
             var builder = new ConfigurationBuilder()
@@ -72,7 +73,7 @@ namespace Backend
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -86,7 +87,10 @@ namespace Backend
                 );
             }
 
-            app.UseMvc();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             app.Use(async (context, next) =>
             {
@@ -102,6 +106,7 @@ namespace Backend
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseRouting();
         }
     }
 }
