@@ -10,6 +10,7 @@ export const light: Theme = {
     name: "light",
     properties: {
         "--color": LightSemanticColors.background,
+        "--highlightBlue": "#286090",
         "--proactiveTopMenuButton": "#ddd",
         "--notificationBarBackground": '#FEF0F1',
         "--listAnalysisBackground": "#f9f9f9",
@@ -147,6 +148,7 @@ export const dark: Theme = {
         "--color": DarkSemanticColors.background,
         "--proactiveTopMenuButton": "#605e5c",
         "--notificationBarBackground": '#323130',
+        "--highlightBlue": "#2899f5",
         "--listAnalysisBackground": DarkSemanticColors.background,
         "--sectionTitle": "white",
         "--summaryText": "white",
@@ -280,6 +282,7 @@ export const highContrastDark: Theme = {
     name: "highContrastDark",
     properties: {
         "--color": HighContrastDarkSemanticColors.background,
+        "--highlightBlue": "#2899f5",
         "--proactiveTopMenuButton": "#605e5c",
         "--notificationBarBackground": '#323130',
         "--listAnalysisBackground": HighContrastDarkSemanticColors.background,
@@ -415,6 +418,7 @@ export const highContrastLight: Theme = {
     name: "highContrastLight",
     properties: {
         "--color": HighContrastLightSemanticColors.background,
+        "--highlightBlue": "#286090",
         "--proactiveTopMenuButton": "#ddd",
         "--notificationBarBackground": '#FEF0F1',
         "--listAnalysisBackground": "#f9f9f9",
