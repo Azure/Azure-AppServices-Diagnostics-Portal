@@ -31,6 +31,7 @@ export class HighchartsGraphComponent implements OnInit {
     Highcharts: typeof Highcharts = Highcharts;
     options: any;
     MetricType = MetricType;
+    backgroundColor = "white";
 
     @Input() HighchartData: any = [];
 
@@ -507,6 +508,7 @@ export class HighchartsGraphComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.backgroundColor = this.themeService.getPropertyValue("--bodyBackground");
         this.initializeChart();
     }
 
@@ -826,7 +828,7 @@ export class HighchartsGraphComponent implements OnInit {
                 valueDecimals: 2,
                 useHTML: true,
                 outside: true,
-                backgroundColor: "white",
+                backgroundColor: this.backgroundColor,
             },
             navigation: {
                 buttonOptions: {

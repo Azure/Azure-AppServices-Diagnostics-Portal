@@ -4,7 +4,7 @@
 }
 
 .search-result-input::placeholder {
-    color: #716f6f
+    color: var(--inputPlaceholderText);
 }
 
 .icon-err{
@@ -32,6 +32,8 @@ a{
 
 .form-control{
     font-size: 16px;
+    color: var(--bodyText);
+    background-color: var(--bodyBackgroundColor);
 }
 
 .article-container {

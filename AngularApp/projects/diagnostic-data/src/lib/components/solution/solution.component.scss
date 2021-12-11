@@ -35,7 +35,7 @@ html, body {
   display: inline-block;
   border-radius: 2px;
   box-shadow: 0 2px 6px 0 hsla(0, 0%, 0%, 0.2);
-  background-color: #f1f1f1;
+  background-color: var(--solutionButtonBackground);
   padding: 1em;
 
   h3 {

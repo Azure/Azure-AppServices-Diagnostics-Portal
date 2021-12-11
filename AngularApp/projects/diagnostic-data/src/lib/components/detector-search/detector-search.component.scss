@@ -31,7 +31,7 @@
 }
 
 .detector-list {
-    background: #f9f9f9;
+    background: var(--listAnalysisBackground);
     border: 1px solid #ebebeb;
     width: 98%;
     margin-bottom: 0px!important;
@@ -48,8 +48,9 @@
 }
 
 .search-result-input::placeholder {
-    color: #716f6f
+    color: var(--inputPlaceholderText);
 }
+
 
 .successful-section-title {
     cursor:pointer;
@@ -76,7 +77,7 @@
     font-weight: 400;
     font-size: 14px;
   }
-  
+
 .no-results-content{
     display:block;
     font-size: 13px;
@@ -84,6 +85,8 @@
 
 .form-control{
     font-size: 16px;
+    color: var(--bodyText);
+    background-color: var(--bodyBackgroundColor);
 }
 
 .span-h1{

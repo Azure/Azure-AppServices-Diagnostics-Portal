@@ -6,4 +6,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class GenericThemeService{
     public currentThemeSub: BehaviorSubject<string>=new BehaviorSubject<string>("light");
+    getPropertyValue(key: string): string {
+        return null;
+    }
 }
