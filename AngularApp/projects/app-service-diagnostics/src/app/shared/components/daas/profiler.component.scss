@@ -17,21 +17,28 @@ th {
 .action-box {
     border: 1px solid #ebebeb;
     padding: 15px;
-    background-color: #f9f9f9;
+    background-color: var(--bodyBackground);
 }
 
 .highlight-blue {
-    color: #286090;
+    color: var(--highlightBlue);
 }
 
 .panel-heading {
     cursor: pointer;
+    background-color: var(--bodyBackground);
+    color: var(--bodyText);
 }
 
 .panel-body {
-    background-color: #f9f9f9;
+    background-color: var(--bodyBackground);
 }
 
 .unbold {
     font-weight: normal;
+}
+
+pre {
+    background-color: var(--bodyBackground);
+    color: var(--bodyText);
 }
