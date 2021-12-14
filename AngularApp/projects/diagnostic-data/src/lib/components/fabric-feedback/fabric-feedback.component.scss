@@ -82,6 +82,20 @@
     margin-right: 10px;
 }
 
+.feedback-panel-container {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.feedback-panel-content {
+    flex: 1 1 auto
+}
+
+.feedback-panel-footer {
+    flex: 0 0 auto;
+}
+
 //Will impact all panels paddings
 //Todo, move it to a shared place instead of sitting in a component scss file
 ::ng-deep .ms-Panel-content {
