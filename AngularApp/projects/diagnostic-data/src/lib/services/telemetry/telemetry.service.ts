@@ -19,9 +19,9 @@ export class TelemetryService {
     private isLegacy: boolean;
     private initializedPortalVersion: string = "v2";
     private isPublic: boolean;
-    private enabledResourceTypes: { resourceType: string, displayName: string }[] = [];
+    private enabledResourceTypes: { resourceType: string, searchSuffix: string }[] = [];
     constructor(private _appInsightsService: AppInsightsTelemetryService, private _kustoService: KustoTelemetryService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _versionService: VersionService, private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticSiteService: DiagnosticSiteService,private _http:HttpClient) {
+        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _versionService: VersionService, private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticSiteService: DiagnosticSiteService, private _http: HttpClient) {
         if (config.useKustoForTelemetry) {
             this.telemetryProviders.push(this._kustoService);
         }
@@ -131,7 +131,7 @@ export class TelemetryService {
 
         }
         const resourceType = this.enabledResourceTypes.find(t => t.resourceType.toLowerCase() === type.toLowerCase());
-        productName = resourceType ? resourceType.displayName : type;
+        productName = resourceType ? resourceType.searchSuffix : type;
 
         //If it's a web app, Check the kind of web app(Function/Linux)
         //If it's not Function/Linux, keep productNamse as it is
