@@ -11,7 +11,7 @@
         <div *ngFor="let feedbackIcon of feedbackIcons;let i = index" (click)="setRating(i)"
           [ngClass]="{'selected-icon':rating - 1 === i}" class="feedback-icon hover-item" style="padding: 5px;"
           (keyup.enter)="setRating(i)" tabindex="0">
-          <fab-icon [iconName]="feedbackIcon.id" [ariaLabel]="feedbackIcon.name"></fab-icon>
+          <fab-icon [iconName]="feedbackIcon.id" [ariaLabel]="feedbackIcon.text"></fab-icon>
         <div class="tooltiptext">{{feedbackIcon.text}}</div>
         </div>
       </div>
