@@ -97,8 +97,7 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
         eventProperties[id] = String(this.ratingEventProperties[id]);
       }
     }
-    console.log(eventProperties);
-    // this.telemetryService.logEvent(eventMessage, eventProperties, measurements);
+    this.telemetryService.logEvent(eventMessage, eventProperties, measurements);
   }
 
   ngOnInit() {
