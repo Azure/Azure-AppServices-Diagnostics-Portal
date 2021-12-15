@@ -109,7 +109,7 @@ export class DetectorControlService {
         this.timeRangeErrorString = returnValue;
         return returnValue;
       }
-      if (moment.duration(moment.utc().diff(end)).asMinutes() < 0) {
+      if (moment.duration(moment.utc().diff(end)).asMinutes() < 15) {
         returnValue = 'End date time must be 15 minutes less than current date time';
         this.timeRangeErrorString = returnValue;
         return returnValue;
@@ -130,8 +130,8 @@ export class DetectorControlService {
           }
           else {
             //Duration is fine. Just make sure that the start date is not more than the past 30 days
-            if (moment.duration(moment.utc().diff(start)).asMonths() > 1) {
-              returnValue = `Start date time cannot be more than a month from now.`;
+            if (moment.duration(moment.utc().diff(start)).asDays() > 30) {
+              returnValue = `Start date time cannot be more than 30 days from now.`;
             }
             else {
               if (diff.asMinutes() === 0) {
@@ -260,7 +260,7 @@ export class DetectorControlService {
   public selectDuration(duration: DurationSelector) {
     this._duration = duration;
     this._startTime = moment.utc().subtract(duration.duration);
-    this._endTime = this._startTime.clone().add(duration.duration);
+    this._endTime = moment.utc().subtract(15,'minute');
     this.setCustomStartEnd(this._startTime.format(this.stringFormat), this.endTime.format(this.stringFormat));
   }
 
