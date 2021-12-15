@@ -8,7 +8,7 @@
     "searchSuffix": "Batch",
     "azureServiceName": "Azure Batch",
     "armApiConfig": {
-        "armApiVersion": "2021-01-01",
+        "armApiVersion": "2022-01-01",
         "isArmApiResponseBase64Encoded": true
     },
     "isSearchEnabled": true,
@@ -28,7 +28,8 @@
             ],
             "color": "rgb(186, 211, 245)",
             "createFlowForCategory": false,
-            "chatEnabled": false
+            "chatEnabled": false,
+            "overviewDetectorId": "poolsAndNodes"
         }
     ],
     "queryLinks": [],
