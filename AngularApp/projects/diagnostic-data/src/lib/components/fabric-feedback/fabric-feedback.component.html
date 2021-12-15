@@ -1,7 +1,7 @@
 <div>
   <fab-panel [isOpen]="globals.openFeedback" [type]="type" [customWidth]="panelWidth" [isHiddenOnDismiss]="true"
     [hasCloseButton]="true" [closeButtonAriaLabel]="'close'" [isBlocking]="false"
-    (onDismiss)="dismissedFeedbackHandler()" (onOpen)="onOpenFeedbackPanel()" [headerText]="'Feedback'"
+    (onDismiss)="dismissedFeedbackHandler()" (onOpened)="onOpenFeedbackPanel()" [headerText]="'Feedback'"
     [isLightDismiss]="true" (onLightDismissClick)="dismissedFeedbackHandler()">
     <div class="feedback-panel-container">
       <!-- Feedback Panel Content -->
@@ -42,7 +42,7 @@
 
   <fab-panel [isOpen]="submitted" [isLightDismiss]="true" [type]="type" [customWidth]="'400px'"
     [isHiddenOnDismiss]="true" [hasCloseButton]="false" [closeButtonAriaLabel]="'close'" [styles]="submittedPanelStyles"
-    [isBlocking]="false" (onDismiss)="dismissedSubmittedHandler()" (onOpen)="onOpenSubmittedPanel()">
+    [isBlocking]="false" (onDismiss)="dismissedSubmittedHandler()" (onOpened)="onOpenSubmittedPanel()">
     <div style="padding: 5px 20px;">
       <div class="submitted-panel-text panel-text">
         <div>
