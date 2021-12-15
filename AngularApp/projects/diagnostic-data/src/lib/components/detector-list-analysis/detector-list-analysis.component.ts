@@ -591,7 +591,10 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                 })
                 , catchError(err => {
                     this.evaluateAndEmitDowntimeInteractionState(containsDownTime, this.detectorViewModels.length, zoomBehaviors.CancelZoom | zoomBehaviors.FireXAxisSelectionEvent | zoomBehaviors.UnGreyGraph);
-                    this.detectorViewModels[index].loadingStatus = LoadingStatus.Failed;
+                    if (this.detectorViewModels[index] != null)
+                    {
+                        this.detectorViewModels[index].loadingStatus = LoadingStatus.Failed;
+                    }
                     return of({});
                 })
             ));
