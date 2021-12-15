@@ -2,7 +2,7 @@
     "homePageText": {
         "title": "Azure Batch Diagnostics",
         "description": "Investigate how your pools are performing, diagnose issues, and discover how to improve their reliability.",
-        "searchBarPlaceHolder": "Search Azure Batch"
+        "searchBarPlaceHolder": "Search for common problems or tools"
     },
     "matchRegEx": "/Microsoft.Batch/batchAccounts/",
     "searchSuffix": "Batch",
@@ -19,7 +19,7 @@
     },
     "categories": [
         {
-            "id": "Pools and Nodes",
+            "id": "poolsandnodesbatch",
             "name": "Pools and Nodes",
             "description": "Investigate potential issues with your pools and nodes.",
             "keywords": [
