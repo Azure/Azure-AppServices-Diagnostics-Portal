@@ -143,7 +143,7 @@ export class FabricSearchResultsComponent {
   updateSearchValue(searchValue: { newValue: any }) {
     this.showSearchResults = !this.isEscape;
 
-   if (!!searchValue.newValue.currentTarget && !!searchValue.newValue.currentTarget.value)
+   if (!!searchValue && !!searchValue.newValue && !!searchValue.newValue.currentTarget && !!searchValue.newValue.currentTarget.value)
    {
         this.searchValue = searchValue.newValue.currentTarget.value;
    }
