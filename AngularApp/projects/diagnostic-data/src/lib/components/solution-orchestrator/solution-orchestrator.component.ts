@@ -286,7 +286,7 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
     }
 
     updateSearchTerm(searchValue: { newValue: any }) {
-        if (!!searchValue.newValue.currentTarget && !!searchValue.newValue.currentTarget.value) {
+        if (!!searchValue && !!searchValue.newValue && !!searchValue.newValue.currentTarget && !!searchValue.newValue.currentTarget.value) {
             this.searchTermDisplayed = searchValue.newValue.currentTarget.value;
         }
     }
