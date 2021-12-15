@@ -175,8 +175,10 @@ export class DetectorTimePickerComponent implements OnInit {
         endDate: infoEndDate
       };
     } else {
-      const localEndTime = new Date();
-      const localStartTime = new Date(localEndTime.getTime() - this.hourDiff * 60 * 60 * 1000);
+      const currentDate = new Date();
+      //End time should be less than 15 minute
+      const localEndTime = new Date(currentDate.getTime() - 15 * 60 * 1000);
+      const localStartTime = new Date(currentDate.getTime() - this.hourDiff * 60 * 60 * 1000);
       startDateWithTime = this.convertLocalDateToUTC(localStartTime);
       endDateWithTime = this.convertLocalDateToUTC(localEndTime);
 
@@ -253,9 +255,9 @@ export class DetectorTimePickerComponent implements OnInit {
   selectCustom() {
     this.showTimePicker = true;
     this.timeDiffError = "";
-
-    const end = this.today;
-    const start = new Date(end.getTime() - this.hourDiff * 60 * 60 * 1000);
+    const currentDate = new Date();
+    const end = new Date(currentDate.getTime() - 15 * 60 * 1000);
+    const start = new Date(currentDate.getTime() - this.hourDiff * 60 * 60 * 1000);
     this.startDate = this.convertUTCToLocalDate(start);
     this.endDate = this.convertUTCToLocalDate(end);
 
