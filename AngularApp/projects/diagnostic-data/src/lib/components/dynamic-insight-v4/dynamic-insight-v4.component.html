@@ -1,4 +1,4 @@
-<fab-card [isExpandable]="true" [expanded]="insight.isExpanded" [ariaLabel]="insight.title">
+<fab-card [isExpandable]="true" [expanded]="insight&&insight.isExpanded" [ariaLabel]="insight&&insight.title">
   <div header>
     <div style="display: flex;align-items: center;min-height: 40px;">
       <status-icon class="mr-3" [status]="insight.status" [size]="16"></status-icon>

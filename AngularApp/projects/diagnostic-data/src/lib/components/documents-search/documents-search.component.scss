@@ -46,7 +46,7 @@ a{
     border: 1px solid #bbbbbb;
     cursor: pointer;
     padding: 10px;
-    background-color: white;
+    background-color: var(--bodyBackgroundColor);
     margin: 10px 0px;
     max-height: 120px;
 }
