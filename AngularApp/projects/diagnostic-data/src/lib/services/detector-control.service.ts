@@ -131,7 +131,7 @@ export class DetectorControlService {
           else {
             //Duration is fine. Just make sure that the start date is not more than the past 30 days
             if (moment.duration(moment.utc().diff(start)).asDays() > 30) {
-              returnValue = `Start date time cannot be more than a 30 days from now.`;
+              returnValue = `Start date time cannot be more than 30 days from now.`;
             }
             else {
               if (diff.asMinutes() === 0) {
