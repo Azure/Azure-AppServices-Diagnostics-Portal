@@ -1,6 +1,7 @@
 .panel-heading {
-  cursor: pointer;
-  color: #000000;
+    cursor: pointer;
+    background-color: var(--bodyBackground);
+    color: var(--bodyText);
 }
 
 .healthy-icon-color {
@@ -8,10 +9,10 @@
 }
 
 .panel-body {
-  background-color: #f6fbff;
+  background-color: var(--bodyBackground);
 }
 
-.connstr-text {  
+.connstr-text {
   overflow-wrap: break-word;
   font-style: italic;
   text-decoration: underline;

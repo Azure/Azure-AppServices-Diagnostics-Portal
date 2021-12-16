@@ -6,3 +6,17 @@
 .fa-plus, .fa-minus {
   cursor: pointer;
 }
+
+.table-hover>tbody>tr:hover {
+    background-color: var(--buttonTextCheckedHovered);
+}
+
+.panel-heading {
+    cursor: pointer;
+    background-color: var(--bodyBackground);
+    color: var(--bodyText);
+}
+
+.panel-body {
+    background-color: var(--bodyBackground);
+}
