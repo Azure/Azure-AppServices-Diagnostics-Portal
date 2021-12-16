@@ -150,7 +150,7 @@ export class DaasV2Component implements OnInit, OnDestroy {
         if (activeSession && activeSession.Tool === this.diagnoserName) {
           this.sessionInProgress = true;
           this.initWizard();
-          this.updateInstanceInformationOnLoad();
+          this.updateInstanceInformationOnLoad(activeSession.Instances);
           this.populateSessionInformation(activeSession);
           this.sessionId = activeSession.SessionId;
           this.subscription = interval(10000).subscribe(res => {
@@ -230,14 +230,17 @@ export class DaasV2Component implements OnInit, OnDestroy {
     this.logFiles = logFiles;
   }
 
-  updateInstanceInformationOnLoad() {
+  updateInstanceInformationOnLoad(instances: string[]) {
     this.instancesStatus = new Map<string, number>();
-    this.instances.forEach(x => {
+    if (instances == null || instances.length == 0) {
+      return;
+    }
+
+    instances.forEach(x => {
       this.instancesStatus.set(x, 1);
     });
-    if (this.instances.length > 0) {
-      this.selectedInstance = this.instances[0];
-    }
+
+    this.selectedInstance = instances[0];
   }
 
   updateInstanceInformation() {
@@ -248,7 +251,7 @@ export class DaasV2Component implements OnInit, OnDestroy {
         this.instancesStatus.set(x, 1);
       });
 
-      this.selectedInstance = this.instances[0];
+      this.selectedInstance = this.instancesToDiagnose[0];
     }
   }
 
