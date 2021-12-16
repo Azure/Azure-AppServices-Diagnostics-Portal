@@ -8,6 +8,9 @@ This is the repository for Azure App Service diagnostics experience.
 
 - Install [Node 12.*](https://nodejs.org/en/download/)
    - Download the .msi file from https://nodejs.org/en/download/ and install it on your machine
+- Install vsts-npm-auth package for authentication npm package source
+   - `npm install -g vsts-npm-auth`
+   - Under AngularApp folder, Run `npx vsts-npm-auth -config .npmrc`
 - Install Angular-CLI 8
    - `npm install -g @angular/cli@8`
 - Build the diagnostic-data lib, Applens and Diagnostics Portal:
