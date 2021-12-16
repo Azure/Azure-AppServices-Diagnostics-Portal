@@ -289,7 +289,7 @@ a:hover {
 
 /*** PANEL DEFAULT ***/
 .with-nav-tabs.panel-default .nav-tabs > li > a {
-    background-color: #eeeeee;
+    background-color: var(--bodyBackground);
 }
 
 .with-nav-tabs.panel-default .nav-tabs > li > a,
