@@ -3,8 +3,16 @@
     <p>{{ description }}</p>
     <div class="wizardcontainer">
 
-        <daas [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName" (SessionsEvent)="updateSessions($event)">
-        </daas>
+        <div *ngIf="isBetaSubscription; else showV1Component">
+            <daas-v2 [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName"
+                (SessionsEvent)="updateSessions($event)">
+            </daas-v2>
+        </div>
+        <ng-template #showV1Component>
+            <daas [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName"
+                (SessionsEvent)="updateSessions($event)">
+            </daas>
+        </ng-template>
     </div>
 
     <h3>What you should know before collecting a Java Memory dump</h3>

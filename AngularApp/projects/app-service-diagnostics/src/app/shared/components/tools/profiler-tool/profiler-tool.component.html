@@ -3,7 +3,7 @@
     <p tabindex="0">{{ description }}</p>
 
     <div class="wizardcontainer">
-        <div *ngIf="isWindowsApp; else linuxApp">
+        <div *ngIf="isWindowsApp && !isBetaSubscription; else linuxApp">
             <profiler [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed"
                 (SessionsEvent)="updateSessions($event)">
             </profiler>

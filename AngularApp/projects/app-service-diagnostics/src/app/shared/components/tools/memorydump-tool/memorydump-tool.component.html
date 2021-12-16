@@ -3,7 +3,7 @@
     <p tabindex="0">{{ description }}</p>
     <div class="wizardcontainer">
 
-        <div *ngIf="isWindowsApp; else linuxApp">
+        <div *ngIf="isWindowsApp && !isBetaSubscription; else linuxApp">
             <daas [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName"
                 (SessionsEvent)="updateSessions($event)">
             </daas>

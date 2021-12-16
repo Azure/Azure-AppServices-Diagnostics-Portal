@@ -126,7 +126,7 @@ export class ProfilerV2Component extends DaasV2Component implements OnInit, OnDe
             this.sessionStatus = 2;
           }
         });
-      } else if (activeInstance.Status == "Analyzing") {
+      } else if (activeInstance.Status == "Analyzing" || activeInstance.Status == "Complete") {
 
         //
         // once we are at the analyzer, lets just set all instances's status to

@@ -24,7 +24,7 @@ export class MemoryDumpToolComponent extends DaasBaseComponent implements OnInit
     }
 
     ngOnInit(): void {
-        this.diagnoserName = this.isWindowsApp ? 'Memory Dump' : 'MemoryDump';
+        this.diagnoserName = this.isWindowsApp && !this.isBetaSubscription? 'Memory Dump' : 'MemoryDump';
         this.diagnoserNameLookup = this.diagnoserName;
         this.scmPath = this._siteServiceLocal.currentSiteStatic.enabledHostNames.find(hostname => hostname.indexOf('.scm.') > 0);
     }

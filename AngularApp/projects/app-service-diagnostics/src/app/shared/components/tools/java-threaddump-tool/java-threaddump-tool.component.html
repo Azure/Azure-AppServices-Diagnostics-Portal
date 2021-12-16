@@ -3,8 +3,16 @@
     <p>{{ description }}</p>
     <div class="wizardcontainer">
 
-        <daas [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName" (SessionsEvent)="updateSessions($event)">
-        </daas>
+        <div *ngIf="isBetaSubscription; else showV1Component">
+            <daas-v2 [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName"
+                (SessionsEvent)="updateSessions($event)">
+            </daas-v2>
+        </div>
+        <ng-template #showV1Component>
+            <daas [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName"
+                (SessionsEvent)="updateSessions($event)">
+            </daas>
+        </ng-template>
     </div>
 
     <h3>What you should know before collecting a Java Thread dump</h3>
@@ -13,6 +21,7 @@
     </ul>
 
     <div class="sessions">
-        <daas-sessions [refreshSessions]="refreshSessions" diagnoserNameLookup="JAVA Thread Dump" [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed"></daas-sessions>
+        <daas-sessions [refreshSessions]="refreshSessions" diagnoserNameLookup="JAVA Thread Dump" [scmPath]="scmPath"
+            [siteToBeDiagnosed]="siteToBeDiagnosed"></daas-sessions>
     </div>
 </div>
