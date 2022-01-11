@@ -385,16 +385,14 @@ export class DaasComponent implements OnInit, OnDestroy {
     }
 
     getInstanceNameFromReport(reportName: string): string {
-
-        if (!this.diagnoserNameLookup.startsWith('CLR Profiler')) {
-            return reportName;
-        }
-
+        if (this.diagnoserNameLookup.indexOf('Profiler') > -1
+        || this.diagnoserNameLookup.indexOf('MemoryDump') > -1
+        || this.diagnoserNameLookup.indexOf('Memory Dump') > -1) {
         const reportNameArray = reportName.split('_');
         if (reportNameArray.length > 0) {
-            return reportNameArray[0];
-        } else {
-            return reportName;
+          return reportNameArray[0];
         }
+      }
+      return reportName;
     }
 }

@@ -180,6 +180,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
 
   getSessionMasterFromV1(session: Session): SessionMaster {
     let sessionMaster: SessionMaster = new SessionMaster();
+    sessionMaster.isV2 = false;
     sessionMaster.sessionId = session.SessionId;
     sessionMaster.startDate = session.StartTime;
     sessionMaster.mode = (session.Status === SessionStatus.CollectedLogsOnly ? SessionModeV2.Collect : SessionModeV2.CollectAndAnalyze);
@@ -215,6 +216,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
 
   getSessionMasterFromV2(session: SessionV2): SessionMaster {
     let sessionMaster: SessionMaster = new SessionMaster();
+    sessionMaster.isV2 = true;
     sessionMaster.sessionId = session.SessionId;
     sessionMaster.tool = session.Tool;
     sessionMaster.toolParams = session.ToolParams;
@@ -339,17 +341,17 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     return false;
   }
 
-  getInstanceNameFromReport(reportName: string): string {
-    if (!this.diagnoserNameLookup.indexOf('Profiler')) {
-      return reportName;
+  getInstanceNameFromReport(reportName: string, toolName: string): string {
+    if (toolName.indexOf('Profiler') > -1
+      || toolName.indexOf('MemoryDump') > -1
+      || toolName.indexOf('Memory Dump') > -1) {
+      const reportNameArray = reportName.split('_');
+      if (reportNameArray.length > 0) {
+        return reportNameArray[0];
+      }
     }
 
-    const reportNameArray = reportName.split('_');
-    if (reportNameArray.length > 0) {
-      return reportNameArray[0];
-    } else {
-      return reportName;
-    }
+    return reportName;
   }
 
   toggleExpanded(i: number): void {
@@ -388,27 +390,12 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
       sessionToDelete.expanded = true;
       sessionToDelete.deletingFailure = '';
       sessionToDelete.deleting = true;
-      if (this.isWindowsApp) {
-        this.deleteWindowsSession(sessionToDelete, sessionIndex);
-      } else {
-        this.deleteLinuxSession(sessionToDelete, sessionIndex);
-      }
+      this.deleteDiagnosticSession(sessionToDelete, sessionIndex);
     }
   }
 
-  deleteWindowsSession(sessionToDelete: SessionMaster, sessionIndex: number) {
-    this._daasService.deleteDaasSession(this.siteToBeDiagnosed, sessionToDelete.sessionId)
-      .subscribe(resp => {
-        sessionToDelete.deleting = false;
-        this.sessions.splice(sessionIndex, 1);
-      }, err => {
-        sessionToDelete.deleting = false;
-        sessionToDelete.deletingFailure = 'Failed while deleting the session with an error : ' + err;
-      });
-  }
-
-  deleteLinuxSession(sessionToDelete: SessionMaster, sessionIndex: number) {
-    this._daasService.deleteDaasSessionV2(this.siteToBeDiagnosed, sessionToDelete.sessionId)
+  deleteDiagnosticSession(sessionToDelete: SessionMaster, sessionIndex: number) {
+    this._daasService.deleteDaasSession(this.siteToBeDiagnosed, sessionToDelete.sessionId, sessionToDelete.isV2)
       .subscribe(resp => {
         sessionToDelete.deleting = false;
         this.sessions.splice(sessionIndex, 1);

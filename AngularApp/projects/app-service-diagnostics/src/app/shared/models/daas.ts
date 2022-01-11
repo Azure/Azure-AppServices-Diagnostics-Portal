@@ -134,6 +134,7 @@ export class SessionMaster {
     deleting: boolean = false;
     deletingFailure: string = "";
     size: number = 0;
+    isV2: boolean = false;
 }
 
 export interface DiagnoserDefinition {

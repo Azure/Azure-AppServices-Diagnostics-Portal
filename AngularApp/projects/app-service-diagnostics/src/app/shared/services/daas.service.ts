@@ -131,13 +131,11 @@ export class DaasService {
         ));
     }
 
-    deleteDaasSession(site: SiteDaasInfo, sessionId: string): Observable<any> {
-        const resourceUri: string = this._uriElementsService.getDiagnosticsSingleSessionDeleteUrl(site, sessionId);
-        return <Observable<any>>(this._armClient.deleteResource(resourceUri, null, true));
-    }
-
-    deleteDaasSessionV2(site: SiteDaasInfo, sessionId: string): Observable<any> {
-        const resourceUri: string = this._uriElementsService.getDiagnosticsSingleSessionDeleteV2Url(site, sessionId);
+    deleteDaasSession(site: SiteDaasInfo, sessionId: string, isV2: boolean): Observable<any> {
+        let resourceUri: string = this._uriElementsService.getDiagnosticsSingleSessionDeleteUrl(site, sessionId);
+        if (isV2) {
+            resourceUri = this._uriElementsService.getDiagnosticsSingleSessionDeleteV2Url(site, sessionId);
+        }
         return <Observable<any>>(this._armClient.deleteResource(resourceUri, null, true));
     }
 
@@ -227,7 +225,7 @@ export class DaasService {
                 if (daasSasUri && daasSasUri.SasUri) {
                     return of(daasSasUri);
                 } else {
-                    let daasSasUri: DaasSasUri = { IsAppSetting: false, SasUri:''};
+                    let daasSasUri: DaasSasUri = { IsAppSetting: false, SasUri: '' };
                     return of(daasSasUri);
                 }
             }));

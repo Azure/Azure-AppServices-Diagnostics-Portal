@@ -32,7 +32,7 @@
             <div *ngIf="isWindowsApp">
               <ul style="list-style: none;" *ngIf="isArrayWithItems(session.reports)">
                 <li *ngFor="let report of session.reports">
-                  {{ report.name }}
+                  {{ getInstanceNameFromReport(report.name, diagnoserNameLookup) }}
                   <a tabindex="0" (click)="openUrl(report.relativePath)" (keyup.enter)="openUrl(report.relativePath)"
                     style="cursor: pointer">
                     <i class="fa fa-external-link" aria-hidden="true"></i>
@@ -160,7 +160,7 @@
                         <li *ngFor="let report of session.reports">
                           <a tabindex="0" (click)="openUrl(report.relativePath)"
                             (keyup.enter)="openReport(report.relativePath)" style="cursor: pointer">
-                            {{ report.name }}
+                            {{ getInstanceNameFromReport(report.name, session.tool) }}
                           </a>
                         </li>
                       </ul>
