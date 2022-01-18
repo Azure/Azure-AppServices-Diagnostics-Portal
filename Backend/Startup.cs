@@ -87,6 +87,10 @@ namespace Backend
                 );
             }
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseRouting();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
@@ -104,9 +108,6 @@ namespace Backend
                 }
             });
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-            app.UseRouting();
         }
     }
 }
