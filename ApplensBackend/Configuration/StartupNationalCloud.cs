@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Logging.AzureAppServices;
 using AppLensV3.Services.AppSvcUxDiagnosticDataService;
+using Microsoft.Extensions.Hosting;
 
 namespace AppLensV3.Configuration
 {
@@ -32,13 +33,13 @@ namespace AppLensV3.Configuration
     public class StartupNationalCloud
     {
         private readonly IConfiguration configuration;
-        private readonly IHostingEnvironment env;
+        private readonly IWebHostEnvironment env;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StartupNationalCloud"/> class.
         /// </summary>
         /// <param name="configuration">DI Configuration.</param>
-        public StartupNationalCloud(IConfiguration configuration, IHostingEnvironment env)
+        public StartupNationalCloud(IConfiguration configuration, IWebHostEnvironment env)
         {
             this.configuration = configuration;
             this.env = env;
@@ -108,7 +109,7 @@ namespace AppLensV3.Configuration
 
             if (env.IsEnvironment("NationalCloud"))
             {
-                services.AddMvc();
+                services.AddMvc().AddNewtonsoftJson();
                 services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -145,13 +146,13 @@ namespace AppLensV3.Configuration
                 services.AddMvc(setup =>
                 {
                     setup.Filters.Add(new AllowAnonymousFilter());
-                });
+                }).AddNewtonsoftJson();
             }
 
             services.AddSingleton<IAppSvcUxDiagnosticDataService, NullableAppSvcUxDiagnosticDataService>();
         }
 
-        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILogger<StartupNationalCloud> logger)
+        public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<StartupNationalCloud> logger)
         {
             app.UseExceptionHandler(errorApp =>
             {
@@ -184,7 +185,9 @@ namespace AppLensV3.Configuration
                 .AllowAnyMethod()
                 .AllowAnyOrigin()
                 .WithExposedHeaders(new string[] { HeaderConstants.ScriptEtagHeader }));
-
+            
+            app.UseRouting();
+            app.UseAuthorization();
             app.UseAuthentication();
             app.Use(async (context, next) =>
             {
@@ -217,11 +220,15 @@ namespace AppLensV3.Configuration
                     }
                 }
             });
+                        
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            app.UseMvc();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

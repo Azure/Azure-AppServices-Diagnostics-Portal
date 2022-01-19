@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
 
@@ -18,22 +18,24 @@
     <PackageReference Include="Microsoft.ApplicationInsights.PerfCounterCollector" Version="2.14.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.WindowsServer" Version="2.14.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel" Version="2.14.0" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.WsFederation" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
+	<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.14" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.1" />
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.9.2" />
     <PackageReference Include="Microsoft.Azure.Kusto.Cloud.Platform" Version="10.0.1" />
     <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="10.0.1" />
+	<PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="3.1.9" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.42.1" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.8" />
     <PackageReference Include="Octokit" Version="0.29.0" />
     <PackageReference Include="Sendgrid" Version="9.10.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.1-rc.108" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
   
    <ItemGroup>

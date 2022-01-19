@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
@@ -13,10 +13,10 @@ namespace AppLensV3
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
         {
             var config = new ConfigurationBuilder()
             .AddCommandLine(args)
@@ -24,25 +24,33 @@ namespace AppLensV3
 
             var assemblyName = typeof(Startup).GetTypeInfo().Assembly.FullName;
 
-            var webHostBuilder = WebHost.CreateDefaultBuilder(args)
-                .UseConfiguration(config)
-                .UseStartup(assemblyName);
+            var webHostBuilder = Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseConfiguration(config);
+                webBuilder.UseStartup(assemblyName);
+            });
+                
 
             if (config.GetValue<bool>("useHttps"))
             {
                 var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
                 store.Open(OpenFlags.ReadOnly);
                 var serverCertificate = store.Certificates[0];
-                webHostBuilder = webHostBuilder.UseKestrel(options =>
+                webHostBuilder = Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder =>
                 {
-                    options.Listen(IPAddress.Loopback, 5001, listenOptions =>
+                    webBuilder.UseKestrel(options =>
                     {
-                        listenOptions.UseHttps(serverCertificate);
+                        options.Listen(IPAddress.Loopback, 5001, listenOptions =>
+                        {
+                            listenOptions.UseHttps(serverCertificate);
+                        });
                     });
+                    webBuilder.UseConfiguration(config);
+                    webBuilder.UseStartup(assemblyName);
                 });
             }
 
-            return webHostBuilder.Build();
+            return webHostBuilder;
         }
     }
 }

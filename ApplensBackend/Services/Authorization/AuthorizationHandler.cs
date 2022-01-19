@@ -58,6 +58,16 @@ namespace AppLensV3.Authorization
         }
     }
 
+    class SecurityGroupLocalDevelopment : AuthorizationHandler<SecurityGroupRequirement>
+    {
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, SecurityGroupRequirement requirement)
+        {
+            //Not required in local development, succeed the context always
+            context.Succeed(requirement);
+            return;
+        }
+    }
+
     class DefaultAuthorizationRequirement : IAuthorizationRequirement{}
 
     class DefaultAuthorizationHandler : AuthorizationHandler<DefaultAuthorizationRequirement>
@@ -97,8 +107,8 @@ namespace AppLensV3.Authorization
             var applensTesters = new SecurityGroupConfig();
             configuration.Bind("ApplensAccess", applensAccess);
             configuration.Bind("ApplensTesters", applensTesters);
-            loggedInUsersCache.Add(applensAccess.GroupId, new Dictionary<string, CachedUser>());
-            loggedInUsersCache.Add(applensTesters.GroupId, new Dictionary<string, CachedUser>());
+            loggedInUsersCache[applensAccess.GroupId] = new Dictionary<string, CachedUser>();
+            loggedInUsersCache[applensTesters.GroupId] = new Dictionary<string, CachedUser>();
             loggedInUsersCache.Add("TemporaryAccess", new Dictionary<string, CachedUser>());
 
             ClearLoggedInUserCache();

@@ -17,12 +17,12 @@ namespace AppLensV3.Configuration
         /// Initializes a new instance of the <see cref="StartupNationalCloudDevelopment"/> class.
         /// </summary>
         /// <param name="configuration">DI Configuration.</param>
-        public StartupNationalCloudDevelopment(IConfiguration configuration, IHostingEnvironment env)
+        public StartupNationalCloudDevelopment(IConfiguration configuration, IWebHostEnvironment env)
             : base(configuration, env)
         {
         }
 
-        public override void Configure(IApplicationBuilder app, IHostingEnvironment env, ILogger<StartupNationalCloud> logger)
+        public override void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<StartupNationalCloud> logger)
         {
             app.UseCors(cors =>
                 cors
@@ -40,11 +40,18 @@ namespace AppLensV3.Configuration
                     await next();
                 }
             });
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            app.UseMvc();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

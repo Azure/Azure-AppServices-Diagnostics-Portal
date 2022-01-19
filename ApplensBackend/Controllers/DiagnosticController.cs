@@ -26,6 +26,7 @@ using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SendGrid.Helpers.Mail;
+using Microsoft.Extensions.Hosting;
 using static AppLensV3.Helpers.HeaderConstants;
 
 namespace AppLensV3.Controllers
@@ -59,7 +60,7 @@ namespace AppLensV3.Controllers
         /// <param name="env">The environment.</param>
         /// <param name="diagnosticClient">Diagnostic client.</param>
         /// <param name="emailNotificationService">Email notification service.</param>
-        public DiagnosticController(IHostingEnvironment env, IDiagnosticClientService diagnosticClient, IEmailNotificationService emailNotificationService, IConfiguration configuration, IResourceConfigService resConfigService, IAppSvcUxDiagnosticDataService appSvcUxDiagnosticDataService)
+        public DiagnosticController(IWebHostEnvironment env, IDiagnosticClientService diagnosticClient, IEmailNotificationService emailNotificationService, IConfiguration configuration, IResourceConfigService resConfigService, IAppSvcUxDiagnosticDataService appSvcUxDiagnosticDataService)
         {
             Env = env;
             DiagnosticClient = diagnosticClient;
@@ -88,7 +89,7 @@ namespace AppLensV3.Controllers
 
         private IEmailNotificationService EmailNotificationService { get; }
 
-        private IHostingEnvironment Env { get; }
+        private IWebHostEnvironment Env { get; }
 
         private IAppSvcUxDiagnosticDataService AppSvcUxDiagnosticDataService { get; }
 

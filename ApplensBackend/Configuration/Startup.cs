@@ -17,13 +17,15 @@ using Microsoft.ApplicationInsights.Extensibility;
 using AppLensV3.Services.ApplensTelemetryInitializer;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using AppLensV3.Services.AppSvcUxDiagnosticDataService;
+using Microsoft.Extensions.Hosting;
 
 namespace AppLensV3
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
+            Environment = env;
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -39,6 +41,8 @@ namespace AppLensV3
         }
 
         public IConfiguration Configuration { get; }
+
+        public IWebHostEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -81,7 +85,7 @@ namespace AppLensV3
             services.AddSingleton<IDetectorGistTemplateService, TemplateService>();
 
             services.AddMemoryCache();
-            services.AddMvc();
+            services.AddMvc().AddNewtonsoftJson();
 
             GraphTokenService.Instance.Initialize(Configuration);
 
@@ -122,8 +126,15 @@ namespace AppLensV3
                 });
             });
 
-            services.AddSingleton<IAuthorizationHandler, SecurityGroupHandler>();
-            services.AddSingleton<IAuthorizationHandler, DefaultAuthorizationHandler>();
+            if (Environment.IsDevelopment())
+            {
+                services.AddSingleton<IAuthorizationHandler, SecurityGroupLocalDevelopment>();
+            }
+            else
+            {
+                services.AddSingleton<IAuthorizationHandler, SecurityGroupHandler>();
+            }
+
 
             if (Configuration["ServerMode"] == "internal")
             {
@@ -134,12 +145,13 @@ namespace AppLensV3
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
 
             app.UseCors(cors =>
                 cors
@@ -149,9 +161,17 @@ namespace AppLensV3
                 .WithExposedHeaders(new string[] { HeaderConstants.ScriptEtagHeader, HeaderConstants.IsTemporaryAccessHeader, HeaderConstants.TemporaryAccessExpiresHeader })
             );
 
-            app.UseAuthentication();
 
-            app.UseMvc();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+
 
             app.Use(async (context, next) =>
             {

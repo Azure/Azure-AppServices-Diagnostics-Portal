@@ -10,6 +10,7 @@ using AppLensV3.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.Hosting;
 
 namespace AppLensV3.Services.DiagnosticClientService
 {
@@ -17,7 +18,7 @@ namespace AppLensV3.Services.DiagnosticClientService
     {
         private IConfiguration _configuration;
 
-        private IHostingEnvironment environment;
+        private IWebHostEnvironment environment;
 
         private HttpClient _client { get; set; }
 
@@ -39,7 +40,7 @@ namespace AppLensV3.Services.DiagnosticClientService
             }
         }
 
-        public DiagnosticClient(IConfiguration configuration, IHostingEnvironment hostEnv)
+        public DiagnosticClient(IConfiguration configuration, IWebHostEnvironment hostEnv)
         {
             _configuration = configuration;
             environment = hostEnv;

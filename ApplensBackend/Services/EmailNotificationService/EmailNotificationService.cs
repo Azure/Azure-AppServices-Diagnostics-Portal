@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using Microsoft.Extensions.Hosting;
 
 namespace AppLensV3.Services
 {
@@ -44,7 +45,7 @@ namespace AppLensV3.Services
             }
         }
 
-        public EmailNotificationService(IHostingEnvironment env, IConfiguration configuration, IKustoQueryService kustoQueryService)
+        public EmailNotificationService(IWebHostEnvironment env, IConfiguration configuration, IKustoQueryService kustoQueryService)
         {
             _configuration = configuration;
             _kustoQueryService = kustoQueryService;
@@ -185,7 +186,7 @@ namespace AppLensV3.Services
             public string MicrosoftLogoImage { get; set; }
         }
 
-        private void ValidateConfigurations(IHostingEnvironment env)
+        private void ValidateConfigurations(IWebHostEnvironment env)
         {
             if (env.IsProduction())
             {
