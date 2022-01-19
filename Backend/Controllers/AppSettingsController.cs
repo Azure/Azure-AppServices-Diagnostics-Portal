@@ -15,9 +15,9 @@ namespace Backend.Controllers
     public class AppSettingsController : Controller
     {
         private IConfiguration config;
-        private IHostingEnvironment env;
+        private IWebHostEnvironment env;
 
-        public AppSettingsController(IConfiguration configuration, IHostingEnvironment env)
+        public AppSettingsController(IConfiguration configuration, IWebHostEnvironment env)
         {
             this.config = configuration;
             this.env = env;
