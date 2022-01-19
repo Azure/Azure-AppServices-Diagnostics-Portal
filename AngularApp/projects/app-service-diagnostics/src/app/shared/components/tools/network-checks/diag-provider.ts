@@ -127,9 +127,8 @@ export class DiagProvider {
     public postDaaSExtApiAsync(api: string, body?: any, timeoutInSec: number = 15): Promise<any> {
         var params = "api-version=2015-08-01";
         var prefix = `management.azure.com/${this._siteInfo.resourceUri}/extensions/DaaS/api`;
-
         var stack = new Error("error_message_placeholder").stack;
-        var promise = this._armService.post(`https://${prefix}/${api}?${params}`, body)
+        var promise = this._armService.post(`https://${prefix}/${api}?${params}`, body)         
             .toPromise()
             .catch(e => {
                 e.stack = stack.replace("error_message_placeholder", e);
@@ -140,10 +139,54 @@ export class DiagProvider {
         });
         return Promise.race([promise, timeoutPromise]);
     }
+    public getAppSettingApiAsync(api: string, params = [], timeoutInSec: number = 15): Promise<any> {      
+        var prefix = `management.azure.com/${this._siteInfo.resourceUri}/extensions/DaaS/api`;
+        var stack = new Error("error_message_placeholder").stack;
+        var promise = this._armService.get(`https://${prefix}/${api}?${params.join("&")}`)         
+            .toPromise()
+            .catch(e => {
+                e.stack = stack.replace("error_message_placeholder", e);
+                throw e;
+            });     
+            var timeoutPromise = delay(timeoutInSec).then(() => {
+                throw new Error(`postDaaSExtApiAsync timeout after ${timeoutInSec}s`);
+            });
+            return Promise.race([promise, timeoutPromise]);        
+    }
+    public getDaaSVersionAsync(api: string, timeoutInSec: number = 15): Promise<any> {      
+        var params = "api-version=2015-08-01";
+        var prefix = `management.azure.com/${this._siteInfo.resourceUri}/extensions/DaaS/api`;  
+        var stack = new Error("error_message_placeholder").stack;
+        var promise = this._armService.get(`https://${prefix}/${api}?${params}`)      
+            .toPromise()
+            .catch(e => {
+                e.stack = stack.replace("error_message_placeholder", e);
+                throw e;
+            });     
+            var timeoutPromise = delay(timeoutInSec).then(() => {
+                throw new Error(`getDaaSVersionAsync timeout after ${timeoutInSec}s`);
+            });
+            return Promise.race([promise, timeoutPromise]);        
+    }
 
     public async checkConnectionStringAsync(connectionString: string, type: string, timeoutInSec: number = 30): Promise<any> {
         var result: any = await this.postDaaSExtApiAsync("connectionstringvalidation/validate", { "ConnectionString": connectionString, "Type": type }, timeoutInSec);
-        return result;
+        return result;       
+    }
+    public async checkConnectionViaAppSetting(appSetting: string, type: string, entityName?: string, timeoutInSec: number = 30): Promise<any> {
+        var param = [];
+        param.push("api-version=2015-08-01");
+        param.push("appSettingName="+appSetting);
+        param.push("type="+type);
+        if(entityName != undefined){
+            param.push("entityName="+entityName);  
+        }
+        var response: any = await this.getAppSettingApiAsync("connectionstringvalidation/validateappsetting", param, timeoutInSec);
+        if(response == null && response.body == null)
+        {
+          throw Error("something went wrong while checking connection string via app setting");
+        }
+        return response.body;        
     }
 
     public getKuduApiAsync(uri: string, instance?: string, timeoutInSec: number = 15, scm = false): Promise<any> {
@@ -315,14 +358,18 @@ export class DiagProvider {
 
     public async checkDaasExtReachable(timeoutInSec: number): Promise<boolean> {
         try {
-            var result = await this.checkConnectionStringAsync("dummy-connection-string", "StorageAccount");
+            var result = await this.checkConnectionStringAsync("dummy-connection-string", "BlobStorageAccount");
 
             return (result != undefined);
         } catch (error) {
             return false;
         }
     }
-
+    public async getDaasVersion(): Promise<any> {        
+        
+        var daasVersionInfo = await this.getDaaSVersionAsync("daasversion");
+        return daasVersionInfo;
+    }
     public async getWebAppVnetInfo(): Promise<any> {
         //This is the regional VNet Integration endpoint
         var swiftUrl = this._siteInfo["id"] + "/config/virtualNetwork";

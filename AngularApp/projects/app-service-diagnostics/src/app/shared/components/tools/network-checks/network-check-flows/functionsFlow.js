@@ -2,24 +2,22 @@ import { DropdownStepView, InfoStepView, StepFlow, StepFlowManager, CheckStepVie
 import { checkKuduAvailabilityAsync, checkVnetIntegrationV2Async, checkDnsSettingV2Async, checkAppSettingsAsync, extractHostPortFromConnectionString, extractHostPortFromKeyVaultReference } from './flowMisc.js';
 import { VnetIntegrationConfigChecker } from './vnetIntegrationConfigChecker.js';
 import { VnetDnsWordings } from './vnetDnsWordings.js';
-import { CommonWordings } from './commonWordings.js';
 
 export class ConnectionStringType {
     static get StorageAccount() { return 'StorageAccount' };
+    static get BlobStorageAccount() { return 'BlobStorageAccount' };
+    static get QueueStorageAccount() { return 'QueueStorageAccount' };
+    static get FileShareStorageAccount() { return 'FileShareStorageAccount' };
     static get ServiceBus() { return 'ServiceBus' };
     static get EventHubs() { return 'EventHubs' };
+        
 }
 
 export var functionsFlow = {
     title: "Connectivity issues",
     async func(siteInfo, diagProvider, flowMgr) {
 
-        var isKuduAccessiblePromise = null;
-        if (siteInfo.kind.includes("linux") || siteInfo.kind.includes("container")) {
-            isKuduAccessiblePromise = false;
-        }else{
-            isKuduAccessiblePromise = checkKuduAvailabilityAsync(diagProvider, flowMgr);
-        }
+        var isKuduAccessiblePromise = checkKuduAvailabilityAsync(diagProvider, flowMgr);
         var dnsServers = null;
         var vnetConfigChecker = new VnetIntegrationConfigChecker(siteInfo, diagProvider);
         var vnetIntegrationType = await vnetConfigChecker.getVnetIntegrationTypeAsync();
@@ -43,16 +41,49 @@ export var functionsFlow = {
 
         if (!await isKuduAccessiblePromise)
         {
-            if (siteInfo.kind.includes("linux") || siteInfo.kind.includes("container")){
-                flowMgr.addView(new CommonWordings().connectivityCheckUnsupported.get());
-            }else{
-                flowMgr.addView(new VnetDnsWordings().cannotCheckWithoutKudu.get("Functions settings"));
-            }
+            flowMgr.addView(new VnetDnsWordings().cannotCheckWithoutKudu.get("Functions settings"));
             return;
         }
 
         var isDaasExtAccessible = await diagProvider.checkDaasExtReachable(30);
-
+        var daasVersionInfo=await diagProvider.getDaasVersion();        
+        var daasVersion=daasVersionInfo.body.Version;        
+        var isDaasNew=true; 
+ 
+function versionCompare(v1, v2) 
+{ 
+    var vnum1 = 0, vnum2 = 0; 
+    for (var i = 0, j = 0; (i < v1.length 
+                            || j < v2.length);) { 
+        while (i < v1.length && v1[i] != '.') { 
+            vnum1 = vnum1 * 10 + (v1[i] - '0'); 
+            i++; 
+        } 
+        while (j < v2.length && v2[j] != '.') { 
+            vnum2 = vnum2 * 10 + (v2[j] - '0'); 
+            j++; 
+        } 
+        if (vnum1 > vnum2) 
+            return 1; 
+        if (vnum2 > vnum1) 
+            return -1;
+        vnum1 = vnum2 = 0; 
+        i++; 
+        j++; 
+    } 
+    return 0; 
+} 
+var version1 = daasVersion; 
+var version2 = "3.3.1221.1";
+if (versionCompare(version1, version2) < 0) {
+        isDaasNew = true;
+        }    
+// else if (versionCompare(version1, version2) > 0) {
+//         isDaasNew=false;
+//         }   
+else{
+        isDaasNew = false;
+    }
         /**
          * Functions specific checks
          **/
@@ -64,38 +95,37 @@ export var functionsFlow = {
         var checkFunctionAppCommonDepsPromise = (async () => {
             var subChecksL1 = [];
             // AzureWebJobsStorage 
-            var propertyName = "AzureWebJobsStorage";
+            var propertyName = "AzureWebJobsStorage";          
             // Using anchor tag instead of markdown link as we need the link to open in a new window/tab instead of the current iFrame which is disallowed
             var failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#azurewebjobsstorage" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
-            var connectionString = appSettings[propertyName];
-            if (connectionString != undefined) {
+            var connectionString = undefined;        
+            if(isDaasNew){
+                var connectionStringType = isDaasExtAccessible ? ConnectionStringType.BlobStorageAccount : undefined;
+            }else{
                 var connectionStringType = isDaasExtAccessible ? ConnectionStringType.StorageAccount : undefined;
+            }                
                 var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, connectionStringType, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown);
                 var maxCheckLevel = getMaxCheckLevel(subChecksL2);
                 var title = maxCheckLevel == 0 ? `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" was successful.` :
                     `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" failed.`;
                 subChecksL1.push({ title: title, subChecks: subChecksL2, level: maxCheckLevel });
-            } else {
-                subChecksL1.push({
-                    title: `The app setting "${propertyName}" is not configured.  The Function App cannot work without this essential setting.`,
-                    level: 2,
-                    detailsMarkdown: failureDetailsMarkdown
-                });
-            }
-
+           
             // WEBSITE_CONTENTAZUREFILECONNECTIONSTRING
             propertyName = "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING";
             failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#website_contentazurefileconnectionstring" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
-            connectionString = appSettings[propertyName];
-            if (connectionString != undefined) {
+            connectionString = undefined;
+            if(isDaasNew){
+                var connectionStringType = isDaasExtAccessible ? ConnectionStringType.FileShareStorageAccount : undefined;
+            }else{
                 var connectionStringType = isDaasExtAccessible ? ConnectionStringType.StorageAccount : undefined;
+            }            
                 var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, connectionStringType, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown);
                 var maxCheckLevel = getMaxCheckLevel(subChecksL2);
                 var title = maxCheckLevel == 0 ? `Network connectivity test to the Azure storage endpoint configured in app setting "${propertyName}" was successful.` :
                     `Network connectivity test to the Azure storage endpoint configured in app setting "${propertyName}" failed.  `
                     + "This can result in the Function App not starting up.";
                 subChecksL1.push({ title: title, subChecks: subChecksL2, level: maxCheckLevel });
-            } // Optional setting
+             // Optional setting
 
             // WEBSITE_RUN_FROM_PACKAGE
             propertyName = "WEBSITE_RUN_FROM_PACKAGE";
@@ -165,23 +195,16 @@ export var functionsFlow = {
                     } else if (binding.connectionStringSetting != undefined) { // CosmosDB
                         bindingInfo.connectionStringProperty = binding.connectionStringSetting;
                     }
-                    if (bindingInfo.connectionStringProperty != undefined) {
-                        var connectionString = appSettings[bindingInfo.connectionStringProperty];
-                        // The specific entity needs to be provided for Service Bus and Event Hubs validation
-                        if (connectionString != undefined && !connectionString.includes("EntityPath"))
-                        {
-                            if (binding.type == "serviceBusTrigger" && binding.topicName != undefined) {         // Service Bus topic
-                                connectionString += ";EntityPath=" + binding.topicName
+                    
+                    if (binding.type == "serviceBusTrigger" && binding.topicName != undefined) {         // Service Bus topic
+                        binding.entityName= binding.topicName                                
                             } else if (binding.type == "serviceBusTrigger" && binding.queueName != undefined) {  // Service Bus queue
-                                connectionString += ";EntityPath=" + binding.queueName
+                                binding.entityName= binding.queueName
                             } else if (binding.type == "eventHubTrigger" && binding.eventHubName != undefined) { // Event Hubs
-                                connectionString += ";EntityPath=" + binding.eventHubName
+                                binding.entityName= binding.eventHubName
                             }
-                        }
-                        bindingInfo.connectionString = connectionString;
-
-                        functionInfo.bindings.push(bindingInfo);
-                    }
+                            bindingInfo.entityName=binding.entityName;
+                            functionInfo.bindings.push(bindingInfo);   
                 });
                 if (functionInfo.bindings.length > 0) {
                     functionsInfo.push(functionInfo);
@@ -190,31 +213,31 @@ export var functionsFlow = {
             if (functionsInfo.length == 0) {
                 return new InfoStepView({ infoType: 0, title: "No functions with configured connection strings were found for this Function App" });
             }
-
             var subChecksL1 = [];
+
             var promisesL1 = functionsInfo.map(async (functionInfo) => {
                 var subChecksL2 = []; // These are the checks (and subchecks) for each binding of a function
                 var promisesL2 = functionInfo.bindings.map(async (binding) => {
                     var connectionString = binding.connectionString;
+                    var failureDetailsMarkdown = undefined;                    
                     // An undefined connectionStringType parameter causes the old tcpping validation to apply
-                    var connectionStringType = isDaasExtAccessible ? bindingTypeToConnectionStringType(binding.type) : undefined;
-                    if (connectionString != undefined && connectionString != "") {
+                    if(isDaasNew){
+                        var connectionStringType = isDaasExtAccessible ? bindingTypeToConnectionStringType(binding.type,isDaasNew) : undefined;
+                    }else{
+                        var connectionStringType = isDaasExtAccessible ? bindingTypeToConnectionStringType(binding.type) : undefined;
+                    }                   
                         (await networkCheckConnectionString(binding.connectionStringProperty, 
                                                             connectionString, 
                                                             connectionStringType, 
                                                             dnsServers, 
                                                             diagProvider, 
-                                                            isVnetIntegrated)).forEach(item => {
+                                                            isVnetIntegrated,
+                                                            failureDetailsMarkdown,
+                                                            binding.entityName)).forEach(item => {
                                                                 item.title = `Binding "${binding.name}" - ` + item.title;
                                                                 subChecksL2.push(item);
                                                             });
-                    } else {
-                        subChecksL2.push({
-                            title: `The App Setting "${binding.connectionStringProperty}" defined in function binding "${binding.name}" has no value.`,
-                            level: 2,
-                            detailsMarkdown: "Validation is not possible for this trigger/binding.  This issue likely affects normal functionality of functions that depend on it and should be corrected."
-                        });
-                    }
+                   
                 });
                 await Promise.all(promisesL2);
                 var functionName = functionInfo.name.split("/").length < 2 ? functionInfo.name : functionInfo.name.split("/")[1];
@@ -267,27 +290,36 @@ function getMaxCheckLevel(subChecks) {
     return maxCheckLevel;
 }
 
-async function networkCheckConnectionString(propertyName, connectionString, connectionStringType = undefined, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown = undefined) {
+async function networkCheckConnectionString(propertyName, connectionString, connectionStringType = undefined, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown = undefined, entityName=undefined) {
     var subChecks = [];
-    if (!isKeyVaultReference(connectionString)) {
-        // Check if the connection string's type is supported by DaaS validation
+
         if (connectionStringType == ConnectionStringType.StorageAccount ||
+            connectionStringType == ConnectionStringType.BlobStorageAccount ||
+            connectionStringType == ConnectionStringType.QueueStorageAccount ||
+            connectionStringType == ConnectionStringType.FileShareStorageAccount ||            
             connectionStringType == ConnectionStringType.ServiceBus ||
             connectionStringType == ConnectionStringType.EventHubs)
         {
             /*
              * Full connection string validation via DaaS Extension
              */
-            var connectivityCheckResult = await validateConnectionStringAsync(propertyName, connectionString, connectionStringType, diagProvider, failureDetailsMarkdown);
-            var maxCheckLevel = getMaxCheckLevel(connectivityCheckResult);
+            var connectivityCheckResult = await validateConnectionViaAppSetting(propertyName, connectionString, connectionStringType, diagProvider, failureDetailsMarkdown, entityName);
+            var maxCheckLevel = getMaxCheckLevel(connectivityCheckResult);            
             var service;
             switch (connectionStringType) {
                 case ConnectionStringType.StorageAccount:
                     service = "Storage account"; break;
+                case ConnectionStringType.BlobStorageAccount:
+                    service = "Blob Storage account"; break;
+                case ConnectionStringType.QueueStorageAccount:
+                    service = "Queue Storage account"; break;
+                case ConnectionStringType.FileShareStorageAccount:
+                    service = "File Share Storage account"; break;               
                 case ConnectionStringType.ServiceBus:
                     service = "Service Bus"; break;
                 case ConnectionStringType.EventHubs:
                     service = "Event Hubs"; break;
+                   
             }
             var title = maxCheckLevel == 0 ? `Successfully connected to the ${service} resource configured in App Setting "${propertyName}".` :
                 `Connection attempt to the ${service} resource configured in App Setting "${propertyName}" failed.`;
@@ -305,18 +337,18 @@ async function networkCheckConnectionString(propertyName, connectionString, conn
                     `Could not access the endpoint "${hostPort.HostName}:${hostPort.Port}" configured in App Setting "${propertyName}".`;
                 subChecks.push({ title: title, level: maxCheckLevel, subChecks: connectivityCheckResult });
             } else { // Unsupported or invalid connection string format
-                var title = `Unable to parse the connection string configured in the App Setting "${propertyName}".  It is either not supported by this troubleshooter or invalid.`;
-                if (failureDetailsMarkdown != undefined) {
-                    subChecks.push({ title: title, level: 2, detailsMarkdown: failureDetailsMarkdown });
-                } else {
-                    subChecks.push({ title: title, level: 2 });
-                }
+               
+            var title = `Unable to parse the connection string configured in the App Setting "${propertyName}".  It is either not supported by this troubleshooter or invalid.`;
+            if (failureDetailsMarkdown != undefined) {
+                subChecks.push({ title: title, level: 2, detailsMarkdown: failureDetailsMarkdown });
+            } else {
+                subChecks.push({ title: title, level: 2 });
+            }       
+                
             }
-        }
-    } else {
-        var res = await networkCheckKeyVaultReferenceAsync(propertyName, connectionString, dnsServers, diagProvider, isVnetIntegrated);
-        res.forEach(item => subChecks.push(item));
-    }
+         }
+        
+      
     return subChecks;
 }
 
@@ -450,10 +482,10 @@ async function runConnectivityCheckAsync(hostname, port, dnsServers, diagProvide
 }
 
 async function validateConnectionStringAsync(propertyName, connectionString, type, diagProvider, failureDetailsMarkdown = undefined) {
-    var checkConnectionStringResult = await diagProvider.checkConnectionStringAsync(connectionString, type).catch(e => {
-        logDebugMessage(e);
+    var checkConnectionStringResult = await diagProvider.checkConnectionStringAsync(connectionString, type).catch(e => {    
+    logDebugMessage(e);          
     });
-    
+
     var subChecks = [];
 
     // Suppress successful checks to avoid clutter
@@ -480,8 +512,12 @@ async function validateConnectionStringAsync(propertyName, connectionString, typ
         var service, title;
         var detailsMarkdown = "";
         switch (type) {
-            case ConnectionStringType.StorageAccount:
-                service = "Storage account"; break;
+            case ConnectionStringType.BlobStorageAccount:
+                    service = "Blob Storage account"; break;
+            case ConnectionStringType.QueueStorageAccount:
+                    service = "Queue Storage account"; break; 
+            case ConnectionStringType.FileShareStorageAccount:
+                    service = "File Share Storage account"; break;       
             case ConnectionStringType.ServiceBus:
                 service = "Service Bus"; break;
             case ConnectionStringType.EventHubs:
@@ -516,9 +552,121 @@ async function validateConnectionStringAsync(propertyName, connectionString, typ
                     detailsMarkdown = title + `\r\n\r\n` + `This can be due to firewall rules on the resource.  Please check if you have configured firewall rules or a private endpoint and that they correctly allow access from the Function App.  Relevant documentation:`
                         + `\r\n\r\n`;
                     switch (type) {
-                        case ConnectionStringType.StorageAccount:
+                        case ConnectionStringType.BlobStorageAccount:
                             detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
                             break;
+                        case ConnectionStringType.QueueStorageAccount:
+                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
+                            break;                        
+                        case ConnectionStringType.ServiceBus:
+                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/service-bus-messaging/network-security" target="_blank">Service Bus network security</a>`;
+                            break;
+                        case ConnectionStringType.EventHubs:
+                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/event-hubs/network-security" target="_blank">Event Hubs network security</a>`;
+                            break;
+                    }
+                }
+                break;
+            default:
+                title = `Validation of connection string failed due to an unknown error.  Please send us feedback via the "Feedback" button above.`;
+                break;
+        }
+        // Show the exception message as it contains useful information to fix the issue.  Don't show it unless its accompanied with other explanations.
+        detailsMarkdown += (detailsMarkdown != "" && checkConnectionStringResult.Exception ? `\r\n\r\nException encountered while connecting: ${checkConnectionStringResult.Exception.Message}` : undefined);
+
+        subChecks.push({
+            title: title,
+            level: 2,
+            detailsMarkdown: detailsMarkdown
+        })
+    }
+    return subChecks;
+}
+async function validateConnectionViaAppSetting(propertyName, connectionString, type, diagProvider, failureDetailsMarkdown = undefined,entityName = undefined) {
+    var checkConnectionStringResult = await diagProvider.checkConnectionViaAppSetting(propertyName, type, entityName).catch(e => {
+        logDebugMessage(e);          
+    });
+
+    var subChecks = [];
+
+    // Suppress successful checks to avoid clutter
+    if (checkConnectionStringResult == undefined) {
+        subChecks.push({
+            title: `Validation of connection string failed due to an internal error. Please send us feedback via the "Feedback" button above."`,
+            level: 2,
+        })
+    } else if (checkConnectionStringResult.StatusText != "Success") {
+        /* Status enums as of Sep 2021
+         *  Success,
+         *  AuthFailure,
+         *  ContentNotFound,
+         *  Forbidden,
+         *  UnknownResponse,
+         *  EndpointNotReachable,
+         *  ConnectionFailure,
+         *  DnsLookupFailed,
+         *  MsiFailure,
+         *  EmptyConnectionString,
+         *  MalformedConnectionString,
+         *  UnknownError
+         */
+        var service, title;
+        var detailsMarkdown = "";
+        switch (type) {
+            case ConnectionStringType.BlobStorageAccount:
+                    service = "Blob Storage account"; break;
+            case ConnectionStringType.QueueStorageAccount:
+                    service = "Queue Storage account"; break; 
+            case ConnectionStringType.FileShareStorageAccount:
+                    service = "File Share Storage account"; break;                    
+            case ConnectionStringType.ServiceBus:
+                service = "Service Bus"; break;
+            case ConnectionStringType.EventHubs:
+                service = "Event Hubs"; break;
+        }
+        switch (checkConnectionStringResult.StatusText)
+        {
+            case "MalformedConnectionString":
+                title = `Invalid connection string`;
+                detailsMarkdown = `The connection string configured is invalid (e.g. missing some required elements). Please check the value configured in the app setting "${propertyName}".`;
+                break;
+            case "EmptyConnectionString":
+                title = `The app setting "${propertyName}" was not found or is set to a blank value`
+                break;
+            case "DnsLookupFailed":
+                title = "Resource not found";
+                detailsMarkdown = `The ${service} resource specified in the connection string was not found.  Please check the value of the setting.`;
+                break;
+            case "AuthFailure":
+                title = "Authentication failure";
+                detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
+                break;
+            case "managedidentitymissed":
+                title = "Authentication failure";
+                detailsMarkdown = `Managedidentity authentication failure - Credential app setting is not set to managedidentity which disallowed checking connection using clientId.`;
+                break;
+            case "fullyQualifiedNamespacemissed":
+                title = "Athentication failure";
+                detailsMarkdown = `fullyQualifiedNamespace authentication failure - All required app settings to check the connection have not been provided with valid values.`;
+                break;
+            case "Forbidden":
+                // Some authentication failures come through as Forbidden so check the exception data
+                if(checkConnectionStringResult.Exception != undefined && 
+                   checkConnectionStringResult.Exception.RequestInformation != undefined && 
+                   JSON.stringify(checkConnectionStringResult.Exception.RequestInformation).includes("AuthenticationFailed")) {
+                    title = "Authentication failure";
+                    detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
+                } else {
+                    title = `Access to the ${service} resource is restricted.`;
+                    detailsMarkdown = title + `\r\n\r\n` + `This can be due to firewall rules on the resource.  Please check if you have configured firewall rules or a private endpoint and that they correctly allow access from the Function App.  Relevant documentation:`
+                        + `\r\n\r\n`;
+                    switch (type) {
+                        case ConnectionStringType.BlobStorageAccount:
+                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
+                            break;
+                        case ConnectionStringType.QueueStorageAccount:
+                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
+                            break;                        
                         case ConnectionStringType.ServiceBus:
                             detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/service-bus-messaging/network-security" target="_blank">Service Bus network security</a>`;
                             break;
@@ -544,12 +692,19 @@ async function validateConnectionStringAsync(propertyName, connectionString, typ
     return subChecks;
 }
 
-function bindingTypeToConnectionStringType(bindingType) {
+
+function bindingTypeToConnectionStringType(bindingType,isDaasNew=undefined) {
     switch(bindingType) {
         case "blobTrigger":
-            return ConnectionStringType.StorageAccount;
+            if(isDaasNew){
+                return ConnectionStringType.BlobStorageAccount;}
+            else{
+                return ConnectionStringType.StorageAccount;}            
         case "queueTrigger":
-            return ConnectionStringType.StorageAccount;
+            if(isDaasNew){
+                return ConnectionStringType.QueueStorageAccount; }
+            else{
+                return ConnectionStringType.StorageAccount; }                   
         case "serviceBusTrigger":
             return ConnectionStringType.ServiceBus;
         case "eventHubTrigger":
