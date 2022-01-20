@@ -195,7 +195,7 @@ export class FabDataTableComponent implements AfterContentInit {
   }
 
   updateSearchValue(e: { newValue: any }) {
-    if (!!e.newValue.currentTarget && !!e.newValue.currentTarget.value)
+    if (!!e.newValue && !!e.newValue.currentTarget && !!e.newValue.currentTarget.value)
     {
          this.searchValue = e.newValue.currentTarget.value;
          const val = this.searchValue.toLowerCase();
