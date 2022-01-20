@@ -28,6 +28,8 @@ import { IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDropdownOption
 import { BehaviorSubject } from 'rxjs';
 import { Commit } from '../../../shared/models/commit';
 import { ApplensCommandBarService } from '../services/applens-command-bar.service';
+import { Router } from '@angular/router';
+import { ResourceInfo } from '../../../shared/models/resources';
 
 const codePrefix = `// *****PLEASE DO NOT MODIFY THIS PART*****
 using Diagnostics.DataProviders;
@@ -183,6 +185,7 @@ export class OnboardingFlowComponent implements OnInit {
   deletingDetector: boolean = false;
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   failureMessage: string = "";
+  PPERedirectTimer: number = 10;
   runButtonStyle: any = {
     root: { cursor: "default" }
   };
@@ -283,7 +286,8 @@ export class OnboardingFlowComponent implements OnInit {
   constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService,
     private diagnosticApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService, private resourceService: ResourceService,
     private _detectorControlService: DetectorControlService, private _adalService: AdalService,
-    public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute, private _applensCommandBarService: ApplensCommandBarService) {
+    public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute, 
+    private _applensCommandBarService: ApplensCommandBarService, private _router: Router) {
     this.editorOptions = {
       theme: 'vs',
       language: 'csharp',
@@ -375,10 +379,16 @@ export class OnboardingFlowComponent implements OnInit {
   ableToDelete: boolean = false;
   deleteVisibilityStyle = {};
 
+  isPPE: boolean = true;
+  PPELink: string;
+
+  resourceInfo: ResourceInfo = new ResourceInfo(); 
+  redirectTimer: NodeJS.Timer;
+
   ngOnInit() {
     this.detectorGraduation = true;
-    this.diagnosticApiService.getDetectorGraduationSetting().subscribe(graduationFlag => {
-      this.detectorGraduation = graduationFlag;
+    this.diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(devopsConfig => {
+      this.detectorGraduation = devopsConfig.graduationEnabled;
       this.deleteVisibilityStyle = !(this.detectorGraduation === true && this.mode !== DevelopMode.Create) ? {display: "none"} : {};
 
       this.modalPublishingButtonText = this.detectorGraduation ? "Create PR" : "Publish";
@@ -390,13 +400,29 @@ export class OnboardingFlowComponent implements OnInit {
         this._telemetryService.logPageView(TelemetryEventNames.OnboardingFlowLoaded, {});
       }
 
+      if(this._activatedRoute.parent.snapshot.data["info"]) {
+        this.resourceInfo = this._activatedRoute.parent.snapshot.data["info"];
+      }
+
+      this.diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
+        this.PPELink = `https://applens-ppe.trafficmanager.net/${this._router.url}`
+        this.isPPE = env === "PPE";
+        if (!this.isPPE && this.detectorGraduation){
+          this.redirectTimer = setInterval(() => {
+            this.PPERedirectTimer = this.PPERedirectTimer - 1;
+            if (this.PPERedirectTimer === 0){
+              window.location.href = this.PPELink;
+              clearInterval(this.redirectTimer);
+            }
+          }, 1000);
+        }
+      })
+
       this._detectorControlService.timePickerStrSub.subscribe(s => {
         this.timePickerButtonStr = s;
       });
 
-      this.diagnosticApiService.getAutoMergeSetting().subscribe(x => {
-        this.autoMerge = x;
-      });
+      this.autoMerge = devopsConfig.autoMerge;
 
       this.getBranchList();
 
@@ -417,16 +443,16 @@ export class OnboardingFlowComponent implements OnInit {
       var branchRegEx = new RegExp(`^dev\/.*\/detector\/${this.id}$`);
       branches.forEach(option => {
         this.optionsForSingleChoice.push({
-          key: String(option["item1"]),
-          text: String(option["item1"])
+          key: String(option["branchName"]),
+          text: String(option["branchName"])
         });
-        if (option["item2"]) {
-          this.defaultBranch = String(option["item1"]);
+        if (option["isMainBranch"].toLowerCase() === "true") {
+          this.defaultBranch = String(option["branchName"]);
         }
-        if (option["item2"] && !(this.mode == DevelopMode.Create)) {// if main branch and in edit mode
+        if ((option["isMainBranch"].toLowerCase() === "true") && !(this.mode == DevelopMode.Create)) {// if main branch and in edit mode
           this.showBranches.push({
-            key: String(option["item1"]),
-            text: String(option["item1"])
+            key: String(option["branchName"]),
+            text: String(option["branchName"])
           });
         }
       })
@@ -1246,7 +1272,7 @@ export class OnboardingFlowComponent implements OnInit {
     DetectorObservable.subscribe(_ => {
       if (!this.autoMerge) {
         makePullRequestObservable.subscribe(_ => {
-          this.PRLink = `${_["item2"]["webUrl"]}/pullrequest/${_["item1"]["pullRequestId"]}`
+          this.PRLink = `${_["webUrl"]}/pullrequest/${_["prId"]}`
           this.publishSuccess = true;
           this.postPublish();
           this._applensCommandBarService.refreshPage();
@@ -1293,7 +1319,7 @@ export class OnboardingFlowComponent implements OnInit {
     deleteDetectorFiles.subscribe(_ => {
       if (!this.autoMerge) {
         makePullRequestObservable.subscribe(_ => {
-          this.PRLink = `${_["repository"]["webUrl"]}/pullrequest/${_["pullRequestId"]}`
+          this.PRLink = `${_["webUrl"]}/pullrequest/${_["prId"]}`
           this.publishSuccess = true;
           this.postPublish();
         }, err => {
@@ -1527,5 +1553,9 @@ export class OnboardingFlowComponent implements OnInit {
     }
 
     return false;
+  }
+
+  ngOnDestroy(){
+    clearInterval(this.redirectTimer);
   }
 }

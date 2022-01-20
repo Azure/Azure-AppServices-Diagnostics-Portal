@@ -201,11 +201,11 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.merge(branch, detectorName, this.resourceId)
   }
 
-  getDetectorGraduationSetting() {
-    return this._diagnosticApi.getDetectorGraduationSetting();
+  getDevopsConfig(resourceProviderType: string) {
+    return this._diagnosticApi.getDevopsConfig(resourceProviderType);
   }
 
-  getAutoMergeSetting() {
-    return this._diagnosticApi.getAutoMergeSetting();
+  getDetectorDevelopmentEnv(): Observable<string>{
+    return this._diagnosticApi.getDetectorDevelopmentEnv();
   }
 }
