@@ -12,6 +12,7 @@ import { Guid } from 'projects/app-service-diagnostics/src/app/shared/utilities/
 import { Router } from '@angular/router';
 import { TelemetryPayload } from 'diagnostic-data';
 import { RecentResource, UserSetting } from '../models/user-setting';
+import { List } from 'office-ui-fabric-react';
 
 
 @Injectable()
@@ -465,16 +466,14 @@ export class DiagnosticApiService {
       return res.toLowerCase() === "true";
     }));
   }
-  public getDetectorGraduationSetting(): Observable<boolean> {
-    const path = "api/appsettings/DetectorGraduation:GraduationEnabled";
-    return this.get<boolean>(path).pipe(map((res:string) => {
-      return res.toLowerCase() === "true";
-    }));
+  public getDevopsConfig(resourceProviderType: string): Observable<any>{
+    let path = `devops/devopsConfig?resourceProviderType=${resourceProviderType}`;
+    return this.invoke(path, HttpMethod.GET);
   }
-  public getAutoMergeSetting(): Observable<boolean> {
-    const path = "api/appsettings/DetectorGraduation:AutoMergeEnabled";
-    return this.get<boolean>(path).pipe(map((res:string) => {
-      return res.toLowerCase() === "true";
+  public getDetectorDevelopmentEnv(): Observable<string> {
+    const path = "api/appsettings/DetectorDevelopmentEnv";
+    return this.get(path).pipe(map((res:string) => {
+      return res;
     }));
   }
 }
