@@ -1,5 +1,4 @@
-<div *ngIf="isPPE || !detectorGraduation" class="view-container">
-
+<div *ngIf="!isProd || !detectorGraduation" class="view-container">
   <ngx-smart-modal #publishModal identifier="publishModal" [customClass]="'publish-dialog'">
     <div>
       <h4>Confirm?</h4>
@@ -418,11 +417,11 @@
     </split>
   </div>
 </div>
-<div *ngIf="!isPPE && detectorGraduation" style="display: flex;">
+<div *ngIf="isProd && detectorGraduation" style="display: flex;">
   <status-icon [status]="HealthStatus.Warning" class="mr-3"></status-icon>
   <div>
-    <p>To ensure the quality, accuracy, and security of detectors, the <b>{{resourceInfo.searchSuffix}}</b> team is now utilizing the <a [href]="PPELink">AppLens PPE Environment</a> for detector development.</p>
-    <p>To learn more about this new experience, click <a href="https://applensdiagnostics.azurewebsites.net/?p=715">here</a>.</p>
+    <p>To ensure the quality, accuracy, and security of detectors, the <b>{{resourceService.searchSuffix}}</b> team is now utilizing the <a [href]="PPELink">AppLens PPE Environment</a> for detector development.</p>
+    <p>To learn more about this new experience, click <a target="_blank" href="https://applensdiagnostics.azurewebsites.net/?p=715">here</a>.</p>
     <p>You will be redirected there in {{PPERedirectTimer}} seconds...</p>
   </div>
 </div>

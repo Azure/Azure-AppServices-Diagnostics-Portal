@@ -476,4 +476,11 @@ export class DiagnosticApiService {
       return res;
     }));
   }
+
+  public getPPEHostname(): Observable<string> {
+    const path = "api/appsettings/PPEHostname";
+    return this.get(path).pipe(map((res:string) => {
+      return res;
+    }));
+  }
 }
