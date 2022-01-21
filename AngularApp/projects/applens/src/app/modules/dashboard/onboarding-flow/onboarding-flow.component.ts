@@ -29,7 +29,6 @@ import { BehaviorSubject } from 'rxjs';
 import { Commit } from '../../../shared/models/commit';
 import { ApplensCommandBarService } from '../services/applens-command-bar.service';
 import { Router } from '@angular/router';
-import { ResourceInfo } from '../../../shared/models/resources';
 
 const codePrefix = `// *****PLEASE DO NOT MODIFY THIS PART*****
 using Diagnostics.DataProviders;
@@ -379,10 +378,9 @@ export class OnboardingFlowComponent implements OnInit {
   ableToDelete: boolean = false;
   deleteVisibilityStyle = {};
 
-  isPPE: boolean = true;
+  isProd: boolean = false;
   PPELink: string;
-
-  resourceInfo: ResourceInfo = new ResourceInfo(); 
+  PPEHostname: string;
   redirectTimer: NodeJS.Timer;
 
   ngOnInit() {
@@ -400,23 +398,22 @@ export class OnboardingFlowComponent implements OnInit {
         this._telemetryService.logPageView(TelemetryEventNames.OnboardingFlowLoaded, {});
       }
 
-      if(this._activatedRoute.parent.snapshot.data["info"]) {
-        this.resourceInfo = this._activatedRoute.parent.snapshot.data["info"];
-      }
-
-      this.diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
-        this.PPELink = `https://applens-ppe.trafficmanager.net/${this._router.url}`
-        this.isPPE = env === "PPE";
-        if (!this.isPPE && this.detectorGraduation){
-          this.redirectTimer = setInterval(() => {
-            this.PPERedirectTimer = this.PPERedirectTimer - 1;
-            if (this.PPERedirectTimer === 0){
-              window.location.href = this.PPELink;
-              clearInterval(this.redirectTimer);
-            }
-          }, 1000);
-        }
-      })
+      this.diagnosticApiService.getPPEHostname().subscribe(host => {
+        this.PPEHostname = host;
+        this.diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
+          this.PPELink = `${this.PPEHostname}${this._router.url}`
+          this.isProd = env === "Prod";
+          if (this.isProd && this.detectorGraduation){
+            this.redirectTimer = setInterval(() => {
+              this.PPERedirectTimer = this.PPERedirectTimer - 1;
+              if (this.PPERedirectTimer === 0){
+                window.location.href = this.PPELink;
+                clearInterval(this.redirectTimer);
+              }
+            }, 1000);
+          }
+        });
+      });
 
       this._detectorControlService.timePickerStrSub.subscribe(s => {
         this.timePickerButtonStr = s;
