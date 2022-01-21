@@ -154,7 +154,7 @@ export class FabDataTableComponent implements AfterContentInit {
   }
 
   private initFabricTableColumns(t: DataTableResponseObject) {
-    if (!t || this.columns.length > 0) return;
+    if (!t || !Array.isArray(t.columns) || this.columns.length > 0) return;
     let columns = t.columns.map(column =>
       <IColumn>{
         key: column.columnName,
