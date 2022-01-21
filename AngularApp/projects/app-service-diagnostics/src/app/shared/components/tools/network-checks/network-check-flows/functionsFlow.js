@@ -44,12 +44,20 @@ export var functionsFlow = {
             flowMgr.addView(new VnetDnsWordings().cannotCheckWithoutKudu.get("Functions settings"));
             return;
         }
-
-        var isDaasExtAccessible = await diagProvider.checkDaasExtReachable(30);
-        var daasVersionInfo=await diagProvider.getDaasVersion();        
+        
+        var daasVersionInfo=await diagProvider.getDaasVersion(); 
+        if(daasVersionInfo.status == "200")
+        {
+            var isDaasExtAccessible= true;
+        }
+        else
+        {
+            var isDaasExtAccessible= false;
+        }  
+             
         var daasVersion=daasVersionInfo.body.Version;        
-        var isDaasNew=true; 
- 
+        var isDaasNew=false; 
+if(isDaasExtAccessible == true){
 function versionCompare(v1, v2) 
 { 
     var vnum1 = 0, vnum2 = 0; 
@@ -74,16 +82,14 @@ function versionCompare(v1, v2)
     return 0; 
 } 
 var version1 = daasVersion; 
-var version2 = "3.3.1221.1";
-if (versionCompare(version1, version2) < 0) {
+var version2 = "2.2.1221.01";
+if (versionCompare(version1, version2) >= 0) {
         isDaasNew = true;
-        }    
-// else if (versionCompare(version1, version2) > 0) {
-//         isDaasNew=false;
-//         }   
+        } 
 else{
         isDaasNew = false;
     }
+}
         /**
          * Functions specific checks
          **/
@@ -648,6 +654,18 @@ async function validateConnectionViaAppSetting(propertyName, connectionString, t
             case "fullyQualifiedNamespacemissed":
                 title = "Athentication failure";
                 detailsMarkdown = `fullyQualifiedNamespace authentication failure - All required app settings to check the connection have not been provided with valid values.`;
+                break;
+            case "systemAssignedmanagedidentity":
+                title = "Athentication failure";
+                detailsMarkdown = `The target service is not provided with Access to the function app using system assigned identity.`;
+                break;
+            case "userAssignedmanagedidentity":
+                title = "Athentication failure";
+                detailsMarkdown = `The target service is not provided with access to the user assigned identity which is configured for the function app.`;
+                break;
+            case "managedIdentityCredential":
+                title = "Athentication failure";
+                detailsMarkdown = `There is no managed identity configured for the function app.`;
                 break;
             case "Forbidden":
                 // Some authentication failures come through as Forbidden so check the exception data
