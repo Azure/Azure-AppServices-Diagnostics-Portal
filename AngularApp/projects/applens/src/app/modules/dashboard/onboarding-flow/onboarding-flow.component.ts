@@ -1311,8 +1311,8 @@ export class OnboardingFlowComponent implements OnInit {
       this.Branch = this.defaultBranch;
     }
 
-    const deleteDetectorFiles = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `deleteing detector: ${this.id}`, "delete", this.resourceId);
-    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, this.PRTitle, this.resourceId);
+    const deleteDetectorFiles = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `deleting detector: ${this.id}`, "delete", this.resourceId);
+    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, `Deleting ${this.id}`, this.resourceId);
     deleteDetectorFiles.subscribe(_ => {
       if (!this.autoMerge) {
         makePullRequestObservable.subscribe(_ => {
