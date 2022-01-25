@@ -148,7 +148,14 @@ function markdownPreprocess(markdown: string, id: string): string {
         return null;
     }
     // parse markdown links to html <a> tag
-    var result = markdown.replace(/(?<!\!)\[(.*?)]\((.*?)( +\"(.*?)\")?\)/g, `<a target="_blank" href="$2" title="$4" onclick="networkCheckLinkClickEventLogger('${id}','$2', '$1')">$1</a>`);
+    var result = markdown;
+    try {
+        const regex = new RegExp("(?<!\!)\[(.*?)]\((.*?)( +\"(.*?)\")?\)", "g");
+        result = markdown.replace(regex, `<a target="_blank" href="$2" title="$4" onclick="networkCheckLinkClickEventLogger('${id}','$2', '$1')">$1</a>`);
+    }
+    catch (e) {
+        result = markdown;
+    }
     return result;
 }
 
