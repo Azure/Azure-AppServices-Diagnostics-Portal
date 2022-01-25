@@ -20,7 +20,7 @@
             <div class="detail-cards">
               <ng-container *ngFor="let item of Diagnosers;let i = index">
                 <button class="detail-card" (click)="chooseDiagnoser(item)"
-                  [ngClass]="{'detail-card-active': item.Name === diagnoser.Name && item.Enabled , 'detail-card-disabled': item.Enabled === false}">
+                  [ngClass]="{'detail-card-active': diagnoser && item.Name === diagnoser.Name && item.Enabled , 'detail-card-disabled': item.Enabled === false}">
                   <h4>{{item.Name}}</h4>
                   <p>{{ item.Description }}</p>
                 </button>
@@ -40,7 +40,7 @@
                 <ng-container *ngFor="let option of DiagnoserOptions">
                   <div class="radio">
                     <label>
-                      <input type="radio" name="optradio" [checked]="diagnoserOption.option === option.option"
+                      <input type="radio" name="optradio" [checked]="diagnoserOption && diagnoserOption.option === option.option"
                         [value]="option.option" (change)="chooseDiagnoserAction(option)"> {{ option.option }}
                     </label>
                   </div>

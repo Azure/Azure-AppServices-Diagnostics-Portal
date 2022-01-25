@@ -200,8 +200,19 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
         } else {
           this.showDiagnoserOptionWarning = false;
         }
-        const firstQuote = param.indexOf('"');
-        const secondQuote = param.indexOf('"', firstQuote + 1);
+
+        //
+        // Handle cases where the parameters are set with a single quote
+        // e.g. -CollectKillAnalyze 'Memory Dump'
+        //
+
+        let separatingChar: string = '"';
+        if (param.indexOf(separatingChar) === -1 && param.indexOf("'") > -1) {
+          separatingChar = "'";
+        }
+
+        const firstQuote = param.indexOf(separatingChar);
+        const secondQuote = param.indexOf(separatingChar, firstQuote + 1);
         let diagnoserName = '';
         if (secondQuote > firstQuote && secondQuote > 0 && firstQuote > 0) {
           diagnoserName = param.substring(firstQuote + 1, secondQuote);
