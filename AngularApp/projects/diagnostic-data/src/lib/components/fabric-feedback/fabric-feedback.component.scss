@@ -96,6 +96,10 @@
     flex: 0 0 auto;
 }
 
+.feedback-submit-button {
+    border:solid 1px;
+    border-color: var(--bodyText);
+}
 //Will impact all panels paddings
 //Todo, move it to a shared place instead of sitting in a component scss file
 ::ng-deep .ms-Panel-content {
