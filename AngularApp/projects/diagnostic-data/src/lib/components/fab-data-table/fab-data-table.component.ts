@@ -131,7 +131,7 @@ export class FabDataTableComponent implements AfterContentInit {
   }
 
   private createFabricDataTableObjects(t: DataTableResponseObject) {
-    if (t === null) return;
+    if (!t || !Array.isArray(t.rows)) return;
     this.rows = [];
 
     t.rows.forEach(row => {
