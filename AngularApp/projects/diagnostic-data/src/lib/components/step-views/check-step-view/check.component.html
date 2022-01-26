@@ -1,6 +1,6 @@
 <div class="check-container">
   <div class="status-icon">
-    <status-icon [loading]="1" [status]="check.level | convertLevelToHealthStatus"></status-icon>
+    <status-icon [loading]="1" [status]="check.level | convertLevelToHealthStatus" [size]="17"></status-icon>
   </div>
   <div class="check-content">
     <div class="check-title {{bold ? 'bold':''}}" [innerHtml]="check.title">
