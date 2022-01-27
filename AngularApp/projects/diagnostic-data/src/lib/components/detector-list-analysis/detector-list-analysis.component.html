@@ -56,9 +56,9 @@
                       <div header>
                         <div style="display: flex;align-items: center;min-height: 40px;">
                           <status-icon class="mr-3" [status]="viewModel.model.status"></status-icon>
-                          <div style="">{{viewModel.model.title}}</div>
+                          <div [attr.aria-label]="viewModel.model.title">{{viewModel.model.title}}</div>
                         </div>
-                        <div style="margin: 12px 0px 16px 0px;">{{viewModel.insightTitle}}</div>
+                        <div style="margin: 12px 0px 16px 0px;" [attr.aria-label]="viewModel.insightTitle">{{viewModel.insightTitle}}</div>
                       </div>
                       <div body>
                         <markdown [data]="viewModel.insightDescription"></markdown>
@@ -196,11 +196,11 @@
                       <div style="display: flex;align-items: center;min-height: 40px;">
                         <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus"
                           [status]="viewModel.model.status"></status-icon>
-                        <div class="list-view-title">{{viewModel.model.title}}</div>
+                        <div class="list-view-title" [attr.aria-label]="viewModel.model.title">{{viewModel.model.title}}</div>
                       </div>
                     </div>
                     <div body>
-                      <div style="margin-bottom: 10px;">{{viewModel.insightTitle}}</div>
+                      <div style="margin-bottom: 10px;" [attr.aria-label]="viewModel.insightTitle">{{viewModel.insightTitle}}</div>
                     </div>
                     <div footer>
                       <div style="margin-bottom:15px;">
