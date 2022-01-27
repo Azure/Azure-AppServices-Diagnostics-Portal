@@ -163,6 +163,7 @@ export class OnboardingFlowComponent implements OnInit {
   showTimePicker: boolean = false;
   gistDialogHidden: boolean = true;
   gistVersion: string;
+  latestGistVersion: string = "";
   gistName: string;
   gistsDropdownOptions: IDropdownOption[] = [];
   gistVersionOptions: IDropdownOption[] = [];
@@ -467,6 +468,8 @@ export class OnboardingFlowComponent implements OnInit {
         var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id}`
         this.Branch = this.targetInShowBranches(targetBranch) ? targetBranch : this.showBranches[0].key;
         this.displayBranch = this.Branch;
+        this.tempBranch = this.Branch;
+        this.updateBranch();
       }
     });
   }
@@ -586,18 +589,25 @@ export class OnboardingFlowComponent implements OnInit {
   updateGistVersionOptions(event: string) {
     this.gistName = event["option"].text;
     this.gistVersionOptions = [];
+    this.latestGistVersion = "";
     var tempList = [];
-    this.githubService.getChangelist(this.gistName)
-      .subscribe((version: Commit[]) => {
-        version.forEach(v => tempList.push({
-          key: String(`${v["sha"]}`),
-          text: String(`${v["author"]}: ${v["dateTime"]}`),
-          title: String(`${this.gistName}`)
-        }));
-        this.gistVersionOptions = tempList.reverse();
-        if (this.gistVersionOptions.length > 10) { this.gistVersionOptions = this.gistVersionOptions.slice(0, 10); }
+    if (!this.detectorGraduation) {
+      this.githubService.getChangelist(this.gistName)
+        .subscribe((version: Commit[]) => {
+          version.forEach(v => tempList.push({
+            key: String(`${v["sha"]}`),
+            text: String(`${v["author"]}: ${v["dateTime"]}`),
+            title: String(`${this.gistName}`)
+          }));
+          this.gistVersionOptions = tempList.reverse();
+          if (this.gistVersionOptions.length > 10) { this.gistVersionOptions = this.gistVersionOptions.slice(0, 10); }
+        });
+    }
+    else {
+      this.diagnosticApiService.getDetectorCode(`${this.gistName}/${this.gistName}.csx`, this.defaultBranch, this.resourceId).subscribe(gistCode => {
+        this.latestGistVersion = gistCode;
       });
-
+    }
   }
 
   gistVersionOnChange(event: string) {
@@ -1519,6 +1529,7 @@ export class OnboardingFlowComponent implements OnInit {
 
     forkJoin(detectorFile, configuration, this.diagnosticApiService.getGists()).subscribe(res => {
       this.codeLoaded = true;
+      if (!this.code)
       this.code = this.addCodePrefix(res[0]);
       this.originalCode = this.code;
       if (res[1] !== null) {

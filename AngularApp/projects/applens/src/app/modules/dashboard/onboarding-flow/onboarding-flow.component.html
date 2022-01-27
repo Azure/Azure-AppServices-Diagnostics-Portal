@@ -165,7 +165,7 @@
     </fab-dialog-content>
   </fab-dialog>
 
-  <fab-dialog [hidden]="gistDialogHidden" (onDismiss)="dismissGistDialog()">
+  <fab-dialog *ngIf="!detectorGraduation || gists.length == 0" [hidden]="gistDialogHidden" (onDismiss)="dismissGistDialog()">
     <fab-dialog-content [title]="gistUpdateTitle">
       <fab-dropdown *ngIf="gists.length > 0" label="Gist name" placeholder="Field value"
         [options]="gistsDropdownOptions" (onChange)="updateGistVersionOptions($event)"></fab-dropdown>
@@ -176,6 +176,18 @@
         <fab-primary-button *ngIf="gists.length > 0" text="Update" (onClick)="gistVersionChange()" contentClass="mr-3">
         </fab-primary-button>
         <fab-default-button text="Cancel" (onClick)="dismissGistDialog()"></fab-default-button>
+      </div>
+    </fab-dialog-content>
+  </fab-dialog>
+
+  <fab-dialog *ngIf="detectorGraduation && gists.length > 0" [hidden]="gistDialogHidden" (onDismiss)="dismissGistDialog()" [minWidth]="'80%'">
+    <fab-dialog-content title="Latest Gist Version" >
+      <fab-dropdown label="Gist name" placeholder="Field value"
+        [options]="gistsDropdownOptions" (onChange)="updateGistVersionOptions($event)"></fab-dropdown>
+      <div class="onboarding-container">
+        <ngx-monaco-editor [options]="editorOptions"
+              [ngModel]="latestGistVersion">
+            </ngx-monaco-editor>
       </div>
     </fab-dialog-content>
   </fab-dialog>
