@@ -441,7 +441,7 @@ export class DiagnosticApiService {
     body['resourceUri'] = resourceUri;
 
     let path = `devops/makePR`;
-    return this.invoke(path, HttpMethod.POST, body);
+    return this.invoke(path, HttpMethod.POST, body, false);
   }
 
   public merge(branch: string, detectorName: string, resourceUri: string){
