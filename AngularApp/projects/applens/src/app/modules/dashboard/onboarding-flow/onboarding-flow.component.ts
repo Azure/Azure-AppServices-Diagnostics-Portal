@@ -28,7 +28,6 @@ import { IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDropdownOption
 import { BehaviorSubject } from 'rxjs';
 import { Commit } from '../../../shared/models/commit';
 import { ApplensCommandBarService } from '../services/applens-command-bar.service';
-import { Router } from '@angular/router';
 
 const codePrefix = `// *****PLEASE DO NOT MODIFY THIS PART*****
 using Diagnostics.DataProviders;
