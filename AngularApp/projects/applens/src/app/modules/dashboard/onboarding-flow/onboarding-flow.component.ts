@@ -1423,14 +1423,27 @@ export class OnboardingFlowComponent implements OnInit {
 
     let newPackage = this.UpdateConfiguration(queryResponse);
 
-    let update = of(null);
-    if (newPackage.length > 0) {
-      update = forkJoin(newPackage.map(r => this.githubService.getChangelist(r).pipe(
-        map(c => this.configuration['dependencies'][r] = c[c.length - 1].sha),
-        flatMap(v => this.githubService.getCommitContent(r, v).pipe(map(s => this.reference[r] = s))))))
-    }
+    if (!this.detectorGraduation) {
+      let update = of(null);
+      if (newPackage.length > 0) {
+        update = forkJoin(newPackage.map(r => this.githubService.getChangelist(r).pipe(
+          map(c => this.configuration['dependencies'][r] = c[c.length - 1].sha),
+          flatMap(v => this.githubService.getCommitContent(r, v).pipe(map(s => this.reference[r] = s))))))
+      }
 
-    update.subscribe(_ => {
+      update.subscribe(_ => {
+        this.publishingPackage = {
+          id: queryResponse.invocationOutput.metadata.id,
+          codeString: this.codeCompletionEnabled ? code.replace(codePrefix, "") : code,
+          committedByAlias: this.userName,
+          dllBytes: this.compilationPackage.assemblyBytes,
+          pdbBytes: this.compilationPackage.pdbBytes,
+          packageConfig: JSON.stringify(this.configuration),
+          metadata: JSON.stringify({ "utterances": this.allUtterances })
+        };
+      });
+    }
+    else {
       this.publishingPackage = {
         id: queryResponse.invocationOutput.metadata.id,
         codeString: this.codeCompletionEnabled ? code.replace(codePrefix, "") : code,
@@ -1440,7 +1453,7 @@ export class OnboardingFlowComponent implements OnInit {
         packageConfig: JSON.stringify(this.configuration),
         metadata: JSON.stringify({ "utterances": this.allUtterances })
       };
-    });
+    }
   }
 
   private showAlertBox(alertClass: string, message: string) {
