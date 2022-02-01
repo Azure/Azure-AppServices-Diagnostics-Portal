@@ -4,11 +4,11 @@ import {
 } from 'diagnostic-data';
 import * as momentNs from 'moment';
 import { NgxSmartModalService } from 'ngx-smart-modal';
-import {
+import {concat, 
   forkJoin
   , Observable, of
 } from 'rxjs';
-import { flatMap, map, tap } from 'rxjs/operators';
+import { flatMap, map, tap,switchMap } from 'rxjs/operators'
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Package } from '../../../shared/models/package';
 import { GithubApiService } from '../../../shared/services/github-api.service';
@@ -24,10 +24,11 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import { WebSocket } from "ws";
 import { MonacoLanguageClient, CloseAction, ErrorAction, MonacoServices, createConnection } from 'monaco-languageclient';
 import { v4 as uuid } from 'uuid';
-import { IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDropdownOption, IDropdownProps, IPanelProps, IPivotProps, PanelType } from 'office-ui-fabric-react';
+import { IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDropdownOption, IDropdownProps, IPanelProps, IPivotProps, PanelType, TagItemSuggestion } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
 import { Commit } from '../../../shared/models/commit';
 import { ApplensCommandBarService } from '../services/applens-command-bar.service';
+
 
 const codePrefix = `// *****PLEASE DO NOT MODIFY THIS PART*****
 using Diagnostics.DataProviders;
@@ -390,6 +391,8 @@ export class OnboardingFlowComponent implements OnInit {
       this.deleteVisibilityStyle = !(this.detectorGraduation === true && this.mode !== DevelopMode.Create) ? {display: "none"} : {};
 
       this.modalPublishingButtonText = this.detectorGraduation ? "Create PR" : "Publish";
+
+      this.defaultBranch = "MainMVP";
 
 
       if (!this.initialized) {
@@ -1507,21 +1510,41 @@ export class OnboardingFlowComponent implements OnInit {
 
     let configuration = of(null);
     if (this.id.toLowerCase() !== '') {
-      configuration = this.githubService.getConfiguration(this.id.toLowerCase()).pipe(
-        map(config => {
-          if (!('dependencies' in config)) {
-            config['dependencies'] = {};
-          }
+      if (!this.detectorGraduation) {
+        configuration = this.githubService.getConfiguration(this.id.toLowerCase()).pipe(
+          map(config => {
+            if (!('dependencies' in config)) {
+              config['dependencies'] = {};
+            }
 
-          this.configuration = config;
-          return this.configuration['dependencies'];
-        }),
-        flatMap(dep => {
-          let keys = Object.keys(dep);
-          if (keys.length === 0) return of([]);
-          return forkJoin(Object.keys(dep).map(key => this.githubService.getSourceReference(key, dep[key])));
+            this.configuration = config;
+            return this.configuration['dependencies'];
+          }),
+          flatMap(dep => {
+            let keys = Object.keys(dep);
+            if (keys.length === 0) return of([]);
+            return forkJoin(Object.keys(dep).map(key => this.githubService.getSourceReference(key, dep[key])));
+          }));
+      }
+      else {
+        const branchObservable = this.diagnosticApiService.getBranches(this.resourceId).pipe(map(branches => {
+          const defaultBranch = branches.find(b => b.isMainBranch.toLowerCase() === "true");
+          this.defaultBranch = String(defaultBranch.branchName);
+          return this.defaultBranch;
         }));
-    } else {
+
+        configuration = branchObservable.pipe(switchMap((branch: string) => {
+          return this.diagnosticApiService.getDetectorCode(`${this.id}/package.json`, branch, this.resourceId).pipe(map(config => {
+            let c: object = JSON.parse(config)
+            c['dependencies'] = c['dependencies'] || {};
+
+            this.configuration = c;
+            return this.configuration['dependencies'];
+          }));
+        }));
+      }
+    } 
+    else {
       if (!('dependencies' in this.configuration)) {
         this.configuration['dependencies'] = {};
       }
