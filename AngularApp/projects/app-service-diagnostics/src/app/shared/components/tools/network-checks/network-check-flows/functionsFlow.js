@@ -647,23 +647,23 @@ async function validateConnectionViaAppSetting(propertyName, connectionString, t
                 title = "Authentication failure";
                 detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
                 break;
-            case "managedidentitymissed":
+            case "Managedidentitymissed":
                 title = "Authentication failure";
                 detailsMarkdown = `Managedidentity authentication failure - Credential app setting is not set to managedidentity which disallowed checking connection using clientId.`;
                 break;
-            case "fullyQualifiedNamespacemissed":
+            case "FullyQualifiedNamespacemissed":
                 title = "Athentication failure";
                 detailsMarkdown = `fullyQualifiedNamespace authentication failure - All required app settings to check the connection have not been provided with valid values.`;
                 break;
-            case "systemAssignedmanagedidentity":
+            case "SystemAssignedmanagedidentity":
                 title = "Athentication failure";
                 detailsMarkdown = `The target service is not provided with Access to the function app using system assigned identity.`;
                 break;
-            case "userAssignedmanagedidentity":
+            case "UserAssignedmanagedidentity":
                 title = "Athentication failure";
                 detailsMarkdown = `The target service is not provided with access to the user assigned identity which is configured for the function app.`;
                 break;
-            case "managedIdentityCredential":
+            case "ManagedIdentityCredential":
                 title = "Athentication failure";
                 detailsMarkdown = `There is no managed identity configured for the function app.`;
                 break;
