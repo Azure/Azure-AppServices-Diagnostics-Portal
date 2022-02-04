@@ -31,6 +31,7 @@ export class TabCommonComponent implements OnInit {
     this._diagnosticApiService.getEnableDetectorDevelopment().subscribe(enabledDetectorDevelopment => {
       this.enabledDetectorDevelopment = enabledDetectorDevelopment;
     });
+    //hide commit history
     // this._diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(config => {
     //   this.graduationEnabled = (config.graduationEnabled);// ? {display: "none"} : {};
     // });
