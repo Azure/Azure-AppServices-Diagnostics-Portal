@@ -65,6 +65,7 @@ import { RecentResource } from '../../shared/models/user-setting';
 import { UserSettingService } from './services/user-setting.service';
 import { ApplensDocsComponent } from '../../shared/components/applens-docs/applens-docs.component';
 import { TabKey } from './tabs/tab-key';
+import { UserActivePullrequestsComponent } from './user-active-pullrequests/user-active-pullrequests.component';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -347,6 +348,10 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
             {
                 path: 'kustoConfig',
                 component: ConfigurationComponent
+            },
+            {
+                path: 'users/:userId/activepullrequests',
+                component: UserActivePullrequestsComponent
             }
         ]
     },
@@ -413,6 +418,6 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         SearchMenuPipe, TabDataComponent, TabDevelopComponent, TabCommonComponent, TabDataSourcesComponent, TabMonitoringComponent,
         TabMonitoringDevelopComponent, TabAnalyticsDevelopComponent, TabAnalyticsDashboardComponent, GistComponent, TabGistCommonComponent,
         TabGistDevelopComponent, TabChangelistComponent, GistChangelistComponent, TabAnalysisComponent, CategoryPageComponent, SupportTopicPageComponent,
-        SelfHelpContentComponent, UserDetectorsComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent, L2SideNavComponent]
+        SelfHelpContentComponent, UserDetectorsComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent, L2SideNavComponent, UserActivePullrequestsComponent]
 })
 export class DashboardModule { }

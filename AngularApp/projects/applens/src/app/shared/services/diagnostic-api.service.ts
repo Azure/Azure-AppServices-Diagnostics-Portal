@@ -483,4 +483,9 @@ export class DiagnosticApiService {
       return res;
     }));
   }
+
+  public getDevopsPullRequest(resourceProviderType: string):Observable<any> {
+    let path = `devops/devopsPullRequests?resourceProviderType=${resourceProviderType}`;
+    return this.invoke(path, HttpMethod.GET, null, false);
+  }
 }

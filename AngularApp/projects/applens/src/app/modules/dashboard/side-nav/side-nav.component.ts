@@ -44,6 +44,8 @@ export class SideNavComponent implements OnInit {
 
   getDetectorsRouteNotFound: boolean = false;
 
+  isGraduation:boolean = false;
+  isProd:boolean = false;
   searchBoxIcon: ITextFieldProps["iconProps"] = {
     iconName: "Zoom",
   }
@@ -153,6 +155,12 @@ export class SideNavComponent implements OnInit {
   groups: IGroup[] = [];
 
   ngOnInit() {
+    this._diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(config =>{
+      this.isGraduation = config.graduationEnabled;
+    })
+    this._diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
+      this.isProd = env === "Prod";
+    });
     this._applensGlobal.openL2SideNavSubject.subscribe(type => {
       this.type = type;
       this.initialize();
@@ -163,6 +171,7 @@ export class SideNavComponent implements OnInit {
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
       this.getCurrentRoutePath();
     });
+
   }
 
   focusSearchBox() {
@@ -375,7 +384,22 @@ export class SideNavComponent implements OnInit {
       },
       () => { },
       "", true, [], "");
-    this.topList = [createNewDetector, yourDetectors];
+    const activepullrequests = new CollapsibleMenuItem("Your Active Pull Requests",
+    "user_active_prs", () => {
+      let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
+      const userId: string = alias.replace('@microsoft.com', '');
+      if (userId.length > 0) {        
+        this.navigateTo(`users/${userId}/activepullrequests`);
+      }
+    }, 
+    () => { },
+    "", true, [], "");
+   
+    if (this.isGraduation && !this.isProd) {      
+      this.topList = [createNewDetector, yourDetectors, activepullrequests];
+    } else {
+      this.topList =  [createNewDetector, yourDetectors];
+    }
   }
 
   doesMatchCurrentRoute(expectedRoute: string) {

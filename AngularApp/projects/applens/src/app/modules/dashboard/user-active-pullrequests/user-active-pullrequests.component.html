@@ -1,0 +1,7 @@
+<div *ngIf="errorMessage != ''">
+  <p> {{errorMessage}} </p>
+</div>
+
+<div *ngIf="table && errorMessage == ''" class="detector-list">
+  <fab-data-table [table]="table" [tableHeight]="'100%'"></fab-data-table>
+</div>

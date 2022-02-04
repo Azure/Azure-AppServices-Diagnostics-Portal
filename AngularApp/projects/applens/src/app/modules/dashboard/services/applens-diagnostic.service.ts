@@ -212,4 +212,8 @@ export class ApplensDiagnosticService {
   getPPEHostname(): Observable<string>{
     return this._diagnosticApi.getPPEHostname();
   }
+
+  getDevopsPullRequest(resourceProviderType: string) {
+    return this._diagnosticApi.getDevopsPullRequest(resourceProviderType);
+  }
 }
