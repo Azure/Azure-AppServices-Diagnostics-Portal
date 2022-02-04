@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { IButtonProps, IDialogContentProps } from 'office-ui-fabric-react';
 import { DiagnosticApiService } from 'projects/applens/src/app/shared/services/diagnostic-api.service';
+import { ResourceService } from 'projects/applens/src/app/shared/services/resource.service';
 import { combineLatest } from 'rxjs';
 import { distinct } from 'rxjs-compat/operator/distinct';
 import { mergeMap } from 'rxjs-compat/operator/mergeMap';
@@ -16,9 +17,10 @@ import { Tab, TabKey } from '../tab-key';
 export class TabCommonComponent implements OnInit {
   selectedTabKey: string;
   enabledDetectorDevelopment: boolean = true;
+  // graduationEnabled: boolean = false;
   TabKey = TabKey;
 
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _diagnosticApiService: DiagnosticApiService) {
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _diagnosticApiService: DiagnosticApiService, private resourceService: ResourceService,) {
     this._activatedRoute.firstChild.data.subscribe(data => {
       const key:string = data["tabKey"];
       this.selectedTabKey = key;
@@ -29,6 +31,9 @@ export class TabCommonComponent implements OnInit {
     this._diagnosticApiService.getEnableDetectorDevelopment().subscribe(enabledDetectorDevelopment => {
       this.enabledDetectorDevelopment = enabledDetectorDevelopment;
     });
+    // this._diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(config => {
+    //   this.graduationEnabled = (config.graduationEnabled);// ? {display: "none"} : {};
+    // });
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(e => {
       const key:string = this._activatedRoute.firstChild.snapshot.data["tabKey"];
       this.selectedTabKey = key;
@@ -63,6 +68,11 @@ export class TabCommonComponent implements OnInit {
           queryParamsHandling:"preserve"
         });
         break;
+      case TabKey.Monitoring:
+          this._router.navigate(["monitoring"], {
+            relativeTo: this._activatedRoute
+          });
+          break;
     }
   }
 }
