@@ -9,8 +9,7 @@ export class ConnectionStringType {
     static get QueueStorageAccount() { return 'QueueStorageAccount' };
     static get FileShareStorageAccount() { return 'FileShareStorageAccount' };
     static get ServiceBus() { return 'ServiceBus' };
-    static get EventHubs() { return 'EventHubs' };
-        
+    static get EventHubs() { return 'EventHubs' };       
 }
 
 export var functionsFlow = {
@@ -44,8 +43,9 @@ export var functionsFlow = {
             flowMgr.addView(new VnetDnsWordings().cannotCheckWithoutKudu.get("Functions settings"));
             return;
         }
-        
-        var daasVersionInfo=await diagProvider.getDaasVersion(); 
+        var param = [];
+        param.push("api-version=2015-08-01");
+        var daasVersionInfo=await diagProvider.getDaaSExtApiAsync("daasversion",param); 
         if(daasVersionInfo.status == "200")
         {
             var isDaasExtAccessible= true;
@@ -57,39 +57,40 @@ export var functionsFlow = {
              
         var daasVersion=daasVersionInfo.body.Version;        
         var isDaasNew=false; 
-if(isDaasExtAccessible == true){
-function versionCompare(v1, v2) 
-{ 
-    var vnum1 = 0, vnum2 = 0; 
-    for (var i = 0, j = 0; (i < v1.length 
-                            || j < v2.length);) { 
-        while (i < v1.length && v1[i] != '.') { 
-            vnum1 = vnum1 * 10 + (v1[i] - '0'); 
-            i++; 
-        } 
-        while (j < v2.length && v2[j] != '.') { 
-            vnum2 = vnum2 * 10 + (v2[j] - '0'); 
-            j++; 
-        } 
-        if (vnum1 > vnum2) 
-            return 1; 
-        if (vnum2 > vnum1) 
-            return -1;
-        vnum1 = vnum2 = 0; 
-        i++; 
-        j++; 
-    } 
-    return 0; 
-} 
-var version1 = daasVersion; 
-var version2 = "2.2.1221.01";
-if (versionCompare(version1, version2) >= 0) {
-        isDaasNew = true;
-        } 
-else{
-        isDaasNew = false;
-    }
-}
+        if(isDaasExtAccessible == true){
+            function versionCompare(v1, v2) 
+            { 
+                var vnum1 = 0, vnum2 = 0; 
+                for (var i = 0, j = 0; (i < v1.length 
+                                        || j < v2.length);) { 
+                    while (i < v1.length && v1[i] != '.') { 
+                        vnum1 = vnum1 * 10 + (v1[i] - '0'); 
+                        i++; 
+                    } 
+                    while (j < v2.length && v2[j] != '.') { 
+                        vnum2 = vnum2 * 10 + (v2[j] - '0'); 
+                        j++; 
+                    } 
+                    if (vnum1 > vnum2) 
+                        return 1; 
+                    if (vnum2 > vnum1) 
+                        return -1;
+                    vnum1 = vnum2 = 0; 
+                    i++; 
+                    j++; 
+                } 
+                return 0; 
+            } 
+        var version1 = daasVersion; 
+        var version2 = "2.2.1221.01";
+        if (versionCompare(version1, version2) >= 0)
+            {
+                isDaasNew = true;
+            } 
+        else{
+                isDaasNew = false;
+            }
+        }
         /**
          * Functions specific checks
          **/
@@ -652,19 +653,19 @@ async function validateConnectionViaAppSetting(propertyName, connectionString, t
                 detailsMarkdown = `Managedidentity authentication failure - Credential app setting is not set to managedidentity which disallowed checking connection using clientId.`;
                 break;
             case "FullyQualifiedNamespacemissed":
-                title = "Athentication failure";
+                title = "Authentication failure";
                 detailsMarkdown = `fullyQualifiedNamespace authentication failure - All required app settings to check the connection have not been provided with valid values.`;
                 break;
             case "SystemAssignedmanagedidentity":
-                title = "Athentication failure";
+                title = "Authentication failure";
                 detailsMarkdown = `The target service is not provided with Access to the function app using system assigned identity.`;
                 break;
             case "UserAssignedmanagedidentity":
-                title = "Athentication failure";
+                title = "Authentication failure";
                 detailsMarkdown = `The target service is not provided with access to the user assigned identity which is configured for the function app.`;
                 break;
             case "ManagedIdentityCredential":
-                title = "Athentication failure";
+                title = "Authentication failure";
                 detailsMarkdown = `There is no managed identity configured for the function app.`;
                 break;
             case "Forbidden":
