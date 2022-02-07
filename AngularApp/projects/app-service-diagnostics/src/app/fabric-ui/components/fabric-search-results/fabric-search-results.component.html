@@ -2,7 +2,7 @@
   <div class="search-box">
     <fab-search-box id="fabSearchBox" type="search" [placeholder]="searchPlaceHolder" [value]="searchValue"
       [ariaLabel]="inputAriaLabel" (onChange)="updateSearchValue($event)" (onFocus)="onSearchBoxFocus()"
-      (onBlur)="onBlurHandler()" (onEscape)="clearSearchWithKey()" aria-controls="search-results">
+      (onBlur)="onBlurHandler()" (onEscape)="clearSearchWithKey()">
     </fab-search-box>
   </div>
   <div class="result-container" *ngIf="showSearchResults">
