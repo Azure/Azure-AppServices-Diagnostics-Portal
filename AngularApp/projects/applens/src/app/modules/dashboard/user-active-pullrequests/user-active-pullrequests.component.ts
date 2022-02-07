@@ -35,13 +35,12 @@ export class UserActivePullrequestsComponent implements OnInit {
       { columnName: "Source Branch"}
     ];
     let rows: any[][] = [];
-
-   
     pullrequests.forEach(element => {
       let sourceBranch:string = element['sourceRefName'];
+      let sourceBranchTrim = sourceBranch.replace('refs/heads/', '');
       let title:string = element['title'];
       let link:string = element['remoteUrl'];
-      let branchUserName = sourceBranch.replace('refs/heads/','').startsWith('dev/') ? sourceBranch.split("/")[1] : sourceBranch;
+      let branchUserName = sourceBranchTrim.startsWith('dev/') ? sourceBranchTrim.split("/")[1] : sourceBranchTrim;
       if (branchUserName.includes(this.userId) && title != undefined && title != '' && link != undefined && link != '') {  
         let rowElement = `<markdown><a href="${link}">${title}</a></markdown>`;
         sourceBranch = sourceBranch.replace('refs/heads/','');
