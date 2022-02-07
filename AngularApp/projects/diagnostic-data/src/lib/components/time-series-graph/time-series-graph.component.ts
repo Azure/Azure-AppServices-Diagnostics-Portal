@@ -40,6 +40,7 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
 
     timeGrain: momentNs.Duration;
     metricType: MetricType = MetricType.Avg;
+    originalDataPoints:{ [key:string]:number[] } = {};
     processData(data: DiagnosticData) {
         super.processData(data);
 
@@ -157,6 +158,9 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
                 tablePoints
                     .filter(point => this._getSeriesName(point.column, point.counterName) === key)
                     .sort((b, a) => !this.customizeXAxis ? a.timestamp.diff(b.timestamp) : b.timestamp.diff(a.timestamp));
+            
+            this.originalDataPoints[key] = this._getOriginalDataPoints(pointsForThisSeries,this.customizeXAxis);
+            
 
             if (!this.customizeXAxis) {
                 let pointToAdd = pointsForThisSeries.pop();
@@ -297,6 +301,21 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
             this.dataTable.columns.filter(column => DataTableDataType.NumberTypes.indexOf(column.dataType) >= 0);
 
         return columns;
+    }
+
+    private _getOriginalDataPoints(pointsForThisSeries:TablePoint[], customizeXAxis:boolean):number[] {
+        //If no data, return a default value
+        if(!Array.isArray(pointsForThisSeries) || pointsForThisSeries.length === 0) return [this.defaultValue];
+        const copiedPoints = [...pointsForThisSeries];
+
+        //Remove all data points before startTime
+        if(!customizeXAxis) {
+            while (copiedPoints.length > 0 && copiedPoints[copiedPoints.length - 1].timestamp.isBefore(this.startTime)) {
+                copiedPoints.pop();
+            }
+        }
+
+        return copiedPoints.map(p => p.value);
     }
 
 }

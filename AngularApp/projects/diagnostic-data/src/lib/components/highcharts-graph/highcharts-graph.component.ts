@@ -46,6 +46,8 @@ export class HighchartsGraphComponent implements OnInit {
     @Input() endTime: momentNs.Moment;
 
     @Input() metricType: MetricType;
+
+    @Input() originalDataPoints: { [key:string]:number[] }
     private _xAxisPlotBands: xAxisPlotBand[] = null;
     @Input() public set xAxisPlotBands(value: xAxisPlotBand[]) {
         this._xAxisPlotBands = [];
@@ -523,16 +525,13 @@ export class HighchartsGraphComponent implements OnInit {
         setTimeout(() => {
             const currentCharts = this.el.nativeElement.getElementsByClassName('highcharts-container') ? this.el.nativeElement.getElementsByClassName('highcharts-container') : null;
             const currentChartId = currentCharts && currentCharts[0] && currentCharts[0].id ? currentCharts[0].id : "";
-            this.highChartsHoverService.hoverXAxisValue.subscribe(data => {
-                this.updateMetric(data);
-            });
 
             const chart = <Highcharts.Chart>Highcharts.charts.find(c => c && c.container.id === currentChartId);
             if (!chart) return;
 
             chart.series.forEach(series => {
-                const data: number[] = series.data.map(point => point.options.y);
-                const defaultValue = this.getMetricsDefaultValue(data);
+                const name = series.name;
+                const defaultValue = this.originalDataPoints[name] ? this.getMetricsDefaultValue(this.originalDataPoints[name]) : 0;
                 this.hoverData.push({
                     name: series.name,
                     //Workaround,no color property in highchart ts definition
@@ -541,6 +540,10 @@ export class HighchartsGraphComponent implements OnInit {
                     defaultValue: defaultValue,
                     isSelect: true
                 });
+            });
+
+            this.highChartsHoverService.hoverXAxisValue.subscribe(data => {
+                this.updateMetric(data);
             });
 
         }, 300);
