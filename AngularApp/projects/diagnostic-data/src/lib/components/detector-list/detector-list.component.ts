@@ -55,6 +55,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
   issueDetectedViewModels: DetectorViewModeWithInsightInfo[] = [];
   successfulViewModels: DetectorViewModeWithInsightInfo[] = [];
+  failedLoadingViewModels: any[] = [];
   allSolutionsMap: Map<string, Solution[]> = new Map<string, Solution[]>();
   solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   allSolutions: Solution[] = [];
@@ -102,7 +103,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
   private getDetectorResponses(): void {
     this._diagnosticService.getDetectors(this.overrideResourceUri).subscribe(detectors => {
-      this.startDetectorRendering(detectors, null, false);
+      this.startDetectorRendering(detectors);
     }, (error => {
       if (this.overrideResourceUri !== "") {
         const e = JSON.parse(error);
@@ -196,7 +197,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
 
   //Get from detector-list-analysis
-  startDetectorRendering(detectorList: DetectorMetaData[], downTime: DownTime, containsDownTime: boolean) {
+  startDetectorRendering(detectorList: DetectorMetaData[]) {
     this.issueDetectedViewModels = [];
     const requests: Observable<any>[] = [];
 
@@ -244,8 +245,12 @@ export class DetectorListComponent extends DataRenderBaseComponent {
             'ChildDetectorLoadingStatus': this.detectorViewModels[index].loadingStatus
           };
         })
-        , catchError(err => {
+        , catchError(err => {          
           this.detectorViewModels[index].loadingStatus = LoadingStatus.Failed;
+          this.loading = this.detectorViewModels.findIndex(vm => vm.loadingStatus === LoadingStatus.Loading) > -1 ? LoadingStatus.Loading : LoadingStatus.Success;
+          this.failedLoadingViewModels.push({
+            model: this.detectorViewModels[index]
+          });
           return of({});
         })
       ));
