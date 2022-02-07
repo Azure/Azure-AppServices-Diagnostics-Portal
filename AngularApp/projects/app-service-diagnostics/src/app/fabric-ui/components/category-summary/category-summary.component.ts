@@ -109,5 +109,9 @@ export class CategorySummaryComponent implements OnInit {
 
     ngAfterViewInit() {
         this._telemetryService.logPageView(TelemetryEventNames.CategoryPageLoaded, {"category": this.categoryName});
+
+        if(document.getElementById("Overview")) {
+            (<HTMLInputElement>document.getElementById("Overview")).focus();
+        }
     }
 }
