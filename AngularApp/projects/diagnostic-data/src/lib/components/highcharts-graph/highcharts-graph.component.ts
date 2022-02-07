@@ -642,8 +642,8 @@ export class HighchartsGraphComponent implements OnInit {
             // "Stack" by "percent".
             switch (this.chartType as TimeSeriesType) {
                 case TimeSeriesType.StackedAreaGraph:
-                    // type = 'area';
-                    // stacking = 'normal';
+                    type = 'area';
+                    stacking = 'normal';
                     break;
                 case TimeSeriesType.StackedBarGraph:
                     type = 'column';
