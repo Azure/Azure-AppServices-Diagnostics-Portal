@@ -259,6 +259,21 @@ export class OnboardingFlowComponent implements OnInit {
     }
   }
 
+  dataSources: IDropdownOption[] = [
+    {
+      key: "1", 
+      text: "Applens"
+    }, 
+    {
+      key: "2", 
+      text: "Portal"
+    }, 
+    {
+      key: "0", 
+      text: "All"
+    }
+  ];
+
   modalPublishingButtonText: string;
   modalPublishingButtonDisabled: boolean;
   publishAccessControlResponse: any;
@@ -319,6 +334,10 @@ export class OnboardingFlowComponent implements OnInit {
     this.userName = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
     this.emailRecipients = this.userName.replace('@microsoft.com', '');
     this.publishAccessControlResponse = {};
+  }
+
+  updateDataSources(event: string){
+    console.log(event);
   }
 
   showDeleteDialog() {
@@ -465,7 +484,7 @@ export class OnboardingFlowComponent implements OnInit {
           });
         }
       });
-      if (this.showBranches.length < 1) {
+      if (this.showBranches.length < 1 || this.mode == DevelopMode.EditMonitoring || this.mode == DevelopMode.EditAnalytics) {
         this.noBranchesAvailable();
       }
       else {
