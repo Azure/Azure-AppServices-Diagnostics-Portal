@@ -24,7 +24,7 @@ import { ApplensDiagnosticService } from './services/applens-diagnostic.service'
 import { ApplensCommsService } from './services/applens-comms.service';
 import { ApplensSupportTopicService } from './services/applens-support-topic.service';
 import { ApplensContentService } from './services/applens-content.service';
-import { DiagnosticService, DiagnosticDataModule, CommsService, DetectorControlService, GenericSupportTopicService, GenericContentService, GenericDocumentsSearchService, GenieGlobals, SolutionOrchestratorComponent } from 'diagnostic-data';
+import { DiagnosticService, DiagnosticDataModule, CommsService, DetectorControlService, GenericSupportTopicService, GenericContentService, GenericDocumentsSearchService, GenieGlobals, SolutionOrchestratorComponent, TimePickerOptions } from 'diagnostic-data';
 import { FabButtonModule, FabCalendarComponent, FabCalendarModule, FabCalloutModule, FabCheckboxModule, FabChoiceGroupModule, FabCommandBarModule, FabDatePickerModule, FabDetailsListModule, FabDialogModule, FabDropdownModule, FabIconModule, FabPanelModule, FabPivotModule, FabSearchBoxModule, FabTextFieldModule } from '@angular-react/fabric';
 import { CollapsibleMenuModule } from '../../collapsible-menu/collapsible-menu.module';
 import { ObserverService } from '../../shared/services/observer.service';
@@ -72,7 +72,15 @@ export class InitResolver implements Resolve<Observable<ResourceInfo>>{
     constructor(private _resourceService: ResourceService, private _detectorControlService: DetectorControlService,private _userInfoService:UserSettingService) { }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ResourceInfo> {
-        this._detectorControlService.setCustomStartEnd(route.queryParams['startTime'], route.queryParams['endTime']);
+        const startTime = route.queryParams['startTime'];
+        const endTime = route.queryParams['endTime'];
+        this._detectorControlService.setCustomStartEnd(startTime, endTime);
+        this._detectorControlService.updateTimePickerInfo({
+            selectedKey: TimePickerOptions.Custom,
+            selectedText: TimePickerOptions.Custom,
+            startDate: new Date(startTime),
+            endDate: new Date(endTime)
+        });
         return this._resourceService.waitForInitialization().pipe(map(resourceInfo => {
             const recentResource: RecentResource = {
                 resourceUri: resourceInfo.resourceUri,
