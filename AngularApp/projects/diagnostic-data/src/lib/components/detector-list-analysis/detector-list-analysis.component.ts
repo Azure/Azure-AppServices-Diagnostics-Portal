@@ -1,6 +1,6 @@
 import { Moment } from 'moment';
 import { v4 as uuid } from 'uuid';
-import { Component, OnInit, Input, Inject, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, Input, Inject, EventEmitter, Output, Optional } from '@angular/core';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { LoadingStatus } from '../../models/loading';
 import { StatusStyles } from '../../models/styles';
@@ -30,6 +30,7 @@ import { zoomBehaviors } from '../../models/time-series';
 import * as momentNs from 'moment';
 const moment = momentNs;
 import { PanelType } from 'office-ui-fabric-react';
+import { GenericBreadcrumbService } from '../../services/generic-breadcrumb.service';
 
 const WAIT_TIME_IN_SECONDS_TO_ALLOW_DOWNTIME_INTERACTION: number = 58;
 const PERCENT_CHILD_DETECTORS_COMPLETED_TO_ALLOW_DOWNTIME_INTERACTION: number = 0.9;
@@ -67,6 +68,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     downtimeResetTimer: any = null;
     @Input() searchTerm: string = "";
     @Input() keystoneSolutionView: boolean = false;
+    analysisName: string = "";
     detectorViewModels: any[];
     detectorId: string;
     detectorName: string = '';
@@ -122,7 +124,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         private _diagnosticService: DiagnosticService, private _detectorControl: DetectorControlService,
         protected telemetryService: TelemetryService, public _appInsightsService: AppInsightsQueryService,
         private _supportTopicService: GenericSupportTopicService, protected _globals: GenieGlobals, private _solutionService: SolutionService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService) {
+        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, @Optional() private _genericBreadcrumbService?: GenericBreadcrumbService) {
         super(telemetryService);
         this.isPublic = config && config.isPublic;
 
@@ -168,6 +170,11 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
 
         this.startTime = this._detectorControl.startTime;
         this.endTime = this._detectorControl.endTime;
+
+        this._diagnosticService.getDetectors().subscribe(detectors => {
+            const metaData = detectors.find(d => d.id === this.analysisId && d.type === DetectorType.Analysis);
+            if(metaData) this.analysisName = metaData.name;
+        })
     }
 
     toggleSuccessful() {
@@ -591,8 +598,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                 })
                 , catchError(err => {
                     this.evaluateAndEmitDowntimeInteractionState(containsDownTime, this.detectorViewModels.length, zoomBehaviors.CancelZoom | zoomBehaviors.FireXAxisSelectionEvent | zoomBehaviors.UnGreyGraph);
-                    if (this.detectorViewModels[index] != null)
-                    {
+                    if (this.detectorViewModels[index] != null) {
                         this.detectorViewModels[index].loadingStatus = LoadingStatus.Failed;
                     }
                     return of({});
@@ -866,10 +872,12 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                                     startDate: new Date(viewModel.model.startTime),
                                     endDate: new Date(viewModel.model.endTime)
                                 });
+                                this.updateBreadcrumb();
                                 this._router.navigate([`../../detectors/${detectorId}`], { relativeTo: this._activatedRoute });
                             });
                         }
                         else {
+                            this.updateBreadcrumb();
                             this._router.navigate([`../../detectors/${detectorId}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', preserveFragment: true });
                         }
                     }
@@ -915,6 +923,17 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         this.solutionTitle = title;
         this.allSolutions = this.allSolutionsMap.get(title);
         this.solutionPanelOpenSubject.next(true);
+    }
+
+    private updateBreadcrumb() {
+        if(this.isPublic || this.withinGenie) return;
+        if (this._genericBreadcrumbService) {
+            this._genericBreadcrumbService.updateBreadCrumbSubject({
+                name: this.analysisName,
+                id: this.analysisId,
+                isDetector: false
+            });
+        }
     }
 }
 

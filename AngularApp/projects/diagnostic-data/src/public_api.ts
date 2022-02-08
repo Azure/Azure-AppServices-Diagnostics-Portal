@@ -24,6 +24,7 @@ export * from './lib/services/genie.service';
 export * from './lib/services/version.service';
 export * from './lib/services/backend-ctrl-query.service';
 export * from './lib/services/portal-action.service';
+export * from './lib/services/generic-breadcrumb.service';
 export * from './lib/config/diagnostic-data-config';
 export * from './lib/diagnostic-data.module';
 

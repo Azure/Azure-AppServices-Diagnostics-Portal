@@ -3,20 +3,21 @@ import { Subscription, Observable } from 'rxjs';
 import { Component, OnDestroy, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { ResourceService } from '../../../shared/services/resource.service';
 import * as momentNs from 'moment';
-import { DetectorControlService, FeatureNavigationService, DetectorMetaData, DetectorType } from 'diagnostic-data';
+import { DetectorControlService, FeatureNavigationService, DetectorMetaData, DetectorType, BreadcrumbNavigationItem } from 'diagnostic-data';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from '@angular/router';
 import { SearchService } from '../services/search.service';
 import { environment } from '../../../../environments/environment';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ObserverService } from '../../../shared/services/observer.service';
-import { ICommandBarProps, PanelType } from 'office-ui-fabric-react';
+import { ICommandBarProps, PanelType, IBreadcrumbProps, IBreadcrumbItem } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';
 import { L2SideNavType } from '../l2-side-nav/l2-side-nav';
 import { l1SideNavCollapseWidth, l1SideNavExpandWidth } from '../../../shared/components/l1-side-nav/l1-side-nav';
 import { filter } from 'rxjs/operators';
 import { StartupService } from '../../../shared/services/startup.service';
 import { UserInfo } from '../user-detectors/user-detectors.component';
+import { BreadcrumbService } from '../services/breadcrumb.service';
 
 @Component({
   selector: 'dashboard',
@@ -62,10 +63,11 @@ export class DashboardComponent implements OnDestroy {
   showL2SideNav: boolean = false;
   expandL1SideNav: boolean = false;
   detectors: DetectorMetaData[] = [];
+  breadcrumbItems: IBreadcrumbItem[] = [];
 
   constructor(public resourceService: ResourceService, private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
-    private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, private _applensGlobal: ApplensGlobal, private _startupService: StartupService, private _resourceService: ResourceService) {
+    private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, private _applensGlobal: ApplensGlobal, private _startupService: StartupService, private _resourceService: ResourceService, private _breadcrumbService: BreadcrumbService) {
     this.contentHeight = (window.innerHeight - 50) + 'px';
 
     this.navigateSub = this._navigator.OnDetectorNavigate.subscribe((detector: string) => {
@@ -166,6 +168,14 @@ export class DashboardComponent implements OnDestroy {
     //   }
     //   console.log(data);
     // });
+    this._breadcrumbService.breadcrumbSubject.subscribe(items => {
+      this.breadcrumbItems = [];
+      items.forEach(i => {
+        const breadcrumbItem = this.convertToBreadCrumbItem(i);
+        this.breadcrumbItems.push(breadcrumbItem);
+      });
+      this.breadcrumbItems[this.breadcrumbItems.length - 1].isCurrentItem = true;
+    });
   }
 
 
@@ -242,6 +252,17 @@ export class DashboardComponent implements OnDestroy {
   private updateShowTitle() {
     const showTitle = this._activatedRoute.firstChild.snapshot.data["showTitle"];
     this.showTitle = showTitle === undefined ? true : showTitle;
+  }
+
+  private convertToBreadCrumbItem(navigationItem: BreadcrumbNavigationItem): IBreadcrumbItem {
+    const item: IBreadcrumbItem = {
+      key: navigationItem.name,
+      text: navigationItem.name,
+      onClick: (ev, item) => {
+        this._breadcrumbService.navigate(navigationItem);
+      }
+    }
+    return item;
   }
 }
 
