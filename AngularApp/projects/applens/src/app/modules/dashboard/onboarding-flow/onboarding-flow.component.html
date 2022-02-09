@@ -267,6 +267,13 @@
     {{alertMessage}}
   </div>
 
+  <ng-container *ngIf="showBranchInfo">
+    <fab-message-bar [messageBarType]="notificationStatusType"  dismissButtonAriaLabel="Close" [styles]="styles">
+       Note: You have active branches for this detector. {{displayBranch}} has been pre-selected for development.
+    </fab-message-bar>
+  </ng-container>
+
+  <loader-view *ngIf="!codeLoaded" message="Starting onboarding flow ..."></loader-view>
 
   <fab-command-bar [attr.id]="'fab-command-bar'" contentClass="fab-command-bar-class">
     <items>
