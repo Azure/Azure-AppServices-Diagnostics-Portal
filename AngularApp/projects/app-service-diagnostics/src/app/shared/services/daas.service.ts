@@ -62,9 +62,15 @@ export class DaasService {
         return <Observable<Session[]>>this._armClient.getResourceWithoutEnvelope<Session[]>(resourceUri, null, true);
     }
 
-    getActiveSession(site: SiteDaasInfo, isWindowsApp: boolean): Observable<SessionV2> {
+    //
+    // With ANT 97 for Linux, the  path to check active session was changed to '/daas/sessions/active'
+    // but accidentally the old path '/daas/activesession' got removed. Hence, the caller needs to try both 
+    // paths unfortunately. This will go away post ANT97 deployment
+    //
+
+    getActiveSession(site: SiteDaasInfo, isWindowsApp: boolean, useNewRouteForLinux: boolean): Observable<SessionV2> {
         let resourceUri: string = this._uriElementsService.getActiveDiagnosticsSessionV2Url(site);
-        if (!isWindowsApp) {
+        if (!isWindowsApp && !useNewRouteForLinux) {
             resourceUri = this._uriElementsService.getActiveDiagnosticsSessionV2LinuxUrl(site);
         }
         return <Observable<SessionV2>>this._armClient.getResourceWithoutEnvelope<SessionV2>(resourceUri, null, true);

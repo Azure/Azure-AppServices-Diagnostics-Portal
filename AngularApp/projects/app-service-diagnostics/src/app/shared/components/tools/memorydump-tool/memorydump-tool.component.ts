@@ -2,12 +2,16 @@ import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { DaasBaseComponent } from '../daas-base/daas-base.component';
 import { SiteService } from '../../../services/site.service';
 import { WebSitesService } from '../../../../resources/web-sites/services/web-sites.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     templateUrl: 'memorydump-tool.component.html',
     styleUrls: ['../styles/daasstyles.scss']
 })
 export class MemoryDumpToolComponent extends DaasBaseComponent implements OnInit {
+
+    multipleAntaresVersions: boolean = false;
+    allInstancesOnAnt98: boolean = false;
 
     title: string = 'Collect a Memory dump';
     description: string = 'If your app is performing slow or not responding at all, you can collect a memory dump to identify the root cause of the issue.';
@@ -19,12 +23,21 @@ export class MemoryDumpToolComponent extends DaasBaseComponent implements OnInit
     ];
     diagnoserNameLookup: string;
 
-    constructor(private _siteServiceLocal: SiteService, private _webSiteServiceLocal: WebSitesService) {
+    constructor(private _siteServiceLocal: SiteService, private _webSiteServiceLocal: WebSitesService,
+        private _activatedRoute: ActivatedRoute) {
         super(_siteServiceLocal, _webSiteServiceLocal);
+
+        if (_activatedRoute.snapshot.data.hasOwnProperty("multipleVersions")) {
+            this.multipleAntaresVersions = _activatedRoute.snapshot.data["multipleVersions"];
+        }
+
+        if (_activatedRoute.snapshot.data.hasOwnProperty("allInstancesOnAnt98")) {
+            this.allInstancesOnAnt98 = _activatedRoute.snapshot.data["allInstancesOnAnt98"];
+        }
     }
 
     ngOnInit(): void {
-        this.diagnoserName = this.isWindowsApp && !this.isBetaSubscription? 'Memory Dump' : 'MemoryDump';
+        this.diagnoserName = this.isWindowsApp && !this.isBetaSubscription ? 'Memory Dump' : 'MemoryDump';
         this.diagnoserNameLookup = this.diagnoserName;
         this.scmPath = this._siteServiceLocal.currentSiteStatic.enabledHostNames.find(hostname => hostname.indexOf('.scm.') > 0);
     }

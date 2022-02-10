@@ -10,7 +10,8 @@
         </div>
         <ng-template #linuxApp>
             <daas-v2 [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName"
-                (SessionsEvent)="updateSessions($event)">
+                (SessionsEvent)="updateSessions($event)" [multipleAntaresVersions]="multipleAntaresVersions"
+                [allInstancesOnAnt98]="allInstancesOnAnt98" >
             </daas-v2>
         </ng-template>
 

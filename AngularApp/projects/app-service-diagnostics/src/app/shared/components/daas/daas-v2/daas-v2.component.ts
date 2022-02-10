@@ -29,6 +29,9 @@ export class DaasV2Component implements OnInit, OnDestroy {
   @Input() diagnoserName: string;
   @Input() diagnoserNameLookup: string = '';
 
+  @Input() multipleAntaresVersions: boolean;
+  @Input() allInstancesOnAnt98: boolean;        // TODO - Yet to be implemented
+
   @Output() SessionsEvent: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   instances: string[];
@@ -107,6 +110,9 @@ export class DaasV2Component implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (!this.isWindowsApp && this.multipleAntaresVersions) {
+      this.error = "This app is currently running on instances that are running both old and newer versions of Azure App Service Platform. These tools don't work for apps when instances have multiple platform versions. Please use the 'Process Explorer' tool from the Kudu site (yoursitename.scm.azurewebsites.net/newui) to collect the diagnostic data.";
+    }
   }
 
   initWizard(): void {
@@ -142,22 +148,41 @@ export class DaasV2Component implements OnInit, OnDestroy {
   checkRunningSessions() {
     this.operationInProgress = true;
     this.operationStatus = 'Checking active sessions...';
+    let useNewRouteForLinux: boolean = false;
 
-    this._daasService.getActiveSession(this.siteToBeDiagnosed, this.isWindowsApp).pipe(retry(2))
+    this._daasService.getActiveSession(this.siteToBeDiagnosed, this.isWindowsApp, useNewRouteForLinux).pipe(retry(2))
       .subscribe(activeSession => {
-        this.operationInProgress = false;
-        this.operationStatus = '';
-        if (activeSession && activeSession.Tool === this.diagnoserName) {
-          this.sessionInProgress = true;
-          this.initWizard();
-          this.updateInstanceInformationOnLoad(activeSession.Instances);
-          this.populateSessionInformation(activeSession);
-          this.sessionId = activeSession.SessionId;
-          this.subscription = interval(10000).subscribe(res => {
-            this.pollRunningSession(this.sessionId);
-          });
+        this.populateActiveSession(activeSession);
+      }, (err) => {
+
+        if (!this.isWindowsApp) {
+
+          //
+          // ANT 97 defined new routes to check for active session
+          //
+
+          useNewRouteForLinux = true;
+          this._daasService.getActiveSession(this.siteToBeDiagnosed, this.isWindowsApp, useNewRouteForLinux).pipe(retry(2))
+            .subscribe(activeSession => {
+              this.populateActiveSession(activeSession);
+            });
         }
       });
+  }
+
+  populateActiveSession(activeSession: SessionV2) {
+    this.operationInProgress = false;
+    this.operationStatus = '';
+    if (activeSession && activeSession.Tool === this.diagnoserName) {
+      this.sessionInProgress = true;
+      this.initWizard();
+      this.updateInstanceInformationOnLoad(activeSession.Instances);
+      this.populateSessionInformation(activeSession);
+      this.sessionId = activeSession.SessionId;
+      this.subscription = interval(10000).subscribe(res => {
+        this.pollRunningSession(this.sessionId);
+      });
+    }
   }
 
   pollRunningSession(sessionId: string) {
