@@ -267,15 +267,13 @@
         (click)="internalExternalToggle()"></fab-command-bar-item> -->
       <fab-command-bar-item>
         <render>
-          <ng-template let-item="item">
-            <div style="padding-top:1px!important;">
-              <fab-dropdown label="Data Source" placeholder="Data Source"
+          <ng-template>
+            <div>
+              <fab-dropdown placeholder="Data Source"
                   [options]="dataSources" (onChange)="updateDataSources($event)"></fab-dropdown>
             </div>
           </ng-template>
         </render>
-        <fab-dropdown label="Data Source" placeholder="Data Source"
-        [options]="dataSources" (onChange)="updateDataSources($event)"></fab-dropdown>
       </fab-command-bar-item>
       <far-items>
         <fab-command-bar-item *ngIf="detectorGraduation" key="brachSelectorPill" text="custom text">
