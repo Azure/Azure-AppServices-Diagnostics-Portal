@@ -49,7 +49,7 @@ export class ContainerAppFinderComponent implements OnInit {
     let resourceArray: string[] = [
       'subscriptions', matchingSite.SubscriptionName,
       'resourceGroups', matchingSite.ResourceGroupName,
-      'providers', 'Microsoft.Web',
+      'providers', (matchingSite.IsInAppNamespace ? 'Microsoft.App' : 'Microsoft.Web'),
       'containerApps', matchingSite.ContainerAppName];
 
     // resourceArray.push('home');

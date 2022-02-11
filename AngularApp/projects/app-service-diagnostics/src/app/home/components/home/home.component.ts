@@ -390,7 +390,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     private initalABTestingBanner() {
         this.isPreview = this.abTestingService.isPreview;
-        var isContainerApps = this._resourceService && !!this._resourceService.resource && this._resourceService.resource.type.toLowerCase() === 'microsoft.web/containerapps';
+        var isContainerApps = this._resourceService && !!this._resourceService.resource &&
+            (this._resourceService.resource.type.toLowerCase() === 'microsoft.web/containerapps' ||
+            this._resourceService.resource.type.toLowerCase() === 'microsoft.app/containerapps');
         var isArcApplianceApps = this._resourceService && !!this._resourceService.resource && this._resourceService.resource.type.toLowerCase() === 'microsoft.resourceConnector/appliances';
 
         this.enableABTesting = this.abTestingService.enableABTesting && !isContainerApps && !isArcApplianceApps;

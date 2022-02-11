@@ -54,6 +54,18 @@
             "displayName": "Container App"
         },
         {
+            "service": "ContainerAppService",
+            "resourceType": "Microsoft.App/containerApps",
+            "templateFileName": "MicrosoftAppContainerApp",
+            "imgSrc": "assets/img/Azure-ContainerApp-Logo.png",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "containerapp",
+            "pesId": "17677",
+            "staticSelfHelpContent": "microsoft.app",
+            "searchSuffix": "AZURE CONTAINER APP",
+            "displayName": "Container App"
+        },
+        {
             "service": "ResourceService",
             "resourceType": "Microsoft.ContainerService/managedClusters",
             "templateFileName": "KubernetesService",

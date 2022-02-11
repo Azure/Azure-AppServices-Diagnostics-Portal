@@ -20,6 +20,7 @@ export let ResourceServiceFactory = (startupService: StartupService, observerSer
             service = new SiteService(serviceInputs, observerService);
             break;
         case 'Microsoft.Web/containerApps':
+        case 'Microsoft.App/containerApps':
             service = new ContainerAppService(serviceInputs, observerService);
             break;
         default:

@@ -37,6 +37,7 @@ namespace Observer {
         GeoMasterName: string;
         ServiceAddress: string;
         Kind: string;
+        IsInAppNamespace: boolean;
     }
 
     export interface ObserverSiteDetailsResponse {
