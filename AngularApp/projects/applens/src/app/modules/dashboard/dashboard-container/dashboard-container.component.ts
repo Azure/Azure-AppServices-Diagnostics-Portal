@@ -40,7 +40,8 @@ export class DashboardContainerComponent implements OnInit {
           if (resource['IsXenon']) {
             this._resourceService.imgSrc = this._resourceService.altIcons['Xenon'];
           }
-        } else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/containerapps') {
+        } else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/containerapps' ||
+                   serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.app/containerapps') {
           this._diagnosticApiService.GeomasterServiceAddress = this.resource.ServiceAddress;
           this._diagnosticApiService.GeomasterName = this.resource.GeoMasterName;
           this.observerLink = "https://wawsobserver.azurewebsites.windows.net/partner/containerapp/" + this.resource.ContainerAppName;
