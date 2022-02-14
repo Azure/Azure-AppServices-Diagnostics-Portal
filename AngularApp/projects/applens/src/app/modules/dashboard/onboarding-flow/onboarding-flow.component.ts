@@ -337,7 +337,7 @@ export class OnboardingFlowComponent implements OnInit {
   updateBranch() {
     this.Branch = this.tempBranch;
     this.displayBranch = this.Branch;
-    this.diagnosticApiService.getDetectorCode(`${this.id}/${this.id}.csx`, this.Branch, this.resourceId).subscribe(x => {
+    this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`, this.Branch, this.resourceId).subscribe(x => {
       this.code = x;
     });
     this.closeCallout();
@@ -424,7 +424,8 @@ export class OnboardingFlowComponent implements OnInit {
 
       this.autoMerge = devopsConfig.autoMerge;
 
-      this.getBranchList();
+      if (this.detectorGraduation)
+        this.getBranchList();
 
       if (this._detectorControlService.isInternalView) {
         this.internalExternalText = this.internalViewText;
@@ -440,7 +441,7 @@ export class OnboardingFlowComponent implements OnInit {
     this.showBranches = [];
 
     this.diagnosticApiService.getBranches(this.resourceId).subscribe(branches => {
-      var branchRegEx = new RegExp(`^dev\/.*\/detector\/${this.id}$`);
+      var branchRegEx = new RegExp(`^dev\/.*\/detector\/${this.id}$`, "i");
       branches.forEach(option => {
         this.optionsForSingleChoice.push({
           key: String(option["branchName"]),
@@ -457,7 +458,7 @@ export class OnboardingFlowComponent implements OnInit {
         }
       })
       this.optionsForSingleChoice.forEach(branch => {
-        if (branchRegEx.test(branch.text) && this.id != "") {
+        if (branchRegEx.test(branch.text) && this.id.toLowerCase() != "") {
           this.showBranches.push({
             key: String(branch.key),
             text: String(`${branch.text.split("/")[1]} : ${branch.text.split("/")[3]}`)
@@ -468,7 +469,7 @@ export class OnboardingFlowComponent implements OnInit {
         this.noBranchesAvailable();
       }
       else {
-        var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id}`
+        var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`
         this.Branch = this.targetInShowBranches(targetBranch) ? targetBranch : this.showBranches[0].key;
         this.displayBranch = this.Branch;
         this.tempBranch = this.Branch;
@@ -1152,7 +1153,7 @@ export class OnboardingFlowComponent implements OnInit {
   }
 
   setTargetBranch(){
-    var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id}`;
+    var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`;
 
     if (this.Branch === this.defaultBranch && this.targetInShowBranches(targetBranch)) {
       this.Branch = targetBranch;
@@ -1314,9 +1315,9 @@ export class OnboardingFlowComponent implements OnInit {
 
 
     let gradPublishFileTitles: string[] = [
-      `/${this.id}/${this.id}.csx`,
-      `/${this.id}/metadata.json`,
-      `/${this.id}/package.json`
+      `/${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`,
+      `/${this.id.toLowerCase()}/metadata.json`,
+      `/${this.id.toLowerCase()}/package.json`
     ];
 
     if (this.autoMerge) {
@@ -1469,7 +1470,7 @@ export class OnboardingFlowComponent implements OnInit {
     this.recommendedUtterances = [];
     this.utteranceInput = "";
     if (this.detectorGraduation && this.mode != DevelopMode.Create) {
-      this.diagnosticApiService.getDetectorCode(`${this.id}/metadata.json`, this.Branch, this.resourceId).subscribe(res => {
+      this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/metadata.json`, this.Branch, this.resourceId).subscribe(res => {
         this.allUtterances = JSON.parse(res).utterances;
       },
         (err) => {
@@ -1497,9 +1498,9 @@ export class OnboardingFlowComponent implements OnInit {
       }
       case DevelopMode.Edit: {
         if (this.detectorGraduation) {
-          this.fileName = `${this.id}.csx`;
+          this.fileName = `${this.id.toLowerCase()}.csx`;
           this.deleteAvailable = true;
-          detectorFile = this.diagnosticApiService.getDetectorCode(`${this.id}/${this.id}.csx`, this.Branch, this.resourceId)
+          detectorFile = this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`, this.Branch, this.resourceId)
         }
         else {
           this.fileName = `${this.id.toLowerCase()}.csx`;
@@ -1547,7 +1548,7 @@ export class OnboardingFlowComponent implements OnInit {
         }));
 
         configuration = branchObservable.pipe(switchMap((branch: string) => {
-          return this.diagnosticApiService.getDetectorCode(`${this.id}/package.json`, branch, this.resourceId).pipe(map(config => {
+          return this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/package.json`, branch, this.resourceId).pipe(map(config => {
             let c: object = JSON.parse(config)
             c['dependencies'] = c['dependencies'] || {};
 

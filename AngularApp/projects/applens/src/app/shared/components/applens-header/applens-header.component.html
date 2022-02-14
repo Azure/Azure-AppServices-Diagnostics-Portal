@@ -3,7 +3,7 @@
     <div style="display: flex;">
       <div class="header-title" role="button" (click)="navigateToLandingPage()" (keyup.enter)="navigateToLandingPage()">
         <img [src]="applensLogo" alt="Applens" class="header-img">
-        <div class="ml-3" style="font-weight: 600;">AppLens (Preview)</div>
+        <div class="ml-3" style="font-weight: 600;">AppLens {{envTag}}</div>
       </div>
       <div class="resource-info">
         <img *ngIf="resourceInfo.imgSrc" class="header-img ml-3" [src]="resourceInfo.imgSrc" [alt]="resourceInfo.searchSuffix">

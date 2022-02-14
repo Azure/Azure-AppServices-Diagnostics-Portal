@@ -13,6 +13,7 @@ export class ApplensHeaderComponent implements OnInit {
   userPhotoSource: string = "";
   applensLogo: string = "../../../../assets/img/Applens-Logo.svg";
   resourceInfo: ResourceInfo = new ResourceInfo();
+  envTag: string = "";
   constructor(private _adalService: AdalService, private _diagnosticApiService: DiagnosticApiService,private _activatedRoute:ActivatedRoute) { }
 
   ngOnInit() {
@@ -24,6 +25,9 @@ export class ApplensHeaderComponent implements OnInit {
     if(this._activatedRoute.snapshot.data["info"]) {
       this.resourceInfo = this._activatedRoute.snapshot.data["info"];
     }
+    this._diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
+      this.envTag = `(${env})`;
+    });
   }
 
   navigateToLandingPage() {
