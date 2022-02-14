@@ -125,13 +125,13 @@
           <fab-card [isExpandable]="false" [isAlign]="true">
             <div header>
               <div style="display: flex;align-items: center;min-height: 40px;">
-                <status-icon class="mr-3" [status]="DetectorStatus.Warning">
+                <status-icon class="mr-3" [status]="HealthStatus.Warning">
                 </status-icon>
                 <div class="list-view-title">{{viewModel.model.title}}</div>
               </div>
             </div>
             <div body>
-              <div style="margin-bottom: 10px;">Sorry, there are some issue when loading this check</div>
+              <div style="margin-bottom: 10px;">Sorry there was a problem. Please try viewing the detector here</div>
             </div>
             <div footer>
               <div style="margin-bottom: 12px;">

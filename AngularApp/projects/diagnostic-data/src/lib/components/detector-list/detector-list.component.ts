@@ -44,7 +44,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   detectorName:string = "";
   detectorMetaData: DetectorMetaData[];
   detectorViewModels: DetectorViewModel[] = [];
-  DetectorStatus = HealthStatus;
+  HealthStatus = HealthStatus;
   private childDetectorsEventProperties = {};
   overrideResourceUri: string = "";
   resourceType: string = "";

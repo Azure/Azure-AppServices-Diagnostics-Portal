@@ -75,8 +75,10 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     contentHeight: string;
     detectors: any[] = [];
     LoadingStatus = LoadingStatus;
+    HealthStatus = HealthStatus;
     issueDetectedViewModels: any[] = [];
     successfulViewModels: any[] = [];
+    failedLoadingViewModels: any[] = [];
     detectorMetaData: DetectorMetaData[];
     private childDetectorsEventProperties = {};
     loadingChildDetectors: boolean = false;
@@ -588,7 +590,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                             this.successfulViewModels.push(successViewModel);
                         }
                     }
-
+                    
                     return {
                         'ChildDetectorName': this.detectorViewModels[index].title,
                         'ChildDetectorId': this.detectorViewModels[index].metadata.id,
@@ -601,6 +603,9 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                     if (this.detectorViewModels[index] != null) {
                         this.detectorViewModels[index].loadingStatus = LoadingStatus.Failed;
                     }
+                    this.failedLoadingViewModels.push({
+                       model: this.detectorViewModels[index]
+                    });
                     return of({});
                 })
             ));
