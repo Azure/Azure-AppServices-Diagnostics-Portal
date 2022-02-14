@@ -40,7 +40,9 @@
     <applens-preview-banner></applens-preview-banner>
     <comm-alert></comm-alert>
     <l2-side-nav></l2-side-nav>
-    <fab-breadcrumb [items]="breadcrumbItems"></fab-breadcrumb>
+    <div style="margin-left: 12px;">
+      <fab-breadcrumb [items]="breadcrumbItems"></fab-breadcrumb>
+    </div>
     <div *ngIf="showTitle" class="dashboard-title">
       {{getTitle()}}
     </div>
