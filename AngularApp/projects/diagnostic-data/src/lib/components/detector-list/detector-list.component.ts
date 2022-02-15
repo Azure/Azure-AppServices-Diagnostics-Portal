@@ -2,9 +2,9 @@ import { BehaviorSubject, forkJoin as observableForkJoin, Observable, of } from 
 import { map } from 'rxjs/internal/operators/map';
 import { catchError } from 'rxjs/operators';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Pipe, PipeTransform, Inject, OnInit, Optional } from '@angular/core';
+import { Component, Pipe, PipeTransform, Inject } from '@angular/core';
 import {
-  DetectorListRendering, DetectorMetaData, DetectorResponse, DiagnosticData, DownTime, HealthStatus
+  DetectorListRendering, DetectorMetaData, DetectorResponse, DiagnosticData, HealthStatus
 } from '../../models/detector';
 import { LoadingStatus } from '../../models/loading';
 import { StatusStyles } from '../../models/styles';
@@ -19,7 +19,6 @@ import { Insight, InsightUtils } from '../../models/insight';
 import { Solution } from '../solution/solution';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PortalActionGenericService } from '../../services/portal-action.service';
-import { FeatureNavigationService } from '../../services/feature-navigation.service';
 import { UriUtilities } from '../../utilities/uri-utilities';
 import { GenericBreadcrumbService } from '../../services/generic-breadcrumb.service';
 
@@ -41,7 +40,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
   LoadingStatus = LoadingStatus;
   renderingProperties: DetectorListRendering;
-  detectorName:string = "";
+  detectorName: string = "";
   detectorMetaData: DetectorMetaData[];
   detectorViewModels: DetectorViewModel[] = [];
   HealthStatus = HealthStatus;
@@ -64,7 +63,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   solutionTitle: string = "";
   loading = LoadingStatus.Loading;
 
-  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _featureNavigationService: FeatureNavigationService, @Optional() private _breadcrumbService?: GenericBreadcrumbService) {
+  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _breadcrumbService: GenericBreadcrumbService) {
     super(telemetryService);
     this.isPublic = this.config && this.config.isPublic;
   }
@@ -108,7 +107,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
       this.startDetectorRendering(detectors);
 
       const detectorMetaData = detectors.find(d => d.id === this.detector);
-      if(detectorMetaData) {
+      if (detectorMetaData) {
         this.detectorName = detectorMetaData.name;
       }
     }, (error => {
@@ -348,14 +347,12 @@ export class DetectorListComponent extends DataRenderBaseComponent {
             });
           } else {
             const resourceId = this._diagnosticService.resourceId;
-            
-            if(this._breadcrumbService) {
-              this._breadcrumbService.updateBreadCrumbSubject({
-                name: this.detectorName,
-                id: this.detector,
-                isDetector: true
-              });
-            }
+
+            this._breadcrumbService.updateBreadCrumbSubject({
+              name: this.detectorName,
+              id: this.detector,
+              isDetector: true
+            });
 
             this._router.navigate([`${resourceId}/detectors/${targetDetector}`], { queryParams: queryParams });
           }
