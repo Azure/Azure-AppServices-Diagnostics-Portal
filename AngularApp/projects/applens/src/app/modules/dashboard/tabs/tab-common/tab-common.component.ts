@@ -41,22 +41,26 @@ export class TabCommonComponent implements OnInit {
     switch (key) {
       case TabKey.Data:
         this._router.navigate(["./"], {
-          relativeTo: this._activatedRoute
+          relativeTo: this._activatedRoute,
+          queryParamsHandling:"preserve"
         });
         break;
       case TabKey.Develop:
         this._router.navigate(["edit"], {
-          relativeTo: this._activatedRoute
+          relativeTo: this._activatedRoute,
+          queryParamsHandling:"preserve"
         });
         break;
       case TabKey.DataSources:
         this._router.navigate(["datasource"], {
-          relativeTo: this._activatedRoute
+          relativeTo: this._activatedRoute,
+          queryParamsHandling:"preserve"
         });
         break;
       case TabKey.CommitHistory:
         this._router.navigate(["changelist"], {
-          relativeTo: this._activatedRoute
+          relativeTo: this._activatedRoute,
+          queryParamsHandling:"preserve"
         });
         break;
     }
