@@ -9,7 +9,7 @@ import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { CompilationProperties } from '../../models/compilation-properties';
 import { GenericSupportTopicService } from '../../services/generic-support-topic.service';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { VersionService } from '../../services/version.service';
 import { CXPChatService } from '../../services/cxp-chat.service';
 import * as momentNs from 'moment';
@@ -18,6 +18,7 @@ import { IButtonStyles } from 'office-ui-fabric-react/lib/components/Button';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/components/ChoiceGroup';
 import { IDropdownOption } from 'office-ui-fabric-react/lib/components/Dropdown';
 import { IIconProps } from 'office-ui-fabric-react/lib/components/Icon';
+import { filter } from 'rxjs/operators';
 
 const moment = momentNs;
 const minSupportedDowntimeDuration: number = 10;
@@ -84,6 +85,9 @@ export class DetectorViewComponent implements OnInit {
       fontSize: "13",
       fontWeight: "600",
       height: "80%"
+    },
+    rootFocused: {
+      border: "1px solid black",
     }
   }
   iconStyles:IIconProps["styles"] = {
@@ -215,6 +219,10 @@ export class DetectorViewComponent implements OnInit {
 
     this.detectorControlService.timePickerStrSub.subscribe(s => {
       this.timePickerButtonStr = s;
+    });
+
+    this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
+      console.log(event);
     });
   }
 
@@ -356,11 +364,11 @@ export class DetectorViewComponent implements OnInit {
 
         //After loading detectors, foucs indicator will land into detector title
         //For now asynchronouslly to foucs after render, it should have better solution
-        // setTimeout(() => {
-        //   if (document.getElementById("detector-name")) {
-        //     document.getElementById("detector-name").focus();
-        //   }
-        // });
+        setTimeout(() => {
+          if (document.querySelector("#time-picker-button button")) {
+            (<HTMLInputElement>document.querySelector("#time-picker-button button")).focus();
+          }
+        });
       }
     });
   }

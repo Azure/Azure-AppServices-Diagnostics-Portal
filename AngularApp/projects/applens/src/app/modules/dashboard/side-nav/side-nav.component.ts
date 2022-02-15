@@ -12,6 +12,7 @@ import { CheckboxVisibility, IDetailsListProps, IGroup, IGroupedListProps, IList
 import { ApplensGlobal } from '../../../applens-global';
 import { FabSearchBoxComponent } from '@angular-react/fabric';
 import { L2SideNavType } from '../l2-side-nav/l2-side-nav';
+import { BreadcrumbService } from '../services/breadcrumb.service';
 
 @Component({
   selector: 'side-nav',
@@ -38,7 +39,7 @@ export class SideNavComponent implements OnInit {
 
   gists: CollapsibleMenuItem[] = [];
 
-  searchValue: string="";
+  searchValue: string = "";
 
   contentHeight: string;
 
@@ -51,7 +52,7 @@ export class SideNavComponent implements OnInit {
   }
 
   @ViewChild(FabSearchBoxComponent, { static: false }) fabSearchBox: any;
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService, private _applensGlobal: ApplensGlobal) {
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService, private _applensGlobal: ApplensGlobal, private _breadcrumbService: BreadcrumbService) {
   }
 
   @HostListener('click', ['$event.target'])
@@ -184,6 +185,7 @@ export class SideNavComponent implements OnInit {
   }
 
   navigateTo(path: string) {
+    this._breadcrumbService.resetBreadCrumbSubject();
     const queryParams = UriUtilities.removeChildDetectorStartAndEndTime(this._activatedRoute.snapshot.queryParams);
     let navigationExtras: NavigationExtras = {
       queryParams: queryParams,
@@ -277,7 +279,7 @@ export class SideNavComponent implements OnInit {
     // if (this.gists.findIndex(g => g.label === gistCategory.label) < 0) {
     //   this.gists.unshift(gistCategory);
     // }
-    this.topList = [createGistItem,yourGists];
+    this.topList = [createGistItem, yourGists];
   }
 
 
@@ -288,7 +290,7 @@ export class SideNavComponent implements OnInit {
       if (detectorList) {
         detectorList.forEach(element => {
           //Not show CategoryOverview in side-nav for safety purpose
-          if(element.type === DetectorType.CategoryOverview) return;
+          if (element.type === DetectorType.CategoryOverview) return;
 
           let onClick = () => {
             this._telemetryService.logEvent(TelemetryEventNames.SideNavigationItemClicked, { "elementId": element.id });
@@ -411,10 +413,9 @@ export class SideNavComponent implements OnInit {
   // }
 
   updateSearchValue(e: { newValue: any }) {
-    if (!!e.newValue.currentTarget && !!e.newValue.currentTarget.value)
-    {
-        this.searchValue = e.newValue.currentTarget.value;
-        this.updateListGroups(this.searchValue);
+    if (!!e.newValue.currentTarget && !!e.newValue.currentTarget.value) {
+      this.searchValue = e.newValue.currentTarget.value;
+      this.updateListGroups(this.searchValue);
     }
   }
 
