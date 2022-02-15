@@ -26,16 +26,16 @@ export class SiteSupportTopicService extends SupportTopicService {
     }
   }
 
-  getPathForSupportTopic(supportTopicId: string, pesId: string, searchTerm: string): Observable<string> {
+  getPathForSupportTopic(supportTopicId: string, pesId: string, searchTerm: string, sapSupportTopicId: string="", sapProductId: string=""): Observable<string> {
     const matchingMapping = this._hardCodedSupportTopicIdMapping.find(
-      supportTopic => supportTopic.supportTopicId === supportTopicId &&
-        (!pesId || pesId === '' || supportTopic.pesId === pesId)
+      supportTopic => supportTopic.sapSupportTopicId === sapSupportTopicId &&
+        (!sapProductId || sapProductId === '' || supportTopic.sapProductId === sapProductId)
     );
 
     if (matchingMapping && this._webSiteService.platform == OperatingSystem.windows) {
       return of(`/legacy${matchingMapping.path}`);
     } else {
-      return super.getPathForSupportTopic(supportTopicId, pesId, searchTerm);
+      return super.getPathForSupportTopic(supportTopicId, pesId, searchTerm, sapSupportTopicId, sapProductId);
     }
   }
 }

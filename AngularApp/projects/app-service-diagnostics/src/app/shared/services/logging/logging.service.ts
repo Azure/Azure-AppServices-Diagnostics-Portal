@@ -21,6 +21,7 @@ export class LoggingService {
     private _resourceType: string = '';
     private _ticketBladeWorkflowId: string = '';
     private _supportTopicId: string = '';
+    private _sapSupportTopicId: string = '';
     private _appType: string = '';
     private _source: string = '';
     private _diagnosticsVersion: string = '';
@@ -57,6 +58,10 @@ export class LoggingService {
 
                 if (this._startUpInfo.supportTopicId) {
                     this._supportTopicId = this._startUpInfo.supportTopicId;
+                }
+
+                if (this._startUpInfo.sapSupportTopicId) {
+                    this._sapSupportTopicId = this._startUpInfo.sapSupportTopicId;
                 }
 
                 if (this._startUpInfo.source) {
@@ -103,6 +108,7 @@ export class LoggingService {
             platform: this.platform,
             appType: this._appType,
             supportTopicId: this._supportTopicId,
+            sapSupportTopicId: this._sapSupportTopicId,
             bladeSource: this._source,
             diagnosticsVersion: this._diagnosticsVersion
         };

@@ -31,6 +31,7 @@ export class ResourceRedirectComponent implements OnInit {
             const resourceId = info.resourceId ? info.resourceId : '';
             const ticketBladeWorkflowId = info.workflowId ? info.workflowId : '';
             const supportTopicId = info.supportTopicId ? info.supportTopicId : '';
+            const sapSupportTopicId = info.sapSupportTopicId ? info.sapSupportTopicId : '';
             const sessionId = info.sessionId ? info.sessionId : '';
             const effectiveLocale = !!info.effectiveLocale ? info.effectiveLocale.toLowerCase() : "";
             const theme = !!info.theme ? info.theme.toLowerCase() : "";
@@ -40,6 +41,7 @@ export class ResourceRedirectComponent implements OnInit {
                 'ResourceId': resourceId,
                 'TicketBladeWorkflowId': ticketBladeWorkflowId,
                 'SupportTopicId': supportTopicId,
+                'SapSupportTopicId': sapSupportTopicId,
                 'PortalSessionId': sessionId,
                 'EffectiveLocale': effectiveLocale,
                 'Theme': theme,
@@ -95,13 +97,16 @@ export class ResourceRedirectComponent implements OnInit {
               );
             }
           }
-          if (info.supportTopicId) {
+
+          if (info.supportTopicId || info.sapSupportTopicId) {
             path += `/supportTopicId`;
             navigationExtras.queryParams = {
               ...navigationExtras.queryParams,
               supportTopicId: info.supportTopicId,
               caseSubject: caseSubject,
-              pesId: info.pesId
+              pesId: info.pesId,
+              sapSupportTopicId: info.sapSupportTopicId,
+              sapProductId: info.sapProductId,
             };
           }
 

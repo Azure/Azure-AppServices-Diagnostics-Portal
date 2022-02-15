@@ -86,6 +86,8 @@ export interface KustoPropertyBagValue {
 export interface SupportTopic {
     id: string;
     pesId: string;
+    sapSupportTopicId: string;
+    sapPesId: string;
 }
 
 export enum DetectorType {
