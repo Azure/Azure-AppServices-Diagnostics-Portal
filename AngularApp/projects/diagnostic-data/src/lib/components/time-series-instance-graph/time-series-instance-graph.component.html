@@ -1,5 +1,5 @@
 <data-container [title]="renderingProperties.title" [description]="renderingProperties.description">
-    <highcharts-graph [HighchartData]="selectedHighChartSeries" [chartType]="renderingProperties.graphType" [chartOptions]="graphOptions" [xAxisPlotBands]="xAxisPlotBands"
+    <highcharts-graph [HighchartData]="selectedHighChartSeries" [chartType]="renderingProperties.graphType" [chartOptions]="graphOptions" [xAxisPlotBands]="xAxisPlotBands" [originalDataPoints]="originalDataPoints"
     [zoomBehavior] = "zoomBehavior" [metricType]="metricType" (XAxisSelection)="onXAxisSelection($event)">
     </highcharts-graph>
     <div *ngIf="!selectedSeries">Loading Data...</div>

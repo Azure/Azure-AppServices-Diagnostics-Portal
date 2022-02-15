@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DataTableDataType, DiagnosticData, TimeSeriesPerInstanceRendering, DataTableResponseObject, DataTableResponseColumn } from '../../models/detector';
 import { DataRenderBaseComponent, DataRenderer } from '../data-render-base/data-render-base.component';
-import { InstanceDetails, DetailedInstanceTimeSeries, DetailedInstanceHighChartTimeSeries,MetricType,GraphSeries, GraphPoint } from '../../models/time-series';
+import { InstanceDetails, DetailedInstanceTimeSeries, DetailedInstanceHighChartTimeSeries,MetricType,GraphSeries, GraphPoint, TablePoint } from '../../models/time-series';
 import { TimeZones, TimeUtilities } from '../../utilities/time-utilities';
 import * as momentNs from 'moment';
 import { HighchartsData, HighchartGraphSeries } from '../highcharts-graph/highcharts-graph.component';
@@ -41,6 +41,7 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
 
   timeGrainInMinutes: number = 5;
   metricType: MetricType = MetricType.Avg;
+  originalDataPoints:{ [key:string]:number[] } = {};
   processData(data: DiagnosticData) {
     super.processData(data);
 
@@ -207,6 +208,8 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
           .filter(point => point.instance.equals(series.instance) && point.counterName === series.name)
           .sort((b, a) => a.timestamp.diff(b.timestamp));
 
+      this.originalDataPoints[series.series.key] = this._getOriginalDataPoints(pointsForThisSeries);
+
       let pointToAdd = pointsForThisSeries.pop();
 
       for (const d = this.startTime.clone(); d.isBefore(this.endTime); d.add(this.timeGrainInMinutes, 'minutes')) {
@@ -316,6 +319,13 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
 
     return timeStampColumn;
   }
+
+  private _getOriginalDataPoints(pointsForThisSeries:InstanceTablePoint[]):number[] {
+    //If no data, return a default value
+    if(!Array.isArray(pointsForThisSeries) || pointsForThisSeries.length === 0) return [this.defaultValue];
+    const copiedPoints = [...pointsForThisSeries];
+    return copiedPoints.map(p => p.value);
+}
 }
 
 interface InstanceTablePoint {
