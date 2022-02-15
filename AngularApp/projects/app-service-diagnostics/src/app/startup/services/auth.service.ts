@@ -19,7 +19,8 @@ export class AuthService {
         subscriptions: null,
         resourceId: environment.authServiceResourceId,
         workflowId: '',
-        supportTopicId: ''
+        supportTopicId: '',
+        sapSupportTopicId: ''
     };
 
     public get hasLocalStartupInfo() {

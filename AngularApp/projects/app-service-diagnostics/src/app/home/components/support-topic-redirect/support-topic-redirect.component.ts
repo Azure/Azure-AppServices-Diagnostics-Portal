@@ -18,7 +18,7 @@ export class SupportTopicRedirectComponent implements OnInit {
     private _notificationService: NotificationService, private portalKustoLogging: PortalKustoTelemetryService, private subscriptionPropertiesService: SubscriptionPropertiesService, private _riskAlertService: RiskAlertService) { }
 
   ngOnInit() {
-    this._supportTopicService.getPathForSupportTopic(this._activatedRoute.snapshot.queryParams.supportTopicId, this._activatedRoute.snapshot.queryParams.pesId, this._activatedRoute.snapshot.queryParams.caseSubject).subscribe(res => {
+    this._supportTopicService.getPathForSupportTopic(this._activatedRoute.snapshot.queryParams.supportTopicId, this._activatedRoute.snapshot.queryParams.pesId, this._activatedRoute.snapshot.queryParams.caseSubject, this._activatedRoute.snapshot.queryParams.sapSupportTopicId, this._activatedRoute.snapshot.queryParams.sapProductId).subscribe(res => {
         this._router.navigate([`../${res.path}`], { relativeTo: this._activatedRoute, queryParams: res.queryParams });
 
     // Discussed with the team and we decide to disable the notification for now

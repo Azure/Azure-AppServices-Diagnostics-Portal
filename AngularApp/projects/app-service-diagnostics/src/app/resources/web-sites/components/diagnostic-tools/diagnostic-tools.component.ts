@@ -130,12 +130,14 @@ export class DiagnosticToolsComponent {
         const resourceId = startUpInfo.resourceId ? startUpInfo.resourceId : '';
         const ticketBladeWorkflowId = startUpInfo.workflowId ? startUpInfo.workflowId : '';
         const supportTopicId = startUpInfo.supportTopicId ? startUpInfo.supportTopicId : '';
+        const sapSupportTopicId = startUpInfo.sapSupportTopicId ? startUpInfo.sapSupportTopicId : '';
         const sessionId = startUpInfo.sessionId ? startUpInfo.sessionId : '';
 
         const eventProperties: { [name: string]: string } = {
           'ResourceId': resourceId,
           'TicketBladeWorkflowId': ticketBladeWorkflowId,
           'SupportTopicId': supportTopicId,
+          'SapSupportTopicId': sapSupportTopicId,
           'PortalSessionId': sessionId,
           'AzureServiceName': this._resourceService.azureServiceName,
         };

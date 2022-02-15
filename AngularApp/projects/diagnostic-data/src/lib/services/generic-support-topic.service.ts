@@ -9,12 +9,13 @@ export class GenericSupportTopicService {
     // In applens we provide this withValue: applens-diagnostics.service
     // In Support Center we provide this withValue: generic-api.service
     public supportTopicId: string;
+    public sapSupportTopicId: string;
 
     public getSelfHelpContentDocument(): Observable<any> {
         return null;
     }
 
-    public getPathForSupportTopic(supportTopicId: string, pesId: string, searchTerm: string): Observable<any> {
+    public getPathForSupportTopic(supportTopicId: string, pesId: string, searchTerm: string, sapSupportTopicId: string, sapProductId: string): Observable<any> {
         return null;
     }
 }
