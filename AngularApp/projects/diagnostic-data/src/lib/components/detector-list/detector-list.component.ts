@@ -2,7 +2,7 @@ import { BehaviorSubject, forkJoin as observableForkJoin, Observable, of } from 
 import { map } from 'rxjs/internal/operators/map';
 import { catchError } from 'rxjs/operators';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Pipe, PipeTransform, Inject, OnInit } from '@angular/core';
+import { Component, Pipe, PipeTransform, Inject, OnInit, Optional } from '@angular/core';
 import {
   DetectorListRendering, DetectorMetaData, DetectorResponse, DiagnosticData, DownTime, HealthStatus
 } from '../../models/detector';
@@ -64,7 +64,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   solutionTitle: string = "";
   loading = LoadingStatus.Loading;
 
-  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _featureNavigationService: FeatureNavigationService, private _breadcrumbService: GenericBreadcrumbService) {
+  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _featureNavigationService: FeatureNavigationService, @Optional() private _breadcrumbService?: GenericBreadcrumbService) {
     super(telemetryService);
     this.isPublic = this.config && this.config.isPublic;
   }
@@ -348,12 +348,14 @@ export class DetectorListComponent extends DataRenderBaseComponent {
             });
           } else {
             const resourceId = this._diagnosticService.resourceId;
-
-            this._breadcrumbService.updateBreadCrumbSubject({
-              name: this.detectorName,
-              id: this.detector,
-              isDetector: true
-            });
+            
+            if(this._breadcrumbService) {
+              this._breadcrumbService.updateBreadCrumbSubject({
+                name: this.detectorName,
+                id: this.detector,
+                isDetector: true
+              });
+            }
 
             this._router.navigate([`${resourceId}/detectors/${targetDetector}`], { queryParams: queryParams });
           }
