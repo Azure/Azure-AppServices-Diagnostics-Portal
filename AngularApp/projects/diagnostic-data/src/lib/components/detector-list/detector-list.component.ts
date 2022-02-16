@@ -2,7 +2,7 @@ import { BehaviorSubject, forkJoin as observableForkJoin, Observable, of } from 
 import { map } from 'rxjs/internal/operators/map';
 import { catchError } from 'rxjs/operators';
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, Pipe, PipeTransform, Inject } from '@angular/core';
+import { Component, Pipe, PipeTransform, Inject, Optional } from '@angular/core';
 import {
   DetectorListRendering, DetectorMetaData, DetectorResponse, DiagnosticData, HealthStatus
 } from '../../models/detector';
@@ -63,7 +63,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   solutionTitle: string = "";
   loading = LoadingStatus.Loading;
 
-  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _breadcrumbService: GenericBreadcrumbService) {
+  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router, private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, @Optional() private _breadcrumbService?: GenericBreadcrumbService) {
     super(telemetryService);
     this.isPublic = this.config && this.config.isPublic;
   }
@@ -254,9 +254,12 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         , catchError(err => {
           this.detectorViewModels[index].loadingStatus = LoadingStatus.Failed;
           this.loading = this.detectorViewModels.findIndex(vm => vm.loadingStatus === LoadingStatus.Loading) > -1 ? LoadingStatus.Loading : LoadingStatus.Success;
-          this.failedLoadingViewModels.push({
-            model: this.detectorViewModels[index]
-          });
+          const viewModel: any = this.detectorViewModels[index];
+          if (viewModel && viewModel.model && viewModel.model.title) {
+            this.failedLoadingViewModels.push({
+              model: viewModel
+            });
+          }
           return of({});
         })
       ));
@@ -347,13 +350,13 @@ export class DetectorListComponent extends DataRenderBaseComponent {
             });
           } else {
             const resourceId = this._diagnosticService.resourceId;
-
-            this._breadcrumbService.updateBreadCrumbSubject({
-              name: this.detectorName,
-              id: this.detector,
-              isDetector: true
-            });
-
+            if(this._breadcrumbService) {
+              this._breadcrumbService.updateBreadCrumbSubject({
+                name: this.detectorName,
+                id: this.detector,
+                isDetector: true
+              });
+            }
             this._router.navigate([`${resourceId}/detectors/${targetDetector}`], { queryParams: queryParams });
           }
         }
