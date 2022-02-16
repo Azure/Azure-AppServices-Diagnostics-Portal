@@ -603,9 +603,12 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                     if (this.detectorViewModels[index] != null) {
                         this.detectorViewModels[index].loadingStatus = LoadingStatus.Failed;
                     }
-                    this.failedLoadingViewModels.push({
-                       model: this.detectorViewModels[index]
-                    });
+                    const viewModel = this.detectorViewModels[index];
+                    if(viewModel && viewModel.model && viewModel.model.title) {
+                        this.failedLoadingViewModels.push({
+                            model: viewModel
+                         });
+                    }
                     return of({});
                 })
             ));
