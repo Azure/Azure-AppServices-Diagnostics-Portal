@@ -120,6 +120,7 @@ import { FabCardComponent } from './components/fab-card/fab-card.component';
 import { SolutionsPanelComponent } from './components/solutions-panel/solutions-panel.component';
 import { DetectorTimePickerComponent } from './components/detector-time-picker/detector-time-picker.component';
 import { FabricFeedbackComponent } from './components/fabric-feedback/fabric-feedback.component';
+import { GenericBreadcrumbService } from './services/generic-breadcrumb.service';
 
 @NgModule({
   imports: [
@@ -258,6 +259,7 @@ export class DiagnosticDataModule {
         GenericThemeService,
         GenericContentService,
         GenericDocumentsSearchService,
+        GenericBreadcrumbService,
         { provide: DIAGNOSTIC_DATA_CONFIG, useValue: config },
         CXPChatService,
         KustoTelemetryService,
