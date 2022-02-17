@@ -31,7 +31,7 @@ export class WebSearchComponent extends DataRenderBaseComponent implements OnIni
     @Input() isChildComponent: boolean = true;
     @Input('webSearchConfig') webSearchConfig: WebSearchConfiguration;
     @Input() searchResults: any[] = [];
-    @Input() numArticlesExpanded : number = 5;
+    @Input() numArticlesExpanded : number = 3;
     @Output() searchResultsChange: EventEmitter<any[]> = new EventEmitter<any[]>();
     pesId : string = "";
 
