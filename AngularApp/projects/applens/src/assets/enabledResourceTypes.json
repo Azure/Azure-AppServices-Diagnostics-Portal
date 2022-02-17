@@ -358,8 +358,8 @@
             "azureCommImpactedServicesList": "SignalRService",
             "pesId": "16477",
             "staticSelfHelpContent": "",
-            "searchSuffix": "AZURE SIGNAL SERVICE",
-            "displayName": "Azure Signal Service"
+            "searchSuffix": "AZURE SIGNALR SERVICE",
+            "displayName": "Azure SignalR Service"
         },
         {
             "service": "ResourceService",
