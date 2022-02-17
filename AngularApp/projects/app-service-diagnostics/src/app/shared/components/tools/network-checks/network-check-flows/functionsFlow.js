@@ -1,7 +1,8 @@
 import { DropdownStepView, InfoStepView, StepFlow, StepFlowManager, CheckStepView, StepViewContainer, InputStepView, ButtonStepView, PromiseCompletionSource, TelemetryService } from 'diagnostic-data';
-import { checkKuduAvailabilityAsync, checkVnetIntegrationV2Async, checkDnsSettingV2Async, checkAppSettingsAsync, extractHostPortFromConnectionString, extractHostPortFromKeyVaultReference } from './flowMisc.js';
+import { checkKuduAvailabilityAsync, checkVnetIntegrationV2Async, checkDnsSettingV2Async, checkAppSettingsAsync, extractHostPortFromConnectionString, extractHostPortFromKeyVaultReference, checkDaaSExtApiAsync } from './flowMisc.js';
 import { VnetIntegrationConfigChecker } from './vnetIntegrationConfigChecker.js';
 import { VnetDnsWordings } from './vnetDnsWordings.js';
+import { CommonWordings } from './commonWordings.js';
 
 export class ConnectionStringType {
     static get StorageAccount() { return 'StorageAccount' };
@@ -9,14 +10,19 @@ export class ConnectionStringType {
     static get QueueStorageAccount() { return 'QueueStorageAccount' };
     static get FileShareStorageAccount() { return 'FileShareStorageAccount' };
     static get ServiceBus() { return 'ServiceBus' };
-    static get EventHubs() { return 'EventHubs' };       
+    static get EventHubs() { return 'EventHubs' };
 }
 
 export var functionsFlow = {
     title: "Connectivity issues",
     async func(siteInfo, diagProvider, flowMgr) {
 
-        var isKuduAccessiblePromise = checkKuduAvailabilityAsync(diagProvider, flowMgr);
+        var isKuduAccessiblePromise = null;
+        if (siteInfo.kind.includes("linux") || siteInfo.kind.includes("container")) {
+            isKuduAccessiblePromise = false;
+        }else{
+            isKuduAccessiblePromise = checkKuduAvailabilityAsync(diagProvider, flowMgr);
+        }
         var dnsServers = null;
         var vnetConfigChecker = new VnetIntegrationConfigChecker(siteInfo, diagProvider);
         var vnetIntegrationType = await vnetConfigChecker.getVnetIntegrationTypeAsync();
@@ -40,57 +46,19 @@ export var functionsFlow = {
 
         if (!await isKuduAccessiblePromise)
         {
-            flowMgr.addView(new VnetDnsWordings().cannotCheckWithoutKudu.get("Functions settings"));
+            if (siteInfo.kind.includes("linux") || siteInfo.kind.includes("container")){
+                flowMgr.addView(new CommonWordings().connectivityCheckUnsupported.get());
+            }else{
+                flowMgr.addView(new VnetDnsWordings().cannotCheckWithoutKudu.get("Functions settings"));
+            }
             return;
         }
-        var param = [];
-        param.push("api-version=2015-08-01");
-        var daasVersionInfo=await diagProvider.getDaaSExtApiAsync("daasversion",param); 
-        if(daasVersionInfo.status == "200")
-        {
-            var isDaasExtAccessible= true;
-        }
-        else
-        {
-            var isDaasExtAccessible= false;
-        }  
-             
-        var daasVersion=daasVersionInfo.body.Version;        
-        var isDaasNew=false; 
-        if(isDaasExtAccessible == true){
-            function versionCompare(v1, v2) 
-            { 
-                var vnum1 = 0, vnum2 = 0; 
-                for (var i = 0, j = 0; (i < v1.length 
-                                        || j < v2.length);) { 
-                    while (i < v1.length && v1[i] != '.') { 
-                        vnum1 = vnum1 * 10 + (v1[i] - '0'); 
-                        i++; 
-                    } 
-                    while (j < v2.length && v2[j] != '.') { 
-                        vnum2 = vnum2 * 10 + (v2[j] - '0'); 
-                        j++; 
-                    } 
-                    if (vnum1 > vnum2) 
-                        return 1; 
-                    if (vnum2 > vnum1) 
-                        return -1;
-                    vnum1 = vnum2 = 0; 
-                    i++; 
-                    j++; 
-                } 
-                return 0; 
-            } 
-        var version1 = daasVersion; 
-        var version2 = "2.2.1221.01";
-        if (versionCompare(version1, version2) >= 0)
-            {
-                isDaasNew = true;
-            } 
-        else{
-                isDaasNew = false;
-            }
-        }
+        var checkDaaSExtApi = await checkDaaSExtApiAsync(diagProvider);        
+
+        var isDaasExtAccessible = checkDaaSExtApi.IsDaasExtAccessible;
+        
+        var isDaasNew = checkDaaSExtApi.IsDaasNew;
+
         /**
          * Functions specific checks
          **/
@@ -102,10 +70,10 @@ export var functionsFlow = {
         var checkFunctionAppCommonDepsPromise = (async () => {
             var subChecksL1 = [];
             // AzureWebJobsStorage 
-            var propertyName = "AzureWebJobsStorage";          
+            var propertyName = "AzureWebJobsStorage";
             // Using anchor tag instead of markdown link as we need the link to open in a new window/tab instead of the current iFrame which is disallowed
             var failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#azurewebjobsstorage" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
-            var connectionString = undefined;        
+            var connectionString = undefined;
             if(isDaasNew){
                 var connectionStringType = isDaasExtAccessible ? ConnectionStringType.BlobStorageAccount : undefined;
             }else{
@@ -286,7 +254,7 @@ export var functionsFlow = {
         }));
     }
 };
-
+  
 function isKeyVaultReference(appSetting) {
     return appSetting.includes("@Microsoft.KeyVault");
 }
@@ -590,7 +558,7 @@ async function validateConnectionStringAsync(propertyName, connectionString, typ
     return subChecks;
 }
 async function validateConnectionViaAppSetting(propertyName, connectionString, type, diagProvider, failureDetailsMarkdown = undefined,entityName = undefined) {
-    var checkConnectionStringResult = await diagProvider.checkConnectionViaAppSetting(propertyName, type, entityName).catch(e => {
+    var checkConnectionStringResult = await diagProvider.checkConnectionViaAppSettingAsync(propertyName, type, entityName).catch(e => {
         logDebugMessage(e);          
     });
 
@@ -648,19 +616,19 @@ async function validateConnectionViaAppSetting(propertyName, connectionString, t
                 title = "Authentication failure";
                 detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
                 break;
-            case "Managedidentitymissed":
+            case "ManagedIdentityCredentialMissing":
                 title = "Authentication failure";
-                detailsMarkdown = `Managedidentity authentication failure - Credential app setting is not set to managedidentity which disallowed checking connection using clientId.`;
+                detailsMarkdown = `Managed identity authentication failure - Credential app setting is not set to managedidentity which disallowed checking connection using clientId.`;
                 break;
-            case "FullyQualifiedNamespacemissed":
+            case "FullyQualifiedNamespaceMissed":
                 title = "Authentication failure";
                 detailsMarkdown = `fullyQualifiedNamespace authentication failure - All required app settings to check the connection have not been provided with valid values.`;
                 break;
-            case "SystemAssignedmanagedidentity":
+            case "SystemAssignedManagedIdentity":
                 title = "Authentication failure";
                 detailsMarkdown = `The target service is not provided with Access to the function app using system assigned identity.`;
                 break;
-            case "UserAssignedmanagedidentity":
+            case "UserAssignedManagedIdentity":
                 title = "Authentication failure";
                 detailsMarkdown = `The target service is not provided with access to the user assigned identity which is configured for the function app.`;
                 break;
@@ -680,6 +648,12 @@ async function validateConnectionViaAppSetting(propertyName, connectionString, t
                     detailsMarkdown = title + `\r\n\r\n` + `This can be due to firewall rules on the resource.  Please check if you have configured firewall rules or a private endpoint and that they correctly allow access from the Function App.  Relevant documentation:`
                         + `\r\n\r\n`;
                     switch (type) {
+                        case ConnectionStringType.StorageAccount:
+                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
+                            break;
+                        case ConnectionStringType.FileShareStorageAccount:
+                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
+                            break;
                         case ConnectionStringType.BlobStorageAccount:
                             detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
                             break;

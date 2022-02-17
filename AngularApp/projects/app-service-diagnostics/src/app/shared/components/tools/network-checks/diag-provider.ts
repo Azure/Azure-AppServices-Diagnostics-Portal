@@ -128,7 +128,7 @@ export class DiagProvider {
         var params = "api-version=2015-08-01";
         var prefix = `management.azure.com/${this._siteInfo.resourceUri}/extensions/DaaS/api`;
         var stack = new Error("error_message_placeholder").stack;
-        var promise = this._armService.post(`https://${prefix}/${api}?${params}`, body)     
+        var promise = this._armService.post(`https://${prefix}/${api}?${params}`, body)
             .toPromise()
             .catch(e => {
                 e.stack = stack.replace("error_message_placeholder", e);
@@ -158,18 +158,18 @@ export class DiagProvider {
         var result: any = await this.postDaaSExtApiAsync("connectionstringvalidation/validate", { "ConnectionString": connectionString, "Type": type }, timeoutInSec);
         return result;       
     }
-    public async checkConnectionViaAppSetting(appSetting: string, type: string, entityName?: string, timeoutInSec: number = 30): Promise<any> {
-        var param = [];
-        param.push("api-version=2015-08-01");
-        param.push("appSettingName="+appSetting);
-        param.push("type="+type);
+    public async checkConnectionViaAppSettingAsync(appSetting: string, type: string, entityName?: string, timeoutInSec: number = 30): Promise<any> {
+        var params = [];
+        params.push("api-version=2015-08-01");
+        params.push("appSettingName="+appSetting);
+        params.push("type="+type);
         if(entityName != undefined){
-            param.push("entityName="+entityName);  
+            params.push("entityName="+entityName);  
         }
-        var response: any = await this.getDaaSExtApiAsync("connectionstringvalidation/validateappsetting", param, timeoutInSec);
+        var response: any = await this.getDaaSExtApiAsync("connectionstringvalidation/validateappsetting", params, timeoutInSec);
         if(response == null && response.body == null)
         {
-          throw Error("Something went wrong while checking connection via app setting.");
+          throw Error("No response received when calling the DaaS extension endpoint connectionstringvalidation/validateappsetting via getDaaSExtApiAsync().");
         }
         return response.body;        
     }
@@ -349,7 +349,7 @@ export class DiagProvider {
         } catch (error) {
             return false;
         }
-    }  
+    }
     
     public async getWebAppVnetInfo(): Promise<any> {
         //This is the regional VNet Integration endpoint

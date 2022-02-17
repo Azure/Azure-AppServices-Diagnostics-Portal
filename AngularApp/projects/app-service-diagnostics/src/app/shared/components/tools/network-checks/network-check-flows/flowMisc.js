@@ -679,3 +679,53 @@ export function addSubnetSelectionDropDownView(siteInfo, diagProvider, flowMgr, 
             dropdownView.dropdowns.push(subscriptionDropdown);
         });
 }
+
+export async function checkDaaSExtApiAsync(diagProvider) {
+    var params = [];
+    params.push("api-version=2015-08-01");
+    var daasVersionInfo=await diagProvider.getDaaSExtApiAsync("daasversion",params);
+    var isDaasExtAccessible;
+    if(daasVersionInfo.status == "200") {
+        isDaasExtAccessible = true;
+    }
+    else {
+        isDaasExtAccessible = false;
+    }
+
+    var isDaasNew = false;
+    if(isDaasExtAccessible == true) {
+        var currentDaasVersion = daasVersionInfo.body.Version;
+        if (checkDassNewVersion(currentDaasVersion) >= 0) {
+            isDaasNew = true;
+        }
+        else {
+            isDaasNew = false;
+        }
+    }
+
+    return { "IsDaasExtAccessible": isDaasExtAccessible, "IsDaasNew": isDaasNew }
+}
+
+function checkDassNewVersion(currentDaasVersion){ 
+    var vnum1 = 0, vnum2 = 0, existingDaasVersion = "2.2.1221.01";; 
+    for (var i = 0, j = 0; (i < currentDaasVersion.length 
+                            || j < existingDaasVersion.length);) 
+    { 
+        while (i < currentDaasVersion.length && currentDaasVersion[i] != '.') { 
+            vnum1 = vnum1 * 10 + (currentDaasVersion[i] - '0'); 
+            i++; 
+        } 
+        while (j < existingDaasVersion.length && existingDaasVersion[j] != '.') { 
+            vnum2 = vnum2 * 10 + (existingDaasVersion[j] - '0'); 
+            j++; 
+        } 
+        if (vnum1 > vnum2) 
+            return 1; 
+        if (vnum2 > vnum1) 
+            return -1;
+        vnum1 = vnum2 = 0; 
+        i++; 
+        j++; 
+    } 
+    return 0; 
+}
