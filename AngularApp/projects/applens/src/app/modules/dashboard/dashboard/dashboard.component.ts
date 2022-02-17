@@ -62,7 +62,6 @@ export class DashboardComponent implements OnDestroy {
   title: string = "";
   showL2SideNav: boolean = false;
   expandL1SideNav: boolean = false;
-  detectors: DetectorMetaData[] = [];
   breadcrumbItems: IBreadcrumbItem[] = [];
 
   constructor(public resourceService: ResourceService, private _detectorControlService: DetectorControlService,
@@ -121,15 +120,9 @@ export class DashboardComponent implements OnDestroy {
   }
 
   ngOnInit() {
-    this._diagnosticService.getDetectors().subscribe(detectors => {
-      this.detectors = detectors;
+    this._applensGlobal.headerTitleSubject.subscribe(title => {
+      this.title = title;
     });
-
-    this.updateShowTitle();
-    this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(e => {
-      this.updateShowTitle();
-    });
-
 
     this._applensGlobal.openL2SideNavSubject.subscribe(type => {
       this.showL2SideNav = type !== L2SideNavType.None;
@@ -162,12 +155,6 @@ export class DashboardComponent implements OnDestroy {
       }
     });
 
-    // this._activatedRoute.firstChild.data.subscribe(data => {
-    //   if(data["showTitle"] !== undefined){
-    //     this.showTitle = data["showTitle"]  
-    //   }
-    //   console.log(data);
-    // });
     this._breadcrumbService.breadcrumbSubject.subscribe(items => {
       this.breadcrumbItems = [];
       items.forEach(i => {
@@ -224,19 +211,6 @@ export class DashboardComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.navigateSub.unsubscribe();
-  }
-
-  getTitle(): string {
-    let title = "";
-    const parms = this._activatedRoute.firstChild.snapshot.params;
-    if (parms["detector"] || parms["analysisId"]) {
-      const id = parms["detector"] || parms["analysisId"];
-      const data = this.detectors.find(d => d.id === id);
-      title = data ? data.name : "";
-    } else {
-      title = "Overview"
-    }
-    return title;
   }
 
   getContainerStyle() {

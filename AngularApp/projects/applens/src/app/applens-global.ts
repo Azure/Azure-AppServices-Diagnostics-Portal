@@ -1,16 +1,14 @@
 import { Injectable } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { AdalService } from "adal-angular4";
-import { BehaviorSubject, combineLatest, merge } from "rxjs";
+import { BehaviorSubject, combineLatest } from "rxjs";
 import { map } from "rxjs/operators";
 import { L2SideNavType, l2SideNavWidth } from "./modules/dashboard/l2-side-nav/l2-side-nav";
 import { l1SideNavCollapseWidth, l1SideNavExpandWidth } from "./shared/components/l1-side-nav/l1-side-nav";
 
 
 
-// @Injectable({
-//     providedIn:"root"
-// })
+
 @Injectable()
 export class ApplensGlobal {
     constructor(private _route: ActivatedRoute, private _adalService: AdalService) { }
@@ -45,5 +43,9 @@ export class ApplensGlobal {
     getUserAlias(): string {
         const alias: string = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
         return alias;
+    }
+
+    updateHeader(title:string) {
+        this.headerTitleSubject.next(title);
     }
 }

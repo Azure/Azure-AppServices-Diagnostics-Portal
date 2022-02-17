@@ -25,6 +25,9 @@ export class TabAnalysisComponent implements OnInit {
   constructor(private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticService: ApplensDiagnosticService,private _applensCommandBarService:ApplensCommandBarService,private _applensGlobal:ApplensGlobal) {
     this._activatedRoute.paramMap.subscribe(params => {
       this.analysisId = params.get('analysisId');
+      this._diagnosticService.getDetectorMetaDataById(this.analysisId).subscribe(metaData => {
+        if(metaData) this._applensGlobal.updateHeader(metaData.name);
+      })
     });
 
   }

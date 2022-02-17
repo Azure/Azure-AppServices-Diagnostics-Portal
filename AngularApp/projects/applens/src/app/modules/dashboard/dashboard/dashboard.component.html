@@ -43,8 +43,8 @@
     <div style="margin-left: 12px;">
       <fab-breadcrumb [items]="breadcrumbItems"></fab-breadcrumb>
     </div>
-    <div *ngIf="showTitle" class="dashboard-title">
-      {{getTitle()}}
+    <div *ngIf="title && title.length > 0" class="dashboard-title">
+      {{title}}
     </div>
     <div [class.content-with-side-nav]="showL2SideNav" style="padding: 0px 20px;">
       <router-outlet></router-outlet>
