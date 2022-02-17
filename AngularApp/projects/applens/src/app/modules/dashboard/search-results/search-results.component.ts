@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SearchService } from '../services/search.service';
 import { Location } from '@angular/common';
+import { ApplensGlobal } from '../../../applens-global';
 
 @Component({
   selector: 'search-results',
@@ -8,7 +9,7 @@ import { Location } from '@angular/common';
   styleUrls: ['./search-results.component.scss']
 })
 export class SearchResultsComponent implements OnInit {
-  constructor(public _searchService: SearchService, private _location: Location) {
+  constructor(public _searchService: SearchService, private _location: Location, private _applensGlobal: ApplensGlobal) {
   }
 
   navigateBack() {
@@ -16,5 +17,6 @@ export class SearchResultsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this._applensGlobal.updateHeader("Searching");
   }
 }

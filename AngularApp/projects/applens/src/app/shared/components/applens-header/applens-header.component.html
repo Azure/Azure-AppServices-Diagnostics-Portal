@@ -10,6 +10,9 @@
         <span *ngIf="resourceInfo.resourceName" class="ml-3" style="font-weight: 600;">{{resourceInfo.resourceName}}</span>
         <span *ngIf="resourceInfo.searchSuffix" class="ml-3" style="color: #605E5C;">{{resourceInfo.searchSuffix}}</span>
       </div>
+      <div *ngIf="_searchService">
+        <fab-search-box (onSearch)="triggerSearch()" [value]="searchValue" [styles]="searchStyles" [placeholder]="'Search'" (onChange)="updateSearchValue($event)"></fab-search-box>
+      </div>
     </div>
 
     <div *ngIf="userPhotoSource !== ''" style="margin-right: 16px;">

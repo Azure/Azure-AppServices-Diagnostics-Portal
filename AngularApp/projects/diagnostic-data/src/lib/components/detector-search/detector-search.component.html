@@ -164,7 +164,7 @@
         </div>
     </div>
     <div *ngIf="detectorId !== ''">
-        <detector-view [detector]="detectorId" [startTime]="startTime" [endTime]="endTime" [detectorResponse]="detectorResponse"></detector-view>
+        <detector-view [detector]="detectorId" [startTime]="startTime" [endTime]="endTime" [detectorResponse]="detectorResponse" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
     </div>
 </div>
 <div style="margin-left:20px;margin-top:20px;" *ngIf="searchConfiguration.WebSearchEnabled">
