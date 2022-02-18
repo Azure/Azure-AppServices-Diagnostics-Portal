@@ -1,4 +1,4 @@
-<div *ngIf="!isProd || !detectorGraduation" class="view-container">
+<div *ngIf="!isProd || !detectorGraduation; else redirectBlock" class="view-container">
   <ngx-smart-modal #publishModal identifier="publishModal" [customClass]="'publish-dialog'">
     <div>
       <h4>Confirm?</h4>
@@ -239,7 +239,7 @@
   <div *ngIf="showAlert" class="alert alert-container" [ngClass]="alertClass" role="alert">
     {{alertMessage}}
   </div>
-  <loader-view *ngIf="!codeLoaded" message="Starting onboarding flow ..."></loader-view>
+
 
   <fab-command-bar [attr.id]="'fab-command-bar'" contentClass="fab-command-bar-class">
     <items>
@@ -329,6 +329,7 @@
       </far-items>
     </items>
   </fab-command-bar>
+  <loader-view *ngIf="!codeLoaded" message="Starting onboarding flow ..."></loader-view>
 
   <div *ngIf="codeLoaded" class="onboarding-container">
     <split [direction]="horizontal" gutterSize="8" gutterColor="#dff0ff">
@@ -439,11 +440,14 @@
     </split>
   </div>
 </div>
-<div *ngIf="isProd && detectorGraduation" style="display: flex;">
-  <status-icon [status]="HealthStatus.Warning" class="mr-3"></status-icon>
-  <div>
-    <p>To ensure the quality, accuracy, and security of detectors, the <b>{{resourceService.searchSuffix}}</b> team is now utilizing the <a [href]="PPELink">AppLens PPE Environment</a> for detector development.</p>
-    <p>To learn more about this new experience, click <a target="_blank" href="https://applensdiagnostics.azurewebsites.net/?p=715">here</a>.</p>
-    <p>You will be redirected there in {{PPERedirectTimer}} seconds...</p>
+<ng-template #redirectBlock>
+  <div *ngIf="isProd && detectorGraduation" style="display: flex;">
+    <status-icon [status]="HealthStatus.Warning" class="mr-3"></status-icon>
+    <div>
+      <p>To ensure the quality, accuracy, and security of detectors, the <b>{{resourceService.searchSuffix}}</b> team is now utilizing the <a [href]="PPELink">AppLens PPE Environment</a> for detector development.</p>
+      <p>To learn more about this new experience, click <a target="_blank" href="https://applensdiagnostics.azurewebsites.net/?p=715">here</a>.</p>
+      <p>You will be redirected there in {{PPERedirectTimer}} seconds...</p>
+    </div>
   </div>
-</div>
+</ng-template>
+

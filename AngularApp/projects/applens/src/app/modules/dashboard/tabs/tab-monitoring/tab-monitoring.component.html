@@ -3,15 +3,12 @@
     <div class="col-sm-6 titleElements">
         <h3 style="margin-top:8px">{{reportName}}</h3>
       </div>
-    <div class="col-sm-1 titleElements">
-      <label>Filtered by </label>
-    </div>
     <div class="col-sm-5 titleElements">
-      <ul class="nav nav-pills">
+      <ul class="nav nav-pills" style="float: right">
         <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{selectedTimeRange}}
+          <fab-default-button [styles]="buttonStyle" [iconProps]="{ iconName: 'clock' }"  class="dropdown-toggle" data-toggle="dropdown" href="#">Time range: {{selectedTimeRange}}
             <span class="caret" style="position: right;"></span>
-          </a>
+          </fab-default-button>
           <ul class="dropdown-menu">
             <li *ngFor="let key of timeRangeKeys">
               <a (click)="setTimeRange(key)">{{key}}</a>
@@ -19,18 +16,14 @@
           </ul>
         </li>
         <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{selectedDataSource}}
+          <fab-default-button [styles]="buttonStyle" [iconProps]="{ iconName: 'SyncOccurence' }" class="dropdown-toggle" data-toggle="dropdown" href="#">Data source: {{selectedDataSource}}
             <span class="caret"></span>
-          </a>
+          </fab-default-button>
           <ul class="dropdown-menu">
             <li *ngFor="let key of dataSourceKeys">
               <a (click)="setDataSource(key)">{{key}}</a>
             </li>
           </ul>
-        </li>
-        <li>
-          <a class="reportlink" (click)="refresh()">Apply Filter
-          </a>
         </li>
       </ul>
     </div>
