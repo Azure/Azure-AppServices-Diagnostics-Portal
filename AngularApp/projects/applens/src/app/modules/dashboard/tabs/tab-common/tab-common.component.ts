@@ -71,7 +71,8 @@ export class TabCommonComponent implements OnInit {
         break;
       case TabKey.Monitoring:
           this._router.navigate(["monitoring"], {
-            relativeTo: this._activatedRoute
+            relativeTo: this._activatedRoute,
+            queryParamsHandling:"preserve"
           });
           break;
     }
