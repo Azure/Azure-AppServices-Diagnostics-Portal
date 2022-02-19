@@ -4,6 +4,8 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
 import { DiagnosticService } from 'diagnostic-data';
 import * as momentNs from 'moment';
+import { IButtonStyles } from 'office-ui-fabric-react';
+import { BehaviorSubject } from 'rxjs-compat';
 
 const moment = momentNs;
 
@@ -54,6 +56,20 @@ export class TabMonitoringComponent implements OnInit {
 
   error: any;
 
+  buttonStyle: IButtonStyles = {
+    root: {
+      color: "#323130",
+      borderRadius: "12px",
+      marginTop: "8px",
+      background: "rgba(0, 120, 212, 0.1)",
+      fontSize: "13",
+      fontWeight: "600",
+      height: "80%"
+    }
+  }
+
+  openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
   ngOnInit() {
     this.getMonitoringResponse();
     this.getDetectorResponse();
@@ -93,6 +109,7 @@ export class TabMonitoringComponent implements OnInit {
   setDataSource(selectedDataSource: string) {
     this.selectedDataSource = selectedDataSource;
     this.dataSourceFlag = this.dataSourceMapping.get(selectedDataSource);
+    this.refresh();
   }
 
   setTimeRange(selectedTimeRange: string) {
@@ -100,5 +117,6 @@ export class TabMonitoringComponent implements OnInit {
     this.timeRangeInHours = this.timeRangeMapping.get(selectedTimeRange);
     let timeRangeInDays: number = parseInt(this.timeRangeInHours) / 24;
     this.startTime = this.endTime.clone().subtract(timeRangeInDays, 'days');
+    this.refresh();
   }
 }
