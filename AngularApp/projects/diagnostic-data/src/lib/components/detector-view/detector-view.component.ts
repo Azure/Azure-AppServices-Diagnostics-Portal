@@ -137,6 +137,7 @@ export class DetectorViewComponent implements OnInit {
   downtimeFilterDisabled: boolean = false;
   public xAxisPlotBands: xAxisPlotBand[] = null;
   public zoomBehavior: zoomBehaviors = zoomBehaviors.Zoom;
+  // isMonitoring: boolean = false;
   @Input() set downtimeZoomBehavior(zoomBehavior: zoomBehaviors) {
     if (!!zoomBehavior) {
       this.zoomBehavior = zoomBehavior;
@@ -182,6 +183,8 @@ export class DetectorViewComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this._route.snapshot.data.tabKey == 'Monitoring')
+        this.buttonStyle = {root:{display: "none"}};
     this.versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
     this._route.params.subscribe(p => {
       this.loadDetector();
