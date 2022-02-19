@@ -372,7 +372,7 @@ export class OnboardingFlowComponent implements OnInit {
       this.showPublishDialog();
     }
     else {
-      this.publish()
+      this.ngxSmartModalService.getModal('publishModal').open();
     }
   }
 
@@ -1171,7 +1171,7 @@ export class OnboardingFlowComponent implements OnInit {
     }
 
     this.setTargetBranch();
-    
+
     if (this.mode == DevelopMode.Create) {
       this.PRTitle = `Creating ${this.id}`;
     }
