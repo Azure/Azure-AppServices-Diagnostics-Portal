@@ -19,7 +19,7 @@ export class ApplensHeaderComponent implements OnInit {
   searchValue: string = "";
   searchStyles: ISearchBoxProps['styles'] = {
     root: {
-      minWidth: "250px"
+      minWidth: "300px"
     },
     clearButton: {
       display: "none"
