@@ -106,7 +106,7 @@ export class OnboardingFlowComponent implements OnInit {
   @Input() startTime: momentNs.Moment = moment.utc().subtract(1, 'days');
   @Input() endTime: momentNs.Moment = moment.utc();
   @Input() gistMode: boolean = false;
-
+  @Input() branchInput: string = ''; 
   DevelopMode = DevelopMode;
   HealthStatus = HealthStatus;
   PanelType = PanelType;
@@ -405,6 +405,7 @@ export class OnboardingFlowComponent implements OnInit {
 
   ngOnInit() {
     this.detectorGraduation = true;
+    this.branchInput = this._activatedRoute.snapshot.queryParams['branchInput'];
     this.diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(devopsConfig => {
       this.detectorGraduation = devopsConfig.graduationEnabled;
       this.deleteVisibilityStyle = !(this.detectorGraduation === true && this.mode !== DevelopMode.Create) ? {display: "none"} : {};
@@ -413,6 +414,8 @@ export class OnboardingFlowComponent implements OnInit {
 
       this.defaultBranch = "MainMVP";
 
+      if (this.detectorGraduation)
+       this.getBranchList();
 
       if (!this.initialized) {
         this.initialize();
@@ -442,10 +445,6 @@ export class OnboardingFlowComponent implements OnInit {
       });
 
       this.autoMerge = devopsConfig.autoMerge;
-
-      if (this.detectorGraduation)
-        this.getBranchList();
-
       if (this._detectorControlService.isInternalView) {
         this.internalExternalText = this.internalViewText;
       }
@@ -458,7 +457,7 @@ export class OnboardingFlowComponent implements OnInit {
   getBranchList() {
     this.optionsForSingleChoice = [];
     this.showBranches = [];
-
+    this.resourceId = this.resourceId == undefined || this.resourceId == '' ? this.resourceService.getCurrentResourceId() : this.resourceId;  
     this.diagnosticApiService.getBranches(this.resourceId).subscribe(branches => {
       var branchRegEx = new RegExp(`^dev\/.*\/detector\/${this.id}$`, "i");
       branches.forEach(option => {
@@ -488,13 +487,21 @@ export class OnboardingFlowComponent implements OnInit {
         this.noBranchesAvailable();
       }
       else {
-        var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`
+        var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`;
+        // if a branch is present via query params, default to that branch.
+        if (this.branchInput != undefined && this.branchInput != '' && this.mode == DevelopMode.Edit)  {
+          this.Branch = this.branchInput;
+          this.displayBranch = this.Branch;
+          this.tempBranch = this.Branch;
+        } else {
         this.Branch = this.targetInShowBranches(targetBranch) ? targetBranch : this.showBranches[0].key;
         this.displayBranch = this.Branch;
         this.tempBranch = this.Branch;
-        this.updateBranch();
       }
+      this.updateBranch();
+    }
     });
+  
   }
 
   internalExternalToggle() {
@@ -1488,6 +1495,9 @@ export class OnboardingFlowComponent implements OnInit {
     let detectorFile: Observable<string>;
     this.recommendedUtterances = [];
     this.utteranceInput = "";
+    if (this.detectorGraduation && this.mode == DevelopMode.Edit && this.branchInput != undefined && this.branchInput != '') {
+      this.Branch = this.branchInput;
+    } 
     if (this.detectorGraduation && this.mode != DevelopMode.Create) {
       this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/metadata.json`, this.Branch, this.resourceId).subscribe(res => {
         this.allUtterances = JSON.parse(res).utterances;
@@ -1560,21 +1570,22 @@ export class OnboardingFlowComponent implements OnInit {
           }));
       }
       else {
-        const branchObservable = this.diagnosticApiService.getBranches(this.resourceId).pipe(map(branches => {
-          const defaultBranch = branches.find(b => b.isMainBranch.toLowerCase() === "true");
-          this.defaultBranch = String(defaultBranch.branchName);
-          return this.defaultBranch;
-        }));
+        // TODO: Get package.json from branch depending on input query param 
+        // const branchObservable = this.diagnosticApiService.getBranches(this.resourceId).pipe(map(branches => {
+        //   const defaultBranch = branches.find(b => b.isMainBranch.toLowerCase() === "true");
+        //   this.defaultBranch = String(defaultBranch.branchName);
+        //   return this.defaultBranch;
+        // }));
 
-        configuration = branchObservable.pipe(switchMap((branch: string) => {
-          return this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/package.json`, branch, this.resourceId).pipe(map(config => {
+      //  branchObservable.pipe(switchMap((branch: string) => {
+        configuration =  this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/package.json`, this.Branch, this.resourceId).pipe(map(config => {
             let c: object = JSON.parse(config)
             c['dependencies'] = c['dependencies'] || {};
 
             this.configuration = c;
             return this.configuration['dependencies'];
           }));
-        }));
+        // }));
       }
     } 
     else {
