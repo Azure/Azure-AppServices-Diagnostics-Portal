@@ -49,7 +49,7 @@ export class UserActivePullrequestsComponent implements OnInit {
         sourceBranch = sourceBranch.replace('refs/heads/','');
         let detectorId = sourceBranchTrim.split("/")[3];
         let path = `${this.resourceId}/detectors/${detectorId}/edit?branchInput=${sourceBranch}`;
-        let sourceClickContent =  `<p><a href="${path}" target="_blank">${sourceBranch}</a></p>`;
+        let sourceClickContent =  `<p> ${sourceBranch}  <a href="${path}" target="_blank">(Click here to edit in AppLens) </a></p>`;
         rows.push([rowElement, sourceClickContent]);
       }
     })

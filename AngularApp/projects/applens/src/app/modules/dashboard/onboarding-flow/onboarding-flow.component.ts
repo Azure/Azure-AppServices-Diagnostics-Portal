@@ -1570,14 +1570,6 @@ export class OnboardingFlowComponent implements OnInit {
           }));
       }
       else {
-        // TODO: Get package.json from branch depending on input query param 
-        // const branchObservable = this.diagnosticApiService.getBranches(this.resourceId).pipe(map(branches => {
-        //   const defaultBranch = branches.find(b => b.isMainBranch.toLowerCase() === "true");
-        //   this.defaultBranch = String(defaultBranch.branchName);
-        //   return this.defaultBranch;
-        // }));
-
-      //  branchObservable.pipe(switchMap((branch: string) => {
         configuration =  this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/package.json`, this.Branch, this.resourceId).pipe(map(config => {
             let c: object = JSON.parse(config)
             c['dependencies'] = c['dependencies'] || {};
@@ -1585,7 +1577,6 @@ export class OnboardingFlowComponent implements OnInit {
             this.configuration = c;
             return this.configuration['dependencies'];
           }));
-        // }));
       }
     } 
     else {
