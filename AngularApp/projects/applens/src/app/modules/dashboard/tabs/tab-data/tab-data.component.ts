@@ -25,8 +25,6 @@ export class TabDataComponent implements OnInit {
 
   hideDetectorControl: boolean = false;
 
-  detectors: DetectorMetaData[] = [];
-
   internalExternalText: string = "";
   internalViewText: string = "Internal view";
   externalViewText: string = "Customer view";
@@ -46,9 +44,7 @@ export class TabDataComponent implements OnInit {
 
       this.analysisMode = this._route.snapshot.data['analysisMode'];
     });
-    this._diagnosticApiService.getDetectors().subscribe(detectors => {
-      this.detectors = detectors;
-    });
+
     if (this._detectorControlService.isInternalView){
       this.internalExternalText = this.internalViewText;
     }
@@ -59,6 +55,11 @@ export class TabDataComponent implements OnInit {
 
   refresh() {
     this.detector = this._route.snapshot.params['detector'];
+    this._diagnosticApiService.getDetectorMetaDataById(this.detector).subscribe(metaData => {
+      if(metaData) {
+        this._applensGlobal.updateHeader(metaData.name);
+      }
+    })
   }
 
   refreshPage() {

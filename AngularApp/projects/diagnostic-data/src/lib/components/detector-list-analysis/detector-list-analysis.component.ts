@@ -126,7 +126,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         private _diagnosticService: DiagnosticService, private _detectorControl: DetectorControlService,
         protected telemetryService: TelemetryService, public _appInsightsService: AppInsightsQueryService,
         private _supportTopicService: GenericSupportTopicService, protected _globals: GenieGlobals, private _solutionService: SolutionService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, @Optional() private _genericBreadcrumbService?: GenericBreadcrumbService) {
+        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, private _genericBreadcrumbService: GenericBreadcrumbService) {
         super(telemetryService);
         this.isPublic = config && config.isPublic;
 
@@ -935,13 +935,12 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
 
     private updateBreadcrumb() {
         if(this.isPublic || this.withinGenie) return;
-        if (this._genericBreadcrumbService) {
-            this._genericBreadcrumbService.updateBreadCrumbSubject({
-                name: this.analysisName,
-                id: this.analysisId,
-                isDetector: false
-            });
-        }
+
+        this._genericBreadcrumbService.updateBreadCrumbSubject({
+            name: this.analysisName,
+            id: this.analysisId,
+            isDetector: false
+        });
     }
 }
 
