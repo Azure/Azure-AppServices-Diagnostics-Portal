@@ -1301,9 +1301,9 @@ export class OnboardingFlowComponent implements OnInit {
     if (this.autoMerge) {
       this.Branch = this.defaultBranch;
     }
-
+    let description = "This Pull Request was created via AppLens";
     const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id}`, commitType, this.resourceId);
-    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, this.PRTitle, this.resourceId);
+    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, this.PRTitle, this.resourceId, description);
 
     DetectorObservable.subscribe(_ => {
       if (!this.autoMerge) {

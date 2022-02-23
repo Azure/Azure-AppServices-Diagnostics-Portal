@@ -189,8 +189,8 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri);
   }
 
-  makePullRequest(sourceBranch: string, targetBranch: string, title: string, resourceUri: string) {
-    return this._diagnosticApi.makePullRequest(sourceBranch, targetBranch, title, resourceUri);
+  makePullRequest(sourceBranch: string, targetBranch: string, title: string, resourceUri: string, description: string = "") {
+    return this._diagnosticApi.makePullRequest(sourceBranch, targetBranch, title, resourceUri, description);
   }
 
   getBranches(resourceId: string) {
