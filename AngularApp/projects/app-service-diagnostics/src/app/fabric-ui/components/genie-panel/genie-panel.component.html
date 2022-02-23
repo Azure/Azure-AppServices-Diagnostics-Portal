@@ -27,16 +27,16 @@
           class="ms-Panel-scrollableContent scroll-bottom">
           <div class="animated fadeIn chat-message-container" *ngFor="let item of messages" style="margin-left:0px;margin-top: 10px;margin-right: 10px;
           content: ' ';clear: both;">
-            <dynamic-component-genie [componentData]="item" (onViewUpdate)="updateView($event)"
+            <dynamic-component-genie aria-live="assertive" [componentData]="item" (onViewUpdate)="updateView($event)"
               (onComplete)="updateStatus($event)"></dynamic-component-genie>
           </div>
         </div>
       </div>
       <div class="search-box-container">
-        <textarea id="genieChatBox" class="genie-search-box" (keydown.enter)="onSearchEnter($event)"
+        <textarea id="genieChatBox" class="genie-search-box" (keydown.enter)="onSearchEnter($event)" role="textbox"
           placeholder="Type your question" aria-label="Type your question"></textarea>
         <div class="search-button-container">
-            <span (click)="onSearchEnter($event)" (keydown.enter)="onSearchEnter($event)" tabindex="0"
+            <span id="searchButton" (click)="onSearchEnter($event)" (keydown.enter)="onSearchEnter($event)" tabindex="0"
               aria-label="Send Message" role="button"><i class="fa fa-paper-plane search-box-icon"></i></span>
             <span *ngIf="isMessageEmpty" tabindex="0" aria-label="Message is empty" class="empty-message-warning">Message is empty</span>
         </div>
