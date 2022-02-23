@@ -93,10 +93,13 @@ export class GeniePanelComponent implements OnInit, OnDestroy {
         });
         this._messageProcessor.setCurrentKey(analysisMessageGroupId);
         this.getMessage();
+
+        document.getElementById("searchButton").focus();
         (<HTMLTextAreaElement>document.getElementById("genieChatBox")).value = "";
         (<HTMLTextAreaElement>document.getElementById("genieChatBox")).disabled = true;
         this.searchValue = "";
         this.isMessageEmpty = false;
+        event.preventDefault();
     }
 
     getMessage(event?: any): void {
