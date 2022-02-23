@@ -6,7 +6,7 @@ import AccessibilityModule from 'highcharts/modules/accessibility';
 import { DetectorControlService } from '../../services/detector-control.service';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection, MetricType } from '../../models/time-series';
 import { KeyValue } from '@angular/common';
-import { PointerEventObject} from 'highcharts';
+import { PointerEventObject } from 'highcharts';
 import { interval, Subscription } from 'rxjs';
 import { HighChartsHoverService } from '../../services/highcharts-hover.service';
 import highchartsDarkTheme from 'highcharts/themes/dark-unica';
@@ -47,7 +47,7 @@ export class HighchartsGraphComponent implements OnInit {
 
     @Input() metricType: MetricType;
 
-    @Input() originalDataPoints: { [key:string]:number[] }
+    @Input() originalDataPoints: { [key: string]: number[] }
     private _xAxisPlotBands: xAxisPlotBand[] = null;
     @Input() public set xAxisPlotBands(value: xAxisPlotBand[]) {
         this._xAxisPlotBands = [];
@@ -61,7 +61,7 @@ export class HighchartsGraphComponent implements OnInit {
         return this._xAxisPlotBands;
     }
 
-    public currentTheme: string="light";
+    public currentTheme: string = "light";
 
     public hoverData: { name: string, value: number, color: string, isSelect: boolean, defaultValue: number }[] = [];
     public static chartProperties: { [chartContainerId: string]: KeyValue<string, any>[] } = {};
@@ -483,15 +483,15 @@ export class HighchartsGraphComponent implements OnInit {
     }
 
     constructor(private el: ElementRef<HTMLElement>, private highChartsHoverService: HighChartsHoverService, private themeService: GenericThemeService) {
-                // Update highchart theme based on ibiza theme attributes
-                this.themeService.currentThemeSub.subscribe((theme)=>{
-                    this.updateHighChartTheme(theme);
-                })
+        // Update highchart theme based on ibiza theme attributes
+        this.themeService.currentThemeSub.subscribe((theme) => {
+            this.updateHighChartTheme(theme);
+        })
     }
 
     private updateHighChartTheme(theme: string) {
         if (!!theme && !!this.themeService && this.currentTheme && theme.toLocaleLowerCase() !== this.currentTheme) {
-            this.currentTheme= theme.toLocaleLowerCase();
+            this.currentTheme = theme.toLocaleLowerCase();
             switch (this.currentTheme) {
                 case 'dark':
                     highchartsDarkTheme(Highcharts);
@@ -626,7 +626,7 @@ export class HighchartsGraphComponent implements OnInit {
         const xAxisIndex = chart.series[0].xData.findIndex(item => item === xAxisValue);
         if (xAxisIndex < 0) return;
         this.hoverData.forEach((data, legendIndex) => {
-            if(chart.series[legendIndex] && chart.series[legendIndex].data[xAxisIndex] && chart.series[legendIndex].data[xAxisIndex].y) {
+            if (chart.series[legendIndex] && chart.series[legendIndex].data[xAxisIndex] && chart.series[legendIndex].data[xAxisIndex].y) {
                 const value = chart.series[legendIndex].data[xAxisIndex].y
                 data.value = value;
             }
@@ -735,7 +735,7 @@ export class HighchartsGraphComponent implements OnInit {
             credits: {
                 enabled: false
             },
-            colors: ["#0078D4", "#EF6950", "#00188F", "#00A2AD", "#4B003F", "#E3008C", "#022F22"],
+            colors: ["#0078D4", "#EF6950", "#00188F", "#00A2AD", "#4B003F", "#E3008C", "#022F22", "#917EDB", "#001D3F", "#502006"],
             accessibility: {
                 enabled: true,
                 describeSingleSeries: true,

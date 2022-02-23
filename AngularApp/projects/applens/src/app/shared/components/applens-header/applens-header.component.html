@@ -12,6 +12,10 @@
       </div>
     </div>
 
+    <div *ngIf="_searchService">
+      <fab-search-box (onSearch)="triggerSearch()" [value]="searchValue" [styles]="searchStyles" [placeholder]="'Describe your problem and hit enter'" (onChange)="updateSearchValue($event)"></fab-search-box>
+    </div>
+
     <div *ngIf="userPhotoSource !== ''" style="margin-right: 16px;">
       <img [src]="userPhotoSource" alt="User Profile Photo" class="avatar header-img">
     </div>

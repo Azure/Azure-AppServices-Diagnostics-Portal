@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ApplensGlobal } from '../../../applens-global';
 import { applensDocs } from '../../utilities/applens-docs-constant';
 
 @Component({
@@ -6,7 +7,10 @@ import { applensDocs } from '../../utilities/applens-docs-constant';
   templateUrl: './applens-docs.component.html',
   styleUrls: ['./applens-docs.component.scss']
 })
-export class ApplensDocsComponent {
+export class ApplensDocsComponent implements OnInit {
   applensDocs = applensDocs;
-  constructor() { }
+  constructor(private _applensGlobal:ApplensGlobal) { }
+  ngOnInit() {
+      this._applensGlobal.updateHeader("");
+  }
 }
