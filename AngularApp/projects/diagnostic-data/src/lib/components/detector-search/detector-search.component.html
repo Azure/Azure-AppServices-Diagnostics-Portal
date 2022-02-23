@@ -173,6 +173,7 @@
                 [isChildComponent]="true" 
                 [(searchResults)]="webSearchResults" 
                 [webSearchConfig]="searchConfiguration.WebSearchConfiguration"
+                [numArticlesExpanded]="3"
     >
     </web-search>
 </div>
@@ -181,7 +182,7 @@
     <documents-search   [searchTerm]="searchTerm"
                         [searchId] = "searchId"
                         [isChildComponent]="true"
-                        [numDocumentsExpanded] = 2>
+                        [numDocumentsExpanded] = "2">
     </documents-search>
 </div>
 

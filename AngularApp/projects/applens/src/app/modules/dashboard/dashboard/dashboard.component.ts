@@ -63,6 +63,11 @@ export class DashboardComponent implements OnDestroy {
   showL2SideNav: boolean = false;
   expandL1SideNav: boolean = false;
   breadcrumbItems: IBreadcrumbItem[] = [];
+  breadcrumbStyles: IBreadcrumbProps['styles'] = {
+    itemLink: {
+      fontSize:"14px",
+    },
+  }
 
   constructor(public resourceService: ResourceService, private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
