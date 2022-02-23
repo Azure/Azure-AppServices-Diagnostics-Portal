@@ -487,7 +487,7 @@ export class OnboardingFlowComponent implements OnInit {
         this.noBranchesAvailable();
       }
       else {
-        var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`;
+        var targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${this.id.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`;
         // if a branch is present via query params, default to that branch.
         if (this.branchInput != undefined && this.branchInput != '' && this.mode == DevelopMode.Edit)  {
           this.Branch = this.branchInput;
@@ -1179,7 +1179,7 @@ export class OnboardingFlowComponent implements OnInit {
   }
 
   setTargetBranch(){
-    var targetBranch = `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`;
+    var targetBranch = this.gistMode ?  `dev/${this.userName.split("@")[0]}/gist/${this.id.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}` ;
 
     if (this.Branch === this.defaultBranch && this.targetInShowBranches(targetBranch)) {
       this.Branch = targetBranch;
