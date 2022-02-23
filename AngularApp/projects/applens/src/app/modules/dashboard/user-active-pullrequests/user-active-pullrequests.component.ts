@@ -43,12 +43,14 @@ export class UserActivePullrequestsComponent implements OnInit {
       let sourceBranchTrim = sourceBranch.replace('refs/heads/', '');
       let title:string = element['title'];
       let link:string = element['remoteUrl'];
+      // Note: this logic will work for branches created with following pattern : dev/<user_alias>/<entitytype>/<entityid>, eg: dev/microsoftalias/detector/mydetector or dev/microsoftalias/gist/mygist
       let branchUserName = sourceBranchTrim.startsWith('dev/') ? sourceBranchTrim.split("/")[1] : sourceBranchTrim;
-      if (branchUserName.includes(this.userId) && title != undefined && title != '' && link != undefined && link != '') {  
+      if (branchUserName.toLocaleLowerCase() == this.userId.toLocaleLowerCase() && title != undefined && title != '' && link != undefined && link != '') {  
         let rowElement = `<markdown><a href="${link}" target="_blank">${title}</a></markdown>`;
         sourceBranch = sourceBranch.replace('refs/heads/','');
-        let detectorId = sourceBranchTrim.split("/")[3];
-        let path = `${this.resourceId}/detectors/${detectorId}/edit?branchInput=${sourceBranch}`;
+        let entityid = sourceBranchTrim.split("/")[3];
+        let entityType = sourceBranchTrim.split("/")[2];
+        let path = entityType.toLocaleLowerCase() == 'gist' ? `${this.resourceId}/gists/${entityid}?branchInput=${sourceBranch}` : `${this.resourceId}/detectors/${entityid}/edit?branchInput=${sourceBranch}`;
         let sourceClickContent =  `<p> ${sourceBranch}  <a href="${path}" target="_blank">(Click here to edit in AppLens) </a></p>`;
         rows.push([rowElement, sourceClickContent]);
       }
