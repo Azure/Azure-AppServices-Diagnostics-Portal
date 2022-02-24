@@ -58,9 +58,6 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     let firstDigit = "0x" + subscriptionId.substr(0, 1);
     this.displayRPDFButton = (16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease && this._checkIsWindowsApp();
     this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportButtonDisplayed, { 'ResiliencyScoreButtonDisplayed': this.displayRPDFButton.toString(), 'SubscriptionId': this._route.parent.snapshot.params['subscriptionid'] });
-  }
-
-  constructor(private globals: Globals, private _detectorControlService: DetectorControlService, private _diagnosticService: DiagnosticService, private _route: ActivatedRoute, private router: Router, private telemetryService: TelemetryService, private _resourceService: ResourceService) {
     const loggingError = new Error();
     this.gRPDFButtonDisabled = false;
     //Get showCoachMark value(string) from local storage (if exists), then convert to boolean   
@@ -78,6 +75,9 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       let _severityLevel: SeverityLevel = SeverityLevel.Warning;
       this.telemetryService.logException(loggingError, null, null, _severityLevel);
     }
+  }
+
+  constructor(private globals: Globals, private _detectorControlService: DetectorControlService, private _diagnosticService: DiagnosticService, private _route: ActivatedRoute, private router: Router, private telemetryService: TelemetryService, private _resourceService: ResourceService) {
   }
 
   toggleOpenState() {
