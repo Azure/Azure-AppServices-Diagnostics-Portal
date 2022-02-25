@@ -11,6 +11,7 @@ import { SeverityLevel } from '@microsoft/applicationinsights-web';
 import { DirectionalHint } from 'office-ui-fabric-react';
 import { ResiliencyScoreReportHelper } from '../../../shared/utilities/resiliencyScoreReportHelper';
 import { BehaviorSubject } from 'rxjs';
+import { DemoSubscriptions } from '../../../betaSubscriptions';
 
 @Component({
   selector: 'detector-command-bar',
@@ -26,6 +27,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   fullReportPath: string;
 
   displayRPDFButton: boolean = false;
+  _isBetaSubscription: boolean = false;
   gRPDFButtonChild: Element;
   gRPDFButtonId: string;
   gRPDFCoachmarkId: string;
@@ -52,11 +54,14 @@ export class DetectorCommandBarComponent implements AfterViewInit {
 
   ngOnInit(): void {
     let subscriptionId = this._route.parent.snapshot.params['subscriptionid'];
-    // add logic for presenting initially to only 10% of Subscriptions
+    // allowlisting beta subscriptions for testing purposes
+    this._isBetaSubscription = DemoSubscriptions.betaSubscriptions.indexOf(subscriptionId) >= 0;
+    // add logic for presenting initially to only 1% of Subscriptions:  percentageToRelease = 0.01% (1=100%)
     let percentageToRelease = 0.1;
     // roughly split of percentageToRelease of subscriptions to use new feature.
+    
     let firstDigit = "0x" + subscriptionId.substr(0, 1);
-    this.displayRPDFButton = (16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease && this._checkIsWindowsApp();
+    this.displayRPDFButton = ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease || this._isBetaSubscription) && this._checkIsWindowsApp()  ;
     this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportButtonDisplayed, { 'ResiliencyScoreButtonDisplayed': this.displayRPDFButton.toString(), 'SubscriptionId': this._route.parent.snapshot.params['subscriptionid'] });
     const loggingError = new Error();
     this.gRPDFButtonDisabled = false;
