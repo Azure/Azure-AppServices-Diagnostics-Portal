@@ -617,24 +617,24 @@ async function validateConnectionViaAppSetting(propertyName, connectionString, t
                 detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
                 break;
             case "ManagedIdentityCredentialMissing":
-                title = "Authentication failure";
-                detailsMarkdown = `Managed identity authentication failure - Credential app setting is not set to managedidentity which disallowed checking connection using clientId.`;
+                title = `The app setting ${propertyName}__credential was not found or not set to "managedidentity" <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
                 break;
             case "FullyQualifiedNamespaceMissed":
-                title = "Authentication failure";
-                detailsMarkdown = `fullyQualifiedNamespace authentication failure - All required app settings to check the connection have not been provided with valid values.`;
+                title = `The app setting ${propertyName}__fullyQualifiedNamespace was not found or is set to a blank value <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
+                break;
+            case "ServiceUriMissed":
+                title = `The ${propertyName} ServiceUri setting  was not found or is set to a blank value <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
                 break;
             case "SystemAssignedManagedIdentity":
                 title = "Authentication failure";
-                detailsMarkdown = `The target service is not provided with Access to the function app using system assigned identity.`;
+                detailsMarkdown = `The target service is not provided with Access to the function app using system assigned identity. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>`;
                 break;
             case "UserAssignedManagedIdentity":
                 title = "Authentication failure";
-                detailsMarkdown = `The target service is not provided with access to the user assigned identity which is configured for the function app.`;
+                detailsMarkdown = `The target service is not provided with access to the user assigned identity which is configured for the function app. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>`;
                 break;
             case "ManagedIdentityCredential":
-                title = "Authentication failure";
-                detailsMarkdown = `There is no managed identity configured for the function app.`;
+                title = 'Your app is not having managed identity configured for making a successful connection. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>';
                 break;
             case "Forbidden":
                 // Some authentication failures come through as Forbidden so check the exception data
@@ -675,12 +675,18 @@ async function validateConnectionViaAppSetting(propertyName, connectionString, t
         }
         // Show the exception message as it contains useful information to fix the issue.  Don't show it unless its accompanied with other explanations.
         detailsMarkdown += (detailsMarkdown != "" && checkConnectionStringResult.Exception ? `\r\n\r\nException encountered while connecting: ${checkConnectionStringResult.Exception.Message}` : undefined);
-
-        subChecks.push({
-            title: title,
-            level: 2,
-            detailsMarkdown: detailsMarkdown
-        })
+        if(detailsMarkdown == "undefined"){
+            subChecks.push({
+                title: title,
+                level: 2,                
+            })
+        }else{
+            subChecks.push({
+                title: title,
+                level: 2,
+                detailsMarkdown: detailsMarkdown
+            })
+        }
     }
     return subChecks;
 }
