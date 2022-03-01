@@ -75,7 +75,7 @@
               <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" contentClass="mr-5"
                 (onClick)="openSolutionPanel(viewModel.model.title)" contentStyle="border-radius: 2px;font-size: 13px;">
                 View Solutions</fab-primary-button>
-              <fab-link (onClick)="selectDetector(viewModel)">Go to detector</fab-link>
+              <fab-link (onClick)="selectDetector(viewModel)">View details</fab-link>
             </div>
           </div>
         </fab-card>
@@ -104,7 +104,7 @@
             </div>
             <div footer>
               <div style="margin-bottom: 12px;">
-                <fab-link (onClick)="selectDetector(viewModel)">Go to detector
+                <fab-link (onClick)="selectDetector(viewModel)">View details
                 </fab-link>
               </div>
             </div>
@@ -135,7 +135,7 @@
             </div>
             <div footer>
               <div style="margin-bottom: 12px;">
-                <fab-link (onClick)="selectDetector(viewModel)">Go to detector
+                <fab-link (onClick)="selectDetector(viewModel)">View details
                 </fab-link>
               </div>
             </div>
