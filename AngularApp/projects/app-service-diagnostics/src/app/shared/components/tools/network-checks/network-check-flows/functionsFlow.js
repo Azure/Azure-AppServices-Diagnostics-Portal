@@ -196,11 +196,7 @@ export var functionsFlow = {
                     var connectionString = binding.connectionString;
                     var failureDetailsMarkdown = undefined;                    
                     // An undefined connectionStringType parameter causes the old tcpping validation to apply
-                    if(isDaasNew){
-                        var connectionStringType = isDaasExtAccessible ? bindingTypeToConnectionStringType(binding.type,isDaasNew) : undefined;
-                    }else{
-                        var connectionStringType = isDaasExtAccessible ? bindingTypeToConnectionStringType(binding.type) : undefined;
-                    }                   
+                    var connectionStringType = isDaasExtAccessible ? bindingTypeToConnectionStringType(binding.type,isDaasNew) : undefined;
                         (await networkCheckConnectionString(binding.connectionStringProperty, 
                                                             connectionString, 
                                                             connectionStringType, 
@@ -254,10 +250,6 @@ export var functionsFlow = {
         }));
     }
 };
-  
-function isKeyVaultReference(appSetting) {
-    return appSetting.includes("@Microsoft.KeyVault");
-}
 
 function getMaxCheckLevel(subChecks) {
     var maxCheckLevel = 0;
@@ -278,7 +270,7 @@ async function networkCheckConnectionString(propertyName, connectionString, conn
             /*
              * Full connection string validation via DaaS Extension
              */
-            var connectivityCheckResult = await validateConnectionViaAppSetting(propertyName, connectionString, connectionStringType, diagProvider, failureDetailsMarkdown, entityName);
+            var connectivityCheckResult = await validateConnectionViaAppSetting(propertyName, connectionStringType, diagProvider, entityName);
             var maxCheckLevel = getMaxCheckLevel(connectivityCheckResult);            
             var service;
             switch (connectionStringType) {
@@ -318,42 +310,10 @@ async function networkCheckConnectionString(propertyName, connectionString, conn
                 subChecks.push({ title: title, level: 2, detailsMarkdown: failureDetailsMarkdown });
             } else {
                 subChecks.push({ title: title, level: 2 });
-            }       
-                
             }
-         }
-        
-      
-    return subChecks;
-}
-
-async function networkCheckKeyVaultReferenceAsync(propertyName, connectionString, dnsServers, diagProvider, isVnetIntegrated) {
-    var failureDetailsMarkdown = 'Please refer to <a href= "https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references#reference-syntax" target="_blank">this documentation</a> to configure the Key Vault reference correctly.'
-    var subChecks = [];
-    var hostPort = extractHostPortFromKeyVaultReference(connectionString);
-    if (hostPort.HostName != undefined && hostPort.Port != undefined) {
-        var connectivityCheckResult = await runConnectivityCheckAsync(hostPort.HostName, hostPort.Port, dnsServers, diagProvider, undefined, isVnetIntegrated, failureDetailsMarkdown);
-        var maxCheckLevel = getMaxCheckLevel(connectivityCheckResult);
-        if (maxCheckLevel == 0) {
-            subChecks.push({
-                title: `Network access validation of connection strings configured as key vault references are currently not supported.  Network access to the Key Vault service referenced in the App Setting "${propertyName}" was verified. Recommend checking application logs for connectivity to the endpoint.`,
-                level: 1,
-                subChecks: connectivityCheckResult
-            });
-        } else {
-            subChecks.push({
-                title: `The Key Vault endpoint "${hostPort.HostName}:${hostPort.Port}" referenced in the App Setting "${propertyName}" could not be reached".`,
-                level: maxCheckLevel,
-                subChecks: connectivityCheckResult
-            });
         }
-    } else {
-        subChecks.push({
-            title: `The Key Vault reference in the App Setting "${propertyName}" could not be parsed.`,
-            level: 2,
-            detailsMarkdown: failureDetailsMarkdown
-        });
     }
+      
     return subChecks;
 }
 
@@ -456,108 +416,7 @@ async function runConnectivityCheckAsync(hostname, port, dnsServers, diagProvide
     return subChecks;
 }
 
-async function validateConnectionStringAsync(propertyName, connectionString, type, diagProvider, failureDetailsMarkdown = undefined) {
-    var checkConnectionStringResult = await diagProvider.checkConnectionStringAsync(connectionString, type).catch(e => {    
-    logDebugMessage(e);          
-    });
-
-    var subChecks = [];
-
-    // Suppress successful checks to avoid clutter
-    if (checkConnectionStringResult == undefined) {
-        subChecks.push({
-            title: `Validation of connection string failed due to an internal error. Please send us feedback via the "Feedback" button above."`,
-            level: 2,
-        })
-    } else if (checkConnectionStringResult.StatusText != "Success") {
-        /* Status enums as of Sep 2021
-         *  Success,
-         *  AuthFailure,
-         *  ContentNotFound,
-         *  Forbidden,
-         *  UnknownResponse,
-         *  EndpointNotReachable,
-         *  ConnectionFailure,
-         *  DnsLookupFailed,
-         *  MsiFailure,
-         *  EmptyConnectionString,
-         *  MalformedConnectionString,
-         *  UnknownError
-         */
-        var service, title;
-        var detailsMarkdown = "";
-        switch (type) {
-            case ConnectionStringType.BlobStorageAccount:
-                    service = "Blob Storage account"; break;
-            case ConnectionStringType.QueueStorageAccount:
-                    service = "Queue Storage account"; break; 
-            case ConnectionStringType.FileShareStorageAccount:
-                    service = "File Share Storage account"; break;       
-            case ConnectionStringType.ServiceBus:
-                service = "Service Bus"; break;
-            case ConnectionStringType.EventHubs:
-                service = "Event Hubs"; break;
-        }
-        switch (checkConnectionStringResult.StatusText)
-        {
-            case "MalformedConnectionString":
-                title = `Invalid connection string`;
-                detailsMarkdown = `The connection string configured is invalid (e.g. missing some required elements). Please check the value configured in the app setting "${propertyName}".`;
-                break;
-            case "EmptyConnectionString":
-                title = `The app setting "${propertyName}" was not found or is set to a blank value`
-                break;
-            case "DnsLookupFailed":
-                title = "Resource not found";
-                detailsMarkdown = `The ${service} resource specified in the connection string was not found.  Please check the value of the setting.`;
-                break;
-            case "AuthFailure":
-                title = "Authentication failure";
-                detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
-                break;
-            case "Forbidden":
-                // Some authentication failures come through as Forbidden so check the exception data
-                if(checkConnectionStringResult.Exception != undefined && 
-                   checkConnectionStringResult.Exception.RequestInformation != undefined && 
-                   JSON.stringify(checkConnectionStringResult.Exception.RequestInformation).includes("AuthenticationFailed")) {
-                    title = "Authentication failure";
-                    detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
-                } else {
-                    title = `Access to the ${service} resource is restricted.`;
-                    detailsMarkdown = title + `\r\n\r\n` + `This can be due to firewall rules on the resource.  Please check if you have configured firewall rules or a private endpoint and that they correctly allow access from the Function App.  Relevant documentation:`
-                        + `\r\n\r\n`;
-                    switch (type) {
-                        case ConnectionStringType.BlobStorageAccount:
-                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
-                            break;
-                        case ConnectionStringType.QueueStorageAccount:
-                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
-                            break;                        
-                        case ConnectionStringType.ServiceBus:
-                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/service-bus-messaging/network-security" target="_blank">Service Bus network security</a>`;
-                            break;
-                        case ConnectionStringType.EventHubs:
-                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/event-hubs/network-security" target="_blank">Event Hubs network security</a>`;
-                            break;
-                    }
-                }
-                break;
-            default:
-                title = `Validation of connection string failed due to an unknown error.  Please send us feedback via the "Feedback" button above.`;
-                break;
-        }
-        // Show the exception message as it contains useful information to fix the issue.  Don't show it unless its accompanied with other explanations.
-        detailsMarkdown += (detailsMarkdown != "" && checkConnectionStringResult.Exception ? `\r\n\r\nException encountered while connecting: ${checkConnectionStringResult.Exception.Message}` : undefined);
-
-        subChecks.push({
-            title: title,
-            level: 2,
-            detailsMarkdown: detailsMarkdown
-        })
-    }
-    return subChecks;
-}
-async function validateConnectionViaAppSetting(propertyName, connectionString, type, diagProvider, failureDetailsMarkdown = undefined,entityName = undefined) {
+async function validateConnectionViaAppSetting(propertyName, type, diagProvider, entityName = undefined) {
     var checkConnectionStringResult = await diagProvider.checkConnectionViaAppSettingAsync(propertyName, type, entityName).catch(e => {
         logDebugMessage(e);          
     });
@@ -588,6 +447,8 @@ async function validateConnectionViaAppSetting(propertyName, connectionString, t
         var service, title;
         var detailsMarkdown = "";
         switch (type) {
+            case ConnectionStringType.StorageAccount:
+                    service = "Blob Storage account"; break;
             case ConnectionStringType.BlobStorageAccount:
                     service = "Blob Storage account"; break;
             case ConnectionStringType.QueueStorageAccount:
@@ -619,21 +480,23 @@ async function validateConnectionViaAppSetting(propertyName, connectionString, t
             case "ManagedIdentityCredentialMissing":
                 title = `The app setting ${propertyName}__credential was not found or not set to "managedidentity" <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
                 break;
-            case "FullyQualifiedNamespaceMissed":
+            case "FullyQualifiedNamespaceMissing":
                 title = `The app setting ${propertyName}__fullyQualifiedNamespace was not found or is set to a blank value <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
                 break;
-            case "ServiceUriMissed":
+            case "ServiceUriMissing":
                 title = `The ${propertyName} ServiceUri setting  was not found or is set to a blank value <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
                 break;
-            case "SystemAssignedManagedIdentity":
-                title = "Authentication failure";
-                detailsMarkdown = `The target service is not provided with Access to the function app using system assigned identity. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>`;
-                break;
-            case "UserAssignedManagedIdentity":
-                title = "Authentication failure";
-                detailsMarkdown = `The target service is not provided with access to the user assigned identity which is configured for the function app. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>`;
-                break;
-            case "ManagedIdentityCredential":
+            case "ManagedIdentityAuthFailure":
+                if(checkConnectionStringResult.IdentityType == "System"){
+                    title = "Authentication failure";
+                    detailsMarkdown = `The target service is not provided with Access to the function app using system assigned identity. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>`;
+                }
+                else{
+                    title = "Authentication failure";
+                    detailsMarkdown = `The target service is not provided with access to the user assigned identity which is configured for the function app. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>`;
+                }                
+                break;            
+            case "ManagedIdentityNotConfigured":
                 title = 'Your app is not having managed identity configured for making a successful connection. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>';
                 break;
             case "Forbidden":
@@ -649,17 +512,11 @@ async function validateConnectionViaAppSetting(propertyName, connectionString, t
                         + `\r\n\r\n`;
                     switch (type) {
                         case ConnectionStringType.StorageAccount:
-                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
-                            break;
                         case ConnectionStringType.FileShareStorageAccount:
-                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
-                            break;
                         case ConnectionStringType.BlobStorageAccount:
-                            detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
-                            break;
                         case ConnectionStringType.QueueStorageAccount:
                             detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/storage/common/storage-network-security?tabs=azure-portal" target="_blank">Storage account network security</a>`;
-                            break;                        
+                            break;              
                         case ConnectionStringType.ServiceBus:
                             detailsMarkdown += `<a href= "https://docs.microsoft.com/en-us/azure/service-bus-messaging/network-security" target="_blank">Service Bus network security</a>`;
                             break;

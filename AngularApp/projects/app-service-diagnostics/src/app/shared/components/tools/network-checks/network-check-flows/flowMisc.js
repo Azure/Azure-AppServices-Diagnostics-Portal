@@ -695,7 +695,7 @@ export async function checkDaaSExtApiAsync(diagProvider) {
     var isDaasNew = false;
     if(isDaasExtAccessible == true) {
         var currentDaasVersion = daasVersionInfo.body.Version;
-        if (checkDassNewVersion(currentDaasVersion) >= 0) {
+        if (isNewerDaasVersion(currentDaasVersion) >= 0) {
             isDaasNew = true;
         }
         else {
@@ -706,17 +706,17 @@ export async function checkDaaSExtApiAsync(diagProvider) {
     return { "IsDaasExtAccessible": isDaasExtAccessible, "IsDaasNew": isDaasNew }
 }
 
-function checkDassNewVersion(currentDaasVersion){ 
-    var vnum1 = 0, vnum2 = 0, existingDaasVersion = "2.2.1221.01";; 
+function isNewerDaasVersion(currentDaasVersion){ 
+    var vnum1 = 0, vnum2 = 0, legacyDaasVersion = "2.2.1221.01";; 
     for (var i = 0, j = 0; (i < currentDaasVersion.length 
-                            || j < existingDaasVersion.length);) 
+                            || j < legacyDaasVersion.length);) 
     { 
         while (i < currentDaasVersion.length && currentDaasVersion[i] != '.') { 
             vnum1 = vnum1 * 10 + (currentDaasVersion[i] - '0'); 
             i++; 
         } 
-        while (j < existingDaasVersion.length && existingDaasVersion[j] != '.') { 
-            vnum2 = vnum2 * 10 + (existingDaasVersion[j] - '0'); 
+        while (j < legacyDaasVersion.length && legacyDaasVersion[j] != '.') { 
+            vnum2 = vnum2 * 10 + (legacyDaasVersion[j] - '0'); 
             j++; 
         } 
         if (vnum1 > vnum2) 
@@ -726,6 +726,6 @@ function checkDassNewVersion(currentDaasVersion){
         vnum1 = vnum2 = 0; 
         i++; 
         j++; 
-    } 
+    }
     return 0; 
 }
