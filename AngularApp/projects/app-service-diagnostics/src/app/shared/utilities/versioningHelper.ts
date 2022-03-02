@@ -14,6 +14,9 @@ export class VersioningHelper {
         let firstDigit = "0x" + subscriptionId.substr(0, 1);
 
         // roughly split of 50% of subscriptions to use new feature.
-        return (parseInt(firstDigit, 16) <= 8) && enableV2;
+        // return (parseInt(firstDigit, 16) <= 8) && enableV2;
+
+        // Enable 100% of subs
+        return enableV2;
     }
 }
