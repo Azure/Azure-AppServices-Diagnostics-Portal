@@ -220,10 +220,16 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     const btns = document.querySelectorAll("#fab-command-bar button");
     const pdfButtonId = "generatePDFButton";
     const coachMarkId = "fab-coachmark";
+    let PDFButtonIndex = btns.length;
     if (btns && btns.length > 0) {
       const dropdown = btns[btns.length - 1];
       dropdown.setAttribute("aria-expanded", `${this.globals.openTimePicker}`);
-      const PDFButton = btns[btns.length - 2];
+      btns.forEach((btn,i) => {
+        if(btn.textContent.includes(this.gRPDFButtonText)) {
+          PDFButtonIndex = i;
+        }
+      });
+      const PDFButton = btns[PDFButtonIndex];
       PDFButton.setAttribute("id", pdfButtonId);
     }
 
