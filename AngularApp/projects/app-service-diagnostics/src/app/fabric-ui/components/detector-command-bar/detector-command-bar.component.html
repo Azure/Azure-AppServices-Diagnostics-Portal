@@ -31,7 +31,7 @@
    *ngIf="showCoachmark==true"
   [attr.id]="'fab-coachmark'" 
   [target]="gRPDFButtonId" 
-  (onAnimationOpenEnd)="showTeachingBubble=true" 
+  (onAnimationOpenEnd)="showingTeachingBubble()"
   [positioningContainerProps]="coachmarkPositioningContainerProps"
   delayBeforeCoachmarkAnimation="4000"
   ariaAlertText="A coachmark has appeared"
@@ -40,7 +40,7 @@
   ariaDescribedByText="Press enter or alt + C to open the coachmark notification"
   ariaLabelledByText="Coachmark notification">
   <fab-teachingbubble 
-    *ngIf="showTeachingBubble==true" 
+    *ngIf="showTeachingBubble==true"
     headline="New Resiliency Score report!" 
     (onDismiss)="coachMarkViewed()" 
     [target]="gRPDFButtonId"    

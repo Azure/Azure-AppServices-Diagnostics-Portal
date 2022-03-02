@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ResourceService } from '../../../shared-v2/services/resource.service';
 import { WebSitesService } from '../../../resources/web-sites/services/web-sites.service';
 import { OperatingSystem } from '../../../shared/models/site';
+import { AppType } from '../../../shared/models/portal';
 import { SeverityLevel } from '@microsoft/applicationinsights-web';
 import { DirectionalHint } from 'office-ui-fabric-react';
 import { ResiliencyScoreReportHelper } from '../../../shared/utilities/resiliencyScoreReportHelper';
@@ -47,9 +48,9 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   };
 
   public _checkIsWindowsApp(): boolean {
-    let webSiteService = this._resourceService as WebSitesService;
+    let webSiteService = this._resourceService as WebSitesService;    
     return this._resourceService && this._resourceService instanceof WebSitesService
-      && (webSiteService.platform === OperatingSystem.windows);
+      && (webSiteService.platform === OperatingSystem.windows) && (webSiteService.appType === AppType.WebApp) && (webSiteService.sku > 8); //Only for Web App (Windows) in Standard or higher
   }
 
   ngOnInit(): void {
@@ -61,17 +62,19 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     // roughly split of percentageToRelease of subscriptions to use new feature.
     
     let firstDigit = "0x" + subscriptionId.substr(0, 1);
-    this.displayRPDFButton = ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease || this._isBetaSubscription) && this._checkIsWindowsApp()  ;
+    this.displayRPDFButton = ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease || this._isBetaSubscription) && this._checkIsWindowsApp();    
     this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportButtonDisplayed, { 'ResiliencyScoreButtonDisplayed': this.displayRPDFButton.toString(), 'SubscriptionId': this._route.parent.snapshot.params['subscriptionid'] });
     const loggingError = new Error();
     this.gRPDFButtonDisabled = false;
     //Get showCoachMark value(string) from local storage (if exists), then convert to boolean   
     try {
-      if (localStorage.getItem("showCoachmark") != undefined) {
-        this.showCoachmark = localStorage.getItem("showCoachmark") === "true";
-      }
-      else {
-        this.showCoachmark = true;
+      if (this.displayRPDFButton){
+        if (localStorage.getItem("showCoachmark") != undefined) {
+          this.showCoachmark = localStorage.getItem("showCoachmark") === "true";
+        }
+        else {
+          this.showCoachmark = true;
+        }
       }
     }
     catch (error) {
@@ -246,5 +249,11 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       let _severityLevel: SeverityLevel = SeverityLevel.Warning;
       this.telemetryService.logException(loggingError, null, null, _severityLevel);
     }
+  }
+
+  showingTeachingBubble(){
+    if (this.displayRPDFButton){
+      this.showTeachingBubble = true;
+    }  
   }
 }
