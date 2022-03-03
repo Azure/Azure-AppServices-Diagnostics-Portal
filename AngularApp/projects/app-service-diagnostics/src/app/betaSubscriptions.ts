@@ -36,6 +36,8 @@ export class DemoSubscriptions {
         '82acd5bb-4206-47d4-9c12-a65db028483d',//Christian Smith,
         '59673966-501b-4a6c-9ed5-12a166a5bde9', // Testing mwh geo
         '750f6b19-1621-45ba-a641-0eb3babe2141', // Tulika Chaudharie's Subscription
-        'fa125e53-a44d-494b-a386-824498910cd4' //  Venkata Manusha Gopisetty's subscription
+        'fa125e53-a44d-494b-a386-824498910cd4', //  Venkata Manusha Gopisetty's subscription
+        'a2c49f0f-548f-4f3b-86a4-39c8eafc0780', // Private Test Sub CURIBE (Cristhian Uribe's subscription)
+        'dd5a12e0-3f90-47b8-9c07-7f9f0c1af13a'  // Microsoft Azure Internal Consumption (Cristhian Uribe's subscription)
     ];
 }
