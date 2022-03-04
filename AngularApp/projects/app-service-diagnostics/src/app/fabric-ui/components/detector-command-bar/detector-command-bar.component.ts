@@ -218,15 +218,18 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     const btns = document.querySelectorAll("#fab-command-bar button");
     const pdfButtonId = "generatePDFButton";
     const coachMarkId = "fab-coachmark";
-    let PDFButtonIndex = btns.length;
+    let PDFButtonIndex = -1;
     if (btns && btns.length > 0) {
       btns.forEach((btn,i) => {
         if(btn.textContent.includes(this.gRPDFButtonText)) {
           PDFButtonIndex = i;
         }
       });
-      const PDFButton = btns[PDFButtonIndex];
-      PDFButton.setAttribute("id", pdfButtonId);
+      
+      if(PDFButtonIndex >= 0 && PDFButtonIndex < btns.length && btns[PDFButtonIndex]) {
+        const PDFButton = btns[PDFButtonIndex];
+        PDFButton.setAttribute("id", pdfButtonId);
+      }
     }
 
     this.gRPDFButtonId = `#${pdfButtonId}`;
