@@ -226,7 +226,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
         }
       });
       
-      if(PDFButtonIndex > 0 && PDFButtonIndex < btns.length && btns[PDFButtonIndex]) {
+      if(PDFButtonIndex >= 0 && PDFButtonIndex < btns.length && btns[PDFButtonIndex]) {
         const PDFButton = btns[PDFButtonIndex];
         PDFButton.setAttribute("id", pdfButtonId);
       }
