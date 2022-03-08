@@ -432,13 +432,14 @@ export class DiagnosticApiService {
     return this.invoke<any>(path, HttpMethod.POST, body, false, true, true, true, false);
   }
 
-  public makePullRequest(sourceBranch: string, targetBranch: string, title: string, resourceUri: string){
+  public makePullRequest(sourceBranch: string, targetBranch: string, title: string, resourceUri: string, description: string = ""){
 
     var body = {};
     body['sourceBranch'] = sourceBranch;
     body['targetBranch'] = targetBranch;
     body['title'] = title;
     body['resourceUri'] = resourceUri;
+    body['description'] = description;
 
     let path = `devops/makePR`;
     return this.invoke(path, HttpMethod.POST, body, false);
