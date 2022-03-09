@@ -170,16 +170,31 @@ export var functionsFlow = {
                     } else if (binding.connectionStringSetting != undefined) { // CosmosDB
                         bindingInfo.connectionStringProperty = binding.connectionStringSetting;
                     }
-                    
-                    if (binding.type == "serviceBusTrigger" && binding.topicName != undefined) {         // Service Bus topic
-                        binding.entityName= binding.topicName                                
+                    if(isDaasNew){
+                        if (binding.type == "serviceBusTrigger" && binding.topicName != undefined) {         // Service Bus topic
+                            binding.entityName= binding.topicName                                
+                                } else if (binding.type == "serviceBusTrigger" && binding.queueName != undefined) {  // Service Bus queue
+                                    binding.entityName= binding.queueName
+                                } else if (binding.type == "eventHubTrigger" && binding.eventHubName != undefined) { // Event Hubs
+                                    binding.entityName= binding.eventHubName
+                                }
+                                bindingInfo.entityName=binding.entityName;
+                    }else{
+                        var connectionString = appSettings[bindingInfo.connectionStringProperty];
+                        // The specific entity needs to be provided for Service Bus and Event Hubs validation
+                        if (connectionString != undefined && !connectionString.includes("EntityPath"))
+                        {
+                            if (binding.type == "serviceBusTrigger" && binding.topicName != undefined) {         // Service Bus topic
+                                connectionString += ";EntityPath=" + binding.topicName
                             } else if (binding.type == "serviceBusTrigger" && binding.queueName != undefined) {  // Service Bus queue
-                                binding.entityName= binding.queueName
+                                connectionString += ";EntityPath=" + binding.queueName
                             } else if (binding.type == "eventHubTrigger" && binding.eventHubName != undefined) { // Event Hubs
-                                binding.entityName= binding.eventHubName
+                                connectionString += ";EntityPath=" + binding.eventHubName
                             }
-                            bindingInfo.entityName=binding.entityName;
-                            functionInfo.bindings.push(bindingInfo);   
+                        }
+                        bindingInfo.connectionString = connectionString;
+                     }                    
+                        functionInfo.bindings.push(bindingInfo);   
                 });
                 if (functionInfo.bindings.length > 0) {
                     functionsInfo.push(functionInfo);
@@ -270,7 +285,7 @@ async function networkCheckConnectionString(propertyName, connectionString, conn
             /*
              * Full connection string validation via DaaS Extension
              */
-            var connectivityCheckResult = await validateConnectionViaAppSetting(propertyName, connectionStringType, diagProvider, entityName);
+            var connectivityCheckResult = await validateConnection(propertyName, connectionString, connectionStringType, diagProvider, entityName);
             var maxCheckLevel = getMaxCheckLevel(connectivityCheckResult);            
             var service;
             switch (connectionStringType) {
@@ -416,10 +431,17 @@ async function runConnectivityCheckAsync(hostname, port, dnsServers, diagProvide
     return subChecks;
 }
 
-async function validateConnectionViaAppSetting(propertyName, type, diagProvider, entityName = undefined) {
-    var checkConnectionStringResult = await diagProvider.checkConnectionViaAppSettingAsync(propertyName, type, entityName).catch(e => {
+async function validateConnection(propertyName, connectionString, type, diagProvider, entityName = undefined) {
+    var checkConnectionStringResult;
+    if(connectionString != undefined && !isDaasNew){
+    checkConnectionStringResult = await diagProvider.checkConnectionStringAsync(connectionString, type).catch(e => {
+        logDebugMessage(e);
+    });
+    }else{
+    checkConnectionStringResult = await diagProvider.checkConnectionViaAppSettingAsync(propertyName, type, entityName).catch(e => {
         logDebugMessage(e);          
     });
+    }
 
     var subChecks = [];
 
@@ -494,7 +516,7 @@ async function validateConnectionViaAppSetting(propertyName, type, diagProvider,
                 else{
                     title = "Authentication failure";
                     detailsMarkdown = `The target service is not provided with access to the user assigned identity which is configured for the function app. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>`;
-                }                
+                }
                 break;            
             case "ManagedIdentityNotConfigured":
                 title = 'Your app is not having managed identity configured for making a successful connection. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>';
@@ -532,6 +554,7 @@ async function validateConnectionViaAppSetting(propertyName, type, diagProvider,
         }
         // Show the exception message as it contains useful information to fix the issue.  Don't show it unless its accompanied with other explanations.
         detailsMarkdown += (detailsMarkdown != "" && checkConnectionStringResult.Exception ? `\r\n\r\nException encountered while connecting: ${checkConnectionStringResult.Exception.Message}` : undefined);
+        
         if(detailsMarkdown == "undefined"){
             subChecks.push({
                 title: title,
