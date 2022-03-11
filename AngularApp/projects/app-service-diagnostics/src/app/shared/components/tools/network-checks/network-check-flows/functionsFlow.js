@@ -63,17 +63,42 @@ export var functionsFlow = {
          * Functions specific checks
          **/
         var appSettings = await diagProvider.getAppSettings();
-
         /**
          * Functions App common dependencies
          **/
         var checkFunctionAppCommonDepsPromise = (async () => {
             var subChecksL1 = [];
             // AzureWebJobsStorage 
-            var propertyName = "AzureWebJobsStorage";
+            var propertyName;
+            var failureDetailsMarkdown;
+            var connectionString;
+            if(appSettings.AzureWebJobsStorage == undefined){                
+                if(isDaasNew && appSettings.AzureWebJobsStorage__blobServiceUri != undefined){
+                    propertyName = "AzureWebJobsStorage__blobServiceUri";
+                    failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#connecting-to-host-storage-with-an-identity-preview" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
+                    connectionString = undefined;
+                    var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, ConnectionStringType.BlobStorageAccount, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown);
+                    var maxCheckLevel = getMaxCheckLevel(subChecksL2);
+                    var title = maxCheckLevel == 0 ? `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" was successful.` :
+                    `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" failed.`;
+                    subChecksL1.push({ title: title, subChecks: subChecksL2, level: maxCheckLevel });
+                }
+                if(isDaasNew && appSettings.AzureWebJobsStorage__queueServiceUri != undefined){
+                    propertyName = "AzureWebJobsStorage__queueServiceUri";
+                    failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#connecting-to-host-storage-with-an-identity-preview" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
+                    connectionString = undefined;
+                    var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, ConnectionStringType.QueueStorageAccount, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown);
+                    var maxCheckLevel = getMaxCheckLevel(subChecksL2);
+                    var title = maxCheckLevel == 0 ? `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" was successful.` :
+                    `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" failed.`;
+                    subChecksL1.push({ title: title, subChecks: subChecksL2, level: maxCheckLevel });
+                }
+
+            }else{
             // Using anchor tag instead of markdown link as we need the link to open in a new window/tab instead of the current iFrame which is disallowed
-            var failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#azurewebjobsstorage" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
-            var connectionString = undefined;
+            propertyName = "AzureWebJobsStorage";
+            failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#azurewebjobsstorage" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
+            connectionString = undefined;
             if(isDaasNew){
                 var connectionStringType = isDaasExtAccessible ? ConnectionStringType.BlobStorageAccount : undefined;
             }else{
@@ -84,7 +109,7 @@ export var functionsFlow = {
                 var title = maxCheckLevel == 0 ? `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" was successful.` :
                     `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" failed.`;
                 subChecksL1.push({ title: title, subChecks: subChecksL2, level: maxCheckLevel });
-           
+            }
             // WEBSITE_CONTENTAZUREFILECONNECTIONSTRING
             propertyName = "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING";
             failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#website_contentazurefileconnectionstring" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
@@ -303,8 +328,11 @@ async function networkCheckConnectionString(propertyName, connectionString, conn
                     service = "Event Hubs"; break;
                    
             }
-            var title = maxCheckLevel == 0 ? `Successfully connected to the ${service} resource configured in App Setting "${propertyName}".` :
-                `Connection attempt to the ${service} resource configured in App Setting "${propertyName}" failed.`;
+            var title = maxCheckLevel == 0 ? `Successfully connected to the ${service} resource configured for connection "${propertyName}".` :
+                `Connection attempt to the ${service} resource configured for connection "${propertyName}" failed.`;
+            if(propertyName.includes("AzureWebJobsStorage")){
+                title += ' (This is preview feature)';
+            }    
             subChecks.push({ title: title, level: maxCheckLevel, subChecks: connectivityCheckResult });
         } else {
             /*
@@ -499,8 +527,11 @@ async function validateConnection(propertyName, connectionString, type, diagProv
                 title = "Authentication failure";
                 detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
                 break;
-            case "ManagedIdentityCredentialMissing":
-                title = `The app setting ${propertyName}__credential was not found or not set to "managedidentity" <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
+            case "ManagedIdentityCredentialInvalid":
+                title = `The app setting ${propertyName}__credential was not set to "managedidentity" <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
+                break;
+            case "ManagedIdentityClientIdEmpty":
+                title = `The app setting ${propertyName}__clientId was found empty <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
                 break;
             case "FullyQualifiedNamespaceMissing":
                 title = `The app setting ${propertyName}__fullyQualifiedNamespace was not found or is set to a blank value <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
@@ -511,7 +542,7 @@ async function validateConnection(propertyName, connectionString, type, diagProv
             case "ManagedIdentityAuthFailure":
                 if(checkConnectionStringResult.IdentityType == "System"){
                     title = "Authentication failure";
-                    detailsMarkdown = `The target service is not provided with Access to the function app using system assigned identity. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>`;
+                    detailsMarkdown = `The target service is not provided with access to the function app using system assigned identity. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>`;
                 }
                 else{
                     title = "Authentication failure";
@@ -529,7 +560,7 @@ async function validateConnection(propertyName, connectionString, type, diagProv
                     title = "Authentication failure";
                     detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
                 } else {
-                    title = `Access to the ${service} resource is restricted.`;
+                    title = `access to the ${service} resource is restricted.`;
                     detailsMarkdown = title + `\r\n\r\n` + `This can be due to firewall rules on the resource.  Please check if you have configured firewall rules or a private endpoint and that they correctly allow access from the Function App.  Relevant documentation:`
                         + `\r\n\r\n`;
                     switch (type) {
