@@ -42,14 +42,14 @@ export class MainComponent implements OnInit {
       enabled: true,
       caseId: false
     },
-    // {
-    //   resourceType: null,
-    //   resourceTypeLabel: 'ARM resource ID',
-    //   routeName: (name) => `${name}`,
-    //   displayName: 'ARM resource ID',
-    //   enabled: true,
-    //   caseId: false
-    // },
+    {
+       resourceType: null,
+       resourceTypeLabel: 'ARM Resource ID',
+       routeName: (name) => `${name}`,
+       displayName: 'ARM Resource ID',
+       enabled: true,
+       caseId: false
+    },
     {
       resourceType: null,
       resourceTypeLabel: 'Session Id',
@@ -146,35 +146,35 @@ export class MainComponent implements OnInit {
       //     });
       //   }
       // });
-      this.fabDropdownOptions.push(
-        { key: 'divider_1', text: '-', itemType: DropdownMenuItemType.Divider },
-        { key: 'Provide ARM Id', text: 'Provide ARM Id', itemType: DropdownMenuItemType.Header }
-      );
+      //this.fabDropdownOptions.push(
+      //  { key: 'divider_1', text: '-', itemType: DropdownMenuItemType.Divider },
+      //  { key: 'Provide ARM Id', text: 'Provide ARM Id', itemType: DropdownMenuItemType.Header }
+      //);
 
-      const list = this.enabledResourceTypes.filter(type => this.defaultResourceTypes.findIndex(defaultResource => defaultResource.displayName === type.displayName) === -1);
+      //const list = this.enabledResourceTypes.filter(type => this.defaultResourceTypes.findIndex(defaultResource => defaultResource.displayName === type.displayName) === -1);
 
-      list.sort((a,b) => {
-        return a.displayName.localeCompare(b.displayName);
-      })
+      // list.sort((a,b) => {
+      //   return a.displayName.localeCompare(b.displayName);
+      // })
 
-      list.forEach(resource => {
-        this.resourceTypes.push({
-          resourceType: resource.resourceType,
-          resourceTypeLabel: 'ARM resource ID',
-          routeName: (name) => `${name}`,
-          displayName: `${resource.displayName}`,
-          enabled: true,
-          caseId: false
-        });
+      // list.forEach(resource => {
+      //   this.resourceTypes.push({
+      //     resourceType: resource.resourceType,
+      //     resourceTypeLabel: 'ARM resource ID',
+      //     routeName: (name) => `${name}`,
+      //     displayName: `${resource.displayName}`,
+      //     enabled: true,
+      //     caseId: false
+      //   });
 
-        this.fabDropdownOptions.push(
-          {
-            key: resource.displayName,
-            text: resource.displayName,
-            ariaLabel: resource.displayName
-          }
-        )
-      });
+      //   this.fabDropdownOptions.push(
+      //     {
+      //       key: resource.displayName,
+      //       text: resource.displayName,
+      //       ariaLabel: resource.displayName
+      //     }
+      //   )
+      // });
 
 
 
@@ -260,7 +260,8 @@ export class MainComponent implements OnInit {
     this.resourceName = this.resourceName.trim();
 
     //If it is ARM resource id
-    if (this.defaultResourceTypes.findIndex(resource => this.selectedResourceType.displayName === resource.displayName) === -1) {
+    //if (this.defaultResourceTypes.findIndex(resource => this.selectedResourceType.displayName === resource.displayName) === -1) {
+    if (this.selectedResourceType.displayName === "ARM Resource ID") {  
       this.resourceName = this.normalizeArmUriForRoute(this.resourceName, this.enabledResourceTypes);
     } else {
       this.errorMessage = "";
