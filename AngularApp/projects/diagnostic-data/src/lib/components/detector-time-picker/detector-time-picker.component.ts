@@ -51,6 +51,7 @@ export class DetectorTimePickerComponent implements OnInit {
       { key: TimePickerOptions.Last6Hours, text: TimePickerOptions.Last6Hours, onClick: () => { this.setTime(6) } },
       { key: TimePickerOptions.Last12Hour, text: TimePickerOptions.Last12Hour, onClick: () => { this.setTime(12) } },
       { key: TimePickerOptions.Last24Hours, text: TimePickerOptions.Last24Hours, onClick: () => { this.setTime(24) } },
+      { key: TimePickerOptions.Last3Days, text: TimePickerOptions.Last3Days, onClick: () => { this.setTime(72) } },
       { key: TimePickerOptions.Custom, text: TimePickerOptions.Custom, onClick: () => { this.selectCustom() } },
     ];
 
@@ -183,7 +184,7 @@ export class DetectorTimePickerComponent implements OnInit {
       endDateWithTime = this.convertLocalDateToUTC(localEndTime);
 
       //find which option contains the hourDiff number
-      const infoSelectOption = this.choiceGroupOptions.find(option => option.key.includes(this.hourDiff.toString()))
+      const infoSelectOption = (this.hourDiff.toString() === '72') ? this.choiceGroupOptions.find(option => option.key.includes('3')) : this.choiceGroupOptions.find(option => option.key.includes(this.hourDiff.toString()))
       timePickerInfo = {
         selectedKey: infoSelectOption.key,
         selectedText: infoSelectOption.text

@@ -359,5 +359,6 @@ export enum TimePickerOptions {
   Last6Hours = "Last 6 Hours",
   Last12Hour = "Last 12 Hours",
   Last24Hours = "Last 24 Hours",
+  Last3Days = "Last 3 Days",
   Custom = "Custom"
 }
