@@ -9,6 +9,9 @@
         <img *ngIf="resourceInfo.imgSrc" class="header-img ml-3" [src]="resourceInfo.imgSrc" [alt]="resourceInfo.searchSuffix">
         <span *ngIf="resourceInfo.resourceName" class="ml-3" style="font-weight: 600;">{{resourceInfo.resourceName}}</span>
         <span *ngIf="resourceInfo.searchSuffix" class="ml-3" style="color: #605E5C;">{{resourceInfo.searchSuffix}}</span>
+        <div class='resource-summary' (click)="openResourceInfoModal()">
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
+        </div>
       </div>
     </div>
 
@@ -21,3 +24,32 @@
     </div>
   </nav>
 </header>
+
+<fab-panel [isOpen]="openResourceInfoPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
+[styles]="panelStyles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
+(onDismiss)="dismissedHandler()">
+<div>
+  <div class="resource-content-container">
+    <div>
+      <div style="margin-bottom: 10px">
+        <div
+          style="position: absolute; left:25px; right: 32px; top:0px; height: 32px; font-family: 'segoe UI'; font-size: 18px; line-height: 24px; font-weight: 600;display: flex; align-items: flex-end"
+          tabindex="0" aria-label="Comm alerts">
+          Resource Information</div>
+      </div>
+      <div class="resource-content">
+        <div *ngIf="observerLink !== ''">
+          <a href="{{observerLink}}" target="_blank">Observer Link
+            <i class="fa fa-link" aria-hidden="true"></i>
+          </a>
+        </div>
+        <div *ngFor="let key of keys">
+          <b>{{key}}:</b> {{resource[key]}}&nbsp;<span *ngIf="resource[key] !== ''"><img
+              src="/assets/img/copy-icon.png" style="height: 12px;"
+              (click)="copyToClipboard(resource[key], $event)" alt="Copy to clipboard" /></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</fab-panel>

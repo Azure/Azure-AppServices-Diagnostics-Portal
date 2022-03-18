@@ -38,12 +38,10 @@ export class DashboardComponent implements OnDestroy {
 
   currentRoutePath: string[];
   resource: any;
-  keys: string[];
   observerLink: string = "";
   showUserInformation: boolean;
   resourceReady: Observable<any>;
   resourceDetailsSub: Subscription;
-  openResourceInfoPanel: boolean = false;
   type: PanelType = PanelType.custom;
   width: string = "850px";
   showTitle: boolean = true;

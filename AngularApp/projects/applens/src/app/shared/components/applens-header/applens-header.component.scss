@@ -37,3 +37,27 @@
 .bold-text {
     font-weight: 600;
 }
+
+.resource-summary {
+    display: inline-block;
+    float: right;
+    padding: 2px 2px 2px 5px;
+    color:#367fa9;
+  }
+
+  .resource-summary i {
+    font-size:18px;
+    color: #367fa9;
+  }
+
+  .resource-summary i:hover{
+    color: var(--bodyText);
+  }
+
+  .resource-content {
+    margin:10px;
+}
+
+.resource-content-container {
+    padding-left: 20px;
+}
