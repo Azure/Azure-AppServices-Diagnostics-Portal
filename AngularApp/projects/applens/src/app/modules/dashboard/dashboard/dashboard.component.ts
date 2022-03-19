@@ -133,6 +133,7 @@ export class DashboardComponent implements OnDestroy {
   }
 
   ngOnInit() {
+    this.title="";
     this._applensGlobal.headerTitleSubject.subscribe(title => {
       this.title = title;
     });

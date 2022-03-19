@@ -1,18 +1,14 @@
 import { AdalService } from 'adal-angular4';
 import { filter } from 'rxjs/operators';
-import { Component, OnInit, PipeTransform, Pipe, ViewChild, ElementRef, HostListener, Input } from '@angular/core';
+import { Component, OnInit, PipeTransform, Pipe } from '@angular/core';
 import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from '@angular/router';
 import { ResourceService } from '../../../shared/services/resource.service';
 import { CollapsibleMenuItem } from '../../../collapsible-menu/components/collapsible-menu-item/collapsible-menu-item.component';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
-import { DetectorType, UriUtilities } from 'diagnostic-data';
+import { DetectorType } from 'diagnostic-data';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
-import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
-import { CheckboxVisibility, IDetailsListProps, IGroup, IGroupedListProps, IListProps, ISearchBoxProps, ISelection, ITextFieldProps, Selection, SelectionMode } from 'office-ui-fabric-react';
-import { ApplensGlobal } from '../../../applens-global';
-import { FabSearchBoxComponent } from '@angular-react/fabric';
-import { L2SideNavType } from '../l2-side-nav/l2-side-nav';
-import { BreadcrumbService } from '../services/breadcrumb.service';
+import {TelemetryEventNames} from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'side-nav',
@@ -21,163 +17,145 @@ import { BreadcrumbService } from '../services/breadcrumb.service';
 })
 export class SideNavComponent implements OnInit {
 
-  L2SideNavType = L2SideNavType;
-  type: L2SideNavType;
-
-  get isGroupList() {
-    return this.type === L2SideNavType.Detectors || this.type === L2SideNavType.Gits;
-  }
-
+  userId: string = "";
 
   detectorsLoading: boolean = true;
 
   currentRoutePath: string[];
 
   categories: CollapsibleMenuItem[] = [];
-  // analysisTypes: CollapsibleMenuItem[] = [];
-  topList: CollapsibleMenuItem[] = [];
+  analysisTypes: CollapsibleMenuItem[] = [];
 
   gists: CollapsibleMenuItem[] = [];
 
-  searchValue: string = "";
+  searchValue: string="";
 
   contentHeight: string;
 
   getDetectorsRouteNotFound: boolean = false;
 
-  isGraduation:boolean = false;
-  isProd:boolean = false;
-  searchBoxIcon: ITextFieldProps["iconProps"] = {
-    iconName: "Zoom",
-  }
-
-  @ViewChild(FabSearchBoxComponent, { static: false }) fabSearchBox: any;
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService, private _applensGlobal: ApplensGlobal, private _breadcrumbService: BreadcrumbService) {
-  }
-
-  @HostListener('click', ['$event.target'])
-  onHandleClickGroupTitle(ele: HTMLElement) {
-
-    const parentElement = ele.parentElement;
-    this.toggleGroupCollapsible(parentElement);
-  }
-
-  @HostListener('keydown.Enter', ['$event.target'])
-  onHandleEnterGroupTitle(ele: HTMLElement) {
-    if (ele.firstElementChild && ele.firstElementChild.lastElementChild) {
-      const element = <HTMLElement>ele.firstElementChild.lastElementChild;
-      this.toggleGroupCollapsible(element);
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService) {
+    this.contentHeight = (window.innerHeight - 139) + 'px';
+    if(environment.adal.enabled){
+      let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
+      this.userId = alias.replace('@microsoft.com', '');
     }
   }
 
-  createNew: CollapsibleMenuItem[] = [
+  documentation: CollapsibleMenuItem[] = [
+    {
+      label: 'Online Documentation',
+      id: "",
+      onClick: () => { window.open('https://app-service-diagnostics-docs.azurewebsites.net/api/Diagnostics.ModelsAndUtils.Models.Response.html#extensionmethods', '_blank') },
+      expanded: false,
+      subItems: null,
+      isSelected: null,
+      icon: null
+    }
+  ];
+
+  overview: CollapsibleMenuItem[] = [
+    {
+      label: 'Detector List',
+      id: "",
+      onClick: () => {
+        this.navigateTo("");
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: null,
+      icon: null
+    }];
+
+    alldetectors: CollapsibleMenuItem[] = [
+        {
+          label: 'Detector List',
+          id: "",
+          onClick: () => {
+            this.navigateTo("alldetectors");
+          },
+          expanded: false,
+          subItems: null,
+          isSelected:   () => {
+            return this.currentRoutePath && this.currentRoutePath.join('/') === `alldetectors`;
+          },
+          icon: null
+        }];
+
+     createNew: CollapsibleMenuItem[] = [
     {
       label: 'Your Detectors',
       id: "",
       onClick: () => {
-        // this.navigateToUserPage();
+        this.navigateToUserPage();
       },
       expanded: false,
       subItems: null,
-      isSelected: null,
+      isSelected:  () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase().startsWith(`users`);
+      },
       icon: null
     },
     {
-      label: 'New Detector',
-      id: "",
-      onClick: () => {
-        this.navigateTo('create');
-      },
-      expanded: false,
-      subItems: null,
-      isSelected: null,
-      icon: null
+    label: 'New Detector',
+    id: "",
+    onClick: () => {
+      this.navigateTo('create');
     },
-    {
-      label: 'New Gist',
-      id: "",
-      onClick: () => {
-        this.navigateTo('createGist');
+    expanded: false,
+    subItems: null,
+    isSelected: () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `create`.toLowerCase();
       },
-      expanded: false,
-      subItems: null,
-      isSelected: null,
-      icon: null
-    }
+    icon: null
+  },
+  {
+    label: 'New Gist',
+    id: "",
+    onClick: () => {
+      this.navigateTo('createGist');
+    },
+    expanded: false,
+    subItems: null,
+    isSelected: () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `createGist`.toLowerCase();
+      },
+    icon: null
+  }
   ];
 
   configuration: CollapsibleMenuItem[] = [
-    {
-      label: 'Kusto Mapping',
-      onClick: () => {
-        this.navigateTo('kustoConfig');
-      },
-      id: "",
-      expanded: false,
-      subItems: null,
-      isSelected: null,
-      icon: null
-    }
+      {
+          label: 'Kusto Mapping',
+          onClick: () => {
+            this.navigateTo('kustoConfig');
+          },
+          id: "",
+          expanded: false,
+          subItems: null,
+          isSelected:  () => {
+            return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `kustoConfig`.toLowerCase();
+          },
+          icon: null
+      }
   ];
 
-  onShouldVirtualize = (props: IListProps) => {
-    return false;
-  }
-
-  searchBoxStyles: ISearchBoxProps['styles'] = {
-    root: {
-      width: "250px"
-    }
-  }
-
-  get searchPlaceHolder() {
-    switch (this.type) {
-      case L2SideNavType.Detectors:
-        return "Search detectors";
-      case L2SideNavType.Gits:
-        return "Search code library";
-      default:
-        return "Search";
-    }
-  }
-
-  selectionMode = SelectionMode.single;
-  checkboxVisibility = CheckboxVisibility.hidden;
-
-  cellStyleProps: IDetailsListProps['cellStyleProps'] = {
-    cellLeftPadding: 0,
-    cellRightPadding: 0,
-    cellExtraRightPadding: 0
-  }
-
-
-  collapsibleItemListCopy: CollapsibleMenuItem[] = [];
-  collapsibleItemList: CollapsibleMenuItem[] = [];
-  groups: IGroup[] = [];
-
   ngOnInit() {
-    this._diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(config =>{
-      this.isGraduation = config.graduationEnabled;
-    })
-    this._diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
-      this.isProd = env === "Prod";
-    });
-    this._applensGlobal.openL2SideNavSubject.subscribe(type => {
-      this.type = type;
-      this.initialize();
-    })
+    this.initializeDetectors();
 
     this.getCurrentRoutePath();
 
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
       this.getCurrentRoutePath();
     });
-
   }
 
-  focusSearchBox() {
-    const input = this.fabSearchBox.elementRef.nativeElement.firstChild.lastElementChild;
-    input.autocomplete = "off";
+  navigateToOverview() {
+    this.navigateTo("overview");
+  }
+
+  navigateToDetectorList() {
+    this.navigateTo("alldetectors");
   }
 
   private getCurrentRoutePath() {
@@ -185,10 +163,8 @@ export class SideNavComponent implements OnInit {
   }
 
   navigateTo(path: string) {
-    this._breadcrumbService.resetBreadCrumbSubject();
-    const queryParams = UriUtilities.removeChildDetectorStartAndEndTime(this._activatedRoute.snapshot.queryParams);
     let navigationExtras: NavigationExtras = {
-      queryParams: queryParams,
+      queryParamsHandling: 'preserve',
       preserveFragment: true,
       relativeTo: this._activatedRoute
     };
@@ -196,30 +172,69 @@ export class SideNavComponent implements OnInit {
     this._router.navigate(path.split('/'), navigationExtras);
   }
 
-  initialize() {
-    this.topList = [];
-    this.collapsibleItemList = [];
-    this.collapsibleItemListCopy = [];
-    this.searchValue = "";
-    switch (this.type) {
-      case L2SideNavType.Detectors:
-        this.initializeListAllDetectors();
-        this.initializeDetectors();
-        break;
-      case L2SideNavType.Develop_Detectors:
-        this.initializeCreateDetectors();
-        break;
-      case L2SideNavType.Gits:
-        this.initializeCreateGist();
-        this.initializeGists();
-        break;
-    }
+  navigateToUserPage() {
+    this.navigateTo(`users/${this.userId}/detectors`);
   }
 
-  private initializeGists() {
+  initializeDetectors() {
+    this._diagnosticApiService.getDetectors().subscribe(detectorList => {
+      if (detectorList) {
+        detectorList.forEach(element => {
+          let onClick = () => {
+            this._telemetryService.logEvent(TelemetryEventNames.SideNavigationItemClicked, { "elementId": element.id });
+            this.navigateTo(`detectors/${element.id}`);
+          };
+
+          let isSelected = () => {
+            return this.currentRoutePath && this.currentRoutePath.join('/') === `detectors/${element.id}`;
+          };
+
+          let category = element.category ? element.category : "Uncategorized";
+          let menuItem = new CollapsibleMenuItem(element.name, element.id, onClick, isSelected, null, false, [], element.supportTopicList && element.supportTopicList.length>0 ? element.supportTopicList.map(x => x.id).join(","): null);
+
+          let categoryMenuItem = this.categories.find((cat: CollapsibleMenuItem) => cat.label === category);
+          if (!categoryMenuItem) {
+            categoryMenuItem = new CollapsibleMenuItem(category, "", null, null, null, false);
+            this.categories.push(categoryMenuItem);
+          }
+
+          categoryMenuItem.subItems.push(menuItem);
+          if (element.type === DetectorType.Analysis) {
+            let onClickAnalysisParent = () => {
+              this.navigateTo(`analysis/${element.id}`);
+            };
+
+            let isSelectedAnalysis = () => {
+              this.getCurrentRoutePath();
+              return this.currentRoutePath && this.currentRoutePath.join('/') === `analysis/${element.id}`;
+            }
+
+            let analysisMenuItem = new CollapsibleMenuItem(element.name, element.id , onClickAnalysisParent, isSelectedAnalysis, null, true, [], element.supportTopicList && element.supportTopicList.length>0 ? element.supportTopicList.map(x => x.id).join(","): null);
+            this.analysisTypes.push(analysisMenuItem);
+
+          }
+        });
+
+        this.categories.push(new CollapsibleMenuItem("Analysis", "", null, null, null, false, this.analysisTypes));
+        this.categories = this.categories.sort((a, b) => a.label === 'Uncategorized' ? 1 : (a.label > b.label ? 1 : -1));
+
+        console.log("Categories before gists", this.categories);
+
+        this.detectorsLoading = false;
+        this._telemetryService.logPageView(TelemetryEventNames.SideNavigationLoaded, {});
+      }
+    },
+      error => {
+        // TODO: handle detector route not found
+        if (error && error.status === 404) {
+          this.getDetectorsRouteNotFound = true;
+        }
+      });
+
+
+
     this._diagnosticApiService.getGists().subscribe(gistList => {
       if (gistList) {
-        this.gists = [];
         gistList.forEach(element => {
           let onClick = () => {
             this.navigateTo(`gists/${element.id}`);
@@ -242,8 +257,6 @@ export class SideNavComponent implements OnInit {
             categoryMenuItem.subItems.push(menuItem);
           });
         });
-
-        this.initialGroupList(this.gists);
       }
     },
       error => {
@@ -251,257 +264,34 @@ export class SideNavComponent implements OnInit {
         if (error && error.status === 404) {
         }
       });
-  }
 
-  private initializeCreateGist() {
-    // const gistCategory = new CollapsibleMenuItem("Gists", "Gists", null, null, null, true);
-    const createGistItem =
-      new CollapsibleMenuItem("Create Gist",
-        "Create Gist",
-        () => {
-          this.navigateTo('createGist');
-        },
-        () => { },
-        "", true, [], "");
-    const yourGists =
-      new CollapsibleMenuItem("Your Gist",
-        "Your Gist",
-        () => {
-          let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
-          const userId: string = alias.replace('@microsoft.com', '');
-          if (userId.length > 0) {
-            this.navigateTo(`users/${userId}/gists`);
-          }
-        },
-        () => { },
-        "", true, [], "");
-    // gistCategory.subItems = [createGistItem, yourGists];
-    // if (this.gists.findIndex(g => g.label === gistCategory.label) < 0) {
-    //   this.gists.unshift(gistCategory);
-    // }
-    this.topList = [createGistItem, yourGists];
-  }
-
-
-  private initializeDetectors() {
-    this._diagnosticApiService.getDetectors().subscribe(detectorList => {
-      this.categories = [];
-      const analysisMenuItem = new CollapsibleMenuItem("Analysis", "", null, null, null, true);
-      if (detectorList) {
-        detectorList.forEach(element => {
-          //Not show CategoryOverview in side-nav for safety purpose
-          if (element.type === DetectorType.CategoryOverview) return;
-
-          let onClick = () => {
-            this._telemetryService.logEvent(TelemetryEventNames.SideNavigationItemClicked, { "elementId": element.id });
-            this.navigateTo(`detectors/${element.id}`);
-            this.dismissL2SideNav();
-          };
-
-          let isSelected = () => {
-            return this.currentRoutePath && this.currentRoutePath.join('/') === `detectors/${element.id}`;
-          };
-
-          let category = element.category ? element.category : "Uncategorized";
-          let menuItem = new CollapsibleMenuItem(element.name, element.id, onClick, isSelected, null, false, [], element.supportTopicList && element.supportTopicList.length > 0 ? element.supportTopicList.map(x => x.id).join(",") : null);
-
-          let categoryMenuItem = this.categories.find((cat: CollapsibleMenuItem) => cat.label === category);
-          if (!categoryMenuItem) {
-            categoryMenuItem = new CollapsibleMenuItem(category, "", null, null, null, false);
-            this.categories.push(categoryMenuItem);
-          }
-
-          categoryMenuItem.subItems.push(menuItem);
-
-          if (element.type === DetectorType.Analysis) {
-            let onClickAnalysisParent = () => {
-              this.navigateTo(`analysis/${element.id}`);
-              this.dismissL2SideNav();
-            };
-
-            let isSelectedAnalysis = () => {
-              this.getCurrentRoutePath();
-              return this.currentRoutePath && this.currentRoutePath.join('/') === `analysis/${element.id}`;
-            }
-
-            let analysisSubMenuItem = new CollapsibleMenuItem(element.name, element.id, onClickAnalysisParent, isSelectedAnalysis, null, true, [], element.supportTopicList && element.supportTopicList.length > 0 ? element.supportTopicList.map(x => x.id).join(",") : null);
-            analysisMenuItem.subItems.push(analysisSubMenuItem);
-          }
-
-
-        });
-        this.categories.push(analysisMenuItem);
-        this.categories = this.categories.sort((a, b) => {
-          if (a.label === 'Analysis') return -1;
-          if (a.label === 'Uncategorized') return 1;
-          return a.label > b.label ? 1 : -1;
-        });
-
-        this.initialGroupList(this.categories);
-
-        const analysisGroup = this.groups.find(g => g.name.toLowerCase() === "analysis");
-        analysisGroup.isCollapsed = false;
-
-        this.detectorsLoading = false;
-        this._telemetryService.logPageView(TelemetryEventNames.SideNavigationLoaded, {});
-      }
-    },
-      error => {
-        // TODO: handle detector route not found
-        if (error && error.status === 404) {
-          this.getDetectorsRouteNotFound = true;
-        }
-      });
-  }
-
-  private initializeListAllDetectors() {
-    const allDetectors = new CollapsibleMenuItem(
-      "All Detector List",
-      "All Detector List",
-      () => {
-        this.navigateTo("detectors/all");
-      },
-      () => { },
-      "", true, [], "");
-    this.topList = [allDetectors];
-  }
-
-  private initializeCreateDetectors() {
-    const createNewDetector = new CollapsibleMenuItem("Create Detector",
-      "Create Detector",
-      () => {
-        this.navigateTo('create');
-      },
-      () => { },
-      "", true, [], "");
-
-    const yourDetectors = new CollapsibleMenuItem("Your Detectors",
-      "Your Detectors",
-      () => {
-        let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
-        const userId: string = alias.replace('@microsoft.com', '');
-        if (userId.length > 0) {
-          this.navigateTo(`users/${userId}/detectors`);
-        }
-      },
-      () => { },
-      "", true, [], "");
-    const activepullrequests = new CollapsibleMenuItem("Your Active Pull Requests",
-    "user_active_prs", () => {
-      let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
-      const userId: string = alias.replace('@microsoft.com', '');
-      if (userId.length > 0) {        
-        this.navigateTo(`users/${userId}/activepullrequests`);
-      }
-    }, 
-    () => { },
-    "", true, [], "");
-   
-    if (this.isGraduation && !this.isProd) {      
-      this.topList = [createNewDetector, yourDetectors, activepullrequests];
-    } else {
-      this.topList =  [createNewDetector, yourDetectors];
-    }
+      console.log("Categories after gists", this.categories);
   }
 
   doesMatchCurrentRoute(expectedRoute: string) {
     return this.currentRoutePath && this.currentRoutePath.join('/') === expectedRoute;
   }
 
-  // openDocumentation() {
-  //   window.open('https://app-service-diagnostics-docs.azurewebsites.net/api/Diagnostics.ModelsAndUtils.Models.Response.html#extensionmethods', '_blank');
-  // }
+  openDocumentation() {
+    window.open('https://app-service-diagnostics-docs.azurewebsites.net/api/Diagnostics.ModelsAndUtils.Models.Response.html#extensionmethods', '_blank');
+  }
+
+
+  isSectionHeaderSelected (path: string, matchFullPath: boolean = true) {
+      if (matchFullPath)
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === path.toLowerCase();
+    else
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase().startsWith(path.toLowerCase());
+  };
+
 
   updateSearchValue(e: { newValue: any }) {
     if (!!e.newValue.currentTarget && !!e.newValue.currentTarget.value) {
       this.searchValue = e.newValue.currentTarget.value;
-      this.updateListGroups(this.searchValue);
+      //this.updateListGroups(this.searchValue);
     }
   }
 
-
-  updateListGroups(searchValue: string) {
-    this.collapsibleItemList = this.collapsibleItemListCopy.filter(item => {
-      return item.label.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.id.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.metadata && item.metadata.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0;
-    });
-
-    this.groups = this.getGroupsFromList(this.collapsibleItemList);
-    this.groups.forEach(g => g.isCollapsed = false);
-
-
-  }
-
-  dismissL2SideNav() {
-    this._applensGlobal.openL2SideNavSubject.next(L2SideNavType.None);
-  }
-
-  private flatCategoriesList(categories: CollapsibleMenuItem[]) {
-    const itemList: CollapsibleMenuItem[] = [];
-    for (const category of categories) {
-      if (category.subItems && category.subItems.length > 0) {
-        for (const item of category.subItems) {
-          item.group = category.label;
-          itemList.push(item);
-        }
-      }
-    }
-    return itemList;
-  }
-
-  private getGroupsFromList(list: CollapsibleMenuItem[]): IGroup[] {
-    const groups: IGroup[] = [];
-    if (list.length === 0) return groups;
-
-    for (let i = 0; i < list.length; i++) {
-      const item = list[i];
-      const group = groups.find(g => g.name.toLowerCase() === item.group.toLowerCase());
-      if (!group) {
-        groups.push({
-          key: item.group,
-          name: item.group,
-          startIndex: i,
-          count: 1,
-          isCollapsed: true
-        });
-      } else {
-        group.count += 1;
-      }
-    }
-
-    //Add an empty group in last, for fixing toggling last group expand/collapsible all groups bug
-    groups.push({
-      key: "empty",
-      name: "empty",
-      startIndex: list.length - 1,
-      count: 0,
-      isCollapsed: true
-    });
-
-    return groups;
-  }
-
-  private initialGroupList(items: CollapsibleMenuItem[]) {
-    this.collapsibleItemList = this.flatCategoriesList(items);
-    this.collapsibleItemListCopy = [...this.collapsibleItemList];
-    this.groups = this.getGroupsFromList(this.collapsibleItemList);
-  }
-
-  listInvokedHandler(e: { item: CollapsibleMenuItem }) {
-    e.item.onClick();
-  }
-
-  private toggleGroupCollapsible(ele: HTMLElement) {
-
-    const classNameList = ele.className.split(" ");
-    if (classNameList.findIndex(name => name === "ms-GroupHeader-title") === -1) return;
-    const groupName = ele.firstElementChild.innerHTML;
-
-    const groupIndex = this.groups.findIndex(g => g.name.toLowerCase() === groupName.toLowerCase());
-    if (groupIndex > -1) {
-      const isCollapsed = this.groups[groupIndex].isCollapsed;
-      this.groups[groupIndex].isCollapsed = !isCollapsed;
-    }
-  }
 }
 
 @Pipe({

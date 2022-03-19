@@ -30,11 +30,20 @@
 .menu-item:hover,
 .menu-item.selected {
     color:var(--bodyText);
-    background-color: var(--bodyBackground);
+    background-color: #ccc;
 }
 
 .menu-label > b {
     color: #ffb353;
+}
+
+.menu-item-container {
+    padding-left: 15px
+}
+
+.menu-item-container.selected {
+    color:var(--bodyText);
+    background-color: #ccc;
 }
 
 .break-all {

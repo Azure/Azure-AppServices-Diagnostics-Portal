@@ -24,7 +24,7 @@ export class DashboardContainerComponent implements OnInit {
   ngOnInit() {
     let serviceInputs = this._startupService.getInputs();
     this.resourceReady = this._resourceService.getCurrentResource();
-    this._applensGlobal.updateHeader("Overview");
+    this._applensGlobal.updateHeader("");
     this.resourceReady.subscribe(resource => {
       if (resource) {
         this.resource = resource;
