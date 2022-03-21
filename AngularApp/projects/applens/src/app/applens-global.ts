@@ -21,6 +21,7 @@ export class ApplensGlobal {
 
 
     openFeedback: boolean = false;
+    openResourceInfoPanel: boolean = false;
     private calcSideNavOverallWidth(isL1Expand: boolean, isL2Open: boolean): number {
         const l1Width = isL1Expand ? l1SideNavExpandWidth : l1SideNavCollapseWidth;
         const l2Width = isL2Open ? l2SideNavWidth : 0;

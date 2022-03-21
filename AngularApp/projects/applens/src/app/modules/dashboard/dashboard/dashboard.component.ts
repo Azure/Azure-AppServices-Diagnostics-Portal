@@ -35,15 +35,13 @@ export class DashboardComponent implements OnDestroy {
   userName: string = "";
   displayName: string = "";
   userPhotoSource: string = undefined;
-
+  keys: string[];
   currentRoutePath: string[];
   resource: any;
-  keys: string[];
   observerLink: string = "";
   showUserInformation: boolean;
   resourceReady: Observable<any>;
   resourceDetailsSub: Subscription;
-  openResourceInfoPanel: boolean = false;
   type: PanelType = PanelType.custom;
   width: string = "850px";
   showTitle: boolean = true;
@@ -77,9 +75,9 @@ export class DashboardComponent implements OnDestroy {
     }
   }
 
-  constructor(public resourceService: ResourceService, private _detectorControlService: DetectorControlService,
+  constructor(public resourceService: ResourceService, private startupService: StartupService,  private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
-    private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, private _applensGlobal: ApplensGlobal, private _startupService: StartupService, private _resourceService: ResourceService, private _breadcrumbService: BreadcrumbService) {
+    private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, public _applensGlobal: ApplensGlobal, private _startupService: StartupService, private _resourceService: ResourceService, private _breadcrumbService: BreadcrumbService) {
     this.contentHeight = (window.innerHeight - 50) + 'px';
 
     this.navigateSub = this._navigator.OnDetectorNavigate.subscribe((detector: string) => {
@@ -151,21 +149,38 @@ export class DashboardComponent implements OnDestroy {
     }
 
     let serviceInputs = this._startupService.getInputs();
-    this._resourceService.getCurrentResource().subscribe(resource => {
-      this.resource = resource;
-      if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/hostingenvironments' && this.resource && this.resource.Name) {
-        this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
-        this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
-      } else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/sites') {
-        this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
-        this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
-        this._diagnosticApiService.Location = this.resource["WebSpace"];
-        if (resource['IsXenon']) {
-          this._resourceService.imgSrc = this._resourceService.altIcons['Xenon'];
+    this.resourceReady = this.resourceService.getCurrentResource();
+    this.resourceReady.subscribe(resource => {
+      if (resource) {
+        this.resource = resource;
+        if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/hostingenvironments' && this.resource && this.resource.Name)
+        {
+            this.observerLink = "https://wawsobserver.azurewebsites.windows.net/MiniEnvironments/"+ this.resource.Name;
+            this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
+            this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
         }
-      } else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/workerapps') {
-        this._diagnosticApiService.GeomasterServiceAddress = this.resource.ServiceAddress;
-        this._diagnosticApiService.GeomasterName = this.resource.GeoMasterName;
+        else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/sites')
+        {
+            this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
+            this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
+            this._diagnosticApiService.Location = this.resource["WebSpace"];
+            this.observerLink = "https://wawsobserver.azurewebsites.windows.net/sites/"+ this.resource.SiteName;
+
+            if (resource['IsXenon']) {
+                this.resourceService.imgSrc = this.resourceService.altIcons['Xenon'];
+            }
+        }
+        else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/containerapps' ||
+                 serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.app/containerapps')
+        {
+          this._diagnosticApiService.GeomasterServiceAddress = this.resource.ServiceAddress;
+          this._diagnosticApiService.GeomasterName = this.resource.GeoMasterName;
+          this.observerLink = "https://wawsobserver.azurewebsites.windows.net/partner/containerapp/" + this.resource.ContainerAppName;
+        }
+
+        this.keys = Object.keys(this.resource);
+        this.replaceResourceEmptyValue();
+        this.updateVentAndLinuxInfo();
       }
     });
 
@@ -206,6 +221,10 @@ export class DashboardComponent implements OnDestroy {
     this.navigateTo(`users/${this.userId}`);
   }
 
+  dismissedHandler() {
+    this._applensGlobal.openResourceInfoPanel = false;
+ }
+
   copyToClipboard(item, event) {
     let listener = (e: ClipboardEvent) => {
       e.clipboardData.setData('text/plain', (item));
@@ -222,6 +241,33 @@ export class DashboardComponent implements OnDestroy {
     }, 3000);
   }
 
+  updateVentAndLinuxInfo() {
+    if (this.keys.indexOf('VnetName') == -1 && this.resourceReady != null && this.resourceDetailsSub == null) {
+      this.resourceDetailsSub = this.resourceReady.subscribe(resource => {
+        if (resource) {
+          this._observerService.getSiteRequestDetails(this.resource.SiteName, this.resource.InternalStampName).subscribe(siteInfo => {
+            this.resource['VnetName'] = siteInfo.details.vnetname;
+            this.keys.push('VnetName');
+
+            if (this.resource['IsLinux']) {
+              this.resource['LinuxFxVersion'] = siteInfo.details.linuxfxversion;
+              this.keys.push('LinuxFxVersion');
+            }
+
+            this.replaceResourceEmptyValue();
+          });
+        }
+      });
+    }
+  }
+
+  replaceResourceEmptyValue() {
+    this.keys.forEach(key => {
+      if (this.resource[key] === "") {
+        this.resource[key] = "N/A";
+      }
+    });
+  }
 
   ngOnDestroy() {
     this.navigateSub.unsubscribe();
