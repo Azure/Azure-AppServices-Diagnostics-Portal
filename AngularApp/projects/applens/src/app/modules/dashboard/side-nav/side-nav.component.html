@@ -8,14 +8,6 @@
           <i class="fa fa-info fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let item of overview"  [menuItem]="item"></collapsible-menu-item>
         </section-divider>
-        <section-divider [label]="'Develop'" [selected]="isSectionHeaderSelected('users', false) || isSectionHeaderSelected('create') || isSectionHeaderSelected('creategist')" [initiallyExpanded]="false" [disableExpandIcon]="false">
-          <i class="fa fa-code fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
-          <collapsible-menu-item *ngFor="let item of createNew" [menuItem]="item"></collapsible-menu-item>
-        </section-divider>
-        <section-divider [label]="'Full Detector List'" [selected]="isSectionHeaderSelected('alldetectors')" [initiallyExpanded]="false" [collapsible]="false" (click)="navigateToDetectorList()">
-          <i class="fa fa-list-ol fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
-          <collapsible-menu-item *ngFor="let item of alldetectors"  [menuItem]="item"></collapsible-menu-item>
-        </section-divider>
         <!-- <section-divider [label]="'Documentation'" [initiallyExpanded]="false" [collapsible]="false" (click)="openDocumentation()">
           <i class="fa fa-book fa-fw menu-icon menu-icon-documentation" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let doc of documentation" [menuItem]="doc"></collapsible-menu-item>
@@ -25,14 +17,17 @@
           <collapsible-menu-item *ngFor="let item of analysisTypes" [menuItem]="item"></collapsible-menu-item>
           <i *ngIf="!categories || categories.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
         </section-divider> -->
-        <section-divider [label]="'Detectors'"  [selected]="isSectionHeaderSelected('detectors/', false) || isSectionHeaderSelected('analysis/', false)">
+        <section-divider [label]="'Detectors'"  [selected]="isSectionHeaderSelected('alldetectors') || isSectionHeaderSelected('detectors/', false) || isSectionHeaderSelected('analysis/', false)">
           <i class="fa fa-stethoscope fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
           <ng-container *ngIf="analysisTypes.length > 0">
-            <span> haha </span>
           <collapsible-menu-item [menuItem]="analysisTypes"></collapsible-menu-item>
         </ng-container>
           <collapsible-menu-item *ngFor="let category of categories" [searchValue]="searchValue" [menuItem]="category"></collapsible-menu-item>
           <i *ngIf="!categories || categories.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
+        </section-divider>
+        <section-divider [label]="'Develop'" [selected]="isSectionHeaderSelected('users', false) || isSectionHeaderSelected('create') || isSectionHeaderSelected('creategist')" [initiallyExpanded]="false" [disableExpandIcon]="false">
+          <i class="fa fa-code fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
+          <collapsible-menu-item *ngFor="let item of createNew" [menuItem]="item"></collapsible-menu-item>
         </section-divider>
         <section-divider *ngIf="gists.length > 0"  [selected]="isSectionHeaderSelected('gists/', false)" [label]="'Gists'" [initiallyExpanded]="false">
           <i class="fa fa-file-code-o fa-fw menu-icon menu-icon-gists" aria-hidden="true"></i>

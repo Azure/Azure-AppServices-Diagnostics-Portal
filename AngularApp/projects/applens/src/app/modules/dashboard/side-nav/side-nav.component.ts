@@ -67,21 +67,6 @@ export class SideNavComponent implements OnInit {
       icon: null
     }];
 
-    alldetectors: CollapsibleMenuItem[] = [
-        {
-          label: 'Detector List',
-          id: "",
-          onClick: () => {
-            this.navigateTo("alldetectors");
-          },
-          expanded: false,
-          subItems: null,
-          isSelected:   () => {
-            return this.currentRoutePath && this.currentRoutePath.join('/') === `alldetectors`;
-          },
-          icon: null
-        }];
-
      createNew: CollapsibleMenuItem[] = [
     {
       label: 'Your Detectors',
@@ -215,6 +200,7 @@ export class SideNavComponent implements OnInit {
           }
         });
 
+        this.categories.push(new CollapsibleMenuItem("All detectors", "", () => {this.navigateTo("alldetectors");},() => { return this.currentRoutePath && this.currentRoutePath.join('/') === `alldetectors`;} , null, false, null));
         this.categories.push(new CollapsibleMenuItem("Analysis", "", null, null, null, false, this.analysisTypes));
         this.categories = this.categories.sort((a, b) => a.label === 'Uncategorized' ? 1 : (a.label > b.label ? 1 : -1));
 
@@ -283,7 +269,6 @@ export class SideNavComponent implements OnInit {
     else
         return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase().startsWith(path.toLowerCase());
   };
-
 
   updateSearchValue(e: { newValue: any }) {
     if (!!e.newValue.currentTarget && !!e.newValue.currentTarget.value) {
