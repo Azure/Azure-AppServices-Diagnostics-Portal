@@ -233,7 +233,7 @@ export class SideNavComponent implements OnInit {
           category.forEach(c => {
             let categoryMenuItem = this.gists.find((cat: CollapsibleMenuItem) => cat.label === c);
             if (!categoryMenuItem) {
-              categoryMenuItem = new CollapsibleMenuItem(c, "", null, null, null, true);
+              categoryMenuItem = new CollapsibleMenuItem(c, "", null, null, null, false);
               this.gists.push(categoryMenuItem);
             }
 
