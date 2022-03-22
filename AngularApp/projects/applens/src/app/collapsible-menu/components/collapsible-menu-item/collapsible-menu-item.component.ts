@@ -47,10 +47,10 @@ export class CollapsibleMenuItemComponent {
     this.hasChildren = this.menuItem.subItems && this.menuItem.subItems.length > 0;
 
     this._searchValueSubject.subscribe(searchValue => {
-      this.searchValueLocal = searchValue;
-      this.menuItem.expanded = searchValue != undefined;
-      this.hasChildren = this.menuItem.subItems ? this._searchPipe.transform(this.menuItem.subItems, searchValue).length > 0 : false;
-      this.matchesSearchTerm = !this.searchValueLocal || this.menuItem.label.toLowerCase().indexOf(this.searchValueLocal.toLowerCase()) >= 0 || this.menuItem.id.toLowerCase().indexOf(this.searchValueLocal.toLowerCase()) >= 0 || this.menuItem.metadata && this.menuItem.metadata.toLowerCase().indexOf(this.searchValueLocal.toLowerCase()) >= 0 || this.hasChildren;
+        this.searchValueLocal = searchValue;
+        this.menuItem.expanded = searchValue != undefined && searchValue != "" ? true : this.menuItem.expanded;
+        this.hasChildren = this.menuItem.subItems ? this._searchPipe.transform(this.menuItem.subItems, searchValue).length > 0 : false;
+        this.matchesSearchTerm = !this.searchValueLocal || this.menuItem.label.toLowerCase().indexOf(this.searchValueLocal.toLowerCase()) >= 0 || this.menuItem.id.toLowerCase().indexOf(this.searchValueLocal.toLowerCase()) >= 0 || this.menuItem.metadata && this.menuItem.metadata.toLowerCase().indexOf(this.searchValueLocal.toLowerCase()) >= 0 || this.hasChildren;
     });
   }
 

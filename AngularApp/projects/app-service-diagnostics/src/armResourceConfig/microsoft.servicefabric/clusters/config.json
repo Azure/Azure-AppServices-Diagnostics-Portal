@@ -26,7 +26,9 @@
 			"chatEnabled": false,
             "overviewDetectorId": "ServiceFabricClusterInsights"
 		}
-	]
+	],
+	"pesId": "15842",
+	"sapProductId": "a730ab7a-33ae-c83a-bca5-4935433e38ff"
 }
 
 

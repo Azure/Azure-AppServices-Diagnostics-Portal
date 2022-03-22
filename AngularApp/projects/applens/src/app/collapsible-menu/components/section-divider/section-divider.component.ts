@@ -20,6 +20,7 @@ export class SectionDividerComponent implements OnInit {
   @Input() initiallyExpanded: boolean = true;
   @Input() collapsible: boolean = true;
   @Input() disableExpandIcon: boolean = false;
+  @Input() selected: boolean = false;
 
   expanded: boolean = true;
 

@@ -114,7 +114,12 @@ export class SummaryCardsComponent extends DataRenderBaseComponent {
       }
       this._router.navigate([path],{relativeTo: this._activatedRoute,queryParamsHandling:'merge'});
     } else {
-      this._navigator.NavigateToDetector(this._activatedRoute.snapshot.params['detector'], card.link);
+        if (!card.isDetector) {
+            this._router.navigate([`./analysis/${card.link}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
+          } else {
+            this._navigator.NavigateToDetector(this._activatedRoute.snapshot.params['detector'], card.link);
+          }
+
     }
   }
 

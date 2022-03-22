@@ -11,4 +11,8 @@ export class GenericResourceService {
     public getPesId(): Observable<string>{
         return Observable.of(null);
     }
+
+    public getSapProductId(): Observable<string>{
+        return Observable.of(null);
+    }
 }

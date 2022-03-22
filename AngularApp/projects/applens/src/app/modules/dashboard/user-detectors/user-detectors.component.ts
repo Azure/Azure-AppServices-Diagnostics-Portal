@@ -6,6 +6,7 @@ import { DataTableResponseColumn, DataTableResponseObject, DetectorMetaData, Ext
 import { ApplensSupportTopicService } from '../services/applens-support-topic.service';
 import { catchError } from 'rxjs/operators';
 import { of,forkJoin as observableForkJoin } from 'rxjs';
+import { ApplensGlobal } from '../../../applens-global';
 
 @Component({
   selector: 'user-detectors',
@@ -35,9 +36,10 @@ export class UserDetectorsComponent implements OnInit {
     }
   ];
 
-  constructor(private _activatedRoute: ActivatedRoute, private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, private _supportTopicService: ApplensSupportTopicService) { }
+  constructor(private _applensGlobal:ApplensGlobal, private _activatedRoute: ActivatedRoute, private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, private _supportTopicService: ApplensSupportTopicService) { }
 
   ngOnInit() {
+    this._applensGlobal.updateHeader("");
     this.isDetector = this._activatedRoute.snapshot.data["isDetector"];
     this.allItems = this._activatedRoute.snapshot.data["allItems"];
     this.checkIsCurrentUser();
@@ -56,7 +58,7 @@ export class UserDetectorsComponent implements OnInit {
         });
       });
 
-      
+
     } else {
       this._diagnosticService.getGists().subscribe(allGists => {
         const gistsOfAuthor = allGists.filter(gist => gist.author && gist.author.toLowerCase().indexOf(this.userId.toLowerCase()) > -1);
@@ -146,7 +148,7 @@ export class UserDetectorsComponent implements OnInit {
     return map;
   }
 
-  
+
 
   private checkIsCurrentUser() {
     this.userId = this._activatedRoute.snapshot.params['userId'] ? this._activatedRoute.snapshot.params['userId'] : '';

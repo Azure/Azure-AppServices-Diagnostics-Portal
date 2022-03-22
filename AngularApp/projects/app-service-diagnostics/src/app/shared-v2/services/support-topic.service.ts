@@ -67,7 +67,7 @@ export class SupportTopicService {
             || supportTopicId == "32630473" || sapSupportTopicId == "2f550394-351c-4add-5807-eba6428dac71") {
                 // WebApp/VNET integration with App Service or FunctionApp/Configuring VNET integration with AppService
                 supportTopic = "VNet Integration";
-                return observableOf({ path: 'tools/networkchecks', queryParams: { redirectFrom, supportTopic } });
+                return observableOf({ path: 'tools/networkchecks', queryParams: { redirectFrom, supportTopic, supportTopicId, sapSupportTopicId } });
             } else if (supportTopicId == "32820919" || sapSupportTopicId == "6baa322b-ef6b-f235-c0c0-82ff512602c4" || sapSupportTopicId == "1653e0e2-8249-fb67-6d0e-767fa14d79b2" || sapSupportTopicId == "bafd9de9-bbe7-5366-efbd-3e845db6e1ae"
             || supportTopicId == "32820562" || sapSupportTopicId == "8856038e-a071-236e-9823-41313ee4cb85") {
                 // WebApp/Outbound Connectivity or FunctionApp/Outbound Connectivity
@@ -77,7 +77,7 @@ export class SupportTopicService {
                     // container based App is not supported yet
                 } else {
                     // non-container webapp/function app
-                    return observableOf({ path: 'tools/networkchecks', queryParams: { redirectFrom, supportTopic } });
+                    return observableOf({ path: 'tools/networkchecks', queryParams: { redirectFrom, supportTopic, supportTopicId, sapSupportTopicId } });
                 }
             }
 

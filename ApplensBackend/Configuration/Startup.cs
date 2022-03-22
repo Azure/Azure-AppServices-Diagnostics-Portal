@@ -63,7 +63,6 @@ namespace AppLensV3
             services.AddSingleton<IGraphClientService, GraphClientService>();
             services.AddSingleton<ISupportTopicService, SupportTopicService>();
             services.AddSingleton<ISelfHelpContentService, SelfHelpContentService>();
-            services.AddSingleton<IFreshChatClientService, FreshChatClientService>();
             services.AddSingleton<ICosmosDBHandlerBase<TemporaryAccessUser>, CosmosDBHandler<TemporaryAccessUser>>();
             services.AddSingleton<ICosmosDBHandlerBase<ResourceConfig>, CosmosDBHandler<ResourceConfig>>();
             services.AddSingleton<IIncidentAssistanceService, IncidentAssistanceService>();

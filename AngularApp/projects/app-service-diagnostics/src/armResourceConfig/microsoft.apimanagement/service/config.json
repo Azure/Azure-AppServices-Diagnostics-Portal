@@ -84,6 +84,7 @@
     "apim-proxy-performance-recategory"
   ],
   "pesId": "15551",
+	"sapProductId": "b4d0e877-0166-0474-9a76-b5be30ba40e4",
   "notificationConfig": {
     "title": "Notifications",
     "notificationDetectorId": "apim-notification",

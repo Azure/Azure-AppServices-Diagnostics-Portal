@@ -9,6 +9,9 @@
         <img *ngIf="resourceInfo.imgSrc" class="header-img ml-3" [src]="resourceInfo.imgSrc" [alt]="resourceInfo.searchSuffix">
         <span *ngIf="resourceInfo.resourceName" class="ml-3" style="font-weight: 600;">{{resourceInfo.resourceName}}</span>
         <span *ngIf="resourceInfo.searchSuffix" class="ml-3" style="color: #605E5C;">{{resourceInfo.searchSuffix}}</span>
+        <div class='resource-summary' (click)="openResourceInfoModal()">
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
+        </div>
       </div>
     </div>
 

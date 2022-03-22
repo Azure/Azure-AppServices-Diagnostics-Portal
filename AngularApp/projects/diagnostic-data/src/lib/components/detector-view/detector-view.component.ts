@@ -729,10 +729,12 @@ export class DetectorViewComponent implements OnInit {
 
   renderCXPChatButton() {
     if (this.cxpChatTrackingId === '' && this.cxpChatUrl === '') {
-      if (this._supportTopicService && this._cxpChatService && this._cxpChatService.isSupportTopicEnabledForLiveChat(this._supportTopicService.supportTopicId)) {
-        this.cxpChatTrackingId = this._cxpChatService.generateTrackingId(((!!this._supportTopicService && !!this._supportTopicService.supportTopicId) ? this._supportTopicService.supportTopicId : ''));
-        this.supportTopicId = this._supportTopicService.supportTopicId;
-        this._cxpChatService.getChatURL(this._supportTopicService.supportTopicId, this.cxpChatTrackingId).subscribe((chatApiResponse: any) => {
+      let effectiveSupportTopicId:string = '';
+      effectiveSupportTopicId = (this._supportTopicService && this._supportTopicService.sapSupportTopicId) ? this._supportTopicService.sapSupportTopicId : this._supportTopicService.supportTopicId;
+      if (this._supportTopicService && this._cxpChatService && this._cxpChatService.isSupportTopicEnabledForLiveChat(effectiveSupportTopicId)) {
+        this.cxpChatTrackingId = this._cxpChatService.generateTrackingId(effectiveSupportTopicId);
+        this.supportTopicId = effectiveSupportTopicId;
+        this._cxpChatService.getChatURL(effectiveSupportTopicId, this.cxpChatTrackingId).subscribe((chatApiResponse: any) => {
           if (chatApiResponse && chatApiResponse != '') {
             this.cxpChatUrl = chatApiResponse;
           }

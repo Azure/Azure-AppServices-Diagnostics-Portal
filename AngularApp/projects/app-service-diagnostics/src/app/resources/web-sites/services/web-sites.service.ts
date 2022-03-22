@@ -95,6 +95,23 @@ export class WebSitesService extends ResourceService {
         }));
     }
 
+    public getSapProductId(): Observable<string> {
+        return this.warmUpCallFinished.pipe(flatMap(() => {
+            if (this.appType == AppType.WebApp && this.platform == OperatingSystem.windows) {
+                return of("1890289e-747c-7ef6-b4f5-b1dbb0bead28");
+            }
+            else if (this.appType == AppType.WebApp && this.platform == OperatingSystem.linux) {
+                return of("b452a42b-3779-64de-532c-8a32738357a6");
+            }
+            else if (this.appType == AppType.FunctionApp) {
+                return of("5ce8de69-abba-65a0-e0e4-a684bcbc7931");
+            }
+            else {
+                return of(null);
+            }
+        }));
+    }
+
     public getKeystoneDetectorId(): Observable<string> {
         return this.warmUpCallFinished.pipe(flatMap(() => {
             if (this.appType == AppType.WebApp && this.platform == OperatingSystem.windows) {
@@ -135,6 +152,10 @@ export class WebSitesService extends ResourceService {
     }
 
     public get liveChatEnabledSupportTopicIds(): string[] {
+        return this.liveChatEnabledSapSupportTopicIds;
+    }
+
+    public get liveChatEnabledSapSupportTopicIds():string[] {
         if (this.isApplicableForLiveChat) {
             if (this.appType === AppType.FunctionApp) {
                 return ['*']; //Enable all support topics for chat. CXP system, performs a check and they can independently enable/disable chats for specific ST's

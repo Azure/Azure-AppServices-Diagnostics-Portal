@@ -327,6 +327,19 @@ export class GenericArmConfigService {
           throw error;
         }
 
+        //currConfig.sapProductId
+        try {
+          if (this.getValue(this.resourceConfig.sapProductId, this.overrideConfig.sapProductId) != null) {
+            currConfig.sapProductId = this.getValue(this.resourceConfig.sapProductId, this.overrideConfig.sapProductId);
+          }
+        } catch (error) {
+          this.logException(error, null, {
+            "resourceUri": resourceUri,
+            "reason": `${TelemetryEventNames.ArmConfigMergeError}: Error while merging armConfig.`,
+            "field": "sapProductId"
+          });
+          throw error;
+        }
 
         //currConfig.liveChatConfig
         try {
@@ -392,6 +405,54 @@ export class GenericArmConfigService {
                 }
               }
               currLiveChatConfig.supportTopicIds = currMergedSupportTopicIds;
+
+              //Process supported sap support topics for live chat
+              let currMergedSapSupportTopicIds: string[] = [];
+
+              if (this.overrideConfig.liveChatConfig.sapSupportTopicIds && this.overrideConfig.liveChatConfig.sapSupportTopicIds.length > 0 &&
+                (!this.resourceConfig.liveChatConfig.sapSupportTopicIds
+                  || (this.resourceConfig.liveChatConfig.sapSupportTopicIds && this.resourceConfig.liveChatConfig.sapSupportTopicIds.length < 1)
+                )
+              ) {
+                //Valid support topics exist only in overrideConfig
+                currMergedSapSupportTopicIds = this.overrideConfig.liveChatConfig.sapSupportTopicIds;
+              }
+              else {
+                if (this.resourceConfig.liveChatConfig.sapSupportTopicIds && this.resourceConfig.liveChatConfig.sapSupportTopicIds.length > 0 &&
+                  (!this.overrideConfig.liveChatConfig.sapSupportTopicIds
+                    || (this.overrideConfig.liveChatConfig.sapSupportTopicIds && this.overrideConfig.liveChatConfig.sapSupportTopicIds.length < 1)
+                  )
+                ) {
+                  //Valid support topics exist only in resourceConfig
+                  currMergedSapSupportTopicIds = this.resourceConfig.liveChatConfig.sapSupportTopicIds;
+                }
+                else {
+                  if (this.overrideConfig.liveChatConfig.sapSupportTopicIds && this.resourceConfig.liveChatConfig.sapSupportTopicIds &&
+                    this.overrideConfig.liveChatConfig.sapSupportTopicIds.length > 0 && this.resourceConfig.liveChatConfig.sapSupportTopicIds.length > 0
+                  ) {
+                    //Support topics exist in both resourceConfig and overrideConfig, merge them
+                    currMergedSapSupportTopicIds = this.overrideConfig.liveChatConfig.sapSupportTopicIds.concat(this.resourceConfig.liveChatConfig.sapSupportTopicIds);
+
+                    //Make sure that we have distinct values after merging.
+                    currMergedSapSupportTopicIds = currMergedSapSupportTopicIds.filter(this.distinctStringValues);
+
+                    if (currMergedSapSupportTopicIds.findIndex((currEntry: string) => { return currEntry === '*' }) > -1) {
+                      currMergedSapSupportTopicIds = [];
+                      //* means enabled for all support topics. So if we find it, make sure it is the only entry.
+                      //This will help with perf later.
+                      currMergedSapSupportTopicIds.push('*');
+                    }
+
+                    //Convert each entry to lowercase
+                    currMergedSapSupportTopicIds.filter((value: string, index: number, self: string[]) => {
+                      self[index] = self[index].toLowerCase();
+                    });
+
+                  } //Else of this means that support topics do not exist in either and it is fine since we already initialize currMergedSapSupportTopicIds as an empty array.
+                }
+              }
+              currLiveChatConfig.sapSupportTopicIds = currMergedSapSupportTopicIds;
+              
               currConfig.liveChatConfig = currLiveChatConfig;
             }
           }

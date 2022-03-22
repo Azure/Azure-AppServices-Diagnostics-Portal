@@ -11,6 +11,7 @@ import { StartupService } from './services/startup.service';
 import { ObserverService } from './services/observer.service';
 import { GithubApiService } from './services/github-api.service';
 import { AseService } from './services/ase.service';
+import { ApplensGlobal as ApplensGlobals } from '../applens-global';
 import { CacheService } from './services/cache.service';
 import { ResourceService } from './services/resource.service';
 import { AadAuthGuard } from './auth/aad-auth-guard.service';
@@ -50,6 +51,7 @@ export class SharedModule {
         SiteService,
         ContainerAppService,
         AseService,
+        ApplensGlobals,
         StartupService,
         ObserverService,
         GithubApiService,

@@ -12,6 +12,7 @@ export class ArmResourceConfig {
 	liveChatConfig?: LiveChatConfig
 	categories?: Array<Category>;
     pesId?: string;
+	sapProductId?: string;
     liabilityCheckConfig?: LiabilityCheckConfig;
     quickLinks?: string[];
     keystoneDetectorId?: string;
@@ -28,6 +29,7 @@ export interface ArmApiConfig {
 export interface LiveChatConfig {
 	isApplicableForLiveChat?: boolean;
 	supportTopicIds?: string[];
+	sapSupportTopicIds?: string[];
 }
 
 export interface GenieConfig {

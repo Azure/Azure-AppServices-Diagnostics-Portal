@@ -50,6 +50,13 @@ export class ResourceService {
     return of(null);
   }
 
+  public getSapProductId(): Observable<string>{
+    if (this.armResourceConfig){
+      return of(this.armResourceConfig.sapProductId);
+    }
+    return of(null);
+  }
+
   public getKeystoneDetectorId(): Observable<string>{
       if (this.armResourceConfig) {
           return of(this.armResourceConfig.keystoneDetectorId);
@@ -145,6 +152,25 @@ export class ResourceService {
           &&  currConfig.liveChatConfig.supportTopicIds instanceof Array
           && currConfig.liveChatConfig.supportTopicIds.length > 0 ) {
           return currConfig.liveChatConfig.supportTopicIds;
+        }
+        else {
+          return [];
+        }
+      }
+      else {
+        return [];
+      }
+    }
+  }
+
+  public get liveChatEnabledSapSupportTopicIds():string[] {
+    if(this._genericArmConfigService) {
+      let currConfig: ArmResourceConfig = this._genericArmConfigService.getArmResourceConfig(this.resource.id);
+      if(this.isApplicableForLiveChat === true) {
+        if ( currConfig.liveChatConfig && currConfig.liveChatConfig.sapSupportTopicIds
+          &&  currConfig.liveChatConfig.sapSupportTopicIds instanceof Array
+          && currConfig.liveChatConfig.sapSupportTopicIds.length > 0 ) {
+          return currConfig.liveChatConfig.sapSupportTopicIds;
         }
         else {
           return [];

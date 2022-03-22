@@ -22,7 +22,6 @@ import { TokenInvalidComponent } from './shared/components/tokeninvalid/tokeninv
 import { AngularReactBrowserModule } from '@angular-react/core';
 import { ApplensAppinsightsTelemetryService } from './shared/services/applens-appinsights-telemetry.service';
 import { ApplensThemeService } from './shared/services/applens-theme.service';
-import { ApplensHeaderComponent } from './shared/components/applens-header/applens-header.component';
 import { FabButtonModule, FabDialogModule, FabPanelModule } from '@angular-react/fabric';
 
 @Injectable()

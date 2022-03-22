@@ -5,6 +5,8 @@ import { ISearchBoxProps } from 'office-ui-fabric-react';
 import { SearchService } from '../../../modules/dashboard/services/search.service';
 import { ResourceInfo } from '../../models/resources';
 import { DiagnosticApiService } from '../../services/diagnostic-api.service';
+import { ApplensGlobal } from '../../../applens-global';
+
 
 @Component({
   selector: 'applens-header',
@@ -26,10 +28,10 @@ export class ApplensHeaderComponent implements OnInit {
     }
   };
 
-
-  constructor(private _adalService: AdalService, private _diagnosticApiService: DiagnosticApiService, private _activatedRoute: ActivatedRoute, private _router: Router, @Optional() public _searchService?: SearchService) { }
+  constructor(private _adalService: AdalService,  private _diagnosticApiService: DiagnosticApiService, private _activatedRoute: ActivatedRoute, private _router: Router, @Optional() public _searchService?: SearchService, @Optional() private _applensGlobal?: ApplensGlobal) { }
 
   ngOnInit() {
+
     const alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
     const userId = alias.replace('@microsoft.com', '');
     this._diagnosticApiService.getUserPhoto(userId).subscribe(image => {
@@ -75,4 +77,9 @@ export class ApplensHeaderComponent implements OnInit {
       this.searchValue = searchValue.newValue.currentTarget.value;
     }
   }
+
+  openResourceInfoModal() {
+    this._applensGlobal.openResourceInfoPanel = true;
+  }
+
 }

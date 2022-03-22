@@ -34,8 +34,10 @@ export class WebSearchComponent extends DataRenderBaseComponent implements OnIni
     @Input() numArticlesExpanded : number = 5;
     @Output() searchResultsChange: EventEmitter<any[]> = new EventEmitter<any[]>();
     pesId : string = "";
+    sapProductId: string = "";
 
-    supportTopicId : string = "";    
+    supportTopicId : string = "";
+    sapSupportTopicId:string = "";
 
     customQueryParametersForBingSearch : string = "";
 
@@ -55,10 +57,12 @@ export class WebSearchComponent extends DataRenderBaseComponent implements OnIni
         super(telemetryService);
         this.isPublic = config && config.isPublic;
         this.supportTopicId = this._supportTopicService.supportTopicId;
+        this.sapSupportTopicId = this._supportTopicService.sapSupportTopicId;
         this.deepSearchConfig = new DocumentSearchConfiguration();;
         const subscription = this._activatedRoute.queryParamMap.subscribe(qParams => {
             this.searchTerm = qParams.get('searchTerm') === null ? "" || this.searchTerm : qParams.get('searchTerm');
             this.getPesId();
+            this.getSapProductId();
             this.checkIfDeepSearchIsEnabled();
             this.refresh();
         });
@@ -189,7 +193,7 @@ export class WebSearchComponent extends DataRenderBaseComponent implements OnIni
         this.resetGlobals();
         if (!this.isChildComponent || !this.searchId || this.searchId.length <1) this.searchId = uuid();
         if (!this.webSearchConfig) {
-            this.webSearchConfig = new WebSearchConfiguration(this.pesId);
+            this.webSearchConfig = new WebSearchConfiguration(this.pesId, null);
         }
         var searchTask;
         let searchTaskComplete = false;
@@ -355,11 +359,40 @@ export class WebSearchComponent extends DataRenderBaseComponent implements OnIni
             this.pesId = pesId;
         });    
     }
+
+    getSapProductId(){
+        this._resourceService.getSapProductId().subscribe(sapProductId => {
+            this.sapProductId = sapProductId;
+        });
+    }
+
+    public getEffectiveProductId():string{
+        if(this.sapProductId){
+            return this.sapProductId;
+        }
+        else if(this.pesId){
+            return this.pesId;
+        }
+        else{
+            return '';
+        }
+    }
+
+    public getEffectiveSupportTopicId():string{
+        if(this.sapSupportTopicId){
+            return this.sapSupportTopicId;
+        }
+        else if(this.supportTopicId){
+            return this.supportTopicId;
+        } else {
+            return '';
+        }
+    }
     
     checkIfDeepSearchIsEnabled () {
 
-        var deepSearchObservable = this.isPublic ? this._contentService.IsDeepSearchEnabled(this.pesId, this.supportTopicId) :
-                                                   this._documentsSearchService.IsEnabled(this.pesId) 
+        var deepSearchObservable = this.isPublic ? this._contentService.IsDeepSearchEnabled(this.getEffectiveProductId(), this.getEffectiveSupportTopicId()) :
+                                                   this._documentsSearchService.IsEnabled(this.getEffectiveProductId()) 
 
         
         let checkStatusTask = deepSearchObservable.pipe( map((res) => res), 

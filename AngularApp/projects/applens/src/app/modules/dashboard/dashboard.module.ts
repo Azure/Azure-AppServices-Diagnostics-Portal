@@ -104,6 +104,11 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                 component: DashboardContainerComponent
             },
             {
+                path: 'overview',
+                redirectTo: '',
+                pathMatch: 'full'
+            },
+            {
                 path: 'home/:viewType',
                 // component: ResourceHomeComponent,
                 redirectTo: '',
@@ -115,7 +120,7 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                     {
                         path: 'detectors',
                         component: UserDetectorsComponent,
-                        data: { 
+                        data: {
                             isDetector: true,
                             allItems: false
                         }
@@ -123,7 +128,7 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                     {
                         path: 'gists',
                         component: UserDetectorsComponent,
-                        data: { 
+                        data: {
                             isDetector: false,
                             allItems: false
                         }
@@ -173,7 +178,7 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                         redirectTo: ''
                     }, {
                         path: 'changelist',
-                        component: TabChangelistComponent, 
+                        component: TabChangelistComponent,
                         data: {
                             tabKey: TabKey.CommitHistory
                         }
@@ -253,7 +258,7 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                 ]
             },
             {
-                path: 'detectors/all',
+                path: 'alldetectors',
                 component: UserDetectorsComponent,
                 data: {
                     isDetector: true,

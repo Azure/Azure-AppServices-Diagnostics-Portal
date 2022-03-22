@@ -28,3 +28,10 @@
     </div>
   </collapsible-list-item>
 </collapsible-list-fabric>
+<collapsible-list-fabric *ngIf="showMetrics" [collapsed]="false" [title]="'Metrics'">
+  <collapsible-list-item body>
+    <div>
+      <detector-container [detector]="_resourceService.overviewPageMetricsId" [hideDetectorControl]="true"></detector-container>
+    </div>
+  </collapsible-list-item>
+</collapsible-list-fabric>

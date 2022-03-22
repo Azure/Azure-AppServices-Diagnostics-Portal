@@ -59,11 +59,13 @@ export interface ResourceServiceInputs {
     armResource: ArmResource;
     azureCommImpactedServicesList: string;
     pesId: string;
+    sapProductId:string;
     staticSelfHelpContent: string;
     altIcons?: { [path: string]: string };
     searchSuffix: string;
     emergingIssuesICMLookupEnabled?: boolean;
     displayName?: string;
+    overviewPageMetricsId?: string;
 }
 
 export const RESOURCE_SERVICE_INPUTS = new InjectionToken<ResourceServiceInputs>('ResourceServiceInputs');
@@ -77,6 +79,7 @@ export const DEFAULT_RESOURCE_SERVICE_INPUTS: ResourceServiceInputs = {
     armResource: null,
     azureCommImpactedServicesList: '',
     pesId: '',
+    sapProductId:'',
     staticSelfHelpContent: '',
     searchSuffix: 'AZURE'
 };

@@ -33,6 +33,7 @@
       "overviewDetectorId": "cappContainerAppAvailabilityDetector"
 		}
 	],
-    "disableGenie": true,
-	"pesId": "17677"
+  "disableGenie": true,
+	"pesId": "17677",
+  "sapProductId": "5bc1fc7c-358f-3640-9d3f-f051a51c1e93"
 }
