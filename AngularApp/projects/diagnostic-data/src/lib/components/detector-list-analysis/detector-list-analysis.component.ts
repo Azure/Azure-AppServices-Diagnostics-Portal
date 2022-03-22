@@ -590,7 +590,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                             this.successfulViewModels.push(successViewModel);
                         }
                     }
-                    
+
                     return {
                         'ChildDetectorName': this.detectorViewModels[index].title,
                         'ChildDetectorId': this.detectorViewModels[index].metadata.id,
@@ -927,11 +927,23 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         }, 4000);
     }
 
-    openSolutionPanel(title: string) {
-        this.solutionTitle = title;
+  openSolutionPanel(viewModel: any) {
+    if (viewModel != null && viewModel.model!= null && viewModel.model.title)
+    {
+        let title:string = viewModel.model.title;
+        let detectorId: string = (viewModel.model.metadata != null) && (viewModel.model.metadata.id != null) ? viewModel.model.metadata.id : "";
+        let status: string = viewModel.model.status != null ? JSON.stringify(viewModel.model.status): "";
         this.allSolutions = this.allSolutionsMap.get(title);
+        this.solutionTitle = title;
         this.solutionPanelOpenSubject.next(true);
+        this.logEvent("ViewSolutionPanelButtonClicked", {
+            SolutionTitle: title,
+            DetectorId: detectorId,
+            Status: status,
+            SearchMode: this.searchMode
+          });
     }
+  }
 
     private updateBreadcrumb() {
         if(this.isPublic || this.withinGenie) return;
