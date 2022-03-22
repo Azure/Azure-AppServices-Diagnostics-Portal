@@ -4,7 +4,7 @@ import { SiteService } from '../../../services/site.service';
 import { ArmService } from '../../../services/arm.service';
 
 import { DropdownStepView, InfoStepView, StepFlow, StepFlowManager, CheckStepView, StepViewContainer, InputStepView, ButtonStepView, PromiseCompletionSource, TelemetryService } from 'diagnostic-data';
-
+import {CXPChatCallerService} from '../../../../shared-v2/services/cxp-chat-caller.service';
 import { DiagProvider, OutboundType } from './diag-provider';
 import { Globals } from 'projects/app-service-diagnostics/src/app/globals';
 import { CheckManager } from './check-manager';
@@ -46,6 +46,11 @@ export class NetworkCheckComponent implements OnInit, AfterViewInit {
     debugMode = false;
     supportTopic: string;
 
+    cxpChatTrackingId: string = '';
+    supportTopicId: string = '';
+    sapSupportTopicId: string = '';
+    cxpChatUrl: string = '';
+
     logEvent: (eventMessage: string, properties: { [name: string]: string }, measurements?: any) => void;
     width = 'calc(100vw - 298px)';
     height = 'calc(100vh - 35px)';
@@ -56,7 +61,7 @@ export class NetworkCheckComponent implements OnInit, AfterViewInit {
 
     //checks: any[];
 
-    constructor(private _siteService: SiteService, private _armService: ArmService, private _telemetryService: TelemetryService, private _globals: Globals, private _route: ActivatedRoute, private _router: Router, private _portalService: PortalService, private _changeDetectorRef: ChangeDetectorRef) {
+    constructor(private _siteService: SiteService, private _armService: ArmService, private _telemetryService: TelemetryService, private _globals: Globals, private _route: ActivatedRoute, private _router: Router, private _portalService: PortalService, private _changeDetectorRef: ChangeDetectorRef, private _cxpChatService: CXPChatCallerService) {
         try {
             var feedbackPanelConfig = { defaultFeedbackText: this._feedbackQuestions, detectorName: "NetworkCheckingTool", notResetOnDismissed: true, url: window.location.href }
             _globals.messagesData.feedbackPanelConfig = feedbackPanelConfig;
@@ -67,6 +72,12 @@ export class NetworkCheckComponent implements OnInit, AfterViewInit {
             if (this.supportTopic || queryParams["redirectFrom"] === "referrer") {
                 this.width = '100vw';
                 this.height = '100vh';
+            }
+            if (queryParams["supportTopicId"] ) {
+                this.supportTopicId = queryParams["supportTopicId"];
+            }
+            if (queryParams["sapSupportTopicId"] ) {
+                this.sapSupportTopicId = queryParams["sapSupportTopicId"];
             }
             this.logEvent = (eventMessage: string, properties: { [name: string]: string } = {}, measurements?: any) => {
                 properties.redirectFrom = queryParams["redirectFrom"];
@@ -192,6 +203,10 @@ export class NetworkCheckComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         this._telemetryService.logEvent("NetworkCheck.FirstPageLoad");
+        //Load CXP chat bubble only when in case submission.
+        if(this.sapSupportTopicId || this.supportTopicId) {
+            this.renderCXPChatButton();
+        }
     }
 
     convertFromNetworkCheckFlow(flow: NetworkCheckFlow): StepFlow {
@@ -212,5 +227,25 @@ export class NetworkCheckComponent implements OnInit, AfterViewInit {
     loadClassesToGlobalContext() {
         var globalClasses = { DropdownStepView, CheckStepView, InputStepView, InfoStepView, ButtonStepView, PromiseCompletionSource };
         Object.keys(globalClasses).forEach(key => window[key] = globalClasses[key]);
+    }
+
+    showChatButton(): boolean {
+        return this.cxpChatTrackingId != '' && this.cxpChatUrl != '';
+    }
+
+    renderCXPChatButton() {
+        if (this.cxpChatTrackingId === '' && this.cxpChatUrl === '') {
+            let effectiveSupportTopicId:string = '';
+            effectiveSupportTopicId = (this.sapSupportTopicId) ? this.sapSupportTopicId : this.supportTopicId;
+            if ( this._cxpChatService && this._cxpChatService.isSupportTopicEnabledForLiveChat(effectiveSupportTopicId)) {
+                this.cxpChatTrackingId = this._cxpChatService.generateTrackingId(effectiveSupportTopicId);
+                this.supportTopicId = effectiveSupportTopicId;
+                this._cxpChatService.getChatURL(effectiveSupportTopicId, this.cxpChatTrackingId).subscribe((chatApiResponse: any) => {
+                    if (chatApiResponse && chatApiResponse != '') {
+                        this.cxpChatUrl = chatApiResponse;
+                    }
+                });
+            }
+        }
     }
 }

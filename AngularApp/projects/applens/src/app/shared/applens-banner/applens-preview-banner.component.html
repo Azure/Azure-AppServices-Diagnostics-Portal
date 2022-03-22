@@ -1,11 +1,13 @@
-<div class="home-banner" *ngIf="showBanner" [ngStyle]="{'background-color': isPreview ? '#d7aced' : '#ffc096'}">
+<div class="home-banner" *ngIf="showBanner">
   <ng-container *ngIf="isPreview else oldApplensBanner">
     <i class="ib-purplerocket mr-3"></i>
-    <span>Please email <a (click)="emailToApplensTeam($event)">AppLens Design</a> with any issues you've found.</span>
+    <span><a (click)="switchView($event)">Click here</a> to switch back to the old experience. Please email
+      <a (click)="emailToApplensTeam($event)">AppLens Design</a> with any issues you’ve found.</span>
   </ng-container>
 </div>
 
 <ng-template #oldApplensBanner>
   <i class="ib-purplerocket mr-3"></i>
-  <span>This version of AppLens will no longer be available starting <strong>March 29, 2022</strong>.<a (click)="switchView($event)">Click here</a> to try the new experience.</span>
+  <span>AppLens VNext is now in public preview. <a (click)="switchView($event)">Click here</a> to try the new & improved
+    experience</span>
 </ng-template>

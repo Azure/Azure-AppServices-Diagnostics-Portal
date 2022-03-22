@@ -18,13 +18,15 @@ export class DashboardContainerComponent implements OnInit {
   resourceReady: Observable<any>;
   resourceDetailsSub: Subscription;
   observerLink: string = "";
+  showMetrics: boolean = true;
 
   constructor(public _resourceService: ResourceService, private _startupService: StartupService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, private _applensGlobal: ApplensGlobal) { }
 
   ngOnInit() {
+    this.showMetrics = !(this._resourceService.overviewPageMetricsId == undefined || this._resourceService.overviewPageMetricsId == "");
     let serviceInputs = this._startupService.getInputs();
     this.resourceReady = this._resourceService.getCurrentResource();
-    this._applensGlobal.updateHeader("Overview");
+    this._applensGlobal.updateHeader("");
     this.resourceReady.subscribe(resource => {
       if (resource) {
         this.resource = resource;

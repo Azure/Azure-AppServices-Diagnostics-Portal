@@ -1,4 +1,50 @@
-<aside>
+<aside class="main-sidebar">
+  <section class="sidebar">
+    <collapsible-menu theme="light">
+      <search-box [(searchValue)]="searchValue"></search-box>
+      <!-- <fab-search-box #fabSearchBox1 [value]="searchValue" (onChange)="updateSearchValue($event)" [styles]="searchBoxStyles" (onFocus)="focusSearchBox()" [placeholder]="searchPlaceHolder"></fab-search-box> -->
+      <menu-scroll>
+        <section-divider [label]="'Overview'" [selected]="isSectionHeaderSelected('')" [initiallyExpanded]="false" [collapsible]="false" (click)="navigateToOverview()">
+          <i class="fa fa-info fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
+          <collapsible-menu-item *ngFor="let item of overview"  [menuItem]="item"></collapsible-menu-item>
+        </section-divider>
+        <!-- <section-divider [label]="'Documentation'" [initiallyExpanded]="false" [collapsible]="false" (click)="openDocumentation()">
+          <i class="fa fa-book fa-fw menu-icon menu-icon-documentation" aria-hidden="true"></i>
+          <collapsible-menu-item *ngFor="let doc of documentation" [menuItem]="doc"></collapsible-menu-item>
+        </section-divider> -->
+        <!-- <section-divider  *ngIf="analysisTypes.length > 0" [label]="'Analysis'">
+          <i class="fa fa-heartbeat fa-fw menu-icon menu-icon-analysis" aria-hidden="true"></i>
+          <collapsible-menu-item *ngFor="let item of analysisTypes" [menuItem]="item"></collapsible-menu-item>
+          <i *ngIf="!categories || categories.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
+        </section-divider> -->
+        <section-divider [label]="'Detectors'"  [selected]="isSectionHeaderSelected('alldetectors') || isSectionHeaderSelected('detectors/', false) || isSectionHeaderSelected('analysis/', false)">
+          <i class="fa fa-stethoscope fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
+          <ng-container *ngIf="analysisTypes.length > 0">
+          <collapsible-menu-item [menuItem]="analysisTypes"></collapsible-menu-item>
+        </ng-container>
+          <collapsible-menu-item *ngFor="let category of categories" [searchValue]="searchValue" [menuItem]="category"></collapsible-menu-item>
+          <i *ngIf="!categories || categories.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
+        </section-divider>
+        <section-divider [label]="'Develop'" [selected]="isSectionHeaderSelected('users', false) || isSectionHeaderSelected('create') || isSectionHeaderSelected('creategist')" [initiallyExpanded]="false" [disableExpandIcon]="false">
+          <i class="fa fa-code fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
+          <collapsible-menu-item *ngFor="let item of createNew" [menuItem]="item"></collapsible-menu-item>
+        </section-divider>
+        <section-divider *ngIf="gists.length > 0"  [selected]="isSectionHeaderSelected('gists/', false)" [label]="'Gists'" [initiallyExpanded]="false">
+          <i class="fa fa-file-code-o fa-fw menu-icon menu-icon-gists" aria-hidden="true"></i>
+          <collapsible-menu-item *ngFor="let gist of gists" [searchValue]="searchValue" [menuItem]="gist"></collapsible-menu-item>
+          <i *ngIf="!gists || gists.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
+        </section-divider>
+        <section-divider [label]="'Configuration'" [selected]="isSectionHeaderSelected('kustoconfig')" [initiallyExpanded]="false">
+          <i class="fa fa-wrench fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
+          <collapsible-menu-item *ngFor="let setting of configuration" [menuItem]="setting"></collapsible-menu-item>
+        </section-divider>
+      </menu-scroll>
+    </collapsible-menu>
+  </section>
+</aside>
+
+
+<aside *ngIf="false">
   <section class="sidebar">
       <div style="display: flex;align-items: center; margin: 16px 8px;justify-content: flex-end;">
         <fab-search-box *ngIf="isGroupList" #fabSearchBox [value]="searchValue" (onChange)="updateSearchValue($event)" [styles]="searchBoxStyles" (onFocus)="focusSearchBox()" [placeholder]="searchPlaceHolder"></fab-search-box>
@@ -33,7 +79,7 @@
           <i class="fa fa-wrench fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let setting of configuration" [menuItem]="setting"></collapsible-menu-item>
         </section-divider> -->
-        
+
         <!-- <collapsible-menu-item *ngFor="let category of categories" [searchValue]="searchValue" [menuItem]="category"></collapsible-menu-item> -->
         <fab-details-list *ngIf="topList.length > 0" [isHeaderVisible]="false" [selectionMode]="selectionMode" [items]="topList" (onItemInvoked)="listInvokedHandler($event)" [compact]="true" [checkboxVisibility]="checkboxVisibility" [onShouldVirtualize]="onShouldVirtualize">
           <columns>
@@ -46,7 +92,7 @@
             </fab-details-list-column>
           </columns>
         </fab-details-list>
-        
+
         <fab-details-list *ngIf="isGroupList" [isHeaderVisible]="false" [selectionMode]="selectionMode" [items]="collapsibleItemList" (onItemInvoked)="listInvokedHandler($event)" [compact]="true" [indentWidth]="10" [checkboxVisibility]="checkboxVisibility" [cellStyleProps]="cellStyleProps" [onShouldVirtualize]="onShouldVirtualize">
           <groups>
             <fab-group-item *ngFor="let group of groups" [name]="group.name" [id]="group.id" [ariaLabel]="group.name" [startIndex]="group.startIndex" [count]="group.count" [isCollapsed]="group.isCollapsed"></fab-group-item>

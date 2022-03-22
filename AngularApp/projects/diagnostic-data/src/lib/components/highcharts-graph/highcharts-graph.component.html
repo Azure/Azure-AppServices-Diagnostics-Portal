@@ -1,4 +1,4 @@
-<highcharts-chart *ngIf="HighchartData && !loading" [Highcharts]="Highcharts" [options]="options"
+<!-- <highcharts-chart *ngIf="HighchartData && !loading" [Highcharts]="Highcharts" [options]="options"
   style="display: block;" (mouseleave)="leaveMetric()">
 </highcharts-chart>
 <div *ngIf="!HighchartData || loading" style="height:200px">
@@ -12,4 +12,10 @@
       <div style="font-size: 20px;">{{data.value | number:'1.0-0' }}</div>
     </div>
   </ng-container>
+</div> -->
+
+<highcharts-chart *ngIf="HighchartData && !loading" [Highcharts]="Highcharts" [options]="options" style="display: block;">
+</highcharts-chart>
+<div *ngIf="!HighchartData || loading" style="height:200px">
+  <i class="fa fa-circle-o-notch fa-spin"></i>
 </div>

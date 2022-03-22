@@ -165,17 +165,35 @@
     </fab-dialog-content>
   </fab-dialog>
 
-  <fab-dialog *ngIf="!detectorGraduation || gists.length == 0" [hidden]="gistDialogHidden" (onDismiss)="dismissGistDialog()">
+  <fab-dialog *ngIf="gists.length == 0" [hidden]="gistDialogHidden" (onDismiss)="dismissGistDialog()">
     <fab-dialog-content [title]="gistUpdateTitle">
-      <fab-dropdown *ngIf="gists.length > 0" label="Gist name" placeholder="Field value"
-        [options]="gistsDropdownOptions" (onChange)="updateGistVersionOptions($event)"></fab-dropdown>
-      <fab-dropdown [disabled]="!gistName" label="Gist version" (onChange)="gistVersionOnChange($event)"
-        placeholder="Field value" [options]="gistVersionOptions">
-      </fab-dropdown>
       <div class="mt-5">
-        <fab-primary-button *ngIf="gists.length > 0" text="Update" (onClick)="gistVersionChange()" contentClass="mr-3">
-        </fab-primary-button>
         <fab-default-button text="Cancel" (onClick)="dismissGistDialog()"></fab-default-button>
+      </div>
+    </fab-dialog-content>
+  </fab-dialog>
+
+  <fab-dialog *ngIf="!detectorGraduation && gists.length > 0" [hidden]="gistDialogHidden"
+    (onDismiss)="dismissGistDialog()" [minWidth]="'80%'">
+    <fab-dialog-content title="Gist Version">
+      <div>
+        <div style="display: flex;">
+            <fab-dropdown label="Gist name" placeholder="Field value" [options]="gistsDropdownOptions"
+              (onChange)="updateGistVersionOptions($event)" [styles]="gistDropdownWidth"></fab-dropdown>
+        </div>
+        <div style="display: flex;">
+            <fab-dropdown [disabled]="!gistName" label="Gist version" (onChange)="gistVersionOnChange($event)"
+              placeholder="Field value" [options]="gistVersionOptions" [styles]="gistDropdownWidth">
+            </fab-dropdown>
+            <div style="padding-top: 27px; padding-left: 20px;">
+            <fab-primary-button text="Update" (onClick)="gistVersionChange()" contentClass="mr-3" >
+            </fab-primary-button>
+            </div>
+        </div>
+      </div>
+      <div class="onboarding-container">
+        <ngx-monaco-editor *ngIf="showGistCode" [options]="editorOptions" [ngModel]="displayGistCode" style="height:600px">
+        </ngx-monaco-editor>
       </div>
     </fab-dialog-content>
   </fab-dialog>
@@ -185,8 +203,7 @@
       <fab-dropdown label="Gist name" placeholder="Field value"
         [options]="gistsDropdownOptions" (onChange)="updateGistVersionOptions($event)"></fab-dropdown>
       <div class="onboarding-container">
-        <ngx-monaco-editor [options]="editorOptions"
-              [ngModel]="latestGistVersion">
+        <ngx-monaco-editor [options]="editorOptions" [ngModel]="latestGistVersion" style="height:600px">
             </ngx-monaco-editor>
       </div>
     </fab-dialog-content>

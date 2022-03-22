@@ -104,7 +104,7 @@ export class DetectorSearchComponent extends DataRenderBaseComponent implements 
             this.controlListening();
         }, this.initialDelay);
         this._resourceService.getPesId().subscribe(pesId => {
-            var searchConf = new SearchConfiguration(this.diagnosticData? this.diagnosticData.table: null, pesId);
+            var searchConf = new SearchConfiguration(this.diagnosticData? this.diagnosticData.table: null, pesId, null);
             this.searchConfiguration = searchConf;
             if ((this.isPublic && detectorSearchEnabledPesIds.findIndex(x => x==pesId)<0) || (!this.isPublic && detectorSearchEnabledPesIdsInternal.findIndex(x => x==pesId)<0)){
                 this.searchConfiguration.DetectorSearchEnabled = false;

@@ -63,7 +63,6 @@ namespace Backend
 
             services.AddSingleton<IKustoQueryService, KustoQueryService>();
             services.AddSingleton<IKustoTokenRefreshService, KustoTokenRefreshService>();
-            services.AddSingleton<IOutageCommunicationService, OutageCommunicationService>();
             services.AddSingleton<IArmService, ArmService>();
             services.AddSingleton<IEncryptionService, EncryptionService>();
             services.AddSingleton<IAppInsightsService, AppInsightsService>();

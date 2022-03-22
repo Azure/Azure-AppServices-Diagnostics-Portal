@@ -56,7 +56,7 @@ export class TabMonitoringComponent implements OnInit {
   private timeRangeInHours: string = "24";
 
   endTime: momentNs.Moment = moment.utc();
-  startTime: momentNs.Moment = this.endTime.clone().subtract(7, 'days');
+  startTime: momentNs.Moment = this.endTime.clone().subtract(1, 'days');
 
   error: any;
 
@@ -77,7 +77,8 @@ export class TabMonitoringComponent implements OnInit {
   ngOnInit() {
     this.getMonitoringResponse();
     this.getDetectorResponse();
-    this.selectedDataSource  = this.statisticsType === StatisticsType.Analytics ? "Applens" : "All";
+    this.selectedDataSource  = this.statisticsType === StatisticsType.Analytics ? "Azure Portal" : "All";
+    this.setDataSource(this.selectedDataSource);
     this.dataSourceKeys = this.statisticsType === StatisticsType.Analytics ? Array.from(this.analyticsDataSourceMapping.keys()) : Array.from(this.monitoringDataSourceMapping.keys());
     this.timeRangeKeys = Array.from(this.timeRangeMapping.keys());
   }

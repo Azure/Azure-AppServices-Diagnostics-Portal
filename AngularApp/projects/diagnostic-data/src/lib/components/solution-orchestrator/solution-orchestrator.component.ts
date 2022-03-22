@@ -65,6 +65,7 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
     targetedScore: number = 0.5;
     webSearchConfig: any = null;
     pesId: string = null;
+    sapProductId: string = null;
 
     searchTermDisplayed: string = "";
     fetchingDetectors: boolean = false;
@@ -210,6 +211,7 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
 
         if (this.isPublic) {
             this.getPesId();
+            this.getSapProductId();
         }
     }
 
@@ -297,6 +299,12 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
         });
     }
 
+    getSapProductId(){
+        this._resourceService.getSapProductId().subscribe(sapProductId => {
+            this.sapProductId = sapProductId;
+        });
+    }
+
     onSearchBoxFocus(){}
 
     // Below two methods are for new version of time picker
@@ -354,7 +362,7 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
 
     getDocuments() {
         if (!this.webSearchConfig) {
-            this.webSearchConfig = new WebSearchConfiguration(this.pesId);
+            this.webSearchConfig = new WebSearchConfiguration(this.pesId, this.sapProductId);
         }
         var searchTask;
         let searchTaskComplete = false;

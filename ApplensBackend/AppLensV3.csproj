@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Attributes\Authorization\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

@@ -23,6 +23,6 @@
                 <div class="markdown" tabindex="0"><markdown ngPreserveWhitespaces [data]=stepFlowManager.errorDetailMarkdown></markdown></div>
             </div>
         </div>
-        
+        <cxp-chat-launcher *ngIf="showChatButton()" [trackingId]="cxpChatTrackingId" [chatUrl]="cxpChatUrl" [supportTopicId]="supportTopicId"></cxp-chat-launcher>
     </div>
 </div>
