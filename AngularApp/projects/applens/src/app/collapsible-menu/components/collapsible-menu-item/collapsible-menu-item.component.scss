@@ -27,10 +27,12 @@
     font-size: 14px;
 }
 
-.menu-item:hover,
+.menu-item:hover {
+    background-color: var(--sideMenuItemBackgroundSelected)
+}
+
 .menu-item.selected {
-    color:var(--bodyText);
-    background-color: #ccc;
+    background-color: var(--sideMenuItemBackgroundSelected)!important;
 }
 
 .menu-label > b {
@@ -43,7 +45,7 @@
 
 .menu-item-container.selected {
     color:var(--bodyText);
-    background-color: #ccc;
+    background-color: var(--sideMenuItemBackgroundSelected);
 }
 
 .break-all {
