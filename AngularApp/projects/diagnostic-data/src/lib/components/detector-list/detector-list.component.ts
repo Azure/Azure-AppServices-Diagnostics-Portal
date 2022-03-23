@@ -363,10 +363,21 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     }
   }
 
-  openSolutionPanel(title: string) {
-    this.allSolutions = this.allSolutionsMap.get(title);
-    this.solutionTitle = `${title} Solution`;
-    this.solutionPanelOpenSubject.next(true);
+  openSolutionPanel(viewModel: DetectorViewModeWithInsightInfo) {
+    if (viewModel != null && viewModel.model!= null && viewModel.model.title)
+    {
+        let title:string = viewModel.model.title;
+        let detectorId: string = (viewModel.model.metadata != null) && (viewModel.model.metadata.id != null) ? viewModel.model.metadata.id : "";
+        let status: string = viewModel.model.status != null ? JSON.stringify(viewModel.model.status): "";
+        this.allSolutions = this.allSolutionsMap.get(title);
+        this.solutionTitle = `${title} Solution`;
+        this.solutionPanelOpenSubject.next(true);
+        this.logEvent("ViewSolutionPanelButtonClicked", {
+            SolutionTitle: title,
+            DetectorId: detectorId,
+            Status: status
+          });
+    }
   }
 }
 

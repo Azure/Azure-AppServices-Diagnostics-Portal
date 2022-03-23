@@ -42,7 +42,7 @@ export class MainComponent implements OnInit {
       resourceType: null,
       resourceTypeLabel: 'App name',
       routeName: (name) => `sites/${name}`,
-      displayName: 'App',
+      displayName: 'App Service',
       enabled: true,
       caseId: false
     },
@@ -55,21 +55,13 @@ export class MainComponent implements OnInit {
       caseId: false
     },
     {
-       resourceType: null,
-       resourceTypeLabel: 'ARM Resource ID',
-       routeName: (name) => `${name}`,
-       displayName: 'ARM Resource ID',
-       enabled: true,
-       caseId: false
-    },
-    {
       resourceType: null,
-      resourceTypeLabel: 'Session Id',
-      routeName: (name) => this.getFakeArmResource('Microsoft.AzurePortal', 'sessions', name),
-      displayName: 'Portal Session',
+      resourceTypeLabel: 'Container App Name',
+      routeName: (name) => `containerapps/${name}`,
+      displayName: 'Container App',
       enabled: true,
       caseId: false
-    },
+    },    
     {
       resourceType: null,
       resourceTypeLabel: 'Virtual machine Id',
@@ -80,12 +72,12 @@ export class MainComponent implements OnInit {
     },
     {
       resourceType: null,
-      resourceTypeLabel: 'Container App Name',
-      routeName: (name) => `containerapps/${name}`,
-      displayName: 'Container App',
+      resourceTypeLabel: 'ARM Resource ID',
+      routeName: (name) => `${name}`,
+      displayName: 'ARM Resource ID',
       enabled: true,
       caseId: false
-    }
+   }
   ];
   resourceTypes: ResourceTypeState[] = [];
 
@@ -99,7 +91,7 @@ export class MainComponent implements OnInit {
   fabDropdownOptions: IDropdownOption[] = [];
   fabDropdownStyles: IDropdownProps["styles"] = {
     dropdownItemsWrapper: {
-      maxHeight: '20vh'
+      maxHeight: '30vh'
     },
   }
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -125,14 +117,6 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this.resourceTypes = [...this.defaultResourceTypes];
     this.selectedResourceType = this.resourceTypes[0];
-
-
-    this.fabDropdownOptions.push({
-      key: "Provide Resource Name",
-      text: "Provide Resource Name",
-      ariaLabel: "Provide Resource Name",
-      itemType: DropdownMenuItemType.Header
-    });
 
     this.defaultResourceTypes.forEach(resource => {
       this.fabDropdownOptions.push({

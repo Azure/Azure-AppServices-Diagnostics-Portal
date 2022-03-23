@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, Input, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, Input, EventEmitter, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICalendarStrings, IDatePickerProps, IChoiceGroupOption, ITextFieldStyles } from 'office-ui-fabric-react';
 import { addMonths, addDays } from 'office-ui-fabric-react/lib/utilities/dateMath/DateMath';
@@ -8,6 +8,7 @@ import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { Observable } from 'rxjs';
 import { UriUtilities } from '../../utilities/uri-utilities';
+import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 
 const moment = momentNs;
 
@@ -40,6 +41,8 @@ export class DetectorTimePickerComponent implements OnInit {
   endClock: string;
   timeDiffError: string = "";
 
+  isPublic : boolean = true;
+
   formatDate: IDatePickerProps['formatDate'] = (date) => {
     //only this format can do both fill in date and select date
     return moment(date).format('M/D/YY');
@@ -50,8 +53,7 @@ export class DetectorTimePickerComponent implements OnInit {
       { key: TimePickerOptions.Last1Hour, text: TimePickerOptions.Last1Hour, onClick: () => { this.setTime(1) } },
       { key: TimePickerOptions.Last6Hours, text: TimePickerOptions.Last6Hours, onClick: () => { this.setTime(6) } },
       { key: TimePickerOptions.Last12Hour, text: TimePickerOptions.Last12Hour, onClick: () => { this.setTime(12) } },
-      { key: TimePickerOptions.Last24Hours, text: TimePickerOptions.Last24Hours, onClick: () => { this.setTime(24) } },
-      { key: TimePickerOptions.Last3Days, text: TimePickerOptions.Last3Days, onClick: () => { this.setTime(72) } },
+      { key: TimePickerOptions.Last24Hours, text: TimePickerOptions.Last24Hours, onClick: () => { this.setTime(24) } },      
       { key: TimePickerOptions.Custom, text: TimePickerOptions.Custom, onClick: () => { this.selectCustom() } },
     ];
 
@@ -74,10 +76,14 @@ export class DetectorTimePickerComponent implements OnInit {
 
   maskTextFieldStyles: Partial<ITextFieldStyles> = { fieldGroup: { width: "80px" } };
 
-  constructor(private activatedRoute: ActivatedRoute, private detectorControlService: DetectorControlService, private router: Router, private telemetryService: TelemetryService) {
+  constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private activatedRoute: ActivatedRoute, private detectorControlService: DetectorControlService, private router: Router, private telemetryService: TelemetryService) {
+    this.isPublic = config && config.isPublic;
   }
 
   ngOnInit() {
+    if (this.isPublic === false) {
+      this.choiceGroupOptions.splice(4, 0, { key: TimePickerOptions.Last3Days, text: TimePickerOptions.Last3Days, onClick: () => { this.setTime(72) } });
+    }
     this.startDate = addDays(this.today, -1);
     this.endDate = this.today;
 

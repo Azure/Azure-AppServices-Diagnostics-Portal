@@ -610,6 +610,7 @@ export class OnboardingFlowComponent implements OnInit {
       if (this.temporarySelection[id]['version'] !== this.configuration['dependencies'][id]) {
         this.configuration['dependencies'][id] = this.temporarySelection[id]['version'];
         this.reference[id] = this.temporarySelection[id]['code'];
+        this.showGistCode = false;
       }
     });
 
@@ -640,11 +641,22 @@ export class OnboardingFlowComponent implements OnInit {
     }
   }
 
+  showGistCode: boolean = false;
+  displayGistCode = "";
+  
+  gistDropdownWidth: IDropdownProps['styles'] = {
+    root: {
+      width: '200px'
+    }
+  };
+
   gistVersionOnChange(event: string) {
     this.temporarySelection[event["option"]["title"]]['version'] = event["option"]["key"];
 
     this.githubService.getCommitContent(event["option"]["title"], this.temporarySelection[event["option"]["title"]]['version']).subscribe(x => {
       this.temporarySelection[event["option"]["title"]]['code'] = x;
+      this.showGistCode = true
+      this.displayGistCode = x;
     });
   }
 

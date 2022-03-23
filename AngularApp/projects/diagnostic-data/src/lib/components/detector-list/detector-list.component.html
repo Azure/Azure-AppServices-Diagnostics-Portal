@@ -59,7 +59,7 @@
     [title]="'Observations and Solutions (' + issueDetectedViewModels.length + ')'">
     <collapsible-list-item body>
       <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
-        <fab-card [expanded]="false" [isExpandable]="!!viewModel.insightDescription" [isAlign]="true">
+        <fab-card [expanded]="!isPublic" [isExpandable]="!!viewModel.insightDescription" [isAlign]="true">
           <div header>
             <div style="display: flex;align-items: center;min-height: 40px;">
               <status-icon class="mr-3" [status]="viewModel.model.status"></status-icon>
@@ -73,7 +73,7 @@
           <div footer>
             <div style="display: flex;align-items: center;margin-bottom: 15px;">
               <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" contentClass="mr-5"
-                (onClick)="openSolutionPanel(viewModel.model.title)" contentStyle="border-radius: 2px;font-size: 13px;">
+                (onClick)="openSolutionPanel(viewModel)" contentStyle="border-radius: 2px;font-size: 13px;">
                 View Solutions</fab-primary-button>
               <fab-link (onClick)="selectDetector(viewModel)">View details</fab-link>
             </div>

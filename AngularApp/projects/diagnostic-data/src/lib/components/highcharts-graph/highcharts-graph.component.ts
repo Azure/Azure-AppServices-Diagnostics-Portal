@@ -1,18 +1,14 @@
 import * as momentNs from 'moment';
-import { Component, Input, OnInit, HostListener, ElementRef, Output, EventEmitter, Pipe, PipeTransform } from '@angular/core';
+import { Component, Input, OnInit, HostListener, ElementRef, Output, EventEmitter } from '@angular/core';
 import { TimeSeriesType } from '../../models/detector';
 import HC_exporting from 'highcharts/modules/exporting';
 import AccessibilityModule from 'highcharts/modules/accessibility';
 import { DetectorControlService } from '../../services/detector-control.service';
-import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection, MetricType } from '../../models/time-series';
+import { HighChartTimeSeries } from '../../models/time-series';
+import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection } from '../../models/time-series';
 import { KeyValue } from '@angular/common';
 import { PointerEventObject } from 'highcharts';
 import { interval, Subscription } from 'rxjs';
-import { HighChartsHoverService } from '../../services/highcharts-hover.service';
-import highchartsDarkTheme from 'highcharts/themes/dark-unica';
-import highchartsHighContrastDarkTheme from 'highcharts/themes/high-contrast-dark';
-import highchartsHighContrastLightTheme from 'highcharts/themes/high-contrast-light';
-import { GenericThemeService } from '../../services/generic-theme.service';
 
 declare var require: any
 var Highcharts = require('highcharts'),
@@ -30,8 +26,7 @@ const moment = momentNs;
 export class HighchartsGraphComponent implements OnInit {
     Highcharts: typeof Highcharts = Highcharts;
     options: any;
-    MetricType = MetricType;
-    backgroundColor = "white";
+
 
     @Input() HighchartData: any = [];
 
@@ -45,9 +40,6 @@ export class HighchartsGraphComponent implements OnInit {
 
     @Input() endTime: momentNs.Moment;
 
-    @Input() metricType: MetricType;
-
-    @Input() originalDataPoints: { [key: string]: number[] }
     private _xAxisPlotBands: xAxisPlotBand[] = null;
     @Input() public set xAxisPlotBands(value: xAxisPlotBand[]) {
         this._xAxisPlotBands = [];
@@ -61,9 +53,6 @@ export class HighchartsGraphComponent implements OnInit {
         return this._xAxisPlotBands;
     }
 
-    public currentTheme: string = "light";
-
-    public hoverData: { name: string, value: number, color: string, isSelect: boolean, defaultValue: number }[] = [];
     public static chartProperties: { [chartContainerId: string]: KeyValue<string, any>[] } = {};
     public static getChartProperty(propertyName: string, chartContainerId: string): any {
         if (chartContainerId != '') {
@@ -216,7 +205,7 @@ export class HighchartsGraphComponent implements OnInit {
 
     private getCurrentChartContainerId(): string {
         if (this.el.nativeElement.getElementsByClassName('highcharts-container') && this.el.nativeElement.getElementsByClassName('highcharts-container').length > 0) {
-            return this.el.nativeElement.getElementsByClassName('highcharts-container')[0].id;
+            return this.el.nativeElement.getElementsByClassName('highcharts-container')[0].id;;
         }
         else {
             return '';
@@ -239,117 +228,113 @@ export class HighchartsGraphComponent implements OnInit {
         return null;
     }
 
-    highchartCallback(): Highcharts.ChartLoadCallbackFunction {
-        let _this = this;
-        return function (e) {
-            var chart: any = this;
-            chart.customNamespace = {};
-            // chart.customNamespace["toggleSelectionButton"] = chart.renderer.button(
-            //     "None", null, -10, function () {
-            //         var series = chart.series;
-            //         var statusToSet = this.text && this.text.textStr && this.text.textStr === "All" ? true : false;
-            //         for (var i = 0; i < series.length; i++) {
-            //             series[i].setVisible(statusToSet, false);
-            //         }
-            //         _this.hoverData.forEach(d => d.isSelect = statusToSet);
-            //         statusToSet = !statusToSet;
-            //         var textStr = statusToSet ? "All" : "None";
-            //         var ariaLabel = statusToSet ? "Select all the series" : "Deselect all the series";
-            //         this.attr({
-            //             role: 'button',
-            //             text: textStr,
-            //             "aria-label": ariaLabel,
-            //         });
-            //     }, {
-            //     fill: 'none',
-            //     stroke: 'none',
-            //     'stroke-width': 0,
-            //     style: {
-            //         color: '#015cda'
-            //     }
-            // }, {
-            //     fill: 'grey',
-            //     stroke: 'none',
-            //     'stroke-width': 0,
-            //     style: {
-            //         color: '#015cda'
-            //     }
-            // }, null, null, null, true).add();
-
-            var namespace = chart.customNamespace || {};
-            if (namespace["toggleSelectionButton"]) {
-                namespace["toggleSelectionButton"].attr({
+    highchartCallback: Highcharts.ChartLoadCallbackFunction = function () {
+        var chart: any = this;
+        chart.customNamespace = {};
+        chart.customNamespace["toggleSelectionButton"] = chart.renderer.button(
+            "None", null, -10, function () {
+                var series = chart.series;
+                var statusToSet = this.text && this.text.textStr && this.text.textStr === "All" ? true : false;
+                for (var i = 0; i < series.length; i++) {
+                    series[i].setVisible(statusToSet, false);
+                }
+                statusToSet = !statusToSet;
+                var textStr = statusToSet ? "All" : "None";
+                var ariaLabel = statusToSet ? "Select all the series" : "Deselect all the series";
+                this.attr({
                     role: 'button',
-                    tabindex: -1,
-                    x: chart.container.offsetWidth - 20,
-                    // r: 0,
-                    "aria-label": "Deselect all the series",
+                    text: textStr,
+                    "aria-label": ariaLabel,
                 });
+            }, {
+            fill: 'none',
+            stroke: 'none',
+            'stroke-width': 0,
+            style: {
+                color: '#015cda'
             }
-            var ToggleSelectionButton = function toggleSelectionButton(chart) {
-                this.initBase(chart);
-            };
+        }, {
+            fill: 'grey',
+            stroke: 'none',
+            'stroke-width': 0,
+            style: {
+                color: '#015cda'
+            }
+        }, null, null, null, true).add();
 
-            ToggleSelectionButton.prototype = new Highcharts.AccessibilityComponent();
-            Highcharts.extend(ToggleSelectionButton.prototype, {
-                // Define keyboard navigation for this component
-                getKeyboardNavigation: function () {
-                    var keys = this.keyCodes,
-                        chart = this.chart,
-                        namespace = chart.customNamespace || {},
-                        component = this;
+        var namespace = chart.customNamespace || {};
+        if (namespace["toggleSelectionButton"]) {
+            namespace["toggleSelectionButton"].attr({
+                role: 'button',
+                tabindex: -1,
+                x: chart.plotWidth - 20,
+                "aria-label": "Deselect all the series",
+            });
+        }
 
-                    return new Highcharts.KeyboardNavigationHandler(chart, {
-                        keyCodeMap: [
-                            // On arrow/tab we just move to the next chart element.
-                            [[
-                                keys.tab, keys.up, keys.down, keys.left, keys.right
-                            ], function (keyCode, e) {
-                                return this.response[
-                                    keyCode === this.tab && e.shiftKey ||
-                                        keyCode === keys.left || keyCode === keys.up ?
-                                        'prev' : 'next'
-                                ];
-                            }],
+        var ToggleSelectionButton = function toggleSelectionButton(chart) {
+            this.initBase(chart);
+        };
 
-                            // Space/enter means we click the button
-                            [[
-                                keys.space, keys.enter
-                            ], function () {
-                                // Fake a click event on the button element
-                                var buttonElement = namespace["toggleSelectionButton"] &&
-                                    namespace["toggleSelectionButton"].element;
-                                if (buttonElement) {
-                                    component.fakeClickEvent(buttonElement);
-                                }
-                                return this.response.success;
-                            }]
-                        ],
+        ToggleSelectionButton.prototype = new Highcharts.AccessibilityComponent();
+        Highcharts.extend(ToggleSelectionButton.prototype, {
+            // Define keyboard navigation for this component
+            getKeyboardNavigation: function () {
+                var keys = this.keyCodes,
+                    chart = this.chart,
+                    namespace = chart.customNamespace || {},
+                    component = this;
 
-                        // Focus button initially
-                        init: function () {
+                return new Highcharts.KeyboardNavigationHandler(chart, {
+                    keyCodeMap: [
+                        // On arrow/tab we just move to the next chart element.
+                        [[
+                            keys.tab, keys.up, keys.down, keys.left, keys.right
+                        ], function (keyCode, e) {
+                            return this.response[
+                                keyCode === this.tab && e.shiftKey ||
+                                    keyCode === keys.left || keyCode === keys.up ?
+                                    'prev' : 'next'
+                            ];
+                        }],
+
+                        // Space/enter means we click the button
+                        [[
+                            keys.space, keys.enter
+                        ], function () {
+                            // Fake a click event on the button element
                             var buttonElement = namespace["toggleSelectionButton"] &&
                                 namespace["toggleSelectionButton"].element;
-                            if (buttonElement && buttonElement.focus) {
-                                buttonElement.focus();
+                            if (buttonElement) {
+                                component.fakeClickEvent(buttonElement);
                             }
-                        }
-                    });
-                }
-            });
+                            return this.response.success;
+                        }]
+                    ],
 
-            chart.update({
-                accessibility: {
-                    customComponents: {
-                        toggleSelectionButton: new ToggleSelectionButton(chart),
-                    },
-                    keyboardNavigation: {
-                        order: ["legend", "series", "zoom", "rangeSelector", "toggleSelectionButton"],
+                    // Focus button initially
+                    init: function () {
+                        var buttonElement = namespace["toggleSelectionButton"] &&
+                            namespace["toggleSelectionButton"].element;
+                        if (buttonElement && buttonElement.focus) {
+                            buttonElement.focus();
+                        }
                     }
+                });
+            }
+        });
+
+        chart.update({
+            accessibility: {
+                customComponents: {
+                    toggleSelectionButton: new ToggleSelectionButton(chart),
+                },
+                keyboardNavigation: {
+                    order: ["legend", "series", "zoom", "rangeSelector", "toggleSelectionButton"],
                 }
-            });
-        };
-    }
+            }
+        });
+    };
 
     private customChartSelectionCallbackFunction: Highcharts.ChartSelectionCallbackFunction = (event: Highcharts.ChartSelectionContextObject) => {
         if (this._zoomBehavior & zoomBehaviors.FireXAxisSelectionEvent) {
@@ -458,7 +443,7 @@ export class HighchartsGraphComponent implements OnInit {
 
     @HostListener('mousemove', ['$event'])
     onMouseMove(ev: MouseEvent) {
-        this.syncCharts();
+        this.syncCharts(ev);
     }
 
     @HostListener('keydown', ['$event'])
@@ -482,110 +467,40 @@ export class HighchartsGraphComponent implements OnInit {
         }
     }
 
-    constructor(private el: ElementRef<HTMLElement>, private highChartsHoverService: HighChartsHoverService, private themeService: GenericThemeService) {
-        // Update highchart theme based on ibiza theme attributes
-        this.themeService.currentThemeSub.subscribe((theme) => {
-            this.updateHighChartTheme(theme);
-        })
-    }
-
-    private updateHighChartTheme(theme: string) {
-        if (!!theme && !!this.themeService && this.currentTheme && theme.toLocaleLowerCase() !== this.currentTheme) {
-            this.currentTheme = theme.toLocaleLowerCase();
-            switch (this.currentTheme) {
-                case 'dark':
-                    highchartsDarkTheme(Highcharts);
-                    break;
-                case 'high-contrast-light':
-                    highchartsHighContrastLightTheme(Highcharts);
-                    break;
-                case 'high-contrast-dark':
-                    highchartsHighContrastDarkTheme(Highcharts);
-                    break;
-                default:
-                    Highcharts.setOptions(Highcharts.getOptions());
-                    break;
-            }
-        }
+    constructor(private detectorControlService: DetectorControlService, private el: ElementRef<HTMLElement>) {
     }
 
     ngOnInit() {
-        this.backgroundColor = this.themeService.getPropertyValue("--bodyBackground");
-        this.initializeChart();
-    }
-
-    private initializeChart() {
         this._setOptions();
         this._updateOptions();
 
         setTimeout(() => {
             this.loading = false;
         }, 100);
-
-        setTimeout(() => {
-            const currentCharts = this.el.nativeElement.getElementsByClassName('highcharts-container') ? this.el.nativeElement.getElementsByClassName('highcharts-container') : null;
-            const currentChartId = currentCharts && currentCharts[0] && currentCharts[0].id ? currentCharts[0].id : "";
-
-            const chart = <Highcharts.Chart>Highcharts.charts.find(c => c && c.container.id === currentChartId);
-            if (!chart) return;
-
-            chart.series.forEach(series => {
-                const name = series.name;
-                const defaultValue = this.originalDataPoints[name] ? this.getMetricsDefaultValue(this.originalDataPoints[name]) : 0;
-                this.hoverData.push({
-                    name: series.name,
-                    //Workaround,no color property in highchart ts definition
-                    color: (<any>series).color,
-                    value: defaultValue,
-                    defaultValue: defaultValue,
-                    isSelect: true
-                });
-            });
-
-            this.highChartsHoverService.hoverXAxisValue.subscribe(data => {
-                this.updateMetric(data);
-            });
-
-        }, 300);
     }
 
-    private syncCharts() {
+    private syncCharts(ev: MouseEvent) {
         let xAxisValue: number;
+
         let currentCharts = this.el.nativeElement.getElementsByClassName('highcharts-container');
         if (!currentCharts || !currentCharts[0]) {
             return;
         }
         let currentId = currentCharts[0].id;
+
+        // Find out which is the current chart object
         for (let i = 0; i < Highcharts.charts.length; i++) {
-            let chart = <Highcharts.Chart>Highcharts.charts[i];
+            let chart = Highcharts.charts[i];
             if (chart) {
                 if (currentId === chart.container.id) {
-                    if (chart.hoverPoint && chart.hoverPoint.category) {
-                        xAxisValue = Number.parseFloat(chart.hoverPoint.category);
-                    }
-                    chart.xAxis[0].crosshair = false;
-                    this.highChartsHoverService.hoverXAxisValue.next(xAxisValue);
+                    //Add width of side-nav in Diag&Solve so cursor will align with vertical line
+                    const sideNav = <HTMLElement>document.getElementById('sidebar');
+                    let sideNavWidth = sideNav ? sideNav.offsetWidth : 0;
+                    let bbLeft = this.el.nativeElement.offsetLeft + chart.plotLeft + sideNavWidth;
 
-                    let yAxisValue: number = null;
-                    if (chart.hoverPoint && chart.hoverPoint.options) {
-                        yAxisValue = chart.hoverPoint.options.y;
-                    }
-                    if (xAxisValue != undefined && xAxisValue != null && yAxisValue !== null) {
-                        this.hoverData.forEach(h => { if (h) h.isSelect = false });
-                        //Find all series with same xAxisValue, its yAxisValue is close(<5% diff), then set metric to select
-                        chart.series.forEach((s, index) => {
-                            const points = s.data;
-                            const point = points.find(p => p.options.x === xAxisValue);
-                            // if(point && ((point.y - yAxisValue)/yAxisValue < 0.01 || (point.y === 0 && yAxisValue === 0))){
-                            //     this.hoverData[index].isSelect = true;
-                            // }else {
-                            //     this.hoverData[index].isSelect = false;
-                            // }
-                            if (this.hoverData[index]) {
-                                this.hoverData[index].isSelect = point && point.y === yAxisValue;
-                            }
-                        });
-                    }
+                    // Get the timestamp value where mouse is hovering
+                    xAxisValue = chart.xAxis[0].toValue(ev.pageX - bbLeft, true);
+                    chart.xAxis[0].crosshair = false;
                     break;
                 }
             }
@@ -605,32 +520,6 @@ export class HighchartsGraphComponent implements OnInit {
                 });
             }
         }
-    }
-
-    private renderTooltipCallback: Highcharts.TooltipFormatterCallbackFunction = function (tooltip) {
-        const formattedDate = moment.utc(this.x).format("MMM DD h:mm A[ UTC]");
-        return formattedDate;
-    }
-
-    private updateMetric(xAxisValue: number) {
-        if (this.metricType === MetricType.None) return;
-        //Mouse hover to outside of graph
-        if (xAxisValue === undefined || xAxisValue === null) {
-            this.hoverData.forEach(data => {
-                data.value = data.defaultValue;
-            });
-            return;
-        }
-        const chart: any = this.getCurrentChart();
-        if (!chart) return;
-        const xAxisIndex = chart.series[0].xData.findIndex(item => item === xAxisValue);
-        if (xAxisIndex < 0) return;
-        this.hoverData.forEach((data, legendIndex) => {
-            if (chart.series[legendIndex] && chart.series[legendIndex].data[xAxisIndex] && chart.series[legendIndex].data[xAxisIndex].y) {
-                const value = chart.series[legendIndex].data[xAxisIndex].y
-                data.value = value;
-            }
-        });
     }
 
     private _updateOptions() {
@@ -699,10 +588,6 @@ export class HighchartsGraphComponent implements OnInit {
         if (this.startTime && this.endTime) {
             this.options.forceX = [this.startTime, this.endTime];
         }
-
-        if (this.metricType !== MetricType.None) {
-            this.options.tooltip.formatter = this.renderTooltipCallback
-        }
     }
 
     private _updateObject(obj: Object, replacement: any): Object {
@@ -735,7 +620,6 @@ export class HighchartsGraphComponent implements OnInit {
             credits: {
                 enabled: false
             },
-            colors: ["#0078D4", "#EF6950", "#00188F", "#00A2AD", "#4B003F", "#E3008C", "#022F22", "#917EDB", "#001D3F", "#502006"],
             accessibility: {
                 enabled: true,
                 describeSingleSeries: true,
@@ -787,18 +671,17 @@ export class HighchartsGraphComponent implements OnInit {
                 },
                 events: {
                     selection: this.customChartSelectionCallbackFunction,
-                    load: this.highchartCallback(),
+                    load: this.highchartCallback,
                     render: function () {
-                        // var chart: any = this;
-                        // chart.customNamespace["toggleSelectionButton"].attr({
-                        //     x: this.plotWidth - 20,
-                        //     // x:0
-                        // });
-                    },
+                        var chart: any = this;
+                        chart.customNamespace["toggleSelectionButton"].attr({
+                            x: this.plotWidth - 20,
+                        });
+                    }
                 },
             },
             legend: {
-                enabled: this.metricType === MetricType.None,
+                enabled: true,
                 align: 'center',
                 layout: 'horizontal',
                 verticalAlign: 'bottom',
@@ -831,7 +714,7 @@ export class HighchartsGraphComponent implements OnInit {
                 valueDecimals: 2,
                 useHTML: true,
                 outside: true,
-                backgroundColor: this.backgroundColor,
+                backgroundColor: "white",
             },
             navigation: {
                 buttonOptions: {
@@ -866,7 +749,7 @@ export class HighchartsGraphComponent implements OnInit {
                 buttons: {
                     contextButton: {
                         enabled: false,
-                    },
+                    }
                 },
 
             },
@@ -927,52 +810,7 @@ export class HighchartsGraphComponent implements OnInit {
             series: this.HighchartData
         } as Highcharts.Options
     }
-
-    selectMetric(index: number) {
-        const chart = this.getCurrentChart();
-        chart.series.forEach((s, i) => {
-            s.setVisible(i === index, false);
-        });
-
-        this.hoverData.forEach((d, i) => {
-            d.isSelect = i === index;
-        });
-    }
-
-    leaveMetric() {
-        const chart = this.getCurrentChart();
-        chart.series.forEach(s => s.setVisible(true, false));
-        this.hoverData.forEach(h => h.isSelect = true);
-    }
-
-    private getMetricsDefaultValue(data: number[]): number {
-        switch (this.metricType) {
-            case MetricType.Avg:
-                const sum = data.reduce((a, b) => a + b, 0);
-                return sum / data.length;
-            case MetricType.Min:
-                return Math.min(...data);
-            case MetricType.Max:
-                return Math.max(...data);
-            case MetricType.Sum:
-                return data.reduce((a, b) => a + b, 0);
-
-            case MetricType.None:
-            default:
-                return null;
-        }
-    }
 }
-
-@Pipe({ name: "chartMetricPipe" })
-export class ChartMetricPipe implements PipeTransform {
-    transform(num: number): string {
-        const decimalLength = 0;
-        const n = Math.floor(num * Math.pow(10, decimalLength)) / Math.pow(10, decimalLength);
-        return `${n.toFixed(decimalLength)}`;
-    }
-}
-
 
 export interface GraphPoint {
     x: momentNs.Moment;
