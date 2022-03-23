@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { OwlDateTimeModule, OwlNativeDateTimeModule, OWL_DATE_TIME_FORMATS } from 'ng-pick-datetime';
 import { OwlMomentDateTimeModule } from 'ng-pick-datetime-moment';
 import { CUSTOM_MOMENT_FORMATS } from '../../shared/models/datetime';
-import { FabDialogModule, FabButtonModule, FabTextFieldModule, FabCalloutModule, FabChoiceGroupModule, FabIconModule, FabDropdownModule } from '@angular-react/fabric';
+import { FabDialogModule, FabButtonModule, FabTextFieldModule, FabCalloutModule, FabChoiceGroupModule, FabIconModule, FabDropdownModule, FabPanelModule} from '@angular-react/fabric';
 import { DiagnosticDataModule } from 'diagnostic-data';
 import { SharedModule } from '../../shared/shared.module';
 
@@ -26,18 +26,19 @@ export const MainModuleRoutes : ModuleWithProviders = RouterModule.forChild([
     OwlNativeDateTimeModule,
     OwlMomentDateTimeModule ,
     SharedModule,
-    FabButtonModule, 
+    FabButtonModule,
     FabDialogModule,
     FabTextFieldModule,
     FabCalloutModule,
     FabChoiceGroupModule,
     FabIconModule,
     FabDropdownModule,
+    FabPanelModule,
     DiagnosticDataModule,
     SharedModule
   ],
   providers: [{
-    provide: OWL_DATE_TIME_FORMATS, 
+    provide: OWL_DATE_TIME_FORMATS,
     useValue: CUSTOM_MOMENT_FORMATS
   }],
   declarations: [MainComponent]

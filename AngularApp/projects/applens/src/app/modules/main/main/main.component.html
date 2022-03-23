@@ -15,10 +15,13 @@
           </label>
           <div id="landing-page-service-type">
             <fab-dropdown [options]="fabDropdownOptions" [defaultSelectedKey]="defaultResourceTypes[0].displayName"
-              (onChange)="selectDropdownKey($event)" [styles]="fabDropdownStyles" [ariaLabel]="'Service Type'"></fab-dropdown>
+              (onChange)="selectDropdownKey($event)" [styles]="fabDropdownStyles" [ariaLabel]="'Service Type'">
+            </fab-dropdown>
           </div>
         </div>
-        <div class="section">
+        <div class="view-resource-link"><a tabindex="0" (click)="openResourcePanel()">View all supported resource
+            types</a></div>
+        <div class="section" style="margin-top: 15px;">
           <label for="landing-page-resource">
             {{selectedResourceType.resourceTypeLabel}} <span class="required">*</span>
           </label>
@@ -101,3 +104,35 @@
 <ng-template #noRecentResource>
   <tr>No Recent Resource</tr>
 </ng-template>
+
+
+<fab-panel [isOpen]="openResourceTypePanel == true" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
+  [styles]="panelStyles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
+  (onDismiss)="dismissedHandler()">
+  <div>
+    <div class="resource-content-container">
+      <div>
+        <div style="margin-bottom: 10px">
+          <div
+            style="position: absolute; left:25px; right: 32px; top:0px; height: 32px; font-family: 'segoe UI'; font-size: 20px; line-height: 24px; font-weight: 630;display: flex; align-items: flex-end"
+            tabindex="0" aria-label="Suppored resource types">
+            Supported Resource Types</div>
+        </div>
+        <div class="resource-content" style="margin-left:20px;font-size:16px">
+          <div>
+            <b>Resource Types:</b>
+          </div>
+          <div>
+            {{defaultResourcesStr}}&nbsp;
+          </div>
+          <div style="margin-top: 10px;">
+            <b>Other Arm Resource Types:</b>
+          </div>
+          <div>
+            {{armResourcesStr}}&nbsp;
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</fab-panel>

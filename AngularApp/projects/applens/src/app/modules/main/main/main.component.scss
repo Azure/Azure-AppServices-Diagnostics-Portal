@@ -62,7 +62,7 @@
 }
 
 .time-picker {
-    border: 1px solid rgb(166,166,166); 
+    border: 1px solid rgb(166,166,166);
     min-width: 300px;
     display: flex;
     justify-content: space-between;
@@ -106,4 +106,9 @@
 
 .recent-resource:hover {
     cursor: pointer;
+}
+
+.view-resource-link {
+    margin-left: 300px;
+    margin-top: 5px;
 }

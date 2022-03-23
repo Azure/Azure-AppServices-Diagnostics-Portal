@@ -5,7 +5,7 @@ import {
   ResourceServiceInputs, ResourceType, ResourceTypeState, ResourceServiceInputsJsonResponse
 } from '../../../shared/models/resources';
 import { HttpClient } from '@angular/common/http';
-import { DropdownMenuItemType, IDropdownOption, IDropdownProps } from 'office-ui-fabric-react';
+import { DropdownMenuItemType, IDropdownOption, IDropdownProps, PanelType } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
 import { DataTableResponseObject, DetectorControlService, HealthStatus } from 'diagnostic-data';
 import { AdalService } from 'adal-angular4';
@@ -25,6 +25,18 @@ export class MainComponent implements OnInit {
   showCaseCleansingOption = false;
   selectedResourceType: ResourceTypeState;
   resourceName: string;
+  openResourceTypePanel: boolean = false;
+  defaultResourcesStr: string="";
+  armResourcesStr: string="";
+  resourceTypeList: any = [];
+  type: PanelType = PanelType.custom;
+  width: string = "850px";
+  panelStyles: any = {
+    root: {
+      marginTop: '50px',
+    }
+  }
+
   defaultResourceTypes: ResourceTypeState[] = [
     {
       resourceType: null,
@@ -130,64 +142,51 @@ export class MainComponent implements OnInit {
       });
     });
 
+     this.defaultResourcesStr = "App Service, App Service Environment, Virtual Machine, Container App";
+
     // TODO: Use this to restrict access to routes that don't match a supported resource type
     this._http.get<ResourceServiceInputsJsonResponse>('assets/enabledResourceTypes.json').subscribe(jsonResponse => {
       this.enabledResourceTypes = <ResourceServiceInputs[]>jsonResponse.enabledResourceTypes;
-      // this.enabledResourceTypes.forEach(type => {
-      //   const searchSuffix = type.searchSuffix;
-      //   if (searchSuffix && searchSuffix.length > 0 && !this.resourceTypes.find(resource => resource.displayName && searchSuffix && resource.displayName.toLowerCase() === searchSuffix.toLowerCase())) {
-      //     this.resourceTypes.push({
-      //       resourceType: null,
-      //       resourceTypeLabel: 'ARM resource ID',
-      //       routeName: (name) => `${name}`,
-      //       displayName: `${searchSuffix}`,
-      //       enabled: true,
-      //       caseId: false
-      //     });
-      //   }
-      // });
-      //this.fabDropdownOptions.push(
-      //  { key: 'divider_1', text: '-', itemType: DropdownMenuItemType.Divider },
-      //  { key: 'Provide ARM Id', text: 'Provide ARM Id', itemType: DropdownMenuItemType.Header }
-      //);
+      this.enabledResourceTypes.forEach(type => {
+        const searchSuffix = type.searchSuffix;
+        if (searchSuffix && searchSuffix.length > 0 && !this.resourceTypes.find(resource => resource.displayName && searchSuffix && resource.displayName.toLowerCase() === searchSuffix.toLowerCase())) {
+          this.resourceTypes.push({
+            resourceType: null,
+            resourceTypeLabel: 'ARM resource ID',
+            routeName: (name) => `${name}`,
+            displayName: `${searchSuffix}`,
+            enabled: true,
+            caseId: false
+          });
+        }
+      });
 
-      //const list = this.enabledResourceTypes.filter(type => this.defaultResourceTypes.findIndex(defaultResource => defaultResource.displayName === type.displayName) === -1);
+      const list = this.enabledResourceTypes.filter(type => this.defaultResourceTypes.findIndex(defaultResource => defaultResource.displayName === type.displayName) === -1);
 
-      // list.sort((a,b) => {
-      //   return a.displayName.localeCompare(b.displayName);
-      // })
+      list.sort((a,b) => {
+        return a.displayName.localeCompare(b.displayName);
+      })
 
-      // list.forEach(resource => {
-      //   this.resourceTypes.push({
-      //     resourceType: resource.resourceType,
-      //     resourceTypeLabel: 'ARM resource ID',
-      //     routeName: (name) => `${name}`,
-      //     displayName: `${resource.displayName}`,
-      //     enabled: true,
-      //     caseId: false
-      //   });
+      list.forEach(resource => {
+        this.resourceTypes.push({
+          resourceType: resource.resourceType,
+          resourceTypeLabel: 'ARM resource ID',
+          routeName: (name) => `${name}`,
+          displayName: `${resource.displayName}`,
+          enabled: true,
+          caseId: false
+        });
 
-      //   this.fabDropdownOptions.push(
-      //     {
-      //       key: resource.displayName,
-      //       text: resource.displayName,
-      //       ariaLabel: resource.displayName
-      //     }
-      //   )
-      // });
+        this.resourceTypeList.push(
+          {
+            key: resource.displayName,
+            text: resource.displayName,
+            ariaLabel: resource.displayName
+          }
+        )
+      });
 
-
-
-
-
-      // this.resourceTypes.forEach(resource => {
-      //   const displayName = resource.displayName;
-      //   this.fabDropdownOptions.push({
-      //     key: displayName,
-      //     text: displayName,
-      //     ariaLabel: displayName
-      //   });
-      // });
+      this.armResourcesStr = list.map(resource => resource.displayName).join(", ");
 
       this._userInfoService.getRecentResources().subscribe(userInfo => {
         if (userInfo && userInfo.resources) {
@@ -205,6 +204,15 @@ export class MainComponent implements OnInit {
     this.userGivenName = this._adalService.userInfo.profile.given_name;
 
   }
+
+  openResourcePanel()
+  {
+      this.openResourceTypePanel = true;
+  }
+
+  dismissedHandler() {
+    this.openResourceTypePanel = false;
+ }
 
   selectResourceType(type: ResourceTypeState) {
     if (type.enabled) {
@@ -261,7 +269,7 @@ export class MainComponent implements OnInit {
 
     //If it is ARM resource id
     //if (this.defaultResourceTypes.findIndex(resource => this.selectedResourceType.displayName === resource.displayName) === -1) {
-    if (this.selectedResourceType.displayName === "ARM Resource ID") {  
+    if (this.selectedResourceType.displayName === "ARM Resource ID") {
       this.resourceName = this.normalizeArmUriForRoute(this.resourceName, this.enabledResourceTypes);
     } else {
       this.errorMessage = "";
@@ -273,7 +281,7 @@ export class MainComponent implements OnInit {
       window.location.href = `https://azuresupportcenter.msftcloudes.com/caseoverview?srId=${this.resourceName}`;
     }
 
-    
+
     this._detectorControlService.setCustomStartEnd(this._detectorControlService.startTime,this._detectorControlService.endTime);
 
     let timeParams = {
@@ -302,6 +310,7 @@ export class MainComponent implements OnInit {
   openTimePicker() {
     this.openTimePickerSubject.next(true);
   }
+
 
   private generateDataTable(recentResources: RecentResource[]) {
 
