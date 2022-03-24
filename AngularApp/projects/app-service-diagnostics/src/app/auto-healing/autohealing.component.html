@@ -126,8 +126,8 @@
 
           <div class="header2">3. Override when Action executes (Optional)</div>
           <div class="autohealtile-content">
-            <div class="autohealtile" tabindex="0" [class.activeAction]="minProcessExecutionTime > 0" role="radio"
-              [attr.aria-checked]="minProcessExecutionTime > 0"
+            <div class="autohealtile" tabindex="0" [class.activeAction]="minProcessExecutionTime > 0" role="button"
+              [attr.aria-pressed]="minProcessExecutionTimeExpanded"
               (click)="minProcessExecutionTimeExpanded = !minProcessExecutionTimeExpanded"
               (keyup.space)="minProcessExecutionTimeExpanded = !minProcessExecutionTimeExpanded"
               (keyup.enter)="minProcessExecutionTimeExpanded = !minProcessExecutionTimeExpanded">
