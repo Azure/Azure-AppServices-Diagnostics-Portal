@@ -119,17 +119,9 @@
             Supported Resource Types</div>
         </div>
         <div class="resource-content" style="margin-left:20px;font-size:16px">
-          <div>
-            <b>Resource Types:</b>
-          </div>
-          <div>
-            {{defaultResourcesStr}}&nbsp;
-          </div>
-          <div style="margin-top: 10px;">
-            <b>Other Arm Resource Types:</b>
-          </div>
-          <div>
-            {{armResourcesStr}}&nbsp;
+          <div *ngFor="let item of resourceTypeList">
+            <img [src]="item.imgSrc" style="height: 15px;width: 15px;" [alt]="item.type" class="mr-3" />
+            {{item.name}}&nbsp;
           </div>
         </div>
       </div>

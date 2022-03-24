@@ -26,8 +26,6 @@ export class MainComponent implements OnInit {
   selectedResourceType: ResourceTypeState;
   resourceName: string;
   openResourceTypePanel: boolean = false;
-  defaultResourcesStr: string="";
-  armResourcesStr: string="";
   resourceTypeList: any = [];
   type: PanelType = PanelType.custom;
   width: string = "850px";
@@ -61,7 +59,7 @@ export class MainComponent implements OnInit {
       displayName: 'Container App',
       enabled: true,
       caseId: false
-    },    
+    },
     {
       resourceType: null,
       resourceTypeLabel: 'Virtual machine Id',
@@ -126,7 +124,14 @@ export class MainComponent implements OnInit {
       });
     });
 
-     this.defaultResourcesStr = "App Service, App Service Environment, Virtual Machine, Container App";
+    this.resourceTypeList = [
+        {name: "App", imgSrc: "assets/img/Azure-WebApps-Logo.png"},
+        {name: "Linux App", imgSrc: "assets/img/Azure-Tux-Logo.png"},
+        {name: "Function App", imgSrc: "assets/img/Azure-Functions-Logo.png"},
+        {name: "Logic App", imgSrc: "assets/img/Azure-LogicAppsPreview-Logo.svg"},
+        {name: "App Service Environment",  imgSrc: "assets/img/ASE-Logo.jpg"},
+        {name: "Virtual Machine", imgSrc: "assets/img/Icon-compute-21-Virtual-Machine.svg"},
+        {name:  "Container App", imgSrc: "assets/img/Azure-ContainerApp-Logo.png"}];
 
     // TODO: Use this to restrict access to routes that don't match a supported resource type
     this._http.get<ResourceServiceInputsJsonResponse>('assets/enabledResourceTypes.json').subscribe(jsonResponse => {
@@ -161,16 +166,11 @@ export class MainComponent implements OnInit {
           caseId: false
         });
 
-        this.resourceTypeList.push(
-          {
-            key: resource.displayName,
-            text: resource.displayName,
-            ariaLabel: resource.displayName
-          }
-        )
+        if (this.resourceTypeList.findIndex(item => item.name.toLowerCase() === resource.displayName.toLowerCase()) < 0)
+        {
+            this.resourceTypeList.push({name: resource.displayName, imgSrc: resource? resource.imgSrc: ""})
+        }
       });
-
-      this.armResourcesStr = list.map(resource => resource.displayName).join(", ");
 
       this._userInfoService.getRecentResources().subscribe(userInfo => {
         if (userInfo && userInfo.resources) {
