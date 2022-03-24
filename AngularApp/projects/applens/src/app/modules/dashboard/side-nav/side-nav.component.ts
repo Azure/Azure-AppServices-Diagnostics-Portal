@@ -247,8 +247,6 @@ export class SideNavComponent implements OnInit {
         if (error && error.status === 404) {
         }
       });
-
-      console.log("Categories after gists", this.categories);
   }
 
   doesMatchCurrentRoute(expectedRoute: string) {

@@ -223,10 +223,6 @@ export class DetectorViewComponent implements OnInit {
     this.detectorControlService.timePickerStrSub.subscribe(s => {
       this.timePickerButtonStr = s;
     });
-
-    this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
-      console.log(event);
-    });
   }
 
   protected loadDetector() {
