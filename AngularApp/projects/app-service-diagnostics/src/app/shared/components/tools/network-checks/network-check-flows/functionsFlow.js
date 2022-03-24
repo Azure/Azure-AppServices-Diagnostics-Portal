@@ -513,44 +513,20 @@ async function validateConnection(propertyName, connectionString, type, diagProv
         switch (checkConnectionStringResult.StatusText)
         {
             case "MalformedConnectionString":
-                title = `Invalid connection string`;
-                detailsMarkdown = `The connection string configured is invalid (e.g. missing some required elements). Please check the value configured in the app setting "${propertyName}".`;
-                break;
-            case "EmptyConnectionString":
-                title = `The app setting "${propertyName}" was not found or is set to a blank value`
-                break;
+            case "EmptyConnectionString":                
             case "DnsLookupFailed":
-                title = "Resource not found";
-                detailsMarkdown = `The ${service} resource specified in the connection string was not found.  Please check the value of the setting.`;
-                break;
             case "AuthFailure":
-                title = "Authentication failure";
-                detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
-                break;
             case "ManagedIdentityCredentialInvalid":
-                title = `The app setting ${propertyName}__credential was not set to "managedidentity" <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
-                break;
-            case "ManagedIdentityClientIdEmpty":
-                title = `The app setting ${propertyName}__clientId was found empty <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
-                break;
-            case "FullyQualifiedNamespaceMissing":
-                title = `The app setting ${propertyName}__fullyQualifiedNamespace was not found or is set to a blank value <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
-                break;
-            case "ServiceUriMissing":
-                title = `The ${propertyName} ServiceUri setting  was not found or is set to a blank value <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#common-properties-for-identity-based-connections" target="_blank">Click here to know more</a>`;
-                break;
+            case "ManagedIdentityClientIdNullorEmpty":
             case "ManagedIdentityAuthFailure":
-                if(checkConnectionStringResult.IdentityType == "System"){
-                    title = "Authentication failure";
-                    detailsMarkdown = `The target service is not provided with access to the function app using system assigned identity. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>`;
-                }
-                else{
-                    title = "Authentication failure";
-                    detailsMarkdown = `The target service is not provided with access to the user assigned identity which is configured for the function app. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>`;
-                }
-                break;            
+            case "FullyQualifiedNamespaceMissing":
+            case "ManagedIdentityConnectionFailed":
             case "ManagedIdentityNotConfigured":
-                title = 'Your app is not having managed identity configured for making a successful connection. <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#configure-an-identity-based-connection" target="_blank">Click here to know more</a>';
+            case "ServiceUriMissing":
+                title = checkConnectionStringResult.StatusSummary;
+                if(checkConnectionStringResult.StatusDetails != undefined){
+                detailsMarkdown = checkConnectionStringResult.StatusDetails;
+                }
                 break;
             case "Forbidden":
                 // Some authentication failures come through as Forbidden so check the exception data
