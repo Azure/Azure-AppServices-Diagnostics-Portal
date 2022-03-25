@@ -516,13 +516,10 @@ async function validateConnection(propertyName, connectionString, type, diagProv
             case "EmptyConnectionString":                
             case "DnsLookupFailed":
             case "AuthFailure":
-            case "ManagedIdentityCredentialInvalid":
-            case "ManagedIdentityClientIdNullorEmpty":
             case "ManagedIdentityAuthFailure":
             case "FullyQualifiedNamespaceMissing":
             case "ManagedIdentityConnectionFailed":
             case "ManagedIdentityNotConfigured":
-            case "ServiceUriMissing":
                 title = checkConnectionStringResult.StatusSummary;
                 if(checkConnectionStringResult.StatusDetails != undefined){
                 detailsMarkdown = checkConnectionStringResult.StatusDetails;
