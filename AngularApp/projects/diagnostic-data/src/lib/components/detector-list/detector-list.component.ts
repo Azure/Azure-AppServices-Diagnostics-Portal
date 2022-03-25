@@ -404,7 +404,8 @@ export class DetectorListComponent extends DataRenderBaseComponent {
               queryParams: this.queryParams,
               relativeTo: this._activatedRoute
             });
-          } else {
+          }
+           else {
             const resourceId = this._diagnosticService.resourceId;
             this._breadcrumbService.updateBreadCrumbSubject({
               name: this.detectorName,
@@ -439,10 +440,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           if (this.isPublic) {
             const url = this._router.url.split("?")[0];
             const routeUrl = url.endsWith("/overview") ? `../detectors/${targetDetector}` : `../../detectors/${targetDetector}`;
-            // this._router.navigate([routeUrl], {
-            //   queryParams: this.queryParams,
-            //   relativeTo: this._activatedRoute
-            // });
             let paramString = "";
             Object.keys(this.queryParams).forEach(x => {
               paramString = paramString === "" ? `${paramString}${x}=${this.queryParams[x]}` : `${paramString}&${x}=${this.queryParams[x]}`;
@@ -461,8 +458,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
               paramString = paramString === "" ? `${paramString}${x}=${this.queryParams[x]}` : `${paramString}&${x}=${this.queryParams[x]}`;
             });
             this.linkAddress = this.overrideResourceUri == "" ? `${resourceId}/detectors/${targetDetector}?${paramString}` : `${this.overrideResourceUri}/detectors/${targetDetector}?${paramString}`;
-            //this.parseResourceService.resourceService.getCurrentResourceId();
-            //this._router.navigate([`${resourceId}/detectors/${targetDetector}`], { queryParams: this.queryParams });
           }
         }
       }
