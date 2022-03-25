@@ -4,7 +4,7 @@ import { catchError } from 'rxjs/operators';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Pipe, PipeTransform, Inject, Optional } from '@angular/core';
 import {
-  DetectorListRendering, DetectorMetaData, DetectorResponse, DiagnosticData, HealthStatus
+  DetectorListRendering, DetectorMetaData, DetectorResponse, DetectorType, DiagnosticData, HealthStatus
 } from '../../models/detector';
 import { LoadingStatus } from '../../models/loading';
 import { StatusStyles } from '../../models/styles';
@@ -23,6 +23,7 @@ import { UriUtilities } from '../../utilities/uri-utilities';
 import { GenericBreadcrumbService } from '../../services/generic-breadcrumb.service';
 import { ILinkProps } from 'office-ui-fabric-react';
 import { ResourceService } from 'projects/applens/src/app/shared/services/resource.service';
+import { SolutionService } from '../../services/solution.service';
 
 
 
@@ -65,7 +66,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   solutionTitle: string = "";
   loading = LoadingStatus.Loading;
 
-  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService,
+  constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private _solutionService: SolutionService,
     private parseResourceService: ParseResourceService, private resourceService: ResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router,
     private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _breadcrumbService : GenericBreadcrumbService) {
     super(telemetryService);
@@ -203,6 +204,45 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     this.overrideResourceUri = this.renderingProperties.resourceUri;
 
     return true;
+  }
+
+  public openBladeDiagnoseDetectorId(viewModel, type: DetectorType = DetectorType.Detector) {
+    if (viewModel != null && viewModel.model.metadata.id) {
+      let detector = viewModel.model.metadata.id;
+      let category = "";
+
+      if (viewModel.model.metadata.category) {
+          category = viewModel.model.metadata.category.replace(/\s/g, '');
+      }
+      else {
+          // For uncategorized detectors:
+          // If it is home page, redirect to availability category. Otherwise stay in the current category page.
+          category = this._router.url.split('/')[11] ? this._router.url.split('/')[11] : "availabilityandperformance";
+      }
+
+    const bladeInfo = {
+        title: category,
+        detailBlade: 'SCIFrameBlade',
+        extension: 'WebsitesExtension',
+        detailBladeInputs: {
+            id: this.overrideResourceUri,
+            categoryId: category,
+            optionalParameters: [{
+                key: "categoryId",
+                value: category
+            },
+            {
+                key: "detectorId",
+                value: detector
+            },
+            {
+                key: "detectorType",
+                value: type
+            }]
+        }
+    };
+    this._solutionService.GoToBlade(this.overrideResourceUri, bladeInfo);
+    }
   }
 
 
@@ -354,7 +394,10 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         if (targetDetector === 'appchanges' && !this.isPublic) {
           this._portalActionService.openChangeAnalysisBlade(this._detectorControl.startTimeString, this._detectorControl.endTimeString);
         } else {
-          if (this.isPublic) {
+          if (this.isPublic && !(this.overrideResourceUri == "")){
+            this.openBladeDiagnoseDetectorId(viewModel);
+          }
+          else if (this.isPublic) {
             const url = this._router.url.split("?")[0];
             const routeUrl = url.endsWith("/overview") ? `../detectors/${targetDetector}` : `../../detectors/${targetDetector}`;
             this._router.navigate([routeUrl], {
