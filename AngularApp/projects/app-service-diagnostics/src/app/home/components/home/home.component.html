@@ -11,19 +11,7 @@
 </ng-container>
 
 
-<div *ngIf="useLegacy else newHomePage" class="home-container">
-  <div class="input-group input-group-lg search-input-group" (keyup.escape)="clearSearch()" role="search"
-    *ngIf="!isAKSOnNationalCloud">
-    <input tabindex="0" type="search" class="form-control" placeholder="{{searchPlaceHolder}}" [ngModel]="searchValue"
-      (ngModelChange)="updateSearchValue($event)" (focus)="onSearchBoxFocus(event)" (focusout)="onSearchLostFocus()"
-      aria-controls="search-results">
-    <div class="input-group-btn" id="clear-search">
-      <button class="btn btn-default" type="button" aria-label="Clear" title="Clear" tabindex="0"
-        (click)="clearSearch()" (focus)="onFocusClear()">
-        <i class="fa fa-close"></i>
-      </button>
-    </div>
-  </div>
+<div *ngIf="useStaticAksText else newHomePage" class="home-container">
   <div role="status">
     <p *ngIf="inputAriaLabel">{{inputAriaLabel}}</p>
   </div>
