@@ -77,7 +77,7 @@ export var functionsFlow = {
                     propertyName = "AzureWebJobsStorage__blobServiceUri";
                     failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#connecting-to-host-storage-with-an-identity-preview" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
                     connectionString = undefined;
-                    var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, ConnectionStringType.BlobStorageAccount, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown);
+                    var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, ConnectionStringType.BlobStorageAccount, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown,isDaasNew);
                     var maxCheckLevel = getMaxCheckLevel(subChecksL2);
                     var title = maxCheckLevel == 0 ? `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" was successful.` :
                     `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" failed.`;
@@ -87,7 +87,7 @@ export var functionsFlow = {
                     propertyName = "AzureWebJobsStorage__queueServiceUri";
                     failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference?tabs=blob#connecting-to-host-storage-with-an-identity-preview" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
                     connectionString = undefined;
-                    var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, ConnectionStringType.QueueStorageAccount, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown);
+                    var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, ConnectionStringType.QueueStorageAccount, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown,isDaasNew);
                     var maxCheckLevel = getMaxCheckLevel(subChecksL2);
                     var title = maxCheckLevel == 0 ? `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" was successful.` :
                     `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" failed.`;
@@ -104,7 +104,7 @@ export var functionsFlow = {
             }else{
                 var connectionStringType = isDaasExtAccessible ? ConnectionStringType.StorageAccount : undefined;
             }                
-                var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, connectionStringType, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown);
+                var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, connectionStringType, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown,isDaasNew);
                 var maxCheckLevel = getMaxCheckLevel(subChecksL2);
                 var title = maxCheckLevel == 0 ? `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" was successful.` :
                     `Network connectivity test to Azure storage endpoint configured in app setting "${propertyName}" failed.`;
@@ -119,7 +119,7 @@ export var functionsFlow = {
             }else{
                 var connectionStringType = isDaasExtAccessible ? ConnectionStringType.StorageAccount : undefined;
             }            
-                var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, connectionStringType, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown);
+                var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, connectionStringType, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown,isDaasNew);
                 var maxCheckLevel = getMaxCheckLevel(subChecksL2);
                 var title = maxCheckLevel == 0 ? `Network connectivity test to the Azure storage endpoint configured in app setting "${propertyName}" was successful.` :
                     `Network connectivity test to the Azure storage endpoint configured in app setting "${propertyName}" failed.  `
@@ -132,7 +132,7 @@ export var functionsFlow = {
             failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#website_run_from_package" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
             connectionString = appSettings[propertyName];
             if (connectionString != undefined && connectionString != "0" && connectionString != "1") {
-                var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, undefined, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown);
+                var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, undefined, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown,isDaasNew);
                 var maxCheckLevel = getMaxCheckLevel(subChecksL2);
                 var title = maxCheckLevel == 0 ? `Network connectivity test to the endpoint configured in app setting "${propertyName}" was successful.` :
                     `Network connectivity test to the endpoint configured in app setting "${propertyName}" failed.  `
@@ -144,7 +144,7 @@ export var functionsFlow = {
             failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#applicationinsights_connection_string" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
             connectionString = appSettings[propertyName];
             if (connectionString != undefined) {
-                var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, undefined, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown);
+                var subChecksL2 = await networkCheckConnectionString(propertyName, connectionString, undefined, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown,isDaasNew);
                 var maxCheckLevel = getMaxCheckLevel(subChecksL2);
                 var title = maxCheckLevel == 0 ? `Network connectivity test to the Application Insights endpoint was successful.` :
                     `Detected integration with Application insights but network connectivity test to Application Insights failed.`;
@@ -244,6 +244,7 @@ export var functionsFlow = {
                                                             diagProvider, 
                                                             isVnetIntegrated,
                                                             failureDetailsMarkdown,
+                                                            isDaasNew,
                                                             binding.entityName)).forEach(item => {
                                                                 item.title = `Binding "${binding.name}" - ` + item.title;
                                                                 subChecksL2.push(item);
@@ -297,7 +298,7 @@ function getMaxCheckLevel(subChecks) {
     return maxCheckLevel;
 }
 
-async function networkCheckConnectionString(propertyName, connectionString, connectionStringType = undefined, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown = undefined, entityName=undefined) {
+async function networkCheckConnectionString(propertyName, connectionString, connectionStringType = undefined, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown = undefined, isDaasNew=undefined, entityName=undefined) {
     var subChecks = [];
 
         if (connectionStringType == ConnectionStringType.StorageAccount ||
@@ -310,7 +311,7 @@ async function networkCheckConnectionString(propertyName, connectionString, conn
             /*
              * Full connection string validation via DaaS Extension
              */
-            var connectivityCheckResult = await validateConnection(propertyName, connectionString, connectionStringType, diagProvider, entityName);
+            var connectivityCheckResult = await validateConnection(propertyName, connectionString, connectionStringType, diagProvider, entityName,isDaasNew);
             var maxCheckLevel = getMaxCheckLevel(connectivityCheckResult);            
             var service;
             switch (connectionStringType) {
@@ -459,7 +460,7 @@ async function runConnectivityCheckAsync(hostname, port, dnsServers, diagProvide
     return subChecks;
 }
 
-async function validateConnection(propertyName, connectionString, type, diagProvider, entityName = undefined) {
+async function validateConnection(propertyName, connectionString, type, diagProvider, entityName = undefined,isDaasNew=undefined) {
     var checkConnectionStringResult;
     if(connectionString != undefined && !isDaasNew){
     checkConnectionStringResult = await diagProvider.checkConnectionStringAsync(connectionString, type).catch(e => {
@@ -513,9 +514,52 @@ async function validateConnection(propertyName, connectionString, type, diagProv
         switch (checkConnectionStringResult.StatusText)
         {
             case "MalformedConnectionString":
-            case "EmptyConnectionString":                
+                if(isDaasNew){
+                    title = checkConnectionStringResult.StatusSummary;
+                    if(checkConnectionStringResult.StatusDetails != undefined){
+                    detailsMarkdown = checkConnectionStringResult.StatusDetails;
+                    }  
+                }
+                else{
+                    title = `Invalid connection string`;
+                    detailsMarkdown = `The connection string configured is invalid (e.g. missing some required elements). Please check the value configured in the app setting "${propertyName}".`;
+                }
+                break;
+            case "EmptyConnectionString":
+                if(isDaasNew){
+                    title = checkConnectionStringResult.StatusSummary;
+                    if(checkConnectionStringResult.StatusDetails != undefined){
+                    detailsMarkdown = checkConnectionStringResult.StatusDetails;
+                    }  
+                }
+                else{
+                    title = `The app setting "${propertyName}" was not found or is set to a blank value` 
+                }
+                break;
             case "DnsLookupFailed":
+                if(isDaasNew){
+                    title = checkConnectionStringResult.StatusSummary;
+                    if(checkConnectionStringResult.StatusDetails != undefined){
+                    detailsMarkdown = checkConnectionStringResult.StatusDetails;
+                    }  
+                }
+                else{
+                    title = "Resource not found";
+                    detailsMarkdown = `The ${service} resource specified in the connection string was not found.  Please check the value of the setting.`;
+                }
+                break;
             case "AuthFailure":
+                if(isDaasNew){
+                    title = checkConnectionStringResult.StatusSummary;
+                    if(checkConnectionStringResult.StatusDetails != undefined){
+                    detailsMarkdown = checkConnectionStringResult.StatusDetails;
+                    }  
+                }
+                else{
+                    title = "Authentication failure";
+                    detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;  
+                }
+                break;
             case "ManagedIdentityAuthFailure":
             case "FullyQualifiedNamespaceMissing":
             case "ManagedIdentityConnectionFailed":
