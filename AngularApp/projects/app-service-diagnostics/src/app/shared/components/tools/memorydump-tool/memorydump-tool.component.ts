@@ -10,8 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class MemoryDumpToolComponent extends DaasBaseComponent implements OnInit {
 
-    multipleAntaresVersions: boolean = false;
-    allInstancesOnAnt98: boolean = false;
+    allLinuxInstancesOnAnt98: boolean = false;
 
     title: string = 'Collect a Memory dump';
     description: string = 'If your app is performing slow or not responding at all, you can collect a memory dump to identify the root cause of the issue.';
@@ -27,12 +26,8 @@ export class MemoryDumpToolComponent extends DaasBaseComponent implements OnInit
         private _activatedRoute: ActivatedRoute) {
         super(_siteServiceLocal, _webSiteServiceLocal);
 
-        if (_activatedRoute.snapshot.data.hasOwnProperty("multipleVersions")) {
-            this.multipleAntaresVersions = _activatedRoute.snapshot.data["multipleVersions"];
-        }
-
-        if (_activatedRoute.snapshot.data.hasOwnProperty("allInstancesOnAnt98")) {
-            this.allInstancesOnAnt98 = _activatedRoute.snapshot.data["allInstancesOnAnt98"];
+        if (_activatedRoute.snapshot.data.hasOwnProperty("allLinuxInstancesOnAnt98")) {
+            this.allLinuxInstancesOnAnt98 = _activatedRoute.snapshot.data["allLinuxInstancesOnAnt98"];
         }
     }
 

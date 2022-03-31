@@ -67,12 +67,12 @@
 
 <div class="col" *ngIf="checkingDaasWebJobStatus">
   <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-  Checking if DaaS Webjob is running...
+  Checking if DaaS Web job is running...
 </div>
 
 <div class="col" *ngIf="checkingSupportedTier">
   <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-  Checking suppported tier and retrieving daas settings
+  Checking supported tier and retrieving daas settings
 </div>
 
 <div style="margin-top:15px"
@@ -83,5 +83,6 @@
 
 <div class="col" *ngIf="storageAccountNeeded">
   <configure-storage-account [siteToBeDiagnosed]="siteToBeDiagnosed" [sessionInProgress]="sessionInProgress"
-    (StorageAccountValidated)="onStorageAccountValidated($event)"></configure-storage-account>
+    [useDiagServerForLinux]="useDiagServerForLinux && !isWindowsApp" (StorageAccountValidated)="onStorageAccountValidated($event)">
+  </configure-storage-account>
 </div>

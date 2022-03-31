@@ -229,17 +229,6 @@ export const HomeRoutes = RouterModule.forChild([
                             cacheComponent: true
                         }
                     },
-                    // Memory Dump (To be shown when a Linux site is running on instances that are both on ANT 97 and ANT 98)
-                    {
-                        path: 'tools/memorydumplinuxmultipleversions',
-                        component: MemoryDumpToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.MemoryDump,
-                            cacheComponent: true,
-                            multipleVersions: true,
-                            allInstancesOnAnt98: false
-                        }
-                    },
                     // Memory Dump (To be shown when All Instances of a Linux App are running on ANT 98)
                     {
                         path: 'tools/memorydumplinuxant98',
@@ -248,7 +237,7 @@ export const HomeRoutes = RouterModule.forChild([
                             navigationTitle: ToolNames.MemoryDump,
                             cacheComponent: true,
                             multipleVersions: false,
-                            allInstancesOnAnt98: true
+                            allLinuxInstancesOnAnt98: true
                         }
                     },
                     // Java Thread Dump

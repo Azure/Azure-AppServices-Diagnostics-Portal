@@ -3,12 +3,9 @@ import { SolutionHolder } from '../models/solution-holder';
 import { SiteRestartComponent } from '../../solutions/components/specific-solutions/site-restart-solution/site-restart-solution.component'; //solutions/components/solutions/site-restart/site-restart.component';
 import { ScaleUpSolutionComponent } from '../../solutions/components/specific-solutions/scale-up-solution/scale-up-solution.component';
 import { ISolution, SolutionData } from '../models/solution';
-import { ProfilingSolutionComponent } from '../../solutions/components/specific-solutions/profiling-solution/profiling-solution.component';
 import { ScaleOutSolutionComponent } from '../../solutions/components/specific-solutions/scale-out-solution/scale-out-solution.component';
 import { SplitSitesIntoDifferentServerFarmsSolutionComponent } from '../../solutions/components/specific-solutions/split-sites-serverfarms-solution/split-sites-serverfarms-solution.component';
-import { MemoryDumpSolutionComponent } from '../../solutions/components/specific-solutions/memorydump-solution/memorydump-solution.component';
 import { RevertDeploymentComponent } from '../../solutions/components/specific-solutions/revert-deployment-solution/revert-deployment-solution.component';
-import { JavaThreadDumpSolutionComponent } from '../../solutions/components/specific-solutions/java-threaddump-solution/java-threaddump-solution.component';
 import { LoggingService } from './logging/logging.service';
 import { SolutionTypeTag } from 'diagnostic-data';
 
@@ -68,12 +65,6 @@ export class SolutionFactoryService {
             //     return new BladeSolutions.OpenAppInsights(rank, parameters, _logger, portalActionService);
             // case 102:
             //     return new OtherSolutions.CheckAutoHeal(rank, _logger);
-            case 103:
-                return new SolutionHolder(MemoryDumpSolutionComponent, <SolutionData>{ title: 'Collect Memory Dump', tags: [SolutionTypeTag.Investigation], solution: solution });
-            case 104:
-                return new SolutionHolder(ProfilingSolutionComponent, <SolutionData>{ title: 'Remote Profile App', tags: [SolutionTypeTag.Investigation], solution: solution });
-            case 117:
-                return new SolutionHolder(JavaThreadDumpSolutionComponent, <SolutionData>{ title: 'Collect Java Thread Dump', tags: [SolutionTypeTag.Investigation], solution: solution });
             // case 105:
             //     return new OtherSolutions.UpgradeDatabase(rank, _logger);
             // case 106:

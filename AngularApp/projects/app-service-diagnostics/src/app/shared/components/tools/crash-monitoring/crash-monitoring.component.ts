@@ -118,10 +118,10 @@ export class CrashMonitoringComponent implements OnInit {
   }
 
   getStorageAccountName(): Observable<string> {
-    return this._daasService.getBlobSasUri(this.siteToBeDiagnosed).pipe(
-      map(daasSasUri => {
-        this.storageConfiguredAsAppSetting = daasSasUri.IsAppSetting;
-        return this.getStorageAccountNameFromSasUri(daasSasUri.SasUri);
+    return this._daasService.getStorageConfiguration(this.siteToBeDiagnosed, false).pipe(
+      map(storageConfig => {
+        this.storageConfiguredAsAppSetting = storageConfig.IsAppSetting;
+        return this.getStorageAccountNameFromSasUri(storageConfig.SasUri);
       }));
   }
 

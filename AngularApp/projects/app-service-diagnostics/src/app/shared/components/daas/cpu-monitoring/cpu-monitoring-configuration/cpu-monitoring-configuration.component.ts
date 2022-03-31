@@ -2,7 +2,8 @@ import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angu
 import { Options } from 'ng5-slider';
 import { DaasService } from '../../../../services/daas.service';
 import { SiteDaasInfo } from '../../../../models/solution-metadata';
-import { MonitoringSession, SessionMode } from '../../../../models/daas';
+import { MonitoringSession, RuleType, CpuMonitoringMode } from '../../../../models/daas';
+import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/components/ChoiceGroup';
 
 @Component({
   selector: 'cpu-monitoring-configuration',
@@ -24,7 +25,7 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
   originalMonitoringSession: MonitoringSession;
 
   operationInProgress: boolean = false;
-  mode: SessionMode;
+  mode: CpuMonitoringMode;
   ruleSummary: string = "";
   error: any;
   sessionModeTypes: string[] = ["Kill", "Collect", "CollectAndKill", "CollectKillAndAnalyze"];
@@ -33,10 +34,10 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
   descMemoryDump: string = "a memory dump is collected";
   descKillMessage: string = "<b>Kill</b> is not graceful termination of the process.";
 
-  modeDescriptions = [{ Mode: SessionMode.Collect, Description: `${this.descStart}, ${this.descMemoryDump}.` },
-  { Mode: SessionMode.CollectAndKill, Description: `${this.descStart}, ${this.descMemoryDump} and the process consuming high CPU is killed. ${this.descKillMessage}` },
-  { Mode: SessionMode.CollectKillAndAnalyze, Description: `${this.descStart},  ${this.descMemoryDump} and the process consuming high CPU is killed. ${this.descKillMessage} Post collection, dumps are also analyzed and an analysis report is generated.` },
-  { Mode: SessionMode.Kill, Description: `${this.descStart}, the process is killed. ${this.descKillMessage}` }];
+  modeDescriptions = [{ Mode: CpuMonitoringMode.Collect, Description: `${this.descStart}, ${this.descMemoryDump}.` },
+  { Mode: CpuMonitoringMode.CollectAndKill, Description: `${this.descStart}, ${this.descMemoryDump} and the process consuming high CPU is killed. ${this.descKillMessage}` },
+  { Mode: CpuMonitoringMode.CollectKillAndAnalyze, Description: `${this.descStart},  ${this.descMemoryDump} and the process consuming high CPU is killed. ${this.descKillMessage} Post collection, dumps are also analyzed and an analysis report is generated.` },
+  { Mode: CpuMonitoringMode.Kill, Description: `${this.descStart}, the process is killed. ${this.descKillMessage}` }];
 
   modeDescription: string = "";
 
@@ -122,7 +123,7 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
     let monitoringSession = new MonitoringSession();
     monitoringSession.CpuThreshold = 75;
     monitoringSession.MonitorDuration = 15;
-    monitoringSession.Mode = SessionMode.CollectAndKill;
+    monitoringSession.Mode = CpuMonitoringMode.CollectAndKill;
     monitoringSession.MaxActions = 2;
     monitoringSession.ThresholdSeconds = 30;
     monitoringSession.MaximumNumberOfHours = 24 * 14;
@@ -133,7 +134,7 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
   }
 
   selectMode(md: string) {
-    this.mode = SessionMode[md];
+    this.mode = CpuMonitoringMode[md];
     if (this.monitoringSession != null) {
       this.monitoringSession.Mode = this.mode;
       this.modeDescription = this.modeDescriptions.find(x => x.Mode == this.mode).Description;
@@ -144,22 +145,22 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
   updateRuleSummary() {
     let actionToTake = "";
     switch (this.monitoringSession.Mode) {
-      case SessionMode.Collect:
+      case CpuMonitoringMode.Collect:
         actionToTake = "collect a memory dump";
         break;
-      case SessionMode.CollectAndKill:
+      case CpuMonitoringMode.CollectAndKill:
         actionToTake = "collect a memory dump and kill the process";
         break;
-      case SessionMode.CollectKillAndAnalyze:
+      case CpuMonitoringMode.CollectKillAndAnalyze:
         actionToTake = "collect a memory dump and analyze when all the dumps have been collected";
         break;
-      case SessionMode.Kill:
+      case CpuMonitoringMode.Kill:
         actionToTake = "kill the process";
         break;
 
     }
     this.ruleSummary = `When the site's process or any child processes of the site's process takes <b>${this.monitoringSession.CpuThreshold}%</b> of CPU for more than <b>${this.monitoringSession.ThresholdSeconds}</b> seconds, <b>${actionToTake}</b>. Evaluate CPU usage every <b>${this.monitoringSession.MonitorDuration} seconds</b>.`;
-    if (this.monitoringSession.Mode != SessionMode.Kill) {
+    if (this.monitoringSession.Mode != CpuMonitoringMode.Kill) {
       this.ruleSummary = this.ruleSummary + ` Collect a maximum of <b>${this.monitoringSession.MaxActions} memory dumps</b>.`;
     }
 

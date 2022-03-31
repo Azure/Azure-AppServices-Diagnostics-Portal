@@ -39,9 +39,7 @@ import { AppInsightsQueryService } from './services/appinsights/appinsights-quer
 import { CacheService } from './services/cache.service';
 import { SolutionFactoryService } from './services/solution-factory.service';
 import { DaasService } from './services/daas.service';
-import { ProfilerComponent } from './components/daas/profiler.component';
 import { ProfilerToolComponent } from './components/tools/profiler-tool/profiler-tool.component';
-import { DaasComponent } from './components/daas/daas.component';
 import { MemoryDumpToolComponent } from './components/tools/memorydump-tool/memorydump-tool.component';
 import { JavaMemoryDumpToolComponent } from './components/tools/java-memorydump-tool/java-memorydump-tool.component';
 import { JavaThreadDumpToolComponent } from './components/tools/java-threaddump-tool/java-threaddump-tool.component';
@@ -122,7 +120,8 @@ import {
     FabPeoplePickerModule,
     FabTagPickerModule,
     FabProgressIndicatorModule,
-    FabContextualMenuModule
+    FabContextualMenuModule,
+    FabChoiceGroupModule
 } from '@angular-react/fabric';
 import { CrashMonitoringAnalysisComponent } from './components/tools/crash-monitoring/crash-monitoring-analysis/crash-monitoring-analysis.component';
 import { RiskAlertsNotificationComponent } from './components/risk-alerts-notification/risk-alerts-notification.component';
@@ -130,8 +129,8 @@ import { RiskAlertsPanelComponent } from './components/risk-alerts-panel/risk-al
 import { IntegratedSolutionsViewComponent } from './components/integrated-solutions-view/integrated-solutions-view.component';
 import { MarkdownModule } from 'ngx-markdown';
 import { NetworkCheckComponent } from './components/tools/network-checks/network-checks.component';
-import { DaasV2Component } from './components/daas/daas-v2/daas-v2.component';
-import { ProfilerV2Component } from './components/daas/profiler-v2/profiler-v2.component';
+import { DaasComponent } from './components/daas/daas/daas.component';
+import { ProfilerComponent } from './components/daas/profiler/profiler.component';
 import { ABTestingService } from './services/abtesting.service';
 
 @NgModule({
@@ -160,11 +159,9 @@ import { ABTestingService } from './services/abtesting.service';
         ExpandableSummaryComponent,
         StepWizardComponent,
         DaasSessionsComponent,
-        ProfilerComponent,
         ProfilerToolComponent,
         NetworkCheckComponent,
         MemoryDumpToolComponent,
-        DaasComponent,
         JavaMemoryDumpToolComponent,
         JavaThreadDumpToolComponent,
         IncidentNotificationComponent,
@@ -201,8 +198,8 @@ import { ABTestingService } from './services/abtesting.service';
         RiskAlertsNotificationComponent,
         RiskAlertsPanelComponent,
         IntegratedSolutionsViewComponent,
-        DaasV2Component,
-        ProfilerV2Component
+        DaasComponent,
+        ProfilerComponent
     ],
     imports: [
         HttpClientModule,
@@ -222,6 +219,7 @@ import { ABTestingService } from './services/abtesting.service';
         FabCheckboxModule,
         FabComboBoxModule,
         FabGroupedListModule,
+        FabChoiceGroupModule,
         FabDatePickerModule,
         FabDividerModule,
         FabSpinnerModule,
@@ -275,9 +273,7 @@ import { ABTestingService } from './services/abtesting.service';
         ExpandableSummaryComponent,
         StepWizardComponent,
         DaasSessionsComponent,
-        ProfilerComponent,
         ProfilerToolComponent,
-        DaasComponent,
         DaasValidatorComponent,
         MemoryDumpToolComponent,
         JavaMemoryDumpToolComponent,

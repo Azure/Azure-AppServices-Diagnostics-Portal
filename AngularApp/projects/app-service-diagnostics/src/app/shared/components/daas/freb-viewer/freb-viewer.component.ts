@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'freb-viewer',
   templateUrl: './freb-viewer.component.html',
-  styleUrls: ['./freb-viewer.component.scss','./../daas.component.scss']
+  styleUrls: ['./freb-viewer.component.scss','./../daas/daas.component.scss']
 })
 export class FrebViewerComponent implements OnInit {
 

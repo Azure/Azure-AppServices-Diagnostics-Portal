@@ -20,6 +20,7 @@ export class DaasValidatorComponent implements OnInit {
   @Input() diagnoserName: string;
   @Output() DaasValidated: EventEmitter<DaasValidationResult> = new EventEmitter<DaasValidationResult>();
   @Input() sessionInProgress: boolean;
+  @Input() allLinuxInstancesOnAnt98: boolean;
 
   supportedTier: boolean = false;
   checkingSkuSucceeded: boolean = false;
@@ -36,6 +37,7 @@ export class DaasValidatorComponent implements OnInit {
   diagnosers: DiagnoserDefinition[];
   daasAppSettingsCheck: DaasAppSettingsCheck;
   isWindowsApp: boolean = false;
+  useDiagServerForLinux: boolean = false;
 
   constructor(private _serverFarmService: ServerFarmDataService,
     private _siteService: SiteService, private _daasService: DaasService,
@@ -99,35 +101,52 @@ export class DaasValidatorComponent implements OnInit {
 
       if (!this.alwaysOnEnabled) {
         return;
-      } else {
-        // If AlwaysOn is set to TRUE, we can be sure that the site is running in a
-        // supported tier as AlwaysOn is not available in BASIC SKU
-        this.supportedTier = true;
+      }
 
-        //
-        // For Linux Apps, no need to check the rest, just return true
-        //
+      // If AlwaysOn is set to TRUE, we can be sure that the site is running in a
+      // supported tier as AlwaysOn is not available in BASIC SKU
+      this.supportedTier = true;
 
-        if (!this.isWindowsApp) {
-          this.validationResult.Validated = true;
-          this.DaasValidated.emit(this.validationResult);
+      //
+      // For Linux Apps, no need to check the rest, just return true
+      //
+
+      if (!this.isWindowsApp) {
+        this.checkDiagServerForLinux().subscribe(isEnabled => {
+          if (isEnabled) {
+            this.storageAccountNeeded = true;
+            this.useDiagServerForLinux = true;
+          } else {
+            this.validationResult.Validated = true;
+            this.DaasValidated.emit(this.validationResult);
+          }
+        });
+      }
+
+      if (this.isWindowsApp) {
+        if (this.daasAppSettingsCheck.DaasDisabled || this.daasAppSettingsCheck.LocalCacheEnabled || this.daasAppSettingsCheck.WebjobsStopped) {
           return;
         }
-      }
 
-      if (this.daasAppSettingsCheck.DaasDisabled || this.daasAppSettingsCheck.LocalCacheEnabled || this.daasAppSettingsCheck.WebjobsStopped) {
-        return;
-      }
-
-      if (this.error === '') {
-        if (this.checkDiagnoserWarnings()) {
-          return;
-        }
-        if (!this.foundDiagnoserWarnings) {
-          this.checkDaasWebjobState();
+        if (this.error === '') {
+          if (this.checkDiagnoserWarnings()) {
+            return;
+          }
+          if (!this.foundDiagnoserWarnings) {
+            this.checkDaasWebjobState();
+          }
         }
       }
+
     });
+  }
+
+  checkDiagServerForLinux(): Observable<boolean> {
+    if (!this.allLinuxInstancesOnAnt98) {
+      return of(false);
+    }
+
+    return this._daasService.isDiagServerEnabledForLinux(this.siteToBeDiagnosed);
   }
 
   getDiagnosers(): Observable<DiagnoserDefinition[]> {
@@ -222,14 +241,17 @@ export class DaasValidatorComponent implements OnInit {
           this.validateDiagnoser();
         }
       }, error => {
-        // We come in this block if the ARM call to get webjob fails
+        // We come in this block if the ARM call to get web job fails
         this.checkingDaasWebJobStatus = false;
         this.daasRunnerJobRunning = false;
-        this.error = `Failed while retrieving DaaS webjob state `;
+        this.error = `Failed while retrieving DaaS web job state `;
       });
   }
 
   onStorageAccountValidated(event: DaasValidationResult) {
+    if (this.useDiagServerForLinux) {
+      event.UseDiagServerForLinux = true;
+    }
     this.DaasValidated.emit(event);
   }
 }

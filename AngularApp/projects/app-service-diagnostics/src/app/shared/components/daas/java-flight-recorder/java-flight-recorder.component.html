@@ -1,8 +1,9 @@
-<daas-validator [siteToBeDiagnosed]="siteToBeDiagnosed" diagnoserName="JAVA Flight Recorder" (DaasValidated)="onDaasValidated($event)"></daas-validator>
+<daas-validator [siteToBeDiagnosed]="siteToBeDiagnosed" diagnoserName="JAVA Flight Recorder"
+    (DaasValidated)="onDaasValidated($event)"></daas-validator>
 <div *ngIf="validationResult.Validated">
     <div class="action-box" *ngIf="siteToBeDiagnosed">
         <div>
-            <table style="border:none;">
+            <table role="presentation" class="table table-borderless">
                 <tr>
                     <th tabindex="0" class="unbold" scope="row">App: </th>
                     <td tabindex="0" class="highlight-blue">
@@ -13,12 +14,17 @@
                     <th tabindex="0" class="unbold" scope="row">Mode: </th>
                     <td>
                         <div class="btn-group" role="radiogroup">
-                            <button tabindex="0" [disabled]="sessionInProgress" role="radio" class="btn btn-default btn-xs"
-                                [ngClass]="{'btn-primary':collectionMode === 0}" (click)="selectMode(0);" [attr.aria-checked]="collectionMode === 0">
+                            <button tabindex="0" [disabled]="sessionInProgress" role="radio"
+                                class="btn btn-default btn-xs"
+                                [ngClass]="{'btn-primary':collectionMode === sessionMode.CollectAndAnalyze}"
+                                (click)="selectMode(0);"
+                                [attr.aria-checked]="collectionMode === sessionMode.CollectAndAnalyze">
                                 Collect and Analyze Data
                             </button>
-                            <button tabindex="0" [disabled]="sessionInProgress" role="radio" class="btn btn-default btn-xs"
-                                [ngClass]="{'btn-primary':collectionMode === 1}" (click)="selectMode(1);" [attr.aria-checked]="collectionMode === 1">
+                            <button tabindex="0" [disabled]="sessionInProgress" role="radio"
+                                class="btn btn-default btn-xs"
+                                [ngClass]="{'btn-primary':collectionMode === sessionMode.Collect}"
+                                (click)="selectMode(1);" [attr.aria-checked]="collectionMode === sessionMode.Collect">
                                 Collect Data Only
                             </button>
                         </div>
@@ -37,8 +43,9 @@
                     </th>
                     <td tabindex="0" class="highlight-blue">
                         <div *ngFor="let instance of instancesSelected;let i = index">
-                            <input [attr.aria-label]="instance.InstanceName" type="checkbox" [disabled]="sessionInProgress"
-                                value="{{ instance.InstanceName }}" name="{{ instance.InstanceName }}" [(ngModel)]="instancesSelected[i].Selected" />
+                            <input [attr.aria-label]="instance.InstanceName" type="checkbox"
+                                [disabled]="sessionInProgress" value="{{ instance.InstanceName }}"
+                                name="{{ instance.InstanceName }}" [(ngModel)]="instancesSelected[i].Selected" />
                             {{
                             instance.InstanceName}}
                         </div>
@@ -52,10 +59,14 @@
                     {{ operationStatus }}
                 </div>
 
-                <button [disabled]="getSelectedInstanceCount() === 0 || sessionInProgress || operationInProgress || retrievingInstancesFailed" [hidden]="sessionCompleted"
-                    class="btn btn-primary" (click)="collectJfrTrace()" (keyup.enter)="collectJfrTrace()" (keyup.space)="collectJfrTrace()">Collect
+                <button
+                    [disabled]="getSelectedInstanceCount() === 0 || sessionInProgress || operationInProgress || retrievingInstancesFailed"
+                    [hidden]="sessionCompleted" class="btn btn-primary" (click)="collectJfrTrace()"
+                    (keyup.enter)="collectJfrTrace()" (keyup.space)="collectJfrTrace()">Collect
                     JAVA Flight Recorder Trace</button>
-                    <div *ngIf="getSelectedInstanceCount() === 0" style="font-size: smaller;color: red;margin-top: 5px;margin-right: 10px;">* Choose at least one instance</div>
+                <div *ngIf="getSelectedInstanceCount() === 0"
+                    style="font-size: smaller;color: red;margin-top: 5px;margin-right: 10px;">* Choose at least one
+                    instance</div>
 
             </div>
 
@@ -66,9 +77,11 @@
                             {{instancestatus.key}}
                         </option>
                     </select>
-                    <step-wizard [CurrentStep]="sessionStatus" [WizardSteps]="WizardSteps" [WizardStepStatus]="WizardStepStatus"></step-wizard>
-                    <div *ngIf="sessionStatus >= 4 " style="text-align:right">
-                        <button class="btn btn-primary btn-sm" (click)="cancelSession()" *ngIf="!cancellingSession">Cancel</button>
+                    <step-wizard [CurrentStep]="sessionStatus" [WizardSteps]="WizardSteps"
+                        [WizardStepStatus]="WizardStepStatus"></step-wizard>
+                    <div *ngIf="sessionStatus >= 4 && showCancelButton" style="text-align:right">
+                        <button class="btn btn-primary btn-sm" (click)="cancelSession()"
+                            *ngIf="!cancellingSession">Cancel</button>
                     </div>
                 </div>
                 <div *ngIf="cancellingSession">
@@ -94,35 +107,35 @@
         </div>
     </div>
 
-    <div style="margin-top:10px;" *ngIf="Logs.length > 0">
+    <div style="margin-top:10px;" *ngIf="logFiles.length > 0">
         <table class="table table-bordered table-responsive">
             <thead class="thead-light">
                 <tr>
                     <th>Data</th>
-                    <th *ngIf="collectionMode === 0">Reports</th>
+                    <th *ngIf="collectionMode === sessionMode.CollectAndAnalyze">Reports</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <tr *ngFor="let logFile of logFiles">
                     <td>
-                        <ul *ngIf="Logs.length > 0" style="list-style: none;padding:0">
-                            <li *ngFor="let log of Logs">
-                                <a (click)="openFile(log.RelativePath)" style="cursor: pointer">
-                                    {{ log.FileName }}
+                        <ul style="list-style: none;padding:0">
+                            <li>
+                                <a (click)="openLog(logFile, sessionHasBlobSasUri)" style="cursor: pointer">
+                                    {{ logFile.Name }}
                                 </a>
                             </li>
                         </ul>
                     </td>
-                    <td *ngIf="collectionMode === 0">
-                        <ul *ngIf="Reports.length > 0" style="list-style: none;padding:0">
-                            <li *ngFor="let report of Reports">
-                                {{ getInstanceNameFromReport(report.FileName) }}
+                    <td *ngIf="collectionMode === sessionMode.CollectAndAnalyze">
+                        <ul *ngIf="logFile.Reports && logFile.Reports.length > 0" style="list-style: none;padding:0">
+                            <li *ngFor="let report of logFile.Reports">
+                                {{ getInstanceNameFromReport(report.Name) }}
                                 <a (click)="openFile(report.RelativePath)" style="cursor: pointer">
                                     <i class="fa fa-external-link" aria-hidden="true"></i>
                                 </a>
                             </li>
                         </ul>
-                        <div *ngIf="sessionStatus >= 3 && sessionInProgress">
+                        <div *ngIf="sessionStatus >= 2 && sessionInProgress && logFile.Reports.length === 0">
                             <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
                             {{ sessionStatus === 3 ? 'Waiting...' : 'Analyzing...' }}
                         </div>

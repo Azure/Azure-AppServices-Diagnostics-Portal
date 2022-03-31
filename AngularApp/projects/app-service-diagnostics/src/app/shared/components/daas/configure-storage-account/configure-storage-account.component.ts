@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { SiteDaasInfo } from '../../../models/solution-metadata';
 import { DaasService } from '../../../services/daas.service';
-import { DaasValidationResult, ValidateSasUriResponse } from '../../../models/daas';
+import { DaasValidationResult, ValidateSasUriResponse, ValidateStorageAccountResponse } from '../../../models/daas';
 import { Globals } from '../../../../globals'
 import { SharedStorageAccountService } from '../../../../shared-v2/services/shared-storage-account.service';
 import { TelemetryService } from 'projects/diagnostic-data/src/lib/services/telemetry/telemetry.service';
@@ -21,13 +21,14 @@ export class ConfigureStorageAccountComponent implements OnInit {
       this.chosenStorageAccount = newStorageAccount.name;
       if (this.chosenStorageAccount) {
         this.error = null;
-        this.validateSasUriResponse = null;
+        this.validateStorageConfigurationResponse = null;
       }
 
-      if (newStorageAccount.sasUri) {
+      if (newStorageAccount.sasUri || newStorageAccount.connectionString) {
         this.validationResult.BlobSasUri = newStorageAccount.sasUri;
+        this.validationResult.ConnectionString = newStorageAccount.connectionString;
         this.validationResult.Validated = true;
-        this.validationResult.SasUriAsAppSetting = true;
+        this.validationResult.ConfiguredAsAppSetting = true;
         this.StorageAccountValidated.emit(this.validationResult);
       }
 
@@ -36,12 +37,13 @@ export class ConfigureStorageAccountComponent implements OnInit {
 
   @Input() siteToBeDiagnosed: SiteDaasInfo;
   @Input() sessionInProgress: boolean;
+  @Input() useDiagServerForLinux: boolean = false;
   @Output() StorageAccountValidated: EventEmitter<DaasValidationResult> = new EventEmitter<DaasValidationResult>();
 
   chosenStorageAccount: string;
   checkingBlobSasUriConfigured: boolean = true;
   validationResult: DaasValidationResult = new DaasValidationResult();
-  validateSasUriResponse: ValidateSasUriResponse;
+  validateStorageConfigurationResponse: any;
   error: any;
   JSON: any;
 
@@ -60,19 +62,34 @@ export class ConfigureStorageAccountComponent implements OnInit {
 
     this.checkingBlobSasUriConfigured = true;
 
-    this._daasService.getBlobSasUri(this.siteToBeDiagnosed).subscribe(daasSasUri => {
-      if (daasSasUri.SasUri && daasSasUri.IsAppSetting) {
+    this._daasService.getStorageConfiguration(this.siteToBeDiagnosed, this.useDiagServerForLinux).subscribe(daasStorageConfiguration => {
+      if (!this.useDiagServerForLinux && daasStorageConfiguration.SasUri && daasStorageConfiguration.IsAppSetting) {
         this._daasService.validateSasUri(this.siteToBeDiagnosed).subscribe(resp => {
           this.checkingBlobSasUriConfigured = false;
           if (resp.IsValid) {
-            this.validateSasUriResponse = null;
-            this.chosenStorageAccount = this.getStorageAccountNameFromSasUri(daasSasUri.SasUri);
-            this.validationResult.BlobSasUri = daasSasUri.SasUri;
-            this.validationResult.SasUriAsAppSetting = daasSasUri.IsAppSetting;
+            this.validateStorageConfigurationResponse = null;
+            this.chosenStorageAccount = this.getStorageAccountNameFromSasUri(daasStorageConfiguration.SasUri);
+            this.validationResult.BlobSasUri = daasStorageConfiguration.SasUri;
+            this.validationResult.ConfiguredAsAppSetting = daasStorageConfiguration.IsAppSetting;
             this.validationResult.Validated = true;
             this.StorageAccountValidated.emit(this.validationResult);
           } else {
-            this.validateSasUriResponse = resp;
+            this.validateStorageConfigurationResponse = resp;
+          }
+        });
+      } else if (this.useDiagServerForLinux && daasStorageConfiguration.ConnectionString && daasStorageConfiguration.IsAppSetting) {
+
+        this._daasService.validateStorageAccount(this.siteToBeDiagnosed).subscribe(resp => {
+          this.checkingBlobSasUriConfigured = false;
+          if (resp.IsValid) {
+            this.validateStorageConfigurationResponse = null;
+            this.chosenStorageAccount = resp.StorageAccount;
+            this.validationResult.ConnectionString = daasStorageConfiguration.ConnectionString;
+            this.validationResult.ConfiguredAsAppSetting = daasStorageConfiguration.IsAppSetting;
+            this.validationResult.Validated = true;
+            this.StorageAccountValidated.emit(this.validationResult);
+          } else {
+            this.validateStorageConfigurationResponse = resp;
           }
         });
       } else {
@@ -87,6 +104,14 @@ export class ConfigureStorageAccountComponent implements OnInit {
 
   isString(obj: any): boolean {
     return (typeof obj) === "string";
+  }
+
+  getException(validateStorageConfigurationResponse: any) {
+
+    if (this.useDiagServerForLinux) {
+      return validateStorageConfigurationResponse.UnderlyingException
+    }
+    return validateStorageConfigurationResponse.Exception;
   }
 
 }
