@@ -139,7 +139,7 @@ export class DiagProvider {
         });
         return Promise.race([promise, timeoutPromise]);
     }
-    public getDaaSExtApiAsync(api: string, params = [], timeoutInSec: number = 15): Promise<any> {      
+    public getDaaSExtApiAsync(api: string, params = [], timeoutInSec: number = 15): Promise<any> {  
         var prefix = `management.azure.com/${this._siteInfo.resourceUri}/extensions/DaaS/api`;
         var stack = new Error("error_message_placeholder").stack;
         var promise = this._armService.get(`https://${prefix}/${api}?${params.join("&")}`)         
@@ -155,8 +155,13 @@ export class DiagProvider {
     }   
 
     public async checkConnectionStringAsync(connectionString: string, type: string, timeoutInSec: number = 30): Promise<any> {
-        var result: any = await this.postDaaSExtApiAsync("connectionstringvalidation/validate", { "ConnectionString": connectionString, "Type": type }, timeoutInSec);
-        return result;       
+        if(connectionString == "" || connectionString == undefined){
+        //this will be removed when refactoring with old DAAS
+            return {StatusText:"EmptyConnectionString"};
+        }else{
+            var result: any = await this.postDaaSExtApiAsync("connectionstringvalidation/validate", { "ConnectionString": connectionString, "Type": type }, timeoutInSec);
+            return result;            
+        } 
     }
     public async checkConnectionViaAppSettingAsync(appSetting: string, type: string, entityName?: string, timeoutInSec: number = 30): Promise<any> {
         var params = [];

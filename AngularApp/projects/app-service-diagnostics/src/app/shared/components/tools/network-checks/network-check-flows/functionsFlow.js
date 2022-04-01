@@ -56,7 +56,7 @@ export var functionsFlow = {
         var checkDaaSExtApi = await checkDaaSExtApiAsync(diagProvider);        
 
         var isDaasExtAccessible = checkDaaSExtApi.IsDaasExtAccessible;
-        
+        //this will be refactored when removing old DAAS
         var isDaasNew = checkDaaSExtApi.IsDaasNew;
 
         /**
@@ -462,7 +462,7 @@ async function runConnectivityCheckAsync(hostname, port, dnsServers, diagProvide
 
 async function validateConnection(propertyName, connectionString, type, diagProvider, entityName = undefined,isDaasNew=undefined) {
     var checkConnectionStringResult;
-    if(connectionString != undefined && !isDaasNew){
+    if(!isDaasNew){
     checkConnectionStringResult = await diagProvider.checkConnectionStringAsync(connectionString, type).catch(e => {
         logDebugMessage(e);
     });
@@ -513,6 +513,7 @@ async function validateConnection(propertyName, connectionString, type, diagProv
         }
         switch (checkConnectionStringResult.StatusText)
         {
+            //this will be refactored when removing old DAAS
             case "MalformedConnectionString":
                 if(isDaasNew){
                     title = checkConnectionStringResult.StatusSummary;
@@ -577,8 +578,8 @@ async function validateConnection(propertyName, connectionString, type, diagProv
                     title = "Authentication failure";
                     detailsMarkdown = `Authentication failure - the credentials in the configured connection string are either invalid or expired. Please update the app setting with a valid connection string.`;
                 } else {
-                    title = `access to the ${service} resource is restricted.`;
-                    detailsMarkdown = title + `\r\n\r\n` + `This can be due to firewall rules on the resource.  Please check if you have configured firewall rules or a private endpoint and that they correctly allow access from the Function App.  Relevant documentation:`
+                    title = `Access to the ${service} resource is restricted.`;
+                    detailsMarkdown = `This can be due to firewall rules on the resource.  Please check if you have configured firewall rules or a private endpoint and that they correctly allow access from the Function App.  Relevant documentation:`
                         + `\r\n\r\n`;
                     switch (type) {
                         case ConnectionStringType.StorageAccount:
@@ -598,12 +599,13 @@ async function validateConnection(propertyName, connectionString, type, diagProv
                 break;
             default:
                 title = `Validation of connection string failed due to an unknown error.  Please send us feedback via the "Feedback" button above.`;
+                detailsMarkdown = `Please see exception below.`;
                 break;
         }
         // Show the exception message as it contains useful information to fix the issue.  Don't show it unless its accompanied with other explanations.
-        detailsMarkdown += (detailsMarkdown != "" && checkConnectionStringResult.Exception ? `\r\n\r\nException encountered while connecting: ${checkConnectionStringResult.Exception.Message}` : undefined);
+        detailsMarkdown += (detailsMarkdown != "" && checkConnectionStringResult.Exception ? `\r\n\r\nException encountered while connecting: ${checkConnectionStringResult.Exception.Message}` : "");
         
-        if(detailsMarkdown == "undefined"){
+        if(detailsMarkdown == "undefined" || detailsMarkdown == ""){
             subChecks.push({
                 title: title,
                 level: 2,                
