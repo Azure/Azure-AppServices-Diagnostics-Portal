@@ -142,7 +142,7 @@ export class ProfilerComponent extends DaasComponent implements OnInit, OnDestro
         }
       }
     } else {
-      if (activeInstance.Status == "Started") {
+      if (activeInstance.Status == "Started" || activeInstance.Status == "Active") {
         this.sessionStatus = 2;
       }
     }

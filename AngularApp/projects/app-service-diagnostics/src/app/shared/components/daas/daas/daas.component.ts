@@ -8,7 +8,7 @@ import { WindowService } from '../../../../startup/services/window.service';
 import { AvailabilityLoggingService } from '../../../services/logging/availability.logging.service';
 import { ServerFarmDataService } from '../../../services/server-farm-data.service';
 import { WebSitesService } from '../../../../resources/web-sites/services/web-sites.service';
-import { catchError, map, retry } from 'rxjs/operators';
+import { catchError, delay, map, retry, retryWhen, take } from 'rxjs/operators';
 import { SiteDaasInfo } from '../../../models/solution-metadata';
 import { OperatingSystem } from '../../../models/site';
 import moment = require('moment');
@@ -148,7 +148,7 @@ export class DaasComponent implements OnInit, OnDestroy {
     this.operationInProgress = true;
     this.operationStatus = 'Checking active sessions...';
 
-    this._daasService.getActiveSession(this.siteToBeDiagnosed, this.isWindowsApp, this.useDiagServerForLinux).pipe(retry(2))
+    this._daasService.getActiveSession(this.siteToBeDiagnosed, this.isWindowsApp, this.useDiagServerForLinux).pipe(retryWhen(errors => errors.pipe(delay(3000), take(3))))
       .subscribe(activeSession => {
         this.populateActiveSession(activeSession);
       });

@@ -1,5 +1,6 @@
-<daas-validator [siteToBeDiagnosed]="siteToBeDiagnosed" diagnoserName="CLR Profiler"
-  (DaasValidated)="onDaasValidated($event)"></daas-validator>
+<daas-validator [sessionInProgress]="sessionInProgress" [siteToBeDiagnosed]="siteToBeDiagnosed"
+diagnoserName="CLR Profiler" (DaasValidated)="onDaasValidated($event)"
+  [allLinuxInstancesOnAnt98]="allLinuxInstancesOnAnt98"></daas-validator>
 <div *ngIf="validationResult.Validated">
   <div class="col" *ngIf="siteToBeDiagnosed && checkingAppInfo">
     <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
