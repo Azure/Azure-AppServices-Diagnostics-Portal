@@ -111,7 +111,7 @@ export class UriElementsService {
     getSingleSessionDeleteUrl(site: SiteDaasInfo, sessionId: string, isDiagServerSession: boolean) {
         if (isDiagServerSession) {
             return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagServerSingleSessionPath
-            .replace('{sessionId}', sessionId);
+                .replace('{sessionId}', sessionId);
         }
 
         return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasSingleSessionPath

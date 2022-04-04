@@ -48,6 +48,7 @@ export class DaasComponent implements OnInit, OnDestroy {
   sessionCompleted: boolean;
   WizardSteps: StepWizardSingleStep[] = [];
   useDiagServerForLinux: boolean = false;
+  linuxSubmittedInstances: SessionResponse[] = [];
 
   WizardStepStatus: string;
 
@@ -304,6 +305,7 @@ export class DaasComponent implements OnInit, OnDestroy {
   }
 
   collectDiagnoserData(consentRequired: boolean, additionalParams: string = "") {
+    this.linuxSubmittedInstances = [];
     consentRequired = consentRequired && !this.diagnoserName.startsWith("CLR Profiler");
     if (consentRequired && this.validateInstancesToCollect()) {
       this.showInstanceWarning = true;
@@ -349,17 +351,17 @@ export class DaasComponent implements OnInit, OnDestroy {
         this.sessionStatus = 1;
         this.updateInstanceInformation();
 
-        let sessionV2 = new Session();
-        sessionV2.Mode = this.collectionMode;
-        sessionV2.Tool = this.diagnoserName;
-        sessionV2.Instances = this.instancesToDiagnose.map(i => i.machineName);
+        let session = new Session();
+        session.Mode = this.collectionMode;
+        session.Tool = this.diagnoserName;
+        session.Instances = this.instancesToDiagnose.map(i => i.machineName);
 
         if (!this.isWindowsApp) {
-          sessionV2.ToolParams = this.diagnoserName.startsWith('MemoryDump') ? `DumpType=${this.linuxDumpType}` : additionalParams
+          session.ToolParams = this.diagnoserName.startsWith('MemoryDump') ? `DumpType=${this.linuxDumpType}` : additionalParams
         }
 
         this.initWizard();
-        this.submitDaasSession(sessionV2)
+        this.submitDaasSession(session)
           .subscribe(result => {
             this.sessionId = result;
             this.subscription = interval(10000).subscribe(res => {
@@ -378,40 +380,54 @@ export class DaasComponent implements OnInit, OnDestroy {
         });
   }
 
-  submitDaasSession(sessionV2: Session): Observable<string> {
+  submitDaasSession(session: Session): Observable<string> {
     if (this.useDiagServerForLinux) {
-      let instancesIds: string[] = this.instancesToDiagnose.map(x => x.instanceId);
-      return this.submitDiagnosticServerSession(instancesIds, sessionV2).pipe(
+      return this.submitDiagnosticServerSession(session).pipe(
         map(responses => {
-          return responses[0].sessionId;
-        }))
+          this.linuxSubmittedInstances = responses;
+          let successfulSessionSubmission = responses.filter(x => x.sessionId != null && x.sessionId.length > 5);
+          if (successfulSessionSubmission != null && successfulSessionSubmission.length > 0) {
+            return responses[0].sessionId;
+          } else {
+            let errors = responses.filter(x => x.error != null);
+            if (errors != null && errors.length > 0) {
+              this.error = errors[0].error;
+              this.sessionInProgress = false;
+            }
+          }
+
+        }));
     } else {
-      return this._daasService.submitDaasSession(this.siteToBeDiagnosed, sessionV2);
+      return this._daasService.submitDaasSession(this.siteToBeDiagnosed, session);
     }
   }
 
-  submitDiagnosticServerSession(instances: string[], sessionV2: Session): Observable<Array<SessionResponse>> {
-    sessionV2.SessionId = moment().utc().format('YYMMDD_HHmmssSSSS');
-    let tasks = instances.map(instanceId => {
-      return this.submitSessionOnInstance(instanceId, sessionV2)
+  submitDiagnosticServerSession(session: Session): Observable<Array<SessionResponse>> {
+    session.SessionId = moment().utc().format('YYMMDD_HHmmssSSSS');
+    let tasks = this.instancesToDiagnose.map(instance => {
+      return this.submitSessionOnInstance(instance, session)
     });
 
     return forkJoin(tasks);
   }
 
-  submitSessionOnInstance(instanceId: string, sessionV2: Session): Observable<SessionResponse> {
-    return this._daasService.submitDaasSessionOnInstance(this.siteToBeDiagnosed, sessionV2, instanceId).pipe(
+  submitSessionOnInstance(instance: Instance, session: Session): Observable<SessionResponse> {
+    return this._daasService.submitDaasSessionOnInstance(this.siteToBeDiagnosed, session, instance.instanceId).pipe(
       retry(1),
       map((sessionId) => {
         let sessionResponse = new SessionResponse();
         sessionResponse.error = null;
         sessionResponse.sessionId = sessionId;
+        sessionResponse.instanceId = instance.instanceId;
+        sessionResponse.machineName = instance.machineName;
         return sessionResponse;
       }),
       catchError(error => {
         let sessionResponse = new SessionResponse();
         sessionResponse.error = error;
         sessionResponse.sessionId = null;
+        sessionResponse.instanceId = instance.instanceId;
+        sessionResponse.machineName = instance.machineName;
         return of(sessionResponse);
       }));
   }
@@ -465,4 +481,6 @@ export class DaasComponent implements OnInit, OnDestroy {
 class SessionResponse {
   sessionId: string;
   error: any;
+  instanceId: string;
+  machineName: string;
 }
