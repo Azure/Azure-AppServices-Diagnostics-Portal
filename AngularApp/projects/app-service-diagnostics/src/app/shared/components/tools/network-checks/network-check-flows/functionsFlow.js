@@ -516,9 +516,9 @@ async function validateConnection(propertyName, connectionString, type, diagProv
             //this will be refactored when removing old DAAS
             case "MalformedConnectionString":
                 if(isDaasNew){
-                    title = checkConnectionStringResult.StatusSummary;
-                    if(checkConnectionStringResult.StatusDetails != undefined){
-                    detailsMarkdown = checkConnectionStringResult.StatusDetails;
+                    title = checkConnectionStringResult.Summary;
+                    if(checkConnectionStringResult.Details != undefined){
+                    detailsMarkdown = checkConnectionStringResult.Details;
                     }  
                 }
                 else{
@@ -528,9 +528,9 @@ async function validateConnection(propertyName, connectionString, type, diagProv
                 break;
             case "EmptyConnectionString":
                 if(isDaasNew){
-                    title = checkConnectionStringResult.StatusSummary;
-                    if(checkConnectionStringResult.StatusDetails != undefined){
-                    detailsMarkdown = checkConnectionStringResult.StatusDetails;
+                    title = checkConnectionStringResult.Summary;
+                    if(checkConnectionStringResult.Details != undefined){
+                    detailsMarkdown = checkConnectionStringResult.Details;
                     }  
                 }
                 else{
@@ -539,9 +539,9 @@ async function validateConnection(propertyName, connectionString, type, diagProv
                 break;
             case "DnsLookupFailed":
                 if(isDaasNew){
-                    title = checkConnectionStringResult.StatusSummary;
-                    if(checkConnectionStringResult.StatusDetails != undefined){
-                    detailsMarkdown = checkConnectionStringResult.StatusDetails;
+                    title = checkConnectionStringResult.Summary;
+                    if(checkConnectionStringResult.Details != undefined){
+                    detailsMarkdown = checkConnectionStringResult.Details;
                     }  
                 }
                 else{
@@ -551,10 +551,10 @@ async function validateConnection(propertyName, connectionString, type, diagProv
                 break;
             case "AuthFailure":
                 if(isDaasNew){
-                    title = checkConnectionStringResult.StatusSummary;
-                    if(checkConnectionStringResult.StatusDetails != undefined){
-                    detailsMarkdown = checkConnectionStringResult.StatusDetails;
-                    }  
+                    title = checkConnectionStringResult.Summary;
+                    if(checkConnectionStringResult.Details != undefined){
+                    detailsMarkdown = checkConnectionStringResult.Details;
+                    }
                 }
                 else{
                     title = "Authentication failure";
@@ -565,12 +565,19 @@ async function validateConnection(propertyName, connectionString, type, diagProv
             case "FullyQualifiedNamespaceMissing":
             case "ManagedIdentityConnectionFailed":
             case "ManagedIdentityNotConfigured":
-                title = checkConnectionStringResult.StatusSummary;
-                if(checkConnectionStringResult.StatusDetails != undefined){
-                detailsMarkdown = checkConnectionStringResult.StatusDetails;
+                title = checkConnectionStringResult.Summary;
+                if(checkConnectionStringResult.Details != undefined){
+                detailsMarkdown = checkConnectionStringResult.Details;
                 }
                 break;
             case "Forbidden":
+                if(isDaasNew){
+                    title = checkConnectionStringResult.Summary;
+                    if(checkConnectionStringResult.Details != undefined){
+                    detailsMarkdown = checkConnectionStringResult.Details;
+                    }
+                }
+                else{
                 // Some authentication failures come through as Forbidden so check the exception data
                 if(checkConnectionStringResult.Exception != undefined && 
                    checkConnectionStringResult.Exception.RequestInformation != undefined && 
@@ -596,6 +603,7 @@ async function validateConnection(propertyName, connectionString, type, diagProv
                             break;
                     }
                 }
+                }                
                 break;
             default:
                 title = `Validation of connection string failed due to an unknown error.  Please send us feedback via the "Feedback" button above.`;
@@ -603,8 +611,12 @@ async function validateConnection(propertyName, connectionString, type, diagProv
                 break;
         }
         // Show the exception message as it contains useful information to fix the issue.  Don't show it unless its accompanied with other explanations.
-        detailsMarkdown += (detailsMarkdown != "" && checkConnectionStringResult.Exception ? `\r\n\r\nException encountered while connecting: ${checkConnectionStringResult.Exception.Message}` : "");
-        
+        if(isDaasNew){
+        detailsMarkdown += (detailsMarkdown != "" && checkConnectionStringResult.ExceptionMessage ? `\r\n\r\nException encountered while connecting: ${checkConnectionStringResult.ExceptionMessage}` : "");
+        }
+        else{
+        detailsMarkdown += (detailsMarkdown != "" && checkConnectionStringResult.Exception ? `\r\n\r\nException encountered while connecting: ${checkConnectionStringResult.Exception.Message}` : "");        
+        }
         if(detailsMarkdown == "undefined" || detailsMarkdown == ""){
             subChecks.push({
                 title: title,
