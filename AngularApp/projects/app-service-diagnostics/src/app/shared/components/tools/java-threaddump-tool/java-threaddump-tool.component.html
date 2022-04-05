@@ -2,17 +2,9 @@
     <h2>{{ title }}</h2>
     <p>{{ description }}</p>
     <div class="wizardcontainer">
-
-        <div *ngIf="isBetaSubscription; else showV1Component">
-            <daas-v2 [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName"
-                (SessionsEvent)="updateSessions($event)">
-            </daas-v2>
-        </div>
-        <ng-template #showV1Component>
-            <daas [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName"
-                (SessionsEvent)="updateSessions($event)">
-            </daas>
-        </ng-template>
+        <daas [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName"
+            (SessionsEvent)="updateSessions($event)">
+        </daas>
     </div>
 
     <h3>What you should know before collecting a Java Thread dump</h3>

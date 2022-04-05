@@ -45,73 +45,81 @@ export class UriElementsService {
         TODO : Need to add start time and end time parameters
     */
 
-    private _diagnosticsPath = '/extensions/daas/api/';
-    private _diagnosticsSessionsAllPath = this._diagnosticsPath + 'sessions/all';
-    private _diagnosticsSessionsPath = this._diagnosticsPath + 'sessions';
-    private _diagnosticsSessionsDetailsPath = this._diagnosticsPath + 'sessions' + '/{type}/{details}';
-    private _diagnosticsDiagnosersPath = this._diagnosticsPath + 'diagnosers';
-    private _diagnosticsInstancesPath = this._diagnosticsPath + 'instances';
-    private _diagnosticsSingleSessionPath = this._diagnosticsPath + 'session/{sessionId}/';
-    private _diagnosticsSingleSessionDetailsPath = this._diagnosticsSingleSessionPath + '{details}';
-    private _diagnosticsSingleSessionDeletePath = this._diagnosticsSingleSessionPath + 'delete';
-    private _diagnosticsDatabaseTestPath = this._diagnosticsPath + 'databasetest';
-    private _diagnosticsAppInfo = this._diagnosticsPath + 'appinfo';
-    private _diagnosticsMonitoringPath = this._diagnosticsPath + "CpuMonitoring";
-    private _diagnosticsStdoutSettingPath = this._diagnosticsPath + 'settings/stdout';
-    private _diagnosticsMonitoringSessionActive = this._diagnosticsMonitoringPath + "/active"
-    private _diagnosticsMonitoringSessionActiveDetails = this._diagnosticsMonitoringPath + "/activesessiondetails"
-    private _diagnosticsMonitoringSessionStop = this._diagnosticsMonitoringPath + "/stop"
-    private _diagnosticsMonitoringAllSessions = this._diagnosticsMonitoringPath;
-    private _diagnosticsMonitoringSingleSession = this._diagnosticsMonitoringPath + "/{sessionId}";
-    private _diagnosticsMonitoringAnalyzeSession = this._diagnosticsMonitoringPath + "/analyze?sessionId={sessionId}";
-    private _diagnosticsSettingsPath = this._diagnosticsPath + 'settings';
-    private _diagnosticsValidateSasUriPath = this._diagnosticsSettingsPath + "/validatesasuri";
+    private _daasApiPath = '/extensions/daas/api/';
+    private _daasDatabaseTestPath = this._daasApiPath + 'databasetest';
+    private _daasAppInfoPath = this._daasApiPath + 'appinfo';
+    private _daasCpuMonitoringPath = this._daasApiPath + "CpuMonitoring";
+    private _daasStdoutSettingPath = this._daasApiPath + 'settings/stdout';
+    private _daasCpuMonitoringSessionActivePath = this._daasCpuMonitoringPath + "/active"
+    private _daasCpuMonitoringSessionActivePathDetails = this._daasCpuMonitoringPath + "/activesessiondetails"
+    private _daasCpuMonitoringStopPath = this._daasCpuMonitoringPath + "/stop"
+    private _daasCpuMonitoringSingleSessionPath = this._daasCpuMonitoringPath + "/{sessionId}";
+    private _daasCpuMonitoringAnalyzeSessionPath = this._daasCpuMonitoringPath + "/analyze?sessionId={sessionId}";
+    private _daasSettingsPath = this._daasApiPath + 'settings';
+    private _daasValidateSasUriPath = this._daasSettingsPath + "/validatesasuri";
+
     private _networkTraceStartPath = '/networkTrace/start';
     private _webjobsPath: string = '/webjobs';
 
-    private _v2diagnosticsPath = '/extensions/daas';
-    private _v2diagnosticsSessionsPath = this._v2diagnosticsPath + '/sessions';
-    private _v2diagnosticsActiveSession = this._v2diagnosticsSessionsPath + '/active';
-    private _v2diagnosticsActiveSessionLinuxPath = this._v2diagnosticsPath + '/activesession';
-    private _v2diagnosticsSingleSessionPath = this._v2diagnosticsSessionsPath + '/{sessionId}';
-    private _v2diagnosticsDiagnosersPath = this._v2diagnosticsPath + '/diagnosers';
+    private _daasPath = '/extensions/daas';
+    private _daasSessionsPath = this._daasPath + '/sessions';
+    private _daasDiagnosersPath = this._daasPath + '/diagnosers';
+    private _daasActiveSessionPath = this._daasSessionsPath + '/active';
+    private _daasSingleSessionPath = this._daasSessionsPath + '/{sessionId}';
 
-    getDiagnosticsDiagnosersUrl(site: SiteDaasInfo, isWindowsApp: boolean = true) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsDiagnosersPath;
+    // Linux DiagServer paths
+    private _daasDiagServerPath = this._daasPath + "/v2";
+    private _daasDiagServerSessionsPath = this._daasDiagServerPath + '/sessions';
+    private _daasDiagServerSessionsPathForInstance = this._daasDiagServerSessionsPath + '?instance={instanceId}';
+    private _daasDiagServerActiveSessionPath = this._daasDiagServerSessionsPath + '/active';
+    private _daasDiagServerSingleSessionPath = this._daasDiagServerSessionsPath + '/{sessionId}';
+    private _daasDiagServerSettingsPath = this._daasDiagServerSessionsPath + "/settings";
+    private _daasDiagServerValidateStorageAccountPath = this._daasDiagServerSessionsPath + '/validatestorageaccount';
+
+    getSessionsUrl(site: SiteDaasInfo, useDiagnosticServerForLinux: boolean) {
+        if (useDiagnosticServerForLinux) {
+            return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagServerSessionsPath;
+        }
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasSessionsPath;
     }
 
-    getAllDiagnosticsSessionsUrl(site: SiteDaasInfo) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsSessionsAllPath;
-    }
-
-    getDiagnosticsSessionsUrl(site: SiteDaasInfo) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsSessionsPath;
-    }
-
-    getDiagnosticsSessionsV2Url(site: SiteDaasInfo) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._v2diagnosticsSessionsPath;
-    }
-
-    getDiagnosticsSessionsDetailsUrl(site: SiteDaasInfo, type: string, detailed: boolean) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsSessionsDetailsPath.replace('{type}', type)
-            .replace('{details}', detailed.toString());
-    }
-
-    getActiveDiagnosticsSessionV2Url(site: SiteDaasInfo) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._v2diagnosticsActiveSession;
-    }
-
-    getActiveDiagnosticsSessionV2LinuxUrl(site: SiteDaasInfo) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._v2diagnosticsActiveSessionLinuxPath;
-    }
-
-    getDiagnosticSessionV2Url(site: SiteDaasInfo, sessionId: string) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._v2diagnosticsSingleSessionPath
+    getSessionUrl(site: SiteDaasInfo, sessionId: string, useDiagServerForLinux: boolean) {
+        if (useDiagServerForLinux) {
+            return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagServerSingleSessionPath
+                .replace('{sessionId}', sessionId);
+        }
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasSingleSessionPath
             .replace('{sessionId}', sessionId);
     }
 
-    getDiagnosticsInstancesUrl(site: SiteDaasInfo) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsInstancesPath;
+    getSessionsForInstanceUrl(site: SiteDaasInfo, instanceId: string) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagServerSessionsPathForInstance
+            .replace('{instanceId}', instanceId);
+    }
+
+    getActiveSessionUrl(site: SiteDaasInfo) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasActiveSessionPath;
+    }
+
+    getActiveSessionLinuxUrl(site: SiteDaasInfo, useDiagnosticServerForLinux: boolean) {
+        if (useDiagnosticServerForLinux) {
+            return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagServerActiveSessionPath;
+        }
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasActiveSessionPath;
+    }
+
+    getSingleSessionDeleteUrl(site: SiteDaasInfo, sessionId: string, isDiagServerSession: boolean) {
+        if (isDiagServerSession) {
+            return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagServerSingleSessionPath
+                .replace('{sessionId}', sessionId);
+        }
+
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasSingleSessionPath
+            .replace('{sessionId}', sessionId);
+    }
+
+    getDiagnosersUrl(site: SiteDaasInfo) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagnosersPath;
     }
 
     getNetworkTraceUrl(site: SiteInfoMetaData) {
@@ -122,65 +130,57 @@ export class UriElementsService {
         return this._getSiteResourceUrl(subscriptionId, resourceGroupName, siteName, slot) + this._virtualNetworkConnections;
     }
 
-    getDiagnosticsSingleSessionUrl(site: SiteDaasInfo, sessionId: string, detailed: any) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsSingleSessionDetailsPath
-            .replace('{sessionId}', sessionId)
-            .replace('{details}', detailed.toString());
-    }
-
-    getDiagnosticsSingleSessionDeleteUrl(site: SiteDaasInfo, sessionId: string) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsSingleSessionDeletePath
-            .replace('{sessionId}', sessionId);
-    }
-
-    getDiagnosticsSingleSessionDeleteV2Url(site: SiteDaasInfo, sessionId: string) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._v2diagnosticsSingleSessionPath
-            .replace('{sessionId}', sessionId);
-    }
-
     getDatabaseTestUrl(site: SiteInfoMetaData) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsDatabaseTestPath;
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDatabaseTestPath;
     }
 
     getAppInfoUrl(site: SiteInfoMetaData) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsAppInfo;
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasAppInfoPath;
     }
 
     getMonitoringSessionsUrl(site: SiteDaasInfo) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsMonitoringAllSessions;
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasCpuMonitoringPath;
     }
 
     getActiveMonitoringSessionUrl(site: SiteDaasInfo) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsMonitoringSessionActive;
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasCpuMonitoringSessionActivePath;
     }
 
     getActiveMonitoringSessionDetailsUrl(site: SiteDaasInfo) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsMonitoringSessionActiveDetails;
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasCpuMonitoringSessionActivePathDetails;
     }
     stopMonitoringSessionUrl(site: SiteDaasInfo) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsMonitoringSessionStop;
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasCpuMonitoringStopPath;
     }
 
     getMonitoringSessionUrl(site: SiteDaasInfo, sessionId: string) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsMonitoringSingleSession
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasCpuMonitoringSingleSessionPath
             .replace('{sessionId}', sessionId);
     }
 
     getAnalyzeMonitoringSessionUrl(site: SiteDaasInfo, sessionId: string) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsMonitoringAnalyzeSession
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasCpuMonitoringAnalyzeSessionPath
             .replace('{sessionId}', sessionId);
     }
 
     getBlobSasUriUrl(site: SiteDaasInfo) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsSettingsPath;
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasSettingsPath;
     }
 
     getValidateBlobSasUriUrl(site: SiteDaasInfo) {
-        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._diagnosticsValidateSasUriPath;
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasValidateSasUriPath;
+    }
+
+    getValidateStorageAccountUrl(site: SiteDaasInfo) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagServerValidateStorageAccountPath;
+    }
+
+    getLinuxDaasSettingsUrl(site: SiteDaasInfo) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagServerSettingsPath;
     }
 
     getStdoutSettingUrl(resourceUrl: string) {
-        return resourceUrl + this._diagnosticsStdoutSettingPath;
+        return resourceUrl + this._daasStdoutSettingPath;
     }
 
     getWebJobs(site: SiteInfoMetaData) {

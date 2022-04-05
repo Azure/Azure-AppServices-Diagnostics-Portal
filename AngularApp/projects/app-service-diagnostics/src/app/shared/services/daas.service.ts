@@ -1,5 +1,5 @@
 
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, catchError } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -7,119 +7,76 @@ import { SiteDaasInfo } from '../models/solution-metadata';
 import { ArmService } from './arm.service';
 import { AuthService } from '../../startup/services/auth.service';
 import { UriElementsService } from './urielements.service';
-import { Session, DiagnoserDefinition, DatabaseTestConnectionResult, MonitoringSession, MonitoringLogsPerInstance, ActiveMonitoringSession, DaasAppInfo, DaasSettings, DaasSasUri, ValidateSasUriResponse, SessionV2 } from '../models/daas';
+import { DiagnoserDefinition, DatabaseTestConnectionResult, MonitoringSession, MonitoringLogsPerInstance, ActiveMonitoringSession, DaasAppInfo, DaasSettings, ValidateSasUriResponse, Session, LinuxDaasSettings, ValidateStorageAccountResponse, DaasStorageConfiguration, Instance } from '../models/daas';
 import { SiteInfoMetaData } from '../models/site';
 import { SiteService } from './site.service';
+import { StorageAccountProperties } from '../../shared-v2/services/shared-storage-account.service';
+import moment = require('moment');
 
 const BlobContainerName: string = "memorydumps";
 
 @Injectable()
 export class DaasService {
 
+    linuxDiagServerEnabled: boolean = false;
+    linuxDiagServerEnabledChecked: boolean = false;
+
     public currentSite: SiteDaasInfo;
     constructor(private _armClient: ArmService, private _authService: AuthService,
         private _http: HttpClient, private _uriElementsService: UriElementsService, private _siteService: SiteService) {
     }
 
-    getDaasSessions(site: SiteDaasInfo): Observable<Session[]> {
-        const resourceUri: string = this._uriElementsService.getAllDiagnosticsSessionsUrl(site);
-        return <Observable<Session[]>>(this._armClient.getResourceWithoutEnvelope<Session[]>(resourceUri, null, true));
-    }
-
-    submitDaasSession(site: SiteDaasInfo, diagnoser: string, Instances: string[], collectLogsOnly: boolean, blobSasUri: string): Observable<string> {
-
-        const session = new Session();
-        session.CollectLogsOnly = collectLogsOnly;
-        session.StartTime = '';
-        session.RunLive = true;
-        session.Instances = Instances;
-        session.Diagnosers = [];
-        session.Diagnosers.push(diagnoser);
-        session.TimeSpan = '00:02:00';
-        session.BlobSasUri = blobSasUri;
-
-        const resourceUri: string = this._uriElementsService.getDiagnosticsSessionsUrl(site);
+    submitDaasSession(site: SiteDaasInfo, session: Session) {
+        let resourceUri: string = this._uriElementsService.getSessionsUrl(site, false);
         return <Observable<string>>(this._armClient.postResource(resourceUri, session, null, true));
     }
 
-    submitDaasSessionV2(site: SiteDaasInfo, session: SessionV2) {
-        const resourceUri: string = this._uriElementsService.getDiagnosticsSessionsV2Url(site);
+    submitDaasSessionOnInstance(site: SiteDaasInfo, session: Session, instanceId: string) {
+        let resourceUri: string = this._uriElementsService.getSessionsForInstanceUrl(site, instanceId);
         return <Observable<string>>(this._armClient.postResource(resourceUri, session, null, true));
     }
 
-    cancelDaasSession(site: SiteDaasInfo, sessionId: string): Observable<boolean> {
-        const resourceUri: string = this._uriElementsService.getDiagnosticsSingleSessionUrl(site, sessionId, 'cancel');
-        return <Observable<boolean>>(this._armClient.postResource(resourceUri, null, null, true));
-    }
-
-    getDaasSessionsWithDetails(site: SiteDaasInfo): Observable<Session[]> {
-        const resourceUri: string = this._uriElementsService.getDiagnosticsSessionsDetailsUrl(site, 'all', true);
-        return <Observable<Session[]>>this._armClient.getResourceWithoutEnvelope<Session[]>(resourceUri, null, true);
-    }
-
-    getDaasActiveSessionsWithDetails(site: SiteDaasInfo): Observable<Session[]> {
-        const resourceUri: string = this._uriElementsService.getDiagnosticsSessionsDetailsUrl(site, 'active', true);
-        return <Observable<Session[]>>this._armClient.getResourceWithoutEnvelope<Session[]>(resourceUri, null, true);
-    }
-
-    //
-    // With ANT 97 for Linux, the  path to check active session was changed to '/daas/sessions/active'
-    // but accidentally the old path '/daas/activesession' got removed. Hence, the caller needs to try both 
-    // paths unfortunately. This will go away post ANT97 deployment
-    //
-
-    getActiveSession(site: SiteDaasInfo, isWindowsApp: boolean, useNewRouteForLinux: boolean): Observable<SessionV2> {
-        let resourceUri: string = this._uriElementsService.getActiveDiagnosticsSessionV2Url(site);
-        if (!isWindowsApp && !useNewRouteForLinux) {
-            resourceUri = this._uriElementsService.getActiveDiagnosticsSessionV2LinuxUrl(site);
+    getActiveSession(site: SiteDaasInfo, isWindowsApp: boolean, useDiagnosticServerForLinux: boolean): Observable<Session> {
+        let resourceUri: string = this._uriElementsService.getActiveSessionUrl(site);
+        if (!isWindowsApp) {
+            resourceUri = this._uriElementsService.getActiveSessionLinuxUrl(site, useDiagnosticServerForLinux);
         }
-        return <Observable<SessionV2>>this._armClient.getResourceWithoutEnvelope<SessionV2>(resourceUri, null, true);
-    }
-
-    getSessionsV2(site: SiteDaasInfo): Observable<SessionV2[]> {
-        const resourceUri: string = this._uriElementsService.getDiagnosticsSessionsV2Url(site);
-        return <Observable<SessionV2[]>>this._armClient.getResourceWithoutEnvelope<SessionV2>(resourceUri, null, true);
-    }
-
-    getSession(site: SiteDaasInfo, sessionId: string): Observable<SessionV2> {
-        const resourceUri: string = this._uriElementsService.getDiagnosticSessionV2Url(site, sessionId);
-        return <Observable<SessionV2>>this._armClient.getResourceWithoutEnvelope<SessionV2>(resourceUri, null, true);
-    }
-
-    getDaasSessionWithDetails(site: SiteDaasInfo, sessionId: string): Observable<Session> {
-        const resourceUri: string = this._uriElementsService.getDiagnosticsSingleSessionUrl(site, sessionId, true);
         return <Observable<Session>>this._armClient.getResourceWithoutEnvelope<Session>(resourceUri, null, true);
     }
 
-    getInstances(site: SiteDaasInfo, isWindowsApp: boolean = true): Observable<string[]> {
+    getSessions(site: SiteDaasInfo, useDiagnosticServerForLinux: boolean): Observable<Session[]> {
+        const resourceUri: string = this._uriElementsService.getSessionsUrl(site, useDiagnosticServerForLinux);
+        return <Observable<Session[]>>this._armClient.getResourceWithoutEnvelope<Session>(resourceUri, null, true);
+    }
 
-        if (isWindowsApp) {
-            const resourceUri: string = this._uriElementsService.getDiagnosticsInstancesUrl(site);
-            return <Observable<string[]>>this._armClient.getResourceWithoutEnvelope<string[]>(resourceUri, null, true);
-        }
+    getSession(site: SiteDaasInfo, sessionId: string, useDiagServerForLinux: boolean): Observable<Session> {
+        const resourceUri: string = this._uriElementsService.getSessionUrl(site, sessionId, useDiagServerForLinux);
+        return <Observable<Session>>this._armClient.getResourceWithoutEnvelope<Session>(resourceUri, null, true);
+    }
 
+    getInstances(site: SiteDaasInfo, isWindowsApp: boolean = true): Observable<Instance[]> {
         const resourceUri: string = this._uriElementsService.getInstances(site);
         return this._armClient.getResourceCollection<any>(resourceUri, null, true).pipe(map(response => {
             if (Array.isArray(response) && response.length > 0) {
-                let machineNames: string[] = [];
+                let instances: Instance[] = [];
                 response.forEach(instance => {
                     if (instance && instance.properties && instance.properties["machineName"]) {
-                        machineNames.push(instance.properties["machineName"]);
+                        instances.push({ instanceId: instance.properties["name"], machineName: instance.properties["machineName"] });
                     }
                 });
-                return machineNames;
+                return instances;
             }
         }));
     }
 
     getDiagnosers(site: SiteDaasInfo): Observable<DiagnoserDefinition[]> {
-        const resourceUri: string = this._uriElementsService.getDiagnosticsDiagnosersUrl(site);
+        const resourceUri: string = this._uriElementsService.getDiagnosersUrl(site);
         return <Observable<DiagnoserDefinition[]>>this._armClient.getResourceWithoutEnvelope<DiagnoserDefinition[]>(resourceUri, null, true);
     }
 
     getDatabaseTest(site: SiteInfoMetaData): Observable<DatabaseTestConnectionResult[]> {
         const resourceUri: string = this._uriElementsService.getDatabaseTestUrl(site);
-        return <Observable<DatabaseTestConnectionResult[]>>this._armClient.getResourceWithoutEnvelope<Session>(resourceUri, null, true);
+        return <Observable<DatabaseTestConnectionResult[]>>this._armClient.getResourceWithoutEnvelope<DatabaseTestConnectionResult[]>(resourceUri, null, true);
     }
 
     getDaasWebjobState(site: SiteDaasInfo): Observable<string> {
@@ -137,11 +94,8 @@ export class DaasService {
         ));
     }
 
-    deleteDaasSession(site: SiteDaasInfo, sessionId: string, isV2: boolean): Observable<any> {
-        let resourceUri: string = this._uriElementsService.getDiagnosticsSingleSessionDeleteUrl(site, sessionId);
-        if (isV2) {
-            resourceUri = this._uriElementsService.getDiagnosticsSingleSessionDeleteV2Url(site, sessionId);
-        }
+    deleteDaasSession(site: SiteDaasInfo, sessionId: string, isDiagServerSession: boolean): Observable<any> {
+        let resourceUri: string = this._uriElementsService.getSingleSessionDeleteUrl(site, sessionId, isDiagServerSession);
         return <Observable<any>>(this._armClient.deleteResource(resourceUri, null, true));
     }
 
@@ -159,18 +113,22 @@ export class DaasService {
         const resourceUri: string = this._uriElementsService.getMonitoringSessionUrl(site, sessionId);
         return <Observable<MonitoringSession>>(this._armClient.getResourceWithoutEnvelope<MonitoringSession>(resourceUri, null, true));
     }
+
     analyzeMonitoringSession(site: SiteDaasInfo, sessionId: string): Observable<any> {
         const resourceUri: string = this._uriElementsService.getAnalyzeMonitoringSessionUrl(site, sessionId);
         return <Observable<any>>(this._armClient.postResource(resourceUri, null, null, true));
     }
+
     getActiveMonitoringSession(site: SiteDaasInfo): Observable<MonitoringSession> {
         const resourceUri: string = this._uriElementsService.getActiveMonitoringSessionUrl(site);
         return <Observable<MonitoringSession>>(this._armClient.getResourceWithoutEnvelope<MonitoringSession>(resourceUri, null, true));
     }
+
     getActiveMonitoringSessionDetails(site: SiteDaasInfo): Observable<ActiveMonitoringSession> {
         const resourceUri: string = this._uriElementsService.getActiveMonitoringSessionDetailsUrl(site);
         return <Observable<ActiveMonitoringSession>>(this._armClient.getResourceWithoutEnvelope<ActiveMonitoringSession>(resourceUri, null, true));
     }
+
     stopMonitoringSession(site: SiteDaasInfo): Observable<string> {
         const resourceUri: string = this._uriElementsService.stopMonitoringSessionUrl(site);
         return <Observable<string>>(this._armClient.postResource(resourceUri, null, null, true));
@@ -201,17 +159,26 @@ export class DaasService {
         return <Observable<boolean>>(this._armClient.postResource(resourceUri, settings, null, true));
     }
 
-    setBlobSasUriAppSetting(site: SiteDaasInfo, blobSasUri: string): Observable<any> {
+    setStorageConfiguration(site: SiteDaasInfo, storageAccountProperties: StorageAccountProperties, useDiagServerForLinux: boolean): Observable<any> {
+        let settingValue: string = '';
+        let settingName = "WEBSITE_DAAS_STORAGE_SASURI";
+        settingValue = storageAccountProperties.sasUri;
+        if (useDiagServerForLinux) {
+            settingName = "WEBSITE_DAAS_STORAGE_CONNECTIONSTRING";
+            settingValue = storageAccountProperties.connectionString;
+        }
+
         return this._siteService.getSiteAppSettings(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot).pipe(
             map(settingsResponse => {
                 if (settingsResponse && settingsResponse.properties) {
-                    if (blobSasUri) {
-                        settingsResponse.properties['WEBSITE_DAAS_STORAGE_SASURI'] = blobSasUri;
+                    if (settingValue) {
+                        settingsResponse.properties[settingName] = settingValue;
                     } else {
-                        if (settingsResponse.properties['WEBSITE_DAAS_STORAGE_SASURI']) {
-                            delete settingsResponse.properties['WEBSITE_DAAS_STORAGE_SASURI'];
+                        if (settingsResponse.properties[settingName]) {
+                            delete settingsResponse.properties[settingName];
                         }
                     }
+
                     this._siteService.updateSiteAppSettings(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot, settingsResponse).subscribe(updateResponse => {
                         return updateResponse;
                     });
@@ -219,20 +186,32 @@ export class DaasService {
             }));
     }
 
-    getBlobSasUri(site: SiteDaasInfo): Observable<DaasSasUri> {
+    getStorageConfiguration(site: SiteDaasInfo, useDiagServerForLinux: boolean): Observable<DaasStorageConfiguration> {
+        let settingName = "WEBSITE_DAAS_STORAGE_SASURI";
+        if (useDiagServerForLinux) {
+            settingName = "WEBSITE_DAAS_STORAGE_CONNECTIONSTRING";
+        }
+
         return this._siteService.getSiteAppSettings(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot).pipe(
             map(settingsResponse => {
-                if (settingsResponse && settingsResponse.properties && settingsResponse.properties["WEBSITE_DAAS_STORAGE_SASURI"] != null) {
-                    let daasSasUri: DaasSasUri = { IsAppSetting: true, SasUri: settingsResponse.properties["WEBSITE_DAAS_STORAGE_SASURI"] };
-                    return daasSasUri;
+                if (settingsResponse && settingsResponse.properties && settingsResponse.properties[settingName] != null) {
+                    let daasStorageConfiguration: DaasStorageConfiguration = new DaasStorageConfiguration();
+                    daasStorageConfiguration.IsAppSetting = true;
+                    if (useDiagServerForLinux) {
+                        daasStorageConfiguration.ConnectionString = settingsResponse.properties[settingName];
+                    } else {
+                        daasStorageConfiguration.SasUri = settingsResponse.properties[settingName];
+                    }
+                    return daasStorageConfiguration;
                 }
             }),
-            mergeMap((daasSasUri: DaasSasUri) => {
-                if (daasSasUri && daasSasUri.SasUri) {
-                    return of(daasSasUri);
+            mergeMap((daasStorageConfiguration: DaasStorageConfiguration) => {
+                if (daasStorageConfiguration
+                    && (daasStorageConfiguration.SasUri || daasStorageConfiguration.ConnectionString)) {
+                    return of(daasStorageConfiguration);
                 } else {
-                    let daasSasUri: DaasSasUri = { IsAppSetting: false, SasUri: '' };
-                    return of(daasSasUri);
+                    let daasStorageConfig: DaasStorageConfiguration = new DaasStorageConfiguration();
+                    return of(daasStorageConfig);
                 }
             }));
     }
@@ -245,15 +224,30 @@ export class DaasService {
             }));
     }
 
-    private _getSasUriFromDaasApi(site: SiteDaasInfo): Observable<DaasSasUri> {
-        const resourceUri: string = this._uriElementsService.getBlobSasUriUrl(site);
-        return this._armClient.getResourceWithoutEnvelope<DaasSettings>(resourceUri, null, true).pipe(
-            map((resp: DaasSettings) => {
-                let daasSasUri: DaasSasUri = { IsAppSetting: false, SasUri: "" };
-                if (resp && resp.BlobSasUri) {
-                    daasSasUri.SasUri = resp.BlobSasUri;
-                }
-                return daasSasUri;
+    validateStorageAccount(site: SiteDaasInfo): Observable<ValidateStorageAccountResponse> {
+        const resourceUri: string = this._uriElementsService.getValidateStorageAccountUrl(site);
+        return this._armClient.getResourceWithoutEnvelope<ValidateStorageAccountResponse>(resourceUri, null, true).pipe(
+            map((resp: ValidateStorageAccountResponse) => {
+                return resp;
+            }));
+    }
+
+    isDiagServerEnabledForLinux(site: SiteDaasInfo): Observable<boolean> {
+        if (this.linuxDiagServerEnabledChecked) {
+            return of(this.linuxDiagServerEnabled);
+        }
+
+        const resourceUri: string = this._uriElementsService.getLinuxDaasSettingsUrl(site);
+        return this._armClient.getResourceWithoutEnvelope<LinuxDaasSettings>(resourceUri, null, true).pipe(
+            map((resp: LinuxDaasSettings) => {
+                this.linuxDiagServerEnabled = resp.DiagnosticServerEnabled;
+                this.linuxDiagServerEnabledChecked = true;
+                return this.linuxDiagServerEnabled;
+            }),
+            catchError(e => {
+                this.linuxDiagServerEnabled = false;
+                this.linuxDiagServerEnabledChecked = true;
+                return of(this.linuxDiagServerEnabled)
             }));
     }
 

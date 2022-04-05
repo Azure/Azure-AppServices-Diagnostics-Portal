@@ -1,17 +1,18 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DaasComponent } from '../daas.component';
 import { StepWizardSingleStep } from '../../../models/step-wizard-single-step';
 import { ServerFarmDataService } from '../../../services/server-farm-data.service';
 import { SiteService } from '../../../services/site.service';
 import { DaasService } from '../../../services/daas.service';
 import { WindowService } from 'projects/app-service-diagnostics/src/app/startup/services/window.service';
-import { Session } from '../../../models/daas';
+import { LogFile, Session } from '../../../models/daas';
 import { AvailabilityLoggingService } from '../../../services/logging/availability.logging.service';
+import { DaasComponent } from '../daas/daas.component';
+import { WebSitesService } from 'projects/app-service-diagnostics/src/app/resources/web-sites/services/web-sites.service';
 
 @Component({
-  selector: 'java-flight-recorder',
-  templateUrl: './java-flight-recorder.component.html',
-  styleUrls: ['./java-flight-recorder.component.scss','../daas.component.scss']
+    selector: 'java-flight-recorder',
+    templateUrl: './java-flight-recorder.component.html',
+    styleUrls: ['./java-flight-recorder.component.scss', '../daas/daas.component.scss']
 })
 export class JavaFlightRecorderComponent extends DaasComponent implements OnInit, OnDestroy {
 
@@ -20,9 +21,10 @@ export class JavaFlightRecorderComponent extends DaasComponent implements OnInit
     WizardSteps: StepWizardSingleStep[] = [];
     error: any;
 
-    constructor(private _serverFarmServiceLocal: ServerFarmDataService, private _siteServiceLocal: SiteService, private _daasServiceLocal: DaasService, private _windowServiceLocal: WindowService, private _loggerLocal: AvailabilityLoggingService) {
-
-        super(_serverFarmServiceLocal, _siteServiceLocal, _daasServiceLocal, _windowServiceLocal, _loggerLocal);
+    constructor(private _serverFarmServiceLocal: ServerFarmDataService, private _siteServiceLocal: SiteService,
+        private _daasServiceLocal: DaasService, private _windowServiceLocal: WindowService,
+        private _loggerLocal: AvailabilityLoggingService, private _webSiteServiceLocal: WebSitesService) {
+        super(_serverFarmServiceLocal, _siteServiceLocal, _daasServiceLocal, _windowServiceLocal, _loggerLocal, _webSiteServiceLocal);
         this.diagnoserName = 'JAVA Flight Recorder';
         this.diagnoserNameLookup = 'JAVA Flight Recorder';
     }
@@ -66,44 +68,65 @@ export class JavaFlightRecorderComponent extends DaasComponent implements OnInit
 
     }
 
-    getDiagnoserStateFromSession(session: Session) {
-        const jfrDiagnoser = session.DiagnoserSessions.find(x => x.Name.startsWith('JAVA Flight Recorder'));
-        if (jfrDiagnoser) {
-            this.diagnoserSession = jfrDiagnoser;
-            this.Logs = jfrDiagnoser.Logs;
-            this.Reports = jfrDiagnoser.Reports;
-            if (jfrDiagnoser.CollectorStatus === 2) {
-                if (jfrDiagnoser.CollectorStatusMessages.length > 0) {
-                    jfrDiagnoser.CollectorStatusMessages.forEach(msg => {
-                        // The order of this IF check should not be changed
-                        if (msg.Message.indexOf('Stopping') >= 0 || msg.Message.indexOf('Stopped') >= 0) {
+    populateSessionInformation(session: Session) {
 
-                            this.instancesStatus.set(msg.EntityType, 3);
-                        } else if (msg.Message.indexOf('seconds') >= 0) {
-                            this.instancesStatus.set(msg.EntityType, 2);
-                        }
-                    });
-                    this.sessionStatus = this.instancesStatus.get(this.selectedInstance);
-                }
-            } else if (jfrDiagnoser.AnalyzerStatus === 2) {
-
-                // once we are at the analyzer, lets just set all instances's status to
-                // analyzing as we will reach here once all the collectors have finsihed
-                this.sessionStatus = 4;
-
-                this.WizardStepStatus = '';
-                if (jfrDiagnoser.AnalyzerStatusMessages.length > 0) {
-                    const thisInstanceMessages = jfrDiagnoser.AnalyzerStatusMessages.filter(x => x.EntityType.startsWith(this.selectedInstance));
-                    if (thisInstanceMessages != null) {
-                        const messagesLength = thisInstanceMessages.length;
-                        if (messagesLength > 0) {
-                            this.WizardStepStatus = thisInstanceMessages[messagesLength - 1].Message;
-                        }
-                    }
-                }
-
-            }
+        if (session.Status === "Active") {
+          this.sessionStatus = 1;
         }
-    }
+        if (!session.ActiveInstances) {
+          return;
+        }
+    
+        let activeInstance = session.ActiveInstances.find(x => x.Name === this.selectedInstance);
+        if (!activeInstance) {
+          return;
+        }
+    
+        this.activeInstance = activeInstance;
+        if (this.isWindowsApp) {
+          if (activeInstance.Status == "Started") {
+            this.WizardStepStatus = "";
+            activeInstance.CollectorStatusMessages.forEach(msg => {
+    
+              //
+              // The order of this IF check should not be changed
+              //
+    
+              if (msg.indexOf('Stopping') >= 0 || msg.indexOf('Stopped') >= 0) {
+                this.sessionStatus = 3;
+              } else if (msg.indexOf('seconds') >= 0) {
+                this.sessionStatus = 2;
+              }
+            });
+          } else if (activeInstance.Status == "Analyzing" || activeInstance.Status == "Complete") {
+    
+            //
+            // once we are at the analyzer, lets just set all instances's status to
+            // analyzing as we will reach here once all the collectors have finished
+    
+            this.sessionStatus = 4;
+            this.activeInstance = activeInstance;
+            let messageCount = activeInstance.AnalyzerStatusMessages.length;
+            if (messageCount > 0) {
+              this.WizardStepStatus = activeInstance.AnalyzerStatusMessages[messageCount - 1];
+            } else {
+              this.WizardStepStatus = "";
+            }
+          }
+        } else {
+          if (activeInstance.Status == "Started") {
+            this.sessionStatus = 2;
+          }
+        }
+    
+        let logFiles: LogFile[] = [];
+        session.ActiveInstances.forEach(activeInstance => {
+          if (activeInstance.Logs && activeInstance.Logs.length > 0) {
+            logFiles = logFiles.concat(activeInstance.Logs);
+          }
+        });
+    
+        this.logFiles = logFiles;
+      }
 
 }

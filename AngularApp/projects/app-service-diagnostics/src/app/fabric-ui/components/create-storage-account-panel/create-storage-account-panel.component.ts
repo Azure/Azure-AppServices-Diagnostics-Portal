@@ -9,6 +9,8 @@ import { StorageAccount } from '../../../shared/models/storage';
 import { DaasService } from '../../../shared/services/daas.service';
 import { ArmService } from '../../../shared/services/arm.service';
 import { interval, Subscription } from 'rxjs';
+import { WebSitesService } from '../../../resources/web-sites/services/web-sites.service';
+import { OperatingSystem } from '../../../shared/models/site';
 
 const BlobContainerName: string = "memorydumps";
 
@@ -37,6 +39,7 @@ export class CreateStorageAccountPanelComponent implements OnInit {
   private apiVersion: string = "2019-06-01";
   subscriptionOperationStatus: Subscription;
   pollCount: number = 0;
+  isWindowsApp: boolean = true;
 
   storageAccounts: IDropdownOption[] = [];
   choiceGroupOptions: IChoiceGroupOption[] = [
@@ -47,7 +50,9 @@ export class CreateStorageAccountPanelComponent implements OnInit {
 
   constructor(public globals: Globals, private _storageService: StorageService, private _daasService: DaasService,
     private _siteService: SiteService, private _sharedStorageAccountService: SharedStorageAccountService,
-    private _armService: ArmService) { }
+    private _armService: ArmService, private _webSiteService: WebSitesService) {
+    this.isWindowsApp = this._webSiteService.platform === OperatingSystem.windows;
+  }
 
   ngOnInit() {
 
@@ -178,7 +183,12 @@ export class CreateStorageAccountPanelComponent implements OnInit {
               return;
             }
             let storageKey = resp.keys[0].value;
-            this.generateSasKey(storageAccountId, storageAccountName, storageKey);
+            if (this.isWindowsApp) {
+              this.generateSasKey(storageAccountId, storageAccountName, storageKey);
+            } else {
+              this.generateStorageConnectionString(storageAccountId, storageAccountName, storageKey);
+            }
+
           }
         },
           error => {
@@ -206,7 +216,7 @@ export class CreateStorageAccountPanelComponent implements OnInit {
         let storageAccountProperties: StorageAccountProperties = new StorageAccountProperties();
         storageAccountProperties.name = storageAccountName;
         storageAccountProperties.sasUri = `https://${storageAccountName}.blob.${this._armService.storageUrl}/${this._daasService.defaultContainerName}?${generatedSasUri}`;
-        this._daasService.setBlobSasUriAppSetting(this.siteToBeDiagnosed, storageAccountProperties.sasUri).subscribe(resp => {
+        this._daasService.setStorageConfiguration(this.siteToBeDiagnosed, storageAccountProperties, false).subscribe(resp => {
           this.generatingSasUri = false;
           this._sharedStorageAccountService.emitChange(storageAccountProperties);
           this.globals.openCreateStorageAccountPanel = false;
@@ -219,6 +229,22 @@ export class CreateStorageAccountPanelComponent implements OnInit {
       }
     }, error => {
       this.errorMessage = "Failed while generating SAS Key";
+      this.generatingSasUri = false;
+      this.error = error;
+    });
+  }
+
+  generateStorageConnectionString(storageAccountId: string, storageAccountName: string, storageKey: string) {
+
+    let storageAccountProperties: StorageAccountProperties = new StorageAccountProperties();
+    storageAccountProperties.name = storageAccountName;
+    storageAccountProperties.connectionString = `DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageKey};EndpointSuffix=${this._armService.storageUrl}`;
+    this._daasService.setStorageConfiguration(this.siteToBeDiagnosed, storageAccountProperties, true).subscribe(resp => {
+      this.generatingSasUri = false;
+      this._sharedStorageAccountService.emitChange(storageAccountProperties);
+      this.globals.openCreateStorageAccountPanel = false;
+    }, error => {
+      this.errorMessage = "Failed while updating Storage Connection string app setting";
       this.generatingSasUri = false;
       this.error = error;
     });

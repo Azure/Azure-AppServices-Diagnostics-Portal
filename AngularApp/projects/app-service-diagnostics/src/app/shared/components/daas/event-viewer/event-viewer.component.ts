@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'event-viewer',
   templateUrl: './event-viewer.component.html',
-  styleUrls: ['./event-viewer.component.scss','./../daas.component.scss']
+  styleUrls: ['./event-viewer.component.scss','./../daas/daas.component.scss']
 })
 export class EventViewerComponent implements OnInit {
 

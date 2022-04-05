@@ -3,19 +3,19 @@ import { DaasService } from '../../../services/daas.service';
 import { AvailabilityLoggingService } from '../../../services/logging/availability.logging.service';
 import { ServerFarmDataService } from '../../../services/server-farm-data.service';
 import { SiteService } from '../../../services/site.service';
-import { DaasV2Component } from '../daas-v2/daas-v2.component';
+import { DaasComponent } from '../daas/daas.component';
 import { WindowService } from '../../../../startup/services/window.service';
 import { StepWizardSingleStep } from '../../../models/step-wizard-single-step';
-import { DaasAppInfo, LogFile, SessionV2 } from '../../../models/daas';
+import { DaasAppInfo, LogFile, Session } from '../../../models/daas';
 import { WebSitesService } from '../../../../resources/web-sites/services/web-sites.service';
 import { OperatingSystem } from '../../../models/site';
 
 @Component({
-  selector: 'profiler-v2',
-  templateUrl: './profiler-v2.component.html',
-  styleUrls: ['./profiler-v2.component.scss', '../daas.component.scss']
+  selector: 'profiler',
+  templateUrl: './profiler.component.html',
+  styleUrls: ['./profiler.component.scss', '../daas/daas.component.scss']
 })
-export class ProfilerV2Component extends DaasV2Component implements OnInit, OnDestroy {
+export class ProfilerComponent extends DaasComponent implements OnInit, OnDestroy {
 
   instancesStatus: Map<string, number>;
   selectedInstance: string;
@@ -96,7 +96,7 @@ export class ProfilerV2Component extends DaasV2Component implements OnInit, OnDe
     }
   }
 
-  populateSessionInformation(session: SessionV2) {
+  populateSessionInformation(session: Session) {
 
     if (session.Status === "Active") {
       this.sessionStatus = 1;
@@ -142,7 +142,7 @@ export class ProfilerV2Component extends DaasV2Component implements OnInit, OnDe
         }
       }
     } else {
-      if (activeInstance.Status == "Started") {
+      if (activeInstance.Status == "Started" || activeInstance.Status == "Active") {
         this.sessionStatus = 2;
       }
     }

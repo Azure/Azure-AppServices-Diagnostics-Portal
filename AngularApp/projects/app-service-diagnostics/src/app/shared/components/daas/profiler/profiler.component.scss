@@ -1,0 +1,44 @@
+td {
+  padding-right: 10px;
+  padding-bottom: 10px;
+}
+
+th {
+  padding-right: 10px;
+  padding-bottom: 10px;
+}
+
+.status-box {
+  border: 1px solid #ebebeb;
+  padding: 15px;
+  margin-top: 20px;
+}
+
+.action-box {
+  border: 1px solid #ebebeb;
+  padding: 15px;
+  background-color: var(--bodyBackground);
+}
+
+.highlight-blue {
+  color: var(--highlightBlue);
+}
+
+.panel-heading {
+  cursor: pointer;
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
+}
+
+.panel-body {
+  background-color: var(--bodyBackground);
+}
+
+.unbold {
+  font-weight: normal;
+}
+
+pre {
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
+}

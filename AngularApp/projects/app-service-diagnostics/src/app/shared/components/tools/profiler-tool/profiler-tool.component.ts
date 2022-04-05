@@ -3,6 +3,7 @@ import { SiteDaasInfo } from '../../../models/solution-metadata';
 import { SiteService } from '../../../services/site.service';
 import { WebSitesService } from '../../../../resources/web-sites/services/web-sites.service';
 import { DaasBaseComponent } from '../daas-base/daas-base.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     templateUrl: 'profiler-tool.component.html',
@@ -12,7 +13,8 @@ export class ProfilerToolComponent extends DaasBaseComponent implements OnInit {
 
     title: string = 'Collect a Profiler Trace';
     description: string = 'If your app is down or performing slow, you can collect a profiling trace to identify the root cause of the issue. Profiling is light weight and is designed for production scenarios.';
-
+    allLinuxInstancesOnAnt98: boolean = false;
+    
     thingsToKnowBefore: string[] = [
         'Once the profiler trace is started, reproduce the issue by browsing to the web app.',
         'The profiler trace will automatically stop after 60 seconds.',
@@ -22,8 +24,13 @@ export class ProfilerToolComponent extends DaasBaseComponent implements OnInit {
         'A profiler trace will help to identify issues in an ASP.NET or ASP.NET Core application.',
     ];
 
-    constructor(private _siteServiceLocal: SiteService, private _webSiteServiceLocal: WebSitesService) {
+    constructor(private _siteServiceLocal: SiteService, private _webSiteServiceLocal: WebSitesService,
+        private _activatedRoute: ActivatedRoute) {
         super(_siteServiceLocal, _webSiteServiceLocal);
+
+        if (_activatedRoute.snapshot.data.hasOwnProperty("allLinuxInstancesOnAnt98")) {
+            this.allLinuxInstancesOnAnt98 = _activatedRoute.snapshot.data["allLinuxInstancesOnAnt98"];
+        }
     }
 
     ngOnInit(): void {

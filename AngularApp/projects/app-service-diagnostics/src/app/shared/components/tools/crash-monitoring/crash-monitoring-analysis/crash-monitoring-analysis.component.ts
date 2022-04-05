@@ -3,7 +3,7 @@ import { DiagnosticService, RenderingType, DataTableResponseObject, TelemetryEve
 import { DaasService } from '../../../../services/daas.service';
 import { SiteService } from '../../../../services/site.service';
 import * as momentNs from 'moment';
-import { CrashMonitoringSettings, DaasSasUri, DaasSettings } from '../../../../models/daas';
+import { CrashMonitoringSettings, DaasStorageConfiguration } from '../../../../models/daas';
 import moment = require('moment');
 import { Subscription, interval, Observable } from 'rxjs';
 import { SiteDaasInfo } from '../../../../models/solution-metadata';
@@ -39,7 +39,7 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
   savingSettings: boolean = false;
   crashMonitoringHistory: CrashMonitoringData[] = [];
   refreshingHistory: boolean = true;
-  blobSasUriObservable: Observable<DaasSasUri>;
+  blobSasUriObservable: Observable<DaasStorageConfiguration>;
 
   // For tooltip display
   directionalHint = DirectionalHint.rightTopEdge;
@@ -68,7 +68,7 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
 
     this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(site => {
       this.siteToBeDiagnosed = site;
-      this.blobSasUriObservable = this._daasService.getBlobSasUri(site);
+      this.blobSasUriObservable = this._daasService.getStorageConfiguration(site, false);
 
       if (!this.blobSasUri) {
 

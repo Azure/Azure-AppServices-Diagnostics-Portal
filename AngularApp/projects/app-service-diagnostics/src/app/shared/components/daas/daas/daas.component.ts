@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
-import { Session, Diagnoser, Report, Log, DaasValidationResult, ReportV2, LogFile, SessionV2, ActiveInstance, SessionModeV2 } from '../../../models/daas';
-import { Subscription, Observable, interval } from 'rxjs';
+import { DaasValidationResult, LogFile, Session, ActiveInstance, SessionMode, Instance } from '../../../models/daas';
+import { Subscription, Observable, interval, forkJoin, of } from 'rxjs';
 import { StepWizardSingleStep } from '../../../models/step-wizard-single-step';
 import { SiteService } from '../../../services/site.service';
 import { DaasService } from '../../../services/daas.service';
@@ -8,34 +8,34 @@ import { WindowService } from '../../../../startup/services/window.service';
 import { AvailabilityLoggingService } from '../../../services/logging/availability.logging.service';
 import { ServerFarmDataService } from '../../../services/server-farm-data.service';
 import { WebSitesService } from '../../../../resources/web-sites/services/web-sites.service';
-import { retry } from 'rxjs/operators';
+import { catchError, delay, map, retry, retryWhen, take } from 'rxjs/operators';
 import { SiteDaasInfo } from '../../../models/solution-metadata';
 import { OperatingSystem } from '../../../models/site';
+import moment = require('moment');
 
 class InstanceSelection {
   InstanceName: string;
   Selected: boolean;
+  InstanceId: string;
 }
 
 @Component({
-  selector: 'daas-v2',
-  templateUrl: './daas-v2.component.html',
-  styleUrls: ['./daas-v2.component.scss', '../daas.component.scss']
+  selector: 'daas',
+  templateUrl: './daas.component.html',
+  styleUrls: ['./daas.component.scss']
 })
-export class DaasV2Component implements OnInit, OnDestroy {
+export class DaasComponent implements OnInit, OnDestroy {
 
   @Input() siteToBeDiagnosed: SiteDaasInfo;
   @Input() scmPath: string;
   @Input() diagnoserName: string;
   @Input() diagnoserNameLookup: string = '';
-
-  @Input() multipleAntaresVersions: boolean;
-  @Input() allInstancesOnAnt98: boolean;        // TODO - Yet to be implemented
+  @Input() allLinuxInstancesOnAnt98: boolean;
 
   @Output() SessionsEvent: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  instances: string[];
-  instancesToDiagnose: string[];
+  instances: Instance[];
+  instancesToDiagnose: Instance[];
   instancesSelected: InstanceSelection[] = [];
   sessionId: string;
   sessionInProgress: boolean;
@@ -47,6 +47,8 @@ export class DaasV2Component implements OnInit, OnDestroy {
   operationStatus: string;
   sessionCompleted: boolean;
   WizardSteps: StepWizardSingleStep[] = [];
+  useDiagServerForLinux: boolean = false;
+  linuxSubmittedInstances: SessionResponse[] = [];
 
   WizardStepStatus: string;
 
@@ -56,7 +58,7 @@ export class DaasV2Component implements OnInit, OnDestroy {
 
   validationResult: DaasValidationResult = new DaasValidationResult();
   cancellingSession: boolean = false;
-  collectionMode: SessionModeV2 = SessionModeV2.CollectAndAnalyze;
+  collectionMode: SessionMode = SessionMode.CollectAndAnalyze;
   showInstanceWarning: boolean = false;
   sessionHasBlobSasUri: boolean = false;
 
@@ -74,16 +76,17 @@ export class DaasV2Component implements OnInit, OnDestroy {
     //
     // For Linux, only collection is supported currently
     //
-    this.collectionMode = this.isWindowsApp ? SessionModeV2.CollectAndAnalyze : this.sessionMode.Collect;
+    this.collectionMode = this.isWindowsApp ? SessionMode.CollectAndAnalyze : this.sessionMode.Collect;
   }
 
-  public get sessionMode(): typeof SessionModeV2 {
-    return SessionModeV2;
+  public get sessionMode(): typeof SessionMode {
+    return SessionMode;
   }
 
   onDaasValidated(validation: DaasValidationResult) {
     this.validationResult = validation;
     if (validation.Validated) {
+      this.useDiagServerForLinux = validation.UseDiagServerForLinux
       if (this.diagnoserNameLookup === '') {
         this.diagnoserNameLookup = this.diagnoserName;
       }
@@ -110,9 +113,6 @@ export class DaasV2Component implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (!this.isWindowsApp && this.multipleAntaresVersions) {
-      this.error = "This app is currently running on instances that are running both old and newer versions of Azure App Service Platform. These tools don't work for apps when instances have multiple platform versions. Please use the 'Process Explorer' tool from the Kudu site (yoursitename.scm.azurewebsites.net/newui) to collect the diagnostic data.";
-    }
   }
 
   initWizard(): void {
@@ -141,36 +141,21 @@ export class DaasV2Component implements OnInit, OnDestroy {
     }
   }
 
-  selectMode(mode: SessionModeV2) {
+  selectMode(mode: SessionMode) {
     this.collectionMode = mode;
   }
 
   checkRunningSessions() {
     this.operationInProgress = true;
     this.operationStatus = 'Checking active sessions...';
-    let useNewRouteForLinux: boolean = false;
 
-    this._daasService.getActiveSession(this.siteToBeDiagnosed, this.isWindowsApp, useNewRouteForLinux).pipe(retry(2))
+    this._daasService.getActiveSession(this.siteToBeDiagnosed, this.isWindowsApp, this.useDiagServerForLinux).pipe(retryWhen(errors => errors.pipe(delay(3000), take(3))))
       .subscribe(activeSession => {
         this.populateActiveSession(activeSession);
-      }, (err) => {
-
-        if (!this.isWindowsApp) {
-
-          //
-          // ANT 97 defined new routes to check for active session
-          //
-
-          useNewRouteForLinux = true;
-          this._daasService.getActiveSession(this.siteToBeDiagnosed, this.isWindowsApp, useNewRouteForLinux).pipe(retry(2))
-            .subscribe(activeSession => {
-              this.populateActiveSession(activeSession);
-            });
-        }
       });
   }
 
-  populateActiveSession(activeSession: SessionV2) {
+  populateActiveSession(activeSession: Session) {
     this.operationInProgress = false;
     this.operationStatus = '';
     if (activeSession && activeSession.Tool === this.diagnoserName) {
@@ -186,7 +171,7 @@ export class DaasV2Component implements OnInit, OnDestroy {
   }
 
   pollRunningSession(sessionId: string) {
-    this._daasService.getSession(this.siteToBeDiagnosed, sessionId)
+    this._daasService.getSession(this.siteToBeDiagnosed, sessionId, this.useDiagServerForLinux)
       .subscribe(activeSession => {
         if (activeSession != null && activeSession.Tool === this.diagnoserName) {
           this.populateSessionInformation(activeSession);
@@ -206,7 +191,7 @@ export class DaasV2Component implements OnInit, OnDestroy {
       });
   }
 
-  populateSessionInformation(session: SessionV2) {
+  populateSessionInformation(session: Session) {
 
     if (session.Status === "Active") {
       this.sessionStatus = 1;
@@ -222,8 +207,7 @@ export class DaasV2Component implements OnInit, OnDestroy {
     }
 
     this.activeInstance = activeInstance;
-
-    if (activeInstance.Status == "Started") {
+    if (activeInstance.Status == "Started" || activeInstance.Status == "Active") {
       this.sessionStatus = 2;
       if (Array.isArray(activeInstance.CollectorStatusMessages)) {
         let messageCount = activeInstance.CollectorStatusMessages.length;
@@ -273,10 +257,10 @@ export class DaasV2Component implements OnInit, OnDestroy {
 
     if (this.instancesToDiagnose.length > 0) {
       this.instancesToDiagnose.forEach(x => {
-        this.instancesStatus.set(x, 1);
+        this.instancesStatus.set(x.machineName, 1);
       });
 
-      this.selectedInstance = this.instancesToDiagnose[0];
+      this.selectedInstance = this.instancesToDiagnose[0].machineName;
     }
   }
 
@@ -286,15 +270,16 @@ export class DaasV2Component implements OnInit, OnDestroy {
     if (this.instances && this.instances.length > 0) {
       this.instances.forEach(x => {
         const s = new InstanceSelection();
-        s.InstanceName = x;
+        s.InstanceName = x.machineName;
         s.Selected = false;
+        s.InstanceId = x.instanceId;
         this.instancesSelected.push(s);
       });
     }
   }
 
-  compareInstances(oldInstances: string[], newInstances: string[]): boolean {
-    return oldInstances.length == newInstances.length && oldInstances.every(function (v, i) { return v === newInstances[i]; });
+  compareInstances(oldInstances: Instance[], newInstances: Instance[]): boolean {
+    return oldInstances.length == newInstances.length && oldInstances.every(function (v, i) { return v.instanceId === newInstances[i].instanceId; });
   }
 
   getSelectedInstanceCount(): number {
@@ -320,6 +305,7 @@ export class DaasV2Component implements OnInit, OnDestroy {
   }
 
   collectDiagnoserData(consentRequired: boolean, additionalParams: string = "") {
+    this.linuxSubmittedInstances = [];
     consentRequired = consentRequired && !this.diagnoserName.startsWith("CLR Profiler");
     if (consentRequired && this.validateInstancesToCollect()) {
       this.showInstanceWarning = true;
@@ -345,12 +331,12 @@ export class DaasV2Component implements OnInit, OnDestroy {
         }
 
         this._logger.LogClickEvent(this.diagnoserName, 'DiagnosticTools');
-        this.instancesToDiagnose = new Array<string>();
+        this.instancesToDiagnose = new Array<Instance>();
 
         if (this.instancesSelected && this.instancesSelected !== null) {
           this.instancesSelected.forEach(x => {
             if (x.Selected) {
-              this.instancesToDiagnose.push(x.InstanceName);
+              this.instancesToDiagnose.push({ instanceId: x.InstanceId, machineName: x.InstanceName });
             }
           });
         }
@@ -365,17 +351,17 @@ export class DaasV2Component implements OnInit, OnDestroy {
         this.sessionStatus = 1;
         this.updateInstanceInformation();
 
-        let sessionV2 = new SessionV2();
-        sessionV2.Mode = this.collectionMode;
-        sessionV2.Tool = this.diagnoserName;
-        sessionV2.Instances = this.instancesToDiagnose;
+        let session = new Session();
+        session.Mode = this.collectionMode;
+        session.Tool = this.diagnoserName;
+        session.Instances = this.instancesToDiagnose.map(i => i.machineName);
 
         if (!this.isWindowsApp) {
-          sessionV2.ToolParams = this.diagnoserName.startsWith('MemoryDump') ? `DumpType=${this.linuxDumpType}` : additionalParams
+          session.ToolParams = this.diagnoserName.startsWith('MemoryDump') ? `DumpType=${this.linuxDumpType}` : additionalParams
         }
 
         this.initWizard();
-        this._daasService.submitDaasSessionV2(this.siteToBeDiagnosed, sessionV2)
+        this.submitDaasSession(session)
           .subscribe(result => {
             this.sessionId = result;
             this.subscription = interval(10000).subscribe(res => {
@@ -392,6 +378,58 @@ export class DaasV2Component implements OnInit, OnDestroy {
           this.operationInProgress = false;
           this.retrievingInstancesFailed = true;
         });
+  }
+
+  submitDaasSession(session: Session): Observable<string> {
+    if (this.useDiagServerForLinux) {
+      return this.submitDiagnosticServerSession(session).pipe(
+        map(responses => {
+          this.linuxSubmittedInstances = responses;
+          let successfulSessionSubmission = responses.filter(x => x.sessionId != null && x.sessionId.length > 5);
+          if (successfulSessionSubmission != null && successfulSessionSubmission.length > 0) {
+            return responses[0].sessionId;
+          } else {
+            let errors = responses.filter(x => x.error != null);
+            if (errors != null && errors.length > 0) {
+              this.error = errors[0].error;
+              this.sessionInProgress = false;
+            }
+          }
+
+        }));
+    } else {
+      return this._daasService.submitDaasSession(this.siteToBeDiagnosed, session);
+    }
+  }
+
+  submitDiagnosticServerSession(session: Session): Observable<Array<SessionResponse>> {
+    session.SessionId = moment().utc().format('YYMMDD_HHmmssSSSS');
+    let tasks = this.instancesToDiagnose.map(instance => {
+      return this.submitSessionOnInstance(instance, session)
+    });
+
+    return forkJoin(tasks);
+  }
+
+  submitSessionOnInstance(instance: Instance, session: Session): Observable<SessionResponse> {
+    return this._daasService.submitDaasSessionOnInstance(this.siteToBeDiagnosed, session, instance.instanceId).pipe(
+      retry(1),
+      map((sessionId) => {
+        let sessionResponse = new SessionResponse();
+        sessionResponse.error = null;
+        sessionResponse.sessionId = sessionId;
+        sessionResponse.instanceId = instance.instanceId;
+        sessionResponse.machineName = instance.machineName;
+        return sessionResponse;
+      }),
+      catchError(error => {
+        let sessionResponse = new SessionResponse();
+        sessionResponse.error = error;
+        sessionResponse.sessionId = null;
+        sessionResponse.instanceId = instance.instanceId;
+        sessionResponse.machineName = instance.machineName;
+        return of(sessionResponse);
+      }));
   }
 
   onInstanceChange(instanceSelected: string): void {
@@ -419,13 +457,12 @@ export class DaasV2Component implements OnInit, OnDestroy {
   }
 
   cancelSession(): void {
-    this.cancellingSession = true;
-    this._daasService.cancelDaasSession(this.siteToBeDiagnosed, this.sessionId).subscribe(resp => {
-      this.cancellingSession = false;
-      this.sessionInProgress = false;
-      this.SessionsEvent.emit(true);
-    });
-
+    // this.cancellingSession = true;
+    // this._daasService.cancelDaasSession(this.siteToBeDiagnosed, this.sessionId).subscribe(resp => {
+    //   this.cancellingSession = false;
+    //   this.sessionInProgress = false;
+    //   this.SessionsEvent.emit(true);
+    // });
   }
 
   getInstanceNameFromReport(reportName: string): string {
@@ -439,4 +476,11 @@ export class DaasV2Component implements OnInit, OnDestroy {
     }
     return reportName;
   }
+}
+
+class SessionResponse {
+  sessionId: string;
+  error: any;
+  instanceId: string;
+  machineName: string;
 }

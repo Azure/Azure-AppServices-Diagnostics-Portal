@@ -3,7 +3,7 @@
   Checking for configured blob storage...
 </div>
 
-<div class="outline-box" *ngIf="!checkingBlobSasUriConfigured && !error && !validateSasUriResponse">
+<div class="outline-box" *ngIf="!checkingBlobSasUriConfigured && !error && !validateStorageConfigurationResponse">
   <div *ngIf="chosenStorageAccount">
     <div tabindex="0">
       Storage account: <span class="highlight-blue">{{ chosenStorageAccount }}</span>
@@ -11,12 +11,12 @@
         [class.disabled]="sessionInProgress" (keyup.space)="toggleStorageAccountPanel()"
         (keyup.enter)="toggleStorageAccountPanel()" (click)="toggleStorageAccountPanel()">change</a>)
     </div>
-    <div style="font-size: smaller">Memory dumps captured via this tool will be stored in this storage account</div>
+    <div style="font-size: smaller">Diagnostic data captured via this tool will be stored in this storage account</div>
   </div>
   <div class="mt-3" *ngIf="!chosenStorageAccount">
     <strong class="mt-3">Storage</strong>
     <div class="mt-1 mb-2">
-      Before you can collect a memory dump, you must specificy a storage account to store the dump files. This
+      Before you can collect a memory dump, you must specify a storage account to store the dump files. This
       is required so that the dump files do not impact disk space of your app.
     </div>
     <div>
@@ -30,22 +30,22 @@
   <strong>Error</strong> - {{ error }}
 </div>
 
-<div class="focus-box focus-box-warning" style="margin-top:20px;word-wrap: break-word" *ngIf="validateSasUriResponse">
+<div class="focus-box focus-box-warning" style="margin-top:20px;word-wrap: break-word" *ngIf="validateStorageConfigurationResponse">
   <div class="mt-1 mb-3">
     The Storage account configuration for this app is in an invalid state. This can happen if the SAS URI has expired or
     the Storage account is deleted. The below information can help in identifying the problem with the configured
     storage account
   </div>
   <div>
-    <ul *ngIf="validateSasUriResponse.Exception">
-      <li *ngIf="validateSasUriResponse.StorageAccount">
-        Account: <strong>{{ validateSasUriResponse.StorageAccount }}</strong>
+    <ul *ngIf="getException(validateStorageConfigurationResponse)">
+      <li *ngIf="validateStorageConfigurationResponse.StorageAccount">
+        Account: <strong>{{ validateStorageConfigurationResponse.StorageAccount }}</strong>
       </li>
       <li>
-        Exception:{{ validateSasUriResponse.Exception }}
+        Exception:{{ getException(validateStorageConfigurationResponse) }}
       </li>
-      <ng-container *ngIf="validateSasUriResponse.ExtendedError">
-        <ng-container *ngFor="let item of validateSasUriResponse.ExtendedError | keyvalue">
+      <ng-container *ngIf="validateStorageConfigurationResponse.ExtendedError">
+        <ng-container *ngFor="let item of validateStorageConfigurationResponse.ExtendedError | keyvalue">
           <li *ngIf="item.value">
             {{item.key}}:{{ isString(item.value) ? item.value : JSON.stringify(item.value) }}
           </li>

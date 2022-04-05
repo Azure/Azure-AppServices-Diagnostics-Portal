@@ -1,11 +1,11 @@
 import { Component, Input, OnInit, SimpleChanges, OnChanges, Pipe, PipeTransform, OnDestroy } from '@angular/core';
-import { Session, SessionStatus, Log, SessionV2, LogFile, ReportV2, DiagnosisStatus, Diagnoser, SessionMode, SessionMaster, SessionFile, SessionModeV2 } from '../../models/daas';
+import { SessionStatus, Session, LogFile, DiagnosisStatus, CpuMonitoringMode, SessionMaster, SessionFile, SessionMode } from '../../models/daas';
 import { WindowService } from '../../../startup/services/window.service';
 import { ServerFarmDataService } from '../../services/server-farm-data.service';
 import { DaasService } from '../../services/daas.service';
 import { SiteDaasInfo } from '../../models/solution-metadata';
 import { Subscription, Observable, interval, of } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
+import { catchError, map, retry, mergeMap } from 'rxjs/operators';
 import { FormatHelper } from '../../utilities/formattingHelper';
 import { ActivatedRoute } from '@angular/router';
 import { Globals } from '../../../globals';
@@ -112,18 +112,25 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     return { sessionId: obj.sessionId, tool: obj.tool, status: obj.status, collectorStatus: obj.collectorStatus, analyzerStatus: obj.analyzerStatus };
   }
 
-  getDaasSessionsV1(): Observable<Session[]> {
-    if (this.isWindowsApp) {
-      return this._daasService.getDaasSessionsWithDetails(this.siteToBeDiagnosed).pipe(retry(2))
-    } else {
-      let session: Session[] = [];
-      return of(session);
-    }
+  getDaasSessionsV2(): Observable<Session[]> {
+    return this._daasService.getSessions(this.siteToBeDiagnosed, false).pipe(retry(2))
   }
 
-  getDaasSessionsV2(): Observable<SessionV2[]> {
-    return this._daasService.getSessionsV2(this.siteToBeDiagnosed).pipe(retry(2))
+  getLinuxDiagnosticServerSessions(): Observable<Session[]> {
+    let emptyArray: Session[] = [];
+    return this._daasService.isDiagServerEnabledForLinux(this.siteToBeDiagnosed).pipe(
+      map((isEnabled) => {
+        return isEnabled;
+      }),
+      mergeMap(isEnabled => {
+        if (!isEnabled) {
+          return of(emptyArray);
+        } else {
+          return this._daasService.getSessions(this.siteToBeDiagnosed, true).pipe(retry(2));
+        }
+      }));
   }
+
 
   checkSessions() {
     if (!this.initializedOnce) {
@@ -132,28 +139,26 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     }
 
     Observable.combineLatest(
-      this.getDaasSessionsV1(),
       this.getDaasSessionsV2().pipe(catchError(err => {
+        return of(err);
+      })),
+      this.getLinuxDiagnosticServerSessions().pipe(catchError(err => {
         return of(err);
       })))
       .subscribe(results => {
         let sessions: SessionMaster[] = [];
-        let sessionsV1 = results[0];
 
-        if (this.isArrayWithItems(results[1])) {
-          let sessionsV2: SessionV2[] = results[1];
+        if (this.isArrayWithItems(results[0])) {
+          let sessionsV2: Session[] = results[0];
           sessionsV2.forEach(session => {
             sessions.push(this.getSessionMasterFromV2(session));
           });
         }
-        // Temporary check to avoid 404s coming from /daas/sessions path
-        else if (typeof results[1] === 'string' && results[1].toLowerCase().indexOf("no route registered") > -1) {
-          this.subscription.unsubscribe();
-        }
 
-        if (this.isArrayWithItems(sessionsV1)) {
-          sessionsV1.forEach(session => {
-            sessions.push(this.getSessionMasterFromV1(session));
+        if (this.isArrayWithItems(results[1])) {
+          let sessionsV2: Session[] = results[1];
+          sessionsV2.forEach(session => {
+            sessions.push(this.getSessionMasterFromV2(session, true));
           });
         }
 
@@ -178,45 +183,10 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     return false;
   }
 
-  getSessionMasterFromV1(session: Session): SessionMaster {
-    let sessionMaster: SessionMaster = new SessionMaster();
-    sessionMaster.isV2 = false;
-    sessionMaster.sessionId = session.SessionId;
-    sessionMaster.startDate = session.StartTime;
-    sessionMaster.mode = (session.Status === SessionStatus.CollectedLogsOnly ? SessionModeV2.Collect : SessionModeV2.CollectAndAnalyze);
-    sessionMaster.status = session.Status;
-    sessionMaster.blobStorageHostName = session.BlobStorageHostName;
-    sessionMaster.size = session.LogFilesSize;
-
-    if (this.isArrayWithItems(session.DiagnoserSessions)) {
-      let diagnoser = session.DiagnoserSessions[0];
-      sessionMaster.tool = diagnoser.Name;
-      diagnoser.Logs.forEach(log => {
-        let file: SessionFile = new SessionFile();
-        file.name = log.FileName;
-        file.relativePath = (session.HasBlobSasUri ? log.FullPermanentStoragePath : `https://${this.scmPath}/api/vfs/data/DaaS/${log.RelativePath}`);
-        sessionMaster.logs.push(file);
-      });
-
-      diagnoser.Reports.forEach(report => {
-        let file: SessionFile = new SessionFile();
-        file.name = report.FileName;
-        file.relativePath = `https://${this.scmPath}/api/vfs/data/DaaS/${report.RelativePath}`;
-        sessionMaster.reports.push(file);
-      });
-
-      sessionMaster.analyzerStatus = diagnoser.AnalyzerStatus;
-      sessionMaster.collectorStatus = diagnoser.CollectorStatus;
-      sessionMaster.collectorErrors = diagnoser.CollectorErrors;
-      sessionMaster.analyzerErrors = diagnoser.AnalyzerErrors;
-    }
-
-    return sessionMaster;
-  }
-
-  getSessionMasterFromV2(session: SessionV2): SessionMaster {
+  getSessionMasterFromV2(session: Session, isDiagServerSession: boolean = false): SessionMaster {
     let sessionMaster: SessionMaster = new SessionMaster();
     sessionMaster.isV2 = true;
+    sessionMaster.isDiagServerSession = isDiagServerSession;
     sessionMaster.sessionId = session.SessionId;
     sessionMaster.tool = session.Tool;
     sessionMaster.toolParams = session.ToolParams;
@@ -225,7 +195,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     sessionMaster.instances = session.Instances;
     sessionMaster.blobStorageHostName = session.BlobStorageHostName;
 
-    if (sessionMaster.mode === SessionModeV2.CollectAndAnalyze) {
+    if (sessionMaster.mode === SessionMode.CollectAndAnalyze) {
       sessionMaster.analyzerStatus = DiagnosisStatus.WaitingForInputs;
     } else {
       sessionMaster.analyzerStatus = DiagnosisStatus.NotRequested;
@@ -371,7 +341,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
   }
 
   isAnalysisRequested(session: SessionMaster) {
-    return session.mode === SessionModeV2.CollectAndAnalyze;
+    return session.mode === SessionMode.CollectAndAnalyze;
   }
 
   setExpanded(sessions: SessionMaster[]): SessionMaster[] {
@@ -395,7 +365,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
   }
 
   deleteDiagnosticSession(sessionToDelete: SessionMaster, sessionIndex: number) {
-    this._daasService.deleteDaasSession(this.siteToBeDiagnosed, sessionToDelete.sessionId, sessionToDelete.isV2)
+    this._daasService.deleteDaasSession(this.siteToBeDiagnosed, sessionToDelete.sessionId, sessionToDelete.isDiagServerSession)
       .subscribe(resp => {
         sessionToDelete.deleting = false;
         this.sessions.splice(sessionIndex, 1);

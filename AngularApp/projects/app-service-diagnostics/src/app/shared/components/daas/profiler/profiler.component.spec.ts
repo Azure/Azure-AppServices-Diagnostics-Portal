@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DaasV2Component } from './daas-v2.component';
+import { ProfilerComponent } from './profiler.component';
 
-describe('DaasV2Component', () => {
-  let component: DaasV2Component;
-  let fixture: ComponentFixture<DaasV2Component>;
+describe('ProfilerComponent', () => {
+  let component: ProfilerComponent;
+  let fixture: ComponentFixture<ProfilerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DaasV2Component ]
+      declarations: [ ProfilerComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DaasV2Component);
+    fixture = TestBed.createComponent(ProfilerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

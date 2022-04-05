@@ -7,11 +7,6 @@ export enum DiagnosisStatus {
     Complete
 }
 
-export interface DiagnoserStatusMessage {
-    EntityType: string;
-    Message: string;
-}
-
 export enum SessionStatus {
     Active,
     CollectedLogsOnly,
@@ -20,60 +15,13 @@ export enum SessionStatus {
     Complete
 }
 
-export interface Log {
-    StartTime: string;
-    EndTime: string;
-    RelativePath: string;
-    FileName: string;
-    FullPermanentStoragePath: string;
-}
-
-export interface Report {
-    StartTime: string;
-    EndTime: string;
-    RelativePath: string;
-    FileName: string;
-    FullPermanentStoragePath: string;
-}
-
-export interface Diagnoser {
-
-    Name: string;
-    CollectorStatus: DiagnosisStatus;
-    CollectorStatusMessages: DiagnoserStatusMessage[];
-    AnalyzerStatus: DiagnosisStatus;
-    AnalyzerStatusMessages: DiagnoserStatusMessage[];
-    CollectorErrors: string[];
-    AnalyzerErrors: string[];
-    Logs: Log[];
-    Reports: Report[];
-}
-
-export class Session {
-    StartTime: string;
-    EndTime: string;
-    SessionId: string;
-    Description: string;
-    Instances: string[];
-    RunLive: boolean;
-    CollectLogsOnly: boolean;
-    Diagnosers: string[];
-    TimeSpan: string;
-    DiagnoserSessions: Diagnoser[];
-    Status: SessionStatus;
-    LogFilesSize: number;
-    BlobSasUri: string;
-    HasBlobSasUri: boolean = false;
-    BlobStorageHostName: string;
-}
-
-export enum SessionModeV2 {
+export enum SessionMode {
     Collect = "Collect",
     CollectAndAnalyze = "CollectAndAnalyze"
 }
 
-export class SessionV2 {
-    Mode: SessionModeV2;
+export class Session {
+    Mode: SessionMode;
     SessionId: string;
     Status: string;
     StartTime: string;
@@ -114,7 +62,7 @@ export class SessionFile {
 }
 
 export class SessionMaster {
-    mode: SessionModeV2;
+    mode: SessionMode;
     sessionId: string;
     startDate: string;
     instances: string[] = [];
@@ -135,6 +83,7 @@ export class SessionMaster {
     deletingFailure: string = "";
     size: number = 0;
     isV2: boolean = false;
+    isDiagServerSession: boolean = false;
 }
 
 export interface DiagnoserDefinition {
@@ -186,7 +135,7 @@ export enum AnalysisStatus {
     Completed
 }
 
-export enum SessionMode {
+export enum CpuMonitoringMode {
     Kill = "Kill",
     Collect = "Collect",
     CollectAndKill = "CollectAndKill",
@@ -194,7 +143,8 @@ export enum SessionMode {
 }
 
 export class MonitoringSession {
-    Mode: SessionMode;
+    RuleType: RuleType = RuleType.Diagnostics;
+    Mode: CpuMonitoringMode;
     SessionId: string;
     StartDate: string;
     EndDate: string;
@@ -212,6 +162,11 @@ export class MonitoringSession {
     AnalysisSubmitted: boolean = false;
     ErrorSubmittingAnalysis: string = "";
     BlobSasUri: string = "";
+}
+
+export enum RuleType {
+    Diagnostics = "Diagnostics",
+    AlwaysOn = "AlwaysOn"
 }
 
 export interface MonitoringFile {
@@ -250,15 +205,18 @@ export class DaasSettings {
     EndpointSuffix: string;
 }
 
-export interface DaasSasUri {
-    SasUri: string;
-    IsAppSetting: boolean;
+export class DaasStorageConfiguration {
+    SasUri: string = '';
+    ConnectionString: string = '';
+    IsAppSetting: boolean = false;
 }
 
 export class DaasValidationResult {
     Validated: boolean = false;
     BlobSasUri: string = "";
-    SasUriAsAppSetting: boolean = false;
+    ConnectionString: string = "";
+    ConfiguredAsAppSetting: boolean = false;
+    UseDiagServerForLinux: boolean = false;
 }
 
 export class CrashMonitoringSettings {
@@ -274,6 +232,14 @@ export interface ValidateSasUriResponse {
     StorageAccount: string;
     SpecifiedAt: string;
     ExtendedError: StorageExtendError;
+}
+
+export interface ValidateStorageAccountResponse {
+    IsStorageConfigured: boolean;
+    IsValid: boolean;
+    StorageAccount: string;
+    ValidationError: any;
+    UnderlyingException: any;
 }
 
 export interface StorageExtendError {
@@ -304,4 +270,13 @@ export enum linuxDumpType {
 export enum linuxCollectionModes {
     CollectLogs = "CollectLogs",
     CollectLogsAndKill = "CollectLogsAndKill"
+}
+
+export interface LinuxDaasSettings {
+    DiagnosticServerEnabled: boolean;
+}
+
+export interface Instance {
+    machineName: string;
+    instanceId: string;
 }

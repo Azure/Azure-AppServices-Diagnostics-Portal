@@ -62,7 +62,7 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
 
   makeDaasWarmupCall(): any {
     this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(siteDaasInfo => {
-      this._daasService.getInstances(siteDaasInfo, true).subscribe(resp => {
+      this._daasService.getDiagnosers(siteDaasInfo).subscribe(resp => {
         //do nothing with resp
       });
     });
@@ -168,7 +168,7 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
   updateDaasAction(emitEvent: boolean) {
     if (this.validationResult.Validated) {
       this.updatedCustomAction.exe = daasConsolePath;
-      if (this.validationResult.SasUriAsAppSetting) {
+      if (this.validationResult.ConfiguredAsAppSetting) {
         this.updatedCustomAction.parameters = `-${this.diagnoserOption.option} "${this.diagnoser.Name}"`;
       } else {
         this.updatedCustomAction.parameters = this.validationResult.BlobSasUri.length > 0 ? `-${this.diagnoserOption.option} "${this.diagnoser.Name}" -BlobSasUri:"${this.validationResult.BlobSasUri}"` : `-${this.diagnoserOption.option} "${this.diagnoser.Name}"`;

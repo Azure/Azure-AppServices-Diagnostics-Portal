@@ -1,5 +1,6 @@
-<daas-validator [siteToBeDiagnosed]="siteToBeDiagnosed" diagnoserName="CLR Profiler"
-  (DaasValidated)="onDaasValidated($event)"></daas-validator>
+<daas-validator [sessionInProgress]="sessionInProgress" [siteToBeDiagnosed]="siteToBeDiagnosed"
+  diagnoserName="CLR Profiler" (DaasValidated)="onDaasValidated($event)"
+  [allLinuxInstancesOnAnt98]="allLinuxInstancesOnAnt98"></daas-validator>
 <div *ngIf="validationResult.Validated">
   <div class="col" *ngIf="siteToBeDiagnosed && checkingAppInfo">
     <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
@@ -148,6 +149,29 @@
         </div>
 
       </div>
+
+      <table *ngIf="linuxSubmittedInstances.length > 0" class="mt-4 table table-bordered table-responsive">
+        <thead>
+          <tr>
+            <th>Instance</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let instance of linuxSubmittedInstances">
+            <td class="highlight-blue">
+              {{ instance.machineName }}
+            </td>
+            <td>
+              <i class="fa health-icon"
+                [ngClass]="{'fa-exclamation-circle unhealthy-icon-color': instance.error, 'fa-check-circle healthy-icon-color': instance.sessionId}"
+                aria-hidden="true"></i>
+              <span *ngIf="instance.error"> {{ instance.error }} </span>
+              <span *ngIf="!instance.error"> Submitted </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
       <div class="status-box" *ngIf="sessionInProgress">
         <div *ngIf="!cancellingSession">
