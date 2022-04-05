@@ -13,13 +13,13 @@
           {{ providerMetadata.providerName }}
         </div>
       </div>
-      <div class="panel-body">
+      <div class="panel-body" style="background-color: var(--bodyBackground);">
         <div class="panel-body data-container-body">
           <ng-container *ngFor="let property of providerMetadata.propertyBag">
             <div style="margin-bottom: 10px" *ngIf="property.key == 'Query' && property.value">
               <div class="operationName" [style.background-color]="getColorForProvider(providerMetadata.providerName)"
                 *ngIf="property.value.operationName"> {{ property.value.operationName }} </div>
-              <pre style="border-radius: 0px"><code>{{ property.value.text }}</code></pre>
+              <pre style="border-radius: 0px; color:var(--bodyText);background-color:var(--bodyBackground)"><code>{{ property.value.text }}</code></pre>
               <div style="margin-bottom: 5px">
                 <a class="datasourcelink" [attr.href]="property.value.url" style="text-decoration: none;"
                   target='_blank'>{{getProviderText(providerMetadata.providerName)}}</a>

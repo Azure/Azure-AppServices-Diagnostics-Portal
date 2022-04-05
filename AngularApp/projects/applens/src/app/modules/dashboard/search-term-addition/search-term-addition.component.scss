@@ -30,7 +30,7 @@
 }
 
 .utterances-text{
-    color: black;
+    color: var(--bodyText);
     word-wrap: break-word;
 }
 
@@ -51,12 +51,12 @@
 
 .utteranceslist-rec {
     list-style: none;
-    color: indigo;
+    color: var(--utterancesLink);
     font-size: 14px;
 }
 
 .utteranceslist-all {
-    color: indigo;
+    color: var(--utterancesLink);
     font-size: 14px;
 }
 

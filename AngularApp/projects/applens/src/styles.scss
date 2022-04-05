@@ -148,12 +148,13 @@ a:hover {
 }
 
 .skin-blue .wrapper {
-    background-color: #f0f0f0
+    background-color: var(--bodyBackground)
 }
 
 .publish-dialog{
   min-width: 70vw !important;
   min-height: 70vh !important;
+  background-color: var(--bodyBackground);
 }
 
 /* highchart container configuration */
