@@ -222,7 +222,7 @@ export const HomeRoutes = RouterModule.forChild([
                     },
                     // Profiler Tool for Linux (To be shown when All Instances of a Linux App are running on ANT 98)
                     {
-                        path: 'tools/profilerlinuxant98',
+                        path: 'tools/profilerlinuxv2',
                         component: ProfilerToolComponent,
                         data: {
                             navigationTitle: ToolNames.Profiler,
@@ -241,7 +241,7 @@ export const HomeRoutes = RouterModule.forChild([
                     },
                     // Memory Dump for Linux (To be shown when All Instances of a Linux App are running on ANT 98)
                     {
-                        path: 'tools/memorydumplinuxant98',
+                        path: 'tools/memorydumplinuxv2',
                         component: MemoryDumpToolComponent,
                         data: {
                             navigationTitle: ToolNames.MemoryDump,
