@@ -111,7 +111,7 @@ import {
     FabTooltipModule,
     FabSpinButtonModule,
     FabTextFieldModule,
-    FabContextualMenuModule
+    FabContextualMenuModule,
     FabPeoplePickerModule,
     FabTagPickerModule,
     FabProgressIndicatorModule,
