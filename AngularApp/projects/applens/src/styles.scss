@@ -218,3 +218,8 @@ code[class*=language-] {
   color: var(--bodyText) !important;
   background-color: var(--bodyBackground) !important;
 }
+
+pre {
+  background-color: var(--bodyBackground) !important;
+  color: var(--bodyText) !important;
+}
