@@ -298,21 +298,20 @@ function getMaxCheckLevel(subChecks) {
     return maxCheckLevel;
 }
 
-async function networkCheckConnectionString(propertyName, connectionString, connectionStringType = undefined, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown = undefined, isDaasNew=undefined, entityName=undefined) {
+async function networkCheckConnectionString(propertyName, connectionString, connectionStringType = undefined, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown = undefined, isDaasNew = undefined, entityName = undefined) {
     var subChecks = [];
-
+    if (!isKeyVaultReference(connectionString)) {
         if (connectionStringType == ConnectionStringType.StorageAccount ||
             connectionStringType == ConnectionStringType.BlobStorageAccount ||
             connectionStringType == ConnectionStringType.QueueStorageAccount ||
-            connectionStringType == ConnectionStringType.FileShareStorageAccount ||            
+            connectionStringType == ConnectionStringType.FileShareStorageAccount ||
             connectionStringType == ConnectionStringType.ServiceBus ||
-            connectionStringType == ConnectionStringType.EventHubs)
-        {
+            connectionStringType == ConnectionStringType.EventHubs) {
             /*
              * Full connection string validation via DaaS Extension
              */
-            var connectivityCheckResult = await validateConnection(propertyName, connectionString, connectionStringType, diagProvider, entityName,isDaasNew);
-            var maxCheckLevel = getMaxCheckLevel(connectivityCheckResult);            
+            var connectivityCheckResult = await validateConnection(propertyName, connectionString, connectionStringType, diagProvider, entityName, isDaasNew);
+            var maxCheckLevel = getMaxCheckLevel(connectivityCheckResult);
             var service;
             switch (connectionStringType) {
                 case ConnectionStringType.StorageAccount:
@@ -322,18 +321,18 @@ async function networkCheckConnectionString(propertyName, connectionString, conn
                 case ConnectionStringType.QueueStorageAccount:
                     service = "Queue Storage account"; break;
                 case ConnectionStringType.FileShareStorageAccount:
-                    service = "File Share Storage account"; break;               
+                    service = "File Share Storage account"; break;
                 case ConnectionStringType.ServiceBus:
                     service = "Service Bus"; break;
                 case ConnectionStringType.EventHubs:
                     service = "Event Hubs"; break;
-                   
+
             }
             var title = maxCheckLevel == 0 ? `Successfully connected to the ${service} resource configured for connection "${propertyName}".` :
                 `Connection attempt to the ${service} resource configured for connection "${propertyName}" failed.`;
-            if(propertyName.includes("AzureWebJobsStorage")){
+            if (propertyName.includes("AzureWebJobsStorage")) {
                 title += ' (This is preview feature)';
-            }    
+            }
             subChecks.push({ title: title, level: maxCheckLevel, subChecks: connectivityCheckResult });
         } else {
             /*
@@ -348,16 +347,49 @@ async function networkCheckConnectionString(propertyName, connectionString, conn
                     `Could not access the endpoint "${hostPort.HostName}:${hostPort.Port}" configured in App Setting "${propertyName}".`;
                 subChecks.push({ title: title, level: maxCheckLevel, subChecks: connectivityCheckResult });
             } else { // Unsupported or invalid connection string format
-               
-            var title = `Unable to parse the connection string configured in the App Setting "${propertyName}".  It is either not supported by this troubleshooter or invalid.`;
-            if (failureDetailsMarkdown != undefined) {
-                subChecks.push({ title: title, level: 2, detailsMarkdown: failureDetailsMarkdown });
-            } else {
-                subChecks.push({ title: title, level: 2 });
+                var title = `Unable to parse the connection string configured in the App Setting "${propertyName}".  It is either not supported by this troubleshooter or invalid.`;
+                if (failureDetailsMarkdown != undefined) {
+                    subChecks.push({ title: title, level: 2, detailsMarkdown: failureDetailsMarkdown });
+                } else {
+                    subChecks.push({ title: title, level: 2 });
+                }
             }
-        }
+        } 
+    } else {
+        var res = await networkCheckKeyVaultReferenceAsync(propertyName, connectionString, dnsServers, diagProvider, isVnetIntegrated);
+        res.forEach(item => subChecks.push(item));
     }
-      
+
+    return subChecks;
+}
+
+async function networkCheckKeyVaultReferenceAsync(propertyName, connectionString, dnsServers, diagProvider, isVnetIntegrated) {
+    var failureDetailsMarkdown = 'Please refer to <a href= "https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references#reference-syntax" target="_blank">this documentation</a> to configure the Key Vault reference correctly.'
+    var subChecks = [];
+    var hostPort = extractHostPortFromKeyVaultReference(connectionString);
+    if (hostPort.HostName != undefined && hostPort.Port != undefined) {
+        var connectivityCheckResult = await runConnectivityCheckAsync(hostPort.HostName, hostPort.Port, dnsServers, diagProvider, undefined, isVnetIntegrated, failureDetailsMarkdown);
+        var maxCheckLevel = getMaxCheckLevel(connectivityCheckResult);
+        if (maxCheckLevel == 0) {
+            subChecks.push({
+                title: `Network access validation of connection strings configured as key vault references are currently not supported.  Network access to the Key Vault service referenced in the App Setting "${propertyName}" was verified. Recommend checking application logs for connectivity to the endpoint.`,
+                level: 1,
+                subChecks: connectivityCheckResult
+            });
+        } else {
+            subChecks.push({
+                title: `The Key Vault endpoint "${hostPort.HostName}:${hostPort.Port}" referenced in the App Setting "${propertyName}" could not be reached".`,
+                level: maxCheckLevel,
+                subChecks: connectivityCheckResult
+            });
+        }
+    } else {
+        subChecks.push({
+            title: `The Key Vault reference in the App Setting "${propertyName}" could not be parsed.`,
+            level: 2,
+            detailsMarkdown: failureDetailsMarkdown
+        });
+    }
     return subChecks;
 }
 
