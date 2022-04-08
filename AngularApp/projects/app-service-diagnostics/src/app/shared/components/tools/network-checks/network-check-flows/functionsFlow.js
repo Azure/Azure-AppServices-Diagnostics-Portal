@@ -189,11 +189,16 @@ export var functionsFlow = {
                 func.properties.config.bindings.forEach(binding => {
                     var bindingInfo = { name: binding.name, type: binding.type, connectionStringProperty: undefined, connectionString: undefined }
 
+                    // bindingInfo.connectionStringProperty (App setting)
                     if (binding.connection != undefined) {
                         bindingInfo.connectionStringProperty = binding.connection;
                     } else if (binding.connectionStringSetting != undefined) { // CosmosDB
                         bindingInfo.connectionStringProperty = binding.connectionStringSetting;
                     }
+                    // bindingInfo.connectionString
+                    var connectionString = appSettings[bindingInfo.connectionStringProperty];
+                    bindingInfo.connectionString = connectionString;
+                    // bindingInfo.entityName
                     if (isDaasNew) {
                         if (binding.type == "serviceBusTrigger" && binding.topicName != undefined) {         // Service Bus topic
                             binding.entityName = binding.topicName
@@ -204,7 +209,7 @@ export var functionsFlow = {
                         }
                         bindingInfo.entityName = binding.entityName;
                     } else {
-                        var connectionString = appSettings[bindingInfo.connectionStringProperty];
+                        
                         // The specific entity needs to be provided for Service Bus and Event Hubs validation
                         if (connectionString != undefined && !connectionString.includes("EntityPath")) {
                             if (binding.type == "serviceBusTrigger" && binding.topicName != undefined) {         // Service Bus topic
@@ -215,7 +220,6 @@ export var functionsFlow = {
                                 connectionString += ";EntityPath=" + binding.eventHubName
                             }
                         }
-                        bindingInfo.connectionString = connectionString;
                     }
                     functionInfo.bindings.push(bindingInfo);
                 });
