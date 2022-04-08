@@ -292,6 +292,10 @@ export var functionsFlow = {
     }
 };
 
+function isKeyVaultReference(appSetting) {
+    return appSetting.includes("@Microsoft.KeyVault");
+}
+
 function getMaxCheckLevel(subChecks) {
     var maxCheckLevel = 0;
     subChecks.forEach(check => maxCheckLevel = Math.max(maxCheckLevel, check.level));
