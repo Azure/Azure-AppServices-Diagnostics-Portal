@@ -214,7 +214,7 @@ fab-command-bar .ms-SearchBox {
 }
 
 //Fix for markdown color
-pre[class*=language-] {
+code[class*=language-] {
   color: var(--bodyText) !important;
   background-color: var(--bodyBackground) !important;
 }
