@@ -70,6 +70,9 @@ export const Routes = RouterModule.forRoot([
           {
             path: 'containerapps/:containerapp',
             loadChildren: './modules/containerapp/containerapp.module#ContainerAppModule'
+          }, {
+            path: 'staticwebapps/:staticwebapp',
+            loadChildren: './modules/staticwebapp/staticwebapp.module#StaticWebAppModule'
           },
           {
             path: 'icm/:incidentId',
