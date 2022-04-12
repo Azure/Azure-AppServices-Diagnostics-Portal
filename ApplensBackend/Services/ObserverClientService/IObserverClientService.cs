@@ -8,6 +8,8 @@ namespace AppLensV3
 
         Task<ObserverResponse> GetContainerApp(string containerAppName);
 
+        Task<ObserverResponse> GetStaticWebApp(string staticWebAppHostName);
+
         Task<ObserverResponse> GetSite(string stamp, string siteName, bool details = false);
 
         Task<ObserverResponse> GetResourceGroup(string site);

@@ -8,6 +8,11 @@ namespace Observer {
         containerAppName: string;
         details: ObserverContainerAppInfo[];
     }
+
+    export interface ObserverStaticWebAppResponse {
+        details: ObserverStaticWebAppInfo[];
+        
+    }
   
     export interface ObserverSiteInfo {
         SiteName: string;
@@ -38,6 +43,21 @@ namespace Observer {
         ServiceAddress: string;
         Kind: string;
         IsInAppNamespace: boolean;
+    }
+
+    export interface ObserverStaticWebAppInfo {
+        ApiKey: string;
+        Branch: string;
+        BuildInfo: any[];
+        CustomDomains: string;
+        DefaultHostname: string;
+        GeoMasterInstance: string;
+        Name: string;
+        RepositoryUrl: string;
+        ResourceGroupName: string;
+        Sku: string;
+        StorageRing: string;
+        SubscriptionName: string;
     }
 
     export interface ObserverSiteDetailsResponse {

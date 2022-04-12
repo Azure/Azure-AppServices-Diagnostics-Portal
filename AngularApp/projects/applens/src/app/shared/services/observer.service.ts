@@ -34,6 +34,16 @@ export class ObserverService {
       }));
   }
 
+  public getStaticWebApp(staticWebAppHostName: string): Observable<Observer.ObserverStaticWebAppResponse> {
+    return this._diagnosticApiService.get<Observer.ObserverStaticWebAppResponse>(`api/staticwebapps/${staticWebAppHostName}`).pipe(
+      map((staticWebAppRes: Observer.ObserverStaticWebAppResponse) => {
+        if (staticWebAppRes && staticWebAppRes.details && isArray(staticWebAppRes.details)) {
+          staticWebAppRes.details.map(info => info);
+        }
+        return staticWebAppRes;
+      }));
+  }
+
   public getAse(ase: string): Observable<Observer.ObserverAseResponse> {
     return this._diagnosticApiService.get<Observer.ObserverAseResponse>(`api/hostingEnvironments/${ase}`);
   }

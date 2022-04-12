@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { ApplensGlobal } from '../../../applens-global';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
@@ -20,7 +21,7 @@ export class DashboardContainerComponent implements OnInit {
   observerLink: string = "";
   showMetrics: boolean = true;
 
-  constructor(public _resourceService: ResourceService, private _startupService: StartupService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, private _applensGlobal: ApplensGlobal) { }
+  constructor(public _resourceService: ResourceService, private _startupService: StartupService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, private _applensGlobal: ApplensGlobal,private _activatedRoute:ActivatedRoute) { }
 
   ngOnInit() {
     this.showMetrics = !(this._resourceService.overviewPageMetricsId == undefined || this._resourceService.overviewPageMetricsId == "");
@@ -48,6 +49,11 @@ export class DashboardContainerComponent implements OnInit {
           this._diagnosticApiService.GeomasterServiceAddress = this.resource.ServiceAddress;
           this._diagnosticApiService.GeomasterName = this.resource.GeoMasterName;
           this.observerLink = "https://wawsobserver.azurewebsites.windows.net/partner/containerapp/" + this.resource.ContainerAppName;
+        } else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/staticsites') {
+          const defaultHostName = this._activatedRoute.snapshot.queryParams["defaultHostName"];
+          if(defaultHostName) {
+            this.observerLink = "https://wawsobserver.azurewebsites.windows.net/staticwebapps/" + defaultHostName;
+          }
         }
 
         this.keys = Object.keys(this.resource);

@@ -130,6 +130,15 @@ namespace AppLensV3
         }
 
         /// <summary>
+        /// Get static web app details by staticWebAppHostName
+        /// </summary>
+        /// <param name="staticWebAppHostName">Host Name of Static Web App</param>
+        public async Task<ObserverResponse> GetStaticWebApp(string staticWebHostAppName)
+        {
+            return await GetStaticWebAppInternal(SupportObserverApiEndpoint + "partner/jamstack/" + staticWebHostAppName);
+        }
+
+        /// <summary>
         /// Get site details for siteName
         /// </summary>
         /// <param name="stamp">Stamp</param>
@@ -140,7 +149,22 @@ namespace AppLensV3
             return await GetSiteInternal(SupportObserverApiEndpoint + "stamps/" + stamp + "/sites/" + siteName + (details ? "/details" : "/adminsites"));
         }
 
-        private async Task<ObserverResponse> GetSiteInternal(string endpoint)
+        private Task<ObserverResponse> GetSiteInternal(string endpoint)
+        {
+            return GetAppInternal(endpoint, "GetAdminSite");
+        }
+
+        private Task<ObserverResponse> GetContainerAppInternal(string endpoint)
+        {
+            return GetAppInternal(endpoint, "GetContainerApp");
+        }
+
+        private Task<ObserverResponse> GetStaticWebAppInternal(string endpoint)
+        {
+            return GetAppInternal(endpoint, "GetStaticWebApp");
+        }
+
+        private async Task<ObserverResponse> GetAppInternal(string endpoint, string apiName)
         {
             var request = new HttpRequestMessage()
             {
@@ -151,24 +175,11 @@ namespace AppLensV3
             request.Headers.Add("Authorization", await GetSupportObserverAccessToken());
             var response = await _httpClient.SendAsync(request);
 
-            ObserverResponse res = await CreateObserverResponse(response, "GetAdminSite");
+            ObserverResponse res = await CreateObserverResponse(response, apiName);
             return res;
         }
 
-        private async Task<ObserverResponse> GetContainerAppInternal(string endpoint)
-        {
-            var request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri(endpoint),
-                Method = HttpMethod.Get
-            };
 
-            request.Headers.Add("Authorization", await GetSupportObserverAccessToken());
-            var response = await _httpClient.SendAsync(request);
-
-            ObserverResponse res = await CreateObserverResponse(response, "GetContainerApp");
-            return res;
-        }
 
         /// <summary>
         /// Get resource group for site

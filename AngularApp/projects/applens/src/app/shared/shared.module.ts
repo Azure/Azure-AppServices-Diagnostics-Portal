@@ -25,6 +25,7 @@ import { FabButtonModule, FabCalloutModule, FabDialogModule, FabPanelModule, Fab
 import { L1SideNavComponent } from './components/l1-side-nav/l1-side-nav.component';
 import { UserSettingService } from '../modules/dashboard/services/user-setting.service';
 import { ApplensDocsComponent } from './components/applens-docs/applens-docs.component';
+import { StaticWebAppService } from './services/staticwebapp.service';
 
 @NgModule({
   imports: [
@@ -52,6 +53,7 @@ export class SharedModule {
         ResourceService,
         SiteService,
         ContainerAppService,
+        StaticWebAppService,
         AseService,
         ApplensGlobals,
         StartupService,

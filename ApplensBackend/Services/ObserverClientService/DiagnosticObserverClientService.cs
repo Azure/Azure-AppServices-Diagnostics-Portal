@@ -64,9 +64,31 @@ namespace AppLensV3
             return GetSiteInternal(stamp, siteName);
         }
 
-        private async Task<ObserverResponse> GetSiteInternal(string stamp, string siteName)
+        public async Task<ObserverResponse> GetStaticWebApp(string staticWebAppHostName)
+        {
+            return await GetStaticWebAppInternal(staticWebAppHostName);
+        }
+
+        private Task<ObserverResponse> GetSiteInternal(string stamp, string siteName)
         {
             var path = stamp != null ? $"stamps/{stamp}/sites/{siteName}" : $"sites/{siteName}";
+            return GetAppInternal(path);
+        }
+
+        private Task<ObserverResponse> GetContainerAppInternal(string containerAppName)
+        {
+            var path = $"partner/containerapp/{containerAppName}";
+            return GetAppInternal(path);
+        }
+
+        private Task<ObserverResponse> GetStaticWebAppInternal(string staticWebAppHostName)
+        {
+            var path = $"partner/jamstack/{staticWebAppHostName}";
+            return GetAppInternal(path);
+        }
+
+        private async Task<ObserverResponse> GetAppInternal(string path)
+        {
             var siteDetailsResponse = await ExecuteDiagCall(path);
             var contentJson = await siteDetailsResponse.Content.ReadAsStringAsync();
             var content = JsonConvert.DeserializeObject(contentJson);
@@ -77,18 +99,6 @@ namespace AppLensV3
             };
         }
 
-        private async Task<ObserverResponse> GetContainerAppInternal(string containerAppName)
-        {
-            var path = $"partner/containerapp/{containerAppName}";
-            var containerAppDetailsResponse = await ExecuteDiagCall(path);
-            var contentJson = await containerAppDetailsResponse.Content.ReadAsStringAsync();
-            var content = JsonConvert.DeserializeObject(contentJson);
-            return new ObserverResponse
-            {
-                StatusCode = containerAppDetailsResponse.StatusCode,
-                Content = content
-            };
-        }
 
         private async Task<HttpResponseMessage> ExecuteDiagCall(string path)
         {

@@ -29,6 +29,13 @@ namespace AppLensV3
             return await GetContainerAppInternal(containerAppName);
         }
 
+        [HttpGet("api/staticwebapps/{staticWebAppName}")]
+        [HttpOptions("api/staticwebapps/{staticWebAppName}")]
+        public async Task<IActionResult> GetStaticWebApp(string staticWebAppName)
+        {
+            return await GetStaticWebAppInternal(staticWebAppName);
+        }
+
         [HttpGet]
         [Route("api/stamps/{stamp}/sites/{siteName}")]
         public async Task<IActionResult> GetSite(string stamp, string siteName)
@@ -108,6 +115,25 @@ namespace AppLensV3
             };
 
             if (containerAppsResponse.StatusCode == HttpStatusCode.NotFound)
+            {
+                return NotFound(response);
+            }
+
+            return Ok(response);
+        }
+
+        private async Task<IActionResult> GetStaticWebAppInternal(string staticWebAppHostName)
+        {
+            var staticWebAppsTask = _observerService.GetStaticWebApp(staticWebAppHostName);
+            var staticWebAppsResponse = await staticWebAppsTask;
+
+            var response = new
+            {
+                StaticWebAppHostName = staticWebAppHostName,
+                Details = staticWebAppsResponse.Content
+            };
+
+            if (staticWebAppsResponse.StatusCode == HttpStatusCode.NotFound)
             {
                 return NotFound(response);
             }
