@@ -295,11 +295,12 @@ export var functionsFlow = {
 };
 
 function isKeyVaultReference (appSetting) {
-    if (appSetting != undefined) {
-        return appSetting.includes('@Microsoft.KeyVault')
+    if (appSetting == undefined) {
+        return false;
+    } else {
+        return appSetting.includes('@Microsoft.KeyVault');
     }
 }
-
 
 function getMaxCheckLevel(subChecks) {
     var maxCheckLevel = 0;
@@ -309,16 +310,21 @@ function getMaxCheckLevel(subChecks) {
 
 async function networkCheckConnectionString(propertyName, connectionString, connectionStringType = undefined, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown = undefined, isDaasNew = undefined, entityName = undefined) {
     var subChecks = [];
-    if (!isKeyVaultReference(connectionString)) {
-        if (connectionStringType == ConnectionStringType.StorageAccount ||
-            connectionStringType == ConnectionStringType.BlobStorageAccount ||
-            connectionStringType == ConnectionStringType.QueueStorageAccount ||
-            connectionStringType == ConnectionStringType.FileShareStorageAccount ||
-            connectionStringType == ConnectionStringType.ServiceBus ||
-            connectionStringType == ConnectionStringType.EventHubs) {
-            /*
-             * Full connection string validation via DaaS Extension
-             */
+    if (connectionStringType == ConnectionStringType.StorageAccount ||
+        connectionStringType == ConnectionStringType.BlobStorageAccount ||
+        connectionStringType == ConnectionStringType.QueueStorageAccount ||
+        connectionStringType == ConnectionStringType.FileShareStorageAccount ||
+        connectionStringType == ConnectionStringType.ServiceBus ||
+        connectionStringType == ConnectionStringType.EventHubs) {
+        /*
+         * Full end-to-end (SDK) based validation via DaaS
+         */
+        // Only new DaaS supports end-to-end KV validation
+        if (!isDaasNew && isKeyVaultReference(connectionString)) {
+            var kvConnectivityCheckResult = await networkCheckKeyVaultReferenceAsync(propertyName, connectionString, dnsServers, diagProvider, isVnetIntegrated);
+            kvConnectivityCheckResult.forEach(item => subChecks.push(item));
+        }
+        else {
             var connectivityCheckResult = await validateConnection(propertyName, connectionString, connectionStringType, diagProvider, entityName, isDaasNew);
             var maxCheckLevel = getMaxCheckLevel(connectivityCheckResult);
             var service;
@@ -343,12 +349,16 @@ async function networkCheckConnectionString(propertyName, connectionString, conn
                 title += ' (This is preview feature)';
             }
             subChecks.push({ title: title, level: maxCheckLevel, subChecks: connectivityCheckResult });
+        }
+    } else {
+        /*
+         * tcpping based validation
+         */
+        if (isKeyVaultReference(connectionString)) {
+            var kvConnectivityCheckResult = await networkCheckKeyVaultReferenceAsync(propertyName, connectionString, dnsServers, diagProvider, isVnetIntegrated);
+            kvConnectivityCheckResult.forEach(item => subChecks.push(item));
         } else {
-            /*
-             * tcpping based validation
-             */
             var hostPort = extractHostPortFromConnectionString(connectionString);
-
             if (hostPort.HostName != undefined && hostPort.Port != undefined) {
                 var connectivityCheckResult = await runConnectivityCheckAsync(hostPort.HostName, hostPort.Port, dnsServers, diagProvider, undefined, isVnetIntegrated, failureDetailsMarkdown);
                 var maxCheckLevel = getMaxCheckLevel(connectivityCheckResult);
@@ -364,9 +374,6 @@ async function networkCheckConnectionString(propertyName, connectionString, conn
                 }
             }
         }
-    } else {
-        var res = await networkCheckKeyVaultReferenceAsync(propertyName, connectionString, dnsServers, diagProvider, isVnetIntegrated);
-        res.forEach(item => subChecks.push(item));
     }
 
     return subChecks;
