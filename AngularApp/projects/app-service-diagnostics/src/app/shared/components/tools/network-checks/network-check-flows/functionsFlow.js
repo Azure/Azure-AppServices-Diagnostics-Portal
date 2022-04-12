@@ -97,7 +97,7 @@ export var functionsFlow = {
                 // Using anchor tag instead of markdown link as we need the link to open in a new window/tab instead of the current iFrame which is disallowed
                 propertyName = "AzureWebJobsStorage";
                 failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#azurewebjobsstorage" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
-                connectionString = undefined;
+                connectionString = appSettings[propertyName];
                 if (isDaasNew) {
                     var connectionStringType = isDaasExtAccessible ? ConnectionStringType.BlobStorageAccount : undefined;
                 } else {
@@ -112,7 +112,7 @@ export var functionsFlow = {
             // WEBSITE_CONTENTAZUREFILECONNECTIONSTRING
             propertyName = "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING";
             failureDetailsMarkdown = `Please refer to <a href= "https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#website_contentazurefileconnectionstring" target="_blank">this documentation</a> on how to configure the app setting "${propertyName}".`;
-            connectionString = undefined;
+            connectionString = appSettings[propertyName];
             if (isDaasNew) {
                 var connectionStringType = isDaasExtAccessible ? ConnectionStringType.FileShareStorageAccount : undefined;
             } else {
@@ -294,9 +294,12 @@ export var functionsFlow = {
     }
 };
 
-function isKeyVaultReference(appSetting) {
-    return appSetting.includes("@Microsoft.KeyVault");
+function isKeyVaultReference (appSetting) {
+    if (appSetting != undefined) {
+        return appSetting.includes('@Microsoft.KeyVault')
+    }
 }
+
 
 function getMaxCheckLevel(subChecks) {
     var maxCheckLevel = 0;
@@ -528,7 +531,7 @@ async function validateConnection(propertyName, connectionString, type, diagProv
                 detailsMarkdown = checkConnectionStringResult.Details;
             }
             if (checkConnectionStringResult.ExceptionMessage != undefined) {
-                detailsMarkdown += `\r\n\r\nException encountered while connecting: ${checkConnectionStringResult.ExceptionMessage}`;
+                detailsMarkdown += `\r\n\r\n Exception encountered while connecting: ${checkConnectionStringResult.ExceptionMessage}`;
             }
         }
         else {
@@ -611,7 +614,7 @@ async function validateConnection(propertyName, connectionString, type, diagProv
                     break;
                 default:
                     title = `Validation of connection string failed due to an unknown error.  Please send us feedback via the "Feedback" button above.`;
-                    detailsMarkdown = `Please see exception below.`;
+                    detailsMarkdown = `Additional details of the error:`;
                     break;
             }
             // Show the exception message as it contains useful information to fix the issue.  Don't show it unless its accompanied with other explanations.
