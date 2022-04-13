@@ -173,7 +173,7 @@
     </fab-dialog-content>
   </fab-dialog>
 
-  <fab-dialog *ngIf="!detectorGraduation && gists.length > 0" [hidden]="gistDialogHidden"
+  <fab-dialog *ngIf="gists.length > 0" [hidden]="gistDialogHidden"
     (onDismiss)="dismissGistDialog()" [minWidth]="'80%'">
     <fab-dialog-content title="Gist Version">
       <div>
@@ -212,19 +212,7 @@
       </div>
     </fab-dialog-content>
   </fab-dialog>
-
-  <fab-dialog *ngIf="detectorGraduation && gists.length > 0" [hidden]="gistDialogHidden" (onDismiss)="dismissGistDialog()" [minWidth]="'80%'">
-    <fab-dialog-content title="Latest Gist Version" >
-      <fab-dropdown label="Gist name" placeholder="Field value"
-        [options]="gistsDropdownOptions" (onChange)="updateGistVersionOptions($event)"></fab-dropdown>
-      <div class="onboarding-container">
-        <ngx-monaco-editor [options]="editorOptions" [ngModel]="latestGistVersion" style="height:600px">
-            </ngx-monaco-editor>
-      </div>
-    </fab-dialog-content>
-  </fab-dialog>
-
-
+  
   <fab-panel [isOpen]="publishSuccess || publishFailed || saveSuccess || saveFailed" [isLightDismiss]="true" [type]="PanelType.custom"
     [customWidth]="'400px'" [isHiddenOnDismiss]="true" [hasCloseButton]="false" [closeButtonAriaLabel]="'close'"
     [styles]="submittedPanelStyles" [isBlocking]="false" (onDismissed)="dismissPublishSuccessHandler()"

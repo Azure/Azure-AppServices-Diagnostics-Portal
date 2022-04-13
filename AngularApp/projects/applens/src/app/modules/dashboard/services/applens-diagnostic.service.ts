@@ -230,4 +230,12 @@ export class ApplensDiagnosticService {
   getDevopsPullRequest(resourceProviderType: string) {
     return this._diagnosticApi.getDevopsPullRequest(resourceProviderType);
   }
+
+  getDevopsChangeList(filepath:string, resourceUri:string):Observable<any> {
+    return this._diagnosticApi.getDevopsChangeList(filepath, resourceUri);
+  }
+
+  getDevopsCommitContent(filePath:string, commitid:string, resourceUri:string) {
+    return this._diagnosticApi.getDevopsCommitContent(filePath, commitid, resourceUri);
+  }
 }

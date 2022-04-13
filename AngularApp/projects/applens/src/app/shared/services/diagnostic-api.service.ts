@@ -489,4 +489,15 @@ export class DiagnosticApiService {
     let path = `devops/devopsPullRequests?resourceProviderType=${resourceProviderType}`;
     return this.invoke(path, HttpMethod.GET, null, false);
   }
+
+  public getDevopsChangeList(filepath:string, resourceUri:string):Observable<any> {
+    let path = `devops/devopsChangeList?filepath=${filepath}&resourceUri=${resourceUri}`;
+    return this.invoke(path, HttpMethod.GET, null, false );
+  }
+
+  public getDevopsCommitContent(filepath:string, commitid:string, resourceUri:string):Observable<string> {
+    let path = `devops/devopsCommitContent?filepath=${filepath}&commitid=${commitid}&resourceUri=${resourceUri}`;
+    return this.invoke(path, HttpMethod.GET, null, false );
+  }
+  
 }

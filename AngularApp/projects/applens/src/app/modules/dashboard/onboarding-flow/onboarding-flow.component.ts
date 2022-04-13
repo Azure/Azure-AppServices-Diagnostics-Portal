@@ -694,11 +694,22 @@ export class OnboardingFlowComponent implements OnInit {
         });
     }
     else {
-      this.diagnosticApiService.getDetectorCode(`${this.gistName}/${this.gistName}.csx`, this.defaultBranch, this.resourceId).subscribe(gistCode => {
-        this.latestGistVersion = gistCode;
-      });
+      this.diagnosticApiService.getDevopsChangeList(`${this.DevopsConfig.folderPath}/${this.gistName}/${this.gistName}.csx`, this.resourceId).subscribe((data:any[]) => {
+        data.forEach(version => {
+          let commitDate = version["author"]["date"];
+          let commitDateFormatted = moment(commitDate).format('MM/DD/YYYY');  
+          tempList.push({
+            key: String(`${version["commitId"]}`),
+            text: String(`${version["author"]["name"]}: ${commitDateFormatted}`),
+            title: String(`${this.gistName}`)
+          })
+        });
+      }); 
+      this.gistVersionOptions = tempList.reverse();
+      if (this.gistVersionOptions.length > 10) { this.gistVersionOptions = this.gistVersionOptions.slice(0, 10); 
     }
   }
+}
 
   showGistCode: boolean = false;
   displayGistCode = "";
@@ -717,7 +728,16 @@ export class OnboardingFlowComponent implements OnInit {
     this.applyGistButtonDisabled = this.selectedKey !== event["option"]["key"] ? false : true;
     this.pastGistVersionEvent = event;
     this.temporarySelection[event["option"]["title"]]['version'] = event["option"]["key"];
-    this.displayGistSourceCode(event["option"]["title"], this.temporarySelection[event["option"]["title"]]['version']);
+    if (this.detectorGraduation) {
+      this.diagnosticApiService.getDevopsCommitContent(`${this.DevopsConfig.folderPath}/${event["option"]["title"]}/${event["option"]["title"]}.csx`, this.temporarySelection[event["option"]["title"]]['version'], this.resourceId).subscribe( x => {
+        this.temporarySelection[event["option"]["title"]]['code'] = x;
+        this.showGistCode = true;
+        this.displayGistCode = x;
+      })
+    } else {
+      this.displayGistSourceCode(event["option"]["title"], this.temporarySelection[event["option"]["title"]]['version']);
+    }
+    
   }
 
   displayGistSourceCode(gistName: string, gistVersion: string) {
@@ -727,7 +747,7 @@ export class OnboardingFlowComponent implements OnInit {
       this.displayGistCode = x;
     });
   }
-
+    
   disableRunButton() {
     this.runButtonDisabled = true;
     this.runButtonStyle = {
@@ -1612,28 +1632,24 @@ export class OnboardingFlowComponent implements OnInit {
     }
 
     let newPackage = this.UpdateConfiguration(queryResponse);
+    let update = of(null);
 
-    if (!this.detectorGraduation) {
-      let update = of(null);
+    if (this.detectorGraduation && newPackage.length > 0 ) {
+    // Get the commit id of each reference and the gist content.
+      update = forkJoin(newPackage.map(r => this.diagnosticApiService.getDevopsChangeList(r, this.resourceId).pipe(
+        map(c => this.configuration['dependencies'][r] = c[c.length - 1].commitId),
+        flatMap(v => this.diagnosticApiService.getDevopsCommitContent(`${this.DevopsConfig.folderPath}/${r}/${r}.csx`, v, this.resourceId).pipe(map(s => this.reference[r] = s ))))))
+    
+    } else {
       if (newPackage.length > 0) {
         update = forkJoin(newPackage.map(r => this.githubService.getChangelist(r).pipe(
           map(c => this.configuration['dependencies'][r] = c[c.length - 1].sha),
           flatMap(v => this.githubService.getCommitContent(r, v).pipe(map(s => this.reference[r] = s))))))
       }
-
-      update.subscribe(_ => {
-        this.publishingPackage = {
-          id: queryResponse.invocationOutput.metadata.id,
-          codeString: this.codeCompletionEnabled ? code.replace(codePrefix, "") : code,
-          committedByAlias: this.userName,
-          dllBytes: this.compilationPackage.assemblyBytes,
-          pdbBytes: this.compilationPackage.pdbBytes,
-          packageConfig: JSON.stringify(this.configuration),
-          metadata: JSON.stringify({ "utterances": this.allUtterances })
-        };
-      });
     }
-    else {
+
+    // update changes here 
+    update.subscribe(_ => {
       this.publishingPackage = {
         id: queryResponse.invocationOutput.metadata.id,
         codeString: this.codeCompletionEnabled ? code.replace(codePrefix, "") : code,
@@ -1643,7 +1659,7 @@ export class OnboardingFlowComponent implements OnInit {
         packageConfig: JSON.stringify(this.configuration),
         metadata: JSON.stringify({ "utterances": this.allUtterances })
       };
-    }
+    });
   }
 
   private showAlertBox(alertClass: string, message: string) {
