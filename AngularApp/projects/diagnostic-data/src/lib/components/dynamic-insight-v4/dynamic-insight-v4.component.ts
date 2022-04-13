@@ -10,7 +10,7 @@ import { LoadingStatus } from '../../models/loading';
 @Component({
   selector: 'dynamic-insight-v4',
   templateUrl: './dynamic-insight-v4.component.html',
-  styleUrls: ['./dynamic-insight-v4.component.scss','../insights-v4/insights-v4.component.scss']
+  styleUrls: ['./dynamic-insight-v4.component.scss', '../insights-v4/insights-v4.component.scss']
 })
 export class DynamicInsightV4Component extends DataRenderBaseComponent {
 
@@ -31,22 +31,23 @@ export class DynamicInsightV4Component extends DataRenderBaseComponent {
   }
 
   private parseInsight() {
+    if (this.renderingProperties) {
+      // Make sure that we don't render a box within the insight
+      this.renderingProperties.innerRendering.title = '';
 
-    // Make sure that we don't render a box within the insight
-    this.renderingProperties.innerRendering.title = '';
-
-    this.insight = <DynamicInsight>{
-      title: this.renderingProperties.title,
-      description: this._markdownService.compile(this.renderingProperties.description),
-      status: this.renderingProperties.status,
-      isExpanded: this.renderingProperties.expanded != undefined ? this.renderingProperties.expanded : true,
-      innerDiagnosticData: <DiagnosticData>{
-        renderingProperties: this.renderingProperties.innerRendering,
-        table: this.diagnosticData.table
-      },
-      isRated: false,
-      isHelpful: false
-    };
+      this.insight = <DynamicInsight>{
+        title: this.renderingProperties.title,
+        description: this._markdownService.compile(this.renderingProperties.description),
+        status: this.renderingProperties.status,
+        isExpanded: this.renderingProperties.expanded != undefined ? this.renderingProperties.expanded : true,
+        innerDiagnosticData: <DiagnosticData>{
+          renderingProperties: this.renderingProperties.innerRendering,
+          table: this.diagnosticData.table
+        },
+        isRated: false,
+        isHelpful: false
+      };
+    }
   }
 
   toggleInsightExpanded(insight: DynamicInsight) {
