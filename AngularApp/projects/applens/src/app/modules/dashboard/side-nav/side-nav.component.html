@@ -1,7 +1,7 @@
 <aside class="main-sidebar">
   <section class="sidebar" id="sidebar">
     <collapsible-menu theme="light">
-      <search-box [(searchValue)]="searchValue"></search-box>
+      <search-box (searchValueChange)="updateSearch($event)"></search-box>
       <!-- <fab-search-box #fabSearchBox1 [value]="searchValue" (onChange)="updateSearchValue($event)" [styles]="searchBoxStyles" (onFocus)="focusSearchBox()" [placeholder]="searchPlaceHolder"></fab-search-box> -->
       <menu-scroll>
         <section-divider [label]="'Overview'" [selected]="isSectionHeaderSelected('')" [initiallyExpanded]="false" [collapsible]="false" (click)="navigateToOverview()">
@@ -22,7 +22,7 @@
           <ng-container *ngIf="analysisTypes.length > 0">
           <collapsible-menu-item [menuItem]="analysisTypes"></collapsible-menu-item>
         </ng-container>
-          <collapsible-menu-item *ngFor="let category of categories" [searchValue]="searchValue" [menuItem]="category"></collapsible-menu-item>
+          <collapsible-menu-item *ngFor="let category of categories" [menuItem]="category" [searchValue]="searchValue"></collapsible-menu-item>
           <i *ngIf="!categories || categories.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
         </section-divider>
         <section-divider [label]="'Develop'" [selected]="isSectionHeaderSelected('users', false) || isSectionHeaderSelected('create') || isSectionHeaderSelected('creategist')" [initiallyExpanded]="false" [disableExpandIcon]="false">

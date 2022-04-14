@@ -24,9 +24,11 @@ export class SideNavComponent implements OnInit {
   currentRoutePath: string[];
 
   categories: CollapsibleMenuItem[] = [];
+  categoriesCopy: CollapsibleMenuItem[] = [];
   analysisTypes: CollapsibleMenuItem[] = [];
 
   gists: CollapsibleMenuItem[] = [];
+  gistsCopy: CollapsibleMenuItem[] = [];
 
   searchValue: string="";
 
@@ -202,7 +204,7 @@ export class SideNavComponent implements OnInit {
         this.categories.push(new CollapsibleMenuItem("All detectors", "", () => {this.navigateTo("alldetectors");},() => { return this.currentRoutePath && this.currentRoutePath.join('/') === `alldetectors`;} , null, false, null));
         this.categories.push(new CollapsibleMenuItem("Analysis", "", null, null, null, true, this.analysisTypes));
         this.categories = this.categories.sort((a, b) => a.label === 'Uncategorized' ? 1 : (a.label > b.label ? 1 : -1));
-
+        this.categoriesCopy = this.deepCopyArray(this.categories);
         this.detectorsLoading = false;
         this._telemetryService.logPageView(TelemetryEventNames.SideNavigationLoaded, {});
       }
@@ -240,6 +242,7 @@ export class SideNavComponent implements OnInit {
             categoryMenuItem.subItems.push(menuItem);
           });
         });
+        this.gistsCopy = this.deepCopyArray(this.gists);
       }
     },
       error => {
@@ -268,8 +271,55 @@ export class SideNavComponent implements OnInit {
   updateSearchValue(e: { newValue: any }) {
     if (!!e.newValue.currentTarget && !!e.newValue.currentTarget.value) {
       this.searchValue = e.newValue.currentTarget.value;
-      //this.updateListGroups(this.searchValue);
+      this.updateMenuItems(this.categories ,this.searchValue);
     }
+  }
+
+  updateSearch(searchTerm: string) {
+    this.searchValue = searchTerm;
+    this.categories = this.updateMenuItems(this.categoriesCopy,searchTerm);
+    this.gists = this.updateMenuItems(this.gistsCopy,searchTerm);
+  }
+
+  private updateMenuItems(items: CollapsibleMenuItem[],searchValue: string):CollapsibleMenuItem[] {
+    const categories = [];
+    for(const item of items)  {
+      const copiedItem = {...item};
+      copiedItem.expanded = false;
+      if(copiedItem.subItems) {
+        const subItems = [];
+        for(const subItem of copiedItem.subItems) {
+          if(this.checkMenuItemMatchesWithSearchTerm(subItem,searchValue)) {
+            subItems.push(subItem);
+          }
+        }
+        copiedItem.subItems = subItems;
+      }
+      if(this.checkMenuItemMatchesWithSearchTerm(copiedItem,searchValue) || (Array.isArray(copiedItem.subItems) && copiedItem.subItems.length > 0)){
+        if(Array.isArray(copiedItem.subItems) && copiedItem.subItems.length > 0) {
+          copiedItem.expanded = true;
+        }
+        categories.push(copiedItem);
+      }
+    }
+    return categories;
+  }
+
+  private deepCopyArray(items: CollapsibleMenuItem[]):CollapsibleMenuItem[] {
+    if(!Array.isArray(items)) return null;
+    const res = [];
+    for(const item of items) {
+      const copiedSubItems = this.deepCopyArray(item.subItems);
+      const copiedItem = {...item};
+      copiedItem.subItems = copiedSubItems;
+      res.push(copiedItem);
+    }
+    return res;
+  }
+
+  private checkMenuItemMatchesWithSearchTerm(item: CollapsibleMenuItem, searchValue:string) {
+    if(searchValue.length === 0) return true;
+    return item.label.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.id.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.metadata && item.metadata.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0;
   }
 
 }
