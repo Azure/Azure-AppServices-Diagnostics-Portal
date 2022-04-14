@@ -9,7 +9,7 @@ import {
   forkJoin
   , Observable, of
 } from 'rxjs';
-import { flatMap, map, tap, switchMap } from 'rxjs/operators'
+import { flatMap, map } from 'rxjs/operators'
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Package } from '../../../shared/models/package';
 import { GithubApiService } from '../../../shared/services/github-api.service';
@@ -698,9 +698,10 @@ export class OnboardingFlowComponent implements OnInit {
         data.forEach(version => {
           let commitDate = version["author"]["date"];
           let commitDateFormatted = moment(commitDate).format('MM/DD/YYYY');  
+          let displayText = `${version["author"]["name"]}: ${commitDateFormatted}`;
           tempList.push({
             key: String(`${version["commitId"]}`),
-            text: String(`${version["author"]["name"]}: ${commitDateFormatted}`),
+            text: displayText,
             title: String(`${this.gistName}`)
           })
         });
@@ -1762,12 +1763,17 @@ export class OnboardingFlowComponent implements OnInit {
           }));
       }
       else {
-        configuration = this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/package.json`, this.Branch, this.resourceId).pipe(map(config => {
+        configuration = this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/package.json`, this.Branch, this.resourceId).pipe(
+          map(config => {
           let c: object = JSON.parse(config)
           c['dependencies'] = c['dependencies'] || {};
-
           this.configuration = c;
           return this.configuration['dependencies'];
+        }),
+         flatMap(dep => {
+          let keys = Object.keys(dep);
+          if (keys.length === 0) return of([]);
+          return forkJoin(Object.keys(dep).map(key => this.getGistCommitContent(key, dep[key])));
         }));
       }
     }
@@ -1776,7 +1782,7 @@ export class OnboardingFlowComponent implements OnInit {
         this.configuration['dependencies'] = {};
       }
     }
-
+    // For each gist listed in package.json, the commit content is set in the references map.
     forkJoin(detectorFile, configuration, this.diagnosticApiService.getGists()).subscribe(res => {
       this.codeLoaded = true;
       // if (!this.code)
@@ -1811,6 +1817,10 @@ export class OnboardingFlowComponent implements OnInit {
 
     return false;
   }
+
+   getGistCommitContent = (gistId, gistCommitVersion) => {
+     return this.diagnosticApiService.getDevopsCommitContent(`${this.DevopsConfig.folderPath}/${gistId}/${gistId}.csx`, gistCommitVersion, this.resourceId);   
+  };
 
   ngOnDestroy() {
     clearInterval(this.redirectTimer);
