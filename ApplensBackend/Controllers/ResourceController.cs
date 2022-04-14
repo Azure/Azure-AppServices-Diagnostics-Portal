@@ -29,11 +29,11 @@ namespace AppLensV3
             return await GetContainerAppInternal(containerAppName);
         }
 
-        [HttpGet("api/staticwebapps/{staticWebAppName}")]
-        [HttpOptions("api/staticwebapps/{staticWebAppName}")]
-        public async Task<IActionResult> GetStaticWebApp(string staticWebAppName)
+        [HttpGet("api/staticwebapps/{defaultHostNameOrAppName}")]
+        [HttpOptions("api/staticwebapps/{defaultHostNameOrAppName}")]
+        public async Task<IActionResult> GetStaticWebApp(string defaultHostNameOrAppName)
         {
-            return await GetStaticWebAppInternal(staticWebAppName);
+            return await GetStaticWebAppInternal(defaultHostNameOrAppName);
         }
 
         [HttpGet]
@@ -122,14 +122,14 @@ namespace AppLensV3
             return Ok(response);
         }
 
-        private async Task<IActionResult> GetStaticWebAppInternal(string staticWebAppHostName)
+        private async Task<IActionResult> GetStaticWebAppInternal(string defaultHostNameOrAppName)
         {
-            var staticWebAppsTask = _observerService.GetStaticWebApp(staticWebAppHostName);
+            var staticWebAppsTask = _observerService.GetStaticWebApp(defaultHostNameOrAppName);
             var staticWebAppsResponse = await staticWebAppsTask;
 
             var response = new
             {
-                StaticWebAppHostName = staticWebAppHostName,
+                DefaultHostNameOrAppName = defaultHostNameOrAppName,
                 Details = staticWebAppsResponse.Content
             };
 

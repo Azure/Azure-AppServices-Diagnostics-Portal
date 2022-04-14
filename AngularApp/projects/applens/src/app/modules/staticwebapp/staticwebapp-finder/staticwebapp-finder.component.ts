@@ -10,7 +10,7 @@ import { StartupService } from "../../../shared/services/startup.service";
 })
 export class StaticWebAppFinderComponent implements OnInit {
 
-  defaultHostName: string;
+  defaultHostNameOrAppName: string;
   loading: boolean = true;
   error: string;
 
@@ -23,12 +23,11 @@ export class StaticWebAppFinderComponent implements OnInit {
   }
 
   ngOnInit() {
-    //Todo, search app by host name and app name
-    this.defaultHostName = this._route.snapshot.params['staticwebapp'];
+    this.defaultHostNameOrAppName = this._route.snapshot.params['staticwebapp'];
 
-    this._observerService.getStaticWebApp(this.defaultHostName).subscribe(observerStaticWebAppResponse => {
+    this._observerService.getStaticWebApp(this.defaultHostNameOrAppName).subscribe(observerStaticWebAppResponse => {
       if (observerStaticWebAppResponse.details.toString() == "Unable to fetch data from Observer API : GetStaticWebApp") {
-        this.error = `There was an error trying to find static web app with the host name ${this.defaultHostName}`;
+        this.error = `There was an error trying to find static web app with default host name or app name ${this.defaultHostNameOrAppName}`;
         this.loading = false;
       }
       else if (observerStaticWebAppResponse.details.length === 1) {
@@ -41,7 +40,7 @@ export class StaticWebAppFinderComponent implements OnInit {
 
       this.loading = false;
     }, (error: Response) => {
-      this.error = error.status == 404 ? `Static Web App with the default host name ${this.defaultHostName} was not found` : `There was an error trying to find static web app with the host name ${this.defaultHostName}`;
+      this.error = error.status == 404 ? `Static Web App with the default host name or app name ${this.defaultHostNameOrAppName} was not found` : `There was an error trying to find static web app with the default host name or app name ${this.defaultHostNameOrAppName}`;
       this.loading = false;
     });
   }
@@ -53,12 +52,7 @@ export class StaticWebAppFinderComponent implements OnInit {
       'providers', 'Microsoft.Web',
       'staticSites', matchingSite.Name];
 
-    const navigationExtra: NavigationExtras = {
-      queryParams: { "defaultHostName": this.defaultHostName },
-      queryParamsHandling: "merge"
-    };
-
-    this._router.navigate(resourceArray, navigationExtra);
+    this._router.navigate(resourceArray, { queryParamsHandling: "preserve" });
   }
 
 }

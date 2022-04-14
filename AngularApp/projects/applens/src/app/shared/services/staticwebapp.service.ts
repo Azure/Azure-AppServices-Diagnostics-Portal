@@ -17,8 +17,7 @@ export class StaticWebAppService extends ResourceService {
     }
 
     public startInitializationObservable() {
-        //To do, change API tp get by app name
-        this._initialized = this._observerApiService.getStaticWebApp("")
+        this._initialized = this._observerApiService.getStaticWebApp(this._armResource.resourceName)
             .pipe(map((observerResponse: Observer.ObserverStaticWebAppResponse) => {
                 this._observerResource = this._staticWebAppObject = this.getStaticWebAppFromObserverResponse(observerResponse);
                 this._currentResource.next(this._staticWebAppObject);
@@ -34,19 +33,6 @@ export class StaticWebAppService extends ResourceService {
             return resource;
         }));
     }
-
-    // private getHostName(): string {
-    //     //Get hostName from route param(/staticWebApp/:staticWebApp) or from query string
-    //     let hostName = "";
-    //     let queryParams = new URLSearchParams(window.location.search);
-    //     if (this._activatedRoute.firstChild && this._activatedRoute.firstChild.firstChild && this._activatedRoute.firstChild.firstChild.firstChild) {
-    //         const route = this._activatedRoute.firstChild.firstChild.firstChild;
-    //         hostName = route.snapshot.params["staticwebapp"];
-    //     } else if (queryParams.has("defaultHostName")) {
-    //         hostName = queryParams.get("defaultHostName");
-    //     }
-    //     return hostName;
-    // }
 
     private getStaticWebAppFromObserverResponse(observerResponse: Observer.ObserverStaticWebAppResponse): Observer.ObserverStaticWebAppInfo {
         const response = observerResponse.details.find(staticWebApp =>

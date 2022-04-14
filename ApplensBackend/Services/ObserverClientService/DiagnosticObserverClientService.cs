@@ -64,9 +64,9 @@ namespace AppLensV3
             return GetSiteInternal(stamp, siteName);
         }
 
-        public async Task<ObserverResponse> GetStaticWebApp(string staticWebAppHostName)
+        public async Task<ObserverResponse> GetStaticWebApp(string defaultHostNameOrAppName)
         {
-            return await GetStaticWebAppInternal(staticWebAppHostName);
+            return await GetStaticWebAppInternal(defaultHostNameOrAppName);
         }
 
         private Task<ObserverResponse> GetSiteInternal(string stamp, string siteName)
@@ -81,9 +81,9 @@ namespace AppLensV3
             return GetAppInternal(path);
         }
 
-        private Task<ObserverResponse> GetStaticWebAppInternal(string staticWebAppHostName)
+        private Task<ObserverResponse> GetStaticWebAppInternal(string defaultHostNameOrAppName)
         {
-            var path = $"partner/jamstack/{staticWebAppHostName}";
+            var path = $"partner/jamstack/{defaultHostNameOrAppName}";
             return GetAppInternal(path);
         }
 

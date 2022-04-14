@@ -34,8 +34,8 @@ export class ObserverService {
       }));
   }
 
-  public getStaticWebApp(staticWebAppHostName: string): Observable<Observer.ObserverStaticWebAppResponse> {
-    return this._diagnosticApiService.get<Observer.ObserverStaticWebAppResponse>(`api/staticwebapps/${staticWebAppHostName}`).pipe(
+  public getStaticWebApp(defaultHostNameOrAppName: string): Observable<Observer.ObserverStaticWebAppResponse> {
+    return this._diagnosticApiService.get<Observer.ObserverStaticWebAppResponse>(`api/staticwebapps/${defaultHostNameOrAppName}`).pipe(
       map((staticWebAppRes: Observer.ObserverStaticWebAppResponse) => {
         if (staticWebAppRes && staticWebAppRes.details && isArray(staticWebAppRes.details)) {
           staticWebAppRes.details.map(info => info);

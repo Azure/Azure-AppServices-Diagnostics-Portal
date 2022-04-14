@@ -61,7 +61,7 @@ export class MainComponent implements OnInit {
       caseId: false
     },{
       resourceType: null,
-      resourceTypeLabel: 'Static App Host Name',
+      resourceTypeLabel: 'Static App Name Or Default Host Name',
       routeName: (name) => `staticwebapps/${name}`,
       displayName: 'Static Web App',
       enabled: true,

@@ -10,6 +10,7 @@ namespace Observer {
     }
 
     export interface ObserverStaticWebAppResponse {
+        defaultHostNameOrAppName: string;
         details: ObserverStaticWebAppInfo[];
         
     }

@@ -130,12 +130,12 @@ namespace AppLensV3
         }
 
         /// <summary>
-        /// Get static web app details by staticWebAppHostName
+        /// Get static web app details by static web App default host name or app name
         /// </summary>
-        /// <param name="staticWebAppHostName">Host Name of Static Web App</param>
-        public async Task<ObserverResponse> GetStaticWebApp(string staticWebHostAppName)
+        /// <param name="defaultHostNameOrAppName">Host Name of Static Web App</param>
+        public async Task<ObserverResponse> GetStaticWebApp(string defaultHostNameOrAppName)
         {
-            return await GetStaticWebAppInternal(SupportObserverApiEndpoint + "partner/jamstack/" + staticWebHostAppName);
+            return await GetStaticWebAppInternal(SupportObserverApiEndpoint + "partner/jamstack/" + defaultHostNameOrAppName);
         }
 
         /// <summary>

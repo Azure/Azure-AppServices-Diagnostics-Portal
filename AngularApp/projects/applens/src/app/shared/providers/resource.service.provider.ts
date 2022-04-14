@@ -5,7 +5,6 @@ import { AseService } from "../services/ase.service";
 import { ResourceService } from "../services/resource.service";
 import { ObserverService } from "../services/observer.service";
 import { StaticWebAppService } from "../services/staticwebapp.service";
-import { ActivatedRoute } from "@angular/router";
 
 export let ResourceServiceFactory = (startupService: StartupService, observerService: ObserverService) => {
     let serviceInputs = startupService.getInputs();

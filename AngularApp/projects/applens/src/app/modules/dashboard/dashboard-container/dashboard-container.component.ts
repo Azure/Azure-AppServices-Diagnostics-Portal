@@ -21,7 +21,7 @@ export class DashboardContainerComponent implements OnInit {
   observerLink: string = "";
   showMetrics: boolean = true;
 
-  constructor(public _resourceService: ResourceService, private _startupService: StartupService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, private _applensGlobal: ApplensGlobal,private _activatedRoute:ActivatedRoute) { }
+  constructor(public _resourceService: ResourceService, private _startupService: StartupService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, private _applensGlobal: ApplensGlobal) { }
 
   ngOnInit() {
     this.showMetrics = !(this._resourceService.overviewPageMetricsId == undefined || this._resourceService.overviewPageMetricsId == "");
@@ -45,15 +45,12 @@ export class DashboardContainerComponent implements OnInit {
             this._resourceService.imgSrc = this._resourceService.altIcons['Xenon'];
           }
         } else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/containerapps' ||
-                   serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.app/containerapps') {
+          serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.app/containerapps') {
           this._diagnosticApiService.GeomasterServiceAddress = this.resource.ServiceAddress;
           this._diagnosticApiService.GeomasterName = this.resource.GeoMasterName;
           this.observerLink = "https://wawsobserver.azurewebsites.windows.net/partner/containerapp/" + this.resource.ContainerAppName;
         } else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/staticsites') {
-          const defaultHostName = this._activatedRoute.snapshot.queryParams["defaultHostName"];
-          if(defaultHostName) {
-            this.observerLink = "https://wawsobserver.azurewebsites.windows.net/staticwebapps/" + defaultHostName;
-          }
+          this.observerLink = "https://wawsobserver.azurewebsites.windows.net/staticwebapps/" + this.resource["DefaultHostname"];
         }
 
         this.keys = Object.keys(this.resource);
