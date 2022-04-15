@@ -1,7 +1,7 @@
 <aside class="main-sidebar">
   <section class="sidebar" id="sidebar">
     <collapsible-menu theme="light">
-      <search-box (searchValueChange)="updateSearch($event)"></search-box>
+      <search-box (searchValueChange)="updateSearch($event)" [searchValue]="searchValue"></search-box>
       <!-- <fab-search-box #fabSearchBox1 [value]="searchValue" (onChange)="updateSearchValue($event)" [styles]="searchBoxStyles" (onFocus)="focusSearchBox()" [placeholder]="searchPlaceHolder"></fab-search-box> -->
       <menu-scroll>
         <section-divider [label]="'Overview'" [selected]="isSectionHeaderSelected('')" [initiallyExpanded]="false" [collapsible]="false" (click)="navigateToOverview()">
