@@ -35,9 +35,15 @@ export class StringUtilities {
         return this.TrimStart(this.TrimEnd(target, trimSubstring), trimSubstring);
     }
 
-    //KMP algorithm for searching string index
-    // https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm
-    public static knuthMorrisPrattStringMatching(text: string, word: string): number {
+    /* * 
+    * KMP algorithm for searching string index
+    * https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm
+    * https://github.com/trekhleb/javascript-algorithms/blob/master/src/algorithms/string/knuth-morris-pratt/knuthMorrisPratt.js
+    * @param {string} text, target string   
+    * @param {string} word, search string
+    * @return {number} index of search string in target. return -1 if not found
+    * */
+    public static IndexOf(text: string, word: string): number {
         if (word.length === 0) {
             return 0;
         }

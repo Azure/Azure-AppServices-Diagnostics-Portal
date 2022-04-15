@@ -281,6 +281,8 @@ export class SideNavComponent implements OnInit {
     this.gists = this.updateMenuItems(this.gistsCopy, searchTerm);
   }
 
+
+  //Only support filtering for two layer menu-item
   private updateMenuItems(items: CollapsibleMenuItem[], searchValue: string): CollapsibleMenuItem[] {
     const categories = [];
     for (const item of items) {
@@ -319,8 +321,7 @@ export class SideNavComponent implements OnInit {
 
   private checkMenuItemMatchesWithSearchTerm(item: CollapsibleMenuItem, searchValue: string) {
     if (searchValue.length === 0) return true;
-    // return item.label.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.id.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.metadata && item.metadata.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0;
-    return StringUtilities.knuthMorrisPrattStringMatching(item.label.toLowerCase(),searchValue.toLowerCase()) >= 0 || StringUtilities.knuthMorrisPrattStringMatching(item.id.toLowerCase(),searchValue.toLowerCase()) >= 0 || (item.metadata && StringUtilities.knuthMorrisPrattStringMatching(item.metadata.toLowerCase(),searchValue.toLowerCase()) >= 0);
+    return StringUtilities.IndexOf(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || StringUtilities.IndexOf(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0 || (item.metadata && StringUtilities.IndexOf(item.metadata.toLowerCase(), searchValue.toLowerCase()) >= 0);
   }
 
 }

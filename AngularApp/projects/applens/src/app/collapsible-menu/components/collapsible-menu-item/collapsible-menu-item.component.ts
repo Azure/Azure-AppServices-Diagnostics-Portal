@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BehaviorSubject } from 'rxjs';
-import { SearchPipe } from '../../pipes/search.pipe';
 import { DirectionalHint } from 'office-ui-fabric-react';
 
 @Component({
@@ -40,7 +39,7 @@ export class CollapsibleMenuItemComponent {
 
   directionalHint = DirectionalHint.bottomLeftEdge;
 
-  constructor(private _searchPipe: SearchPipe) { }
+  constructor() { }
 
   ngOnInit() {
     this.children = this.menuItem.subItems;
@@ -48,9 +47,6 @@ export class CollapsibleMenuItemComponent {
 
     this._searchValueSubject.subscribe(searchValue => {
         this.searchValueLocal = searchValue;
-        this.menuItem.expanded = searchValue != undefined && searchValue != "" ? true : this.menuItem.expanded;
-        // this.hasChildren = this.menuItem.subItems ? this._searchPipe.transform(this.menuItem.subItems, searchValue).length > 0 : false;
-        // this.matchesSearchTerm = !this.searchValueLocal || this.menuItem.label.toLowerCase().indexOf(this.searchValueLocal.toLowerCase()) >= 0 || this.menuItem.id.toLowerCase().indexOf(this.searchValueLocal.toLowerCase()) >= 0 || this.menuItem.metadata && this.menuItem.metadata.toLowerCase().indexOf(this.searchValueLocal.toLowerCase()) >= 0 || this.hasChildren;
     });
   }
 
