@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { ApplensGlobal } from '../../../applens-global';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
