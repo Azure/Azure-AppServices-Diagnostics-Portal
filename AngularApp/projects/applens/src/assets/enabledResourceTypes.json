@@ -123,6 +123,16 @@
         },
         {
             "service": "ResourceService",
+            "resourceType": "Microsoft.ServiceFabric/managedclusters",
+            "templateFileName": "ServiceFabricManagedClusters",
+            "imgSrc": "assets/img/sfmc-logo.svg",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "serviceFabricManagedCluster",
+            "searchSuffix": "AZURE SERVICE FABRIC MANAGED CLUSTER",
+            "displayName": "Service Fabric Managed Cluster"
+        },
+        {
+            "service": "ResourceService",
             "resourceType": "Microsoft.ApiManagement/service",
             "templateFileName": "ApiManagementService",
             "imgSrc": "assets/img/Azure-ApiManagement-Logo.png",
@@ -373,86 +383,86 @@
             "searchSuffix": "AZURE WEB PUBSUB SERVICE",
             "displayName": "Web PubSub Service"
         },
-        { 
-            "service": "ResourceService",  
-            "resourceType": "Microsoft.NetApp/netAppAccounts",  
-            "templateFileName": "NetAppAccounts",  
-            "imgSrc": "assets/img/Azure-NetApp-Logo.png",  
-            "versionPrefix": "", 
-            "pesId": "16469",  
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.NetApp/netAppAccounts",
+            "templateFileName": "NetAppAccounts",
+            "imgSrc": "assets/img/Azure-NetApp-Logo.png",
+            "versionPrefix": "",
+            "pesId": "16469",
             "azureCommImpactedServicesList": "Azure NetApp Files",
             "searchSuffix": "AZURE NETAPP FILE",
             "displayName": "NetApp File"
         },
-        { 
-            "service": "ResourceService",  
-            "resourceType": "Microsoft.Compute/virtualMachines",  
-            "templateFileName": "VirtualMachines",  
-            "imgSrc": "assets/img/Icon-compute-21-Virtual-Machine.svg",  
-            "versionPrefix": "", 
-            "pesId": "14749",  
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.Compute/virtualMachines",
+            "templateFileName": "VirtualMachines",
+            "imgSrc": "assets/img/Icon-compute-21-Virtual-Machine.svg",
+            "versionPrefix": "",
+            "pesId": "14749",
             "azureCommImpactedServicesList": "Azure Virtual Machines",
             "searchSuffix": "AZURE VIRTUAL MACHINE",
             "displayName": "Virtual Machine"
         },
-        { 
-             "service": "ResourceService",  
-             "resourceType": "Microsoft.AzurePortal/sessions",  
-             "templateFileName": "AzurePortal",  
-             "imgSrc": "assets/img/AzurePortal.svg",  
-             "versionPrefix": "",  
+        {
+             "service": "ResourceService",
+             "resourceType": "Microsoft.AzurePortal/sessions",
+             "templateFileName": "AzurePortal",
+             "imgSrc": "assets/img/AzurePortal.svg",
+             "versionPrefix": "",
              "azureCommImpactedServicesList": "azurePortal",
             "searchSuffix": "AZURE PORTAL SESSION",
-            "displayName": "Portal Session" 
+            "displayName": "Portal Session"
          },
-        { 
-             "service": "ResourceService",  
-             "resourceType": "microsoft.insights/components",  
-             "templateFileName": "AppInsights",  
-             "imgSrc": "assets/img/AppInsights-Logo.svg",  
-             "versionPrefix": "",  
+        {
+             "service": "ResourceService",
+             "resourceType": "microsoft.insights/components",
+             "templateFileName": "AppInsights",
+             "imgSrc": "assets/img/AppInsights-Logo.svg",
+             "versionPrefix": "",
              "azureCommImpactedServicesList": "appInsights",
             "searchSuffix": "AZURE APPLICATION INSIGHTS",
             "displayName": "Application Insights"
          },
-        { 
-             "service": "ResourceService",  
-             "resourceType": "microsoft.operationalinsights/workspaces",  
-             "templateFileName": "LogAnalytics",  
-             "imgSrc": "assets/img/LogAnalytics-Logo.svg",  
-             "versionPrefix": "",  
+        {
+             "service": "ResourceService",
+             "resourceType": "microsoft.operationalinsights/workspaces",
+             "templateFileName": "LogAnalytics",
+             "imgSrc": "assets/img/LogAnalytics-Logo.svg",
+             "versionPrefix": "",
              "azureCommImpactedServicesList": "logAnalytics",
             "searchSuffix": "AZURE LOG ANALYTICS",
             "displayName": "Log Analytics"
          },
-        { 
-             "service": "ResourceService",  
-             "resourceType": "Microsoft.Web/staticSites",  
-             "templateFileName": "StaticSites",  
-             "imgSrc": "assets/img/StaticSites-Logo.svg",  
-             "versionPrefix": "",  
+        {
+             "service": "ResourceService",
+             "resourceType": "Microsoft.Web/staticSites",
+             "templateFileName": "StaticSites",
+             "imgSrc": "assets/img/StaticSites-Logo.svg",
+             "versionPrefix": "",
              "azureCommImpactedServicesList": "staticSites",
             "searchSuffix": "AZURE STATIC WEB APPS",
             "displayName": "Static Web Apps"
          },
-        { 
-             "service": "ResourceService",  
-             "resourceType": "Microsoft.DocumentDB/databaseAccounts",  
-             "templateFileName": "CosmosDB",  
-             "imgSrc": "assets/img/CosmosDB-Logo.svg",  
-             "versionPrefix": "",  
+        {
+             "service": "ResourceService",
+             "resourceType": "Microsoft.DocumentDB/databaseAccounts",
+             "templateFileName": "CosmosDB",
+             "imgSrc": "assets/img/CosmosDB-Logo.svg",
+             "versionPrefix": "",
              "pesId": "15585",
              "staticSelfHelpContent": "microsoft.cosmosdb",
              "azureCommImpactedServicesList": "Azure Cosmos DB",
             "searchSuffix": "AZURE COSMOS DB",
             "displayName": "Cosmos DB"
          },
-        { 
-             "service": "ResourceService",  
-             "resourceType": "Microsoft.Kubernetes/connectedClusters",  
-             "templateFileName": "ArcK8s",  
-             "imgSrc": "assets/img/ArcK8s-Logo.svg",  
-             "versionPrefix": "",  
+        {
+             "service": "ResourceService",
+             "resourceType": "Microsoft.Kubernetes/connectedClusters",
+             "templateFileName": "ArcK8s",
+             "imgSrc": "assets/img/ArcK8s-Logo.svg",
+             "versionPrefix": "",
              "pesId": "17112",
              "staticSelfHelpContent": "microsoft.kubernetes",
              "azureCommImpactedServicesList": "Azure Arc enabled Kubernetes",
@@ -537,32 +547,32 @@
             "searchSuffix": "AZURE CACHE FOR REDIS",
             "displayName": "Azure Cache for Redis"
         },
-        { 
-             "service": "ResourceService",  
-             "resourceType": "Microsoft.Insights/scheduledQueryRules",  
-             "templateFileName": "LogSearchAlerts",  
-             "imgSrc": "assets/img/AzureAlerts-Logo.svg",  
-             "versionPrefix": "",  
+        {
+             "service": "ResourceService",
+             "resourceType": "Microsoft.Insights/scheduledQueryRules",
+             "templateFileName": "LogSearchAlerts",
+             "imgSrc": "assets/img/AzureAlerts-Logo.svg",
+             "versionPrefix": "",
              "azureCommImpactedServicesList": "",
              "searchSuffix": "AZURE LOG SEARCH ALERTS",
              "displayName": "Azure Log Search Alerts"
          },
-         { 
-             "service": "ResourceService",  
-             "resourceType": "Microsoft.Insights/metricAlerts",  
-             "templateFileName": "MetricAlerts",  
-             "imgSrc": "assets/img/AzureAlerts-Logo.svg",  
-             "versionPrefix": "",  
+         {
+             "service": "ResourceService",
+             "resourceType": "Microsoft.Insights/metricAlerts",
+             "templateFileName": "MetricAlerts",
+             "imgSrc": "assets/img/AzureAlerts-Logo.svg",
+             "versionPrefix": "",
              "azureCommImpactedServicesList": "",
              "searchSuffix": "AZURE METRICS ALERTS",
              "displayName": "Azure Metric Alerts"
          },
-         { 
-            "service": "ResourceService",  
-            "resourceType": "Microsoft.Compute/virtualMachineScaleSets",  
-            "templateFileName": "VirtualMachineScaleSets",  
-            "imgSrc": "assets/img/VM-Scale-Sets.svg",  
-            "versionPrefix": "",  
+         {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.Compute/virtualMachineScaleSets",
+            "templateFileName": "VirtualMachineScaleSets",
+            "imgSrc": "assets/img/VM-Scale-Sets.svg",
+            "versionPrefix": "",
             "azureCommImpactedServicesList": "",
             "searchSuffix": "VIRTUAL MACHINE SCALE SETS",
             "displayName": "Virtual Machine Scale Sets"
