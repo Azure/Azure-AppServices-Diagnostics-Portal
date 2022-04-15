@@ -23,7 +23,7 @@
           <collapsible-menu-item [menuItem]="analysisTypes"></collapsible-menu-item>
         </ng-container>
           <collapsible-menu-item *ngFor="let category of categories" [menuItem]="category" [searchValue]="searchValue"></collapsible-menu-item>
-          <i *ngIf="!categories || categories.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
+          <!-- <i *ngIf="!categories || categories.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i> -->
         </section-divider>
         <section-divider [label]="'Develop'" [selected]="isSectionHeaderSelected('users', false) || isSectionHeaderSelected('create') || isSectionHeaderSelected('creategist')" [initiallyExpanded]="false" [disableExpandIcon]="false">
           <i class="fa fa-code fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>

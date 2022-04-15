@@ -5,9 +5,9 @@ import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from 
 import { ResourceService } from '../../../shared/services/resource.service';
 import { CollapsibleMenuItem } from '../../../collapsible-menu/components/collapsible-menu-item/collapsible-menu-item.component';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
-import { DetectorType } from 'diagnostic-data';
+import { DetectorType, StringUtilities } from 'diagnostic-data';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
-import {TelemetryEventNames} from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
+import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -30,7 +30,7 @@ export class SideNavComponent implements OnInit {
   gists: CollapsibleMenuItem[] = [];
   gistsCopy: CollapsibleMenuItem[] = [];
 
-  searchValue: string="";
+  searchValue: string = "";
 
   contentHeight: string;
 
@@ -38,7 +38,7 @@ export class SideNavComponent implements OnInit {
 
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService) {
     this.contentHeight = (window.innerHeight - 139) + 'px';
-    if(environment.adal.enabled){
+    if (environment.adal.enabled) {
       let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
       this.userId = alias.replace('@microsoft.com', '');
     }
@@ -69,7 +69,7 @@ export class SideNavComponent implements OnInit {
       icon: null
     }];
 
-     createNew: CollapsibleMenuItem[] = [
+  createNew: CollapsibleMenuItem[] = [
     {
       label: 'Your Detectors',
       id: "",
@@ -78,53 +78,53 @@ export class SideNavComponent implements OnInit {
       },
       expanded: false,
       subItems: null,
-      isSelected:  () => {
+      isSelected: () => {
         return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase().startsWith(`users`);
       },
       icon: null
     },
     {
-    label: 'New Detector',
-    id: "",
-    onClick: () => {
-      this.navigateTo('create');
-    },
-    expanded: false,
-    subItems: null,
-    isSelected: () => {
+      label: 'New Detector',
+      id: "",
+      onClick: () => {
+        this.navigateTo('create');
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: () => {
         return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `create`.toLowerCase();
       },
-    icon: null
-  },
-  {
-    label: 'New Gist',
-    id: "",
-    onClick: () => {
-      this.navigateTo('createGist');
+      icon: null
     },
-    expanded: false,
-    subItems: null,
-    isSelected: () => {
+    {
+      label: 'New Gist',
+      id: "",
+      onClick: () => {
+        this.navigateTo('createGist');
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: () => {
         return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `createGist`.toLowerCase();
       },
-    icon: null
-  }
+      icon: null
+    }
   ];
 
   configuration: CollapsibleMenuItem[] = [
-      {
-          label: 'Kusto Mapping',
-          onClick: () => {
-            this.navigateTo('kustoConfig');
-          },
-          id: "",
-          expanded: false,
-          subItems: null,
-          isSelected:  () => {
-            return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `kustoConfig`.toLowerCase();
-          },
-          icon: null
-      }
+    {
+      label: 'Kusto Mapping',
+      onClick: () => {
+        this.navigateTo('kustoConfig');
+      },
+      id: "",
+      expanded: false,
+      subItems: null,
+      isSelected: () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `kustoConfig`.toLowerCase();
+      },
+      icon: null
+    }
   ];
 
   ngOnInit() {
@@ -176,7 +176,7 @@ export class SideNavComponent implements OnInit {
           };
 
           let category = element.category ? element.category : "Uncategorized";
-          let menuItem = new CollapsibleMenuItem(element.name, element.id, onClick, isSelected, null, false, [], element.supportTopicList && element.supportTopicList.length>0 ? element.supportTopicList.map(x => x.id).join(","): null);
+          let menuItem = new CollapsibleMenuItem(element.name, element.id, onClick, isSelected, null, false, [], element.supportTopicList && element.supportTopicList.length > 0 ? element.supportTopicList.map(x => x.id).join(",") : null);
 
           let categoryMenuItem = this.categories.find((cat: CollapsibleMenuItem) => cat.label === category);
           if (!categoryMenuItem) {
@@ -195,13 +195,13 @@ export class SideNavComponent implements OnInit {
               return this.currentRoutePath && this.currentRoutePath.join('/') === `analysis/${element.id}`;
             }
 
-            let analysisMenuItem = new CollapsibleMenuItem(element.name, element.id , onClickAnalysisParent, isSelectedAnalysis, null, true, [], element.supportTopicList && element.supportTopicList.length>0 ? element.supportTopicList.map(x => x.id).join(","): null);
+            let analysisMenuItem = new CollapsibleMenuItem(element.name, element.id, onClickAnalysisParent, isSelectedAnalysis, null, true, [], element.supportTopicList && element.supportTopicList.length > 0 ? element.supportTopicList.map(x => x.id).join(",") : null);
             this.analysisTypes.push(analysisMenuItem);
 
           }
         });
 
-        this.categories.push(new CollapsibleMenuItem("All detectors", "", () => {this.navigateTo("alldetectors");},() => { return this.currentRoutePath && this.currentRoutePath.join('/') === `alldetectors`;} , null, false, null));
+        this.categories.push(new CollapsibleMenuItem("All detectors", "", () => { this.navigateTo("alldetectors"); }, () => { return this.currentRoutePath && this.currentRoutePath.join('/') === `alldetectors`; }, null, false, null));
         this.categories.push(new CollapsibleMenuItem("Analysis", "", null, null, null, true, this.analysisTypes));
         this.categories = this.categories.sort((a, b) => a.label === 'Uncategorized' ? 1 : (a.label > b.label ? 1 : -1));
         this.categoriesCopy = this.deepCopyArray(this.categories);
@@ -261,42 +261,42 @@ export class SideNavComponent implements OnInit {
   }
 
 
-  isSectionHeaderSelected (path: string, matchFullPath: boolean = true) {
-      if (matchFullPath)
-        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === path.toLowerCase();
+  isSectionHeaderSelected(path: string, matchFullPath: boolean = true) {
+    if (matchFullPath)
+      return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === path.toLowerCase();
     else
-        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase().startsWith(path.toLowerCase());
+      return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase().startsWith(path.toLowerCase());
   };
 
   updateSearchValue(e: { newValue: any }) {
     if (!!e.newValue.currentTarget && !!e.newValue.currentTarget.value) {
       this.searchValue = e.newValue.currentTarget.value;
-      this.updateMenuItems(this.categories ,this.searchValue);
+      this.updateMenuItems(this.categories, this.searchValue);
     }
   }
 
   updateSearch(searchTerm: string) {
     this.searchValue = searchTerm;
-    this.categories = this.updateMenuItems(this.categoriesCopy,searchTerm);
-    this.gists = this.updateMenuItems(this.gistsCopy,searchTerm);
+    this.categories = this.updateMenuItems(this.categoriesCopy, searchTerm);
+    this.gists = this.updateMenuItems(this.gistsCopy, searchTerm);
   }
 
-  private updateMenuItems(items: CollapsibleMenuItem[],searchValue: string):CollapsibleMenuItem[] {
+  private updateMenuItems(items: CollapsibleMenuItem[], searchValue: string): CollapsibleMenuItem[] {
     const categories = [];
-    for(const item of items)  {
-      const copiedItem = {...item};
+    for (const item of items) {
+      const copiedItem = { ...item };
       copiedItem.expanded = false;
-      if(copiedItem.subItems) {
+      if (copiedItem.subItems) {
         const subItems = [];
-        for(const subItem of copiedItem.subItems) {
-          if(this.checkMenuItemMatchesWithSearchTerm(subItem,searchValue)) {
+        for (const subItem of copiedItem.subItems) {
+          if (this.checkMenuItemMatchesWithSearchTerm(subItem, searchValue)) {
             subItems.push(subItem);
           }
         }
         copiedItem.subItems = subItems;
       }
-      if(this.checkMenuItemMatchesWithSearchTerm(copiedItem,searchValue) || (Array.isArray(copiedItem.subItems) && copiedItem.subItems.length > 0)){
-        if(Array.isArray(copiedItem.subItems) && copiedItem.subItems.length > 0) {
+      if (this.checkMenuItemMatchesWithSearchTerm(copiedItem, searchValue) || (Array.isArray(copiedItem.subItems) && copiedItem.subItems.length > 0)) {
+        if (Array.isArray(copiedItem.subItems) && copiedItem.subItems.length > 0) {
           copiedItem.expanded = true;
         }
         categories.push(copiedItem);
@@ -305,21 +305,22 @@ export class SideNavComponent implements OnInit {
     return categories;
   }
 
-  private deepCopyArray(items: CollapsibleMenuItem[]):CollapsibleMenuItem[] {
-    if(!Array.isArray(items)) return null;
+  private deepCopyArray(items: CollapsibleMenuItem[]): CollapsibleMenuItem[] {
+    if (!Array.isArray(items)) return null;
     const res = [];
-    for(const item of items) {
+    for (const item of items) {
       const copiedSubItems = this.deepCopyArray(item.subItems);
-      const copiedItem = {...item};
+      const copiedItem = { ...item };
       copiedItem.subItems = copiedSubItems;
       res.push(copiedItem);
     }
     return res;
   }
 
-  private checkMenuItemMatchesWithSearchTerm(item: CollapsibleMenuItem, searchValue:string) {
-    if(searchValue.length === 0) return true;
-    return item.label.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.id.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.metadata && item.metadata.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0;
+  private checkMenuItemMatchesWithSearchTerm(item: CollapsibleMenuItem, searchValue: string) {
+    if (searchValue.length === 0) return true;
+    // return item.label.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.id.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0 || item.metadata && item.metadata.toLowerCase().indexOf(searchValue.toLowerCase()) >= 0;
+    return StringUtilities.knuthMorrisPrattStringMatching(item.label.toLowerCase(),searchValue.toLowerCase()) >= 0 || StringUtilities.knuthMorrisPrattStringMatching(item.id.toLowerCase(),searchValue.toLowerCase()) >= 0 || (item.metadata && StringUtilities.knuthMorrisPrattStringMatching(item.metadata.toLowerCase(),searchValue.toLowerCase()) >= 0);
   }
 
 }
