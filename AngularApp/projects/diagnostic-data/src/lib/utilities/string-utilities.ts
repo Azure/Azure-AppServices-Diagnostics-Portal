@@ -34,4 +34,55 @@ export class StringUtilities {
 
         return this.TrimStart(this.TrimEnd(target, trimSubstring), trimSubstring);
     }
+
+    //KMP algorithm for searching string index
+    // https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm
+    public static knuthMorrisPrattStringMatching(text: string, word: string): number {
+        if (word.length === 0) {
+            return 0;
+        }
+
+        let textIndex = 0;
+        let wordIndex = 0;
+
+        const patternTable = StringUtilities.BuildPatternTable(word);
+
+        while (textIndex < text.length) {
+            if (text[textIndex] === word[wordIndex]) {
+                // We've found a match.
+                if (wordIndex === word.length - 1) {
+                    return (textIndex - word.length) + 1;
+                }
+                wordIndex += 1;
+                textIndex += 1;
+            } else if (wordIndex > 0) {
+                wordIndex = patternTable[wordIndex - 1];
+            } else {
+                // wordIndex = 0;
+                textIndex += 1;
+            }
+        }
+        return -1;
+    }
+
+    //Helper function for KMP algorithm
+    private static BuildPatternTable(word: string): number[] {
+        const patternTable = [0];
+        let prefixIndex = 0;
+        let suffixIndex = 1;
+
+        while (suffixIndex < word.length) {
+            if (word[prefixIndex] === word[suffixIndex]) {
+                patternTable[suffixIndex] = prefixIndex + 1;
+                suffixIndex += 1;
+                prefixIndex += 1;
+            } else if (prefixIndex === 0) {
+                patternTable[suffixIndex] = 0;
+                suffixIndex += 1;
+            } else {
+                prefixIndex = patternTable[prefixIndex - 1];
+            }
+        }
+        return patternTable;
+    }
 }
