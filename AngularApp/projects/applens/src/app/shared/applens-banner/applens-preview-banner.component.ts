@@ -7,7 +7,7 @@ import { TelemetryService } from 'diagnostic-data';
   styleUrls: ['./applens-preview-banner.component.scss']
 })
 export class ApplensBannerComponent implements OnInit {
-  public showBanner: boolean = true;
+  public showBanner: boolean = false;
   private url: URL = new URL(window.location.href);
   private readonly prodHostName = "applens.azurewebsites.net";
   private readonly previewHostName = "applens-preview.azurewebsites.net";
