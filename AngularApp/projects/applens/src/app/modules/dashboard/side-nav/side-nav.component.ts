@@ -321,7 +321,7 @@ export class SideNavComponent implements OnInit {
 
   private checkMenuItemMatchesWithSearchTerm(item: CollapsibleMenuItem, searchValue: string) {
     if (searchValue.length === 0) return true;
-    return StringUtilities.IndexOf(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || StringUtilities.IndexOf(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0 || (item.metadata && StringUtilities.IndexOf(item.metadata.toLowerCase(), searchValue.toLowerCase()) >= 0);
+    return StringUtilities.IndexOf(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || StringUtilities.IndexOf(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0;
   }
 
 }
