@@ -698,7 +698,8 @@ export class OnboardingFlowComponent implements OnInit {
         data.forEach(version => {
           let commitDate = version["author"]["date"];
           let commitDateFormatted = moment(commitDate).format('MM/DD/YYYY');  
-          let displayText = `${version["author"]["name"]}: ${commitDateFormatted}`;
+          let authorAlias = version["author"]['email'].split("@")[0];
+          let displayText = String(`${authorAlias}: ${commitDateFormatted} ${version["commitId"] === this.configuration['dependencies'][this.gistName] ? "[in use]" : ""}`);
           tempList.push({
             key: String(`${version["commitId"]}`),
             text: displayText,
@@ -706,8 +707,10 @@ export class OnboardingFlowComponent implements OnInit {
           })
         });
       }); 
+      this.loadingGistVersions = false;
+      this.refreshGistButtonDisabled = false;
       this.gistVersionOptions = tempList.reverse();
-      if (this.gistVersionOptions.length > 10) { this.gistVersionOptions = this.gistVersionOptions.slice(0, 10); 
+      if (this.gistVersionOptions.length > 10) { this.gistVersionOptions = this.gistVersionOptions.slice(0, 10);       
     }
   }
 }
@@ -722,6 +725,7 @@ export class OnboardingFlowComponent implements OnInit {
     dropdownItemsWrapper: {
       maxHeight: '40vh'
     },
+    
   };
 
   gistVersionOnChange(event: string) {
