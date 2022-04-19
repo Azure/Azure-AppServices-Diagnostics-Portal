@@ -68,6 +68,7 @@ a:hover {
   max-width: 100% !important;
   max-height: 90%;
   overflow-y: scroll !important;
+  background-color: var(--bodyBackground)!important;
 }
 
 .panel.with-nav-tabs .panel-heading.app-nav-bar {
@@ -162,7 +163,7 @@ a:hover {
 .publish-dialog {
   min-width: 70vw !important;
   min-height: 70vh !important;
-  background-color: var(--bodyBackground);
+  background-color: var(--bodyBackground)!important;
 }
 
 /* highchart container configuration */
