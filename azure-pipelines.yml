@@ -15,11 +15,6 @@ steps:
     versionSpec: '14.18.x'
   displayName: 'Install Node.js'
 
-- task: npmAuthenticate@0
-  inputs:
-    workingFile: './AngularApp/.npmrc'
-  displayName: 'NPM Authenticate'
-
 - script: |
     cd AngularApp
     npm install -g @angular/cli@8.0.2
