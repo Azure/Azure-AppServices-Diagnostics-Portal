@@ -181,6 +181,12 @@ highcharts-chart {
   overflow: visible !important;
 }
 
+.highcharts-tooltip-container span {
+    font-size: "12px";
+    font-weight: "normal";
+    font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif!important;
+}
+
 fab-command-bar .ms-SearchBox {
   border-width: 0px !important;
 }
