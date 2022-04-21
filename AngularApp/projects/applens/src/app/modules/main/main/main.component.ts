@@ -397,6 +397,9 @@ export class MainComponent implements OnInit {
     this.onNavigateRecentResource(recentResource);
   }
 
+  updateResourceName(e: { event: Event, newValue?: string }) {
+    this.resourceName = e.newValue.toString();
+  }
 
 }
 
