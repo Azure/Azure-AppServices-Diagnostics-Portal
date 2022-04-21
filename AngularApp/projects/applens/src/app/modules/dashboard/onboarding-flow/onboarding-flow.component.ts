@@ -447,7 +447,7 @@ export class OnboardingFlowComponent implements OnInit {
       this.commitHistoryLink = (devopsConfig.folderPath === "/") ? `https://dev.azure.com/${devopsConfig.organization}/${devopsConfig.project}/_git/${devopsConfig.repository}?path=${devopsConfig.folderPath}${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&_a=history` : `https://dev.azure.com/${devopsConfig.organization}/${devopsConfig.project}/_git/${devopsConfig.repository}?path=${devopsConfig.folderPath}/${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&_a=history`;
 
       this.deleteVisibilityStyle = !(this.detectorGraduation === true && this.mode !== DevelopMode.Create) ? { display: "none" } : {};
-      this.saveButtonVisibilityStyle = !(this.detectorGraduation === true && this.mode !== DevelopMode.Create) ? { display: "none" } : {};
+      this.saveButtonVisibilityStyle = !(this.detectorGraduation === true ) ? { display: "none" } : {};
       this.commitHistoryVisibilityStyle = !(this.detectorGraduation === true && this.mode !== DevelopMode.Create) ? { display: "none" } : {};
 
 
@@ -1512,13 +1512,14 @@ export class OnboardingFlowComponent implements OnInit {
       this.Branch = `${this.Branch}${this.saveTempId}`;
     }
 
-    /*
-    if (this.mode == DevelopMode.Create && idInSystem(saveTempId)){
-      this.saveFailed = true;
-      this.saveFailMessage = "A detector with this ID already exists. Please enter a new ID"
-      postSave();
-    }
-    */
+    this.idInSystem(this.saveTempId).subscribe(inSystem => {
+      if (this.mode == DevelopMode.Create && inSystem){
+        this.saveFailed = true;
+        this.saveFailMessage = "A detector with this ID already exists. Please enter a new ID"
+        this.postSave();
+        return;
+      }
+    });
 
 
     let title = [`/${this.saveTempId.toLowerCase()}/${this.saveTempId.toLowerCase()}.csx`];
@@ -1547,6 +1548,10 @@ export class OnboardingFlowComponent implements OnInit {
     this.getBranchList();
     this.enablePublishButton();
     this.enableRunButton();
+  }
+
+  idInSystem(detectorId: string): Observable<boolean>{
+    return this._diagnosticApi.idExists(detectorId);
   }
 
   postSave() {

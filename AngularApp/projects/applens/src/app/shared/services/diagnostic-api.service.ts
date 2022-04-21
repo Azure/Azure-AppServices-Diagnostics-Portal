@@ -499,5 +499,9 @@ export class DiagnosticApiService {
     let path = `devops/devopsCommitContent?filepath=${filepath}&commitid=${commitid}&resourceUri=${resourceUri}`;
     return this.invoke(path, HttpMethod.GET, null, false );
   }
-  
+
+  public idExists(id: string): Observable<boolean>{
+    let path = `internal/idExists?detectorId=${id}`;
+    return this.invoke(path, HttpMethod.GET, null, false);
+  }
 }
