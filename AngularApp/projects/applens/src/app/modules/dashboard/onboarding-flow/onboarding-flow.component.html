@@ -226,9 +226,14 @@
           </div>
         </div>
 
-        <div *ngIf="publishFailed && !detectorGraduation || saveFailed" style="display: flex; align-items: center; padding: 0px 10px;">
+        <div *ngIf="publishFailed && !detectorGraduation" style="display: flex; align-items: center; padding: 0px 10px;">
           <status-icon [status]="HealthStatus.Critical" class="mr-3"></status-icon>
           <div style="font-weight: 600;">Your detector {{detectorName}} publish failed </div>
+        </div>
+
+        <div *ngIf="saveFailed" style="display: flex; align-items: center; padding: 0px 10px;">
+          <status-icon [status]="HealthStatus.Critical" class="mr-3"></status-icon>
+          <div style="font-weight: 600;">Failed to save your detector </div>
         </div>
 
         <div *ngIf="publishSuccess && detectorGraduation" style="display: flex; align-items: center; padding: 0px 10px;">
@@ -251,6 +256,7 @@
     <div *ngIf="publishSuccess && !detectorGraduation" style="margin-left: 4px;">You can find it in "Your detectors" later.</div>
     <div *ngIf="publishSuccess && detectorGraduation" style="margin-left: 4px;">You can view your PR <a target="_blank" rel="noopener noreferrer" [href]="PRLink">here</a>.</div>
     <div *ngIf="saveSuccess" style="margin-left: 4px;">You can view your code <a target="_blank" rel="noopener noreferrer" [href]="PRLink">here</a>.</div>
+    <div *ngIf="saveFailed" style="margin-left: 4px;">{{saveFailMessage}}</div>
   </fab-panel>
 
 
