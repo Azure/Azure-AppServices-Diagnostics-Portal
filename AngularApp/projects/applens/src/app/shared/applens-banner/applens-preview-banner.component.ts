@@ -9,8 +9,8 @@ import { TelemetryService } from 'diagnostic-data';
 export class ApplensBannerComponent implements OnInit {
   public showBanner: boolean = false;
   private url: URL = new URL(window.location.href);
-  private readonly prodHostName = "applens.azurewebsites.net";
-  private readonly previewHostName = "applens-preview.azurewebsites.net";
+  private readonly prodHostName = "applens.trafficmanager.net";
+  private readonly previewHostName = "applens-preview.trafficmanager.net";
   public isPreview: boolean = true;
   constructor(private _telemetryService: TelemetryService) { }
 
