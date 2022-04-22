@@ -26,7 +26,7 @@ export class MainComponent implements OnInit {
   selectedResourceType: ResourceTypeState;
   resourceName: string;
   openResourceTypePanel: boolean = false;
-  resourceTypeList: any = [];
+  resourceTypeList: { name: string, imgSrc: string }[] = [];
   type: PanelType = PanelType.custom;
   width: string = "850px";
   panelStyles: any = {
@@ -42,7 +42,8 @@ export class MainComponent implements OnInit {
       routeName: (name) => `sites/${name}`,
       displayName: 'App Service',
       enabled: true,
-      caseId: false
+      caseId: false,
+      id: 'App Service'
     },
     {
       resourceType: null,
@@ -50,7 +51,8 @@ export class MainComponent implements OnInit {
       routeName: (name) => `hostingEnvironments/${name}`,
       displayName: 'App Service Environment',
       enabled: true,
-      caseId: false
+      caseId: false,
+      id: 'App Service Environment'
     },
     {
       resourceType: null,
@@ -58,14 +60,16 @@ export class MainComponent implements OnInit {
       routeName: (name) => `containerapps/${name}`,
       displayName: 'Container App',
       enabled: true,
-      caseId: false
-    },{
+      caseId: false,
+      id: 'Container App'
+    }, {
       resourceType: null,
       resourceTypeLabel: 'Static App Name Or Default Host Name',
       routeName: (name) => `staticwebapps/${name}`,
       displayName: 'Static Web App',
       enabled: true,
-      caseId: false
+      caseId: false,
+      id: 'Static Web App'
     },
     {
       resourceType: null,
@@ -73,7 +77,8 @@ export class MainComponent implements OnInit {
       routeName: (name) => this.getFakeArmResource('Microsoft.Compute', 'virtualMachines', name),
       displayName: 'Virtual Machine',
       enabled: true,
-      caseId: false
+      caseId: false,
+      id: 'Virtual Machine'
     },
     {
       resourceType: null,
@@ -81,19 +86,20 @@ export class MainComponent implements OnInit {
       routeName: (name) => `${name}`,
       displayName: 'ARM Resource ID',
       enabled: true,
-      caseId: false
-   },
-   {
-    resourceType: null,
-    resourceTypeLabel: 'Stamp name',
-    routeName: (name) => `stampfinder/${name}`,
-    displayName: 'Internal Stamp',
-    enabled: true,
-    caseId: false
-  }
+      caseId: false,
+      id: 'ARM Resource ID'
+    },
+    {
+      resourceType: null,
+      resourceTypeLabel: 'Stamp name',
+      routeName: (name) => `stampfinder/${name}`,
+      displayName: 'Internal Stamp',
+      enabled: true,
+      caseId: false,
+      id: 'Internal Stamp'
+    }
   ];
   resourceTypes: ResourceTypeState[] = [];
-
   startTime: momentNs.Moment;
   endTime: momentNs.Moment;
   enabledResourceTypes: ResourceServiceInputs[];
@@ -117,7 +123,7 @@ export class MainComponent implements OnInit {
   table: RecentResourceDisplay[];
   applensDocs = applensDocs;
 
-  constructor(private _router: Router, private _http: HttpClient, private _detectorControlService: DetectorControlService, private _adalService: AdalService, private _userInfoService: UserSettingService, private _themeService: GenericThemeService) {
+  constructor(private _router: Router, private _http: HttpClient, private _detectorControlService: DetectorControlService, private _adalService: AdalService, private _userSettingService: UserSettingService, private _themeService: GenericThemeService) {
     this.endTime = moment.utc();
     this.startTime = this.endTime.clone().add(-1, 'days');
     this.inIFrame = window.parent !== window;
@@ -129,63 +135,51 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
     this.resourceTypes = [...this.defaultResourceTypes];
-    this.selectedResourceType = this.resourceTypes[0];
+    this.selectedResourceType = this.defaultResourceTypes[0];
 
     this.defaultResourceTypes.forEach(resource => {
       this.fabDropdownOptions.push({
-        key: resource.displayName,
+        key: resource.id,
         text: resource.displayName,
-        ariaLabel: resource.displayName
+        ariaLabel: resource.displayName,
       });
     });
 
+
+    this._userSettingService.getUserSetting().subscribe(userInfo => {
+      if (userInfo && userInfo.resources) {
+        this.table = this.generateDataTable(userInfo.resources);
+      }
+
+      if (userInfo && userInfo.theme && userInfo.theme.toLowerCase() == "dark") {
+        this._themeService.setActiveTheme("dark");
+      }
+
+      if (userInfo && userInfo.defaultServiceType && this.defaultResourceTypes.find(type => type.id.toLowerCase() === userInfo.defaultServiceType.toLowerCase())) {
+        this.selectedResourceType = this.defaultResourceTypes.find(type => type.id.toLowerCase() === userInfo.defaultServiceType.toLowerCase());
+      }
+    });
+
     this.resourceTypeList = [
-        {name: "App", imgSrc: "assets/img/Azure-WebApps-Logo.png"},
-        {name: "Linux App", imgSrc: "assets/img/Azure-Tux-Logo.png"},
-        {name: "Function App", imgSrc: "assets/img/Azure-Functions-Logo.png"},
-        {name: "Logic App", imgSrc: "assets/img/Azure-LogicAppsPreview-Logo.svg"},
-        {name: "App Service Environment",  imgSrc: "assets/img/ASE-Logo.jpg"},
-        {name: "Virtual Machine", imgSrc: "assets/img/Icon-compute-21-Virtual-Machine.svg"},
-        {name:  "Container App", imgSrc: "assets/img/Azure-ContainerApp-Logo.png"},
-        {name:  "Internal Stamp", imgSrc: "assets/img/Cloud-Service-Logo.svg"}];
+      { name: "App", imgSrc: "assets/img/Azure-WebApps-Logo.png" },
+      { name: "Linux App", imgSrc: "assets/img/Azure-Tux-Logo.png" },
+      { name: "Function App", imgSrc: "assets/img/Azure-Functions-Logo.png" },
+      { name: "Logic App", imgSrc: "assets/img/Azure-LogicAppsPreview-Logo.svg" },
+      { name: "App Service Environment", imgSrc: "assets/img/ASE-Logo.jpg" },
+      { name: "Virtual Machine", imgSrc: "assets/img/Icon-compute-21-Virtual-Machine.svg" },
+      { name: "Container App", imgSrc: "assets/img/Azure-ContainerApp-Logo.png" },
+      { name: "Internal Stamp", imgSrc: "assets/img/Cloud-Service-Logo.svg" }];
 
     // TODO: Use this to restrict access to routes that don't match a supported resource type
     this._http.get<ResourceServiceInputsJsonResponse>('assets/enabledResourceTypes.json').subscribe(jsonResponse => {
       this.enabledResourceTypes = <ResourceServiceInputs[]>jsonResponse.enabledResourceTypes;
-      this.enabledResourceTypes.forEach(type => {
-        const searchSuffix = type.searchSuffix;
-        if (searchSuffix && searchSuffix.length > 0 && !this.resourceTypes.find(resource => resource.displayName && searchSuffix && resource.displayName.toLowerCase() === searchSuffix.toLowerCase())) {
-          this.resourceTypes.push({
-            resourceType: null,
-            resourceTypeLabel: 'ARM resource ID',
-            routeName: (name) => `${name}`,
-            displayName: `${searchSuffix}`,
-            enabled: true,
-            caseId: false
-          });
+      this.enabledResourceTypes.forEach(resource => {
+        if (this.resourceTypeList.findIndex(item => item.name.toLowerCase() === resource.displayName.toLowerCase()) < 0) {
+          this.resourceTypeList.push({ name: resource.displayName, imgSrc: resource ? resource.imgSrc : "" })
         }
       });
-
-      const list = this.enabledResourceTypes.filter(type => this.defaultResourceTypes.findIndex(defaultResource => defaultResource.displayName === type.displayName) === -1);
-
-      list.sort((a,b) => {
-        return a.displayName.localeCompare(b.displayName);
-      })
-
-      list.forEach(resource => {
-        this.resourceTypes.push({
-          resourceType: resource.resourceType,
-          resourceTypeLabel: 'ARM resource ID',
-          routeName: (name) => `${name}`,
-          displayName: `${resource.displayName}`,
-          enabled: true,
-          caseId: false
-        });
-
-        if (this.resourceTypeList.findIndex(item => item.name.toLowerCase() === resource.displayName.toLowerCase()) < 0)
-        {
-            this.resourceTypeList.push({name: resource.displayName, imgSrc: resource? resource.imgSrc: ""})
-        }
+      this.resourceTypeList.sort((a, b) => {
+        return a.name.localeCompare(b.name);
       });
     });
 
@@ -195,36 +189,27 @@ export class MainComponent implements OnInit {
     });
 
     this.userGivenName = this._adalService.userInfo.profile.given_name;
-    this._userInfoService.getUserSetting().subscribe(userInfo => {
-        if (userInfo && userInfo.resources) {
-          this.table = this.generateDataTable(userInfo.resources);
-        }
-
-        if(userInfo && userInfo.theme.toLowerCase() == "dark")
-        {
-            this._themeService.setActiveTheme("dark");
-        }
-      });
   }
 
-  openResourcePanel()
-  {
-      this.openResourceTypePanel = true;
+  openResourcePanel() {
+    this.openResourceTypePanel = true;
   }
 
   dismissedHandler() {
     this.openResourceTypePanel = false;
- }
+  }
 
   selectResourceType(type: ResourceTypeState) {
     if (type.enabled) {
       this.selectedResourceType = type;
       this.showResourceTypeOptions = false;
     }
+    this.selectedResourceType = type;
+    this._userSettingService.updateDefaultServiceType(type.id);
   }
 
   selectDropdownKey(e: { option: IDropdownOption, index: number }) {
-    const resourceType = this.resourceTypes.find(resource => resource.displayName === e.option.key);
+    const resourceType = this.defaultResourceTypes.find(resource => resource.displayName === e.option.text);
     this.selectResourceType(resourceType);
   }
 
@@ -284,7 +269,7 @@ export class MainComponent implements OnInit {
     }
 
 
-    this._detectorControlService.setCustomStartEnd(this._detectorControlService.startTime,this._detectorControlService.endTime);
+    this._detectorControlService.setCustomStartEnd(this._detectorControlService.startTime, this._detectorControlService.endTime);
 
     let timeParams = {
       startTime: this._detectorControlService.startTimeString,

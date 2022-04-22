@@ -15,6 +15,7 @@ export interface ResourceTypeState {
     resourceTypeLabel?: string;
     enabled: boolean;
     caseId: boolean;
+    id: string;
 }
 
 export interface ActivatedResource {

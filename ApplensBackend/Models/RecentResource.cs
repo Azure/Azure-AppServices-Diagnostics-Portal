@@ -27,7 +27,10 @@ namespace AppLensV3.Models
        [JsonProperty(PropertyName = "expandAnalysisCheckCard")]
        public bool ExpandAnalysisCheckCard { get; set; }
 
-        public UserSetting(string id, List<RecentResource> resources, string theme="light", string viewMode="smarter", bool expandAnalysisCheckCard = false)
+        [JsonProperty(PropertyName = "defaultServiceType")]
+        public string DefaultServiceType;
+
+        public UserSetting(string id, List<RecentResource> resources, string theme="light", string viewMode="smarter", bool expandAnalysisCheckCard = false, string defaultServiceType = "")
         {
             Id = id;
             Resources = resources;
@@ -35,6 +38,7 @@ namespace AppLensV3.Models
             Theme = theme;
             ViewMode = viewMode;
             ExpandAnalysisCheckCard = expandAnalysisCheckCard;
+            DefaultServiceType = defaultServiceType;
         }
     }
 

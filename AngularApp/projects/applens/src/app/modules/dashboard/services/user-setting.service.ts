@@ -10,8 +10,8 @@ const maxRecentResourceLength = 5;
 export class UserSettingService {
     userSetting: UserSetting;
     userId: string = "";
-    currentTheme: string="light";
-    currentViewMode: string="smarter";
+    currentTheme: string = "light";
+    currentViewMode: string = "smarter";
     currentThemeSub: BehaviorSubject<string> = new BehaviorSubject<string>("light");
     currentViewModeSub: BehaviorSubject<string> = new BehaviorSubject<string>("smarter");
     isWaterfallViewSub: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -20,8 +20,7 @@ export class UserSettingService {
         const alias = !!this._adalService.userInfo.profile && !!this._adalService.userInfo.profile.upn ? this._adalService.userInfo.profile.upn : '';
         this.userId = alias.replace('@microsoft.com', '');
 
-        if (this.userId != "")
-        {
+        if (this.userId != "") {
             this.getUserSetting().subscribe((userSetting) => {
                 this.userSetting = userSetting;
             });
@@ -49,19 +48,18 @@ export class UserSettingService {
     }
 
     isWaterfallViewMode() {
-        return this.getUserSetting().pipe(map(userSetting => {return userSetting.viewMode == "waterfall"}));
+        return this.getUserSetting().pipe(map(userSetting => { return userSetting.viewMode == "waterfall" }));
     }
 
     updateRecentResource(recentResource: RecentResource) {
         this.updateUserSetting(recentResource, this.addRecentResource);
     }
 
-    updateThemeAndView(updatedUserSetting: UserSetting)
-    {
+    updateThemeAndView(updatedUserSetting: UserSetting) {
         this.currentTheme = updatedUserSetting.theme;
-            this.currentThemeSub.next(this.currentTheme);
-            this.currentViewMode = updatedUserSetting.viewMode;
-            this.currentViewModeSub.next(this.currentViewMode);
+        this.currentThemeSub.next(this.currentTheme);
+        this.currentViewMode = updatedUserSetting.viewMode;
+        this.currentViewModeSub.next(this.currentViewMode);
     }
 
     public updateUserSetting(item: any, fn: UpdateUserSettingCallBack) {
@@ -80,22 +78,26 @@ export class UserSettingService {
         });
     }
 
-    updateUserPanelSetting(item: any)
-    {
+    updateUserPanelSetting(item: any) {
         this.updateUserSetting(item, this.updatePanelUserSettingCallBack);
     }
 
-   updatePanelUserSettingCallBack(item: any, userSettings: UserSetting): UserSetting {
-    const newUserSetting = { ...userSettings };
-    if (item != null)
-    {
-        newUserSetting.expandAnalysisCheckCard = item.expandCheckCard;
-        newUserSetting.theme = item.theme;
-        newUserSetting.viewMode = item.viewMode;
+    updatePanelUserSettingCallBack(item: any, userSettings: UserSetting): UserSetting {
+        const newUserSetting = { ...userSettings };
+        if (item != null) {
+            newUserSetting.expandAnalysisCheckCard = item.expandCheckCard;
+            newUserSetting.theme = item.theme;
+            newUserSetting.viewMode = item.viewMode;
+        }
+
+        return newUserSetting;
     }
 
-    return newUserSetting;
-  }
+    updateDefaultServiceType(serviceType:string) {
+        if(this.userSetting) {
+            this.userSetting.defaultServiceType = serviceType;
+        }
+    }
 
     private addRecentResource(newResource: RecentResource, userSetting: UserSetting) {
         const newUserSetting = { ...userSetting };
@@ -109,7 +111,7 @@ export class UserSettingService {
         res.unshift(newResource);
 
         newUserSetting.resources = res;
-      return newUserSetting;
+        return newUserSetting;
     }
 }
 
