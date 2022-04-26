@@ -220,6 +220,7 @@ export var functionsFlow = {
                                 connectionString += ";EntityPath=" + binding.eventHubName
                             }
                         }
+                        bindingInfo.connectionString = connectionString;
                     }
                     functionInfo.bindings.push(bindingInfo);
                 });
