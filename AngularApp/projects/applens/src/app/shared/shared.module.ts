@@ -27,6 +27,7 @@ import { UserSettingService } from '../modules/dashboard/services/user-setting.s
 import { ApplensDocsComponent } from './components/applens-docs/applens-docs.component';
 import { StaticWebAppService } from './services/staticwebapp.service';
 import { StampService } from './services/stamp.service';
+import { DetectorGistApiService } from './services/detectorgist-template-api.service';
 
 @NgModule({
   imports: [
@@ -65,7 +66,8 @@ export class SharedModule {
         CacheService,
         AadAuthGuard,
         CaseCleansingApiService,
-        UserSettingService
+        UserSettingService,
+        DetectorGistApiService
       ]
     }
   }

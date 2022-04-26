@@ -78,6 +78,7 @@ namespace AppLensV3
             services.AddSingleton<IHealthCheckService, HealthCheckService>();
             services.AddSingleton<ISurveysService, SurveysService>();
             services.AddSingleton<ICosmosDBUserSettingHandler, CosmosDBUserSettingHandler>();
+            services.AddSingleton<IDetectorGistTemplateService, TemplateService>();
 
             services.AddMemoryCache();
             services.AddMvc();

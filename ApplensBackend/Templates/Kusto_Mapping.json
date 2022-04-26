@@ -1,0 +1,12 @@
+[{
+    "publicClusterName":"",
+    "publicDatabaseName":"",
+    "fairfaxClusterName":"",
+    "fairfaxDatabaseName":"",
+    "mooncakeClusterName":"",
+    "mooncakeDatabaseName":"",
+    "usNatClusterName":"",   
+    "usNatDatabaseName":"",
+    "usSecClusterName":"", 
+    "usSecDatabaseName":""
+}]

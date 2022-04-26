@@ -71,4 +71,11 @@ namespace AppLensV3.Helpers
         public const string IsTemporaryAccessHeader = "IsTemporaryAccess";
         public const string TemporaryAccessExpiresHeader = "TemporaryAccessExpires";
     }
+
+    public static class DetectorGistTemplateServiceConstants
+    {
+        public const int MaxDiskReadTimeInMilliseconds = 3 * 60 * 1000; // 3 minutes
+        public const int ApiTimeoutInMilliseconds = 15 * 1000; // 15 seconds
+        public const int MaxCacheTimeInDays = 30;
+    }
 }

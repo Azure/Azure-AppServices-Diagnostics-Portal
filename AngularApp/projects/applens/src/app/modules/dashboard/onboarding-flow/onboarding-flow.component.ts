@@ -13,6 +13,7 @@ import { flatMap, map } from 'rxjs/operators'
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Package } from '../../../shared/models/package';
 import { GithubApiService } from '../../../shared/services/github-api.service';
+import { DetectorGistApiService } from '../../../shared/services/detectorgist-template-api.service';
 import { ResourceService } from '../../../shared/services/resource.service';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { RecommendedUtterance } from '../../../../../../diagnostic-data/src/public_api';
@@ -317,7 +318,7 @@ export class OnboardingFlowComponent implements OnInit {
   selectedKey: string = '';
 
 
-  constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService,
+  constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService, private detectorGistApiService: DetectorGistApiService,
     private diagnosticApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService, private resourceService: ResourceService,
     private _detectorControlService: DetectorControlService, private _adalService: AdalService,
     public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute,
@@ -1704,7 +1705,7 @@ export class OnboardingFlowComponent implements OnInit {
     switch (this.mode) {
       case DevelopMode.Create: {
         let templateFileName = (this.gistMode ? "Gist_" : "Detector_") + this.resourceService.templateFileName;
-        detectorFile = this.githubService.getTemplate(templateFileName);
+        detectorFile = this.detectorGistApiService.getTemplate(templateFileName);
         this.fileName = "new.csx";
         this.startTime = this._detectorControlService.startTime;
         this.endTime = this._detectorControlService.endTime;
