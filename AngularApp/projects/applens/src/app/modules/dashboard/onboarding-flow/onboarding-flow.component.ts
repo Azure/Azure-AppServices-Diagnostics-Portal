@@ -1411,7 +1411,7 @@ export class OnboardingFlowComponent implements OnInit {
     }
     let link = this.gistMode ? `${this.PPEHostname}/${this.resourceId}/gists/${this.publishingPackage.id}?branchInput=${this.Branch}` : `${this.PPEHostname}/${this.resourceId}/detectors/${this.publishingPackage.id}/edit?branchInput=${this.Branch}`;
     let description = `This Pull Request was created via AppLens. To make edits, go to ${link}`;
-    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id} CommittedBy : ${this.userName}`, commitType, this.resourceId);
+    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`, commitType, this.resourceId);
     const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, this.PRTitle, this.resourceId, description);
 
     DetectorObservable.subscribe(_ => {
@@ -1459,7 +1459,7 @@ export class OnboardingFlowComponent implements OnInit {
       this.Branch = this.defaultBranch;
     }
 
-    const deleteDetectorFiles = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `deleting detector: ${this.id} CommittedBy : ${this.userName}`, "delete", this.resourceId);
+    const deleteDetectorFiles = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `deleting detector: ${this.id} Author : ${this.userName}`, "delete", this.resourceId);
     const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, `Deleting ${this.id}`, this.resourceId);
     deleteDetectorFiles.subscribe(_ => {
       if (!this.autoMerge) {
@@ -1530,7 +1530,7 @@ export class OnboardingFlowComponent implements OnInit {
 
     let link = this.gistMode ? `${this.PPEHostname}/${this.resourceId}/gists/${this.saveTempId.toLowerCase()}?branchInput=${this.Branch}` : `${this.PPEHostname}/${this.resourceId}/detectors/${this.saveTempId.toLowerCase()}/edit?branchInput=${this.Branch}`;
 
-    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, file, title, `${commitMessageStart} ${this.saveTempId.toLowerCase()} CommittedBy : ${this.userName}`, commitType, this.resourceId);
+    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, file, title, `${commitMessageStart} ${this.saveTempId.toLowerCase()} Author : ${this.userName}`, commitType, this.resourceId);
 
 
     DetectorObservable.subscribe(_ => {
