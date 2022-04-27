@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { OperatingSystem, SiteInfoMetaData } from '../shared/models/site';
+import { OperatingSystem } from '../shared/models/site';
 import { SiteService } from '../shared/services/site.service';
 import { AutohealingService } from '../shared/services/autohealing.service';
 import { FormatHelper } from '../shared/utilities/formattingHelper';
@@ -9,6 +9,8 @@ import { AvailabilityLoggingService } from '../shared/services/logging/availabil
 import { Globals } from '../globals';
 import { TelemetryService } from 'diagnostic-data';
 import { WebSitesService } from '../resources/web-sites/services/web-sites.service';
+import { DaasService } from '../shared/services/daas.service';
+import { SiteDaasInfo } from '../shared/models/solution-metadata';
 
 @Component({
   selector: 'autohealing',
@@ -20,7 +22,7 @@ export class AutohealingComponent implements OnInit {
   autohealingSettings: AutoHealSettings;
   originalAutoHealSettings: AutoHealSettings;
 
-  siteToBeDiagnosed: SiteInfoMetaData;
+  siteToBeDiagnosed: SiteDaasInfo;
   retrievingAutohealSettings: boolean = true;
   savingAutohealSettings: boolean = false;
 
@@ -50,22 +52,20 @@ export class AutohealingComponent implements OnInit {
   constructor(private _siteService: SiteService, private _autohealingService: AutohealingService,
     private globals: Globals, private telemetryService: TelemetryService,
     private _logger: AvailabilityLoggingService, protected _route: ActivatedRoute,
-    private _webSiteService: WebSitesService) {
+    private _webSiteService: WebSitesService, private _daasService: DaasService) {
     this.isWindowsApp = this._webSiteService.platform === OperatingSystem.windows;
-    this.isLinuxDotNetApp = this._webSiteService.platform === OperatingSystem.linux
-      && this._webSiteService.linuxFxVersion.startsWith("DOTNETCORE");
-
-    //
-    // Disable AutoHeal temporarily because Cloud Services in ANT96 are still pointing to old KuduLite bits
-    // Will remove this check after ANT 96.1 is deployed (Rough ETA is first week of Jan)
-    //
-      this.isLinuxDotNetApp = false;
   }
 
   ngOnInit() {
-    this._siteService.currentSiteMetaData.subscribe(siteInfo => {
+    this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(siteInfo => {
       if (siteInfo) {
         this.siteToBeDiagnosed = siteInfo;
+        this._daasService.isDiagServerEnabledForLinux(this.siteToBeDiagnosed).subscribe(isDiagServerEnabled => {
+          this.isLinuxDotNetApp = this._webSiteService.platform === OperatingSystem.linux
+            && this._webSiteService.linuxFxVersion.startsWith("DOTNETCORE")
+            && isDiagServerEnabled;
+        });
+
         this._autohealingService.getAutohealSettings(this.siteToBeDiagnosed).subscribe(autoHealSettings => {
           this.retrievingAutohealSettings = false;
           this.errorMessage = '';
