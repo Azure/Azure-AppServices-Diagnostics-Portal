@@ -35,7 +35,8 @@ export class SideNavComponent implements OnInit {
   contentHeight: string;
 
   getDetectorsRouteNotFound: boolean = false;
-
+  isGraduation:boolean = false;
+  isProd:boolean = false;
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService) {
     this.contentHeight = (window.innerHeight - 139) + 'px';
     if (environment.adal.enabled) {
@@ -127,6 +128,24 @@ export class SideNavComponent implements OnInit {
     }
   ];
 
+
+  activePullRequest: CollapsibleMenuItem[] = [
+  {
+    id: "",
+    label : 'Your Active Pull Request',
+    onClick: () => {
+      let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
+    const userId: string = alias.replace('@microsoft.com', '');
+    if (userId.length > 0) {        
+      this.navigateTo(`users/${userId}/activepullrequests`);
+    }
+    },
+    expanded: false,
+    subItems: null,
+    isSelected: null,
+    icon: null
+  }];
+
   ngOnInit() {
     this.initializeDetectors();
     this.getCurrentRoutePath();
@@ -134,6 +153,7 @@ export class SideNavComponent implements OnInit {
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
       this.getCurrentRoutePath();
     });
+    this.initializeActivePullRequestTab();
   }
 
   navigateToOverview() {
@@ -142,6 +162,12 @@ export class SideNavComponent implements OnInit {
 
   navigateToDetectorList() {
     this.navigateTo("alldetectors");
+  }
+
+  navigateToActivePRs() {
+    let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
+    const userId: string = alias.replace('@microsoft.com', '');
+    this.navigateTo(`users/${userId}/activepullrequests`);
   }
 
   private getCurrentRoutePath() {
@@ -252,6 +278,14 @@ export class SideNavComponent implements OnInit {
       });
   }
 
+  private initializeActivePullRequestTab() {
+    this._diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(config =>{
+      this.isGraduation = config.graduationEnabled;
+    })
+    this._diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
+      this.isProd = env === "Prod";
+    });
+  }
   doesMatchCurrentRoute(expectedRoute: string) {
     return this.currentRoutePath && this.currentRoutePath.join('/') === expectedRoute;
   }

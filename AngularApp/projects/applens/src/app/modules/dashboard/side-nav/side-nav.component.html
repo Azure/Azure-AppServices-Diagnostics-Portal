@@ -27,7 +27,11 @@
         </section-divider>
         <section-divider [label]="'Develop'" [selected]="isSectionHeaderSelected('users', false) || isSectionHeaderSelected('create') || isSectionHeaderSelected('creategist')" [initiallyExpanded]="false" [disableExpandIcon]="false">
           <i class="fa fa-code fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
-          <collapsible-menu-item *ngFor="let item of createNew" [menuItem]="item"></collapsible-menu-item>
+          <collapsible-menu-item *ngFor="let item of createNew" [menuItem]="item"></collapsible-menu-item>    
+        </section-divider>
+        <section-divider [label]="'Pull Requests'" [selected]="isSectionHeaderSelected('activepullrequests', false)" [initiallyExpanded]="false" [collapsible]="false" *ngIf="!isProd && isGraduation" (click)="navigateToActivePRs()">
+          <i class="fa fa-code-fork menu-icon menu-icon-detectors" aria-hidden="true"></i>
+          <collapsible-menu-item  *ngFor="let item of activePullRequest" [menuItem]="item"></collapsible-menu-item>
         </section-divider>
         <section-divider *ngIf="gists.length > 0"  [selected]="isSectionHeaderSelected('gists/', false)" [label]="'Gists'" [initiallyExpanded]="false">
           <i class="fa fa-file-code-o fa-fw menu-icon menu-icon-gists" aria-hidden="true"></i>
