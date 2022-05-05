@@ -69,13 +69,12 @@ export class DetectorListComponent extends DataRenderBaseComponent {
 
   constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private _solutionService: SolutionService,
     private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router,
-    private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _breadcrumbService : GenericBreadcrumbService, private _genericUserSettingsService:GenericUserSettingService) {
+    private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _breadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService) {
     super(telemetryService);
     this.isPublic = this.config && this.config.isPublic;
 
-    this._genericUserSettingsService.isWaterfallViewSub.subscribe(isWaterfallViewMode =>
-    {
-        this.isWaterfallViewMode = isWaterfallViewMode;
+    this._genericUserSettingsService.isWaterfallViewSub.subscribe(isWaterfallViewMode => {
+      this.isWaterfallViewMode = isWaterfallViewMode;
     });
 
   }
@@ -88,9 +87,8 @@ export class DetectorListComponent extends DataRenderBaseComponent {
       this.expandIssuedChecks = expandIssuedChecks;
     });
 
-    this._genericUserSettingsService.isWaterfallViewMode().subscribe(isWaterfallViewMode =>
-    {
-        this.isWaterfallViewMode = isWaterfallViewMode;
+    this._genericUserSettingsService.isWaterfallViewMode().subscribe(isWaterfallViewMode => {
+      this.isWaterfallViewMode = isWaterfallViewMode;
     });
   }
 
@@ -227,36 +225,36 @@ export class DetectorListComponent extends DataRenderBaseComponent {
       let category = "";
 
       if (viewModel.model.metadata.category) {
-          category = viewModel.model.metadata.category.replace(/\s/g, '');
+        category = viewModel.model.metadata.category.replace(/\s/g, '');
       }
       else {
-          // For uncategorized detectors:
-          // If it is home page, redirect to availability category. Otherwise stay in the current category page.
-          category = this._router.url.split('/')[11] ? this._router.url.split('/')[11] : "availabilityandperformance";
+        // For uncategorized detectors:
+        // If it is home page, redirect to availability category. Otherwise stay in the current category page.
+        category = this._router.url.split('/')[11] ? this._router.url.split('/')[11] : "availabilityandperformance";
       }
 
-    const bladeInfo = {
+      const bladeInfo = {
         title: category,
         detailBlade: 'SCIFrameBlade',
         extension: 'WebsitesExtension',
         detailBladeInputs: {
-            id: this.overrideResourceUri,
-            categoryId: category,
-            optionalParameters: [{
-                key: "categoryId",
-                value: category
-            },
-            {
-                key: "detectorId",
-                value: detector
-            },
-            {
-                key: "detectorType",
-                value: type
-            }]
+          id: this.overrideResourceUri,
+          categoryId: category,
+          optionalParameters: [{
+            key: "categoryId",
+            value: category
+          },
+          {
+            key: "detectorId",
+            value: detector
+          },
+          {
+            key: "detectorType",
+            value: type
+          }]
         }
-    };
-    this._solutionService.GoToBlade(this.overrideResourceUri, bladeInfo);
+      };
+      this._solutionService.GoToBlade(this.overrideResourceUri, bladeInfo);
     }
   }
 
@@ -407,32 +405,33 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         // Log children detectors click
         this.logEvent(TelemetryEventNames.ChildDetectorClicked, clickDetectorEventProperties);
         this.queryParams = UriUtilities.removeChildDetectorStartAndEndTime(this._activatedRoute.snapshot.queryParams);
+        const additionalParams = this.renderingProperties.additionalParams ? JSON.parse(this.renderingProperties.additionalParams) : {};
+        const combinedParams = { ...this.queryParams, ...additionalParams };
         if (targetDetector === 'appchanges' && this.isPublic) {
           this._portalActionService.openChangeAnalysisBlade(this._detectorControl.startTimeString, this._detectorControl.endTimeString);
         } else {
-          if (this.isPublic && !(this.overrideResourceUri == "")){
+          if (this.isPublic && !(this.overrideResourceUri == "")) {
             this.openBladeDiagnoseDetectorId(viewModel);
           }
           else if (this.isPublic) {
             const url = this._router.url.split("?")[0];
             const routeUrl = url.endsWith("/overview") ? `../detectors/${targetDetector}` : `../../detectors/${targetDetector}`;
             this._router.navigate([routeUrl], {
-              queryParams: this.queryParams,
+              queryParams: combinedParams,
               relativeTo: this._activatedRoute
             });
           }
-           else {
+          else {
             const resourceId = this._diagnosticService.resourceId;
-            if (!this.isPublic)
-            {
-                this._breadcrumbService.updateBreadCrumbSubject({
-                    name: this.detectorName,
-                    id: this.detector,
-                    isDetector: true,
-                   queryParams: this._activatedRoute.snapshot.queryParams
-                });
+            if (!this.isPublic) {
+              this._breadcrumbService.updateBreadCrumbSubject({
+                name: this.detectorName,
+                id: this.detector,
+                isDetector: true,
+                queryParams: combinedParams
+              });
             }
-            this._router.navigate([`${resourceId}/detectors/${targetDetector}`], { queryParams: this.queryParams });
+            this._router.navigate([`${resourceId}/detectors/${targetDetector}`], { queryParams: combinedParams });
           }
         }
       }
@@ -445,33 +444,34 @@ export class DetectorListComponent extends DataRenderBaseComponent {
       let targetDetector = viewModel.model.metadata.id;
 
       if (targetDetector !== "") {
-         const queryParams = this._activatedRoute.snapshot.queryParams;
-         const resourceId = this._diagnosticService.resourceId;
+        const queryParams = this._activatedRoute.snapshot.queryParams;
+        const additionalParams = this.renderingProperties.additionalParams ? JSON.parse(this.renderingProperties.additionalParams) : {};
+        const combinedParams = { ...queryParams, ...additionalParams };
+        const resourceId = this._diagnosticService.resourceId;
 
-         let paramString = "";
-         Object.keys(queryParams).forEach(x => {
-           paramString = paramString === "" ? `${paramString}${x}=${queryParams[x]}` : `${paramString}&${x}=${queryParams[x]}`;
-         });
-         const linkAddress = this.overrideResourceUri == "" ? `${resourceId}/detectors/${targetDetector}?${paramString}` : `${this.overrideResourceUri}/detectors/${targetDetector}?${paramString}`;
-         window.open(linkAddress, '_blank');
+        let paramString = "";
+        Object.keys(combinedParams).forEach(x => {
+          paramString = paramString === "" ? `${paramString}${x}=${combinedParams[x]}` : `${paramString}&${x}=${combinedParams[x]}`;
+        });
+        const linkAddress = this.overrideResourceUri == "" ? `${resourceId}/detectors/${targetDetector}?${paramString}` : `${this.overrideResourceUri}/detectors/${targetDetector}?${paramString}`;
+        window.open(linkAddress, '_blank');
       }
     }
   }
 
   openSolutionPanel(viewModel: DetectorViewModeWithInsightInfo) {
-    if (viewModel != null && viewModel.model!= null && viewModel.model.title)
-    {
-        let title:string = viewModel.model.title;
-        let detectorId: string = (viewModel.model.metadata != null) && (viewModel.model.metadata.id != null) ? viewModel.model.metadata.id : "";
-        let status: string = viewModel.model.status != null ? JSON.stringify(viewModel.model.status): "";
-        this.allSolutions = this.allSolutionsMap.get(title);
-        this.solutionTitle = `${title} Solution`;
-        this.solutionPanelOpenSubject.next(true);
-        this.logEvent("ViewSolutionPanelButtonClicked", {
-            SolutionTitle: title,
-            DetectorId: detectorId,
-            Status: status
-          });
+    if (viewModel != null && viewModel.model != null && viewModel.model.title) {
+      let title: string = viewModel.model.title;
+      let detectorId: string = (viewModel.model.metadata != null) && (viewModel.model.metadata.id != null) ? viewModel.model.metadata.id : "";
+      let status: string = viewModel.model.status != null ? JSON.stringify(viewModel.model.status) : "";
+      this.allSolutions = this.allSolutionsMap.get(title);
+      this.solutionTitle = `${title} Solution`;
+      this.solutionPanelOpenSubject.next(true);
+      this.logEvent("ViewSolutionPanelButtonClicked", {
+        SolutionTitle: title,
+        DetectorId: detectorId,
+        Status: status
+      });
     }
   }
 }
