@@ -1,10 +1,8 @@
-.header-img {
-    width:24px;
-    height: 24px;
-}
-
 .avatar {
+    width:30px;
+    height: 30px;
     border-radius: 50%;
+    margin: 5px;
 }
 
 .avatar :hover {
@@ -71,10 +69,22 @@
 
 .user-photo-container {
     margin-right: 16px;
+    display: flex;
+    align-items: center;
 }
 
 .user-photo-container :hover {
     cursor: pointer;
+}
+
+.user-initial {
+    background-color: #CDDAEA;
+    color: #0F3057;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
 }
 
 .image-label {

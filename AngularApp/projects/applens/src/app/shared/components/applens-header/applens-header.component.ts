@@ -19,6 +19,7 @@ import { DetectorControlService } from 'diagnostic-data';
 })
 export class ApplensHeaderComponent implements OnInit {
   userPhotoSource: string = "";
+  userNameInitial: string = "";
   showCallout: boolean = false;
   applensLogo: string = "../../../../assets/img/Applens-Logo.svg";
   resourceInfo: ResourceInfo = new ResourceInfo();
@@ -46,11 +47,18 @@ export class ApplensHeaderComponent implements OnInit {
     { key: 'waterfall', text: 'Waterfall', onClick: () => { this.smartViewChecked = false; this.selectedKey = "waterfall"; } }
   ];
 
-  constructor(private _adalService: AdalService,  private _diagnosticApiService: DiagnosticApiService, private _activatedRoute: ActivatedRoute, private _userSettingService: UserSettingService, private _router: Router, private _themeService: ApplensThemeService, private _detectorControlService: DetectorControlService, @Optional() public _searchService?: SearchService, @Optional() private _applensGlobal?: ApplensGlobal) { }
+  constructor(private _adalService: AdalService, private _diagnosticApiService: DiagnosticApiService, private _activatedRoute: ActivatedRoute, private _userSettingService: UserSettingService, private _router: Router, private _themeService: ApplensThemeService, private _detectorControlService: DetectorControlService, @Optional() public _searchService?: SearchService, @Optional() private _applensGlobal?: ApplensGlobal) { }
 
   ngOnInit() {
     const alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
     const userId = alias.replace('@microsoft.com', '');
+
+    if (this._adalService.userInfo.profile) {
+      const familyName: string = this._adalService.userInfo.profile.family_name;
+      const givenName: string = this._adalService.userInfo.profile.given_name;
+      this.userNameInitial = `${givenName.charAt(0).toLocaleUpperCase()}${familyName.charAt(0).toLocaleUpperCase()}`;
+    }
+
     this._diagnosticApiService.getUserPhoto(userId).subscribe(image => {
       this.userPhotoSource = image;
     });
@@ -65,10 +73,10 @@ export class ApplensHeaderComponent implements OnInit {
     }
 
     this._userSettingService.getUserSetting().subscribe(userSettings => {
-        this.expandCheckCard = userSettings ? userSettings.expandAnalysisCheckCard : false;
-        this.darkThemeChecked = userSettings && userSettings.theme.toLowerCase() == "dark" ? true : false;
-        this.smartViewChecked = userSettings && userSettings.viewMode.toLowerCase() == "smarter" ? true : false;
-        this.selectedKey = userSettings && userSettings.viewMode.toLowerCase() == "smarter" ?  "smarter" : "waterfall";
+      this.expandCheckCard = userSettings ? userSettings.expandAnalysisCheckCard : false;
+      this.darkThemeChecked = userSettings && userSettings.theme.toLowerCase() == "dark" ? true : false;
+      this.smartViewChecked = userSettings && userSettings.viewMode.toLowerCase() == "smarter" ? true : false;
+      this.selectedKey = userSettings && userSettings.viewMode.toLowerCase() == "smarter" ? "smarter" : "waterfall";
     });
 
     this._diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
@@ -102,9 +110,9 @@ export class ApplensHeaderComponent implements OnInit {
   private updateUserSettingsFromPanel() {
     const themeStr = this.darkThemeChecked ? "dark" : "light";
     const updatedSettings = {
-        expandAnalysisCheckCard: this.expandCheckCard,
-        theme:  themeStr,
-        viewMode: this.smartViewChecked ?  "smarter" : "waterfall"
+      expandAnalysisCheckCard: this.expandCheckCard,
+      theme: themeStr,
+      viewMode: this.smartViewChecked ? "smarter" : "waterfall"
     };
     this._themeService.setActiveTheme(themeStr);
     this._userSettingService.isWaterfallViewSub.next(!this.smartViewChecked);

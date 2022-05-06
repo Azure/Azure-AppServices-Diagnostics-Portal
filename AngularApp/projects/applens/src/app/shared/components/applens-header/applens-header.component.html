@@ -19,9 +19,9 @@
       <fab-search-box (onSearch)="triggerSearch()" [value]="searchValue" [styles]="searchStyles" [placeholder]="'Describe your problem and hit enter'" (onChange)="updateSearchValue($event)"></fab-search-box>
     </div>
 
-    <div *ngIf="userPhotoSource !== ''" class="user-photo-container" (click)="openCallout()" (keyup.enter)="openCallout()" tabindex="0">
+    <div class="user-photo-container" (click)="openCallout()" (keyup.enter)="openCallout()" tabindex="0">
       <span class="image-label"> New! </span>
-      <img id="userId" [src]="userPhotoSource" alt="User Profile Photo" class="avatar header-img">
+      <img *ngIf="userPhotoSource !== '';else userInitial" id="userId" [src]="userPhotoSource" alt="User Profile Photo" class="avatar">
     </div>
   </nav>
 </header>
@@ -39,3 +39,7 @@
     <fab-default-button (onClick)="cancelUserSettingChange()">Cancel</fab-default-button>
   </div>
 </div>
+
+<ng-template #userInitial>
+  <div class="avatar user-initial">{{userNameInitial}}</div>
+</ng-template>
