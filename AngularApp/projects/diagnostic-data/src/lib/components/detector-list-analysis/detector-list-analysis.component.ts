@@ -129,7 +129,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         private _diagnosticService: DiagnosticService, private _detectorControl: DetectorControlService,
         protected telemetryService: TelemetryService, public _appInsightsService: AppInsightsQueryService,
         private _supportTopicService: GenericSupportTopicService, protected _globals: GenieGlobals, private _solutionService: SolutionService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, private _genericBreadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService:GenericUserSettingService) {
+        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, private _genericBreadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService) {
         super(telemetryService);
         this.isPublic = config && config.isPublic;
 
@@ -182,7 +182,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
 
         this._diagnosticService.getDetectors().subscribe(detectors => {
             const metaData = detectors.find(d => d.id === this.analysisId && d.type === DetectorType.Analysis);
-            if(metaData) this.analysisName = metaData.name;
+            if (metaData) this.analysisName = metaData.name;
         })
     }
 
@@ -611,10 +611,10 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                         this.detectorViewModels[index].loadingStatus = LoadingStatus.Failed;
                     }
                     const viewModel = this.detectorViewModels[index];
-                    if(viewModel && viewModel.model && viewModel.model.title) {
+                    if (viewModel && viewModel.model && viewModel.model.title) {
                         this.failedLoadingViewModels.push({
                             model: viewModel
-                         });
+                        });
                     }
                     return of({});
                 })
@@ -759,7 +759,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
             statusIcon: null,
             expanded: false,
             response: null,
-            request: this._diagnosticService.getDetector(detector.id, startTimeString, endTimeString)
+            request: this._diagnosticService.getDetector(detector.id, startTimeString, endTimeString, false, this._detectorControl.isInternalView, this.getQueryParamsForAnalysisDetector())
         };
     }
 
@@ -827,7 +827,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         if (viewModel != null && viewModel.model.metadata.id) {
             let detectorId = viewModel.model.metadata.id;
             let categoryName = "";
-
+            const queryParams = this._activatedRoute.snapshot.queryParams;
             if (viewModel.model.metadata.category) {
                 categoryName = viewModel.model.metadata.category.replace(/\s/g, '');
             }
@@ -878,16 +878,24 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                     } else {
                         //TODO, For D&S blade, need to add a service to find category and navigate to detector
                         if (viewModel.model.startTime != null && viewModel.model.endTime != null) {
-                                this._detectorControl.setCustomStartEnd(viewModel.model.startTime, viewModel.model.endTime);
-                                //Todo, detector control service should able to read and infer TimePickerOptions from startTime and endTime
-                                this._detectorControl.updateTimePickerInfo({
-                                    selectedKey: TimePickerOptions.Custom,
-                                    selectedText: TimePickerOptions.Custom,
-                                    startDate: new Date(viewModel.model.startTime),
-                                    endDate: new Date(viewModel.model.endTime)
-                                });
-                                this.updateBreadcrumb();
-                                this._router.navigate([`../../detectors/${detectorId}`], { relativeTo: this._activatedRoute });
+                            this._detectorControl.setCustomStartEnd(viewModel.model.startTime, viewModel.model.endTime);
+                            //Todo, detector control service should able to read and infer TimePickerOptions from startTime and endTime
+                            this._detectorControl.updateTimePickerInfo({
+                                selectedKey: TimePickerOptions.Custom,
+                                selectedText: TimePickerOptions.Custom,
+                                startDate: new Date(viewModel.model.startTime),
+                                endDate: new Date(viewModel.model.endTime)
+                            });
+                            this.updateBreadcrumb();
+
+                            //Remove queryParams startTimeChildDetector and endTimeChildDetector. Update startTime and endTime to downtime period
+                            const updatedParams = { ...queryParams };
+                            delete updatedParams["startTimeChildDetector"];
+                            delete updatedParams["endTimeChildDetector"];
+                            updatedParams["startTime"] = viewModel.model.startTime;
+                            updatedParams["endTime"] = viewModel.model.endTime;
+
+                            this._router.navigate([`../../detectors/${detectorId}`], { relativeTo: this._activatedRoute, queryParams: updatedParams });
                         }
                         else {
                             this.updateBreadcrumb();
@@ -901,7 +909,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
 
     linkStyle: ILinkProps['styles'] = {
         root: {
-          padding: '10px'
+            padding: '10px'
         }
     }
 
@@ -955,26 +963,25 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         }, 4000);
     }
 
-  openSolutionPanel(viewModel: any) {
-    if (viewModel != null && viewModel.model!= null && viewModel.model.title)
-    {
-        let title:string = viewModel.model.title;
-        let detectorId: string = (viewModel.model.metadata != null) && (viewModel.model.metadata.id != null) ? viewModel.model.metadata.id : "";
-        let status: string = viewModel.model.status != null ? JSON.stringify(viewModel.model.status): "";
-        this.allSolutions = this.allSolutionsMap.get(title);
-        this.solutionTitle = title;
-        this.solutionPanelOpenSubject.next(true);
-        this.logEvent("ViewSolutionPanelButtonClicked", {
-            SolutionTitle: title,
-            DetectorId: detectorId,
-            Status: status,
-            SearchMode: this.searchMode
-          });
+    openSolutionPanel(viewModel: any) {
+        if (viewModel != null && viewModel.model != null && viewModel.model.title) {
+            let title: string = viewModel.model.title;
+            let detectorId: string = (viewModel.model.metadata != null) && (viewModel.model.metadata.id != null) ? viewModel.model.metadata.id : "";
+            let status: string = viewModel.model.status != null ? JSON.stringify(viewModel.model.status) : "";
+            this.allSolutions = this.allSolutionsMap.get(title);
+            this.solutionTitle = title;
+            this.solutionPanelOpenSubject.next(true);
+            this.logEvent("ViewSolutionPanelButtonClicked", {
+                SolutionTitle: title,
+                DetectorId: detectorId,
+                Status: status,
+                SearchMode: this.searchMode
+            });
+        }
     }
-  }
 
     private updateBreadcrumb() {
-        if(this.isPublic || this.withinGenie) return;
+        if (this.isPublic || this.withinGenie) return;
 
         const queryParams = this._activatedRoute.snapshot.queryParams;
         this._genericBreadcrumbService.updateBreadCrumbSubject({

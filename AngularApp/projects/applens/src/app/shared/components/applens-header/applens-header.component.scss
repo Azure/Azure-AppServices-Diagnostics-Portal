@@ -1,5 +1,10 @@
+.header-img {
+    width: 24px;
+    height: 24px;
+}
+
 .avatar {
-    width:30px;
+    width: 30px;
     height: 30px;
     border-radius: 50%;
     margin: 5px;
@@ -30,6 +35,7 @@
 .resource-info {
     display: flex;
     padding-left: 15px;
+    align-items: center;
 }
 
 .bold-text {
