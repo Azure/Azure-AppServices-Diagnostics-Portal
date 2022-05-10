@@ -118,6 +118,10 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
 
   getLinuxDiagnosticServerSessions(): Observable<Session[]> {
     let emptyArray: Session[] = [];
+    if (this.isWindowsApp){
+      return of(emptyArray);
+    }
+
     return this._daasService.isDiagServerEnabledForLinux(this.siteToBeDiagnosed).pipe(
       map((isEnabled) => {
         return isEnabled;

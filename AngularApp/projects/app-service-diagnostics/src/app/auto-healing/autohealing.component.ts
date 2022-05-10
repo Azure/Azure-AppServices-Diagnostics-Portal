@@ -60,11 +60,13 @@ export class AutohealingComponent implements OnInit {
     this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(siteInfo => {
       if (siteInfo) {
         this.siteToBeDiagnosed = siteInfo;
-        this._daasService.isDiagServerEnabledForLinux(this.siteToBeDiagnosed).subscribe(isDiagServerEnabled => {
-          this.isLinuxDotNetApp = this._webSiteService.platform === OperatingSystem.linux
-            && this._webSiteService.linuxFxVersion.startsWith("DOTNETCORE")
-            && isDiagServerEnabled;
-        });
+        if (!this.isWindowsApp) {
+          this._daasService.isDiagServerEnabledForLinux(this.siteToBeDiagnosed).subscribe(isDiagServerEnabled => {
+            this.isLinuxDotNetApp = this._webSiteService.platform === OperatingSystem.linux
+              && this._webSiteService.linuxFxVersion.startsWith("DOTNETCORE")
+              && isDiagServerEnabled;
+          });
+        }
 
         this._autohealingService.getAutohealSettings(this.siteToBeDiagnosed).subscribe(autoHealSettings => {
           this.retrievingAutohealSettings = false;
