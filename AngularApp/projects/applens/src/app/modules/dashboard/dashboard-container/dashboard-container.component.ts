@@ -120,4 +120,8 @@ export class DashboardContainerComponent implements OnInit {
       event.target.src = "/assets/img/copy-icon.png";
     }, 3000);
   }
+
+  checkWithHref(s: string) {
+    return `${s}`.includes("a href");
+  }
 }

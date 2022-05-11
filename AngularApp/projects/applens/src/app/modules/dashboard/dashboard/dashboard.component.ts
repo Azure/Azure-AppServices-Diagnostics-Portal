@@ -316,6 +316,10 @@ export class DashboardComponent implements OnDestroy {
     }
     return item;
   }
+
+  checkWithHref(s: string) {
+    return `${s}`.includes("a href");
+  }
 }
 
 @Pipe({ name: 'formatResourceName' })

@@ -71,7 +71,7 @@
           </a>
         </div>
         <div *ngFor="let key of keys">
-          <b>{{key}}:</b> &nbsp;<div [innerHTML]="resource[key]" style="display:inline"></div>&nbsp;<span *ngIf="resource[key] !== '' && !resource[key].includes('a href')"><img
+          <b>{{key}}:</b> &nbsp;<div [innerHTML]="resource[key]" style="display:inline"></div>&nbsp;<span *ngIf="resource[key] !== '' && !checkWithHref(resource[key])"><img
               src="/assets/img/copy-icon.png" style="height: 12px;background-color:var(--imgButtonBackground);"
               (click)="copyToClipboard(resource[key], $event)" alt="Copy to clipboard" /></span>
         </div>
