@@ -19,9 +19,6 @@
         </section-divider> -->
         <section-divider [label]="'Detectors'"  [selected]="isSectionHeaderSelected('alldetectors') || isSectionHeaderSelected('detectors/', false) || isSectionHeaderSelected('analysis/', false)">
           <i class="fa fa-stethoscope fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
-          <ng-container *ngIf="analysisTypes.length > 0">
-          <collapsible-menu-item [menuItem]="analysisTypes"></collapsible-menu-item>
-        </ng-container>
           <collapsible-menu-item *ngFor="let category of categories" [menuItem]="category" [searchValue]="searchValue"></collapsible-menu-item>
           <i *ngIf="!categoriesCopy || categoriesCopy.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
         </section-divider>

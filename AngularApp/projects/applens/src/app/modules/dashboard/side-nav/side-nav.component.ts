@@ -228,7 +228,10 @@ export class SideNavComponent implements OnInit {
         });
 
         this.categories.push(new CollapsibleMenuItem("All detectors", "", () => { this.navigateTo("alldetectors"); }, () => { return this.currentRoutePath && this.currentRoutePath.join('/') === `alldetectors`; }, null, false, null));
-        this.categories.push(new CollapsibleMenuItem("Analysis", "", null, null, null, true, this.analysisTypes));
+
+        if(this.analysisTypes.length > 0) {
+          this.categories.push(new CollapsibleMenuItem("Analysis", "", null, null, null, true, this.analysisTypes));
+        }
         this.categories = this.categories.sort((a, b) => a.label === 'Uncategorized' ? 1 : (a.label > b.label ? 1 : -1));
         this.categoriesCopy = this.deepCopyArray(this.categories);
         this.detectorsLoading = false;
