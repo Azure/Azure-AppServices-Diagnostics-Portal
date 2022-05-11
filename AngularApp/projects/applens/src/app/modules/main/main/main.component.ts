@@ -1,11 +1,11 @@
 import * as momentNs from 'moment';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import {
-  ResourceServiceInputs, ResourceType, ResourceTypeState, ResourceServiceInputsJsonResponse
+  ResourceServiceInputs, ResourceTypeState, ResourceServiceInputsJsonResponse
 } from '../../../shared/models/resources';
 import { HttpClient } from '@angular/common/http';
-import { DropdownMenuItemType, IDropdownOption, IDropdownProps, PanelType } from 'office-ui-fabric-react';
+import { IDropdownOption, IDropdownProps, PanelType } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
 import { DataTableResponseObject, DetectorControlService, GenericThemeService, HealthStatus } from 'diagnostic-data';
 import { AdalService } from 'adal-angular4';
@@ -13,7 +13,6 @@ import { UserSettingService } from '../../dashboard/services/user-setting.servic
 import { RecentResource } from '../../../shared/models/user-setting';
 import { ResourceDescriptor } from 'diagnostic-data'
 import { applensDocs } from '../../../shared/utilities/applens-docs-constant';
-import { userInfo } from 'os';
 const moment = momentNs;
 
 @Component({
