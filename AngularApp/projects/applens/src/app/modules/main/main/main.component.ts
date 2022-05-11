@@ -13,6 +13,7 @@ import { UserSettingService } from '../../dashboard/services/user-setting.servic
 import { RecentResource } from '../../../shared/models/user-setting';
 import { ResourceDescriptor } from 'diagnostic-data'
 import { applensDocs } from '../../../shared/utilities/applens-docs-constant';
+import { userInfo } from 'os';
 const moment = momentNs;
 
 @Component({
@@ -147,10 +148,6 @@ export class MainComponent implements OnInit {
 
 
     this._userSettingService.getUserSetting().subscribe(userInfo => {
-      if (userInfo && userInfo.resources) {
-        this.table = this.generateDataTable(userInfo.resources);
-      }
-
       if (userInfo && userInfo.theme && userInfo.theme.toLowerCase() == "dark") {
         this._themeService.setActiveTheme("dark");
       }
@@ -180,6 +177,12 @@ export class MainComponent implements OnInit {
       });
       this.resourceTypeList.sort((a, b) => {
         return a.name.localeCompare(b.name);
+      });
+
+      this._userSettingService.getUserSetting().subscribe(userInfo => {
+        if (userInfo && userInfo.resources) {
+          this.table = this.generateDataTable(userInfo.resources);
+        }
       });
     });
 
