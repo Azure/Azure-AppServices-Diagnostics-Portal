@@ -1,16 +1,6 @@
-<div class="inline" style="vertical-align: top;font-size: 16px">
-  <div class="setting-wrapper">
-    <label style="margin-right:20px"> {{ ToggleText }}
-    </label>
-    <div class="setting-control-container" [class.toggle-disabled]="isDisabled">
-      <div tabindex="0" role="switch" class="medium" aria-disabled="false" id="options"
-        attr.aria-checked="{{selected ? 'true': 'false'}}" (keyup.space)="update(!selected)"
-        (keyup.enter)="update(!selected)" (click)="update(!selected)" attr.aria-label="{{ ToggleText }}">
-        <div name="option" [class.toggle-disabled]="isDisabled" attr.aria-checked="{{!selected ? 'true': 'false'}}">Off
-        </div>
-        <div name="option" [class.toggle-disabled]="isDisabled" attr.aria-checked="{{selected ? 'true': 'false'}}">On
-        </div>
-      </div>
-    </div>
+<div class="ml-2 mt-2 settings-wrapper">
+  <div>
+    <fab-choice-group [options]="choiceGroupOptions" [label]="ToggleText" [selectedKey]="selectedKey">
+    </fab-choice-group>
   </div>
 </div>

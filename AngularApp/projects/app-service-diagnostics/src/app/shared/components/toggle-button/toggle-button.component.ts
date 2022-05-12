@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { IChoiceGroupOption } from 'office-ui-fabric-react';
 
 @Component({
   selector: 'toggle-button',
@@ -7,20 +8,29 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class ToggleButtonComponent implements OnInit {
 
+  selectedKey: string = "on";
   constructor() { }
 
   ngOnInit() {
+    this.updateSelectedKey();
   }
+
+  choiceGroupOptions: IChoiceGroupOption[] = [
+    { key: 'on', text: 'On', defaultChecked: true, onClick: () => { this.setSelected(true) } },
+    { key: 'off', text: 'Off', onClick: () => { this.setSelected(false) } }
+  ];
 
   @Input() selected: boolean;
   @Input() ToggleText: string;
   @Output() selectedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Input() isDisabled: boolean = false;
 
-  update(val) {
-    if (this.selected != val) {
-    this.selected = val;
+  updateSelectedKey() {
+    this.selectedKey = this.selected ? 'on' : 'off';
+  }
+
+  setSelected(selected: boolean) {
+    this.selected = selected;
+    this.updateSelectedKey();
     this.selectedChange.emit(this.selected);
-    }
   }
 }
