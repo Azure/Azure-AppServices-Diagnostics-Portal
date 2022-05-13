@@ -707,7 +707,7 @@ export async function checkDaaSExtApiAsync(diagProvider) {
 }
 
 function isNewerDaasVersion(currentDaasVersion){ 
-    var vnum1 = 0, vnum2 = 0, legacyDaasVersion = "1.56.0821.01";
+    var vnum1 = 0, vnum2 = 0, legacyDaasVersion = "2.2.1221.01";
     for (var i = 0, j = 0; (i < currentDaasVersion.length 
                             || j < legacyDaasVersion.length);) 
     { 
