@@ -171,10 +171,14 @@ export class DiagProvider {
         if(entityName != undefined){
             params.push("entityName="+entityName);  
         }
-        var response: any = await this.getDaaSExtApiAsync("connectionstringvalidation/validateappsetting", params, timeoutInSec);
-        if(response == null && response.body == null)
+        var response: any = await this.getDaaSExtApiAsync("connectionstringvalidation/validateappsettingforfunctionapp", params, timeoutInSec);
+        if (response == null)
         {
-          throw Error("No response received when calling the DaaS extension endpoint connectionstringvalidation/validateappsetting via getDaaSExtApiAsync().");
+          throw Error("No response received when calling the DaaS extension endpoint connectionstringvalidation/validateappsettingforfunctionapp via getDaaSExtApiAsync().");
+        }
+        if (response.body == null || response.body.StatusText == null)
+        {
+            throw Error("Invalid response received when calling the DaaS extension endpoint connectionstringvalidation/validateappsettingforfunctionapp via getDaaSExtApiAsync(). response.body or response.body.StatusText is null.");
         }
         return response.body;        
     }
