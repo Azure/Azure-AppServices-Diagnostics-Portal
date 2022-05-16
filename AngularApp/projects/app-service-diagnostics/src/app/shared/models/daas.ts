@@ -280,3 +280,13 @@ export interface Instance {
     machineName: string;
     instanceId: string;
 }
+
+export interface LinuxCommand {
+    command: string;
+}
+
+export interface LinuxCommandOutput {
+    Output: string;
+    Error: string;
+    ExitCode: number;
+}

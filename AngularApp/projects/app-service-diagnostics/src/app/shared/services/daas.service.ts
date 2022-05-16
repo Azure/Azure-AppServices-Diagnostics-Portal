@@ -7,7 +7,7 @@ import { SiteDaasInfo } from '../models/solution-metadata';
 import { ArmService } from './arm.service';
 import { AuthService } from '../../startup/services/auth.service';
 import { UriElementsService } from './urielements.service';
-import { DiagnoserDefinition, DatabaseTestConnectionResult, MonitoringSession, MonitoringLogsPerInstance, ActiveMonitoringSession, DaasAppInfo, DaasSettings, ValidateSasUriResponse, Session, LinuxDaasSettings, ValidateStorageAccountResponse, DaasStorageConfiguration, Instance } from '../models/daas';
+import { DiagnoserDefinition, DatabaseTestConnectionResult, MonitoringSession, MonitoringLogsPerInstance, ActiveMonitoringSession, DaasAppInfo, DaasSettings, ValidateSasUriResponse, Session, LinuxDaasSettings, ValidateStorageAccountResponse, DaasStorageConfiguration, Instance, LinuxCommandOutput, LinuxCommand } from '../models/daas';
 import { SiteInfoMetaData } from '../models/site';
 import { SiteService } from './site.service';
 import { StorageAccountProperties } from '../../shared-v2/services/shared-storage-account.service';
@@ -237,12 +237,36 @@ export class DaasService {
             return of(this.linuxDiagServerEnabled);
         }
 
-        const resourceUri: string = this._uriElementsService.getLinuxDaasSettingsUrl(site);
-        return this._armClient.getResourceWithoutEnvelope<LinuxDaasSettings>(resourceUri, null, true).pipe(
-            map((resp: LinuxDaasSettings) => {
-                this.linuxDiagServerEnabled = resp.DiagnosticServerEnabled;
-                this.linuxDiagServerEnabledChecked = true;
-                return this.linuxDiagServerEnabled;
+        //
+        // Commenting this out because of a bug in /daas/v2/sesssions/settings implementation
+        //
+
+        // const resourceUri: string = this._uriElementsService.getLinuxDaasSettingsUrl(site);
+        // return this._armClient.getResourceWithoutEnvelope<LinuxDaasSettings>(resourceUri, null, true).pipe(
+        //     map((resp: LinuxDaasSettings) => {
+        //         this.linuxDiagServerEnabled = resp.DiagnosticServerEnabled;
+        //         this.linuxDiagServerEnabledChecked = true;
+        //         return this.linuxDiagServerEnabled;
+        //     }),
+        //     catchError(e => {
+        //         this.linuxDiagServerEnabled = false;
+        //         this.linuxDiagServerEnabledChecked = true;
+        //         return of(this.linuxDiagServerEnabled)
+        //     }));
+
+        const resourceUri: string = this._uriElementsService.getLinuxCommandUrl(site);
+        let command: LinuxCommand = { command: "printenv WEBSITE_USE_DIAGNOSTIC_SERVER" };
+        return this._armClient.postResourceWithoutEnvelope<LinuxCommandOutput, LinuxCommand>(resourceUri, command, null, true).pipe(
+            map((resp: LinuxCommandOutput) => {
+                if (resp && resp.Output) {
+                    this.linuxDiagServerEnabled = resp.Output.toLowerCase().startsWith('true');
+                    this.linuxDiagServerEnabledChecked = true;
+                    return this.linuxDiagServerEnabled;
+                } else {
+                    this.linuxDiagServerEnabled = false;
+                    this.linuxDiagServerEnabledChecked = true;
+                    return this.linuxDiagServerEnabled;
+                }
             }),
             catchError(e => {
                 this.linuxDiagServerEnabled = false;

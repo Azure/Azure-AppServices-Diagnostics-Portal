@@ -76,6 +76,8 @@ export class UriElementsService {
     private _daasDiagServerSettingsPath = this._daasDiagServerSessionsPath + "/settings";
     private _daasDiagServerValidateStorageAccountPath = this._daasDiagServerSessionsPath + '/validatestorageaccount';
 
+    private _commandPath = '/extensions/command';
+
     getSessionsUrl(site: SiteDaasInfo, useDiagnosticServerForLinux: boolean) {
         if (useDiagnosticServerForLinux) {
             return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagServerSessionsPath;
@@ -177,6 +179,10 @@ export class UriElementsService {
 
     getLinuxDaasSettingsUrl(site: SiteDaasInfo) {
         return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagServerSettingsPath;
+    }
+
+    getLinuxCommandUrl(site: SiteDaasInfo) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._commandPath;
     }
 
     getStdoutSettingUrl(resourceUrl: string) {
