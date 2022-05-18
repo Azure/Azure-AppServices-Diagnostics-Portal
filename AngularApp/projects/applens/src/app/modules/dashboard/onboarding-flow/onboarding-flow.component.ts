@@ -318,11 +318,10 @@ export class OnboardingFlowComponent implements OnInit {
   selectedKey: string = '';
   isSaved: boolean = false;
   notificationStatusType: MessageBarType = MessageBarType.info;
-  styles: any = {
+  branchMessageStyle: any = {
     root: {
-        height: '49px',
+        height: '20px',
         backgroundColor: '#FEF0F1',
-        marginBottom: '13px'
     }
   }
   showBranchInfo:boolean = false;
