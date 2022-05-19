@@ -14,6 +14,7 @@ import { StartupService } from '../../../shared/services/startup.service';
 export class DashboardContainerComponent implements OnInit {
 
   keys: string[];
+  keyPairs: [string,string][] = [];
   resource: any;
   resourceReady: Observable<any>;
   resourceDetailsSub: Subscription;
@@ -60,6 +61,7 @@ export class DashboardContainerComponent implements OnInit {
         else {
           this.updateVentAndLinuxInfo();
         }
+        this.convertKeyToKeyPairs(this.keys);
       }
     });
   }
@@ -123,5 +125,15 @@ export class DashboardContainerComponent implements OnInit {
 
   checkWithHref(s: string) {
     return `${s}`.includes("a href");
+  }
+
+  private convertKeyToKeyPairs(keys:string[]) {
+    for(let i = 0;i < keys.length;i+=2) {
+      if(keys.length % 2 === 1 && i === keys.length - 1) {
+        this.keyPairs.push([keys[i], ""]);
+      } else {
+        this.keyPairs.push([keys[i],keys[i + 1]]);
+      }
+    }
   }
 }

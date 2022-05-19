@@ -1,44 +1,36 @@
 .info-container {
-    display: flex;
-    flex-wrap: wrap;
     font-size: 13px;
 }
 
-.observer-link {
-    flex:100%;
-    margin-bottom: 8px;
-}
 
 .info-item {
-    flex:50%;
     margin-top: 6px;
-    display: flex;
 }
 
 .info-item-key {
-    flex: 0 0 160px;
+    @extend .info-item;
+    width: 160px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
 }
 
 .info-item-value {
-    //flex: 1 0 auto;
+    @extend .info-item;
     color: var(--sectionTitle);
-    flex: 0 0 400px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+    min-width: 400px;
 }
 
 .info-item-splitter {
-    flex: 0 0 15px;
-    text-align: center;
+    @extend .info-item;
+    padding: 0px 15px;
 }
 
 .info-item-copy {
-    flex: 0 0 15px;
+    @extend .info-item;
     padding: 0px 15px;
+    max-width: 300px;
+    min-width: 150px;
 }
 
 .observer-link > a:focus {

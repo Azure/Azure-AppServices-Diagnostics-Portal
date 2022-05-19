@@ -7,30 +7,70 @@
 <collapsible-list-fabric [collapsed]="false" [title]="'Resource Information'">
   <collapsible-list-item body>
     <div class="info-container">
-      <div *ngIf="observerLink !== ''" class="info-item">
-        <div class="info-item-key">Observer Link</div>
-        <div class="info-item-splitter">:</div>
-        <div class="observer-link">
-          <a href="{{observerLink}}" target="_blank">Observer Link<i class="hyper-link-icon ml-1" aria-hidden="true"></i></a>
-        </div>
-
-      </div>
-      <div *ngFor="let key of keys" class="info-item">
-        <div class="info-item-key sub-title">{{key}}</div>
-        <div class="info-item-splitter">:</div>
-        <div class="info-item-value" [innerHTML]="resource[key]">
-        </div>
-        <div class="info-item-copy">
-          <img *ngIf="resource[key] !== null && resource[key] !== undefined  && !checkWithHref(resource[key])" src="/assets/img/copy-icon.png" style="height: 12px; background-color:var(--imgButtonBackground);" (click)="copyToClipboard(resource[key], $event)" alt="Copy to clipboard" />
-        </div>
-      </div>
+      <table>
+        <tbody>
+          <tr *ngIf="observerLink !== ''">
+            <td>
+              <div class="info-item-key">Observer Link</div>
+            </td>
+            <td>
+              <div class="info-item-splitter">:</div>
+            </td>
+            <td>
+              <div class="info-item-value">
+                <a href="{{observerLink}}" target="_blank">Observer Link<i class="hyper-link-icon ml-1"
+                    aria-hidden="true"></i></a>
+              </div>
+            </td>
+          </tr>
+          <tr *ngFor="let keyPair of keyPairs">
+            <td>
+              <div class="info-item-key">{{keyPair[0]}}</div>
+            </td>
+            <td>
+              <div class="info-item-splitter">:</div>
+            </td>
+            <td>
+              <div class="info-item-value">{{resource[keyPair[0]]}}</div>
+            </td>
+            <td>
+              <div class="info-item-copy">
+                <img
+                  *ngIf="resource[keyPair[0]] !== null && resource[keyPair[0]] !== undefined  && !checkWithHref(resource[keyPair[0]])"
+                  src="/assets/img/copy-icon.png" style="height: 12px; background-color:var(--imgButtonBackground);"
+                  (click)="copyToClipboard(resource[keyPair[0]], $event)" alt="Copy to clipboard" />
+              </div>
+            </td>
+            <ng-container *ngIf="keyPair[1] !== ''">
+              <td>
+                <div class="info-item-key">{{keyPair[1]}}</div>
+              </td>
+              <td>
+                <div class="info-item-splitter">:</div>
+              </td>
+              <td>
+                <div class="info-item-value">{{resource[keyPair[1]]}}</div>
+              </td>
+              <td>
+                <div class="info-item-copy">
+                  <img
+                    *ngIf="resource[keyPair[1]] !== null && resource[keyPair[1]] !== undefined  && !checkWithHref(resource[keyPair[1]])"
+                    src="/assets/img/copy-icon.png" style="height: 12px; background-color:var(--imgButtonBackground);"
+                    (click)="copyToClipboard(resource[keyPair[1]], $event)" alt="Copy to clipboard" />
+                </div>
+              </td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </collapsible-list-item>
 </collapsible-list-fabric>
 <collapsible-list-fabric *ngIf="showMetrics" [collapsed]="false" [title]="'Metrics'">
   <collapsible-list-item body>
     <div>
-      <detector-container [detector]="_resourceService.overviewPageMetricsId" [hideDetectorControl]="true"></detector-container>
+      <detector-container [detector]="_resourceService.overviewPageMetricsId" [hideDetectorControl]="true">
+      </detector-container>
     </div>
   </collapsible-list-item>
 </collapsible-list-fabric>
