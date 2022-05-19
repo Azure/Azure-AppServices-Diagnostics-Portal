@@ -317,11 +317,11 @@ export class OnboardingFlowComponent implements OnInit {
   private _oldCodeDecorations: string[] = [];
   selectedKey: string = '';
   isSaved: boolean = false;
-  notificationStatusType: MessageBarType = MessageBarType.info;
+  notificationStatusType: MessageBarType = MessageBarType.success;
   branchMessageStyle: any = {
     root: {
         height: '20px',
-        backgroundColor: '#FEF0F1',
+        backgroundColor: '#c9dded',
     }
   }
   showBranchInfo:boolean = false;
