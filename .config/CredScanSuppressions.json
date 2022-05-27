@@ -1,0 +1,13 @@
+{
+    "tool": "Credential Scanner",
+    "suppressions": [
+        {
+            "file": "main.69ede3cbec91a30156c7.js",
+            "_justification": "There is a false positive hash that credscan is finding. Suppress this file for now."
+        },
+        {
+            "file": "CosmosDBUserSettingHandler.cs",
+            "_justification": "This file does not contain any secrets. It might be mistaken the word Key for a secret."
+        }
+    ]
+}
