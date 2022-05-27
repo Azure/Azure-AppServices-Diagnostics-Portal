@@ -61,8 +61,7 @@ extends:
 
           - script: |
               cd AngularApp
-              npm install -g @angular/cli@8.0.2
-              npm install --registry https://registry.npmjs.org
+              npm install
               npm run build
             displayName: 'npm install and build'
 
