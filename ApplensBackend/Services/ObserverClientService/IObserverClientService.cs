@@ -23,5 +23,7 @@ namespace AppLensV3
         Task<ObserverResponse> GetSitePostBody(string stamp, string site);
 
         Task<ObserverResponse> GetStampBody(string stampName);
+
+        Task<ObserverResponse> GetSiteSku(string stamp, string site);
     }
 }

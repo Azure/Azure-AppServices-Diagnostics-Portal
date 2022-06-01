@@ -281,6 +281,7 @@ export class DashboardComponent implements OnDestroy {
         }
 
         this.keys = Object.keys(this.resource);
+        this.keys.sort((a,b) => a.localeCompare(b));
         this.replaceResourceEmptyValue();
         if (serviceInputs.resourceType.toString().toLowerCase() == "stamps") {
           this.updateAdditionalStampInfo();
