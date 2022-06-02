@@ -41,19 +41,29 @@ export class DetectorTimePickerComponent implements OnInit {
   endClock: string;
   timeDiffError: string = "";
 
-  isPublic : boolean = true;
+  isPublic: boolean = true;
 
   formatDate: IDatePickerProps['formatDate'] = (date) => {
     //only this format can do both fill in date and select date
-    return moment(date).format('M/D/YY');
+    console.log(date);
+    return moment(date).format('YYYY-MM-DD');
   };
+
+  parseDateFromString: IDatePickerProps['parseDateFromString'] = (s) => {
+    const dateStr = s || "";
+    const datePart = dateStr.split("-");
+    const year = datePart[0].length > 0 ? Number.parseInt(datePart[0], 10) : this.endDate.getFullYear();
+    const month = datePart[1].length > 0 ? Math.max(1, Math.min(12, parseInt(datePart[1], 10))) - 1 : this.endDate.getMonth();
+    const date = datePart[2].length > 1 ? Math.max(1, Math.min(31, parseInt(datePart[2], 10))) : this.endDate.getDate();
+    return new Date(year, month, date);
+  }
 
   choiceGroupOptions: IChoiceGroupOption[] =
     [
       { key: TimePickerOptions.Last1Hour, text: TimePickerOptions.Last1Hour, onClick: () => { this.setTime(1) } },
       { key: TimePickerOptions.Last6Hours, text: TimePickerOptions.Last6Hours, onClick: () => { this.setTime(6) } },
       { key: TimePickerOptions.Last12Hour, text: TimePickerOptions.Last12Hour, onClick: () => { this.setTime(12) } },
-      { key: TimePickerOptions.Last24Hours, text: TimePickerOptions.Last24Hours, onClick: () => { this.setTime(24) } },      
+      { key: TimePickerOptions.Last24Hours, text: TimePickerOptions.Last24Hours, onClick: () => { this.setTime(24) } },
       { key: TimePickerOptions.Custom, text: TimePickerOptions.Custom, onClick: () => { this.selectCustom() } },
     ];
 

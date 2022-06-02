@@ -330,9 +330,8 @@ export class DetectorControlService {
     if (updatedInfo && updatedInfo.selectedKey !== TimePickerOptions.Custom) {
       this.timePickerStrSub.next(updatedInfo.selectedText);
     } else {
-      const timeFormat = 'M/D/YY HH:mm';
-      const st = moment(this.startTimeString).format(timeFormat);
-      const et = moment(this.endTimeString).format(timeFormat);
+      const st = moment(this.startTimeString).format(this.stringFormat);
+      const et = moment(this.endTimeString).format(this.stringFormat);
       this.timePickerStrSub.next(`${st} to ${et}`);
     }
   }

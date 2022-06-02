@@ -8,11 +8,11 @@
         </fab-choice-group>
         <div *ngIf="showTimePicker" class="row">
           <div style="display: flex;" class="ml-3 mt-3">
-            <div class="mr-3 date-picker-label">Start </div>
-            <fab-date-picker contentClass="col-md-8" [minDate]="minDate" [maxDate]="maxDate"
+            <div class="mr-2 date-picker-label">Start </div>
+            <fab-date-picker [minDate]="minDate" [maxDate]="maxDate"
               placeholder="Select a date..." ariaLabel="Select start date" allowTextInput="true"
               showMonthPickerAsOverlay="true" (onSelectDate)="onSelectStartDateHandler($event)" [formatDate]="formatDate"
-              [value]="startDate" contentStyle="width:120px;">
+              [value]="startDate" [parseDateFromString]="parseDateFromString" contentStyle="width:130px;">
             </fab-date-picker>
             <fab-masked-text-field contentClass="col-md-4" maxLength="6" [(value)]="startClock"
               [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
@@ -22,11 +22,11 @@
           </div>
 
           <div style="display: flex;" class="ml-3 mt-3">
-            <div  class="mr-4 date-picker-label">End</div>
-            <fab-date-picker contentClass="col-md-8" [minDate]="minDate" [maxDate]="maxDate"
+            <div  class="mr-2 date-picker-label">End&nbsp;</div>
+            <fab-date-picker [minDate]="minDate" [maxDate]="maxDate"
               placeholder="Select a date..." ariaLabel="Select end date" allowTextInput="true"
               showMonthPickerAsOverlay="true" (onSelectDate)="onSelectEndDateHandler($event)" [formatDate]="formatDate"
-              [value]="endDate" contentStyle="width:120px">
+              [value]="endDate" [parseDateFromString]="parseDateFromString" contentStyle="width:130px">
             </fab-date-picker>
             <fab-masked-text-field contentClass="col-md-4" maxLength="6" [(value)]="endClock"
               [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
