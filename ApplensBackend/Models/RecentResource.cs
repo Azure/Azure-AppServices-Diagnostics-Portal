@@ -54,6 +54,7 @@ namespace AppLensV3.Models
     {
         public string ResourceUri { get; set; }
         public string Kind { get; set; }
+        public Dictionary<string,string> QueryParams { get; set; }
     }
 
     public class FavoriteDetectorProp
