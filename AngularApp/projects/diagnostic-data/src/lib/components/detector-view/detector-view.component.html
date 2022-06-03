@@ -160,7 +160,9 @@
 
 <ng-container *ngIf="!detectorDataLocalCopy && errorState">
   <div class="mt-3">
-    <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>
+    <ng-container *ngIf="!hideDetectorControl && !insideDetectorList">
+      <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>
+    </ng-container>
     <span class="critical-color" *ngIf="errorState.error && !isPublic"> Error: {{errorState.error}}</span>
     <span class="critical-color" *ngIf="isPublic && errorState || !errorState.error">Sorry, an error occurred. Please
       refresh the page and try again.</span>
