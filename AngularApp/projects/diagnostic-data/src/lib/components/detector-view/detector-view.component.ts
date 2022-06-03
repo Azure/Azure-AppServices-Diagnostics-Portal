@@ -401,7 +401,7 @@ export class DetectorViewComponent implements OnInit {
   }
 
   getTimestampAsString(dateTime: Moment) {
-    return dateTime.format('DD-MMM-YY HH:mm') + ' UTC';
+    return dateTime.format(this.detectorControlService.stringFormat) + ' UTC';
   }
 
   getDowntimeLabel(d: DownTime) {
