@@ -7,7 +7,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { IDropdownOption, IDropdownProps, PanelType, SpinnerSize } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
-import { DataTableResponseObject, DetectorControlService, GenericThemeService, HealthStatus } from 'diagnostic-data';
+import { DetectorControlService, GenericThemeService, HealthStatus } from 'diagnostic-data';
 import { AdalService } from 'adal-angular4';
 import { UserSettingService } from '../../dashboard/services/user-setting.service';
 import { RecentResource } from '../../../shared/models/user-setting';
@@ -474,7 +474,7 @@ export class MainComponent implements OnInit {
 
     const queryParams = recentResource.queryParams ? { ...recentResource.queryParams } : {};
 
-    if (!(moment.utc(queryParams["startTime"])).isValid()  || !(moment.utc(queryParams["endTime"])).isValid()) {
+    if (!this.checkTimeStringIsValid(queryParams["startTime"]) || !this.checkTimeStringIsValid(queryParams["endTime"])) {
       queryParams["startTime"] = startUtc ? startUtc.format(this._detectorControlService.stringFormat) : "";
       queryParams["endTime"] = endUtc ? endUtc.format(this._detectorControlService.stringFormat) : "";
     }
@@ -498,6 +498,12 @@ export class MainComponent implements OnInit {
 
   navigateToUnauthorized() {
     this._router.navigate(['unauthorized'], { queryParams: { isDurianEnabled: true } });
+  }
+
+  private checkTimeStringIsValid(timeString: string): boolean {
+    if (timeString == null || timeString.length === 0) return false;
+    const time:momentNs.Moment = moment.utc(timeString);
+    return time.isValid();
   }
 
 }
