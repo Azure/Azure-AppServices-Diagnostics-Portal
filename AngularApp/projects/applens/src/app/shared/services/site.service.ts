@@ -84,6 +84,6 @@ export class SiteService extends ResourceService {
         const priceTire = SkuUtilities.getPriceTireBySkuAndSize(siteSku.sku, siteSku.current_worker_size);
         const numberOfWorkers = siteSku.actual_number_of_workers;
         const aspName = siteSku.server_farm_name;
-        return `${aspName}(${priceTire}:${numberOfWorkers})`;
+        return `${aspName} (${priceTire}: ${numberOfWorkers})`;
     }
 }
