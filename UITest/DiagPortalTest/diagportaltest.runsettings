@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- Runsettings configuration -->
+<!-- https://learn.microsoft.com/en-us/visualstudio/test/configure-unit-tests-by-using-a-dot-runsettings-file?view=vs-2022#autodetect-the-run-settings-file -->
+<RunSettings>
+	<!-- configuration elements -->
+	<TestRunParameters>
+		<Parameter name="Slot" value="staging" />
+		<Parameter name="Region" value="" />
+	</TestRunParameters>
+</RunSettings>

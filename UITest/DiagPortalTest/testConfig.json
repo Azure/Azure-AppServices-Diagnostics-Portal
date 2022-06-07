@@ -1,0 +1,42 @@
+{
+  "webApp": {
+    "resourceUri": "/subscriptions/931906d8-00b9-481b-aba2-f227b237cada/resourceGroups/CanaryResources/providers/Microsoft.Web/sites/diagnoticscanarywindowswebapp",
+    "diagAndSolve": {
+      "categoryName": "Configuration and Management",
+      "detectorName": "All Scaling Operations"
+    },
+    "caseSubmission": {
+      "supportTopicId": "32542218",
+      "sapSupportTopicId": "b7106007-ad1e-eece-0d48-4508b0db3d2b",
+      "sapProductId": "1890289e-747c-7ef6-b4f5-b1dbb0bead28",
+      "caseSubject": "test"
+    }
+  },
+  "aks": {
+    "resourceUri": "/subscriptions/931906d8-00b9-481b-aba2-f227b237cada/resourceGroups/CanaryResources/providers/Microsoft.ContainerService/managedClusters/applensdiagnoticscanaryaks",
+    "diagAndSolve": {
+      "categoryName": "Known Issues, Availability and Performance",
+      "detectorName": "Etcd Availability Issues",
+      "diagPortalPath": "aksDiagnostics"
+    },
+    "caseSubmission": {
+      "supportTopicId": "32844737",
+      "sapSupportTopicId": "167672fd-29e9-943b-526d-b6a0c1c57195",
+      "sapProductId": "5a3a423f-8667-9095-1770-0a554a934512",
+      "caseSubject": "test"
+    }
+  },
+  "logicApp": {
+    "resourceUri": "/subscriptions/931906d8-00b9-481b-aba2-f227b237cada/resourceGroups/CanaryResources/providers/Microsoft.Logic/workflows/applensdiagnosticscanaryla",
+    "diagAndSolve": {
+      "categoryName": "Performance",
+      "detectorName": "429 Connector Throttling"
+    },
+    "caseSubmission": {
+      "supportTopicId": "32742524",
+      "sapSupportTopicId": "8797e998-e3d4-8b20-d285-e6f7365fd6f4",
+      "sapProductId": "9239daee-9951-e495-0aee-bf6b73708882",
+      "caseSubject": "test"
+    }
+  }
+}
