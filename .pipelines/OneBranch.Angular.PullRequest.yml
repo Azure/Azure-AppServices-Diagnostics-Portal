@@ -73,6 +73,9 @@ extends:
           ob_outputDirectory: '$(Build.SourcesDirectory)/out' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
 
         steps:
+          - task: CmdLine@2
+            inputs:
+              script: 'setx DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1'
           - task: UseDotNet@2
             displayName: 'Install DotNet'
             inputs:
