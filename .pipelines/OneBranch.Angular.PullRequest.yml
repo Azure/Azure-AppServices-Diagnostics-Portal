@@ -74,7 +74,7 @@ extends:
 
         steps:
           - task: UseDotNet@2
-            displayName: 'Use .NET Core sdk 5.0.0'
+            displayName: 'Install DotNet'
             inputs:
               version: 5.0.0
 
