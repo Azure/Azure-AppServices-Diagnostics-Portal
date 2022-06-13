@@ -76,7 +76,8 @@ extends:
           - task: UseDotNet@2
             displayName: 'Install DotNet'
             inputs:
-              version: 5.0.0
+              packageType: 'sdk'
+              version: '5.0.x'
 
           - task: DotNetCoreCLI@2
             inputs:
