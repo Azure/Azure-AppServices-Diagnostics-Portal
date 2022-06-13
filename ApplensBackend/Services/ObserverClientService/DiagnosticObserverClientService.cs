@@ -64,6 +64,12 @@ namespace AppLensV3
             return GetSiteInternal(stamp, siteName);
         }
 
+        public Task<ObserverResponse> GetSiteSku(string stamp, string siteName)
+        {
+            var path = $"stamps/{stamp}/sites/{siteName}/sku";
+            return GetAppInternal(path);
+        }
+
         public async Task<ObserverResponse> GetStaticWebApp(string defaultHostNameOrAppName)
         {
             return await GetStaticWebAppInternal(defaultHostNameOrAppName);

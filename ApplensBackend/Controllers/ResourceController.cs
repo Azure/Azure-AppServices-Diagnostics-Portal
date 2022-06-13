@@ -64,6 +64,14 @@ namespace AppLensV3
         }
 
         [HttpGet]
+        [Route("api/stamps/{stamp}/sites/{siteName}/sku")]
+        public async Task<IActionResult> GetSiteSku(string stamp,string siteName)
+        {
+            var siteSku = await _observerService.GetSiteSku(stamp, siteName);
+            return Ok(new { Details = siteSku.Content });
+        }
+
+        [HttpGet]
         [Route("api/hostingEnvironments/{hostingEnvironmentName}/postBody")]
         public async Task<IActionResult> GetHostingEnvironmentRequestBody(string hostingEnvironmentName)
         {

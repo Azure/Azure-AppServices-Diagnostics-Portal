@@ -868,8 +868,14 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                         }
                     }
                     else {
+                        // Case submission flow search result navigation
                         this.logEvent(TelemetryEventNames.SearchResultClicked, { searchMode: this.searchMode, searchId: this.searchId, detectorId: detectorId, rank: 0, title: clickDetectorEventProperties.ChildDetectorName, status: clickDetectorEventProperties.Status, ts: Math.floor((new Date()).getTime() / 1000).toString() });
-                        this._router.navigate([`../../../analysis/${this.analysisId}/search/detectors/${detectorId}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', preserveFragment: true, queryParams: { searchTerm: this.searchTerm } });
+                        let dest = `../../../analysis/${this.analysisId}/search/detectors/${detectorId}`;
+                        if (this._activatedRoute.snapshot.paramMap.has("detectorName"))
+                        {
+                            dest = `../${detectorId}`;
+                        }
+                        this._router.navigate([dest], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', preserveFragment: true, queryParams: { searchTerm: this.searchTerm } });
                     }
                 }
                 else {

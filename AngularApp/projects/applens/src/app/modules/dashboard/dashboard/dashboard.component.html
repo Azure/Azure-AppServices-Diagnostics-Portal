@@ -3,10 +3,16 @@
   <fab-dialog [hidden]="!displayAlertDialog" [styles]="alertDialogStyles" [modalProps]="alertDialogProps" [forceFocusInsideTrap]="true">
     <fab-dialog-content [title]="alertInfo.header" tabindex="1">
       <p>{{alertInfo.details}}</p>
+      <label for="cross-subscription-justification">
+        Justification <span class="required">*</span>
+      </label>
+      <fab-text-field [ariaLabel]="'Justification for accessing resource out of case subscription'" [(value)]="crossSubJustification"
+        [placeholder]="'Justification for accessing resource out of case subscription'" id="cross-subscription-justification">
+      </fab-text-field>
     </fab-dialog-content>
     <fab-dialog-footer>
       <div class="mt-5">
-        <fab-primary-button (onClick)="handleUserResponse(alertInfo.confirmationOptions[0])" contentClass="mr-3" tabindex="1">
+        <fab-primary-button (onClick)="handleUserResponse(alertInfo.confirmationOptions[0])" contentClass="mr-3" tabindex="1" [disabled]="!(crossSubJustification && crossSubJustification.length>0)">
           {{!showLoaderInDialog? alertInfo.confirmationOptions[0].label: 'Loading...'}}
         </fab-primary-button>
         <fab-default-button (onClick)="handleUserResponse(alertInfo.confirmationOptions[1])" tabindex="1">

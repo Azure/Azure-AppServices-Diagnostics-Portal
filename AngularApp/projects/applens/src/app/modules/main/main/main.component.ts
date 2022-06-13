@@ -7,13 +7,13 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { IDropdownOption, IDropdownProps, PanelType, SpinnerSize } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
-import { DataTableResponseObject, DetectorControlService, GenericThemeService, HealthStatus } from 'diagnostic-data';
+import { DetectorControlService, GenericThemeService, HealthStatus } from 'diagnostic-data';
 import { AdalService } from 'adal-angular4';
 import { UserSettingService } from '../../dashboard/services/user-setting.service';
 import { RecentResource } from '../../../shared/models/user-setting';
 import { ResourceDescriptor } from 'diagnostic-data'
 import { applensDocs } from '../../../shared/utilities/applens-docs-constant';
-import {DiagnosticApiService} from '../../../shared/services/diagnostic-api.service';
+import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { UserAccessStatus } from '../../../shared/models/alerts';
 const moment = momentNs;
 
@@ -171,17 +171,17 @@ export class MainComponent implements OnInit {
     }
   }
 
-  validateCaseNumber(){
+  validateCaseNumber() {
     if (!this.caseNumber || this.caseNumber.length < 12) {
-      this.caseNumberValidationError = "Case number too short";
+      this.caseNumberValidationError = "Case number too short. It should be a minimum of 12 digits.";
       return false;
     }
     if (this.caseNumber.length > 18) {
-      this.caseNumberValidationError = "Case number too long";
+      this.caseNumberValidationError = "Case number too long. It should be a maximum of 18 digits.";
       return false;
     }
-    if (this.caseNumber && this.caseNumber.length > 0 && isNaN(Number(this.caseNumber))){
-      this.caseNumberValidationError = "Case number should be a valid number";
+    if (this.caseNumber && this.caseNumber.length > 0 && isNaN(Number(this.caseNumber))) {
+      this.caseNumberValidationError = `'${this.caseNumber}' is not a valid number.`;
       return false;
     }
     else {
@@ -197,25 +197,31 @@ export class MainComponent implements OnInit {
     this._diagnosticApiService.checkUserAccess().subscribe(res => {
       if (res && res.Status == UserAccessStatus.CaseNumberNeeded) {
         this.caseNumberNeededForUser = true;
+        this._diagnosticApiService.setCaseNumberNeededForUser(this.caseNumberNeededForUser);
         this.displayLoader = false;
       }
       else {
         this.displayLoader = false;
       }
-    },(err) => {
+    }, (err) => {
       if (err.status === 404) {
         //This means userAuthorization is not yet available on the backend
         this.caseNumberNeededForUser = false;
+        this._diagnosticApiService.setCaseNumberNeededForUser(this.caseNumberNeededForUser);
         this.displayLoader = false;
         return;
+      }
+      if (err.status === 403) {
+        this.displayLoader = false;
+        this.navigateToUnauthorized();
       }
       let errormsg = err.error;
       errormsg = errormsg.replace(/\\"/g, '"');
       errormsg = errormsg.replace(/\"/g, '"');
-        let errobj = JSON.parse(errormsg);
-        this.displayUserAccessError = true;
-        this.userAccessErrorMessage = errobj.DetailText;
-        this.displayLoader = false;
+      let errobj = JSON.parse(errormsg);
+      this.displayUserAccessError = true;
+      this.userAccessErrorMessage = errobj.DetailText;
+      this.displayLoader = false;
     });
   }
 
@@ -344,7 +350,7 @@ export class MainComponent implements OnInit {
     this._userSettingService.updateDefaultServiceType(this.selectedResourceType.id);
     if (this.caseNumberNeededForUser && (this.selectedResourceType && this.selectedResourceType.userAuthorizationEnabled)) {
       this.caseNumber = this.caseNumber.trim();
-      if (!this.validateCaseNumber()){
+      if (!this.validateCaseNumber()) {
         return;
       }
       this._diagnosticApiService.setCustomerCaseNumber(this.caseNumber);
@@ -376,7 +382,7 @@ export class MainComponent implements OnInit {
     let navigationExtras: NavigationExtras = {
       queryParams: {
         ...timeParams,
-        ...this.caseNumber? {caseNumber: this.caseNumber}: {}
+        ...this.caseNumber ? { caseNumber: this.caseNumber } : {}
       },
     }
 
@@ -415,7 +421,8 @@ export class MainComponent implements OnInit {
         imgSrc: resourceType ? resourceType.imgSrc : "",
         type: resourceType ? resourceType.displayName : "",
         kind: recentResource.kind,
-        resourceUri: recentResource.resourceUri
+        resourceUri: recentResource.resourceUri,
+        queryParams: recentResource.queryParams
       }
       if (type === "microsoft.web/sites") {
         this.updateDisplayWithKind(recentResource.kind, display);
@@ -425,7 +432,7 @@ export class MainComponent implements OnInit {
     return rows;
   }
 
-  private handleStampForRecentResource(recentResource: RecentResource) {
+  private handleStampForRecentResource(recentResource: RecentResource): RecentResourceDisplay {
     let stampName = null;
     const resourceType = this.enabledResourceTypes.find(t => t.resourceType.toLocaleLowerCase() === "stamps");
     let resourceUriRegExp = new RegExp('/infrastructure/stamps/([^/]+)', "i");
@@ -437,12 +444,13 @@ export class MainComponent implements OnInit {
     if (result && result.length > 0) {
       stampName = result[1];
     }
-    return {
+    return <RecentResourceDisplay>{
       name: stampName,
       imgSrc: resourceType ? resourceType.imgSrc : "",
       type: resourceType ? resourceType.displayName : "",
       kind: recentResource.kind,
-      resourceUri: recentResource.resourceUri.replace("infrastructure/stamps", "stamps")
+      resourceUri: recentResource.resourceUri.replace("infrastructure/stamps", "stamps"),
+      queryParams: recentResource.queryParams
     }
   }
 
@@ -460,20 +468,22 @@ export class MainComponent implements OnInit {
     }
   }
 
-  //Todo, once get startTime,endTime from database,replace with those get from detectorControlService
   private onNavigateRecentResource(recentResource: RecentResourceDisplay) {
     const startUtc = this._detectorControlService.startTime;
     const endUtc = this._detectorControlService.endTime;
 
-    let timeParams = {
-      startTime: startUtc ? startUtc.format('YYYY-MM-DDTHH:mm') : "",
-      endTime: endUtc ? endUtc.format('YYYY-MM-DDTHH:mm') : ""
+    const queryParams = recentResource.queryParams ? { ...recentResource.queryParams } : {};
+
+    if (!this.checkTimeStringIsValid(queryParams["startTime"]) || !this.checkTimeStringIsValid(queryParams["endTime"])) {
+      queryParams["startTime"] = startUtc ? startUtc.format(this._detectorControlService.stringFormat) : "";
+      queryParams["endTime"] = endUtc ? endUtc.format(this._detectorControlService.stringFormat) : "";
     }
 
-    let navigationExtras: NavigationExtras = {
-      queryParams: timeParams
+    const navigationExtras: NavigationExtras = {
+      queryParams: queryParams
     }
-    const route = recentResource.resourceUri
+
+    const route = recentResource.resourceUri;
     this._router.navigate([route], navigationExtras);
   }
 
@@ -484,6 +494,16 @@ export class MainComponent implements OnInit {
 
   updateResourceName(e: { event: Event, newValue?: string }) {
     this.resourceName = e.newValue.toString();
+  }
+
+  navigateToUnauthorized() {
+    this._router.navigate(['unauthorized'], { queryParams: { isDurianEnabled: true } });
+  }
+
+  private checkTimeStringIsValid(timeString: string): boolean {
+    if (timeString == null || timeString.length === 0) return false;
+    const time:momentNs.Moment = moment.utc(timeString);
+    return time.isValid();
   }
 
 }

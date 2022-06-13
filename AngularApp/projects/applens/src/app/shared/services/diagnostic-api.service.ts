@@ -1,7 +1,7 @@
 import { AdalService } from 'adal-angular4';
 import { DetectorMetaData, DetectorResponse, ExtendDetectorMetaData, QueryResponse, TelemetryService } from 'diagnostic-data';
 import { map, retry, catchError, tap } from 'rxjs/operators';
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Observable, of, throwError as observableThrowError } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -24,12 +24,23 @@ export class DiagnosticApiService {
   public Location: string = null;
   public effectiveLocale: string = "";
   public CustomerCaseNumber: string = null;
+  public caseNumberNeededForUser: boolean = false;
+  public caseNumberNeededEvent: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private _httpClient: HttpClient, private _cacheService: CacheService,
     private _adalService: AdalService, private _telemetryService: TelemetryService, private _router: Router) { }
 
   public get diagnosticApi(): string {
     return environment.production ? '' : this.localDiagnosticApi;
+  }
+
+  public setCaseNumberNeededForUser(value: boolean) {
+    this.caseNumberNeededForUser = value;
+    this.caseNumberNeededEvent.emit(this.caseNumberNeededForUser);
+  }
+
+  public getCaseNumberNeededForUser(): EventEmitter<boolean> {
+    return this.caseNumberNeededEvent;
   }
 
   public setCustomerCaseNumber(value) { this.CustomerCaseNumber = value; }

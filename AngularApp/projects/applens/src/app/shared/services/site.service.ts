@@ -1,31 +1,43 @@
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, flatMap, map, mergeMap } from 'rxjs/operators';
 import { Inject, Injectable } from '@angular/core';
 import { RESOURCE_SERVICE_INPUTS, ResourceServiceInputs, ResourceInfo } from '../models/resources';
 import { ObserverService } from './observer.service';
 import { ResourceService } from './resource.service';
 import { HttpResponse } from '@angular/common/http';
+import { SkuUtilities } from '../utilities/sku-utilities';
 
 @Injectable()
 export class SiteService extends ResourceService {
 
-  private _currentResource: BehaviorSubject<Observer.ObserverSiteInfo> = new BehaviorSubject(null);
+    private _currentResource: BehaviorSubject<Observer.ObserverSiteInfo> = new BehaviorSubject(null);
 
-  private _siteObject: Observer.ObserverSiteInfo;
+    private _siteObject: Observer.ObserverSiteInfo;
 
-  constructor(@Inject(RESOURCE_SERVICE_INPUTS) inputs: ResourceServiceInputs, protected _observerApiService: ObserverService) {
-    super(inputs);
-  }
+    constructor(@Inject(RESOURCE_SERVICE_INPUTS) inputs: ResourceServiceInputs, protected _observerApiService: ObserverService) {
+        super(inputs);
+    }
 
-  public startInitializationObservable() {
-    this._initialized = this._observerApiService.getSite(this._armResource.resourceName)
-      .pipe(map((observerResponse: Observer.ObserverSiteResponse) => {
-        this._observerResource = this._siteObject = this.getSiteFromObserverResponse(observerResponse);
-        this._currentResource.next(this._siteObject);
-        this.updatePesIdAndImgSrc();
-        return new ResourceInfo(this.getResourceName(),this.imgSrc,this.displayName,this.getCurrentResourceId(),this._siteObject.Kind);
-      }))
-  }
+    public startInitializationObservable() {
+        this._initialized = this._observerApiService.getSite(this._armResource.resourceName)
+            .pipe(
+                map((observerResponse: Observer.ObserverSiteResponse) => {
+                    const siteObject = this.getSiteFromObserverResponse(observerResponse);
+                    return siteObject;
+                }), flatMap(site => {
+                    return this._observerApiService.getSiteSku(site.InternalStampName, site.SiteName).pipe(
+                        map(siteSku => {
+                            site.AppServicePlan = this.getSiteASPAndSKu(siteSku);
+                            return site;
+                        }), catchError(_ => of(site)));
+                }), map(site => {
+                    this._observerResource = this._siteObject = site;
+                    this._currentResource.next(this._siteObject);
+                    this.updatePesIdAndImgSrc();
+
+                    return new ResourceInfo(this.getResourceName(), this.imgSrc, this.displayName, this.getCurrentResourceId(), this._siteObject.Kind);
+                }));
+    }
 
     public getCurrentResource(): Observable<any> {
         return this._currentResource;
@@ -66,5 +78,12 @@ export class SiteService extends ResourceService {
             this.displayName = "LINUX WEB APP";
             this.templateFileName = "LinuxApp";
         }
+    }
+
+    private getSiteASPAndSKu(siteSku: Observer.ObserverSiteSku): string {
+        const priceTire = SkuUtilities.getPriceTireBySkuAndSize(siteSku.sku, siteSku.current_worker_size);
+        const numberOfWorkers = siteSku.actual_number_of_workers;
+        const aspName = siteSku.server_farm_name;
+        return `${aspName} (${priceTire}: ${numberOfWorkers})`;
     }
 }

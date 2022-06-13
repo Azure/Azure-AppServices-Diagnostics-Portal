@@ -19,6 +19,7 @@ export interface UserPanelSetting {
 export interface RecentResource {
     kind: string;
     resourceUri: string;
+    queryParams: { [key: string]: string }
 }
 
 

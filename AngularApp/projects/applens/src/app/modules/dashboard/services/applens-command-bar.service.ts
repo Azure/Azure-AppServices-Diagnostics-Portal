@@ -77,7 +77,7 @@ export class ApplensCommandBarService {
     }
 
     public removeFavoriteDetector(detectorId: string): Observable<string> {
-        const successfulMessage =  "Successfully unpinned to overview page";
+        const successfulMessage =  "Successfully unpinned from overview page";
         const errorMessage = "Some issue happened while unpinning, Please try again later";    
         return this._userSettingService.removeFavoriteDetector(detectorId).pipe(
             map(_ => successfulMessage), 

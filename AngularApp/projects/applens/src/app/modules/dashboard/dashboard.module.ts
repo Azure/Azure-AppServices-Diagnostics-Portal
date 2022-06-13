@@ -88,9 +88,11 @@ export class InitResolver implements Resolve<Observable<ResourceInfo>>{
         //Wait for getting UserSetting and update landingPage info before going to dashboard/detector page
         let recentResource: RecentResource = null;
         return this._resourceService.waitForInitialization().pipe(map(resourceInfo => {
+            const queryParams = route.queryParams;
             recentResource = {
                 resourceUri: resourceInfo.resourceUri,
-                kind: resourceInfo.kind
+                kind: resourceInfo.kind,
+                queryParams: queryParams
             };
             return resourceInfo;
         }), flatMap(resourceInfo => {

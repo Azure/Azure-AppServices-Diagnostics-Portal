@@ -30,7 +30,7 @@ export class SideNavComponent implements OnInit {
   gists: CollapsibleMenuItem[] = [];
   gistsCopy: CollapsibleMenuItem[] = [];
 
-  searchValue: string = "";
+  searchValue: string = undefined;
 
   contentHeight: string;
 
@@ -136,7 +136,7 @@ export class SideNavComponent implements OnInit {
     onClick: () => {
       let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
     const userId: string = alias.replace('@microsoft.com', '');
-    if (userId.length > 0) {        
+    if (userId.length > 0) {
       this.navigateTo(`users/${userId}/activepullrequests`);
     }
     },

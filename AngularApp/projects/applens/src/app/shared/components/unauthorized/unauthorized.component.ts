@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import { DiagnosticApiService } from '../../services/diagnostic-api.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 const postAuthRedirectKey = 'post_auth_redirect';
 
@@ -14,11 +14,13 @@ export class UnauthorizedComponent implements OnInit {
     accessFailedReason: string = "";
     temporaryAccessSucceeded: boolean = false;
     temporaryAccessSuccessMessage: string = "";
+    isDurianEnabled: boolean = false;
 
-    public constructor(private _router: Router, private _diagnosticApiService: DiagnosticApiService){
+    public constructor(private _router: Router, private _diagnosticApiService: DiagnosticApiService, private _activatedRoute: ActivatedRoute){
       
     }
     ngOnInit(){
+      this._activatedRoute.snapshot.queryParams['isDurianEnabled'] ? this.isDurianEnabled = true : this.isDurianEnabled = false;
     }
 
     navigateToRedirectUrl(){

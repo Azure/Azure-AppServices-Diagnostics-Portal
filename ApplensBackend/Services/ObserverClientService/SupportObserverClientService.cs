@@ -120,6 +120,11 @@ namespace AppLensV3
             return await GetSiteInternal(SupportObserverApiEndpoint + "sites/" + siteName + "/adminsites");
         }
 
+        public async Task<ObserverResponse> GetSiteSku(string stamp,string siteName)
+        {
+            return await GetAppInternal($"{SupportObserverApiEndpoint}stamps/{stamp}/sites/{siteName}/sku", "GetSiteSku");
+        }
+
         /// <summary>
         /// Get container app details for containerAppName
         /// </summary>

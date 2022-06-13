@@ -70,7 +70,7 @@ export class FavoriteDetectorsComponent implements OnInit {
     this._userSettingService.removeFavoriteDetector(detector.id).subscribe(_ => {
       this.autoDismissPanel();
       this.panelHealthStatus = HealthStatus.Success;
-      this.panelMessage = `Successfully unpinned to overview page`;
+      this.panelMessage = `Successfully unpinned from overview page`;
     }, err => {
       this.autoDismissPanel();
       this.panelHealthStatus = HealthStatus.Critical;

@@ -2,7 +2,7 @@
     <div class="unauthorized-div">
         <img src="assets/img/unauthorized.svg" class="unauthorized-icon"/>
         <p class="unauthorized-header">Unauthorized! Its easy to gain access to AppLens.</p>
-        <div style="display: flex; flex-direction: row;">
+        <div style="display: flex; flex-direction: row;" *ngIf="!isDurianEnabled">
             <div style="flex: 0 1 auto; max-width: 50%;">
                 <div>
                     <p class="unauthorized-sub-header">Need Quick Access?</p>
@@ -16,14 +16,36 @@
             </div>
             <div style="flex: 0 1 auto; min-width: 50px; height: 100%; text-align: center; font-size: 18px; font-weight: 700;">or</div>
             <div style="flex: 0 1 auto;">
-                <p class="unauthorized-sub-header">Request for long-term <a href="https://myaccess/identityiq/ui/rest/redirect?rp1=/accessRequest/accessRequest.jsf&rp2=accessRequest/review?role=AppLens+Access&autoSubmit=true" target="_blank" rel="noopener noreferrer">AppLens Access here</a></p>
+                <p class="unauthorized-sub-header">Request for AppLens Access based on your role</p>
+                <ol>
+                    <li><a href="https://myaccess/identityiq/ui/rest/redirect?rp1=/accessRequest/accessRequest.jsf&rp2=accessRequest/review?role=AppLens+CSS+Access&autoSubmit=true" target="_blank" rel="noopener noreferrer">AppLens CSS Access</a></li>
+                    <li><a href="https://myaccess/identityiq/ui/rest/redirect?rp1=/accessRequest/accessRequest.jsf&rp2=accessRequest/review?role=AppLens+Non-CSS+Access&autoSubmit=true" target="_blank" rel="noopener noreferrer">AppLens Non-CSS Access</a></li>
+                </ol>
                 <p><u>If the above direct link does not work</u>, please follow the below steps to apply for access.</p>
                 <ol>
                     <li>Go to <a href="https://myaccess" target="_blank" rel="noopener noreferrer">MyAccess</a></li>
                     <li>Click on <strong>Request Access</strong></li>
-                    <li>Search for and select <strong>AppLens Access</strong></li>
+                    <li>Search for AppLens and select <strong>AppLens CSS Access</strong> or <strong>AppLens Non-CSS Access</strong> based on your role requirements.</li>
                     <li>Click <strong>Next</strong> and move to Review and Submit</li>
-                    <li>Make sure <strong>AppLens Access</strong> is selected and click <strong>Submit</strong></li>
+                </ol>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: row;" *ngIf="isDurianEnabled">
+            <div style="flex: 0 1 auto; max-width: 50%;">
+                <p class="unauthorized-sub-header">Request for AppLens Access based on your role</p>
+                <ol>
+                    <li><a href="https://myaccess/identityiq/ui/rest/redirect?rp1=/accessRequest/accessRequest.jsf&rp2=accessRequest/review?role=AppLens+CSS+Access&autoSubmit=true" target="_blank" rel="noopener noreferrer">AppLens CSS Access</a></li>
+                    <li><a href="https://myaccess/identityiq/ui/rest/redirect?rp1=/accessRequest/accessRequest.jsf&rp2=accessRequest/review?role=AppLens+Non-CSS+Access&autoSubmit=true" target="_blank" rel="noopener noreferrer">AppLens Non-CSS Access</a></li>
+                </ol>
+            </div>
+            <div style="flex: 0 1 auto; min-width: 50px; height: 100%; text-align: center; font-size: 18px; font-weight: 700;">or</div>
+            <div style="flex: 0 1 auto;">
+                <p><u>If the direct links do not work</u>, please follow the below steps to apply for access.</p>
+                <ol>
+                    <li>Go to <a href="https://myaccess" target="_blank" rel="noopener noreferrer">MyAccess</a></li>
+                    <li>Click on <strong>Request Access</strong></li>
+                    <li>Search for AppLens and select <strong>AppLens CSS Access</strong> or <strong>AppLens PG Access</strong> based on your role requirements.</li>
+                    <li>Click <strong>Next</strong> and move to Review and Submit</li>
                 </ol>
             </div>
         </div>
