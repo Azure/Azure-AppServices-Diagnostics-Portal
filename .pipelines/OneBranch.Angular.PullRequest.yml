@@ -73,16 +73,12 @@ extends:
           ob_outputDirectory: '$(Build.SourcesDirectory)/out' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
 
         steps:
-          - task: UseDotNet@2
-            displayName: 'Use .NET Core sdk 2.0.0'
-            inputs:
-              version: 2.0.0
-
           - task: DotNetCoreCLI@2
-            displayName: Restore
             inputs:
-              command: restore
-              projects: ApplensBackend/AppLensV3.csproj
+              command: 'restore'
+              projects: 'ApplensBackend/AppLensV3.csproj'
+              feedsToUse: 'config'
+              nugetConfigPath: 'ApplensBackend/nuget.config'
 
           - task: DotNetCoreCLI@2
             displayName: Build
@@ -104,5 +100,3 @@ extends:
             inputs:
               PathtoPublish: '$(Build.ArtifactStagingDirectory)/ApplensBackend'
               ArtifactName: '$(build.applens.server)'
-
-          
