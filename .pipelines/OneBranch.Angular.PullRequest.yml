@@ -57,7 +57,11 @@ extends:
           - task: NodeTool@0
             inputs:
                 versionSpec: '14.18.x'
-            displayName: 'Install Node.js'        
+            displayName: 'Install Node.js'
+
+          - task: npmAuthenticate@0
+            inputs:
+              workingFile: './AngularApp/.npmrc'
 
           - script: |
               cd AngularApp
