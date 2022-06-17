@@ -63,8 +63,7 @@
         </div>
 
         <div class="section">
-          <fab-primary-button contentStyle="border-radius: 2px; border:1px solid #EDEBE9;" [disabled]="disableSubmitButton" (click)="onSubmit()">
-            Continue</fab-primary-button>
+            <button type="button" class="btn btn-sm btn-primary" [disabled]="disableSubmitButton" (click)="onSubmit()">Continue</button>
             <div *ngIf="accessErrorMessage && accessErrorMessage!== ''" class="mt-3 error-message-container">
               <status-icon [status]="status"></status-icon><span class="ml-3 error-message">{{accessErrorMessage}}</span>
             </div>
@@ -105,7 +104,7 @@
           <h3>Documentation</h3>
         </div>
         <div class="mb-3" *ngFor="let doc of applensDocs">
-          <a [href]="doc.link" target="_blank">{{doc.name}}<i class="hyper-link-icon ml-1" aria-hidden="true"></i></a>
+          <a class="applens-documentation" [href]="doc.link" target="_blank">{{doc.name}}<i class="hyper-link-icon ml-1" aria-hidden="true"></i></a>
         </div>
       </div>
     </div>

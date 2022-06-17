@@ -109,6 +109,15 @@
     cursor: pointer;
 }
 
+.recent-resource:focus-visible {
+    border: solid 1px var(--bodyText);
+}
+
+.applens-documentation:focus-visible {
+    border: solid 1px var(--bodyText);
+}
+
+
 .view-resource-link {
     margin-left: 300px;
     margin-top: 5px;
