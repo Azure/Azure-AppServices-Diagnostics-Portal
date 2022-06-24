@@ -133,7 +133,7 @@ extends:
             buildType: 'current'
             downloadType: 'single'
             artifactName: 'drop_Build_BuildAngular'
-            downloadPath: '$(System.ArtifactsDirectory)'
+            downloadPath: '$(System.ArtifactsDirectory)/drop_Build_BuildAngular'
 
         - task: DownloadBuildArtifacts@1
           displayName: 'Download Applens Backend Build Artifacts'
@@ -141,7 +141,7 @@ extends:
             buildType: 'current'
             downloadType: 'single'
             artifactName: 'drop_Build_BuildApplensBackend'
-            downloadPath: '$(System.ArtifactsDirectory)'
+            downloadPath: '$(System.ArtifactsDirectory)/drop_Build_BuildApplensBackend'
 
         - task: CopyFiles@2
           displayName: 'Copy Backend Files to: $(ob_outputDirectory)'
