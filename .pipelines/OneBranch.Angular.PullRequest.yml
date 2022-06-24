@@ -115,3 +115,50 @@ extends:
               projects: ApplensBackend/AppLensV3.csproj
               arguments: '--configuration $(BuildConfiguration) --output $(ob_outputDirectory)'
               zipAfterPublish: false
+
+    - stage: Package
+      jobs:
+      - job: BuildAngular
+        pool:
+          type: linux
+
+        variables: # More settings at https://aka.ms/obpipelines/yaml/jobs
+          ob_outputDirectory: '$(Build.SourcesDirectory)/out/EndResult' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts          
+
+        steps: # These steps will be run in unrestricted container's network
+        - task: DownloadBuildArtifacts@1
+          displayName: 'Download Applens Client Build Artifacts'
+          inputs:
+            buildType: 'current'
+            downloadType: 'single'
+            artifactName: 'drop_Build_BuildAngular'
+            downloadPath: '$(System.ArtifactsDirectory)'
+
+        - task: DownloadBuildArtifacts@1
+          displayName: 'Download Applens Backend Build Artifacts'
+          inputs:
+            buildType: 'current'
+            downloadType: 'single'
+            artifactName: 'drop_Build_BuildApplensBackend'
+            downloadPath: '$(System.ArtifactsDirectory)'
+
+        - task: CopyFiles@2
+          displayName: 'Copy Backend Files to: $(ob_outputDirectory)'
+          inputs:
+            SourceFolder: '$(System.ArtifactsDirectory)/drop_Build_BuildApplensBackend'
+            TargetFolder: '$(ob_outputDirectory)'
+
+        - task: CopyFiles@2
+          displayName: 'Copy Client Files to: $(ob_outputDirectory)/wwwroot'
+          inputs:
+            SourceFolder: '$(System.ArtifactsDirectory)/drop_Build_BuildAngular'
+            TargetFolder: '$(ob_outputDirectory)/wwwroot'
+
+        - task: DeleteFiles@1
+          inputs:
+            SourceFolder: '$(System.ArtifactsDirectory)'
+            Contents: |
+              drop_Build_BuildApplensBackend
+              drop_Build_BuildAngular
+
+        
