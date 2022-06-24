@@ -161,9 +161,11 @@ extends:
             Contents: |
               drop_Build_BuildApplensBackend
               drop_Build_BuildAngular
-
+          
         - task: ArchiveFiles@2
-          displayName: 'Archive'
           inputs:
             rootFolderOrFile: '$(ob_outputDirectory)/ApplensBackend'
             includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(ob_outputDirectory)/Applens.zip'
+            replaceExistingArchive: true
