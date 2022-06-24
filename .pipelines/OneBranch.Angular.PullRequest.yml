@@ -69,6 +69,11 @@ extends:
               npm run build-applens
             displayName: 'npm install and build'
 
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(ob_outputDirectory)/ApplensBackend/wwwroot'
+              ArtifactName: 'Applens-Angular'
+
       - job: BuildApplensBackend
         pool:
           type: linux
