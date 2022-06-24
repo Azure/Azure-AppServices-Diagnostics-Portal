@@ -117,6 +117,7 @@ extends:
               zipAfterPublish: false
 
     - stage: Package
+      dependsOn: Build
       jobs:
       - job: PackageArtifacts
         pool:
