@@ -73,7 +73,7 @@ extends:
             inputs:
               SourceFolder: 'ApplensBackend/wwwroot'
               Contents: '**'
-              TargetFolder: '$(Build.SourcesDirectory)/out/ApplensBackend/wwwroot'
+              TargetFolder: '$(Build.SourcesDirectory)/out'
 
       - job: BuildApplensBackend
         pool:
@@ -150,10 +150,10 @@ extends:
             TargetFolder: '$(ob_outputDirectory)'
 
         - task: CopyFiles@2
-          displayName: 'Copy Client Files to: $(ob_outputDirectory)/wwwroot'
+          displayName: 'Copy Client Files to: $(ob_outputDirectory)/ApplensBackend/wwwroot'
           inputs:
             SourceFolder: '$(System.ArtifactsDirectory)/drop_Build_BuildAngular'
-            TargetFolder: '$(ob_outputDirectory)/wwwroot'
+            TargetFolder: '$(ob_outputDirectory)/ApplensBackend/wwwroot'
 
         - task: DeleteFiles@1
           inputs:
