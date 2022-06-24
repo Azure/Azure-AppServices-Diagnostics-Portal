@@ -118,7 +118,7 @@ extends:
 
     - stage: Package
       jobs:
-      - job: BuildAngular
+      - job: PackageArtifacts
         pool:
           type: linux
 
