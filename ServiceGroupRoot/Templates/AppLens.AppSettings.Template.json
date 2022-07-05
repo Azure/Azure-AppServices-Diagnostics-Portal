@@ -1,0 +1,89 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "siteName": {
+            "type": "string"
+        },
+        "slotName": {
+            "type": "string",
+            "metadata": {
+                "description": "Target deployment slot to zipdeploy into."
+            },
+            "defaultValue": "staging"
+        },
+        "azureAdClientId": {
+            "type": "string"
+        },
+        "azureAdAuthority": {
+            "type": "string",
+            "defaultValue": "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47",
+            "allowedValues": [
+                "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47",
+                "https://login.microsoftonline.us/cab8a31a-1906-4287-a0d8-4eef66b95f6e",
+                "https://login.microsoftonline.eaglex.ic.gov/70a90262-f46c-48aa-ac4c-37e37f8be1a2",
+                "https://login.microsoftonline.microsoft.scloud/20ac2fc4-effc-4f76-ba7d-63c5ae134f5f",
+                "https://login.chinacloudapi.cn/a55a4d5b-9241-49b1-b4ff-befa8db00269"
+            ]
+        },
+        "runtimeHostEndpoint": {
+            "type": "string"
+        },
+        "runtimeHostAzureAdResourceId": {
+            "type": "string"
+        },
+        "runtimeHostAzureAdKey": {
+            "type": "string"
+        },
+        "observerEndpoint": {
+            "type": "string"
+        },
+        "observerClientId": {
+            "type": "string"
+        },
+        "observerAadResource": {
+            "type": "string"
+        },
+        "observerAzureAdKey": {
+            "type": "string"
+        },
+        "dstsRealm": {
+            "type": "string"
+        },
+        "dstsMetadataAddress": {
+            "type": "string"
+        },
+        "dstsIssuer": {
+            "type": "string"
+        },
+        "aspNetCoreEnvironment": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('siteName'),'\/',parameters('slotName'),'\/','\/appsettings')]",
+            "type": "Microsoft.Web/sites/slots/config",
+            "apiVersion": "2018-11-01",
+            "properties": {
+                "WEBSITE_ADD_SITENAME_BINDINGS_IN_APPHOST_CONFIG": "1",
+                "WEBSITE_LOAD_CERTIFICATES": "*",
+                "DiagnosticRole:AppServiceEndpoint": "[parameters('runtimeHostEndpoint')]",
+                "DiagnosticRole:UseAppService": "true",
+                "DiagnosticRole:ClientId": "[parameters('azureAdClientId')]",
+                "DiagnosticRole:AppKey": "[parameters('runtimeHostAzureAdKey')]",
+                "DiagnosticRole:AADAuthority": "[parameters('azureAdAuthority')]",
+                "DiagnosticRole:AADResource": "[parameters('runtimeHostAzureAdResourceId')]",
+                "Observer:endpoint": "[parameters('observerEndpoint')]",
+                "Observer:clientId": "[parameters('observerClientId')]",
+                "Observer:resourceId": "[parameters('observerAadResource')]",
+                "Observer:clientSecret": "[parameters('observerAzureAdKey')]",
+                "Observer:authority": "[parameters('azureAdAuthority')]",
+                "DatacenterFederationConfiguration:Realm": "[parameters('dstsRealm')]",
+                "DatacenterFederationConfiguration:MetadataAddress": "[parameters('dstsMetadataAddress')]",
+                "DatacenterFederationConfiguration:Issuer": "[parameters('dstsIssuer')]",
+                "ASPNETCORE_ENVIRONMENT": "[parameters('aspNetCoreEnvironment')]"
+            }
+        }
+    ]
+}

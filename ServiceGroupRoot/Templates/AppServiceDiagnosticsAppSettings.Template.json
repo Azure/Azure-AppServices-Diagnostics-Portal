@@ -1,0 +1,41 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "siteName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the web app."
+            }
+        },
+        "slotName": {
+            "type": "string",
+            "metadata": {
+                "description": "Target deployment slot to zipdeploy into."
+            },
+            "defaultValue": "staging"
+        },
+        "azurePortalDomain": {
+            "type": "string",
+            "defaultValue": "portal.azure.com",
+            "allowedValues": [
+                "portal.azure.com",
+                "portal.azure.us",
+                "portal.azure.cn",
+                "portal.azure.eaglex.ic.gov",
+                "portal.azure.microsoft.scloud"
+            ]
+        }
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('siteName'),'\/',parameters('slotName'),'\/','\/appsettings')]",
+            "type": "Microsoft.Web/sites/slots/config",
+            "apiVersion": "2018-11-01",
+            "properties": {
+                "AcceptOriginSuffix:Origins": "[parameters('azurePortalDomain')]",
+                "ContentSearch:Ocp-Apim-Subscription-Key": "n.a"
+            }
+        }
+    ]
+}

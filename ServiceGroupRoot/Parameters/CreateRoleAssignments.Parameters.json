@@ -1,0 +1,12 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "principalId": {
+        "value": "__USER_ASSIGNED_IDENTITY_PRINCIPAL_ID__"
+      },
+      "createRBAC": {
+        "value": "__CREATE_MSI_RBAC_BOOL__"
+      }
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "siteName": {
+        "value": "__SITENAME__"
+      },
+      "location": {
+        "value": "__LOCATION__"
+      },
+      "appServicePlanName": {
+        "value": "__APP_SERVICE_NAME__"
+      },
+      "sku": {
+        "value": "__APP_SERVICE_PLAN_SKU__"
+      },
+      "healthCheckPath": {
+        "value": "__HEALTHCHECK_PATH__"
+      }
+    }
+  }

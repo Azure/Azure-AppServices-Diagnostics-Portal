@@ -1,0 +1,182 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subscriptionId": {
+      "type": "string",
+      "defaultValue": "[subscription().subscriptionId]",
+      "metadata": {
+        "description": "The ID of the subscription the Azure App Service Plan belongs to."
+      }
+    },
+    "resourceGroup": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().name]",
+      "metadata": {
+        "description": "The name of the resource group the Azure App Service Plan belongs to."
+      }
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of Azure App Service Plan this web app belongs to."
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "S1",
+      "metadata": {
+        "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+      },
+      "allowedValues": [
+        "F1",
+        "D1",
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ]
+    },
+    "siteName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the web app."
+      }
+    },
+    "alwaysOn": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Whether the web app should remain loaded after 20 minutes of inactivity."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources"
+      }
+    }
+  },
+  "resources": [
+    {
+      "comments": "Defines an Azure App Service Plan.",
+      "type": "Microsoft.Web/serverfarms",
+      "name": "[parameters('appServicePlanName')]",
+      "apiVersion": "2015-08-01",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[parameters('sku')]"
+      },
+      "properties": {
+        "name": "[parameters('appServicePlanName')]"
+      }
+    },
+    {
+      "comments": "Defines an Azure Web App.",
+      "type": "Microsoft.Web/sites",
+      "name": "[parameters('siteName')]",
+      "apiVersion": "2018-11-01",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      ],
+      "tags": {
+        "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]": "empty"
+      },
+      "properties": {
+        "sourcePlatform": "Unknown",
+        "targetPlatform": "Unknown",
+        "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('resourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]",
+        "WEBSITE_LOCAL_CACHE_OPTION": "Disabled",
+        "WEBSITE_LOCAL_CACHE_SIZEINMB": "300",
+        "WEBSITE_SWAP_WARMUP_PING_PATH": null,
+        "WEBSITE_ENABLE_SYNC_UPDATE_SITE": "true",
+        "clientAffinityEnabled": false,
+        "siteConfig": {
+          "phpVersion": "off",
+          "scmType": "None",
+          "netFrameworkVersion": "v4.0",
+          "use32BitWorkerProcess": false,
+          "webSocketsEnabled": false,
+          "alwaysOn": "[parameters('alwaysOn')]",
+          "healthCheckPath": null,
+          "httpLoggingEnabled": true,
+          "logsDirectorySizeLimit": 50,
+          "autoHealEnabled": true,
+          "autoHealRules": {
+            "triggers": {
+              "requests": null,
+              "privateBytesInKB": 0,
+              "statusCodes": [
+                {
+                  "status": 500,
+                  "subStatus": 0,
+                  "count": 100,
+                  "timeInterval": "00:10:00"
+                },
+                {
+                  "status": 503,
+                  "subStatus": 0,
+                  "count": 100,
+                  "timeInterval": "00:10:00"
+                }
+              ],
+              "slowRequests": null
+            },
+            "actions": {
+              "actionType": "CustomAction",
+              "customAction": {
+                "exe": "D:\\home\\data\\DaaS\\bin\\DaasConsole.exe",
+                "parameters": "-CollectKillAnalyze \"Memory Dump\"  60"
+              },
+              "minProcessExecutionTime": "00:05:00"
+            }
+          }
+        }
+      },
+      "resources": [
+        {
+          "comments": "Defines an Azure Web App slot.",
+          "type": "slots",
+          "name": "staging",
+          "apiVersion": "2015-08-01",
+          "location": "[parameters('location')]",
+          "identity": {
+            "type": "SystemAssigned"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', parameters('siteName'))]"
+          ],
+          "tags": {
+            "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]": "empty"
+          },
+          "properties": {
+            "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('resourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('appServicePlanName'))]",
+            "clientAffinityEnabled": false,
+            "siteConfig": {
+              "phpVersion": "off",
+              "scmType": "LocalGit",
+              "netFrameworkVersion": "v4.0",
+              "use32BitWorkerProcess": false,
+              "webSocketsEnabled": false,
+              "alwaysOn": false,
+              "healthCheckPath": null,
+              "httpLoggingEnabled": true,
+              "logsDirectorySizeLimit": 50
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+﻿{
+  "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/rolloutParameters.json",
+  "contentVersion": "1.0.0.0",
+  "wait": [
+    {
+      "name": "wait1minute",
+      "properties": {
+        "duration": "PT1M"
+      }
+    }
+  ],
+  "shellExtensions": [
+    {
+      "name": "initialsetup",
+      "type": "mySimpleShell",
+      "properties": {
+        "maxExecutionTime": "PT30M"
+      },
+      "package": {
+        "reference": {
+          "path": "bin\\initscript.tar.gz"
+        }
+      },
+      "launch": {
+        "command": [
+          "/bin/bash",
+          "-c",
+          "pwsh init.ps1"
+        ],
+        "environmentVariables": [
+          {
+            "name": "KeyVaultCertificate",
+            "value": "__KEY_VAULT_CERTIFICATES_LIST__"
+          },
+          {
+            "name": "SiteName",
+            "value": "__SITENAME__-__LOCATION_ABBR__"
+          },
+          {
+            "name": "KeyVaultName",
+            "value": "__KEYVAULTNAME__"
+          },
+          {
+            "name": "EasyAuthClientId",
+            "value": "__EASY_AUTH_AZURE_AD_CLIENT_ID"
+          },
+          {
+            "name": "TenantId",
+            "value": "__TENANT_ID__"
+          },
+          {
+            "name": "ServicePrincipalApplicationId",
+            "value": "__SERVICE_PRINCIPAL_APP_ID__"
+          },
+          {
+            "name": "MicrosoftAzureWebsitesServicePrincipalObjectId",
+            "value": "__AZURE_WEBSITES_SERVICE_PRINCIPAL_OBJECT_ID__"
+          },
+          {
+            "name": "CloudEnvironment",
+            "value": "__CLOUD_ENVIRONMENT__"
+          },
+          {
+            "name": "ServicePrincipalClientSecret",
+            "reference": {
+              "provider": "AzureKeyVault",
+              "parameters": {
+                "secretId": "__KEYVAULT_URI_SERVICE_PRINCIPAL_CLIENT_SECRET_URI__"
+              }
+            },
+            "asSecureValue": "true"
+          }
+        ]
+      }
+    }
+  ]
+}
