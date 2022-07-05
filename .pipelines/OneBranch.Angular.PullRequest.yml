@@ -69,10 +69,11 @@ extends:
               npm run build-applens
             displayName: 'npm install and build'
 
-          - task: PublishBuildArtifacts@1
+          - task: CopyFiles@2
             inputs:
-              PathtoPublish: '$(ob_outputDirectory)/ApplensBackend/wwwroot'
-              ArtifactName: 'Applens-Angular'
+              SourceFolder: 'ApplensBackend/wwwroot'
+              Contents: '**'
+              TargetFolder: '$(Build.SourcesDirectory)/out'
 
       - job: BuildApplensBackend
         pool:
@@ -114,3 +115,58 @@ extends:
               projects: ApplensBackend/AppLensV3.csproj
               arguments: '--configuration $(BuildConfiguration) --output $(ob_outputDirectory)'
               zipAfterPublish: false
+
+    - stage: Package
+      dependsOn: Build
+      jobs:
+      - job: PackageArtifacts
+        pool:
+          type: linux
+
+        variables: # More settings at https://aka.ms/obpipelines/yaml/jobs
+          ob_outputDirectory: '$(Build.SourcesDirectory)/out' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts          
+
+        steps: # These steps will be run in unrestricted container's network
+        - task: DownloadBuildArtifacts@1
+          displayName: 'Download Applens Client Build Artifacts'
+          inputs:
+            buildType: 'current'
+            downloadType: 'single'
+            artifactName: 'drop_Build_BuildAngular'
+            downloadPath: '$(System.ArtifactsDirectory)/drop_Build_BuildAngular'
+
+        - task: DownloadBuildArtifacts@1
+          displayName: 'Download Applens Backend Build Artifacts'
+          inputs:
+            buildType: 'current'
+            downloadType: 'single'
+            artifactName: 'drop_Build_BuildApplensBackend'
+            downloadPath: '$(System.ArtifactsDirectory)/drop_Build_BuildApplensBackend'
+
+        - task: CopyFiles@2
+          displayName: 'Copy Backend Files to: $(System.ArtifactsDirectory)/applensdrop'
+          inputs:
+            SourceFolder: '$(System.ArtifactsDirectory)/drop_Build_BuildApplensBackend'
+            TargetFolder: '$(System.ArtifactsDirectory)/applensdrop'
+
+        - task: CopyFiles@2
+          displayName: 'Copy Client Files to: $(System.ArtifactsDirectory)/applensdrop/ApplensBackend/wwwroot'
+          inputs:
+            SourceFolder: '$(System.ArtifactsDirectory)/drop_Build_BuildAngular'
+            TargetFolder: '$(System.ArtifactsDirectory)/applensdrop/ApplensBackend/wwwroot'
+
+        - task: ArchiveFiles@2
+          inputs:
+            rootFolderOrFile: '$(System.ArtifactsDirectory)/applensdrop/ApplensBackend'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(ob_outputDirectory)/Applens.zip'
+            replaceExistingArchive: true
+
+        - task: DeleteFiles@1
+          inputs:
+            SourceFolder: '$(System.ArtifactsDirectory)'
+            Contents: |
+              drop_Build_BuildApplensBackend
+              drop_Build_BuildAngular
+              applensdrop
