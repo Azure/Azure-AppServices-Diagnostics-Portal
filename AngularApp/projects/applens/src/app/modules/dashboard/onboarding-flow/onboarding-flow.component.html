@@ -273,7 +273,7 @@
     </fab-message-bar>
   </ng-container>
 
-  <fab-command-bar [attr.id]="'fab-command-bar'" contentClass="fab-command-bar-class">
+  <fab-command-bar tabindex="0" [attr.id]="'fab-command-bar'" contentClass="fab-command-bar-class">
     <items>
       <!-- do not use *ngIf on these buttons  -->
       <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"

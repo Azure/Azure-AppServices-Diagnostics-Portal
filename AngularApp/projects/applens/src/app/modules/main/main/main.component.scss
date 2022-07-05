@@ -48,18 +48,13 @@
 }
 
 .section {
-    display: flex;
-    justify-content: space-between;
     margin-top: 26px ;
 }
 
-.section > label {
-    width: 130px;
+::ng-deep .section label {
     font-weight: 400;
-}
-
-.section > div {
-    width: 300px;
+    color: var(--labelText);
+    font-size: 14px;
 }
 
 .time-picker {
@@ -108,6 +103,15 @@
 .recent-resource:hover {
     cursor: pointer;
 }
+
+.recent-resource:focus-visible {
+    border: solid 1px var(--bodyText);
+}
+
+.applens-documentation:focus-visible {
+    border: solid 1px var(--bodyText);
+}
+
 
 .view-resource-link {
     margin-left: 300px;

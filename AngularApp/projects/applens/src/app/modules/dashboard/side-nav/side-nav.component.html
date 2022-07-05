@@ -1,11 +1,11 @@
 <aside class="main-sidebar">
   <section class="sidebar" id="sidebar">
     <collapsible-menu theme="light">
-      <search-box (searchValueChange)="updateSearch($event)" [searchValue]="searchValue"></search-box>
+      <search-box tabindex="0" (searchValueChange)="updateSearch($event)" [searchValue]="searchValue" [ariaLabel]="searchAriaLabel"></search-box>
       <!-- <fab-search-box #fabSearchBox1 [value]="searchValue" (onChange)="updateSearchValue($event)" [styles]="searchBoxStyles" (onFocus)="focusSearchBox()" [placeholder]="searchPlaceHolder"></fab-search-box> -->
       <menu-scroll>
         <section-divider [label]="'Overview'" [selected]="isSectionHeaderSelected('')" [initiallyExpanded]="false"
-          [collapsible]="false" (click)="navigateToOverview()">
+          [collapsible]="false" (click)="navigateToOverview()" (keyup.enter)="navigateToOverview()">
           <i class="fa fa-info fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let item of overview" [menuItem]="item"></collapsible-menu-item>
         </section-divider>

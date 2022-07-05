@@ -512,6 +512,15 @@ export class DiagnosticApiService {
     return this.invoke(path, HttpMethod.POST, body, false);
   }
 
+  public deleteBranch(branch: string, resourceUri: string){
+    var body = {};
+    body['branch'] = branch;
+    body['resourceUri'] = resourceUri;
+
+    let path = `devops/deleteBranches`;
+    return this.invoke(path, HttpMethod.POST, body, false);
+  }
+
   public getBranches(resourceId: string): Observable<{ branchName: string, isMainBranch: string }[]> {
     let path = "devops/getBranches?resourceURI=" + resourceId;
     return this.invoke(path, HttpMethod.GET, null, false);

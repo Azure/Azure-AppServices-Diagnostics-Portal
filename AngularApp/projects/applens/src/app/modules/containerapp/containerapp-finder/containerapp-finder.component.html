@@ -16,7 +16,7 @@
             <p class="panel-text">{{site.SubscriptionName}}</p>
             <p class="panel-text">{{site.ResourceGroupName}}</p>
             <p class="panel-text">{{site.KubeEnvironmentName}}</p>
-            <a (click)="navigateToSite(site)" class="btn btn-primary">Select</a>
+            <a tabindex="0" (keyup.enter)="navigateToSite(site)" (click)="navigateToSite(site)" class="btn btn-primary">Select</a>
           </div>
         </div>
       </div>

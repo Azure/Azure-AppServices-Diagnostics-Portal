@@ -26,8 +26,12 @@ export class SiteService extends ResourceService {
                     return siteObject;
                 }), flatMap(site => {
                     return this._observerApiService.getSiteSku(site.InternalStampName, site.SiteName).pipe(
-                        map(siteSku => {
-                            site.AppServicePlan = this.getSiteASPAndSKu(siteSku);
+                        map((siteSku: any) => {
+                            if(siteSku == "Resource Not Found. API : GetSiteSku") {
+                                site.AppServicePlan = "";
+                            } else {
+                                site.AppServicePlan = this.getSiteASPAndSKu(siteSku);
+                            }
                             return site;
                         }), catchError(_ => of(site)));
                 }), map(site => {

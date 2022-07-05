@@ -217,7 +217,6 @@ export class OnboardingFlowComponent implements OnInit {
   PRLink: string = "";
 
   detectorGraduation: boolean = false;
-  autoMerge: boolean = false;
   disableDelete: boolean = false;
 
   buttonStyle: IButtonStyles = {
@@ -325,6 +324,10 @@ export class OnboardingFlowComponent implements OnInit {
     }
   }
   showBranchInfo:boolean = false;
+  owners: string[] = [];
+
+  codeOnDefaultBranch: boolean = true;
+
   constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService, private detectorGistApiService: DetectorGistApiService,
     private diagnosticApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService, private resourceService: ResourceService,
     private _detectorControlService: DetectorControlService, private _adalService: AdalService,
@@ -461,8 +464,6 @@ export class OnboardingFlowComponent implements OnInit {
 
       this.modalPublishingButtonText = this.detectorGraduation ? "Create PR" : "Publish";
 
-      this.defaultBranch = "MainMVP";
-
       this._themeService.currentThemeSub.subscribe((theme) => {
         this.editorOptions = theme == "dark" ? this.darkOptions : this.lightOptions;
       })
@@ -470,7 +471,7 @@ export class OnboardingFlowComponent implements OnInit {
       if (this.detectorGraduation)
         this.getBranchList();
 
-      if (!this.initialized) {
+      if (!this.initialized && !this.detectorGraduation) {
         this.initialize();
         this.initialized = true;
         this._telemetryService.logPageView(TelemetryEventNames.OnboardingFlowLoaded, {});
@@ -497,7 +498,6 @@ export class OnboardingFlowComponent implements OnInit {
         this.timePickerButtonStr = s;
       });
 
-      this.autoMerge = devopsConfig.autoMerge;
       if (this._detectorControlService.isInternalView) {
         this.internalExternalText = this.internalViewText;
       }
@@ -553,6 +553,11 @@ export class OnboardingFlowComponent implements OnInit {
         }
         this.updateBranch();
         this.showBranchInfo = true;
+      }
+      if (!this.initialized) {
+        this.initialize();
+        this.initialized = true;
+        this._telemetryService.logPageView(TelemetryEventNames.OnboardingFlowLoaded, {});
       }
     });
 
@@ -1398,8 +1403,10 @@ export class OnboardingFlowComponent implements OnInit {
   gradPublish() {
     this.publishDialogHidden = true;
 
-    const commitType = this.mode == DevelopMode.Create && !this.isSaved ? "add" : "edit";
-    const commitMessageStart = this.mode == DevelopMode.Create && !this.isSaved ? "Adding" : "Editing";
+    var pushToMain = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && this.queryResponse.invocationOutput['appFilter']['InternalOnly'] === 'True' && !this.IsDetectorMarkedPublic(this.originalCode));
+
+    const commitType = this.mode == DevelopMode.Create && !this.isSaved || (pushToMain && !this.codeOnDefaultBranch) ? "add" : "edit";
+    const commitMessageStart = this.mode == DevelopMode.Create && !this.isSaved || (pushToMain && !this.codeOnDefaultBranch) ? "Adding" : "Editing";
 
     let gradPublishFiles: string[] = [
       this.publishingPackage.codeString,
@@ -1414,16 +1421,37 @@ export class OnboardingFlowComponent implements OnInit {
       `/${this.publishingPackage.id.toLowerCase()}/package.json`
     ];
 
-    if (this.autoMerge) {
-      this.Branch = this.defaultBranch;
+    let reviewers = "";
+
+    if(Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0){
+      this.queryResponse.invocationOutput['appFilter']['AppType'].split(',').forEach(apt => {
+        if(Object.keys(this.DevopsConfig.appTypeReviewers).includes(apt)){
+          if (!this.owners.includes(this.DevopsConfig.appTypeReviewers[apt])) this.owners.push(this.DevopsConfig.appTypeReviewers[apt]);
+        }
+      });
+      this.queryResponse.invocationOutput['appFilter']['PlatformType'].split(',').forEach(plt => {
+        if(Object.keys(this.DevopsConfig.platformReviewers).includes(plt)){
+          if (!this.owners.includes(this.DevopsConfig.platformReviewers[plt])) this.owners.push(this.DevopsConfig.platformReviewers[plt]);
+        }
+      });
+      this.owners.forEach(o => {
+        if(o.match(/^\s*$/) == null) reviewers = reviewers.concat(o, '\n');
+      })
+      gradPublishFileTitles.push(`/${this.publishingPackage.id.toLowerCase()}/owners.txt`);
+      gradPublishFiles.push(reviewers);
+    }
+
+    var requestBranch = this.Branch;
+    if (pushToMain) {
+      requestBranch = this.defaultBranch;
     }
     let link = this.gistMode ? `${this.PPEHostname}/${this.resourceId}/gists/${this.publishingPackage.id}?branchInput=${this.Branch}` : `${this.PPEHostname}/${this.resourceId}/detectors/${this.publishingPackage.id}/edit?branchInput=${this.Branch}`;
     let description = `This Pull Request was created via AppLens. To make edits, go to ${link}`;
-    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`, commitType, this.resourceId);
-    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, this.PRTitle, this.resourceId, description);
+    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`, commitType, this.resourceId);
+    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(requestBranch, this.defaultBranch, this.PRTitle, this.resourceId, description);
 
     DetectorObservable.subscribe(_ => {
-      if (!this.autoMerge) {
+      if (!pushToMain) {
         makePullRequestObservable.subscribe(_ => {
           this.PRLink = `${_["webUrl"]}/pullrequest/${_["prId"]}`
           this.publishSuccess = true;
@@ -1435,8 +1463,11 @@ export class OnboardingFlowComponent implements OnInit {
         });
       }
       else {
+        this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${this.publishingPackage.id.toLowerCase()}/${this.publishingPackage.id.toLowerCase()}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${this.publishingPackage.id.toLowerCase()}/${this.publishingPackage.id.toLowerCase()}.csx&version=GB${this.defaultBranch}`;
         this.publishSuccess = true;
         this.postPublish();
+        this.codeOnDefaultBranch = true;
+        this.deleteBranch(this.Branch, this.resourceId);
         this._applensCommandBarService.refreshPage();
       }
     }, err => {
@@ -1463,14 +1494,20 @@ export class OnboardingFlowComponent implements OnInit {
       `/${this.id.toLowerCase()}/package.json`
     ];
 
-    if (this.autoMerge) {
-      this.Branch = this.defaultBranch;
+    if(Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0){
+      gradPublishFiles.push("delete owners.txt");
+      gradPublishFileTitles.push(`/${this.id.toLowerCase()}/owners.txt`);
     }
 
-    const deleteDetectorFiles = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `deleting detector: ${this.id} Author : ${this.userName}`, "delete", this.resourceId);
-    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(this.Branch, this.defaultBranch, `Deleting ${this.id}`, this.resourceId);
+    var requestBranch = this.Branch;
+    if (this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.originalCode))) {
+      requestBranch = this.defaultBranch;
+    }
+
+    const deleteDetectorFiles = this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `deleting detector: ${this.id} Author : ${this.userName}`, "delete", this.resourceId);
+    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(requestBranch, this.defaultBranch, `Deleting ${this.id}`, this.resourceId);
     deleteDetectorFiles.subscribe(_ => {
-      if (!this.autoMerge) {
+      if (!this.DevopsConfig.autoMerge && !(this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.originalCode))) {
         makePullRequestObservable.subscribe(_ => {
           this.PRLink = `${_["webUrl"]}/pullrequest/${_["prId"]}`
           this.publishSuccess = true;
@@ -1481,8 +1518,10 @@ export class OnboardingFlowComponent implements OnInit {
         });
       }
       else {
+        this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&version=GB${this.defaultBranch}`;
         this.publishSuccess = true;
         this.postPublish();
+        this.deleteBranch(this.Branch, this.resourceId);
       }
     }, err => {
       this.publishFailed = true;
@@ -1491,6 +1530,10 @@ export class OnboardingFlowComponent implements OnInit {
 
     this.dismissDeleteDialog();
     this.deletingDetector = false
+  }
+
+  deleteBranch(branch: string, resourceId: string){
+    this.diagnosticApiService.deleteBranches(branch, resourceId).subscribe();
   }
 
   saveTempId: string = "";
@@ -1515,6 +1558,26 @@ export class OnboardingFlowComponent implements OnInit {
       `/${this.publishingPackage.id.toLowerCase()}/metadata.json`,
       `/${this.publishingPackage.id.toLowerCase()}/package.json`
     ];
+
+    let reviewers = "";
+
+    if(Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0){
+      this.queryResponse.invocationOutput['appFilter']['AppType'].split(',').forEach(apt => {
+        if(Object.keys(this.DevopsConfig.appTypeReviewers).includes(apt)){
+          if (!this.owners.includes(this.DevopsConfig.appTypeReviewers[apt])) this.owners.push(this.DevopsConfig.appTypeReviewers[apt]);
+        }
+      });
+      this.queryResponse.invocationOutput['appFilter']['PlatformType'].split(',').forEach(plt => {
+        if(Object.keys(this.DevopsConfig.platformReviewers).includes(plt)){
+          if (!this.owners.includes(this.DevopsConfig.platformReviewers[plt])) this.owners.push(this.DevopsConfig.platformReviewers[plt]);
+        }
+      });
+      this.owners.forEach(o => {
+        if(o.match(/^\s*$/) == null) reviewers = reviewers.concat(o, '\n');
+      })
+      gradPublishFileTitles.push(`/${this.publishingPackage.id.toLowerCase()}/owners.txt`);
+      gradPublishFiles.push(reviewers);
+    }
 
     let link = this.gistMode ? `${this.PPEHostname}/${this.resourceId}/gists/${this.publishingPackage.id}?branchInput=${this.Branch}` : `${this.PPEHostname}/${this.resourceId}/detectors/${this.publishingPackage.id}/edit?branchInput=${this.Branch}`;
     let description = `This Pull Request was created via AppLens. To make edits, go to ${link}`;
@@ -1689,6 +1752,11 @@ export class OnboardingFlowComponent implements OnInit {
         (err) => {
           this.allUtterances = [];
         });
+      
+      // if (this.DevopsConfig.resourceProvider === 'Microsoft.Web/sites')
+      this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/owners.txt`, this.Branch, this.resourceId).subscribe(o => {
+        this.owners = o.split('\n');
+      });
     }
     else {
       this.githubService.getMetadataFile(this.id.toLowerCase()).subscribe(res => {
@@ -1715,6 +1783,11 @@ export class OnboardingFlowComponent implements OnInit {
           this.fileName = `${this.id.toLowerCase()}.csx`;
           this.deleteAvailable = true;
           detectorFile = this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`, this.Branch, this.resourceId)
+          this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`, this.defaultBranch, this.resourceId).subscribe(x => {
+            this.codeOnDefaultBranch = true;
+          }, err => {
+            this.codeOnDefaultBranch = false;
+          });
         }
         else {
           this.fileName = `${this.id.toLowerCase()}.csx`;

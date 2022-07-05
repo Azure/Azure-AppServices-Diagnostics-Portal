@@ -195,10 +195,6 @@ fab-command-bar .ms-SearchBox {
   padding: 0px !important;
 }
 
-.ms-CommandBar,
-.ms-Button--commandBar {
-  background-color: var(--bodyBackground) !important;
-}
 
 .ms-Button--commandBar:hover {
   background-color: rgba(85, 179, 255, 0.1) !important;
@@ -207,6 +203,10 @@ fab-command-bar .ms-SearchBox {
 .ms-CommandBar,
 .ms-Button--commandBar {
   background-color: var(--bodyBackground) !important;
+}
+
+.ms-Button--commandBar:focus {
+  border: 1px solid black !important;
 }
 
 .fab-command-bar-class {

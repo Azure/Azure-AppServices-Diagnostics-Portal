@@ -31,6 +31,7 @@ export class SideNavComponent implements OnInit {
   gistsCopy: CollapsibleMenuItem[] = [];
 
   searchValue: string = undefined;
+  searchAriaLabel: string = "Filter by name or id";
 
   contentHeight: string;
 
@@ -316,6 +317,12 @@ export class SideNavComponent implements OnInit {
     this.searchValue = searchTerm;
     this.categories = this.updateMenuItems(this.categoriesCopy, searchTerm);
     this.gists = this.updateMenuItems(this.gistsCopy, searchTerm);
+    
+    const subDetectorCount = this.contSubMenuItems(this.categories);
+    const subGistCount = this.contSubMenuItems(this.gists);
+    const detectorAriaLabel = `${subDetectorCount > 0 ? subDetectorCount : 'No'} ${subDetectorCount > 1 ? 'Detectors' : 'Detector' }`;
+    const gistAriaLabel = `${subGistCount > 0 ? subGistCount : 'No'} ${subGistCount > 1 ? 'Gists' : 'Gist' }`;
+    this.searchAriaLabel = `${detectorAriaLabel} And ${gistAriaLabel} Found for ${this.searchValue}`;
   }
 
 
@@ -359,6 +366,16 @@ export class SideNavComponent implements OnInit {
   private checkMenuItemMatchesWithSearchTerm(item: CollapsibleMenuItem, searchValue: string) {
     if (searchValue.length === 0) return true;
     return StringUtilities.IndexOf(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || StringUtilities.IndexOf(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0;
+  }
+
+  private contSubMenuItems(items: CollapsibleMenuItem[]): number {
+    let count = 0;
+    for(let item of items) {
+      if(item.subItems && item.subItems.length > 0) {
+        count = count + item.subItems.length;
+      }
+    }
+    return count;
   }
 
 }

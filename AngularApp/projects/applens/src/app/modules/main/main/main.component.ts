@@ -5,7 +5,7 @@ import {
   ResourceServiceInputs, ResourceTypeState, ResourceServiceInputsJsonResponse
 } from '../../../shared/models/resources';
 import { HttpClient } from '@angular/common/http';
-import { IDropdownOption, IDropdownProps, PanelType, SpinnerSize } from 'office-ui-fabric-react';
+import { IDropdownOption, IDropdownProps, ITextFieldProps, PanelType, SpinnerSize } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
 import { DetectorControlService, GenericThemeService, HealthStatus } from 'diagnostic-data';
 import { AdalService } from 'adal-angular4';
@@ -45,6 +45,7 @@ export class MainComponent implements OnInit {
   accessErrorMessage: string = '';
   userAccessErrorMessage: string = '';
   displayUserAccessError: boolean = false;
+  caseNumberPlaceholder: string = "Type 'internal' for internal resources"
 
   defaultResourceTypes: ResourceTypeState[] = [
     {
@@ -130,6 +131,26 @@ export class MainComponent implements OnInit {
     dropdownItemsWrapper: {
       maxHeight: '30vh'
     },
+    root: {
+      display: 'flex'
+    },
+    label: {
+      width: '300px'
+    },
+    dropdown: {
+      width: '300px'
+    }
+
+  }
+
+  fabTextFieldStyles: ITextFieldProps["styles"] = {
+    wrapper: {
+      display: 'flex',
+      justifyContent: 'space-between'
+    },
+    field: {
+      width: '300px'
+    }
   }
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   timePickerStr: string = "";
@@ -246,7 +267,7 @@ export class MainComponent implements OnInit {
         this._themeService.setActiveTheme("dark");
       }
 
-      if (userInfo && userInfo.defaultServiceType && this.defaultResourceTypes.find(type => type.id.toLowerCase() === userInfo.defaultServiceType.toLowerCase())) {
+      if (!(this.accessErrorMessage && this.accessErrorMessage.length > 0 && this.selectedResourceType) && userInfo && userInfo.defaultServiceType && this.defaultResourceTypes.find(type => type.id.toLowerCase() === userInfo.defaultServiceType.toLowerCase())) {
         this.selectedResourceType = this.defaultResourceTypes.find(type => type.id.toLowerCase() === userInfo.defaultServiceType.toLowerCase());
       }
     });
@@ -348,7 +369,7 @@ export class MainComponent implements OnInit {
 
   onSubmit() {
     this._userSettingService.updateDefaultServiceType(this.selectedResourceType.id);
-    if (this.caseNumberNeededForUser && (this.selectedResourceType && this.selectedResourceType.userAuthorizationEnabled)) {
+    if (!(this.caseNumber == "internal") && this.caseNumberNeededForUser && (this.selectedResourceType && this.selectedResourceType.userAuthorizationEnabled)) {
       this.caseNumber = this.caseNumber.trim();
       if (!this.validateCaseNumber()) {
         return;
@@ -382,7 +403,7 @@ export class MainComponent implements OnInit {
     let navigationExtras: NavigationExtras = {
       queryParams: {
         ...timeParams,
-        ...this.caseNumber ? { caseNumber: this.caseNumber } : {}
+        ...!(this.caseNumber == "internal") && this.caseNumber ? { caseNumber: this.caseNumber } : {}
       },
     }
 
@@ -502,7 +523,7 @@ export class MainComponent implements OnInit {
 
   private checkTimeStringIsValid(timeString: string): boolean {
     if (timeString == null || timeString.length === 0) return false;
-    const time:momentNs.Moment = moment.utc(timeString);
+    const time: momentNs.Moment = moment.utc(timeString);
     return time.isValid();
   }
 

@@ -21,6 +21,9 @@ export class DaasService {
     linuxDiagServerEnabled: boolean = false;
     linuxDiagServerEnabledChecked: boolean = false;
 
+    linuxDiagServerStorageConfigured: boolean = false
+    linuxDiagServerStorageConfiguredChecked: boolean = false
+
     public currentSite: SiteDaasInfo;
     constructor(private _armClient: ArmService, private _authService: AuthService,
         private _http: HttpClient, private _uriElementsService: UriElementsService, private _siteService: SiteService) {
@@ -180,6 +183,16 @@ export class DaasService {
                     }
 
                     this._siteService.updateSiteAppSettings(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot, settingsResponse).subscribe(updateResponse => {
+                        if (useDiagServerForLinux) {
+                            
+                            //
+                            // Reset this flag so that the daas-sessions component can
+                            // get the current value of the storage account and then
+                            // poll for the diagServer sessions
+                            //
+
+                            this.linuxDiagServerStorageConfiguredChecked = false;
+                        }
                         return updateResponse;
                     });
                 }
@@ -229,6 +242,23 @@ export class DaasService {
         return this._armClient.getResourceWithoutEnvelope<ValidateStorageAccountResponse>(resourceUri, null, true).pipe(
             map((resp: ValidateStorageAccountResponse) => {
                 return resp;
+            }));
+    }
+
+    isStorageAccountConfiguredForDiagServer(site: SiteDaasInfo): Observable<boolean> {
+        if (this.linuxDiagServerStorageConfiguredChecked) {
+            return of(this.linuxDiagServerStorageConfigured)
+        }
+
+        return this._siteService.getSiteAppSettings(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot).pipe(
+            map(settingsResponse => {
+                if (settingsResponse && settingsResponse.properties) {
+                    this.linuxDiagServerStorageConfiguredChecked = true;
+                    if (settingsResponse.properties["WEBSITE_DAAS_STORAGE_CONNECTIONSTRING"] != null) {
+                        this.linuxDiagServerStorageConfigured = true;
+                        return this.linuxDiagServerStorageConfigured;
+                    }
+                }
             }));
     }
 

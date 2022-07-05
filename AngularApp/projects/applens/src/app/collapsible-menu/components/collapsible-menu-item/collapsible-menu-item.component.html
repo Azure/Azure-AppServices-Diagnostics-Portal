@@ -1,6 +1,6 @@
 <ng-container *ngIf="false">
 <div *ngIf="matchesSearchTerm || alwaysShowItem">
-    <div class="menu-item" (click)="handleClick()" (keyup.enter)="handleClick()">
+    <div tabindex="0" class="menu-item" (click)="handleClick()" (keyup.enter)="handleClick()">
       <!-- <div class="mr-3" *ngIf=" menuItem.subItems && menuItem.subItems.length > 0">
         <fab-icon [iconName]="iconName"></fab-icon>
       </div> -->
@@ -14,8 +14,9 @@
 </div>
 </ng-container>
 
+
 <div *ngIf="matchesSearchTerm" class="menu-item-container" [class.selected]="isSelected()" >
-    <div class="menu-item" (click)="handleClick()"  [style.padding-left]="getPadding()" [style.font-size]="getFontSize()">
+    <div tabindex="0" (keyup.enter)="handleClick()" class="menu-item" (click)="handleClick()"  [style.padding-left]="getPadding()" [style.font-size]="getFontSize()">
         <i class="fa expand-icon" *ngIf=" menuItem.subItems && menuItem.subItems.length > 0" [class.fa-caret-right]="!menuItem.expanded" [class.fa-caret-down]="menuItem.expanded"></i>
         <i class="fa" *ngIf="menuItem.icon" [ngClass]="menuItem.icon"></i>
         <span class="menu-label" [innerHtml]="menuItem.label | searchmatch:searchValueLocal"></span>

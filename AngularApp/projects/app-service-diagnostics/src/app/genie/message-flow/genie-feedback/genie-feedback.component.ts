@@ -21,7 +21,7 @@ export class GenieFeedbackComponent extends ButtonMessageComponent {
     [
       {
         id: "Sad",
-        text: "dissatisfied "
+        text: "dissatisfied"
       },
       {
         id: "EmojiNeutral",

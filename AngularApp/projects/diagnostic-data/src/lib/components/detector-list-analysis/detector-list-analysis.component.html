@@ -52,7 +52,7 @@
                 [title]="'Observations and Solutions (' + issueDetectedViewModels.length + ')'">
                 <collapsible-list-item body>
                   <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
-                    <fab-card [expanded]="!isPublic" [isExpandable]="!!viewModel.insightDescription" [isAlign]="true">
+                    <fab-card [expanded]="true" [isExpandable]="!!viewModel.insightDescription" [isAlign]="true">
                       <div header>
                         <div style="display: flex;align-items: center;min-height: 40px;">
                           <status-icon class="mr-3" [status]="viewModel.model.status"></status-icon>

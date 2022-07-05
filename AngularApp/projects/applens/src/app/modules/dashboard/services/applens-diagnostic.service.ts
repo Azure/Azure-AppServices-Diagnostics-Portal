@@ -216,6 +216,10 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.makePullRequest(sourceBranch, targetBranch, title, resourceUri, description);
   }
 
+  deleteBranches(branch: string, resourceUri: string){
+    return this._diagnosticApi.deleteBranch(branch, resourceUri);
+  }
+
   getBranches(resourceId: string) {
     return this._diagnosticApi.getBranches(resourceId);
   }

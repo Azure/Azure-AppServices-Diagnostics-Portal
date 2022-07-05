@@ -91,7 +91,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     this.initHeading();
     if (this.showDetailedView) {
       this.checkSessions();
-      this.subscription = interval(30000).subscribe(res => {
+      this.subscription = interval(60000).subscribe(res => {
         this.checkSessions();
       });
 
@@ -118,13 +118,20 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
 
   getLinuxDiagnosticServerSessions(): Observable<Session[]> {
     let emptyArray: Session[] = [];
-    if (this.isWindowsApp){
+    if (this.isWindowsApp) {
       return of(emptyArray);
     }
 
     return this._daasService.isDiagServerEnabledForLinux(this.siteToBeDiagnosed).pipe(
       map((isEnabled) => {
         return isEnabled;
+      }),
+      mergeMap((isEnabled) => {
+        if (!isEnabled) {
+          return of(isEnabled);
+        } else {
+          return this._daasService.isStorageAccountConfiguredForDiagServer(this.siteToBeDiagnosed);
+        }
       }),
       mergeMap(isEnabled => {
         if (!isEnabled) {

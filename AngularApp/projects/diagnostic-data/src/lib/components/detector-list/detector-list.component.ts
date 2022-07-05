@@ -340,7 +340,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         // this.onComplete.emit(dataOutput);
       }, 10);
 
-      // this.childDetectorsEventProperties['ChildDetectorsList'] = JSON.stringify(childDetectorData);
+      this.childDetectorsEventProperties['ChildDetectorsList'] = JSON.stringify(childDetectorData);
       // if (this.searchId && this.searchId.length > 0) {
       //     this.childDetectorsEventProperties['SearchId'] = this.searchId;
       // }

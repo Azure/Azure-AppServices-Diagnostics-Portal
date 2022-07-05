@@ -88,7 +88,7 @@ export class DetectorViewComponent implements OnInit {
       height: "80%"
     },
     rootFocused: {
-      border: "1px solid black",
+      border: "2px solid black",
     }
   }
   iconStyles:IIconProps["styles"] = {
