@@ -155,6 +155,13 @@ extends:
             SourceFolder: '$(System.ArtifactsDirectory)/drop_Build_BuildAngular'
             TargetFolder: '$(System.ArtifactsDirectory)/applensdrop/ApplensBackend/wwwroot'
 
+        - task: CopyFiles@2
+          displayName: 'Copy ev2 root'
+          inputs:
+            SourceFolder: 'ServiceGroupRoot'
+            Contents: '**'
+            TargetFolder: '$(ob_outputDirectory)/Ev2ServiceGroupRoot'
+
         - task: ArchiveFiles@2
           inputs:
             rootFolderOrFile: '$(System.ArtifactsDirectory)/applensdrop/ApplensBackend'
