@@ -25,8 +25,8 @@ export class ConfigureStorageAccountComponent implements OnInit {
       }
 
       if (newStorageAccount.sasUri || newStorageAccount.connectionString) {
-        this.validationResult.BlobSasUri = newStorageAccount.sasUri;
-        this.validationResult.ConnectionString = newStorageAccount.connectionString;
+        this.validationResult.BlobSasUri = newStorageAccount.sasUri ? newStorageAccount.sasUri : '';
+        this.validationResult.ConnectionString = newStorageAccount.connectionString ? newStorageAccount.connectionString : '';
         this.validationResult.Validated = true;
         this.validationResult.ConfiguredAsAppSetting = true;
         this.StorageAccountValidated.emit(this.validationResult);

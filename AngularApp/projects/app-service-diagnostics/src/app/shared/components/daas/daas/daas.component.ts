@@ -60,7 +60,6 @@ export class DaasComponent implements OnInit, OnDestroy {
   cancellingSession: boolean = false;
   collectionMode: SessionMode = SessionMode.CollectAndAnalyze;
   showInstanceWarning: boolean = false;
-  sessionHasBlobSasUri: boolean = false;
 
   activeInstance: ActiveInstance;
   logFiles: LogFile[] = [];
@@ -346,7 +345,6 @@ export class DaasComponent implements OnInit, OnDestroy {
           return false;
         }
 
-        this.sessionHasBlobSasUri = this.validationResult.BlobSasUri.length > 0;
         this.sessionInProgress = true;
         this.sessionStatus = 1;
         this.updateInstanceInformation();
@@ -444,7 +442,7 @@ export class DaasComponent implements OnInit, OnDestroy {
     }
   }
 
-  openLog(log: LogFile, hasBlobSasUri: boolean) {
+  openLog(log: LogFile) {
     this._windowService.open(`${log.RelativePath}`);
   }
 
