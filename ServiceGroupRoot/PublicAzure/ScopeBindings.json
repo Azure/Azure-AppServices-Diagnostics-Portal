@@ -113,6 +113,51 @@
           "replaceWith": "USGov Virginia"
         }
       ]
+    }
+    {
+      "scopeTagName": "Fairfax",
+      "bindings": [
+        {
+          "find": "__AZURE_PORTAL_DOMAIN__",
+          "replaceWith": "portal.azure.us"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "Mooncake",
+      "bindings": [
+        {
+          "find": "__AZURE_PORTAL_DOMAIN__",
+          "replaceWith": "portal.azure.cn"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "MWH",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-mwh"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "AM2",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-am2"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "BLU",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-blu"
+        }
+      ]
     },
     {
       "scopeTagName": "PublicAzure",
@@ -172,24 +217,6 @@
         {
           "find": "__AZURE_PORTAL_DOMAIN__",
           "replaceWith": "portal.azure.com"
-        }
-      ]
-    },
-    {
-      "scopeTagName": "Fairfax",
-      "bindings": [
-        {
-          "find": "__AZURE_PORTAL_DOMAIN__",
-          "replaceWith": "portal.azure.us"
-        }
-      ]
-    },
-    {
-      "scopeTagName": "Mooncake",
-      "bindings": [
-        {
-          "find": "__AZURE_PORTAL_DOMAIN__",
-          "replaceWith": "portal.azure.cn"
         }
       ]
     },

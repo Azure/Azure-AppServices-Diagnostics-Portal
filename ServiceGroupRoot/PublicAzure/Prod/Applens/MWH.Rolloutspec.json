@@ -1,0 +1,36 @@
+{
+  "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/rolloutSpecification.json",
+  "rolloutMetadata": {
+    "serviceModelPath": "PublicAzure\\Prod\\Applens\\ServiceModel.json",
+    "scopeBindingsPath": "PublicAzure\\ScopeBindings.json",
+    "name": "MWH STAGING",
+    "rolloutType": "Major",
+    "buildSource": {
+      "parameters": {
+        "versionFile": "buildver.txt"
+      }
+    },
+    "notification": {
+      "email": {
+        "to": "applensv2team@microsoft.com",
+        "options": {
+          "when": [
+            "onError",
+            "onComplete"
+          ],
+          "verbosity": "Compact"
+        }
+      }
+    }
+  },
+  "orchestratedsteps": [
+    {
+      "name": "ZipDeploy",
+      "targetType": "ServiceResource",
+      "targetName": "ApplensZipDeployMWH",
+      "actions": [
+        "Deploy"
+      ]
+    }
+  ]
+}

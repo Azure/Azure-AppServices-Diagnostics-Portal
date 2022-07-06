@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "paths": [
+        {
+            "parameterReference": "servicePackageLink"
+        }
+    ],
+    "parameters": {
+        "siteName": {
+            "value": "__SITENAME_PREFIX__-__LOCATION_ABBR__"
+        },
+        "siteName2": {
+            "value": "__SITENAME__"
+        },
+        "slotName": {
+            "value": "staging"
+        },
+        "servicePackageLink": {
+            "value": "bin\\Applens.zip"
+        }
+    }
+}

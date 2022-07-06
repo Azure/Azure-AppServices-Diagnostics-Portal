@@ -3,10 +3,11 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "siteName": {
+            "type": "string"
+        },
+        "sitename2": {
             "type": "string",
-            "metadata": {
-                "description": "The name of the web app."
-            }
+            "defaultValue": ""
         },
         "slotName": {
             "type": "string",
@@ -22,11 +23,14 @@
             }
         }
     },
+    "variables": {
+        "varSiteName": "[if(contains(parameters('siteName'), '__'), parameters('sitename2'), parameters('siteName'))]"
+    },
     "resources": [
         {
             "apiVersion": "2014-06-01",
             "type": "Microsoft.Web/sites/slots/extensions",
-            "name": "[concat(parameters('siteName'),'\/',parameters('slotName'),'\/','\/zipdeploy')]",
+            "name": "[concat(variables('varSiteName'),'\/',parameters('slotName'),'\/','\/zipdeploy')]",
             "properties": {
                 "packageUri": "[parameters('servicePackageLink')]"
             }
