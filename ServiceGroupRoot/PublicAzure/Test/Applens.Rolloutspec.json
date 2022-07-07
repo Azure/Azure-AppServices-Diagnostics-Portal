@@ -1,9 +1,9 @@
-﻿{
+{
   "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/rolloutSpecification.json",
   "rolloutMetadata": {
-  "serviceModelPath": "PublicAzure\\Test\\ServiceModel.json",
-	"scopeBindingsPath": "PublicAzure\\ScopeBindings.json",
-    "name": "Applens Test",
+    "serviceModelPath": "PublicAzure\\Test\\ServiceModel.json",
+    "scopeBindingsPath": "PublicAzure\\ScopeBindings.json",
+    "name": "TEST STAGING",
     "rolloutType": "Major",
     "buildSource": {
       "parameters": {
@@ -12,39 +12,24 @@
     },
     "notification": {
       "email": {
-        "to": "hawfor@microsoft.com"
+        "to": "hawfor@microsoft.com",
+        "options": {
+          "when": [
+            "onError",
+            "onComplete"
+          ],
+          "verbosity": "Compact"
+        }
       }
     }
   },
   "orchestratedsteps": [
     {
-      "name": "CreateOrUpdateAppServicePlan",
-      "targetType": "ServiceResource",
-      "targetName": "ApplensWebAppCreateTest",
-      "actions": [
-        "Deploy"
-      ]
-    },
-    {
-      "name": "CreateOrUpdateAppSettings",
-      "targetType": "ServiceResource",
-      "targetName": "ApplensAppSettingsTest",
-      "actions": [
-        "Deploy"
-      ],
-      "dependsOn": [
-        "CreateOrUpdateAppServicePlan"
-      ]
-    },
-    {
-      "name": "WebAppZipDeploy",
+      "name": "ZipDeploy",
       "targetType": "ServiceResource",
       "targetName": "ApplensZipDeploy",
       "actions": [
         "Deploy"
-      ],
-      "dependsOn": [
-        "CreateOrUpdateAppSettings"
       ]
     }
   ]

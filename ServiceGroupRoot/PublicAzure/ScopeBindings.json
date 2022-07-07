@@ -133,6 +133,19 @@
       ]
     },
     {
+      "scopeTagName": "TEST",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-pr"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "West US"
+        }
+      ]
+    },
+    {
       "scopeTagName": "MWH",
       "bindings": [
         {

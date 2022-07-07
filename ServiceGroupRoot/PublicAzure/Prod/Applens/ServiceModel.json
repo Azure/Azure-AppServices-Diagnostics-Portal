@@ -2,7 +2,7 @@
   "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/serviceModel.json",
   "serviceMetadata": {
     "serviceGroup": "DiagnosticsBackend",
-    "environment": "Test"
+    "environment": "Prod"
   },
   "serviceResourceGroupDefinitions": [
     {
