@@ -9,6 +9,15 @@
       "name": "WebAppResourceGroupDefinitions",
       "serviceResourceDefinitions": [
         {
+          "name": "WebAppDefinitionV2",
+          "composedOf": {
+            "arm": {
+              "templatePath": "Templates\\DeployWebAppV2.json",
+              "parametersPath": "Parameters\\MultiRegion.WebApp.Parameters.json"
+            }
+          }
+        },
+        {
           "name": "ZipDeployDefinition",
           "composedOf": {
             "arm": {
@@ -30,64 +39,6 @@
     }
   ],
   "serviceResourceGroups": [
-    {
-      "azureResourceGroupName": "DiagnosticBackendPublicAzure",
-      "location": "West US",
-      "instanceOf": "WebAppResourceGroupDefinitions",
-      "azureSubscriptionId": "6a205b0a-6b5a-4346-8468-f4b6367f7efa",
-      "scopeTags": [
-        {
-          "name": "General"
-        },
-        {
-          "name": "PublicAzure"
-        },
-        {
-          "name": "WestUSRegion"
-        }
-      ],
-      "serviceResources": [
-        {
-          "name": "ApplensPublic",
-          "instanceOf": "WebAppDefinition",
-          "scopeTags": [
-            {
-              "name": "ApplensWestUs"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsPublicWebAppCreate",
-          "instanceOf": "WebAppDefinitionV2",
-          "armParametersPath": "Parameters\\MultiRegion.WebApp.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsPublicAppSettings",
-          "instanceOf": "AppServiceDiagnosticsAppSettingsDefintion",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsAppSettings.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsPublicZipDeploy",
-          "instanceOf": "ZipDeployDefinition",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsZipDeploy.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        }
-      ]
-    },
     {
       "azureResourceGroupName": "applens-mwh",
       "location": "West US 2",
@@ -188,40 +139,10 @@
       "serviceResources": [
         {
           "name": "ApplensUsSec",
-          "instanceOf": "WebAppDefinition",
+          "instanceOf": "WebAppDefinitionV2",
           "scopeTags": [
             {
               "name": "Applens"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsWebAppCreateUSSec",
-          "instanceOf": "WebAppDefinitionV2",
-          "armParametersPath": "Parameters\\MultiRegion.WebApp.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsAppSettingsUSSec",
-          "instanceOf": "AppServiceDiagnosticsAppSettingsDefintion",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsAppSettings.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsZipDeployUSSec",
-          "instanceOf": "ZipDeployDefinition",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsZipDeploy.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
             }
           ]
         }
@@ -246,40 +167,10 @@
       "serviceResources": [
         {
           "name": "ApplensFairfax",
-          "instanceOf": "WebAppDefinition",
+          "instanceOf": "WebAppDefinitionV2",
           "scopeTags": [
             {
               "name": "Applens"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsFairfax",
-          "instanceOf": "WebAppDefinitionV2",
-          "armParametersPath": "Parameters\\MultiRegion.WebApp.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsAppSettingsFairfax",
-          "instanceOf": "AppServiceDiagnosticsAppSettingsDefintion",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsAppSettings.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsZipDeployFairfax",
-          "instanceOf": "ZipDeployDefinition",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsZipDeploy.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
             }
           ]
         }
