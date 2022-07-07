@@ -1,12 +1,12 @@
 {
 	"homePageText": {
-		"title": "Azure Spring Cloud Diagnostics",
-		"description": "Use Azure Spring Cloud Diagnostics to investigate how your service is performing, diagnose issues, and discover how to improve its reliability. Select the problem category that best matches the information or tool that you're interested in:",
+		"title": "Azure Spring Apps Diagnostics",
+		"description": "Use Azure Spring Apps Diagnostics to investigate how your service is performing, diagnose issues, and discover how to improve its reliability. Select the problem category that best matches the information or tool that you're interested in:",
 		"searchBarPlaceHolder": "Search for common problems, tools and more"
 	},
 	"matchRegEx": "/Microsoft.AppPlatform/Spring/",
 	"searchSuffix": "Spring",
-	"azureServiceName": "Azure Spring Cloud",
+	"azureServiceName": "Azure Spring Apps",
 	"armApiConfig": {
 		"armApiVersion": "2020-07-01"
 	},
@@ -29,7 +29,7 @@
 		{
 			"id": "configurationsandmanagementspring",
 			"name": "Configurations and Management",
-			"description": "Find out if you misconfigured some features of Azure Spring Cloud.",
+			"description": "Find out if you misconfigured some features of Azure Spring Apps.",
 			"keywords": ["Log", "Metrics", "Distributed Tracing", "Scaling", "Swap", "Custom Domain", "SSL"],
 			"color": "rgb(249, 213, 180)",
 			"createFlowForCategory": true,
