@@ -167,7 +167,7 @@ extends:
             rootFolderOrFile: '$(System.ArtifactsDirectory)/applensdrop/ApplensBackend'
             includeRootFolder: false
             archiveType: 'zip'
-            archiveFile: '$(ob_outputDirectory)/Applens.zip'
+            archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/Applens.zip'
             replaceExistingArchive: true
 
         - task: DeleteFiles@1
