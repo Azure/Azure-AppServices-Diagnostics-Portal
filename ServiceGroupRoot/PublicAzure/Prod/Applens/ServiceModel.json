@@ -9,23 +9,6 @@
       "name": "WebAppResourceGroupDefinitions",
       "serviceResourceDefinitions": [
         {
-          "name": "WebAppDefinition",
-          "composedOf": {
-            "arm": {
-              "templatePath": "Templates\\DeployWebApp.json",
-              "parametersPath": "Parameters\\WebApp.Parameters.json"
-            }
-          }
-        },
-        {
-          "name": "WebAppDefinitionV2",
-          "composedOf": {
-            "arm": {
-              "templatePath": "Templates\\DeployWebAppV2.json"
-            }
-          }
-        },
-        {
           "name": "ZipDeployDefinition",
           "composedOf": {
             "arm": {
@@ -35,12 +18,13 @@
           }
         },
         {
-          "name": "AppServiceDiagnosticsAppSettingsDefintion",
-          "composedOf": {
-            "arm": {
-              "templatePath": "Templates\\AppServiceDiagnosticsAppSettings.Template.json"
+            "name": "AutoSwapDefinition",
+            "composedOf": {
+                "arm": {
+                    "templatePath": "Templates\\AutoSwap.json",
+                    "parametersPath": "Parameters\\AutoSwap.Parameters.json"
+                }
             }
-          }
         }
       ]
     }
@@ -124,6 +108,10 @@
         {
           "name": "ApplensZipDeployMWH",
           "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "MWHSWAP",
+          "instanceOf": "AutoSwapDefinition"
         }
       ]
     },
@@ -147,6 +135,10 @@
         {
           "name": "ApplensZipDeployAM2",
           "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "AM2SWAP",
+          "instanceOf": "AutoSwapDefinition"
         }
       ]
     },
@@ -170,6 +162,10 @@
         {
           "name": "ApplensZipDeployBLU",
           "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "BLUSWAP",
+          "instanceOf": "AutoSwapDefinition"
         }
       ]
     },

@@ -138,6 +138,10 @@
         {
           "find": "__SITENAME__",
           "replaceWith": "applens-mwh"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "West US 2"
         }
       ]
     },
@@ -147,6 +151,10 @@
         {
           "find": "__SITENAME__",
           "replaceWith": "applens-am2"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "West Europe"
         }
       ]
     },
@@ -156,6 +164,10 @@
         {
           "find": "__SITENAME__",
           "replaceWith": "applens-blu"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "East US"
         }
       ]
     },
