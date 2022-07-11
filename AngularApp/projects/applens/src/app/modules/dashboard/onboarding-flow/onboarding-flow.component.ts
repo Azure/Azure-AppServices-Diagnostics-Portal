@@ -1752,11 +1752,12 @@ export class OnboardingFlowComponent implements OnInit {
         (err) => {
           this.allUtterances = [];
         });
-      
-      // if (this.DevopsConfig.resourceProvider === 'Microsoft.Web/sites')
-      this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/owners.txt`, this.Branch, this.resourceId).subscribe(o => {
-        this.owners = o.split('\n');
-      });
+      // Fetch owners.txt when needed. Otherwise leads to noisy errors in API.
+      if (Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0) {      
+        this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/owners.txt`, this.Branch, this.resourceId).subscribe(o => {
+          this.owners = o.split('\n');
+        });
+      }
     }
     else {
       this.githubService.getMetadataFile(this.id.toLowerCase()).subscribe(res => {
