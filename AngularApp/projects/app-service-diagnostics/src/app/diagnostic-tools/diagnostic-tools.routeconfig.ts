@@ -137,7 +137,7 @@ export const DiagnosticToolsRoutes: Route[] = [
     },
     // Linux Node Heap Dump
     {
-        path: ToolIds.LinuxNodeHeapDump,
+        path: "linuxnodeheapdump",
         component: LinuxNodeHeapDumpComponent,
         data: {
             navigationTitle: ToolNames.LinuxNodeHeapDump,
@@ -146,7 +146,7 @@ export const DiagnosticToolsRoutes: Route[] = [
     },
     // Linux Node Cpu Profiler
     {
-        path: ToolIds.LinuxNodeCpuProfiler,
+        path: "linuxnodecpuprofiler",
         component: LinuxNodeCpuProfilerComponent,
         data: {
             navigationTitle: ToolNames.LinuxNodeCpuProfiler,
@@ -155,7 +155,7 @@ export const DiagnosticToolsRoutes: Route[] = [
     },
     // Linux Python CPU Profiler
     {
-        path: ToolIds.LinuxPythonCpuProfiler,
+        path: "linuxpythoncpuprofiler",
         component: LinuxPythonCpuProfilerComponent,
         data: {
             navigationTitle: ToolNames.LinuxPythonCpuProfiler,
