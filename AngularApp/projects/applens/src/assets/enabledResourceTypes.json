@@ -110,6 +110,7 @@
             "imgSrc": "assets/img/BotService-Logo.png",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "botServices",
+            "pesId": "16152",
             "searchSuffix": "AZURE BOT SERVICE",
             "displayName": "Bot Service"
         },
@@ -120,6 +121,7 @@
             "imgSrc": "assets/img/Azure-Service-Fabric-Logo.png",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "serviceFabric",
+            "pesId": "15842",
             "searchSuffix": "AZURE SERVICE FABRIC",
             "displayName": "Service Fabric"
         },
@@ -130,6 +132,7 @@
             "imgSrc": "assets/img/sfmc-logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "serviceFabricManagedCluster",
+            "pesId": "17479",
             "searchSuffix": "AZURE SERVICE FABRIC MANAGED CLUSTER",
             "displayName": "Service Fabric Managed Cluster"
         },
@@ -176,7 +179,7 @@
             "imgSrc": "assets/img/Azure-SpringCloudService-Logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
-            "pesId": "",
+            "pesId": "16860",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE SPRING CLOUD SERVICE",
             "displayName": "Spring Cloud Service"
@@ -212,7 +215,7 @@
             "imgSrc": "assets/img/MLlogo.jpg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "MachineLearningServices",
-            "pesId": "",
+            "pesId": "16644",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE MACHINE LEARNING SERVICE",
             "displayName": "Machine Learning Service"
@@ -224,7 +227,7 @@
             "imgSrc": "assets/img/acilogo.png",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "containerGroups",
-            "pesId": "",
+            "pesId": "16326",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE CONTAINER INSTANCE",
             "displayName": "Container Instance (ACI)"
@@ -236,7 +239,7 @@
             "imgSrc": "assets/img/batchailogo.png",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "BatchAI",
-            "pesId": "",
+            "pesId": "16447",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE BATCH AI SERVICE",
             "displayName": "Batch AI Service"
@@ -248,7 +251,7 @@
             "imgSrc": "assets/img/Azure-LogicApps-Logo.png",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "ISE",
-            "pesId": "",
+            "pesId": "17030",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE INTEGRATION SERVICE ENVIRONMENT",
             "displayName": "Integration Service Environment"
@@ -424,6 +427,7 @@
              "imgSrc": "assets/img/AppInsights-Logo.svg",
              "versionPrefix": "",
              "azureCommImpactedServicesList": "appInsights",
+            "pesId": "15693",
             "searchSuffix": "AZURE APPLICATION INSIGHTS",
             "displayName": "Application Insights"
          },
@@ -434,6 +438,7 @@
              "imgSrc": "assets/img/LogAnalytics-Logo.svg",
              "versionPrefix": "",
              "azureCommImpactedServicesList": "logAnalytics",
+            "pesId": "15725",
             "searchSuffix": "AZURE LOG ANALYTICS",
             "displayName": "Log Analytics"
          },
@@ -444,6 +449,7 @@
              "imgSrc": "assets/img/StaticSites-Logo.svg",
              "versionPrefix": "",
              "azureCommImpactedServicesList": "staticSites",
+            "pesId": "17265",
             "searchSuffix": "AZURE STATIC WEB APPS",
             "displayName": "Static Web Apps"
          },
@@ -478,7 +484,7 @@
             "imgSrc": "assets/img/Azure-MediaService-Logo.png",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
-            "pesId": "",
+            "pesId": "14885",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE MEDIA SERVICE",
             "displayName": "Media Service"
@@ -490,7 +496,7 @@
             "imgSrc": "assets/img/Azure-Network-Function-Manager-Logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
-            "pesId": "",
+            "pesId": "17043",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE NETWORK FUNCTION MANAGER",
             "displayName": "Network Function Manager"
@@ -502,7 +508,7 @@
             "imgSrc": "assets/img/Azure-Network-Function-Manager-Device-Logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
-            "pesId": "",
+            "pesId": "16597",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE NETWORK FUNCTION MANAGER DEVICE",
             "displayName": "Network Function Manager Device"
@@ -514,7 +520,7 @@
             "imgSrc": "assets/img/Azure-Stack-Hub-Logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
-            "pesId": "",
+            "pesId": "16226",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE STACK HUB",
             "displayName": "Stack Hub"
@@ -526,6 +532,7 @@
             "imgSrc": "assets/img/ArcK8s-Logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
+            "pesId": "17501",
             "searchSuffix": "AZURE ARC APPLIANCE",
             "displayName": "Azure Arc Appliance"
         },
@@ -536,6 +543,7 @@
             "imgSrc": "assets/img/Azure-SQL-Server-Logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
+            "pesId": "13491",
             "searchSuffix": "AZURE SQL SERVER",
             "displayName": "Azure SQL Server"
         },
@@ -546,6 +554,7 @@
             "imgSrc": "assets/img/azure-icons/AzureCacheRedis.png",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
+            "pesId": "14783",
             "searchSuffix": "AZURE CACHE FOR REDIS",
             "displayName": "Azure Cache for Redis"
         },
@@ -556,6 +565,7 @@
              "imgSrc": "assets/img/AzureAlerts-Logo.svg",
              "versionPrefix": "",
              "azureCommImpactedServicesList": "",
+            "pesId": "15454",
              "searchSuffix": "AZURE LOG SEARCH ALERTS",
              "displayName": "Azure Log Search Alerts"
          },
@@ -566,6 +576,7 @@
              "imgSrc": "assets/img/AzureAlerts-Logo.svg",
              "versionPrefix": "",
              "azureCommImpactedServicesList": "",
+             "pesId": "15454",
              "searchSuffix": "AZURE METRICS ALERTS",
              "displayName": "Azure Metric Alerts"
          },
@@ -575,6 +586,7 @@
             "templateFileName": "VirtualMachineScaleSets",
             "imgSrc": "assets/img/VM-Scale-Sets.svg",
             "versionPrefix": "",
+             "pesId": "16080",
             "azureCommImpactedServicesList": "",
             "searchSuffix": "VIRTUAL MACHINE SCALE SETS",
             "displayName": "Virtual Machine Scale Sets"
