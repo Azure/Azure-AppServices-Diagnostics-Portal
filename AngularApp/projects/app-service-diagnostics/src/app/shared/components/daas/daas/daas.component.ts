@@ -28,7 +28,7 @@ export class DaasComponent implements OnInit, OnDestroy {
 
   @Input() siteToBeDiagnosed: SiteDaasInfo;
   @Input() scmPath: string;
-  @Input() diagnoserName: string;
+  @Input() diagnoserName: string = '';
   @Input() diagnoserNameLookup: string = '';
   @Input() allLinuxInstancesOnAnt98: boolean;
 

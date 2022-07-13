@@ -54,7 +54,10 @@ import { CrashMonitoringComponent } from '../shared/components/tools/crash-monit
 import { RiskTileComponent } from './components/risk-tile/risk-tile.component';
 import { IntegratedSolutionsViewComponent } from '../shared/components/integrated-solutions-view/integrated-solutions-view.component';
 import { HomeContainerComponent } from './components/home-container/home-container.component';
-import {SolutionOrchestratorComponent} from "diagnostic-data";
+import { SolutionOrchestratorComponent } from "diagnostic-data";
+import { LinuxNodeHeapDumpComponent } from '../shared/components/tools/linux-node-heap-dump/linux-node-heap-dump.component';
+import { LinuxNodeCpuProfilerComponent } from '../shared/components/tools/linux-node-cpu-profiler/linux-node-cpu-profiler.component';
+import { LinuxPythonCpuProfilerComponent } from '../shared/components/tools/linux-python-cpu-profiler/linux-python-cpu-profiler.component';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -273,6 +276,33 @@ export const HomeRoutes = RouterModule.forChild([
                         component: JavaFlightRecorderToolComponent,
                         data: {
                             navigationTitle: ToolNames.JavaFlightRecorder,
+                            cacheComponent: true
+                        }
+                    },
+                    // Linux Node Heap Dump
+                    {
+                        path: 'tools/linuxnodeheapdump',
+                        component: LinuxNodeHeapDumpComponent,
+                        data: {
+                            navigationTitle: ToolNames.LinuxNodeHeapDump,
+                            cacheComponent: true
+                        }
+                    },
+                    // Linux Node Cpu Profiler
+                    {
+                        path: 'tools/linuxnodecpuprofiler',
+                        component: LinuxNodeCpuProfilerComponent,
+                        data: {
+                            navigationTitle: ToolNames.LinuxNodeCpuProfiler,
+                            cacheComponent: true
+                        }
+                    },
+                    // Linux Python CPU Profiler
+                    {
+                        path: 'tools/linuxpythoncpuprofiler',
+                        component: LinuxPythonCpuProfilerComponent,
+                        data: {
+                            navigationTitle: ToolNames.LinuxPythonCpuProfiler,
                             cacheComponent: true
                         }
                     },

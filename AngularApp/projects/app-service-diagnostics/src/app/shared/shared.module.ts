@@ -124,6 +124,9 @@ import { DaasComponent } from './components/daas/daas/daas.component';
 import { ProfilerComponent } from './components/daas/profiler/profiler.component';
 import { ABTestingService } from './services/abtesting.service';
 import { NetworkTroubleshooterComponent } from './components/tools/network-troubleshooter/network-troubleshooter.component';
+import { LinuxPythonCpuProfilerComponent } from './components/tools/linux-python-cpu-profiler/linux-python-cpu-profiler.component';
+import { LinuxNodeHeapDumpComponent } from './components/tools/linux-node-heap-dump/linux-node-heap-dump.component';
+import { LinuxNodeCpuProfilerComponent } from './components/tools/linux-node-cpu-profiler/linux-node-cpu-profiler.component';
 
 @NgModule({
     declarations: [
@@ -191,7 +194,10 @@ import { NetworkTroubleshooterComponent } from './components/tools/network-troub
         RiskAlertsPanelComponent,
         IntegratedSolutionsViewComponent,
         DaasComponent,
-        ProfilerComponent
+        ProfilerComponent,
+        LinuxPythonCpuProfilerComponent,
+        LinuxNodeHeapDumpComponent,
+        LinuxNodeCpuProfilerComponent
     ],
     imports: [
         HttpClientModule,

@@ -1,0 +1,17 @@
+<div class="container">
+  <h2 tabindex="0">{{ title }}</h2>
+  <p tabindex="0">{{ description }}</p>
+  <div class="wizardcontainer">
+      <profiler [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoserName"
+          (SessionsEvent)="updateSessions($event)" [allLinuxInstancesOnAnt98]="allLinuxInstancesOnAnt98">
+      </profiler>
+  </div>
+  <h3>What you should know before collecting a Node CPU Profiler</h3>
+  <ul>
+      <li *ngFor="let statement of thingsToKnowBefore">{{statement}}</li>
+  </ul>
+  <div class="sessions">
+      <daas-sessions [refreshSessions]="refreshSessions" [diagnoserNameLookup]="diagnoserNameLookup"
+          [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed"></daas-sessions>
+  </div>
+</div>
