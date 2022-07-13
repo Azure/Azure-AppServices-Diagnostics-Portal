@@ -271,13 +271,21 @@ export class AppInsightsService {
     }
 
     public openAppInsightsPerformanceBlade() {
-        this.portalActionService.openAppInsightsPerformanceBlade(this.appInsightsSettings.resouceUri);
+        this.portalActionService.openAppInsightsPerformanceBlade(this.appInsightsSettings.resourceUri);
     }
 
     public openAppInsightsExtensionBlade(detailBlade?: string) {
         return this.portalService.getAppInsightsResourceInfo().subscribe(
             (aiResource: string) => {
-                this.portalActionService.openAppInsightsExtensionBlade(detailBlade, aiResource);
+                if (this.isNotNullOrEmpty(aiResource)) {
+                    this.portalActionService.openAppInsightsExtensionBlade(detailBlade, aiResource);
+                } else if (this.isNotNullOrEmpty(this.appInsightsSettings.resourceUri)) {
+                    this.portalActionService.openAppInsightsExtensionBlade(detailBlade, this.appInsightsSettings.resourceUri);
+                } else {
+                    this.getAppInsightsResourceFromAppSettings().subscribe(aiResourceAppSettings => {
+                        this.portalActionService.openAppInsightsExtensionBlade(detailBlade, aiResourceAppSettings);
+                    });
+                }
             });
     }
 
