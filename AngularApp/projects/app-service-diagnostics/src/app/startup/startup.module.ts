@@ -30,7 +30,7 @@ export class StartupModule {
       providers: [
         WindowService,
         PortalService,
-        { provide: GenericPortalService, useExisting: GenericPortalService },
+        { provide: GenericPortalService, useExisting: PortalService },
         BroadcastService,
         AuthService,
         StartupMessages,
