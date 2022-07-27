@@ -9,6 +9,10 @@ namespace Backend.Services
 {
     public class AppInsightsService : IAppInsightsService
     {
+        private const string AppInsightsEndpointPublicAzure = "api.applicationinsights.io";
+        private const string AppInsightsEndpointAzureGov = "api.applicationinsights.us";
+        private const string AppInsightsEndpointAzureChina = "api.applicationinsights.azure.cn";
+
         private readonly IEncryptionService _encryptionService;
 
         private readonly Lazy<HttpClient> _client = new Lazy<HttpClient>(() =>
@@ -31,7 +35,7 @@ namespace Backend.Services
 
         public AppInsightsService(IEncryptionService encryptionService)
         {
-            _encryptionService = encryptionService;            
+            _encryptionService = encryptionService;
         }
 
 
@@ -62,16 +66,21 @@ namespace Backend.Services
         /// <returns></returns>
         private string GetAppInsightsDefaultEndpoint(string siteHostName)
         {
+            if (string.IsNullOrWhiteSpace(siteHostName))
+            {
+                return AppInsightsEndpointPublicAzure;
+            }
+
             if (siteHostName.Contains(".azurewebsites.us", StringComparison.OrdinalIgnoreCase))
             {
-                return "api.applicationinsights.us";
+                return AppInsightsEndpointAzureGov;
             }
             else if (siteHostName.Contains(".azurewebsites.cn", StringComparison.OrdinalIgnoreCase))
             {
-                return "api.applicationinsights.azure.cn";
+                return AppInsightsEndpointAzureChina;
             }
 
-            return "api.applicationinsights.io";
+            return AppInsightsEndpointPublicAzure;
         }
     }
 }
