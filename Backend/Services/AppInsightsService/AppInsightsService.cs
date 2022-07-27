@@ -31,18 +31,18 @@ namespace Backend.Services
 
         public AppInsightsService(IEncryptionService encryptionService)
         {
-            _encryptionService = encryptionService;
+            _encryptionService = encryptionService;            
         }
 
 
-        public async Task<bool> Validate(string appInsightsAppId, string encryptedKey)
+        public async Task<bool> Validate(string appInsightsAppId, string encryptedKey, string siteHostName)
         {
 
             var query = WebUtility.UrlEncode("requests|take 1");
             HttpRequestMessage request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://api.applicationinsights.io/v1/apps/{appInsightsAppId}/query?timespan=1H&query={query}")
+                RequestUri = new Uri($"https://{GetAppInsightsDefaultEndpoint(siteHostName)}/v1/apps/{appInsightsAppId}/query?timespan=1H&query={query}")
             };
 
             var apiKey = _encryptionService.DecryptString(encryptedKey);
@@ -53,6 +53,25 @@ namespace Backend.Services
 
             return true;
 
+        }
+
+        /// <summary>
+        /// Gets the name of the correct AppInsights default endpoint based on the hostname where the UI project is hosted
+        /// </summary>
+        /// <param name="siteHostName"></param>
+        /// <returns></returns>
+        private string GetAppInsightsDefaultEndpoint(string siteHostName)
+        {
+            if (siteHostName.Contains(".azurewebsites.us", StringComparison.OrdinalIgnoreCase))
+            {
+                return "api.applicationinsights.us";
+            }
+            else if (siteHostName.Contains(".azurewebsites.cn", StringComparison.OrdinalIgnoreCase))
+            {
+                return "api.applicationinsights.azure.cn";
+            }
+
+            return "api.applicationinsights.io";
         }
     }
 }

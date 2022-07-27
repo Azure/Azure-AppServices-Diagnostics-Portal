@@ -48,7 +48,13 @@ namespace Backend.Controllers
 
             try
             {
-                var appInsightsEnabled = await _appInsightsService.Validate(appInsightsAppId, encryptedKey);
+                string siteHostName = string.Empty;
+                if (Request.Host.HasValue)
+                {
+                    siteHostName = Request.Host.Value;
+                }
+
+                var appInsightsEnabled = await _appInsightsService.Validate(appInsightsAppId, encryptedKey, siteHostName);
             }
             catch (Exception ex)
             {
