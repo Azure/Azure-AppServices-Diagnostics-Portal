@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 
 namespace Backend.Services
 {
