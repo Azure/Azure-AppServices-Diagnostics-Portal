@@ -65,11 +65,6 @@ namespace Backend.Services
         /// <returns></returns>
         private string GetAppInsightsDefaultEndpoint(string siteHostName)
         {
-            if (string.IsNullOrWhiteSpace(siteHostName))
-            {
-                return AppInsightsEndpointPublicAzure;
-            }
-
             if (siteHostName.Contains(".azurewebsites.us", StringComparison.OrdinalIgnoreCase))
             {
                 return AppInsightsEndpointAzureGov;
