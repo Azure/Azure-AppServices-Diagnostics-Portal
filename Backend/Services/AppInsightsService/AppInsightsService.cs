@@ -74,7 +74,7 @@ namespace Backend.Services
             {
                 return AppInsightsEndpointAzureGov;
             }
-            else if (siteHostName.Contains(".azurewebsites.cn", StringComparison.OrdinalIgnoreCase))
+            else if (siteHostName.Contains(".chinacloudsites.cn", StringComparison.OrdinalIgnoreCase))
             {
                 return AppInsightsEndpointAzureChina;
             }
