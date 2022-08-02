@@ -31,7 +31,21 @@
       "createFlowForCategory": true,
       "chatEnabled": false,
       "overviewDetectorId": "cappContainerAppAvailabilityDetector"
-		}
+		},  
+    {
+      "id": "containerappsenvironmentca",
+      "name": "Container Apps Environment",
+      "description": "Check the health of your container apps environment",
+      "keywords": [
+        "Node Allocation Failures",
+        "Node Pools",
+        "Cluster"
+      ],
+      "color": "rgb(208, 175, 239)",
+      "createFlowForCategory": true,
+      "chatEnabled": false,
+      "overviewDetectorId": "containerenvinsights"
+		}        
 	],
   "disableGenie": true,
 	"pesId": "17677",
