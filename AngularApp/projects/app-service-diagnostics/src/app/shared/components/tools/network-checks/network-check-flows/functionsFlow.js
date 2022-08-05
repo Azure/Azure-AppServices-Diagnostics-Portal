@@ -194,6 +194,8 @@ export var functionsFlow = {
                         bindingInfo.connectionStringProperty = binding.connection;
                     } else if (binding.connectionStringSetting != undefined) { // CosmosDB
                         bindingInfo.connectionStringProperty = binding.connectionStringSetting;
+                    } else { // not a trigger/binding that has connection info (e.g. Timer trigger, HTTP trigger)
+                        return;
                     }
                     // bindingInfo.connectionString
                     var connectionString = appSettings[bindingInfo.connectionStringProperty];
@@ -228,11 +230,12 @@ export var functionsFlow = {
                     functionsInfo.push(functionInfo);
                 }
             });
+
             if (functionsInfo.length == 0) {
                 return new InfoStepView({ infoType: 0, title: "No functions with configured connection strings were found for this Function App" });
             }
-            var subChecksL1 = [];
 
+            var subChecksL1 = [];
             var promisesL1 = functionsInfo.map(async (functionInfo) => {
                 var subChecksL2 = []; // These are the checks (and subchecks) for each binding of a function
                 var promisesL2 = functionInfo.bindings.map(async (binding) => {
