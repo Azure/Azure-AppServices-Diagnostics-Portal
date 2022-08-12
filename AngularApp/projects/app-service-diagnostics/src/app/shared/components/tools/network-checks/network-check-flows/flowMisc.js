@@ -682,30 +682,20 @@ export function addSubnetSelectionDropDownView(siteInfo, diagProvider, flowMgr, 
         });
 }
 
-export async function checkDaaSExtApiAsync(diagProvider) {
+export async function checkNetworkTroubleshooterApiAsync(diagProvider) {
     var params = [];
     params.push("api-version=2015-08-01");
-    var daasVersionInfo=await diagProvider.getDaaSExtApiAsync("daasversion",params);
-    var isDaasExtAccessible;
-    if(daasVersionInfo.status == "200") {
-        isDaasExtAccessible = true;
+    // TODO: determine/create an api that tells us if the backend is available to handle requests
+    //var versionInfo = await diagProvider.getDaaSExtApiAsync("Version",params);
+    var isAccessible = true;
+    /*if(versionInfo.status == "200") {
+        isAccessible = true;
     }
     else {
-        isDaasExtAccessible = false;
-    }
+        isAccessible = false;
+    }*/
 
-    var isDaasNew = false;
-    if(isDaasExtAccessible == true) {
-        var currentDaasVersion = daasVersionInfo.body.Version;
-        if (isNewerDaasVersion(currentDaasVersion) >= 0) {
-            isDaasNew = true;
-        }
-        else {
-            isDaasNew = false;
-        }
-    }
-
-    return { "IsDaasExtAccessible": isDaasExtAccessible, "IsDaasNew": isDaasNew }
+    return { "IsAccessible": isAccessible,  }
 }
 
 function isNewerDaasVersion(currentDaasVersion){ 

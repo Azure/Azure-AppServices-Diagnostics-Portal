@@ -124,63 +124,43 @@ export class DiagProvider {
             });
     }
 
-    public postDaaSExtApiAsync(api: string, body?: any, timeoutInSec: number = 15): Promise<any> {
+    public async postNetworkTroubleshooterApiAsync(api: string, body: any, timeoutInSec: number = 15): Promise<any> {
         var params = "api-version=2015-08-01";
-        var prefix = `management.azure.com/${this._siteInfo.resourceUri}/extensions/DaaS/api`;
+        var prefix = `management.azure.com/${this._siteInfo.resourceUri}/NetworkValidationChecker`;
         var stack = new Error("error_message_placeholder").stack;
         var promise = this._armService.post(`https://${prefix}/${api}?${params}`, body)
             .toPromise()
             .catch(e => {
                 e.stack = stack.replace("error_message_placeholder", e);
                 throw e;
-            });
-        var timeoutPromise = delay(timeoutInSec).then(() => {
-            throw new Error(`postDaaSExtApiAsync timeout after ${timeoutInSec}s`);
-        });
-        return Promise.race([promise, timeoutPromise]);
-    }
-    public getDaaSExtApiAsync(api: string, params = [], timeoutInSec: number = 15): Promise<any> {  
-        var prefix = `management.azure.com/${this._siteInfo.resourceUri}/extensions/DaaS/api`;
-        var stack = new Error("error_message_placeholder").stack;
-        var promise = this._armService.get(`https://${prefix}/${api}?${params.join("&")}`)         
-            .toPromise()
-            .catch(e => {
-                e.stack = stack.replace("error_message_placeholder", e);
-                throw e;
             });     
             var timeoutPromise = delay(timeoutInSec).then(() => {
-                throw new Error(`getDaaSExtApiAsync timeout after ${timeoutInSec}s`);
+                throw new Error(`postNetworkTroubleshooterApiAsync timeout after ${timeoutInSec}s`);
             });
             return Promise.race([promise, timeoutPromise]);        
-    }   
-
-    public async checkConnectionStringAsync(connectionString: string, type: string, timeoutInSec: number = 30): Promise<any> {
-        if(connectionString == "" || connectionString == undefined){
-        //this will be removed when refactoring with old DAAS
-            return {StatusText:"EmptyConnectionString"};
-        }else{
-            var result: any = await this.postDaaSExtApiAsync("connectionstringvalidation/validate", { "ConnectionString": connectionString, "Type": type }, timeoutInSec);
-            return result;            
-        } 
     }
+
     public async checkConnectionViaAppSettingAsync(appSetting: string, type: string, entityName?: string, timeoutInSec: number = 30): Promise<any> {
-        var params = [];
-        params.push("api-version=2015-08-01");
-        params.push("appSettingName="+appSetting);
-        params.push("type="+type);
-        if(entityName != undefined){
-            params.push("entityName="+entityName);  
-        }
-        var response: any = await this.getDaaSExtApiAsync("connectionstringvalidation/validateappsettingforfunctionapp", params, timeoutInSec);
+        var requestBody = new NetworkTroubleshooterPostAPIBody();
+        requestBody.ProviderType = type;
+        requestBody.Credentials = new Credentials();
+        requestBody.Credentials.CredentialType = "CredentialReference";
+        requestBody.Credentials.CredentialReference = new CredentialReference(); 
+        requestBody.Credentials.CredentialReference.ReferenceType = "AppSetting";
+        requestBody.Credentials.CredentialReference.ReferenceName = appSetting;
+        requestBody.ResourceMetadata = new ResourceMetadata();
+        requestBody.ResourceMetadata.EntityName = entityName;
+
+        var response: any = await this.postNetworkTroubleshooterApiAsync("ConnectivityCheck", requestBody, timeoutInSec);
         if (response == null)
         {
-          throw Error("No response received when calling the DaaS extension endpoint connectionstringvalidation/validateappsettingforfunctionapp via getDaaSExtApiAsync().");
+          throw Error("No response received when calling the network troubleshooter endpoint via postNetworkTroubleshooterApiAsync().");
         }
         if (response.body == null || response.body.StatusText == null)
         {
-            throw Error("Invalid response received when calling the DaaS extension endpoint connectionstringvalidation/validateappsettingforfunctionapp via getDaaSExtApiAsync(). response.body or response.body.StatusText is null.");
+            throw Error("Invalid response received when calling the network troubleshooter endpoint via postNetworkTroubleshooterApiAsync(). response.body or response.body.StatusText is null.");
         }
-        return response.body;        
+        return response.body;
     }
 
     public getKuduApiAsync(uri: string, instance?: string, timeoutInSec: number = 15, scm = false): Promise<any> {
@@ -345,16 +325,6 @@ export class DiagProvider {
         try {
             var result = await this.runKuduCommand("echo ok", undefined, undefined, timeoutInSec);
             return result == "ok";
-        } catch (error) {
-            return false;
-        }
-    }
-
-    public async checkDaasExtReachable(timeoutInSec: number): Promise<boolean> {
-        try {
-            var result = await this.checkConnectionStringAsync("dummy-connection-string", "StorageAccount");
-
-            return (result != undefined);
         } catch (error) {
             return false;
         }
