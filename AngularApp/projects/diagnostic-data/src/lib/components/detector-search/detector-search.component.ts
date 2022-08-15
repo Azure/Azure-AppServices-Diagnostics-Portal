@@ -221,6 +221,11 @@ export class DetectorSearchComponent extends DataRenderBaseComponent implements 
         this.showCharAlert = false;
     }
 
+    clearButtonEnter(event){
+        event.preventDefault();
+        this.clearSearchTerm();
+    }
+
     hitSearch(autofocus: boolean=false){
         if (autofocus) {this.autoFocus = true;}
         this.resetAlert();

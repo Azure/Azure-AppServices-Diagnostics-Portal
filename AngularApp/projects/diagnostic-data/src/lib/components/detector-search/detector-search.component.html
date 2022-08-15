@@ -5,7 +5,7 @@
     </div>
     <div style="margin-left:20px;">
         <div class="input-group input-group-sm search-input-group" *ngIf="!searchConfiguration.DetectorSearchEnabled || detectorId == ''">
-            <input class="form-control search-result-input" [(ngModel)]="searchTerm" tabindex="0" type="search" placeholder="Describe your problem here" (keyup.enter)="hitSearch(true)" maxlength="140" (ngModelChange)="resetAlert()" #searchInputBox>
+            <input class="form-control search-result-input" [(ngModel)]="searchTerm" tabindex="0" type="search" placeholder="Describe your problem here" (keydown.enter)="hitSearch(true)" maxlength="140" (ngModelChange)="resetAlert()" #searchInputBox>
             <div class="input-group-btn" id="clear-search">
                 <button aria-label="Please provide at least 2 characters"
                 title="Please provide at least 2 characters"
@@ -14,7 +14,7 @@
                 style="padding-top:1px;" tabindex="0">
                     <i class="fa fa-exclamation icon-err"></i>
                 </button>
-                <button aria-label="Clear search input" class="btn btn-default" style="padding-top:1px;" tabindex="0" title="Clear" type="button" (click)="clearSearchTerm()">
+                <button aria-label="Clear search input" (keydown.enter)="clearButtonEnter($event)" class="btn btn-default" style="padding-top:1px;" tabindex="0" title="Clear" type="button" (click)="clearSearchTerm()">
                 <i class="fa fa-close"></i>
                 </button>
             </div>
@@ -22,14 +22,14 @@
         <p #charAlertRef *ngIf="showCharAlert" tabindex="0">Please provide at least 2 characters</p>
     </div>
 </div>
-<div style="margin-left:20px;" *ngIf="searchConfiguration.DetectorSearchEnabled" tabindex="0" #searchResultsSection>
+<div style="margin-left:20px;" *ngIf="searchConfiguration.DetectorSearchEnabled" #searchResultsSection>
     <div [hidden]="detectorId === ''">
-    <div>
-        <div style="display: inline-block;margin-top: 10px">
-        <a tabindex="0" (keyup.enter)="goBackToSearch()" aria-label="Link to go back to the analysis view" role="button"
-            (click)="goBackToSearch()" *ngIf="detectorId !== ''">Back to Observations</a>
+        <div>
+            <div style="display: inline-block;margin-top: 10px">
+            <a tabindex="0" (keyup.enter)="goBackToSearch()" aria-label="Link to go back to the analysis view" role="button"
+                (click)="goBackToSearch()" *ngIf="detectorId !== ''">Back to Observations</a>
+            </div>
         </div>
-    </div>
     </div>
     <span *ngIf="showPreLoadingError" style="margin-left:10px;margin-top:10px;">{{preLoadingErrorMessage}}</span>
     <span *ngIf="showPreLoader" style="margin-top:10px;">
