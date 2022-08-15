@@ -385,6 +385,7 @@ export class DetectorSearchComponent extends DataRenderBaseComponent implements 
 
     clearSearchTerm() {
         this.searchTerm = "";
+        this.searchInputBox.nativeElement.focus();
     }
 
     getChildrenOfAnalysis(analysisId, detectorList) {
