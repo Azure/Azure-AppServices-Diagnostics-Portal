@@ -3,6 +3,7 @@ import { Globals } from 'projects/app-service-diagnostics/src/app/globals';
 import { stringify } from 'querystring';
 import { ResponseMessageEnvelope } from '../../../models/responsemessageenvelope';
 import { Site, SiteInfoMetaData } from '../../../models/site';
+import { NetworkTroubleshooterPostAPIBody, Credentials, CredentialReference, ResourceMetadata } from '../../../models/network-troubleshooter/post-request-body'
 import { ArmService } from '../../../services/arm.service';
 import { SiteService } from '../../../services/site.service';
 
