@@ -44,6 +44,8 @@ namespace AppLensV3.Controllers
         private readonly bool detectorDevelopmentEnabled;
         private readonly IList<string> apiEndpointsForDetectorDevelopment;
 
+        private readonly string[] AllowedSections = new string[] { "ContentSearch", "DeepSearch", "ApplicationInsights", "AcceptOriginSuffix:Origins", "CodeCompletion", "DetectorDevelopmentEnabled", "DetectorDevelopmentEnv", "PPEHostname", "APPLENS_ENVIRONMENT", "APPLENS_HOST" };
+
         private class InvokeHeaders
         {
             public string Path { get; set; }
@@ -109,7 +111,14 @@ namespace AppLensV3.Controllers
                 return BadRequest("App setting name is empty");
             }
 
-            return Ok(config[name]);
+            if (AllowedSections != null && AllowedSections.Any(sectionName => name.StartsWith(sectionName)))
+            {
+                return Ok(config[name]);
+            }
+            else
+            {
+                return NotFound($"App setting with the name '{name}' is not found");
+            }
         }
 
         [HttpGet("invoke")]
