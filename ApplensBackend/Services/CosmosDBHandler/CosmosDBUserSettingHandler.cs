@@ -88,13 +88,22 @@ namespace AppLensV3.Services
 
 
 
-        public async Task<UserSetting> GetUserSetting(string id)
+        public async Task<UserSetting> GetUserSetting(string id, bool needCreate = true)
         {
             UserSetting userSetting = null;
             userSetting = await GetItemAsync(id, UserSettingConstant.PartitionKey);
-            if (userSetting == null)
+            if (userSetting == null && needCreate == true)
             {
-                var newUserSetting = new UserSetting(id);
+                //Get default user settings with id "__default"
+                var defaultUserSetting = await GetUserSetting("__default", false);
+                UserSetting newUserSetting;
+                if(defaultUserSetting != null)
+                {
+                    newUserSetting = new UserSetting(id, defaultUserSetting);
+                }else
+                {
+                    newUserSetting = new UserSetting(id);
+                }
                 userSetting = await CreateItemAsync(newUserSetting);
             }
             return userSetting;
