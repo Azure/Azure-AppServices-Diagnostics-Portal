@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
 
   interval: any;
 
-  browser: IUAParser.IBrowser;
+  browser: UAParser.IBrowser;
 
   constructor(private _router: Router, private _adalService: AdalService) {
     this.inIFrame = window.parent !== window;
