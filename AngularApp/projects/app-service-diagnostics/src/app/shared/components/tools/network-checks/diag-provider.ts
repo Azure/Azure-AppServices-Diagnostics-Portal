@@ -127,7 +127,9 @@ export class DiagProvider {
 
     public async postNetworkTroubleshooterApiAsync(api: string, body: any, timeoutInSec: number = 15): Promise<any> {
         var params = "api-version=2015-08-01";
-        var prefix = `management.azure.com/${this._siteInfo.resourceUri}/NetworkValidationChecker`;
+        //TODO: Temporary switch to calling SCM - revert to calling ARM once ARM manifest is updated
+        //var prefix = `management.azure.com/${this._siteInfo.resourceUri}/NetworkValidationChecker`;
+        var prefix = `${this.scmHostName}/NetworkValidationChecker`;
         var stack = new Error("error_message_placeholder").stack;
         var promise = this._armService.post(`https://${prefix}/${api}?${params}`, body)
             .toPromise()
@@ -138,7 +140,7 @@ export class DiagProvider {
             var timeoutPromise = delay(timeoutInSec).then(() => {
                 throw new Error(`postNetworkTroubleshooterApiAsync timeout after ${timeoutInSec}s`);
             });
-            return Promise.race([promise, timeoutPromise]);        
+            return Promise.race([promise, timeoutPromise]);
     }
 
     public async checkConnectionViaAppSettingAsync(appSetting: string, type: string, entityName?: string, timeoutInSec: number = 30): Promise<any> {
@@ -153,15 +155,11 @@ export class DiagProvider {
         requestBody.ResourceMetadata.EntityName = entityName;
 
         var response: any = await this.postNetworkTroubleshooterApiAsync("ConnectivityCheck", requestBody, timeoutInSec);
-        if (response == null)
+        if (response == null || response.statusText == null)
         {
           throw Error("No response received when calling the network troubleshooter endpoint via postNetworkTroubleshooterApiAsync().");
         }
-        if (response.body == null || response.body.StatusText == null)
-        {
-            throw Error("Invalid response received when calling the network troubleshooter endpoint via postNetworkTroubleshooterApiAsync(). response.body or response.body.StatusText is null.");
-        }
-        return response.body;
+        return response;
     }
 
     public getKuduApiAsync(uri: string, instance?: string, timeoutInSec: number = 15, scm = false): Promise<any> {

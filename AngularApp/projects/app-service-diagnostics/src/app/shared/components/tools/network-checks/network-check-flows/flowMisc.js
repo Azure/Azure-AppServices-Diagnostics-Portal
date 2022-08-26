@@ -697,27 +697,3 @@ export async function checkNetworkTroubleshooterApiAsync(diagProvider) {
 
     return { "IsAccessible": isAccessible,  }
 }
-
-function isNewerDaasVersion(currentDaasVersion){ 
-    var vnum1 = 0, vnum2 = 0, legacyDaasVersion = "2.2.1221.01";
-    for (var i = 0, j = 0; (i < currentDaasVersion.length 
-                            || j < legacyDaasVersion.length);) 
-    { 
-        while (i < currentDaasVersion.length && currentDaasVersion[i] != '.') { 
-            vnum1 = vnum1 * 10 + (currentDaasVersion[i] - '0'); 
-            i++; 
-        } 
-        while (j < legacyDaasVersion.length && legacyDaasVersion[j] != '.') { 
-            vnum2 = vnum2 * 10 + (legacyDaasVersion[j] - '0'); 
-            j++; 
-        } 
-        if (vnum1 > vnum2) 
-            return 1; 
-        if (vnum2 > vnum1) 
-            return -1;
-        vnum1 = vnum2 = 0; 
-        i++; 
-        j++; 
-    }
-    return 0; 
-}

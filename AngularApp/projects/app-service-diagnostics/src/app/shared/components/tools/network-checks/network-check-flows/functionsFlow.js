@@ -5,10 +5,9 @@ import { VnetDnsWordings } from './vnetDnsWordings.js';
 import { CommonWordings } from './commonWordings.js';
 
 export class ConnectionStringType {
-    static get StorageAccount() { return 'StorageAccount' };
-    static get BlobStorageAccount() { return 'BlobStorageAccount' };
-    static get QueueStorageAccount() { return 'QueueStorageAccount' };
-    static get FileShareStorageAccount() { return 'FileShareStorageAccount' };
+    static get BlobStorageAccount() { return 'BlobStorage' };
+    static get QueueStorageAccount() { return 'QueueStorage' };
+    static get FileShareStorageAccount() { return 'FileShare' };
     static get ServiceBus() { return 'ServiceBus' };
     static get EventHubs() { return 'EventHubs' };
 }
@@ -288,8 +287,7 @@ function getMaxCheckLevel(subChecks) {
 
 async function networkCheckConnectionString(propertyName, connectionString, connectionStringType = undefined, dnsServers, diagProvider, isVnetIntegrated, failureDetailsMarkdown = undefined, entityName = undefined) {
     var subChecks = [];
-    if (connectionStringType == ConnectionStringType.StorageAccount ||
-        connectionStringType == ConnectionStringType.BlobStorageAccount ||
+    if (connectionStringType == ConnectionStringType.BlobStorageAccount ||
         connectionStringType == ConnectionStringType.QueueStorageAccount ||
         connectionStringType == ConnectionStringType.FileShareStorageAccount ||
         connectionStringType == ConnectionStringType.ServiceBus ||
@@ -301,8 +299,6 @@ async function networkCheckConnectionString(propertyName, connectionString, conn
         var maxCheckLevel = getMaxCheckLevel(connectivityCheckResult);
         var service;
         switch (connectionStringType) {
-            case ConnectionStringType.StorageAccount:
-                service = "Storage account"; break;
             case ConnectionStringType.BlobStorageAccount:
                 service = "Blob Storage account"; break;
             case ConnectionStringType.QueueStorageAccount:
@@ -405,6 +401,7 @@ async function runConnectivityCheckAsync(hostname, port, dnsServers, diagProvide
         return { ip, checkResultsMarkdown };
     })();
 
+    //TODO: Perform tcpping validation through NetworkValidationChecker endpoint instead of kudu
     var tcpPingPromise = diagProvider.tcpPingAsync(hostname, port).catch(e => {
         logDebugMessage(e);
         return {};
@@ -480,8 +477,7 @@ async function runConnectivityCheckAsync(hostname, port, dnsServers, diagProvide
 }
 
 async function validateConnection(propertyName, type, diagProvider, entityName = undefined) {
-    var checkConnectionStringResult;
-    checkConnectionStringResult = await diagProvider.checkConnectionViaAppSettingAsync(propertyName, type, entityName).catch(e => {
+    var checkConnectionStringResult = await diagProvider.checkConnectionViaAppSettingAsync(propertyName, type, entityName).catch(e => {
             logDebugMessage(e);
         });
 
@@ -493,16 +489,16 @@ async function validateConnection(propertyName, type, diagProvider, entityName =
             title: `Validation of connection string failed due to an internal error. Please send us feedback via the "Feedback" button above."`,
             level: 2,
         })
-    } else if (checkConnectionStringResult.StatusText != "Success") {
+    } else if (checkConnectionStringResult.statusText != "Success") {
         var service, title;
         var detailsMarkdown = "";
 
-        title = checkConnectionStringResult.Summary;
-        if (checkConnectionStringResult.Details != undefined) {
-            detailsMarkdown = checkConnectionStringResult.Details;
+        title = checkConnectionStringResult.summary;
+        if (checkConnectionStringResult.details != undefined) {
+            detailsMarkdown = checkConnectionStringResult.details;
         }
-        if (checkConnectionStringResult.ExceptionMessage != undefined) {
-            detailsMarkdown += `\r\n\r\n Exception encountered while connecting: ${checkConnectionStringResult.ExceptionMessage}`;
+        if (checkConnectionStringResult.exceptionMessage != undefined) {
+            detailsMarkdown += `\r\n\r\n Exception encountered while connecting: ${checkConnectionStringResult.exceptionMessage}`;
         }
 
         if (detailsMarkdown == "undefined" || detailsMarkdown == "") {
