@@ -10,10 +10,12 @@ namespace AppLensV3.Services
     public class CosmosDBUserSettingHandler : CosmosDBHandlerBase<UserSetting>, ICosmosDBUserSettingHandler
     {
         const string collectionId = "UserInfo";
+        private string defaultUserSettingId = "";
         public CosmosDBUserSettingHandler(IConfiguration configration) : base(configration)
         {
             CollectionId = collectionId;
             Inital(configration).Wait();
+            defaultUserSettingId = configration["UserSetting:DefaultUserSettingId"];
         }
 
         public Task<UserSetting> UpdateUserSetting(UserSetting userSetting)
@@ -88,13 +90,22 @@ namespace AppLensV3.Services
 
 
 
-        public async Task<UserSetting> GetUserSetting(string id)
+        public async Task<UserSetting> GetUserSetting(string id, bool needCreate = true)
         {
             UserSetting userSetting = null;
             userSetting = await GetItemAsync(id, UserSettingConstant.PartitionKey);
-            if (userSetting == null)
+            if (userSetting == null && needCreate == true)
             {
-                var newUserSetting = new UserSetting(id);
+                //Get default user settings
+                var defaultUserSetting = await GetUserSetting(defaultUserSettingId, false);
+                UserSetting newUserSetting;
+                if(defaultUserSetting != null)
+                {
+                    newUserSetting = new UserSetting(id, defaultUserSetting);
+                }else
+                {
+                    newUserSetting = new UserSetting(id);
+                }
                 userSetting = await CreateItemAsync(newUserSetting);
             }
             return userSetting;

@@ -9,7 +9,7 @@ namespace AppLensV3.Services
     {
         Task<UserSetting> UpdateUserSetting(UserSetting userSettings);
 
-        Task<UserSetting> GetUserSetting(string id);
+        Task<UserSetting> GetUserSetting(string id, bool needCreate = true);
 
         Task<UserSetting> PathUserSettingProperty(string id, string property, object value);
 
