@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net;
 using System.Threading.Tasks;
+using Backend.Models;
 
 namespace Backend.Services
 {
@@ -38,24 +39,38 @@ namespace Backend.Services
         }
 
 
-        public async Task<bool> Validate(string appInsightsAppId, string encryptedKey, string siteHostName)
+        public async Task<AppInsightsValidationResponse> Validate(string appInsightsAppId, string encryptedKey, string siteHostName)
         {
-
+            var validationResponse = new AppInsightsValidationResponse();
             var query = WebUtility.UrlEncode("requests|take 1");
+            string apiKey = string.Empty;
+
             HttpRequestMessage request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
                 RequestUri = new Uri($"https://{GetAppInsightsDefaultEndpoint(siteHostName)}/v1/apps/{appInsightsAppId}/query?timespan=1H&query={query}")
             };
 
-            var apiKey = _encryptionService.DecryptString(encryptedKey);
+            var decryptionResponse = _encryptionService.DecryptString(encryptedKey);
+            if (!string.IsNullOrWhiteSpace(decryptionResponse.ApiKey))
+            {
+                apiKey = decryptionResponse.ApiKey;
+                if (decryptionResponse.UsingExpiredKeyOrCertificate)
+                {
+                    validationResponse.UpdatedEncryptionBlob = _encryptionService.EncryptString(decryptionResponse.ApiKey);
+                }
+            }
+
             request.Headers.Add("x-api-key", apiKey ?? string.Empty);
-
             var response = await this._httpClient.SendAsync(request);
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                throw new UnauthorizedAccessException();
+            }
+
             response.EnsureSuccessStatusCode();
-
-            return true;
-
+            validationResponse.IsValid = true;
+            return validationResponse;
         }
 
         /// <summary>

@@ -47,15 +47,23 @@ export class AppInsightsQueryService {
         return null;
     }
 
+    updateAppInsightsEncryptedAppSettings(encryptedKey: string, appId: string): Observable<any> {
+        return null;
+    }
+
     checkAppInsightsAccess(appInsightsResourceUri: string): Observable<boolean> {
         return null;
     }
 
-    getAppInsightsArmTag(resourceUri: string): Observable<any> {
+    getAppInsightsStoredConfiguration(resourceUri: string): Observable<any> {
         return null;
     }
 
     getAppInsightsApiKeysCount(): Observable<number> {
+        return null;
+    }
+
+    getAppInsightsConnected(resourceId: string): Observable<boolean> {
         return null;
     }
 }

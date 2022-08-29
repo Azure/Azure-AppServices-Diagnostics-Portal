@@ -33,13 +33,15 @@ export class AppInsightsEnablementComponent implements OnInit {
   hasWriteAccess: boolean = false;
   isEnabledInProd: boolean = true;
   messageBarType = MessageBarType.info;
-  canCreateApiKeys:boolean = false;
+  canCreateApiKeys: boolean = false;
+  appInsightsValiationError: string = "";
 
   @Input()
   resourceId: string = "";
 
   ngOnInit() {
     if (this.isEnabledInProd) {
+      this.appInsightsValiationError = "";
       this._appInsightsService.loadAppInsightsResourceObservable.subscribe(loadStatus => {
         if (loadStatus === true) {
           let appInsightsSettings = this._appInsightsService.appInsightsSettings;
@@ -49,21 +51,40 @@ export class AppInsightsEnablementComponent implements OnInit {
 
           if (this.isAppInsightsEnabled) {
             this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsEnabled);
-            this._settingsService.getAppInsightsConnected().subscribe(connected => {
+            this._appInsightsService.getAppInsightsConnected(this.resourceId).subscribe(connected => {
               if (connected) {
                 this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsAlreadyConnected);
                 this.isAppInsightsConnected = true;
-                this._appInsightsService.getAppInsightsArmTag(this.resourceId).subscribe(tagResponse => {
-                  if (tagResponse && tagResponse.AppId && tagResponse.ApiKey) {
-                    const additionalHeaders = new HttpHeaders({ 'appinsights-app-id': tagResponse.AppId, 'appinsights-encryptedkey': tagResponse.ApiKey });
-                    this._backendCtrlService.get<any>(`api/appinsights/validate`, additionalHeaders).subscribe(resp => {
-                      if (resp === true) {
+                this._appInsightsService.getAppInsightsStoredConfiguration(this.resourceId).subscribe(storedResponse => {
+                  if (storedResponse && storedResponse.AppId && storedResponse.ApiKey) {
+                    const additionalHeaders = new HttpHeaders({ 'appinsights-app-id': storedResponse.AppId, 'appinsights-encryptedkey': storedResponse.ApiKey });
+                    this._backendCtrlService.get<any>(`api/appinsights/validate`, additionalHeaders, true).subscribe(resp => {
+                      if (resp.isValid === true) {
                         this.appInsightsValidated = true;
+                        if (resp.updatedEncryptionBlob != null && resp.updatedEncryptionBlob.length > 1) {
+                          this._appInsightsService.updateAppInsightsEncryptedAppSettings(resp.updatedEncryptionBlob, storedResponse.AppId).subscribe(appSettingUpdated => {
+                            if (appSettingUpdated) {
+                              this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsAppSettingsUpdatedWithLatestSecret);
+                            }
+                            this.loadingSettings = false;
+                          }, error => {
+                            this.loadingSettings = false;
+                          });
+                        } else {
+                          this.loadingSettings = false;
+                        }
                       }
-                      this.loadingSettings = false;
                     }, error => {
                       this.loadingSettings = false;
-                      this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsConfigurationInvalid);
+                      if (error.status === 403) {
+                        this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsConfigurationInvalid);
+                      } else {
+                        this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsFailedDuringKeyValidation);
+                        if (error.error) {
+                          this.appInsightsValiationError += " - " + error.error;
+                        }
+                      }
+
                     });
                   }
                 }, error => {

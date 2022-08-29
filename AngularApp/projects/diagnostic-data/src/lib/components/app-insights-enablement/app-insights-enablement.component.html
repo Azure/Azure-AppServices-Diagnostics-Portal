@@ -57,7 +57,7 @@
                 <ng-container *ngIf="!appInsightsValidated">
                   <table>
                     <tbody>
-                      <tr>
+                      <tr *ngIf="appInsightsValiationError.length === 0">
                         <td>
                           <i class="fa fa-exclamation-triangle warning-icon-color mr-2"></i>
                         </td>
@@ -75,6 +75,13 @@
                             <i style="color: gray;" class="fa fa-info-circle info-icon-color fa-lg ml-2"></i>
                           </a>
                         </td>
+                      </tr>
+                      <tr *ngIf="appInsightsValiationError.length > 0">
+                        <td>
+                          <i class="fa fa-exclamation-triangle warning-icon-color mr-2"></i>
+                        </td>
+                        <td colspan="3">We failed to validate the saved AppInsights configuration. This might be a
+                          temporary error. Please retry after some time. Additional Details: {{ appInsightsValiationError }}</td>
                       </tr>
                     </tbody>
                   </table>
