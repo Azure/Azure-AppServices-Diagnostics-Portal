@@ -60,7 +60,7 @@ export class SupportTopicService {
         return result;
     }
 
-    public getSelfHelpContentApollo(): Observable<any> {
+    private getSelfHelpContentApollo(): Observable<any> {
         if (this.pesId && this.pesId.length > 0 && this.sapSupportTopicId && this.sapSupportTopicId.length > 0) {
             
             // To generate a unique apollo search Id, we use resource name, current timestamp and a guid.
