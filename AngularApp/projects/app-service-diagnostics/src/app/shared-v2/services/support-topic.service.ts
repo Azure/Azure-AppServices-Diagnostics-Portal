@@ -118,6 +118,7 @@ export class SupportTopicService {
     }
 
     public getSelfHelpContentDocument(): Observable<any> {
+        //Call Apollo API, if error then fallback on legacy API
         return this.getSelfHelpContentApollo().pipe(map(res => res), catchError(err => { return this.getSelfHelpContentLegacy(); }));
     }
 
