@@ -1,0 +1,6 @@
+<div>
+<div *ngFor="let markdown of markdownCode; let i=index">
+  <markdown ngPreserveWhitespaces [data]="markdown.trim()"></markdown>
+  <applens-doc-section *ngIf="i<files.length" [files]="files[i]" [fileNames]="fileNames[i]" ></applens-doc-section>
+</div>
+</div>

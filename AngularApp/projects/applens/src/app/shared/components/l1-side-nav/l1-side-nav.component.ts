@@ -7,7 +7,6 @@ import { DashboardContainerComponent } from '../../../modules/dashboard/dashboar
 import { L2SideNavType } from '../../../modules/dashboard/l2-side-nav/l2-side-nav';
 import { OnboardingFlowComponent } from '../../../modules/dashboard/onboarding-flow/onboarding-flow.component';
 import { DiagnosticApiService } from '../../services/diagnostic-api.service';
-import { ApplensDocsComponent } from '../applens-docs/applens-docs.component';
 import { l1SideNavExpandWidth, l1SideNavCollapseWidth, L1SideNavItemType } from './l1-side-nav';
 
 const iconBasePath = "assets/img/applens-skeleton/side-nav";
@@ -128,8 +127,8 @@ export class L1SideNavComponent implements OnInit {
       return L1SideNavItemType.Detectors;
     } else if (childRoute.component === DashboardContainerComponent) {
       return L1SideNavItemType.Overview;
-    } else if (childRoute.component === ApplensDocsComponent) {
-      return L1SideNavItemType.Docs;
+    // } else if (childRoute.component === ApplensDocsComponent) {
+    //   return L1SideNavItemType.Docs;
     } else if (childRoute.component === OnboardingFlowComponent) {
       return L1SideNavItemType.Develop_Detectors;
     }

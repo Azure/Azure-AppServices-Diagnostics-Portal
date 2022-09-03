@@ -7,6 +7,10 @@ import { DiagnosticService, DetectorMetaData, DetectorType, RenderingType, Keyst
 import * as momentNs from 'moment';
 import { ResourceService } from './resource.service';
 import { AuthService } from '../../startup/services/auth.service';
+import { ArmService } from '../../shared/services/arm.service';
+import { v4 as uuid } from 'uuid';
+import { ResponseMessageEnvelope } from '../../shared/models/responsemessageenvelope';
+import { cleanApolloSolutions } from '../utils/apollo-utils';
 
 const moment = momentNs;
 
@@ -14,6 +18,10 @@ const moment = momentNs;
 export class SupportTopicService {
 
     protected detectorTask: Observable<DetectorMetaData[]>;
+    protected apolloApiConfig = {
+        apiVersion: '2020-07-01-preview',
+        apolloResourceProvider: 'providers/Microsoft.Diagnostics/apollo'
+    };
     public supportTopicId: string = "";
     public pesId: string = "";
     public sapSupportTopicId: string = "";
@@ -43,10 +51,57 @@ export class SupportTopicService {
         "14748": ["32629421"]
     };
 
-    constructor(protected _http: HttpClient, protected _authService: AuthService, protected _diagnosticService: DiagnosticService, protected _resourceService: ResourceService, protected _telemetryService: TelemetryService) {
+    constructor(protected _http: HttpClient, protected _authService: AuthService, protected _diagnosticService: DiagnosticService, protected _resourceService: ResourceService, protected _telemetryService: TelemetryService, protected _armService: ArmService) {
     }
 
-    public getSelfHelpContentDocument(): Observable<any> {
+    private cleanSelfHelpContentApollo(selfHelpResponse) {
+        let docContent = selfHelpResponse.properties.content;
+        let result = cleanApolloSolutions(docContent);
+        return result;
+    }
+
+    private getSelfHelpContentApollo(): Observable<any> {
+        if (this.pesId && this.pesId.length > 0 && this.sapSupportTopicId && this.sapSupportTopicId.length > 0) {
+            
+            // To generate a unique apollo search Id, we use resource name, current timestamp and a guid.
+            let apolloResourceId = `${this._resourceService.resource.name}-${Math.floor(Date.now() / 1000)}-${uuid()}`;
+            let requestBody =
+            {
+                "properties" : {
+                  "triggerCriteria": [
+                    {
+                      "name": "SapId",
+                      "value": this.sapSupportTopicId
+                    }
+                  ],
+                  "parameters": {
+                    "SearchText": "error found"
+                  }
+                }
+            };
+            let resourceUri = `${this._resourceService.resource.id}/${this.apolloApiConfig.apolloResourceProvider}/${apolloResourceId}`;
+            return this._armService.putResource(resourceUri, requestBody, this.apolloApiConfig.apiVersion, true).pipe(map((response: ResponseMessageEnvelope<any>) => {
+                return this.cleanSelfHelpContentApollo(response);
+            }));
+        }
+    }
+
+    private cleanSelfHelpContentLegacy(selfHelpResponse) {
+        if (selfHelpResponse && selfHelpResponse.length > 0) {
+            var htmlContent = selfHelpResponse[0]["htmlContent"];
+            // Custom javascript code to remove top header from support document html string
+            var tmp = document.createElement("DIV");
+            tmp.innerHTML = htmlContent;
+            var h2s = tmp.getElementsByTagName("h2");
+            if (h2s && h2s.length > 0) {
+                h2s[0].remove();
+            }
+
+            return tmp.innerHTML;
+        }
+    }
+
+    private getSelfHelpContentLegacy(): Observable<any> {
         if (this.pesId && this.pesId.length > 0 && this.supportTopicId && this.supportTopicId.length > 0) {
             return this._authService.getStartupInfo().pipe(flatMap(res => {
                 var selfHelpContentForSupportTopicUrl = this.selfHelpContentUrl + "&productId=" + encodeURIComponent(this.pesId) + "&topicId=" + encodeURIComponent(this.supportTopicId);
@@ -56,10 +111,15 @@ export class SupportTopicService {
 
                 return this._http.get(selfHelpContentForSupportTopicUrl, {
                     headers: headers
-                });
+                }).pipe(map((response) => { return this.cleanSelfHelpContentLegacy(response); }));
             }));
         }
         return observableOf(null);
+    }
+
+    public getSelfHelpContentDocument(): Observable<any> {
+        //Call Apollo API, if error then fallback on legacy API
+        return this.getSelfHelpContentApollo().pipe(map(res => res), catchError(err => { return this.getSelfHelpContentLegacy(); }));
     }
 
 

@@ -8,14 +8,15 @@ import { OperatingSystem } from '../../../shared/models/site';
 import { VersioningHelper } from '../../../shared/utilities/versioningHelper';
 import { HttpClient } from '@angular/common/http';
 import {AuthService} from '../../../startup/services/auth.service';
+import { ArmService } from '../../../shared/services/arm.service';
 
 @Injectable()
 export class SiteSupportTopicService extends SupportTopicService {
 
   private _hardCodedSupportTopicIdMapping = [];
 
-  constructor(protected _http: HttpClient, protected _authService: AuthService, protected _diagnosticService: DiagnosticService, protected _webSiteService: WebSitesService, protected _telemetryService: TelemetryService) {
-    super(_http, _authService, _diagnosticService, _webSiteService, _telemetryService);
+  constructor(protected _http: HttpClient, protected _authService: AuthService, protected _diagnosticService: DiagnosticService, protected _webSiteService: WebSitesService, protected _telemetryService: TelemetryService, protected _armService: ArmService) {
+    super(_http, _authService, _diagnosticService, _webSiteService, _telemetryService, _armService);
 
     if (!VersioningHelper.isV2Subscription(_webSiteService.subscriptionId)) {
 

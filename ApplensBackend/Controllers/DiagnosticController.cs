@@ -28,6 +28,7 @@ using Newtonsoft.Json.Linq;
 using SendGrid.Helpers.Mail;
 using Microsoft.Extensions.Hosting;
 using static AppLensV3.Helpers.HeaderConstants;
+using AppLensV3.Services.DiagnosticClientService;
 
 namespace AppLensV3.Controllers
 {
