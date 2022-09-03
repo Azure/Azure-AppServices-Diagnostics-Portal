@@ -1,6 +1,5 @@
 ﻿using Backend.Models;
 using Microsoft.ApplicationInsights;
-using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -14,7 +13,7 @@ namespace Backend.Services
 {
     public class EncryptionService : IEncryptionService
     {
-        private readonly CertificateService _certificateRefreshService;
+        private readonly CertificateService? _certificateRefreshService;
         private readonly string _encryptionKey;
         private readonly TelemetryClient _telemetryClient;
         private readonly bool _useCertificates;
@@ -37,8 +36,23 @@ namespace Backend.Services
                 return EncryptStringLegacy(apiKey);
             }
 
+            if (_certificateRefreshService == null)
+            {
+                throw new NullReferenceException("Failed to get instance of CertificateRefreshService");
+            }
+
             X509Certificate2? certificate = _certificateRefreshService.GetCertificate();
+            if (certificate == null)
+            {
+                throw new NullReferenceException("Failed to get the certificate to encrypt");
+            }
+
             using var rsa = certificate.GetRSAPublicKey();
+            if (rsa == null)
+            {
+                throw new NullReferenceException("Failed to get the public key for the certificate");
+            }
+
             var byteArray = rsa.Encrypt(Encoding.UTF8.GetBytes(apiKey), RSAEncryptionPadding.OaepSHA256);
             return Convert.ToBase64String(byteArray);
         }
@@ -54,6 +68,11 @@ namespace Backend.Services
                 };
 
                 return legacyResponse;
+            }
+
+            if (_certificateRefreshService == null)
+            {
+                throw new NullReferenceException("Failed to get instance of CertificateRefreshService");
             }
 
             var response = new AppInsightsDecryptionResponse();
@@ -108,10 +127,20 @@ namespace Backend.Services
                 throw new Exception("Failed to load the certificate to decrypt");
             }
 
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             _telemetryClient.TrackTrace($"Trying to decrypt data using {cert.Thumbprint} {cert.Subject}");
             using var rsa = cert.GetRSAPrivateKey();
             try
             {
+                if (rsa == null)
+                {
+                    throw new NullReferenceException("Failed to get the private key for the certificate");
+                }
+
                 var byteArray = rsa.Decrypt(data, RSAEncryptionPadding.OaepSHA256);
                 _telemetryClient.TrackTrace($"Decrypted data successfully using {cert.Thumbprint} {cert.Subject}");
                 return Encoding.UTF8.GetString(byteArray);
