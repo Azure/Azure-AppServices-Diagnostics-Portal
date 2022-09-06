@@ -43,6 +43,13 @@
           </collapsible-menu-item>
           <i *ngIf="!gistsCopy || gistsCopy.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
         </section-divider>
+        <section-divider *ngIf="docs.length > 0" [selected]="isSectionHeaderSelected('docs/', false)"
+          [label]="'Documentation'" [initiallyExpanded]="false">
+          <i class="fa fa-file-text-o fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
+          <collapsible-menu-item *ngFor="let doc of docs;" [searchValue]="searchValue" [menuItem]="doc">
+          </collapsible-menu-item>
+          <i *ngIf="!docsCopy || docsCopy.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
+        </section-divider>
         <section-divider [label]="'Configuration'" [selected]="isSectionHeaderSelected('kustoconfig')"
           [initiallyExpanded]="false">
           <i class="fa fa-wrench fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>

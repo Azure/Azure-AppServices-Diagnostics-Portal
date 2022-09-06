@@ -327,17 +327,7 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
             this._supportTopicService.getSelfHelpContentDocument().subscribe(res => {
                 this.azureGuidesShowLoader = false;
                 if (res && res.length > 0) {
-                    var htmlContent = res[0]["htmlContent"];
-                    // Custom javascript code to remove top header from support document html string
-                    var tmp = document.createElement("DIV");
-                    tmp.innerHTML = htmlContent;
-                    var h2s = tmp.getElementsByTagName("h2");
-                    if (h2s && h2s.length > 0) {
-                        h2s[0].remove();
-                    }
-
-                    // Set the innter html for support document display
-                    this.supportDocumentContent = tmp.innerHTML;
+                    this.supportDocumentContent = res;
                     this.supportDocumentRendered = true;
                 }
             }, (err) => {

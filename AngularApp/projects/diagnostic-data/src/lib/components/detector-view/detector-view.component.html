@@ -142,7 +142,7 @@
   </div>
 </div>
 
-<data-container *ngIf="!isAnalysisView && supportDocumentRendered" [title]="'Recommended Docs'">
+<data-container *ngIf="!isAnalysisView && supportDocumentRendered" [title]="'Additional troubleshooting resources'">
   <markdown *ngIf="supportDocumentContent.length>0" #markdownDiv [data]="supportDocumentContent"></markdown>
 </data-container>
 

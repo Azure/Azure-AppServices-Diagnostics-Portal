@@ -480,9 +480,9 @@
   <div *ngIf="isProd && detectorGraduation" style="display: flex;">
     <status-icon [status]="HealthStatus.Warning" class="mr-3"></status-icon>
     <div>
-      <p>To ensure the quality, accuracy, and security of detectors, the <b>{{resourceService.searchSuffix}}</b> team is now utilizing the <a target="_blank" [href]="PPELink">AppLens PPE Environment</a> for detector development.</p>
+      <p>To ensure the quality, accuracy, and security of detectors, the <b>{{resourceService.searchSuffix}}</b> team is now utilizing the AppLens PPE Environment for detector development.</p>
       <p>To learn more about this new experience, click <a target="_blank" href="https://applensdiagnostics.azurewebsites.net/?p=715">here</a>.</p>
-      <p>You will be redirected there in {{PPERedirectTimer}} seconds...</p>
+      <a target="_blank" [href]="PPELink">Click here to develop in PPE [Opens in New tab]</a>
     </div>
   </div>
 </ng-template>

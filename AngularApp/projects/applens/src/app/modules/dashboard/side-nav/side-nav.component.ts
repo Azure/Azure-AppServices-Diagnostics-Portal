@@ -11,6 +11,8 @@ import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/s
 import { environment } from '../../../../environments/environment';
 import { UserSettingService } from '../services/user-setting.service';
 import { BreadcrumbService } from '../services/breadcrumb.service';
+import { forkJoin } from 'rxjs';
+import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 
 @Component({
   selector: 'side-nav',
@@ -31,6 +33,13 @@ export class SideNavComponent implements OnInit {
   gists: CollapsibleMenuItem[] = [];
   gistsCopy: CollapsibleMenuItem[] = [];
 
+  docs: CollapsibleMenuItem[] = [];
+  docsCopy: CollapsibleMenuItem[] = [];
+  docsRepoRoot: string = `AppLensDocumentation`;
+  docsBranch = null;
+  docsResource: string = `AppServiceDiagnostics`;
+  docStagingBranch: string = 'DocumentationStagingBranch';
+  
   favoriteDetectors: CollapsibleMenuItem[] = [];
   favoriteDetectorsCopy: CollapsibleMenuItem[] = [];
 
@@ -42,7 +51,7 @@ export class SideNavComponent implements OnInit {
   getDetectorsRouteNotFound: boolean = false;
   isGraduation: boolean = false;
   isProd: boolean = false;
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService, private _userSettingService: UserSettingService, private breadcrumbService: BreadcrumbService) {
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService, private _userSettingService: UserSettingService, private breadcrumbService: BreadcrumbService,  private _diagnosticApi: DiagnosticApiService) {
     this.contentHeight = (window.innerHeight - 139) + 'px';
     if (environment.adal.enabled) {
       let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
@@ -194,6 +203,15 @@ export class SideNavComponent implements OnInit {
     this.navigateTo(`users/${this.userId}/detectors`);
   }
 
+  getDocCategories(){
+    const categoriesObservable = this._diagnosticApiService.getDetectorCode(`${this.docsRepoRoot}/content`, this.docsBranch, this.docsResource);
+    return categoriesObservable;
+  }
+  getDocFiles(category: string){
+    const fileObservalbe = this._diagnosticApiService.getDetectorCode(`${this.docsRepoRoot}/${category}/content`, this.docsBranch, this.docsResource);
+    return fileObservalbe;
+  }
+
   initializeDetectors() {
     this._diagnosticApiService.getDetectors().subscribe(detectorList => {
       if (detectorList) {
@@ -253,6 +271,42 @@ export class SideNavComponent implements OnInit {
         // TODO: handle detector route not found
         if (error && error.status === 404) {
         }
+      });
+    
+      this._diagnosticApi.isStaging().subscribe(isStaging => {
+        if (isStaging){this.docsBranch = this.docStagingBranch;}
+        this.getDocCategories().subscribe(content => {
+          let categories = content.split(/[\n\r]+/);
+          let fileNamesObservables = [];
+          categories.forEach(cat => {
+            fileNamesObservables.push(this.getDocFiles(cat));
+            let catItem = new CollapsibleMenuItem(cat, "", null, null, null, false);
+            this.docs.push(catItem);
+          });
+          forkJoin(fileNamesObservables).subscribe(files => {
+            let fileNames = []
+            files.forEach((f, filesIndex) => {
+              fileNames.push(f.split(/[\n\r]+/));
+              fileNames[filesIndex].forEach(d => {
+                let docItem: CollapsibleMenuItem = {
+                  label: d,
+                  id: "",
+                  onClick: () => {
+                    this.navigateTo(`docs/${categories[filesIndex]}/${d}`);
+                  },
+                  expanded: false,
+                  subItems: null,
+                  isSelected: () => {
+                    return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `docs/${categories[filesIndex]}/${d}`;
+                  },
+                  icon: null
+                }
+                this.docs[this.docs.findIndex(x => {return x.label === categories[filesIndex]})].subItems.push(docItem)
+              });
+            });
+            this.docsCopy = this.deepCopyArray(this.docs);
+          });
+        });
       });
   }
 

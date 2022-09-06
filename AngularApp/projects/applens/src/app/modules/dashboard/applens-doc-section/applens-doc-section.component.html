@@ -1,0 +1,47 @@
+<div *ngIf="files.length > 1; else singleSample">
+    <fab-pivot [styles]="pivotStyle">
+      <fab-pivot-item *ngFor="let file of files; let i=index;" [headerText]="fileNames[i]">
+        <fab-command-bar [styles]="commandbarStyle">
+          <far-items>
+            <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation(file)"
+            [disabled]="runButtonDisabled" [buttonStyles]="runButtonStyle"></fab-command-bar-item>
+            <fab-command-bar-item key="copy" [text]="'Copy'" [iconProps]="{ iconName: 'Copy' }" (click)="copyCode(file)"
+            [buttonStyles]="runButtonStyle"></fab-command-bar-item>
+          </far-items>
+        </fab-command-bar>
+        <div style="background-color: #e9e9e9; padding-left: 15px; padding-right: 15px; padding-top: 4px; padding-bottom: 10px;">
+          <ngx-monaco-editor [options]="editorOptions" [(ngModel)]="file" style="height:300px"></ngx-monaco-editor>
+          <h5 *ngIf="queryResponse" style="font-weight: bold">Run output example</h5>
+          <detector-view *ngIf="queryResponse" [detectorResponse]="queryResponse.invocationOutput" [startTime]="startTime"
+            [endTime]="endTime" [error]="errorState" [showEdit]="false" [developmentMode]="true" [script]="file"
+            [compilationPackage]="compilationPackage" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
+          <div *ngFor="let item of buildOutput" class="compilation-output">{{item}}</div>
+        </div>
+      </fab-pivot-item>
+    </fab-pivot>
+</div>
+
+<ng-template #singleSample>
+  <div>
+    <fab-command-bar [styles]="commandbarStyle">
+      <far-items>
+        <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation(files[0])"
+          [disabled]="runButtonDisabled" [buttonStyles]="runButtonStyle"></fab-command-bar-item>
+          <fab-command-bar-item key="copy" [text]="'Copy'" [iconProps]="{ iconName: 'Copy' }" (click)="copyCode(files[0])"
+            [buttonStyles]="runButtonStyle"></fab-command-bar-item>
+      </far-items>
+    </fab-command-bar>
+    <div
+      style="background-color: #e9e9e9; padding-left: 15px; padding-right: 15px; padding-top: 4px; padding-bottom: 10px;">
+      <ngx-monaco-editor [options]="editorOptions" [(ngModel)]="files[0]" style="height:300px"></ngx-monaco-editor>
+      <h5 *ngIf="queryResponse" style="font-weight: bold">Run output example</h5>
+      <detector-view *ngIf="queryResponse" [detectorResponse]="queryResponse.invocationOutput" [startTime]="startTime"
+        [endTime]="endTime" [error]="errorState" [showEdit]="false" [developmentMode]="true" [script]="files[0]"
+        [compilationPackage]="compilationPackage" [hideDetectorHeader]="true" [hideDetectorControl]="true">
+      </detector-view>
+      <div *ngFor="let item of buildOutput" class="compilation-output">{{item}}</div>
+    </div>
+  </div>
+</ng-template>
+
+
