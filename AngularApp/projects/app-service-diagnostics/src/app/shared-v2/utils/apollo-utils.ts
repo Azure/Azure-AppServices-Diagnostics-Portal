@@ -5,7 +5,7 @@ var isReplacementString = (inputStr) => {
 var sectionParser = (content: string) => {
 	//Split on lines with header tag
 	var headingSplits = content.split(/(<h[1-9]>.*<\/h[1-9]>)/);
-	var nonEmptyParts = headingSplits.filter(x => x.length > 1);
+	var nonEmptyParts = headingSplits.filter(x => x.length > 0);
 	var sections: string[] = [];
 
 	//Create sections from the splits
