@@ -21,8 +21,8 @@ namespace Backend.Services
         private readonly string _certificateName;
         private readonly string _certificateRefreshIntervalInMinutes;
         private readonly string _keyVaultUri;
-        private readonly CertificateClient _certificateClient;
-        private readonly SecretClient _secretClient;
+        private readonly CertificateClient? _certificateClient;
+        private readonly SecretClient? _secretClient;
         private readonly TelemetryClient _telemetryClient;
         private Timer? _timer = null;
         private X509Certificate2? _currentCertificate;
@@ -35,8 +35,6 @@ namespace Backend.Services
             _certificateName = configuration["AppInsights:CertificateName"];
             _certificateRefreshIntervalInMinutes = configuration["AppInsights:CertificateRefreshIntervalInMinutes"];
             _keyVaultUri = configuration[GetKeyVaultforEnvironment(env.EnvironmentName)];
-            _certificateClient = new CertificateClient(new Uri(_keyVaultUri), new DefaultAzureCredential());
-            _secretClient = new SecretClient(new Uri(_keyVaultUri), new DefaultAzureCredential());
             _telemetryClient = telemetryClient;
 
             if (int.TryParse(configuration["AppInsights:MaxExpiredCertificateCount"], out int maxExpiredCertificateCount))
@@ -47,6 +45,12 @@ namespace Backend.Services
             if (bool.TryParse(configuration["AppInsights:UseCertificates"], out bool useCertificates))
             {
                 _useCertificates = useCertificates;
+
+                if (_useCertificates)
+                {
+                    _certificateClient = new CertificateClient(new Uri(_keyVaultUri), new DefaultAzureCredential());
+                    _secretClient = new SecretClient(new Uri(_keyVaultUri), new DefaultAzureCredential());
+                }
             }
         }
 
@@ -105,6 +109,11 @@ namespace Backend.Services
         {
             try
             {
+                if (_certificateClient == null)
+                {
+                    throw new NullReferenceException("Failed to get instance of certificateClient");
+                }
+
                 _telemetryClient.TrackTrace("Fetching Certificates from KeyVault");
                 var expiredCertificates = new List<X509Certificate2>();
                 var certificateVersions = _certificateClient.GetPropertiesOfCertificateVersions(_certificateName).ToArray();
@@ -116,8 +125,7 @@ namespace Backend.Services
                         string thumbprint = certVersion.GetThumbprint();
                         if (!_expiredCertificatesCache.ContainsKey(thumbprint))
                         {
-                            X509Certificate2 x509Cert = CreateX509Certificate(certVersion);
-                            expiredCertificates.Add(x509Cert);
+                            expiredCertificates.Add(CreateX509Certificate(certVersion));
                         }
                     }
                     else
@@ -171,6 +179,11 @@ namespace Backend.Services
 
         private X509Certificate2 CreateX509Certificate(CertificateProperties certificateVersion)
         {
+            if (_secretClient == null)
+            {
+                throw new NullReferenceException("Failed to get instance of _secretClient");
+            }
+
             _telemetryClient.TrackTrace($"Creating X509Certificate2 object for {certificateVersion.GetThumbprint()}");
             var certificateSecret = _secretClient.GetSecret(certificateVersion.Name, certificateVersion.Version).Value;
             var privateKey = Convert.FromBase64String(certificateSecret.Value);
