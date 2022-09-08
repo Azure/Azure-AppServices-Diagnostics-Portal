@@ -42,7 +42,7 @@ export class AppInsightsService {
     // this flag is changed to true, AppInsights:UseCertificates should also be
     // changed to true. Both these should remain in sync
     //
-    private useAppSettingsForAppInsightEncryption: boolean = false;
+    private useAppSettingsForAppInsightEncryption: boolean = true;
     private appInsightsEncryptedAppSettingName: string = 'WEBSITE_APPINSIGHTS_ENCRYPTEDAPIKEY';
 
     public appInsightsSettings: any = {
