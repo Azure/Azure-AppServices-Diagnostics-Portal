@@ -78,7 +78,15 @@ export class AppInsightsService {
                 this.siteName = resourceUriParts.siteName;
                 this.slotName = resourceUriParts.slotName;
 
-                this.loadAppInsightsSettings(resourceUriParts.subscriptionId, resourceUriParts.resourceGroup, resourceUriParts.siteName, resourceUriParts.slotName);
+                this._backendService.get<string>(`api/appsettings/AppInsights:UseCertificates`).subscribe(useCertificatesSetting => {
+                    if (useCertificatesSetting 
+                        && useCertificatesSetting.toString().toLowerCase() == 'true') {
+                            this.useAppSettingsForAppInsightEncryption = true;
+                    }
+                    this.loadAppInsightsSettings(resourceUriParts.subscriptionId, resourceUriParts.resourceGroup, resourceUriParts.siteName, resourceUriParts.slotName);
+                }, error => {
+                    this.loadAppInsightsSettings(resourceUriParts.subscriptionId, resourceUriParts.resourceGroup, resourceUriParts.siteName, resourceUriParts.slotName);
+                });
             }
         });
     }
@@ -496,7 +504,7 @@ export class AppInsightsService {
     public getAppInsightsArmTag(resourceUri: string): Observable<any> {
         return this.getExistingTags(resourceUri).pipe(
             map(existingTags => {
-                if (existingTags[this.appInsightsTagName] != null) {
+                if (existingTags != null && existingTags[this.appInsightsTagName] != null) {
                     var appInsightsTag = JSON.parse(existingTags[this.appInsightsTagName]);
                     return appInsightsTag;
 

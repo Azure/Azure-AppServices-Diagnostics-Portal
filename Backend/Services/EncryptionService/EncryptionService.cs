@@ -114,7 +114,28 @@ namespace Backend.Services
             if (string.IsNullOrWhiteSpace(response.ApiKey))
             {
                 response.UsingExpiredKeyOrCertificate = true;
-                response.ApiKey = DecryptStringLegacy(encryptedString);
+                try
+                {
+                    response.ApiKey = DecryptStringLegacy(encryptedString);
+                }
+                catch (Exception ex)
+                {
+                    _telemetryClient.TrackTrace("Failed to decrypt using legacy encryption method",
+                    new Dictionary<string, string>()
+                    {
+                        {"exception", ex.ToString()}
+                    });
+
+                    //
+                    // This is an expected exception if all the stored encryption methods fail to
+                    // decrypt the key. In this scenario, we must throw UnauthorizedAccessException
+                    // explicitly so that AppInsightsController can return a 403 instead of BAD request.
+                    // This will ensure that user will gets option to reconnect AppInsights integration
+                    // 
+
+                    throw new UnauthorizedAccessException("Failed to decrypt using legacy encryption method", ex);
+                }
+
             }
 
             return response;
@@ -150,7 +171,7 @@ namespace Backend.Services
                 _telemetryClient.TrackTrace($"Failed to decrypt using certificate {cert.Thumbprint} {cert.Subject}",
                     new Dictionary<string, string>()
                     {
-                        {"exceptionMessage", ex.Message}
+                        {"exception", ex.ToString()}
                     }
                 );
             }
