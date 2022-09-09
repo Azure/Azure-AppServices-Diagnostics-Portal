@@ -331,6 +331,7 @@ export class OnboardingFlowComponent implements OnInit {
   owners: string[] = [];
 
   codeOnDefaultBranch: boolean = false;
+  npmRcContent: string = "# Auto generated file from Gardener Plugin CentralFeedServiceAdoptionPlugin\nregistry=https://pkgs.dev.azure.com/msazure/one/_packaging/one_PublicPackages/npm/registry/ \nalways-auth=true";
 
   constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService, private detectorGistApiService: DetectorGistApiService,
     private diagnosticApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService, private resourceService: ResourceService,
@@ -1455,6 +1456,11 @@ export class OnboardingFlowComponent implements OnInit {
       `/${this.publishingPackage.id.toLowerCase()}/package.json`
     ];
 
+    if (commitType == 'add') {
+      gradPublishFiles.push(this.publishingPackage.npmRCFile);
+      gradPublishFileTitles.push(`/${this.publishingPackage.id.toLowerCase()}/.npmrc`);
+    }
+
     let reviewers = "";
 
     if(Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0){
@@ -1531,6 +1537,20 @@ export class OnboardingFlowComponent implements OnInit {
       requestBranch = this.defaultBranch;
     }
 
+    this.npmRCFileExists(`/${this.id.toLowerCase()}/.npmrc`, requestBranch, this.resourceId).subscribe( s => {
+      gradPublishFiles.push("Delete npmrc");
+      gradPublishFileTitles.push(`/${this.id.toLowerCase()}/.npmrc`);
+      this.deleteOperation(requestBranch, gradPublishFiles, gradPublishFileTitles);
+    }, err => {
+      this.deleteOperation(requestBranch, gradPublishFiles, gradPublishFileTitles);
+    }, () => {      
+    this.dismissDeleteDialog();
+    this.deletingDetector = false;
+    });
+
+  }
+
+  deleteOperation(requestBranch:string, gradPublishFiles:string[], gradPublishFileTitles:string[]) {
     const deleteDetectorFiles = this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `deleting detector: ${this.id} Author : ${this.userName}`, "delete", this.resourceId);
     const makePullRequestObservable = this.diagnosticApiService.makePullRequest(requestBranch, this.defaultBranch, `Deleting ${this.id}`, this.resourceId, this.owners);
     deleteDetectorFiles.subscribe(_ => {
@@ -1554,13 +1574,14 @@ export class OnboardingFlowComponent implements OnInit {
       this.deleteFailed = true;
       this.postPublish();
     });
-
-    this.dismissDeleteDialog();
-    this.deletingDetector = false
   }
 
   deleteBranch(branch: string, resourceId: string){
     this.diagnosticApiService.deleteBranches(branch, resourceId).subscribe();
+  }
+
+  npmRCFileExists(filepath:string, branch:string, resourceId:string):Observable<string> {
+    return this.diagnosticApiService.getDetectorCode(filepath, branch, resourceId);
   }
 
   saveTempId: string = "";
@@ -1593,6 +1614,11 @@ export class OnboardingFlowComponent implements OnInit {
       `/${idForSave.toLowerCase()}/metadata.json`,
       `/${idForSave.toLowerCase()}/package.json`
     ];
+
+    if (commitType == 'add') {
+      gradPublishFiles.push(this.publishingPackage.npmRCFile);
+      gradPublishFileTitles.push(`/${this.publishingPackage.id.toLowerCase()}/.npmrc`);
+    }
 
     let reviewers = "";
 
@@ -1769,7 +1795,8 @@ export class OnboardingFlowComponent implements OnInit {
         dllBytes: this.compilationPackage.assemblyBytes,
         pdbBytes: this.compilationPackage.pdbBytes,
         packageConfig: JSON.stringify(this.configuration),
-        metadata: JSON.stringify({ "utterances": this.allUtterances })
+        metadata: JSON.stringify({ "utterances": this.allUtterances }),
+        npmRCFile : this.npmRcContent
       };
     });
   }
