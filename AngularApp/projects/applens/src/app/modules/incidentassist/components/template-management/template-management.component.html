@@ -84,7 +84,7 @@
                   type="Submit" text='Test Incident' (click)="onTestIncidentClick()" [disabled]="!(testIncidentId && testIncidentId.length>6 && testIncidentId.length<15)">
               </fab-primary-button>
             </div>
-            <div *ngIf="testinIncidentLoader" class="loader-block">
+            <div *ngIf="testingIncidentLoader" class="loader-block">
               <i class="fa fa-spinner fa-spin loader-icon"></i>
               <span style="display: block;" class="loader-text" *ngIf="loaderMessage != null">{{loaderMessage}}</span>
             </div>

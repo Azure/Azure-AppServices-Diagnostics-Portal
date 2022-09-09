@@ -176,6 +176,18 @@
     </fab-dialog-content>
   </fab-dialog>
 
+  <fab-dialog [hidden]="searchTermDialogHidden" (onDismiss)="dismissSearchDialog()" [minWidth]="'80%'">
+    <fab-dialog-content [title]="'Add Search terms'">
+      <search-term-addition [allUtterances]="allUtterances" [recommendedUtterances]="recommendedUtterances"
+      [utteranceInput]="utteranceInput" [detectorId]="id"></search-term-addition>
+      <div class="mt-5">
+        <fab-primary-button text="Save" (onClick)="saveSearchTerms()" contentClass="mr-3">
+        </fab-primary-button>
+        <fab-default-button text="Cancel" (onClick)="dismissSearchDialog()"></fab-default-button>
+      </div>
+    </fab-dialog-content>
+  </fab-dialog>
+
   <fab-dialog *ngIf="gists.length == 0" [hidden]="gistDialogHidden" (onDismiss)="dismissGistDialog()">
     <fab-dialog-content [title]="gistUpdateTitle">
       <div class="mt-5">
@@ -224,7 +236,7 @@
     </fab-dialog-content>
   </fab-dialog>
   
-  <fab-panel [isOpen]="publishSuccess || publishFailed || saveSuccess || saveFailed" [isLightDismiss]="true" [type]="PanelType.custom"
+  <fab-panel [isOpen]="publishSuccess || publishFailed || saveSuccess || saveFailed || deleteSuccess || deleteFailed" [isLightDismiss]="true" [type]="PanelType.custom"
     [customWidth]="'400px'" [isHiddenOnDismiss]="true" [hasCloseButton]="false" [closeButtonAriaLabel]="'close'"
     [styles]="submittedPanelStyles" [isBlocking]="false" (onDismissed)="dismissPublishSuccessHandler()"
     (onOpened)="onOpenPublishSuccessPanel()" >
@@ -247,6 +259,11 @@
           <div style="font-weight: 600;">Failed to save your detector </div>
         </div>
 
+        <div *ngIf="deleteFailed" style="display: flex; align-items: center; padding: 0px 10px;">
+          <status-icon [status]="HealthStatus.Critical" class="mr-3"></status-icon>
+          <div style="font-weight: 600;">Failed to delete your detector </div>
+        </div>
+
         <div *ngIf="publishSuccess && detectorGraduation && !useAutoMergeText" style="display: flex; align-items: center; padding: 0px 10px;">
           <status-icon [status]="HealthStatus.Success" class="mr-3"></status-icon>
           <div>
@@ -259,6 +276,20 @@
           <div style="font-weight: 600;">Pull request failed to send</div>
         </div>
 
+        <div *ngIf="deleteSuccess && useAutoMergeText" style="display: flex; align-items: center; padding: 0px 10px;">
+          <status-icon [status]="HealthStatus.Success" class="mr-3"></status-icon>
+          <div>
+            <h5 style="font-weight: 600;">Detector {{detectorName}} successfully deleted</h5>
+          </div>
+        </div>
+
+        <div *ngIf="deleteSuccess && !useAutoMergeText" style="display: flex; align-items: center; padding: 0px 10px;">
+          <status-icon [status]="HealthStatus.Success" class="mr-3"></status-icon>
+          <div>
+            <h5 style="font-weight: 600;">Pull request to delete detector {{detectorName}} has been raised</h5>
+          </div>
+        </div>
+
       </div>
       <div style="margin-top: auto; margin-bottom: auto; margin-right: 20px">
         <h5>{{currentTime}}</h5>
@@ -267,7 +298,7 @@
     <div *ngIf="publishSuccess && (!detectorGraduation || useAutoMergeText)" style="margin-left: 4px;">You can find it in "Your detectors" later.</div>
     <div *ngIf="publishSuccess && detectorGraduation && !useAutoMergeText" style="margin-left: 4px;">You can view your PR <a target="_blank" rel="noopener noreferrer" [href]="PRLink">here</a>.</div>
     <div *ngIf="saveSuccess" style="margin-left: 4px;">You can view your code <a target="_blank" rel="noopener noreferrer" [href]="PRLink">here</a>.</div>
-    <div *ngIf="saveFailed" style="margin-left: 4px;">{{saveFailMessage}}</div>
+    <div *ngIf="saveFailed && saveIdFailure" style="margin-left: 4px;">This detector ID is already in use. Please try a new one</div>
   </fab-panel>
 
 
@@ -290,7 +321,7 @@
       <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"
       [disabled]="runButtonDisabled"></fab-command-bar-item>
       <fab-command-bar-item [style]="saveButtonVisibilityStyle" key="save" [text]="saveButtonText" [iconProps]="saveIcon"
-        (click)="saveDetectorCode()" [disabled]="publishButtonDisabled"></fab-command-bar-item>
+        (click)="saveDetectorCode()"></fab-command-bar-item>
       <fab-command-bar-item key="publishGrad" [text]="modalPublishingButtonText" [iconProps]="publishIcon"
           (click)="publishButtonOnClick()" [disabled]="publishButtonDisabled">
         </fab-command-bar-item>
@@ -309,6 +340,8 @@
       (click)="openCommitHistory()"></fab-command-bar-item>
       <fab-command-bar-item [style]="deleteVisibilityStyle" key="delete" text="Delete" [iconProps]="{iconName: 'Delete'}"
         (click)="showDeleteDialog()"></fab-command-bar-item>
+        <fab-command-bar-item  [style]="searchTermVisibilityStyle" key="showSearchTerms" text="Add Search Terms"  [iconProps]="{iconName: 'Search'}"
+        (click)="showSearchTermsDialog()"></fab-command-bar-item>
       <!-- <fab-command-bar-item key="internal" [text]="internalExternalText" [iconProps]="{ iconName: 'View' }"
         (click)="internalExternalToggle()"></fab-command-bar-item> -->
       <far-items>

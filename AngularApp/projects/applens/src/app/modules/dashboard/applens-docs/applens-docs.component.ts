@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ExtraOptions, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { ApplensGlobal } from '../../../applens-global';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
@@ -13,10 +13,22 @@ import { ApplensDiagnosticService } from '../services/applens-diagnostic.service
 })
 export class ApplensDocsComponent implements OnInit {
   applensDocs = applensDocs;
-  constructor(private _applensGlobal:ApplensGlobal, private diagnosticApiService: ApplensDiagnosticService, private ref: ChangeDetectorRef, private _activatedRoute: ActivatedRoute, private _diagnosticApi: DiagnosticApiService) { }
+  constructor(private _applensGlobal:ApplensGlobal, private diagnosticApiService: ApplensDiagnosticService, private ref: ChangeDetectorRef,
+    private _activatedRoute: ActivatedRoute, private _diagnosticApi: DiagnosticApiService, private _router: Router) {
+    this._router.routeReuseStrategy.shouldReuseRoute = function () {
+      return false;
+    };
+    this.someSubscription = this._router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this._router.navigated = false;
+      }
+    });
+   }
   
   markdownCode = [];
   folders = []
+
+  someSubscription: any;
 
   codeRegEx = new RegExp("<applens-code.*?\/>","g");
   folderRegEx = new RegExp("(?<=folder=\").*?(?=\")", "g");
@@ -65,7 +77,9 @@ export class ApplensDocsComponent implements OnInit {
     let fileIndex = this.files.length;
     this.files.push([]);
     this.diagnosticApiService.getDetectorCode(`${this.docsRepoRoot}/${this.category}/${this.doc}/${folderName}/content`, this.docsBranch, this.docsResource).subscribe(names => {
-      this.fileNames[fileIndex] = names.split('\n');
+      this.fileNames[fileIndex] = names.split('\n').filter((element) => {
+        return element.replace(/\s/g,"") != "";
+      });
       let getFileObservables = [];
       this.fileNames[fileIndex].forEach(f => {
         getFileObservables.push(this.diagnosticApiService.getDetectorCode(`${this.docsRepoRoot}/${this.category}/${this.doc}/${folderName}/${f.replace(/\s/g,"")}`, this.docsBranch, this.docsResource)); 
@@ -74,5 +88,10 @@ export class ApplensDocsComponent implements OnInit {
         this.files[fileIndex] = fileContent;
       });
     });
+  }
+  ngOnDestroy() {
+    if (this.someSubscription) {
+      this.someSubscription.unsubscribe();
+    }
   }
 }

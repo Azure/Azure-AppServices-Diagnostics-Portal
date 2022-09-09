@@ -276,7 +276,9 @@ export class SideNavComponent implements OnInit {
       this._diagnosticApi.isStaging().subscribe(isStaging => {
         if (isStaging){this.docsBranch = this.docStagingBranch;}
         this.getDocCategories().subscribe(content => {
-          let categories = content.split(/[\n\r]+/);
+          let categories = content.split(/[\n\r]+/).filter((element) => {
+            return element.replace(/\s/g,"") != "";
+          });
           let fileNamesObservables = [];
           categories.forEach(cat => {
             fileNamesObservables.push(this.getDocFiles(cat));
@@ -286,7 +288,9 @@ export class SideNavComponent implements OnInit {
           forkJoin(fileNamesObservables).subscribe(files => {
             let fileNames = []
             files.forEach((f, filesIndex) => {
-              fileNames.push(f.split(/[\n\r]+/));
+              fileNames.push(f.split(/[\n\r]+/).filter((element) => {
+                return element.replace(/\s/g,"") != "";
+              }));
               fileNames[filesIndex].forEach(d => {
                 let docItem: CollapsibleMenuItem = {
                   label: d,

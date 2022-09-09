@@ -37,7 +37,7 @@ export class TemplateManagementComponent implements OnInit {
   teamIncidentsForTest: IncidentInfo[] = [];
   testIncidentId: string = null;
   validationResponse: any = {};
-  testinIncidentLoader: boolean = false;
+  testingIncidentLoader: boolean = false;
   testIncidentError: string = null;
   errorButtonStatus = HealthStatus.Critical;
 
@@ -109,6 +109,8 @@ export class TemplateManagementComponent implements OnInit {
       this.displayLoader = false;
       let onboardedTeams = JSON.parse(res.body);
       if (onboardedTeams.length>0){
+        this.fabDropdownOptions = [{key: "None", text: "None"}];
+        this.allOnboardedTeams = [{key: "None", text: "None"}];
         onboardedTeams.forEach(team => {
           if (team.type.length>0) {
             team.type.forEach(type => {
@@ -140,18 +142,37 @@ export class TemplateManagementComponent implements OnInit {
     });
   }
 
-  setSelectedTeam(dropdownId, selectedTeam){
-    this.selectedTeamId = dropdownId;
-    this.selectedTeam = {
-      teamId: selectedTeam.teamId.split("++")[0],
-      teamName: selectedTeam.teamName,
-      incidentType: selectedTeam.incidentType
-    };
+  resetLoadedTeam() {
+    this.selectedTeamId = null;
+    this.selectedTeam = null;
     this.teamTemplate = null;
-    this.getTeamTemplate();
+    this.validationButtonDisabled = true;
+    this.updateButtonDisabled = true;
+    this.updatedSuccessfully = false;
+    this.testButtonDisabled = true;  
+    this.showTestBlade = false;
+    this.resetTestBladeData();
+  }
+
+  setSelectedTeam(dropdownId, selectedTeam){
+    if (dropdownId != this.selectedTeamId) {
+      this.resetLoadedTeam();
+      this.selectedTeamId = dropdownId;
+      this.selectedTeam = {
+        teamId: selectedTeam.teamId.split("++")[0],
+        teamName: selectedTeam.teamName,
+        incidentType: selectedTeam.incidentType
+      };
+      this.getTeamTemplate();
+    }
   }
 
   selectDropdownKey(e: { option: IDropdownOption, index: number }) {
+    if (e.option.key == "None") {
+      this.resetLoadedTeam();
+      this.selectedTeamId = "None";
+      return;
+    }
     let teamId = e.option.key.toString().split("++")[0];
     let incidentType = e.option.key.toString().split("++")[1];
     const selectedTeam = this.allOnboardedTeams.find(team => team.teamId === teamId && team.incidentType === incidentType);
@@ -179,17 +200,17 @@ export class TemplateManagementComponent implements OnInit {
 
   onTestClick() {
     this.showTestBlade = true;
-    this.testinIncidentLoader = true;
+    this.testingIncidentLoader = true;
     this.loaderMessage = `Fetching recent incidents from your team...`;
     this._incidentAssistanceService.getIncidentsForTeam(this.selectedTeam.teamId, this.selectedTeam.incidentType.toString()).subscribe((res) => {
       this.loaderMessage = null;
-      this.testinIncidentLoader = false;
+      this.testingIncidentLoader = false;
       if (res && res.body && res.body.length>0) {
         this.teamIncidentsForTest = res.body;
       }
     } , (err) => {
       this.loaderMessage = null;
-      this.testinIncidentLoader = false;
+      this.testingIncidentLoader = false;
     });
   }
 
@@ -203,10 +224,10 @@ export class TemplateManagementComponent implements OnInit {
       "validationTemplate": JSON.parse(this.teamTemplate)
     };
     this.resetTestIncidentVariables();
-    this.testinIncidentLoader = true;
+    this.testingIncidentLoader = true;
     this.loaderMessage = `Testing against incident ${this.testIncidentId.trim()}`;
     this._incidentAssistanceService.testTemplateWithIncident(body).subscribe(res => {
-      this.testinIncidentLoader = false;
+      this.testingIncidentLoader = false;
       var result = JSON.parse(res.body);
       if (result){
         this.validationResponse = {
@@ -217,7 +238,7 @@ export class TemplateManagementComponent implements OnInit {
       }
     },
     (err) => {
-      this.testinIncidentLoader = false;
+      this.testingIncidentLoader = false;
       this.testIncidentError = err.error.length>200? "An error occurred": err.error;
     });
   }
@@ -225,7 +246,7 @@ export class TemplateManagementComponent implements OnInit {
   onUpdateClick() {
     if (!this.updateButtonDisabled){
       var body = JSON.parse(this.teamTemplate);
-      this.resetGlobals();
+      this.loaderMessage = "Updating team template...";
       this.displayLoader = true;
       this._incidentAssistanceService.updateTeamTemplate(this.selectedTeam.teamId, this.selectedTeam.incidentType.toString(), body).subscribe(res => {
         this.displayLoader = false;
@@ -254,8 +275,15 @@ export class TemplateManagementComponent implements OnInit {
     this.loaderMessage = null;
   }
 
+  resetTestBladeData() {
+    this.teamIncidentsForTest = [];
+    this.testIncidentId = null;
+    this.resetTestIncidentVariables();
+  }
+
   resetTestIncidentVariables(){
     this.loaderMessage = null;
+    this.testingIncidentLoader = false;
     this.validationResponse = {};
     this.testIncidentError = null;
   }

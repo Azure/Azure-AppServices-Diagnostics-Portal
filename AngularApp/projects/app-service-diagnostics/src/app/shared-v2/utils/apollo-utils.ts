@@ -5,7 +5,7 @@ var isReplacementString = (inputStr) => {
 var sectionParser = (content: string) => {
 	//Split on lines with header tag
 	var headingSplits = content.split(/(<h[1-9]>.*<\/h[1-9]>)/);
-	var nonEmptyParts = headingSplits.filter(x => x.length > 1);
+	var nonEmptyParts = headingSplits.filter(x => x.length > 0);
 	var sections: string[] = [];
 
 	//Create sections from the splits
@@ -27,5 +27,9 @@ export var cleanApolloSolutions = (docContent) => {
 
 	//Also remove the FIRST SECTION if it has h2 tag or if it doesn't contain any links
 	targetParts = targetParts[0].includes("<h2>") || !targetParts[0].includes("a href") ? targetParts.slice(1, targetParts.length): targetParts;
-	return targetParts ? targetParts.join('\n'): '';
+	let result = targetParts ? targetParts.join('\n'): '';
+	const hrefTerm = "a href";
+	const searchRegExp = new RegExp(hrefTerm, 'g');
+	result = result.replace(searchRegExp, 'a target="_blank" href');
+	return result;
 }

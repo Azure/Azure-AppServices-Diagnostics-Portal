@@ -191,6 +191,9 @@ export class OnboardingFlowComponent implements OnInit {
   publishFailed: boolean = false;
   saveSuccess: boolean = false;
   saveFailed: boolean = false;
+  deleteSuccess: boolean = false;
+  deleteFailed: boolean = false;
+  saveIdFailure: boolean = false;
   saveButtonText: string = "Save";
   detectorName: string = "";
   submittedPanelTimer: any = null;
@@ -328,6 +331,7 @@ export class OnboardingFlowComponent implements OnInit {
   owners: string[] = [];
 
   codeOnDefaultBranch: boolean = false;
+  searchTermDialogHidden: boolean = true;
 
   constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService, private detectorGistApiService: DetectorGistApiService,
     private diagnosticApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService, private resourceService: ResourceService,
@@ -442,6 +446,7 @@ export class OnboardingFlowComponent implements OnInit {
   ableToDelete: boolean = false;
   deleteVisibilityStyle = {};
   commitHistoryVisibilityStyle = {};
+  searchTermVisibilityStyle = {};
   commitHistoryLink: string = "";
 
   isProd: boolean = false;
@@ -461,7 +466,7 @@ export class OnboardingFlowComponent implements OnInit {
       this.deleteVisibilityStyle = !(this.detectorGraduation === true && this.mode !== DevelopMode.Create) ? { display: "none" } : {};
       this.saveButtonVisibilityStyle = !(this.detectorGraduation === true ) ? { display: "none" } : {};
       this.commitHistoryVisibilityStyle = !(this.detectorGraduation === true && this.mode !== DevelopMode.Create) ? { display: "none" } : {};
-
+      this.searchTermVisibilityStyle = !this.detectorGraduation ? {display : "none"} : {};
 
       this.modalPublishingButtonText = this.detectorGraduation && !devopsConfig.autoMerge ? "Create PR" : "Publish";
 
@@ -1291,8 +1296,12 @@ export class OnboardingFlowComponent implements OnInit {
     return match;
   }
 
-  setTargetBranch() {
-    var targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${this.id.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`;
+  setTargetBranch(tempId = null) {
+
+    var targetBranch = ""; 
+    
+    if (tempId === null) targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${this.id.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`;
+    else targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${tempId.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${tempId.toLowerCase()}`;
 
     if (this.Branch === this.defaultBranch && this.targetInShowBranches(targetBranch)) {
       this.Branch = targetBranch;
@@ -1344,7 +1353,9 @@ export class OnboardingFlowComponent implements OnInit {
     this.publishFailed = false;
     this.saveSuccess = false;
     this.saveFailed = false;
-    //this.autoMergeText = false;
+    this.saveIdFailure = false;
+    this.deleteSuccess = false;
+    this.deleteFailed = false;
   }
 
 
@@ -1397,24 +1408,26 @@ export class OnboardingFlowComponent implements OnInit {
 
   addReviewers(){
     let reviewers = "";
-    if (!!this.queryResponse.invocationOutput['appFilter']){
-      if (!!this.queryResponse.invocationOutput['appFilter']['AppType']){
-        this.queryResponse.invocationOutput['appFilter']['AppType'].split(',').forEach(apt => {
-        if(Object.keys(this.DevopsConfig.appTypeReviewers).includes(apt)){
-          this.DevopsConfig.appTypeReviewers[apt].forEach(rev => {
-            if (!this.owners.includes(rev)) this.owners.push(rev);
-          });
-        }
-      });
-    }
-      if (!!this.queryResponse.invocationOutput['appFilter']['PlatformType']){
-        this.queryResponse.invocationOutput['appFilter']['PlatformType'].split(',').forEach(plt => {
-        if(Object.keys(this.DevopsConfig.platformReviewers).includes(plt)){
-          this.DevopsConfig.platformReviewers[plt].forEach(rev => {
-            if (!this.owners.includes(rev)) this.owners.push(rev);
-          });
-        }
-      });
+    if (!!this.queryResponse){
+      if (!!this.queryResponse.invocationOutput['appFilter']){
+        if (!!this.queryResponse.invocationOutput['appFilter']['AppType']){
+          this.queryResponse.invocationOutput['appFilter']['AppType'].split(',').forEach(apt => {
+          if(Object.keys(this.DevopsConfig.appTypeReviewers).includes(apt)){
+            this.DevopsConfig.appTypeReviewers[apt].forEach(rev => {
+              if (!this.owners.includes(rev)) this.owners.push(rev);
+            });
+          }
+        });
+      }
+        if (!!this.queryResponse.invocationOutput['appFilter']['PlatformType']){
+          this.queryResponse.invocationOutput['appFilter']['PlatformType'].split(',').forEach(plt => {
+          if(Object.keys(this.DevopsConfig.platformReviewers).includes(plt)){
+            this.DevopsConfig.platformReviewers[plt].forEach(rev => {
+              if (!this.owners.includes(rev)) this.owners.push(rev);
+            });
+          }
+        });
+      }
     }
       this.owners.forEach(o => {
         if(o.match(/^\s*$/) == null) reviewers = reviewers.concat(o, '\n');
@@ -1526,21 +1539,21 @@ export class OnboardingFlowComponent implements OnInit {
       if (!this.useAutoMergeText) {
         makePullRequestObservable.subscribe(_ => {
           this.PRLink = `${_["webUrl"]}/pullrequest/${_["prId"]}`
-          this.publishSuccess = true;
+          this.deleteSuccess = true;
           this.postPublish();
         }, err => {
-          this.publishFailed = true;
+          this.deleteFailed = true;
           this.postPublish();
         });
       }
       else {
         this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&version=GB${this.defaultBranch}`;
-        this.publishSuccess = true;
+        this.deleteSuccess = true;
         this.postPublish();
         this.deleteBranch(this.Branch, this.resourceId);
       }
     }, err => {
-      this.publishFailed = true;
+      this.deleteFailed = true;
       this.postPublish();
     });
 
@@ -1553,55 +1566,85 @@ export class OnboardingFlowComponent implements OnInit {
   }
 
   saveTempId: string = "";
-  saveFailMessage: string = "";
 
   saveDetectorCode() {
-    this.setTargetBranch();
+    this.saveTempId = this.getIdFromCodeString();
+    this.setTargetBranch(this.saveTempId);
     this.publishDialogHidden = true;
 
     const commitType = this.mode == DevelopMode.Create && !this.isSaved ? "add" : "edit";
     const commitMessageStart = this.mode == DevelopMode.Create && !this.isSaved ? "Adding" : "Editing";
 
-    let gradPublishFiles: string[] = [
+    let gradPublishFiles: string[] = !!this.publishingPackage ? [
       this.publishingPackage.codeString,
       this.publishingPackage.metadata,
       this.publishingPackage.packageConfig
+    ] : [
+      this.code,
+      "",
+      ""
     ];
 
+    
+
+    let idForSave = !!this.publishingPackage ? this.publishingPackage.id.toLowerCase() : this.saveTempId;
+    if (this.mode == DevelopMode.Edit) idForSave = this.id;
 
     let gradPublishFileTitles: string[] = [
-      `/${this.publishingPackage.id.toLowerCase()}/${this.publishingPackage.id.toLowerCase()}.csx`,
-      `/${this.publishingPackage.id.toLowerCase()}/metadata.json`,
-      `/${this.publishingPackage.id.toLowerCase()}/package.json`
+      `/${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx`,
+      `/${idForSave.toLowerCase()}/metadata.json`,
+      `/${idForSave.toLowerCase()}/package.json`
     ];
 
     let reviewers = "";
 
     if(Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0){
       reviewers = this.addReviewers();
-      gradPublishFileTitles.push(`/${this.publishingPackage.id.toLowerCase()}/owners.txt`);
+      gradPublishFileTitles.push(`/${idForSave}/owners.txt`);
       gradPublishFiles.push(reviewers);
     }
 
-    let link = this.gistMode ? `${this.PPEHostname}/${this.resourceId}/gists/${this.publishingPackage.id}?branchInput=${this.Branch}` : `${this.PPEHostname}/${this.resourceId}/detectors/${this.publishingPackage.id}/edit?branchInput=${this.Branch}`;
-    let description = `This Pull Request was created via AppLens. To make edits, go to ${link}`;
-    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`, commitType, this.resourceId);
+    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${idForSave} Author : ${this.userName}`, commitType, this.resourceId);
     
     this.saveButtonText = "Saving";
     this.publishDialogHidden = true;
     this.disableSaveButton();
 
-
-    DetectorObservable.subscribe(_ => {
-      this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${this.publishingPackage.id.toLowerCase()}/${this.publishingPackage.id.toLowerCase()}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${this.publishingPackage.id.toLowerCase()}/${this.publishingPackage.id.toLowerCase()}.csx&version=GB${this.Branch}`;
-      this.saveSuccess = true;
-      this.postSave();
-      this.isSaved = true;
-      this._applensCommandBarService.refreshPage();
-    }, err => {
-      this.saveFailed = true;
-      this.postSave();
-    });
+    // successfully ran or edit mode
+    if (!!this.publishingPackage || this.mode == DevelopMode.Edit){
+      DetectorObservable.subscribe(_ => {
+        this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${idForSave}/${idForSave}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${idForSave}/${idForSave}.csx&version=GB${this.Branch}`;
+        this.saveSuccess = true;
+        this.postSave();
+        this.isSaved = true;
+        this._applensCommandBarService.refreshPage();
+      }, err => {
+        if (err.error.includes('Detector with this ID already exists. Please use a new ID')) this.saveIdFailure = true;
+        this.saveFailed = true;
+        this.postSave();
+      });
+    }
+    else {
+      this._diagnosticApi.idExists(this.saveTempId).subscribe(idExists =>{
+        if (!idExists){
+          DetectorObservable.subscribe(_ => {
+            this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${idForSave}/${idForSave}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${idForSave}/${idForSave}.csx&version=GB${this.Branch}`;
+            this.saveSuccess = true;
+            this.postSave();
+            this.isSaved = true;
+            this._applensCommandBarService.refreshPage();
+          }, err => {
+            this.saveFailed = true;
+            this.postSave();
+          });
+        }
+        else {
+          this.saveIdFailure = true;
+          this.saveFailed = true;
+          this.postSave();
+        }
+      })
+    }
   }
 
   postPublish() {
@@ -1675,8 +1718,8 @@ export class OnboardingFlowComponent implements OnInit {
   private UpdateConfiguration(queryResponse: QueryResponse<DetectorResponse>) {
     let temp = {};
     let newPackage = [];
-    let ids = new Set(Object.keys(this.configuration['dependencies']));
-    if (queryResponse.compilationOutput.references != null) {
+    let ids = !!this.configuration['dependencies'] ? new Set(Object.keys(this.configuration['dependencies'])) : null;
+    if (queryResponse.compilationOutput.references != null && ids != null) {
       queryResponse.compilationOutput.references.forEach(r => {
         if (ids.has(r)) {
           temp[r] = this.configuration['dependencies'][r];
@@ -1916,6 +1959,12 @@ export class OnboardingFlowComponent implements OnInit {
     return false;
   }
 
+  getIdFromCodeString(): string {
+    var trimmedCode = this.code.toLowerCase().replace(/\s/g, "");
+    let id = trimmedCode.match(/(?<=\[definition\(id=").*?(?=",Name=")/gmi);
+    return id == null ? null : id[0];
+  }
+
    getGistCommitContent = (gistId, gistCommitVersion) => {
      return this.diagnosticApiService.getDevopsCommitContent(`${this.DevopsConfig.folderPath}/${gistId}/${gistId}.csx`, gistCommitVersion, this.resourceId);   
   };
@@ -1928,5 +1977,17 @@ export class OnboardingFlowComponent implements OnInit {
       },
       queryParamsHandling: 'merge'
     })
+  }
+
+  showSearchTermsDialog() {
+  this.searchTermDialogHidden  = false;
+  }
+
+  dismissSearchDialog() {
+    this.searchTermDialogHidden = true;
+  }
+  saveSearchTerms() {
+    this.prepareMetadata();
+    this.searchTermDialogHidden = true;
   }
 }

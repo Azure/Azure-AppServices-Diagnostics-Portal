@@ -1,5 +1,5 @@
 
-import { of as observableOf, Observable, of } from 'rxjs';
+import { of as observableOf, Observable, of, throwError } from 'rxjs';
 import { map, flatMap, catchError } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -81,9 +81,16 @@ export class SupportTopicService {
             };
             let resourceUri = `${this._resourceService.resource.id}/${this.apolloApiConfig.apolloResourceProvider}/${apolloResourceId}`;
             return this._armService.putResource(resourceUri, requestBody, this.apolloApiConfig.apiVersion, true).pipe(map((response: ResponseMessageEnvelope<any>) => {
-                return this.cleanSelfHelpContentApollo(response);
+                let apolloCleaned = this.cleanSelfHelpContentApollo(response);
+                if (apolloCleaned && apolloCleaned.length > 1) {
+                    return apolloCleaned;
+                }
+                else {
+                    throw new Error("No meaningful content came from Apollo");
+                }
             }));
         }
+        return throwError("Cannot get self content from Apollo");
     }
 
     private cleanSelfHelpContentLegacy(selfHelpResponse) {
@@ -119,7 +126,9 @@ export class SupportTopicService {
 
     public getSelfHelpContentDocument(): Observable<any> {
         //Call Apollo API, if error then fallback on legacy API
-        return this.getSelfHelpContentApollo().pipe(map(res => res), catchError(err => { return this.getSelfHelpContentLegacy(); }));
+        return this.getSelfHelpContentApollo().pipe(map(res => res), catchError(err => { 
+            return this.getSelfHelpContentLegacy(); 
+        }));
     }
 
 
