@@ -134,7 +134,7 @@ export class ArmService {
         return uri;
     }
 
-    getResource<T>(resourceUri: string, apiVersion?: string, invalidateCache: boolean = false, armResource?: ArmResource): Observable<{} | ResponseMessageEnvelope<T>> {
+    getResource<T>(resourceUri: string, apiVersion?: string, invalidateCache: boolean = false, additionalHeaders?: Map<string, string>): Observable<{} | ResponseMessageEnvelope<T>> {
         if (!resourceUri.startsWith('/')) {
             resourceUri = '/' + resourceUri;
         }
@@ -143,7 +143,11 @@ export class ArmService {
         this.getSubscriptionLocation(resourceUri.split("subscriptions/")[1].split("/")[0]).subscribe(response => {
             subscriptionLocation = response.body['subscriptionPolicies'] ? response.body['subscriptionPolicies']['locationPlacementId'] : '';
         });
-        let additionalHeaders = new Map<string, string>();
+
+        if (!!additionalHeaders == false){
+            additionalHeaders = new Map<string, string>();
+        }
+
         additionalHeaders.set('x-ms-subscription-location-placementid', subscriptionLocation);
         // When x-ms-diagversion is set to 1, the requests will be sent to DiagnosticRole.
         //If the value is set to other than 1 or if the header is not present at all, requests will go to runtimehost
@@ -155,10 +159,6 @@ export class ArmService {
 
         let requestId: string = Guid.newGuid();
         additionalHeaders.set('x-ms-request-id', requestId);
-
-        if (!!armResource){
-            additionalHeaders.set('x-ms-location', armResource.location);
-        }
 
         let eventProps = {
             'resourceId': resourceUri,

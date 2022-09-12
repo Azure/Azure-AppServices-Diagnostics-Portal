@@ -77,7 +77,9 @@ export class GenericApiService {
 
             return this._armService.getArmResource<ArmResource>(resourceId).pipe(
                 flatMap(resource => {
-                    return this._armService.getResource<DetectorResponse>(path, null, refresh, resource).pipe(
+                    let requestHeaders = new Map<string, string>();
+                    requestHeaders.set('x-ms-location', resource.location); 
+                    return this._armService.getResource<DetectorResponse>(path, null, refresh, requestHeaders).pipe(
                         map((response: ResponseMessageEnvelope<DetectorResponse>) => {
                             return response.properties;
                         })
