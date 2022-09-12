@@ -74,8 +74,32 @@ export class DiagnosticToolsComponent {
     });
 
     this.toolCategories.push(<SiteFilteredItem<any>>{
-      appType: AppType.WebApp | AppType.FunctionApp,
+      appType: AppType.WebApp,
       platform: OperatingSystem.windows,
+      sku: Sku.All,
+      hostingEnvironmentKind: HostingEnvironmentKind.All,
+      stack: '',
+      item: {
+        title: 'Diagnostic Tools',
+        tools: this._sitesFeatureService.diagnosticTools.map(tool => {
+          return <SiteFilteredItem<Tile>>{
+            appType: tool.appType,
+            platform: tool.platform,
+            sku: tool.sku,
+            hostingEnvironmentKind: tool.hostingEnvironmentKind,
+            stack: tool.stack,
+            item: {
+              title: tool.item.name,
+              action: tool.item.clickAction
+            }
+          };
+        })
+      }
+    });
+
+    this.toolCategories.push(<SiteFilteredItem<any>>{
+      appType: AppType.FunctionApp,
+      platform: OperatingSystem.windows | OperatingSystem.linux,
       sku: Sku.All,
       hostingEnvironmentKind: HostingEnvironmentKind.All,
       stack: '',

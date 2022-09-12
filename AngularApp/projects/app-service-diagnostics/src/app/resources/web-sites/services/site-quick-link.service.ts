@@ -57,16 +57,7 @@ export class SiteQuickLinkService extends QuickLinkService {
             item: [
                 'functionappdownanderrors',
                 'functionsettings',
-                'BestPracticesFunctionApp'
-            ]
-        },
-        {
-            appType: AppType.FunctionApp,
-            platform: OperatingSystem.windows,
-            stack: '',
-            sku: Sku.All,
-            hostingEnvironmentKind: HostingEnvironmentKind.All,
-            item: [
+                'BestPracticesFunctionApp',
                 'networkchecks'
             ]
         }
