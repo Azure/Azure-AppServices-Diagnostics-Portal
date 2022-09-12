@@ -13,6 +13,7 @@ import { PortalKustoTelemetryService } from './portal-kusto-telemetry.service';
 import { Guid } from '../utilities/guid';
 import { Router } from '@angular/router';
 import { TelemetryPayload } from 'diagnostic-data';
+import { ArmResource } from '../../shared-v2/models/arm';
 
 @Injectable()
 export class ArmService {
@@ -133,7 +134,7 @@ export class ArmService {
         return uri;
     }
 
-    getResource<T>(resourceUri: string, apiVersion?: string, invalidateCache: boolean = false): Observable<{} | ResponseMessageEnvelope<T>> {
+    getResource<T>(resourceUri: string, apiVersion?: string, invalidateCache: boolean = false, armResource?: ArmResource): Observable<{} | ResponseMessageEnvelope<T>> {
         if (!resourceUri.startsWith('/')) {
             resourceUri = '/' + resourceUri;
         }
@@ -154,6 +155,10 @@ export class ArmService {
 
         let requestId: string = Guid.newGuid();
         additionalHeaders.set('x-ms-request-id', requestId);
+
+        if (!!armResource){
+            additionalHeaders.set('x-ms-location', armResource.location);
+        }
 
         let eventProps = {
             'resourceId': resourceUri,
