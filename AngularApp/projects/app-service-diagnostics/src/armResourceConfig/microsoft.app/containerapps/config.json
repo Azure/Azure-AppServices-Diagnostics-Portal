@@ -45,7 +45,21 @@
       "createFlowForCategory": true,
       "chatEnabled": false,
       "overviewDetectorId": "containerenvinsights"
-		}        
+		},
+    {
+      "id": "sslanddomainsca",
+      "name": "SSL and Domains",
+      "description": "Discover issues with certificates and custom domains",
+      "keywords": [
+        "Auth",
+        "Binding",
+        "Cert Failures"
+      ],
+      "color": "rgb(208, 175, 239)",
+      "createFlowForCategory": true,
+      "chatEnabled": false,
+      "overviewDetectorId": "cappcertificates"
+		}
 	],
   "disableGenie": true,
 	"pesId": "17677",
