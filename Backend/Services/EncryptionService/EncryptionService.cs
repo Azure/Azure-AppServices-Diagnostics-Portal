@@ -114,28 +114,7 @@ namespace Backend.Services
             if (string.IsNullOrWhiteSpace(response.ApiKey))
             {
                 response.UsingExpiredKeyOrCertificate = true;
-                try
-                {
-                    response.ApiKey = DecryptStringLegacy(encryptedString);
-                }
-                catch (Exception ex)
-                {
-                    _telemetryClient.TrackTrace("Failed to decrypt using legacy encryption method",
-                    new Dictionary<string, string>()
-                    {
-                        {"exception", ex.ToString()}
-                    });
-
-                    //
-                    // This is an expected exception if all the stored encryption methods fail to
-                    // decrypt the key. In this scenario, we must throw UnauthorizedAccessException
-                    // explicitly so that AppInsightsController can return a 403 instead of BAD request.
-                    // This will ensure that user will gets option to reconnect AppInsights integration
-                    // 
-
-                    throw new UnauthorizedAccessException("Failed to decrypt using legacy encryption method", ex);
-                }
-
+                response.ApiKey = DecryptStringLegacy(encryptedString);
             }
 
             return response;
@@ -181,25 +160,45 @@ namespace Backend.Services
 
         private string DecryptStringLegacy(string encryptedString)
         {
-            byte[] iv = new byte[16];
-            byte[] buffer = Convert.FromBase64String(encryptedString);
-
-            using (Aes aes = Aes.Create())
+            try
             {
-                aes.Key = Encoding.UTF8.GetBytes(_encryptionKey);
-                aes.IV = iv;
-                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+                byte[] iv = new byte[16];
+                byte[] buffer = Convert.FromBase64String(encryptedString);
 
-                using (MemoryStream memoryStream = new MemoryStream(buffer))
+                using (Aes aes = Aes.Create())
                 {
-                    using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
+                    aes.Key = Encoding.UTF8.GetBytes(_encryptionKey);
+                    aes.IV = iv;
+                    ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                    using (MemoryStream memoryStream = new MemoryStream(buffer))
                     {
-                        using (StreamReader streamReader = new StreamReader(cryptoStream))
+                        using (CryptoStream cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
                         {
-                            return streamReader.ReadToEnd();
+                            using (StreamReader streamReader = new StreamReader(cryptoStream))
+                            {
+                                return streamReader.ReadToEnd();
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _telemetryClient.TrackTrace("Failed to decrypt using legacy encryption method",
+                    new Dictionary<string, string>()
+                    {
+                        {"exception", ex.ToString()}
+                    });
+
+                //
+                // This is an expected exception if all the stored encryption methods fail to
+                // decrypt the key. In this scenario, we must throw UnauthorizedAccessException
+                // explicitly so that AppInsightsController can return a 403 instead of BAD request.
+                // This will ensure that user will gets option to reconnect AppInsights integration
+                // 
+
+                throw new UnauthorizedAccessException("Failed to decrypt using legacy encryption method", ex);
             }
         }
 
