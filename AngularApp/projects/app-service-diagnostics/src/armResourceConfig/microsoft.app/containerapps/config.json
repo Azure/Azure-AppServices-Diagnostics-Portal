@@ -60,6 +60,20 @@
       "overviewDetectorId": "daprinsights"
 		},
     {
+      "id": "configurationandmanagementca",
+      "name": "Configuration and Management",
+      "description": "Find out if your contianer app features are misconfigured",
+      "keywords": [
+        "Configuration",
+        "Management",
+        "Authentication"
+      ],
+      "color": "rgb(208, 175, 239)",
+      "createFlowForCategory": true,
+      "chatEnabled": false,
+      "overviewDetectorId": "cappconfigandmanagement"
+		},
+    {
       "id": "sslanddomainsca",
       "name": "SSL and Domains",
       "description": "Discover issues with certificates and custom domains",
