@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DiagnosticService, DetectorMetaData, DetectorType, TelemetryService } from 'diagnostic-data';
 import { Category } from '../models/category';
-import { Feature, FeatureType, FeatureTypes, FeatureAction } from '../models/features';
+import { Feature, FeatureAction } from '../models/features';
 import { ContentService } from './content.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../startup/services/auth.service';
@@ -12,7 +12,6 @@ import { PortalActionService } from '../../shared/services/portal-action.service
 import { StartupInfo } from '../../shared/models/portal';
 import { VersionTestService } from '../../fabric-ui/version-test.service';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter } from 'rxjs-compat/operator/filter';
 import { map } from 'rxjs/operators';
 
 const exclusiveDetectorTypes: DetectorType[] = [
@@ -48,7 +47,7 @@ export class FeatureService {
                     id: detector.id,
                     description: detector.description,
                     category: detector.category,
-                    featureType: FeatureTypes.Detector,
+                    featureType: DetectorType.Detector,
                     name: detector.name,
                     clickAction: this._createFeatureAction(detector.name, detector.category, () => {
                       //Remove after A/B test
@@ -69,7 +68,7 @@ export class FeatureService {
                     id: detector.id,
                     description: detector.description,
                     category: detector.category,
-                    featureType: FeatureTypes.Detector,
+                    featureType: DetectorType.Analysis,
                     name: detector.name,
                     clickAction: this._createFeatureAction(detector.name, detector.category, () => {
                       if (this.isLegacy) {
@@ -96,7 +95,7 @@ export class FeatureService {
             name: article.title,
             description: article.description,
             category: '',
-            featureType: FeatureTypes.Documentation,
+            featureType: "Documentation",
             clickAction: this._createFeatureAction(article.title, 'Content', () => {
               window.open(article.link, '_blank');
             })
@@ -107,6 +106,17 @@ export class FeatureService {
   }
 
   sortFeatures() {
+    this.sortFeaturesBase(this._features);
+  }
+
+  public sortFeaturesBase(features: Feature[]) {
+    features.sort((a, b) => {
+      if (a.featureType !== b.featureType) {
+        return a.featureType < b.featureType ? -2 : 2;
+      } else {
+        return a.name < b.name ? -1 : 1;
+      }
+    });
   }
 
   protected _createFeatureAction(name: string, category: string, func: Function): FeatureAction {
@@ -135,8 +145,9 @@ export class FeatureService {
 
   getFeaturesForCategorySub(category: Category): Observable<Feature[]> {
     return this.featureSub.pipe(
-      map(features => this.filterFeaturesForCategory(category, features)
-      ));
+      map(features => {
+        return this.filterFeaturesForCategory(category, features);
+      }));
   }
 
   getFeatures(searchValue?: string) {

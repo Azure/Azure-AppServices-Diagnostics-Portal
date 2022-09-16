@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { FeatureService } from '../../../shared-v2/services/feature.service';
-import { DiagnosticService, TelemetryService } from 'diagnostic-data';
+import { DetectorType, DiagnosticService, TelemetryService } from 'diagnostic-data';
 import { ContentService } from '../../../shared-v2/services/content.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../startup/services/auth.service';
-import { Feature, FeatureTypes } from '../../../shared-v2/models/features';
+import { Feature } from '../../../shared-v2/models/features';
 import { AppType, SupportBladeDefinitions } from '../../../shared/models/portal';
 import { OperatingSystem, Site, HostingEnvironmentKind } from '../../../shared/models/site';
 import { SiteFilteredItem } from '../models/site-filter';
@@ -13,13 +13,11 @@ import { ToolNames, ToolIds } from '../../../shared/models/tools-constants';
 import { PortalActionService } from '../../../shared/services/portal-action.service';
 import { WebSitesService } from './web-sites.service';
 import { WebSiteFilter } from '../pipes/site-filter.pipe';
-import { LoggingV2Service } from '../../../shared-v2/services/logging-v2.service';
 import { SiteService } from '../../../shared/services/site.service';
 import { CategoryService } from '../../../shared-v2/services/category.service';
 import { VersionTestService } from '../../../fabric-ui/version-test.service';
 import { ArmService } from '../../../shared/services/arm.service';
 import { SubscriptionPropertiesService } from '../../../shared/services/subscription-properties.service';
-import { DemoSubscriptions } from '../../../betaSubscriptions';
 
 @Injectable()
 export class SiteFeatureService extends FeatureService {
@@ -37,7 +35,7 @@ export class SiteFeatureService extends FeatureService {
       category: "Availability and Performance",
       platform: OperatingSystem.windows,
       appType: AppType.WebApp,
-      order: ['appdownanalysis', 'perfanalysis', 'webappcpu', 'memoryusage', 'webapprestart'].reverse()
+      order: ['appdownanalysis', 'perfanalysis', 'webappcpu', 'memoryusage', 'webapprestart']
     }];
     this._authService.getStartupInfo().subscribe(startupInfo => {
       this.subscriptionId = startupInfo.resourceId.split("subscriptions/")[1].split("/")[0];
@@ -52,10 +50,10 @@ export class SiteFeatureService extends FeatureService {
     });
   }
 
-  private _sortFeaturesHelper(displayOrder:any[]) {
+  private _sortFeaturesHelper(displayOrder: any[]) {
     let featureDisplayOrder = displayOrder;
     let locationPlacementId = '';
-    if(this.subscriptionPropertiesService){
+    if (this.subscriptionPropertiesService) {
       this.subscriptionPropertiesService.getSubscriptionProperties(this.subscriptionId).subscribe(response => {
         locationPlacementId = response.body['subscriptionPolicies']['locationPlacementId'];
       });
@@ -67,92 +65,53 @@ export class SiteFeatureService extends FeatureService {
       })
     }
 
-    featureDisplayOrder.forEach(feature => {
+    featureDisplayOrder.forEach(displayOrder => {
 
-      if (feature.platform === this._resourceService.platform && this._resourceService.appType === feature.appType) {
+      if (displayOrder.platform === this._resourceService.platform && this._resourceService.appType === displayOrder.appType) {
         // Add all the features for this category to a temporary array
         let categoryFeatures: Feature[] = [];
         this._features.forEach(x => {
-          if (x.category != null && x.category.indexOf(feature.category) > -1) {
+          if (x.category != null && x.category.indexOf(displayOrder.category) > -1) {
             categoryFeatures.push(x);
           }
         });
 
         // Remove all the features for the sorted category
         this._features = this._features.filter(x => {
-          return x.category !== feature.category;
+          return x.category !== displayOrder.category;
         });
 
-        // Sort all the features for this category
-        categoryFeatures.sort(
-          function (a, b) {
-            let categoryOrder = featureDisplayOrder.find(x => x.category.toLowerCase().startsWith(feature.category.toLowerCase()));
-            if (categoryOrder != null) {
-              if (categoryOrder.order.indexOf(a.id.toLowerCase()) < categoryOrder.order.indexOf(b.id.toLowerCase())) {
-                return 1;
-              } else if (categoryOrder.order.indexOf(b.id.toLowerCase()) === categoryOrder.order.indexOf(a.id.toLowerCase())) {
-                return 0;
-              }
-              else {
-                return -1;
-              }
-            }
-          }
-        );
 
-        // add the sorted features for this category back to the array
-        this._features = this._features.concat(categoryFeatures);
+        const categoryOrder = featureDisplayOrder.find(x => x.category.toLowerCase().startsWith(displayOrder.category.toLowerCase()));
+        let preOrderedFeatures: Feature[] = [];
+        let unOrderedFeatures: Feature[] = [];
+
+        //Follow order array in _featureDisplayOrder.order for preordered features
+        if(categoryOrder && categoryOrder.order.length > 0) {
+          categoryOrder.order.forEach((id:string) => {
+            const index = categoryFeatures.findIndex(f => f.id.toLowerCase() === id.toLowerCase());
+            if(index > -1) {
+              preOrderedFeatures.push(categoryFeatures[index]);
+            }
+          });
+        }
+
+        unOrderedFeatures = categoryFeatures.filter(feature => preOrderedFeatures.findIndex(preFeature => preFeature.id === feature.id) === -1);
+
+        this.sortFeaturesBase(unOrderedFeatures);
+
+        // add the sorted features for this category back to the array, with pre-ordered then rest features
+        this._features = this._features.concat([...preOrderedFeatures,...unOrderedFeatures]);
       }
     });
 
+    //For resource have no pre-defined order
+    if (featureDisplayOrder.findIndex(d => d.platform === this._resourceService.platform && this._resourceService.appType === d.appType) === -1) {
+      this.sortFeaturesBase(this._features);
+    }
+
   }
 
-
-  getLegacyAvailabilityAndPerformanceFeatures(resourceId: string): Feature[] {
-    resourceId = resourceId.startsWith('/') ? resourceId.replace('/', '') : resourceId;
-    return <Feature[]>[
-      {
-        id: 'appanalysis',
-        name: 'Web App Down',
-        category: 'Availability and Performance',
-        description: 'Analyze availability of web app',
-        featureType: FeatureTypes.Detector,
-        clickAction: this._createFeatureAction('appanalysis', 'Availability and Performance', () => {
-          this._router.navigateByUrl(`resource/${resourceId}/legacy/diagnostics/availability/analysis`);
-        })
-      },
-      {
-        id: 'perfanalysis',
-        name: 'Web App Slow',
-        category: 'Availability and Performance',
-        description: 'Analyze performance of web app',
-        featureType: FeatureTypes.Detector,
-        clickAction: this._createFeatureAction('perfanalysis', 'Availability and Performance', () => {
-          this._router.navigateByUrl(`resource/${resourceId}/legacy/diagnostics/performance/analysis`);
-        })
-      },
-      {
-        id: 'cpuanalysis',
-        name: 'High CPU Usage',
-        category: 'Availability and Performance',
-        description: 'Analyze CPU Usage of your Web App on all instances and see breakdown of usage of all Web Apps on your server farm',
-        featureType: FeatureTypes.Detector,
-        clickAction: this._createFeatureAction('cpuanalysis', 'Availability and Performance', () => {
-          this._router.navigateByUrl(`resource/${resourceId}/legacy/diagnostics/availability/detectors/sitecpuanalysis`);
-        })
-      },
-      {
-        id: 'memoryanalysis',
-        name: 'High Memory Usage',
-        category: 'Availability and Performance',
-        description: 'Analyze Memory Usage of your Web App including physical memory, committed memory usage, and page file operations',
-        featureType: FeatureTypes.Detector,
-        clickAction: this._createFeatureAction('memoryanalysis', 'Availability and Performance', () => {
-          this._router.navigateByUrl(`resource/${resourceId}/legacy/diagnostics/availability/memoryanalysis`);
-        })
-      }
-    ];
-  }
 
   addProactiveTools(resourceId: string) {
     this.proactiveTools = [
@@ -167,7 +126,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.AutoHealing,
           category: 'Proactive Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.AutoHealing, 'Proactive Tools', () => {
             // this.navigateTo(resourceId,ToolIds.AutoHealing);
             // this._router.navigateByUrl(`resource${resourceId}/categories/DiagnosticTools/tools/mitigate`);
@@ -191,7 +150,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.CpuMonitoring,
           category: 'Proactive Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.CpuMonitoring, 'Proactive Tools', () => {
             // this.navigateTo(resourceId,ToolIds.CpuMonitoring);
             // this._router.navigateByUrl(`resource${resourceId}/categories/DiagnosticTools/tools/cpumonitoring`);
@@ -215,7 +174,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.CrashMonitoring,
           category: 'Proactive Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.CrashMonitoring, 'Proactive Tools', () => {
 
             //Need remove after A/B test
@@ -246,7 +205,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.Profiler,
           category: 'Diagnostic Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.Profiler, 'Diagnostic Tools', () => {
             //Need remove after A/B test
             if (this.isLegacy) {
@@ -268,7 +227,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.Profiler,
           category: 'Diagnostic Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.Profiler, 'Diagnostic Tools', () => {
             //Need remove after A/B test
             if (this.isLegacy) {
@@ -290,7 +249,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.MemoryDump,
           category: 'Diagnostic Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.MemoryDump, 'Diagnostic Tools', () => {
             //Need remove after A/B tes
             if (this.isLegacy) {
@@ -312,7 +271,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.DatabaseTester,
           category: 'Diagnostic Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.DatabaseTester, 'Diagnostic Tools', () => {
             //Need remove after A/B test
             if (this.isLegacy) {
@@ -334,7 +293,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.NetworkTrace,
           category: 'Diagnostic Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.NetworkTrace, 'Diagnostic Tools', () => {
             //Need remove after A/B test
             if (this.isLegacy) {
@@ -356,7 +315,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.JavaMemoryDump,
           category: 'Diagnostic Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.JavaMemoryDump, 'Diagnostic Tools', () => {
             //Need remove after A/B test
             if (this.isLegacy) {
@@ -378,7 +337,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.JavaThreadDump,
           category: 'Diagnostic Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.JavaThreadDump, 'Diagnostic Tools', () => {
             //Need remove after A/B test
             if (this.isLegacy) {
@@ -400,7 +359,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.JavaFlightRecorder,
           category: 'Diagnostic Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.JavaFlightRecorder, 'Diagnostic Tools', () => {
             //Need remove after A/B test
             if (this.isLegacy) {
@@ -422,7 +381,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.NetworkChecks,
           category: 'Diagnostic Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.NetworkChecks, 'Diagnostic Tools', () => {
             //Need remove after A/B test
             if (this.isLegacy) {
@@ -444,7 +403,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.NetworkChecks,
           category: 'Networking',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(ToolNames.NetworkChecks, 'Networking', () => {
             //Need remove after A/B test
             if (this.isLegacy) {
@@ -466,7 +425,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.AdvancedAppRestart,
           category: 'Diagnostic Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction('AdvancedAppRestart', 'Support Tools', () => {
             this._portalActionService.openBladeAdvancedAppRestartBladeForCurrentSite();
           })
@@ -486,7 +445,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.MetricPerInstanceApp,
           category: 'Support Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(SupportBladeDefinitions.MetricPerInstance.Identifier, 'Support Tools', () => {
             this._portalActionService.openMdmMetricsV3Blade();
           })
@@ -494,7 +453,7 @@ export class SiteFeatureService extends FeatureService {
       },
       {
         appType: AppType.WebApp,
-        platform: OperatingSystem.windows  | OperatingSystem.HyperV,
+        platform: OperatingSystem.windows | OperatingSystem.HyperV,
         sku: Sku.Paid,
         hostingEnvironmentKind: HostingEnvironmentKind.All,
         stack: '',
@@ -503,7 +462,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.AppServicePlanMetrics,
           category: 'Support Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(SupportBladeDefinitions.AppServicePlanMetrics.Identifier, 'Support Tools', () => {
             this._portalActionService.openMdmMetricsV3Blade(this._resourceService.resource.properties.serverFarmId);
           })
@@ -520,7 +479,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.EventViewer,
           category: 'Support Tools',
           description: 'View event logs(containing exceptions, errors etc) generated by your application.',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(SupportBladeDefinitions.EventViewer.Identifier, 'Support Tools', () => {
             //Need remove after A/B test
             if (this.isLegacy) {
@@ -542,7 +501,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.EventViewer,
           category: 'Support Tools',
           description: 'View event logs(containing exceptions, errors etc) generated by your function app.',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(SupportBladeDefinitions.EventViewer.Identifier, 'Support Tools', () => {
             //Need remove after A/B test
             if (this.isLegacy) {
@@ -564,7 +523,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.FrebViewer,
           category: 'Support Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction(SupportBladeDefinitions.FREBLogs.Identifier, 'Support Tools', () => {
             //Need remove after A/B test
             if (this.isLegacy) {
@@ -586,7 +545,7 @@ export class SiteFeatureService extends FeatureService {
           name: ToolNames.AdvancedAppRestart,
           category: 'Support Tools',
           description: '',
-          featureType: FeatureTypes.Tool,
+          featureType: DetectorType.DiagnosticTool,
           clickAction: this._createFeatureAction('AdvancedAppRestart', 'Support Tools', () => {
             this._portalActionService.openBladeAdvancedAppRestartBladeForCurrentSite();
           })
