@@ -572,6 +572,9 @@ export class ArmService {
     }
 
     getResourceCollection<T>(resourceId: string, apiVersion?: string, invalidateCache: boolean = false, queryParams: any[] = []): Observable<{} | ResponseMessageCollectionEnvelope<T>> {
+        if (!resourceId.startsWith('/')) {
+            resourceId = '/' + resourceId;
+        }
         var url = `${this.armUrl}${resourceId}?api-version=${this.getApiVersion(resourceId, apiVersion)}`;
         if (queryParams && queryParams.length > 0) {
             queryParams.forEach(param => {
