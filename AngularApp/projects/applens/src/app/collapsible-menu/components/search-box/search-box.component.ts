@@ -11,7 +11,7 @@ export class SearchBoxComponent {
 
   @Output() searchValueChange: EventEmitter<string> = new EventEmitter<string>();
 
-  searchValue: string = "";
+  searchValue: string = null;
   searchControl: FormControl = new FormControl();
   
   @Input() ariaLabel: string = "";
