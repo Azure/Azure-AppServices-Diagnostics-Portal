@@ -79,6 +79,33 @@ export class IncidentAssistanceService {
     });
     return request;
   }
+
+  public getTeamTemplateAuthors(teamId: string, incidentType: string): Observable<any> {
+    let url = `${this.diagnosticApi}api/icm/getTeamTemplateAuthors/${teamId}/${incidentType}`;
+    let request = this._httpClient.get<HttpResponse<Object>>(url, {
+      headers: this._getHeaders(),
+      observe: 'response'
+    });
+    return request;
+  }
+
+  public updateTeamTemplateAuthors(teamId: string, incidentType: string, body: any): Observable<any> {
+    let url = `${this.diagnosticApi}api/icm/updateTeamTemplateAuthors/${teamId}/${incidentType}`;
+    let request = this._httpClient.post<HttpResponse<Object>>(url, body, {
+      headers: this._getHeaders(),
+      observe: 'response'
+    });
+    return request;
+  }
+
+  public getAvailableValidations(teamId: string, incidentType: string): Observable<any> {
+    let url = `${this.diagnosticApi}api/icm/getAvailableValidations/${teamId}/${incidentType}`;
+    let request = this._httpClient.get<HttpResponse<Object>>(url, {
+      headers: this._getHeaders(),
+      observe: 'response'
+    });
+    return request;
+  }
   
   public getIncidentsForTeam(teamId: string, incidentType: string): Observable<any> {
     let url = `${this.diagnosticApi}api/icm/getTeamIncidents/${teamId}/${incidentType}`;

@@ -1,5 +1,17 @@
 ﻿namespace Backend.Models
 {
+    public class AppInsightsValidationResponse
+    {
+        public bool IsValid { get; set; }
+        public string UpdatedEncryptionBlob { get; set; } = "";
+    }
+
+    public class AppInsightsDecryptionResponse
+    {
+        public string ApiKey { get; set; } = "";
+        public bool UsingExpiredKeyOrCertificate { get; set; } = false;
+    }
+
     public class AppInsightsApiKeySettings
     {
         public string id { get; set; }

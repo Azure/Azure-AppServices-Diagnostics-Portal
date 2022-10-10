@@ -1,0 +1,29 @@
+main {
+  height: 60vh;
+  width: 70vw;
+}
+
+#canvas {
+  height: calc(100% - 50px);
+  background: #f0f0f0;
+  background: #f0f0f0;
+  flex: 1;
+  border: 1px solid darkgray;
+}
+
+div#canvas[disabled="true"] {
+  opacity: 1;
+}
+
+div#canvas[disabled="true"] ::ng-deep.ngflowchart-step-wrapper {
+  opacity: 1;
+}
+
+.card {
+  width: 160px;
+  height: 80px;
+  padding: 20px;
+  border: 2px solid lightgray;
+  background: whitesmoke;
+  border-radius: 20px;
+}

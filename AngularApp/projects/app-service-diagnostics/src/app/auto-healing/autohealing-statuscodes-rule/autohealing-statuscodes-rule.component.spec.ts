@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AutohealingStatuscodesRuleComponent } from './autohealing-statuscodes-rule.component';
 
@@ -6,7 +6,7 @@ describe('AutohealingStatuscodesRuleComponent', () => {
   let component: AutohealingStatuscodesRuleComponent;
   let fixture: ComponentFixture<AutohealingStatuscodesRuleComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ AutohealingStatuscodesRuleComponent ]
     })

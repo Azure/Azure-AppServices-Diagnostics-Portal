@@ -31,6 +31,7 @@ export class Globals {
   openCallStackPanel: boolean = false;
   openRiskAlertsPanel: boolean = false;
   callStackDetails = { managedException: "", callStack: "" };
+  showCommAlertSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   private localStorageKey: string = "genieChat";
   constructor(private activatedRoute: ActivatedRoute) {

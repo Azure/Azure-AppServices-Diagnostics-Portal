@@ -1,0 +1,35 @@
+{
+  "name": "@joelwenzel/ng-flowchart",
+  "version": "1.0.0-beta.12",
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@angular/common": "^13.3.11",
+    "@angular/core": "^13.3.11"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
+  "repository": {
+    "url": "https://github.com/joel-wenzel/ng-flowchart/tree/master/projects/ng-flowchart"
+  },
+  "module": "fesm2015/joelwenzel-ng-flowchart.mjs",
+  "es2020": "fesm2020/joelwenzel-ng-flowchart.mjs",
+  "esm2020": "esm2020/joelwenzel-ng-flowchart.mjs",
+  "fesm2020": "fesm2020/joelwenzel-ng-flowchart.mjs",
+  "fesm2015": "fesm2015/joelwenzel-ng-flowchart.mjs",
+  "typings": "joelwenzel-ng-flowchart.d.ts",
+  "exports": {
+    "./package.json": {
+      "default": "./package.json"
+    },
+    ".": {
+      "types": "./joelwenzel-ng-flowchart.d.ts",
+      "esm2020": "./esm2020/joelwenzel-ng-flowchart.mjs",
+      "es2020": "./fesm2020/joelwenzel-ng-flowchart.mjs",
+      "es2015": "./fesm2015/joelwenzel-ng-flowchart.mjs",
+      "node": "./fesm2015/joelwenzel-ng-flowchart.mjs",
+      "default": "./fesm2020/joelwenzel-ng-flowchart.mjs"
+    }
+  },
+  "sideEffects": false
+}

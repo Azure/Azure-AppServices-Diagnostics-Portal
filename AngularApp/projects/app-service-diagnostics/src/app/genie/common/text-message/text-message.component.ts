@@ -12,7 +12,7 @@ export class GenieTextMessageComponent implements OnInit, AfterViewInit, IChatMe
     message: string = '';
     focus: boolean = false;
     messageByUser: boolean = false;
-    @ViewChild('messagefocus', {static: false}) elem:ElementRef;
+    @ViewChild('messagefocus') elem:ElementRef;
 
     @Output() onViewUpdate = new EventEmitter();
     @Output() onComplete = new EventEmitter<{ status: boolean, data?: any }>();

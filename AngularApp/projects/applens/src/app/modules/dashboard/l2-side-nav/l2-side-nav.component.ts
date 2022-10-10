@@ -1,4 +1,3 @@
-import { FabPanelComponent } from '@angular-react/fabric';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IPanelProps, PanelType } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../applens-global';

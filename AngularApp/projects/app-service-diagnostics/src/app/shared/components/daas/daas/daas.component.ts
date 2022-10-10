@@ -11,7 +11,7 @@ import { WebSitesService } from '../../../../resources/web-sites/services/web-si
 import { catchError, delay, map, retry, retryWhen, take } from 'rxjs/operators';
 import { SiteDaasInfo } from '../../../models/solution-metadata';
 import { OperatingSystem } from '../../../models/site';
-import moment = require('moment');
+import * as moment from 'moment';
 
 class InstanceSelection {
   InstanceName: string;

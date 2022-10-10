@@ -1,4 +1,4 @@
-import { Component, Input, OnInit,Inject } from '@angular/core';
+import { Component, Input, OnInit,Inject, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IMessageBarProps, MessageBarType, PanelType } from 'office-ui-fabric-react';
 import { Observable } from 'rxjs';
@@ -11,7 +11,7 @@ import { Solution } from '../solution/solution';
   templateUrl: './solutions-panel.component.html',
   styleUrls: ['./solutions-panel.component.scss']
 })
-export class SolutionsPanelComponent implements OnInit {
+export class SolutionsPanelComponent implements OnInit, OnDestroy {
 
   constructor(private _activatedRoute:ActivatedRoute, private _themeService: GenericThemeService,  @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
     this.isPublic = config && config.isPublic;
@@ -53,7 +53,26 @@ export class SolutionsPanelComponent implements OnInit {
     });
   }
 
-  dismissPanel() {
+    dismissPanel() {
     this.isOpen = false;
+  }
+
+  ngOnDestroy(): void {
+    this.isOpen = false;
+    this.removePanelFromDom();
+  }
+
+  //
+  // Workaround as the Solutions Panel is not getting closed on
+  // router.navigateByUrl() call. solutionPanelComponentClass is
+  // just a bogus CSS class added to the <fab-panel> template to
+  // ensure we don't end up deleting other open fab-panel in DOM
+  //
+  
+  removePanelFromDom() {
+    const htmlElement = document.querySelectorAll<HTMLElement>('.ms-Panel.is-open.solutionPanelComponentClass');
+    if (htmlElement.length > 0) {
+      htmlElement[0].parentElement.remove();
+    }
   }
 }

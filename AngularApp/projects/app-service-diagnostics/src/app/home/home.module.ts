@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, SecurityContext } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../shared/shared.module';
 import { RouterModule } from '@angular/router';
@@ -27,7 +27,6 @@ import { MarkdownModule } from 'ngx-markdown';
 import { CXPChatService } from 'diagnostic-data';
 import { PortalReferrerResolverComponent } from '../shared/components/portal-referrer-resolver/portal-referrer-resolver.component';
 import { CXPChatCallerService } from '../shared-v2/services/cxp-chat-caller.service';
-import { FabCommandBarModule, FabSearchBoxModule, FabSpinnerModule } from '@angular-react/fabric';
 import { UncategorizedDetectorsResolver } from './resolvers/uncategorized-detectors.resolver';
 import { DetectorCategorizationService } from '../shared/services/detector-categorized.service';
 import { ToolNames } from '../shared/models/tools-constants';
@@ -58,6 +57,9 @@ import { SolutionOrchestratorComponent } from "diagnostic-data";
 import { LinuxNodeHeapDumpComponent } from '../shared/components/tools/linux-node-heap-dump/linux-node-heap-dump.component';
 import { LinuxNodeCpuProfilerComponent } from '../shared/components/tools/linux-node-cpu-profiler/linux-node-cpu-profiler.component';
 import { LinuxPythonCpuProfilerComponent } from '../shared/components/tools/linux-python-cpu-profiler/linux-python-cpu-profiler.component';
+import { FabSearchBoxModule } from '@angular-react/fabric/lib/components/search-box';
+import { FabCommandBarModule } from '@angular-react/fabric/lib/components/command-bar';
+import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -674,7 +676,9 @@ export const HomeRoutes = RouterModule.forChild([
         GenieModule,
         FabricModule,
         FormsModule,
-        MarkdownModule.forRoot(),
+        MarkdownModule.forRoot({
+            sanitize: SecurityContext.STYLE
+          }),
         FabSearchBoxModule,
         FabCommandBarModule,
         FabSpinnerModule

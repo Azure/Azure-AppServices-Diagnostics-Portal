@@ -21,7 +21,7 @@
   </fab-dialog-content>
   <fab-dialog-footer>
     <div class="diag-footer">
-      <fab-primary-button (onClick)="navigateToLandingPage()" contentClass="mr-3">Continue</fab-primary-button>
+      <fab-primary-button (onClick)="navigateToLandingPage()" [contentClass]="'mr-3'">Continue</fab-primary-button>
       <fab-default-button (onClick)="dismissDialog()">Cancel</fab-default-button>
     </div>
   </fab-dialog-footer>

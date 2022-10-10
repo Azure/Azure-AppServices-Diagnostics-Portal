@@ -59,20 +59,19 @@ import { GenericThemeService } from 'diagnostic-data';
     DiagnosticDataModule.forRoot(environment.production ? PUBLIC_PROD_CONFIGURATION : PUBLIC_DEV_CONFIGURATION),
     BrowserAnimationsModule,
     RouterModule.forRoot([
-      {
+    {
         path: 'test',
         component: TestInputComponent,
-      },
-      {
+    },
+    {
         path: 'resourceRedirect',
         component: ResourceRedirectComponent,
-      },
-      {
+    },
+    {
         path: 'resource',
-        loadChildren: './resources/resources.module#ResourcesModule',
-      }
-    ],
-    ),
+        loadChildren: () => import('./resources/resources.module').then(m => m.ResourcesModule),
+    }
+], { relativeLinkResolution: 'legacy' }),
     CustomMaterialModule,
     HighchartsChartModule,
     FabricModule

@@ -12,7 +12,7 @@
     </fab-dialog-content>
     <fab-dialog-footer>
       <div class="mt-5">
-        <fab-primary-button (onClick)="handleUserResponse(alertInfo.confirmationOptions[0])" contentClass="mr-3" tabindex="1" [disabled]="!(crossSubJustification && crossSubJustification.length>0)">
+        <fab-primary-button (onClick)="handleUserResponse(alertInfo.confirmationOptions[0])" [contentClass]="'mr-3'" tabindex="1" [disabled]="!(crossSubJustification && crossSubJustification.length>0)">
           {{!showLoaderInDialog? alertInfo.confirmationOptions[0].label: 'Loading...'}}
         </fab-primary-button>
         <fab-default-button (onClick)="handleUserResponse(alertInfo.confirmationOptions[1])" tabindex="1">
@@ -83,16 +83,10 @@
 
 <fab-panel *ngIf="!stillLoading && showDashboardContent" [isOpen]="_applensGlobal.openResourceInfoPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
 [styles]="panelStyles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
-(onDismiss)="dismissedHandler()">
+(onDismiss)="dismissedHandler()" [headerText]="'Resource Information'">
 <div>
   <div class="resource-content-container">
     <div>
-      <div style="margin-bottom: 10px">
-        <div
-          style="position: absolute; left:25px; right: 32px; top:0px; height: 32px; font-family: 'segoe UI'; font-size: 18px; line-height: 24px; font-weight: 600;display: flex; align-items: flex-end"
-          tabindex="0" aria-label="Resource Information">
-          Resource Information</div>
-      </div>
       <div class="resource-content">
         <div *ngIf="observerLink !== ''">
           <a href="{{observerLink}}" target="_blank">Observer Link

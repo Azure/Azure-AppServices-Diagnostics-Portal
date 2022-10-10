@@ -13,7 +13,7 @@ import { TelemetryService } from '../../services/telemetry/telemetry.service';
 export class MarkdownTextComponent implements AfterViewInit, OnDestroy {
 
   listenObj: any;
-  @ViewChild(MarkdownComponent, { static: false }) markdownDiv;
+  @ViewChild(MarkdownComponent) markdownDiv;
   @Input() detector: string = "";
   @Input() markdownData: string = "";
   

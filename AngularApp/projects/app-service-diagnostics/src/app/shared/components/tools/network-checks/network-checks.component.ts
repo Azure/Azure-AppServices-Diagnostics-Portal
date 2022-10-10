@@ -3,8 +3,7 @@ import { Component, ViewEncapsulation, } from '@angular/core';
 @Component({
     templateUrl: 'network-checks.component.html',
     styleUrls: ['../styles/daasstyles.scss', './network-checks.component.scss'],
-    encapsulation: ViewEncapsulation.None,
-    entryComponents: []
+    encapsulation: ViewEncapsulation.None
 })
 
 export class NetworkCheckComponent{

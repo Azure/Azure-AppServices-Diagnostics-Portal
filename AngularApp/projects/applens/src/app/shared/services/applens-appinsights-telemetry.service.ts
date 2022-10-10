@@ -3,7 +3,7 @@ import { ApplicationInsights, Snippet, IPageViewTelemetry, IEventTelemetry, IExc
 import { ITelemetryProvider } from 'diagnostic-data';
 import { of, forkJoin, throwError } from 'rxjs';
 import { map, retry, catchError } from 'rxjs/operators';
-import { DiagnosticApiService } from './diagnostic-api.service';
+import { DiagnosticApiAppSettingsService } from './diagnostic-api-app-settings.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,7 @@ export class ApplensAppinsightsTelemetryService implements ITelemetryProvider {
   environment: string = "";
   websiteHostName: string = "";
 
-  constructor(private _backendApi: DiagnosticApiService) { }
+  constructor(private _backendApi: DiagnosticApiAppSettingsService) { }
 
   public initialize() {
     if (!this.appInsights) {

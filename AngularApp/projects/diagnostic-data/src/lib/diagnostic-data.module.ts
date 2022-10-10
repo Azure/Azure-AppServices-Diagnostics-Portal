@@ -9,7 +9,7 @@ import { GenieGlobals } from './services/genie.service';
 import { MarkdownModule } from 'ngx-markdown';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { CommonModule } from '@angular/common';
-import { ModuleWithProviders, NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule, SecurityContext } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CardSelectionComponent } from './components/card-selection/card-selection.component';
 import { CommAlertComponent } from './components/comm-alert/comm-alert.component';
@@ -77,7 +77,6 @@ import { DetectorListAnalysisComponent } from './components/detector-list-analys
 import { AppDependenciesComponent } from './components/app-dependencies/app-dependencies.component';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { HighchartsGraphComponent } from './components/highcharts-graph/highcharts-graph.component';
-import { FabPanelModule, FabIconModule, FabChoiceGroupModule, FabSearchBoxModule, FabDropdownModule, FabDetailsListModule, FabTextFieldModule, FabMessageBarModule, FabButtonModule, FabTooltipModule, FabSpinnerModule, FabCalloutModule, FabCheckboxModule, FabPivotModule, FabLinkModule, FabDatePickerModule, FabCalendarModule, FabCommandBarModule, FabBreadcrumbModule } from '@angular-react/fabric';
 import { SummaryCardsComponent } from './components/summary-cards/summary-cards.component';
 import { InsightsV4Component } from './components/insights-v4/insights-v4.component';
 import { CardSelectionV4Component } from './components/card-selection-v4/card-selection-v4.component';
@@ -111,7 +110,7 @@ import { InfoStepComponent } from './components/step-views/info-step-view/info-s
 import { DropDownStepComponent, GetDropdownOptionsPipe } from './components/step-views/dropdown-step-view/dropdown-step.component';
 import { CheckStepComponent } from './components/step-views/check-step-view/check-step.component';
 import { CheckComponent, ConvertLevelToHealthStatusPipe } from './components/step-views/check-step-view/check.component';
-import {SolutionOrchestratorComponent} from "./components/solution-orchestrator/solution-orchestrator.component";
+import { SolutionOrchestratorComponent } from "./components/solution-orchestrator/solution-orchestrator.component";
 import { ButtonStepComponent } from './components/step-views/button-step-view/button-step.component';
 import { FabCoachmarkModule } from './modules/fab-coachmark/coachmark.module';
 import { FabTeachingBubbleModule } from './modules/fab-teachingbubble/teachingbubble.module';
@@ -127,143 +126,163 @@ import { GenericUserSettingService } from './services/generic-user-setting.servi
 import { FormStepComponent } from './components/step-views/form-step-view/form-step.component';
 import { GenericPortalService } from './services/generic-portal.service';
 
+import { FabIconModule } from '@angular-react/fabric/lib/components/icon';
+import { FabButtonModule } from '@angular-react/fabric/lib/components/button';
+import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown';
+import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
+import { FabCommandBarModule } from '@angular-react/fabric/lib/components/command-bar';
+import { FabBreadcrumbModule } from '@angular-react/fabric/lib/components/breadcrumb';
+import { FabCalloutModule } from '@angular-react/fabric/lib/components/callout';
+import { FabCheckboxModule } from '@angular-react/fabric/lib/components/checkbox';
+import { FabChoiceGroupModule } from '@angular-react/fabric/lib/components/choice-group';
+import { FabDatePickerModule } from '@angular-react/fabric/lib/components/date-picker';
+import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
+import { FabPivotModule } from '@angular-react/fabric/lib/components/pivot';
+import { FabLinkModule } from '@angular-react/fabric/lib/components/link';
+import { FabMessageBarModule } from '@angular-react/fabric/lib/components/message-bar';
+import { FabTooltipModule } from '@angular-react/fabric/lib/components/tooltip';
+import { FabSearchBoxModule } from '@angular-react/fabric/lib/components/search-box';
+import { FabCalendarModule } from '@angular-react/fabric/lib/components/calendar';
+import { FabDetailsListModule } from '@angular-react/fabric/lib/components/details-list';
+import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-field';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MarkdownModule.forRoot(),
-    FormsModule,
-    MonacoEditorModule.forRoot(),
-    CustomMaterialModule,
-    HighchartsChartModule,
-    RouterModule,
-    FabPanelModule,
-    FabIconModule,
-    FabChoiceGroupModule,
-    FabSearchBoxModule,
-    FabCoachmarkModule,
-    FabTeachingBubbleModule,
-    FabCommandBarModule,
-    FabDropdownModule,
-    InViewportModule,
-    FabDetailsListModule,
-    FabTextFieldModule,
-    FabMessageBarModule,
-    FabButtonModule,
-    FabTooltipModule,
-    FabSpinnerModule,
-    FabCalloutModule,
-    FabCheckboxModule,
-    FabPivotModule,
-    FabLinkModule,
-    FabBreadcrumbModule,
-    RouterModule,
-    FabDatePickerModule,
-    FabCalendarModule
-  ],
-  providers: [
-    ClipboardService
-  ],
-  declarations: [
-    TimeSeriesGraphComponent, DynamicDataComponent,
-    DataRenderBaseComponent, DataContainerComponent, TimeSeriesInstanceGraphComponent, DetectorViewComponent, DetectorSearchComponent,
-    DataSummaryComponent, EmailComponent, InsightsComponent, LoaderViewComponent, DynamicInsightComponent,
-    MarkdownViewComponent, DetectorListComponent, DetectorOrderPipe, StarRatingComponent, StarRatingFeedbackComponent,
-    DropdownComponent, StatusIconComponent, DetectorControlComponent, DetectorContainerComponent, InternalPipe,
-    CommAlertComponent, FeedbackComponent, CopyInsightDetailsComponent, MarkdownEditorComponent, CardSelectionComponent,
-    GuageGraphicComponent, GuageControlComponent, SolutionComponent, SolutionsComponent, FormComponent,
-    VerticalDisplayListComponent, VerticalDisplayListItemComponent, SolutionTypeTagComponent, SolutionDisplayComponent,
-    SolutionDisplayItemComponent,
-    ChangeAnalysisOnboardingComponent,
-    ChangesetsViewComponent,
-    ChangesViewComponent,
-    DetectorListAnalysisComponent,
-    AppDependenciesComponent,
-    AppInsightsMarkdownComponent,
-    HighchartsGraphComponent,
-    SummaryCardsComponent,
-    InsightsV4Component,
-    CardSelectionV4Component,
-    DropdownV4Component,
-    CxpChatLauncherComponent,
-    AppInsightsEnablementComponent,
-    ConnectAppInsightsComponent,
-    WebSearchComponent,
-    RenderFilterPipe,
-    DynamicInsightV4Component,
-    MarkdownTextComponent,
-    DataTableV4Component,
-    DocumentsSearchComponent,
-    LoaderDetectorViewComponent,
-    KeystoneInsightComponent,
-    SolutionViewContainerComponent,
-    FabDataTableFilterComponent,
-    NotificationRenderingComponent,
-    FabTabComponent,
-    SectionsComponent,
-    CollapsibleListComponent,
-    CollapsibleListFabricComponent,
-    CollapsibleListItemComponent,
-    InputStepComponent,
-    StepViewsRendererComponent,
-    InfoStepComponent,
-    DropDownStepComponent,
-    ButtonStepComponent,
-    CheckStepComponent,
-    FormStepComponent,
-    CheckComponent,
-    ConvertLevelToHealthStatusPipe,
-    GetDropdownOptionsPipe,
-    SolutionOrchestratorComponent,
-    FabCardComponent,
-    FabDataTableComponent,
-    SolutionsPanelComponent,
-    DetectorTimePickerComponent,
-    FabricFeedbackComponent
-  ],
-  entryComponents: [DetectorListAnalysisComponent],
-  exports: [
-    FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent,
-    DataSummaryComponent, LoaderViewComponent, LoaderDetectorViewComponent, StatusIconComponent, DetectorControlComponent,
-    DetectorContainerComponent, InternalPipe, CommAlertComponent, GuageControlComponent, SolutionComponent,
-    FormComponent, VerticalDisplayListComponent, VerticalDisplayListItemComponent, SolutionTypeTagComponent, DataContainerComponent,
-    ChangeAnalysisOnboardingComponent,
-    ChangesetsViewComponent,
-    ChangesViewComponent,
-    DetectorListAnalysisComponent,
-    AppInsightsMarkdownComponent,
-    FeedbackComponent,
-    CxpChatLauncherComponent,
-    AppInsightsEnablementComponent,
-    ConnectAppInsightsComponent,
-    WebSearchComponent,
-    SolutionViewContainerComponent,
-    FabTabComponent,
-    CollapsibleListComponent,
-    CollapsibleListFabricComponent,
-    CollapsibleListItemComponent,
-    InputStepComponent,
-    StepViewsRendererComponent,
-    InfoStepComponent,
-    DropDownStepComponent,
-    ButtonStepComponent,
-    CheckStepComponent,
-    FormStepComponent,
-    CheckComponent,
-    ConvertLevelToHealthStatusPipe,
-    GetDropdownOptionsPipe,
-    SolutionOrchestratorComponent,
-    FabCoachmarkModule,
-    FabTeachingBubbleModule,
-    FabTabComponent,
-    FabricFeedbackComponent,
-    FabDataTableComponent,
-    DetectorTimePickerComponent,
-    FabCardComponent
-  ],
+    imports: [
+        CommonModule,
+        MarkdownModule.forRoot({
+            sanitize: SecurityContext.STYLE
+        }),
+        FormsModule,
+        MonacoEditorModule.forRoot(),
+        CustomMaterialModule,
+        HighchartsChartModule,
+        RouterModule,
+        FabPanelModule,
+        FabIconModule,
+        FabChoiceGroupModule,
+        FabSearchBoxModule,
+        FabCoachmarkModule,
+        FabTeachingBubbleModule,
+        FabCommandBarModule,
+        FabDropdownModule,
+        InViewportModule,
+        FabDetailsListModule,
+        FabTextFieldModule,
+        FabMessageBarModule,
+        FabButtonModule,
+        FabTooltipModule,
+        FabSpinnerModule,
+        FabCalloutModule,
+        FabCheckboxModule,
+        FabPivotModule,
+        FabLinkModule,
+        FabBreadcrumbModule,
+        RouterModule,
+        FabDatePickerModule,
+        FabCalendarModule
+    ],
+    providers: [
+        ClipboardService
+    ],
+    declarations: [
+        TimeSeriesGraphComponent, DynamicDataComponent,
+        DataRenderBaseComponent, DataContainerComponent, TimeSeriesInstanceGraphComponent, DetectorViewComponent, DetectorSearchComponent,
+        DataSummaryComponent, EmailComponent, InsightsComponent, LoaderViewComponent, DynamicInsightComponent,
+        MarkdownViewComponent, DetectorListComponent, DetectorOrderPipe, StarRatingComponent, StarRatingFeedbackComponent,
+        DropdownComponent, StatusIconComponent, DetectorControlComponent, DetectorContainerComponent, InternalPipe,
+        CommAlertComponent, FeedbackComponent, CopyInsightDetailsComponent, MarkdownEditorComponent, CardSelectionComponent,
+        GuageGraphicComponent, GuageControlComponent, SolutionComponent, SolutionsComponent, FormComponent,
+        VerticalDisplayListComponent, VerticalDisplayListItemComponent, SolutionTypeTagComponent, SolutionDisplayComponent,
+        SolutionDisplayItemComponent,
+        ChangeAnalysisOnboardingComponent,
+        ChangesetsViewComponent,
+        ChangesViewComponent,
+        DetectorListAnalysisComponent,
+        AppDependenciesComponent,
+        AppInsightsMarkdownComponent,
+        HighchartsGraphComponent,
+        SummaryCardsComponent,
+        InsightsV4Component,
+        CardSelectionV4Component,
+        DropdownV4Component,
+        CxpChatLauncherComponent,
+        AppInsightsEnablementComponent,
+        ConnectAppInsightsComponent,
+        WebSearchComponent,
+        RenderFilterPipe,
+        DynamicInsightV4Component,
+        MarkdownTextComponent,
+        DataTableV4Component,
+        DocumentsSearchComponent,
+        LoaderDetectorViewComponent,
+        KeystoneInsightComponent,
+        SolutionViewContainerComponent,
+        FabDataTableFilterComponent,
+        NotificationRenderingComponent,
+        FabTabComponent,
+        SectionsComponent,
+        CollapsibleListComponent,
+        CollapsibleListFabricComponent,
+        CollapsibleListItemComponent,
+        InputStepComponent,
+        StepViewsRendererComponent,
+        InfoStepComponent,
+        DropDownStepComponent,
+        ButtonStepComponent,
+        CheckStepComponent,
+        CheckComponent,
+        ConvertLevelToHealthStatusPipe,
+        GetDropdownOptionsPipe,
+        SolutionOrchestratorComponent,
+        FabCardComponent,
+        FabDataTableComponent,
+        SolutionsPanelComponent,
+        DetectorTimePickerComponent,
+        FabricFeedbackComponent,
+        FormStepComponent
+    ],
+    exports: [
+        FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent,
+        DataSummaryComponent, LoaderViewComponent, LoaderDetectorViewComponent, StatusIconComponent, DetectorControlComponent,
+        DetectorContainerComponent, InternalPipe, CommAlertComponent, GuageControlComponent, SolutionComponent,
+        FormComponent, VerticalDisplayListComponent, VerticalDisplayListItemComponent, SolutionTypeTagComponent, DataContainerComponent,
+        ChangeAnalysisOnboardingComponent,
+        ChangesetsViewComponent,
+        ChangesViewComponent,
+        DetectorListAnalysisComponent,
+        AppInsightsMarkdownComponent,
+        FeedbackComponent,
+        CxpChatLauncherComponent,
+        AppInsightsEnablementComponent,
+        ConnectAppInsightsComponent,
+        WebSearchComponent,
+        SolutionViewContainerComponent,
+        FabTabComponent,
+        CollapsibleListComponent,
+        CollapsibleListFabricComponent,
+        CollapsibleListItemComponent,
+        InputStepComponent,
+        StepViewsRendererComponent,
+        InfoStepComponent,
+        DropDownStepComponent,
+        ButtonStepComponent,
+        CheckStepComponent,
+        CheckComponent,
+        ConvertLevelToHealthStatusPipe,
+        GetDropdownOptionsPipe,
+        SolutionOrchestratorComponent,
+        FabCoachmarkModule,
+        FabTeachingBubbleModule,
+        FabTabComponent,
+        FabricFeedbackComponent,
+        FabDataTableComponent,
+        DetectorTimePickerComponent,
+        FabCardComponent,
+        FormStepComponent
+    ]
 })
 export class DiagnosticDataModule {
-  static forRoot(config: DiagnosticDataConfig = INTERNAL_PROD_CONFIGURATION): ModuleWithProviders {
+  static forRoot(config: DiagnosticDataConfig = INTERNAL_PROD_CONFIGURATION): ModuleWithProviders<DiagnosticDataModule> {
     return {
       ngModule: DiagnosticDataModule,
       providers: [

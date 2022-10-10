@@ -12,11 +12,11 @@
     <a name="feedbackbutton" type="button" class="solution-feedback-button" id="solutionNotHelpfulButton" [ngClass]="{'btn-primary':noSelected}" (click)="feedbackButtonClicked(false)">
         No
     </a>
-    <fab-callout [target]="'#solutionNotHelpfulButton'" *ngIf="showReasonsCallout" (onDismiss)="closeReasonsCallout()">
+    <fab-callout [target]="'#solutionNotHelpfulButton'" [hidden]="!showReasonsCallout" (onDismiss)="closeReasonsCallout()">
       <div style="padding: 18px;">
         <fab-choice-group [selectedKey]="selectedCalloutOption && selectedCalloutOption.key" [options]="calloutOptions" (onChange)="setCalloutSelection($event)" [label]="'Please let us know why!'" [required]="true"></fab-choice-group>
         <div style="text-align: right;">
-          <fab-primary-button contentStyle="margin-top: 20px;"
+          <fab-primary-button [contentStyle]="'margin-top: 20px;'"
                     type="Submit" text='Submit' (click)="onCalloutSubmit()" [disabled]="calloutSubmitDisabled">
           </fab-primary-button>
         </div>

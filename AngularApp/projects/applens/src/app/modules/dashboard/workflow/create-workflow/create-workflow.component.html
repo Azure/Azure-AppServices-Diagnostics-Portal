@@ -1,0 +1,9 @@
+<main>
+  <div id="canvas" ngFlowchartCanvas [ngFlowchartOptions]="options" [disabled]="disabled"></div>
+</main>
+
+<ng-template #normalStep let-data>
+  <div class="card" [attr.name]="data.data.name" #card>
+    <span>{{ data.data.name }}</span>
+  </div>
+</ng-template>

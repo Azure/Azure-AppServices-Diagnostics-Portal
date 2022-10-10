@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AppInsightsMarkdownComponent } from './app-insights-markdown.component';
 
@@ -6,7 +6,7 @@ describe('AppInsightsMarkdownComponent', () => {
   let component: AppInsightsMarkdownComponent;
   let fixture: ComponentFixture<AppInsightsMarkdownComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ AppInsightsMarkdownComponent ]
     })

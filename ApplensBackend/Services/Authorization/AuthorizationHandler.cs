@@ -1,17 +1,13 @@
 using AppLensV3.Helpers;
-using AppLensV3.Models;
-using AppLensV3.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -59,7 +55,7 @@ namespace AppLensV3.Authorization
         }
     }
 
-    class SecurityGroupLocalDevelopment : AuthorizationHandler<SecurityGroupRequirement>
+    class SecurityGroupHandlerLocalDevelopment : AuthorizationHandler<SecurityGroupRequirement>
     {
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, SecurityGroupRequirement requirement)
         {
@@ -96,41 +92,23 @@ namespace AppLensV3.Authorization
     /// </summary>
     class SecurityGroupHandler : AuthorizationHandler<SecurityGroupRequirement>
     {
-        private readonly string graphUrl = "https://graph.microsoft.com/v1.0/users/{0}/checkMemberGroups";
         private readonly int loggedInUserCacheClearIntervalInMs = 60 * 60 * 1000; // 1 hour
         private readonly int loggedInUserExpiryIntervalInSeconds = 6 * 60 * 60; // 6 hours
         private readonly ILogger<SecurityGroupHandler> _logger;
+        private ConcurrentDictionary<string, CachedUser> loggedInUsersCache;
 
         public SecurityGroupHandler(IHttpContextAccessor httpContextAccessor, IConfiguration configuration, ILogger<SecurityGroupHandler> logger)
         {
             _logger = logger;
-            loggedInUsersCache = new Dictionary<string, Dictionary<string, CachedUser>>();
+            loggedInUsersCache = new ConcurrentDictionary<string, CachedUser>();
             var applensAccess = new SecurityGroupConfig();
             configuration.Bind("ApplensAccess", applensAccess);
-            loggedInUsersCache[applensAccess.GroupId] = new Dictionary<string, CachedUser>();
 
             ClearLoggedInUserCache();
             _httpContextAccessor = httpContextAccessor;
         }
 
         private IHttpContextAccessor _httpContextAccessor = null;
-        private Dictionary<string, Dictionary<string, CachedUser>> loggedInUsersCache;
-
-        private readonly Lazy<HttpClient> _client = new Lazy<HttpClient>(() =>
-        {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            return client;
-        });
-
-        private HttpClient _httpClient
-        {
-            get
-            {
-                return _client.Value;
-            }
-        }
 
         /// <summary>
         /// Task to clear expired users from cache at regular interval.
@@ -142,15 +120,12 @@ namespace AppLensV3.Authorization
             {
                 _logger.LogInformation($"Clearing LoggedInUserCache to remove entries older than {loggedInUserExpiryIntervalInSeconds} seconds.");
                 long now = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-                foreach (KeyValuePair<string, Dictionary<string, CachedUser>> securityGroupCache in loggedInUsersCache)
+                foreach (KeyValuePair<string, CachedUser> user in loggedInUsersCache)
                 {
-                    foreach (KeyValuePair<string, CachedUser> user in securityGroupCache.Value)
+                    if ((now - user.Value.ts) > loggedInUserExpiryIntervalInSeconds)
                     {
-                        if ((now - user.Value.ts) > loggedInUserExpiryIntervalInSeconds)
-                        {
-                            // Pop out user from logged in users list
-                            securityGroupCache.Value.Remove(user.Key);
-                        }
+                        // Pop out user from logged in users list
+                        loggedInUsersCache.TryRemove(user);
                     }
                 }
 
@@ -161,59 +136,33 @@ namespace AppLensV3.Authorization
         /// <summary>
         /// Adds user to cached dictionary.
         /// </summary>
-        /// <param name="groupId">groupId.</param>
         /// <param name="userId">userId.</param>
-        private void AddUserToCache(string groupId, string userId, DateTime userSince)
+        /// <param name="userSince">userSince.</param>
+        private void AddUserToCache(string userId, DateTime userSince)
         {
-            Dictionary<string, CachedUser> securityGroup;
-            if (loggedInUsersCache.TryGetValue(groupId, out securityGroup))
+            CachedUser user;
+            long ts = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            if (loggedInUsersCache.TryGetValue(userId, out user))
             {
-                CachedUser user;
-                long ts = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-                if (securityGroup.TryGetValue(userId, out user))
-                {
-                    securityGroup[userId].ts = ts;
-                }
-                else
-                {
-                    securityGroup.Add(userId, new CachedUser(userSince, ts));
-                }
+                loggedInUsersCache[userId].ts = ts;
+            }
+            else
+            {
+                loggedInUsersCache.TryAdd(userId, new CachedUser(userSince, ts));
             }
         }
 
         /// <summary>
         /// Checks cached dictionary to find if user exists.
         /// </summary>
-        /// <param name="groupId">groupId.</param>
         /// <param name="userId">userId.</param>
         /// <returns>boolean value.</returns>
-        private bool IsUserInCache(string groupId, string userId, out DateTime userSince)
+        private bool IsUserInCache(string userId)
         {
-            Dictionary<string, CachedUser> securityGroup;
-            if (loggedInUsersCache.TryGetValue(groupId, out securityGroup))
+            CachedUser user;
+            if (loggedInUsersCache.TryGetValue(userId, out user))
             {
-                CachedUser user;
-                if (securityGroup.TryGetValue(userId, out user))
-                {
-                    userSince = user.UserSince;
-                    return true;
-                }
-            }
-
-            userSince = DateTime.UtcNow;
-            return false;
-        }
-
-        private bool IsUserInCache(string groupId, string userId)
-        {
-            Dictionary<string, CachedUser> securityGroup;
-            if (loggedInUsersCache.TryGetValue(groupId, out securityGroup))
-            {
-                CachedUser user;
-                if (securityGroup.TryGetValue(userId, out user))
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
@@ -230,7 +179,7 @@ namespace AppLensV3.Authorization
             bool isUserPartOfSecurityGroup = await Utilities.CheckUserGroupMembership(userId, securityGroupObjectId);
             if (isUserPartOfSecurityGroup)
             {
-                AddUserToCache(securityGroupObjectId, userId, DateTime.UtcNow);
+                AddUserToCache(userId, DateTime.UtcNow);
                 return true;
             }
 
@@ -260,7 +209,7 @@ namespace AppLensV3.Authorization
                     DateTime userSince;
                     if (userId != null)
                     {
-                        if (IsUserInCache(requirement.SecurityGroupObjectId, userId))
+                        if (IsUserInCache(userId))
                         {
                             isMember = true;
                         }

@@ -10,10 +10,10 @@ import { WebSitesService } from '../../../../resources/web-sites/services/web-si
   styleUrls: ['../styles/daasstyles.scss']
 })
 export class LinuxNodeCpuProfilerComponent extends DaasBaseComponent implements OnInit {
-  title: string = 'Collect Node CPU Profiler Trace';
-  description: string = 'If your app is consuming CPU, collect a profiler trace to identify the application code consuming high CPU.';
+  title: string = 'Collect Node Profiler Trace';
+  description: string = 'If your app is respondingly slowly, collect a profiler trace to identify the root cause.';
   thingsToKnowBefore: string[] = [
-    'The trace file helps in diagnosing High CPU issues in your Node app.',
+    'The trace file helps in diagnosing performance issues in your Node app.',
     'The trace is collected using Node V8 inspector.'
   ];
   diagnoserNameLookup: string;

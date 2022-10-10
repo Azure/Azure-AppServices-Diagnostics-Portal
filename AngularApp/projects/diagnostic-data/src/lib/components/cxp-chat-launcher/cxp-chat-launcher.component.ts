@@ -139,7 +139,7 @@ In case chat did not start in a pop up window, disable your pop up blocker and c
     if (this.chatUrl != '') {
       if (this.diagnosticLogsConsent == 'Yes' || this.diagnosticLogsConsent == 'No') {
         this.completeChatUrl = `${this.chatUrl}&diagnosticsConsent=${(this.diagnosticLogsConsent == 'Yes')}`;
-        window.open(this.completeChatUrl, '_blank', this.windowFeatures, false);
+        window.open(this.completeChatUrl, '_blank', this.windowFeatures);
         this._cxpChatService.logUserActionOnChat('ChatUrlOpened', this.trackingId, this.completeChatUrl);
         this.showChatOpenedMessage();
       }

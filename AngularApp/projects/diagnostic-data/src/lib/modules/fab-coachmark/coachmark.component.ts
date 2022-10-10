@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { ReactWrapperComponent } from '@angular-react/core';
+import { AngularReact, ReactWrapperComponent } from '@angular-react/core';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import { ICoachmarkProps } from 'office-ui-fabric-react/lib/Coachmark';
 
+@AngularReact()
 @Component({
   selector: 'fab-coachmark',
   exportAs: 'fabCoachmark',
@@ -51,7 +52,7 @@ import { ICoachmarkProps } from 'office-ui-fabric-react/lib/Coachmark';
       <ReactContent><ng-content></ng-content></ReactContent>
     </Coachmark>
   `,
-  styles: ['react-renderer'],
+  styles: [],
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class FabCoachmarkComponent extends ReactWrapperComponent<ICoachmarkProps> {

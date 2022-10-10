@@ -28,12 +28,9 @@ import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'dynamic-component',
-    entryComponents: [TextMessageComponent, MainMenuComponent, ButtonMessageComponent, FeedbackComponent,
-        SolutionsMessageComponent, GraphMessageComponent, ProblemStatementMessageComponent, TalkToAgentMessageComponent, CategoryMenuComponent,
-        DetectorSummaryComponent, DocumentSearchComponent, DocumentSearchResultsComponent],
     template: `
     <div #dynamicComponentContainer></div>
-  `,
+  `
 })
 export class DynamicComponent {
     currentComponent = null;

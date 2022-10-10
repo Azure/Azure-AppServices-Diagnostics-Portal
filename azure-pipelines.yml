@@ -7,7 +7,7 @@ trigger:
 - master
 
 pool:
-  vmImage: 'Ubuntu-18.04'
+  vmImage: 'Ubuntu-latest'
 
 steps:
 - task: NodeTool@0
@@ -17,7 +17,7 @@ steps:
 
 - script: |
     cd AngularApp
-    npm install -g @angular/cli@8.0.2
+    npm install -g @angular/cli@13.3.9
     npm install
     npm run build
   displayName: 'npm install and build'

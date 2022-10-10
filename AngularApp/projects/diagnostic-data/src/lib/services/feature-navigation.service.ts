@@ -2,6 +2,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 Injectable()
+@Injectable()
 export class FeatureNavigationService {
 
   public lastDetector: string = null;

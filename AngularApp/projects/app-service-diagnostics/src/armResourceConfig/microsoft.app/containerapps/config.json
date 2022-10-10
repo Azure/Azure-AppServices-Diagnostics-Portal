@@ -45,7 +45,48 @@
       "createFlowForCategory": true,
       "chatEnabled": false,
       "overviewDetectorId": "containerenvinsights"
-		}        
+		},
+    {
+      "id": "containerappsdaprca",
+      "name": "Dapr Components Insights",
+      "description": "Check the health of the Dapr Components of your container apps",
+      "keywords": [
+        "Dapr Components Failures",
+        "Dapr"
+      ],
+      "color": "rgb(208, 175, 239)",
+      "createFlowForCategory": true,
+      "chatEnabled": false,
+      "overviewDetectorId": "daprinsights"
+		},
+    {
+      "id": "configurationandmanagementca",
+      "name": "Configuration and Management",
+      "description": "Find out if your contianer app features are misconfigured",
+      "keywords": [
+        "Configuration",
+        "Management",
+        "Authentication"
+      ],
+      "color": "rgb(208, 175, 239)",
+      "createFlowForCategory": true,
+      "chatEnabled": false,
+      "overviewDetectorId": "cappconfigandmanagement"
+		},
+    {
+      "id": "sslanddomainsca",
+      "name": "SSL and Domains",
+      "description": "Discover issues with certificates and custom domains",
+      "keywords": [
+        "Auth",
+        "Binding",
+        "Cert Failures"
+      ],
+      "color": "rgb(208, 175, 239)",
+      "createFlowForCategory": true,
+      "chatEnabled": false,
+      "overviewDetectorId": "cappcertificates"
+		}
 	],
   "disableGenie": true,
 	"pesId": "17677",

@@ -1,10 +1,11 @@
-import { FabDetailsListComponent, FabSearchBoxComponent } from '@angular-react/fabric';
 import { AfterContentInit, Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { DetailsListLayoutMode, IColumn, IListProps, ISelection, SelectionMode, Selection } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
 import { DataTableResponseObject } from '../../models/detector';
 import { TableColumnOption, TableFilter, TableFilterSelectionOption } from '../../models/data-table';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
+import { FabDetailsListComponent } from '@angular-react/fabric/lib/components/details-list';
+import { FabSearchBoxComponent } from '@angular-react/fabric/lib/components/search-box';
 
 
 const columnMinWidth: number = 100;
@@ -18,10 +19,10 @@ const columnMaxWidth: number = 250;
 export class FabDataTableComponent implements AfterContentInit {
 
   constructor(private telemetryService: TelemetryService) { }
-  table:DataTableResponseObject;
+  table: DataTableResponseObject;
 
   @Input("table") private set _table(t: DataTableResponseObject) {
-    if(!!t) {
+    if (!!t) {
       this.table = t;
       this.tableObserve.next(t);
     }
@@ -57,7 +58,7 @@ export class FabDataTableComponent implements AfterContentInit {
   filterSelectionMap: Map<string, Set<string>> = new Map<string, Set<string>>();
   @ViewChild(FabDetailsListComponent, { static: true }) fabDetailsList: FabDetailsListComponent;
   @ViewChild('emptyTableFooter', { static: true }) emptyTableFooter: TemplateRef<any>;
-  @ViewChild(FabSearchBoxComponent, { static: false }) fabSearchBox: any;
+  @ViewChild(FabSearchBoxComponent) fabSearchBox: any;
   tableObserve = new BehaviorSubject<DataTableResponseObject>(null);
   selection: ISelection = new Selection({
     onSelectionChanged: () => {
@@ -98,7 +99,7 @@ export class FabDataTableComponent implements AfterContentInit {
 
       //Ideally,it should be enable if table is too large.
       //But for now, if enabled, it will show only 40 rows
-      this.fabDetailsList.onShouldVirtualize = (list: IListProps<any>) => {
+      this.fabDetailsList.onShouldVirtualize = () => {
         // return this.rows.length > this.rowLimit ? true : false;
         return false;
       }
@@ -195,19 +196,18 @@ export class FabDataTableComponent implements AfterContentInit {
   }
 
   updateSearchValue(e: { newValue: any }) {
-    if (!!e.newValue && !!e.newValue.currentTarget && !!e.newValue.currentTarget.value)
-    {
-         this.searchValue = e.newValue.currentTarget.value;
-         const val = this.searchValue.toLowerCase();
-        if (this.searchTimeout) {
+    if (!!e.newValue && !!e.newValue.currentTarget && !!e.newValue.currentTarget.value) {
+      this.searchValue = e.newValue.currentTarget.value;
+      const val = this.searchValue.toLowerCase();
+      if (this.searchTimeout) {
         clearTimeout(this.searchTimeout);
-        }
-        this.searchTimeout = setTimeout(() => {
+      }
+      this.searchTimeout = setTimeout(() => {
         this.telemetryService.logEvent("TableSearch", {
-            'SearchValue': val
+          'SearchValue': val
         });
-        }, 5000);
-        this.updateTable();
+      }, 5000);
+      this.updateTable();
     }
   }
 
@@ -283,7 +283,7 @@ export class FabDataTableComponent implements AfterContentInit {
   private checkColumIsVisible(name: string): boolean {
     const option = this.getColumnOption(name);
     let visible = true;
-    if(option && option.visible === false) visible = false;
+    if (option && option.visible === false) visible = false;
     return option === null ? true : visible;
   }
 

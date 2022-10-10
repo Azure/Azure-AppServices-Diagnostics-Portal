@@ -34,7 +34,7 @@
     </fab-choice-group>
   </div>
   <div class="user-setting-section" style="border-top: 1px solid gray;">
-    <fab-primary-button (onClick)="applyUserSettingChange()" contentClass="mr-5">Apply</fab-primary-button>
+    <fab-primary-button (onClick)="applyUserSettingChange()" [contentClass]="'mr-5'">Apply</fab-primary-button>
     <fab-default-button (onClick)="cancelUserSettingChange()">Cancel</fab-default-button>
   </div>
 </div>

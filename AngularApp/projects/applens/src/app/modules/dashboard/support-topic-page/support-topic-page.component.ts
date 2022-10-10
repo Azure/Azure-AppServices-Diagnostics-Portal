@@ -4,7 +4,6 @@ import { DetectorMetaData, SupportTopic } from 'diagnostic-data';
 import { map } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from '@angular/router';
-import { AvatarModule } from 'ngx-avatar';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { ApplensSupportTopicService } from '../services/applens-support-topic.service';
 import { HttpClient } from '@angular/common/http';

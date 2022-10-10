@@ -30,7 +30,7 @@
             </div>
           </div>
           <div>
-            <fab-primary-button (onClick)="submitFeedback()" [disabled]="rating == 0 &&feedbackText === ''" contentClass="feedback-submit-button">Submit
+            <fab-primary-button (onClick)="submitFeedback()" [disabled]="rating == 0 &&feedbackText === ''" [contentClass]="'feedback-submit-button'">Submit
               feedback
             </fab-primary-button>
           </div>
@@ -42,7 +42,8 @@
 
   <fab-panel [isOpen]="submitted" [isLightDismiss]="true" [type]="type" [customWidth]="'400px'"
     [isHiddenOnDismiss]="true" [hasCloseButton]="false" [closeButtonAriaLabel]="'close'" [styles]="submittedPanelStyles"
-    [isBlocking]="false" (onDismiss)="dismissedSubmittedHandler()" (onOpened)="onOpenSubmittedPanel()">
+    [isBlocking]="false" (onDismiss)="dismissedSubmittedHandler()" (onOpened)="onOpenSubmittedPanel()"
+    [className]="'submitted-panel-height'">
     <div style="padding: 5px 20px;">
       <div class="submitted-panel-text panel-text">
         <div>

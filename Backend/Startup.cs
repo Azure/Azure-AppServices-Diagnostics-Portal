@@ -67,6 +67,10 @@ namespace Backend
             services.AddSingleton<IEncryptionService, EncryptionService>();
             services.AddSingleton<IAppInsightsService, AppInsightsService>();
             services.AddSingleton<IHealthCheckService, HealthCheckService>();
+
+            // https://stackoverflow.com/questions/52036998/how-do-i-get-a-reference-to-an-ihostedservice-via-dependency-injection-in-asp-ne
+            services.AddSingleton<CertificateService>();
+            services.AddHostedService(p => p.GetRequiredService<CertificateService>());
         }
 
 

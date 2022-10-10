@@ -13,6 +13,7 @@ import { PortalKustoTelemetryService } from './portal-kusto-telemetry.service';
 import { Guid } from '../utilities/guid';
 import { Router } from '@angular/router';
 import { TelemetryPayload } from 'diagnostic-data';
+import { ArmResource } from '../../shared-v2/models/arm';
 
 @Injectable()
 export class ArmService {
@@ -133,7 +134,7 @@ export class ArmService {
         return uri;
     }
 
-    getResource<T>(resourceUri: string, apiVersion?: string, invalidateCache: boolean = false): Observable<{} | ResponseMessageEnvelope<T>> {
+    getResource<T>(resourceUri: string, apiVersion?: string, invalidateCache: boolean = false, additionalHeaders?: Map<string, string>): Observable<{} | ResponseMessageEnvelope<T>> {
         if (!resourceUri.startsWith('/')) {
             resourceUri = '/' + resourceUri;
         }
@@ -142,7 +143,11 @@ export class ArmService {
         this.getSubscriptionLocation(resourceUri.split("subscriptions/")[1].split("/")[0]).subscribe(response => {
             subscriptionLocation = response.body['subscriptionPolicies'] ? response.body['subscriptionPolicies']['locationPlacementId'] : '';
         });
-        let additionalHeaders = new Map<string, string>();
+
+        if (!!additionalHeaders == false){
+            additionalHeaders = new Map<string, string>();
+        }
+
         additionalHeaders.set('x-ms-subscription-location-placementid', subscriptionLocation);
         // When x-ms-diagversion is set to 1, the requests will be sent to DiagnosticRole.
         //If the value is set to other than 1 or if the header is not present at all, requests will go to runtimehost
@@ -567,6 +572,9 @@ export class ArmService {
     }
 
     getResourceCollection<T>(resourceId: string, apiVersion?: string, invalidateCache: boolean = false, queryParams: any[] = []): Observable<{} | ResponseMessageCollectionEnvelope<T>> {
+        if (!resourceId.startsWith('/')) {
+            resourceId = '/' + resourceId;
+        }
         var url = `${this.armUrl}${resourceId}?api-version=${this.getApiVersion(resourceId, apiVersion)}`;
         if (queryParams && queryParams.length > 0) {
             queryParams.forEach(param => {

@@ -38,9 +38,9 @@ import { GenericResourceService } from '../../services/generic-resource-service'
     ]
 })
 export class DetectorSearchComponent extends DataRenderBaseComponent implements OnInit {
-    @ViewChild ('charAlertRef', {static: false}) charAlertRef: ElementRef;
-    @ViewChild ('searchInputBox', {static: false}) searchInputBox: ElementRef;
-    @ViewChild ('searchResultsSection', {static: false}) searchResultsSection: ElementRef;
+    @ViewChild('charAlertRef') charAlertRef: ElementRef;
+    @ViewChild('searchInputBox') searchInputBox: ElementRef;
+    @ViewChild('searchResultsSection') searchResultsSection: ElementRef;
     startTime: Moment;
     endTime: Moment;
     isPublic: boolean = false;

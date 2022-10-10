@@ -1,5 +1,5 @@
 
-import { map, retry, catchError } from 'rxjs/operators';
+import { map, retry, catchError, flatMap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ResponseMessageEnvelope } from '../models/responsemessageenvelope';
@@ -7,6 +7,7 @@ import { Observable, of } from 'rxjs';
 import { AuthService } from '../../startup/services/auth.service';
 import { ArmService } from './arm.service';
 import { DetectorResponse, DetectorMetaData } from 'diagnostic-data';
+import { ArmResource } from '../../shared-v2/models/arm';
 
 @Injectable()
 export class GenericApiService {
@@ -73,8 +74,21 @@ export class GenericApiService {
             if (additionalQueryParams != undefined) {
                 path += additionalQueryParams;
             }
-            return this._armService.getResource<DetectorResponse>(path, null, refresh).pipe(
-                map((response: ResponseMessageEnvelope<DetectorResponse>) => response.properties));
+
+            return this._armService.getArmResource<ArmResource>(resourceId).pipe(
+                flatMap(resource => {
+                    let requestHeaders = new Map<string, string>();
+                    requestHeaders.set('x-ms-location', resource.location);
+                    if (resource.properties && resource.properties.sku) {
+                        requestHeaders.set('x-ms-sku', resource.properties.sku);
+                    }
+                    return this._armService.getResource<DetectorResponse>(path, null, refresh, requestHeaders).pipe(
+                        map((response: ResponseMessageEnvelope<DetectorResponse>) => {
+                            return response.properties;
+                        })
+                    )
+                })
+            );
         }
     }
 

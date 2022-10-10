@@ -89,10 +89,10 @@
 
                 <div style="margin-top:20px;">
 
-                  <fab-default-button *ngIf="!monitoringEnabled" contentStyle="float:left" (onClick)="stopMonitoring(false)">
+                  <fab-default-button *ngIf="!monitoringEnabled" [contentStyle]="'float:left'" (onClick)="stopMonitoring(false)">
                     Run a new monitor
                   </fab-default-button>
-                  <fab-default-button *ngIf="monitoringEnabled" contentStyle="float:left" (onClick)="stopMonitoring(false)">
+                  <fab-default-button *ngIf="monitoringEnabled" [contentStyle]="'float:left'" (onClick)="stopMonitoring(false)">
                     Stop monitor
                   </fab-default-button>
                   <div class="disable-agent" *ngIf="!monitoringEnabled">

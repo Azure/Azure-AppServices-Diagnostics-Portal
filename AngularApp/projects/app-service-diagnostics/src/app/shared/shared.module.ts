@@ -1,5 +1,5 @@
 import { PortalKustoTelemetryService } from './services/portal-kusto-telemetry.service';
-import { NgModule, ModuleWithProviders } from '@angular/core';
+import { NgModule, ModuleWithProviders, SecurityContext } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -88,32 +88,6 @@ import { ConfigureStorageAccountComponent } from './components/daas/configure-st
 import { JavaFlightRecorderComponent } from './components/daas/java-flight-recorder/java-flight-recorder.component';
 import { JavaFlightRecorderToolComponent } from './components/tools/java-flight-recorder-tool/java-flight-recorder-tool.component';
 import { CrashMonitoringComponent } from './components/tools/crash-monitoring/crash-monitoring.component';
-import {
-    FabButtonModule,
-    FabCheckboxModule,
-    FabDatePickerModule,
-    FabFabricModule,
-    FabDropdownModule,
-    FabGroupModule,
-    FabGroupedListModule,
-    FabHoverCardModule,
-    FabIconModule,
-    FabImageModule,
-    FabLinkModule,
-    FabMessageBarModule,
-    FabModalModule,
-    FabPanelModule,
-    FabPivotModule,
-    FabSearchBoxModule,
-    FabSliderModule,
-    FabSpinnerModule,
-    FabToggleModule,
-    FabTooltipModule,
-    FabSpinButtonModule,
-    FabTextFieldModule,
-    FabContextualMenuModule,
-    FabChoiceGroupModule
-} from '@angular-react/fabric';
 import { CrashMonitoringAnalysisComponent } from './components/tools/crash-monitoring/crash-monitoring-analysis/crash-monitoring-analysis.component';
 import { RiskAlertsNotificationComponent } from './components/risk-alerts-notification/risk-alerts-notification.component';
 import { RiskAlertsPanelComponent } from './components/risk-alerts-panel/risk-alerts-panel.component';
@@ -127,6 +101,30 @@ import { NetworkTroubleshooterComponent } from './components/tools/network-troub
 import { LinuxPythonCpuProfilerComponent } from './components/tools/linux-python-cpu-profiler/linux-python-cpu-profiler.component';
 import { LinuxNodeHeapDumpComponent } from './components/tools/linux-node-heap-dump/linux-node-heap-dump.component';
 import { LinuxNodeCpuProfilerComponent } from './components/tools/linux-node-cpu-profiler/linux-node-cpu-profiler.component';
+import { FabIconModule } from '@angular-react/fabric/lib/components/icon';
+import { FabFabricModule } from '@angular-react/fabric/lib/components/fabric';
+import { FabButtonModule } from '@angular-react/fabric/lib/components/button';
+import { FabImageModule } from '@angular-react/fabric/lib/components/image';
+import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown';
+import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
+import { FabCheckboxModule } from '@angular-react/fabric/lib/components/checkbox';
+import { FabGroupedListModule } from '@angular-react/fabric/lib/components/grouped-list';
+import { FabChoiceGroupModule } from '@angular-react/fabric/lib/components/choice-group';
+import { FabDatePickerModule } from '@angular-react/fabric/lib/components/date-picker';
+import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
+import { FabToggleModule } from '@angular-react/fabric/lib/components/toggle';
+import { FabContextualMenuModule } from '@angular-react/fabric/lib/components/contextual-menu';
+import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-field';
+import { FabSpinButtonModule } from '@angular-react/fabric/lib/components/spin-button';
+import { FabGroupModule } from '@angular-react/fabric/lib/components/group';
+import { FabSearchBoxModule } from '@angular-react/fabric/lib/components/search-box';
+import { FabSliderModule } from '@angular-react/fabric/lib/components/slider';
+import { FabTooltipModule } from '@angular-react/fabric/lib/components/tooltip';
+import { FabModalModule } from '@angular-react/fabric/lib/components/modal';
+import { FabHoverCardModule } from '@angular-react/fabric/lib/components/hover-card';
+import { FabMessageBarModule } from '@angular-react/fabric/lib/components/message-bar';
+import { FabLinkModule } from '@angular-react/fabric/lib/components/link';
+import { FabPivotModule } from '@angular-react/fabric/lib/components/pivot';
 
 @NgModule({
     declarations: [
@@ -232,7 +230,9 @@ import { LinuxNodeCpuProfilerComponent } from './components/tools/linux-node-cpu
         FabSpinButtonModule,
         FabTextFieldModule,
         FabContextualMenuModule,
-        MarkdownModule.forRoot()
+        MarkdownModule.forRoot({
+            sanitize: SecurityContext.STYLE
+        })
     ],
     exports: [
         CommonModule,
@@ -282,11 +282,10 @@ import { LinuxNodeCpuProfilerComponent } from './components/tools/linux-node-cpu
         GenericAnalysisComponent,
         RiskAlertsNotificationComponent,
         RiskAlertsPanelComponent
-    ],
-    entryComponents: [GenericAnalysisComponent, GenericDetectorComponent]
+    ]
 })
 export class SharedModule {
-    static forRoot(): ModuleWithProviders {
+    static forRoot(): ModuleWithProviders<SharedModule> {
         return {
             ngModule: SharedModule,
             providers: [

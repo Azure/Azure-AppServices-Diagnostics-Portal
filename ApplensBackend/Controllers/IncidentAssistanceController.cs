@@ -187,5 +187,62 @@ namespace AppLensV3.Controllers
                 return BadRequest("Request Body cannot be empty");
             }
         }
+
+        [HttpGet("getTeamTemplateAuthors/{teamId}/{incidentType}")]
+        [HttpOptions("getTeamTemplateAuthors/{teamId}/{incidentType}")]
+        public async Task<IActionResult> GetTeamTemplateAuthors(string teamId, string incidentType)
+        {
+            string userId = GetUserId();
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return StatusCode(401, "Invalid user. Does not contain valid upn.");
+            }
+            var response = await _incidentAssistanceService.GetTeamTemplateAuthors(teamId, incidentType, userId);
+            var responseTask = response.Content.ReadAsStringAsync();
+            return StatusCode((int)response.StatusCode, await responseTask);
+        }
+
+        [HttpPost("updateTeamTemplateAuthors/{teamId}/{incidentType}")]
+        [HttpOptions("updateTeamTemplateAuthors/{teamId}/{incidentType}")]
+        public async Task<IActionResult> UpdateTeamTemplateAuthors([FromBody] JToken body, string teamId, string incidentType)
+        {
+            string userId = GetUserId();
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return StatusCode(401, "Invalid user. Does not contain valid upn.");
+            }
+            if (string.IsNullOrWhiteSpace(teamId))
+            {
+                return BadRequest("teamId cannot be empty");
+            }
+            if (string.IsNullOrWhiteSpace(incidentType))
+            {
+                return BadRequest("incidentType cannot be empty");
+            }
+            if (body != null)
+            {
+                var response = await _incidentAssistanceService.UpdateTeamTemplateAuthors(teamId, incidentType, body, userId);
+                var responseTask = response.Content.ReadAsStringAsync();
+                return StatusCode((int)response.StatusCode, await responseTask);
+            }
+            else
+            {
+                return BadRequest("Request Body cannot be empty");
+            }
+        }
+
+        [HttpGet("getAvailableValidations/{teamId}/{incidentType}")]
+        [HttpOptions("getAvailableValidations/{teamId}/{incidentType}")]
+        public async Task<IActionResult> GetAvailableValidations(string teamId, string incidentType)
+        {
+            string userId = GetUserId();
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return StatusCode(401, "Invalid user. Does not contain valid upn.");
+            }
+            var response = await _incidentAssistanceService.GetAvailableValidations(teamId, incidentType, userId);
+            var responseTask = response.Content.ReadAsStringAsync();
+            return StatusCode((int)response.StatusCode, await responseTask);
+        }
     }
 }

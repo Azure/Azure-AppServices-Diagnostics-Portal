@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from '@angular/router';
 import { DiagnosticService } from 'diagnostic-data';
-import { AvatarModule } from 'ngx-avatar';
+import { AvatarModule } from 'ngx-avatars';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { HttpMethod } from '../../../shared/models/http';
 import { ApplensSupportTopicService } from '../services/applens-support-topic.service';

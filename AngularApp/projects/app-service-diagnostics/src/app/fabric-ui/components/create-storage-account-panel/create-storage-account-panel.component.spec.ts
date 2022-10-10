@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CreateStorageAccountPanelComponent } from './create-storage-account-panel.component';
 
@@ -6,7 +6,7 @@ describe('CreateStorageAccountPanelComponent', () => {
   let component: CreateStorageAccountPanelComponent;
   let fixture: ComponentFixture<CreateStorageAccountPanelComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CreateStorageAccountPanelComponent ]
     })

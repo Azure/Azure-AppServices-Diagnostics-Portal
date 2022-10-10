@@ -91,4 +91,21 @@ export class StringUtilities {
         }
         return patternTable;
     }
+
+    private static EscapeRegExp(input: string): string {
+        const regex = new RegExp(/[.*+?^${}()|[\]\\]/, 'g');
+        return input.replace(regex, '\\$&');
+    }
+
+    private static ReplaceNewlines(input: string): string {
+        const regex = new RegExp(/(?:\r\n|\r|\n)/, 'g');
+        return input.replace(regex, '\n');
+    }
+
+    public static ReplaceAll(input: string, target: string, replacement: string): string {
+        var cleanedRegex = StringUtilities.ReplaceNewlines(StringUtilities.EscapeRegExp(target));
+        const searchRegExp = new RegExp(cleanedRegex, 'g');
+        input = StringUtilities.ReplaceNewlines(input);
+        return input.replace(searchRegExp, replacement);
+    }
 }

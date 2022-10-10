@@ -56,6 +56,12 @@ namespace AppLensV3.Services
 
         Task<HttpResponseMessage> UpdateTeamTemplate(string teamId, string incidentType, object payload, string userId);
 
+        Task<HttpResponseMessage> GetTeamTemplateAuthors(string teamId, string incidentType, string userId);
+
+        Task<HttpResponseMessage> UpdateTeamTemplateAuthors(string teamId, string incidentType, object payload, string userId);
+
+        Task<HttpResponseMessage> GetAvailableValidations(string teamId, string incidentType, string userId);
+
         Task<List<IncidentInfo>> GetTopIncidentsForTeam(string teamId, string incidentType, int num = 5);
 
         Task<HttpResponseMessage> TestTemplateWithIncident(object payload, string userId);
@@ -80,6 +86,17 @@ namespace AppLensV3.Services
             get
             {
                 return _client.Value;
+            }
+        }
+
+        private void ValidateTeamIdentifiers(string teamId, string incidentType) {
+            if (string.IsNullOrWhiteSpace(teamId))
+            {
+                throw new ArgumentException("teamId");
+            }
+            if (string.IsNullOrWhiteSpace(incidentType))
+            {
+                throw new ArgumentException("incidentType");
             }
         }
 
@@ -141,14 +158,7 @@ namespace AppLensV3.Services
 
         public async Task<HttpResponseMessage> GetTeamTemplate(string teamId, string incidentType, string userId)
         {
-            if (string.IsNullOrWhiteSpace(teamId))
-            {
-                throw new ArgumentException("teamId");
-            }
-            if (string.IsNullOrWhiteSpace(incidentType))
-            {
-                throw new ArgumentException("incidentType");
-            }
+            ValidateTeamIdentifiers(teamId, incidentType);
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{IncidentAssistEndpoint}/api/GetTeamTemplate/{teamId}/{incidentType}?userId={userId}");
             request = AddFunctionAuthHeaders(request);
             return await _httpClient.SendAsync(request);
@@ -156,14 +166,7 @@ namespace AppLensV3.Services
 
         public async Task<HttpResponseMessage> UpdateTeamTemplate(string teamId, string incidentType, object payload, string userId)
         {
-            if (string.IsNullOrWhiteSpace(teamId))
-            {
-                throw new ArgumentException("teamId");
-            }
-            if (string.IsNullOrWhiteSpace(incidentType))
-            {
-                throw new ArgumentException("incidentType");
-            }
+            ValidateTeamIdentifiers(teamId, incidentType);
             var getTemplateResponse = await GetTeamTemplate(teamId, incidentType, userId);
             if (getTemplateResponse.StatusCode == HttpStatusCode.Unauthorized)
             {
@@ -172,6 +175,31 @@ namespace AppLensV3.Services
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{IncidentAssistEndpoint}/api/UpdateTeamTemplate/{teamId}/{incidentType}?userId={userId}");
             request = AddFunctionAuthHeaders(request);
             request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+            return await _httpClient.SendAsync(request);
+        }
+
+        public async Task<HttpResponseMessage> GetTeamTemplateAuthors(string teamId, string incidentType, string userId)
+        {
+            ValidateTeamIdentifiers(teamId, incidentType);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{IncidentAssistEndpoint}/api/GetTeamTemplateAuthors/{teamId}/{incidentType}?userId={userId}");
+            request = AddFunctionAuthHeaders(request);
+            return await _httpClient.SendAsync(request);
+        }
+
+        public async Task<HttpResponseMessage> UpdateTeamTemplateAuthors(string teamId, string incidentType, object payload, string userId)
+        {
+            ValidateTeamIdentifiers(teamId, incidentType);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"{IncidentAssistEndpoint}/api/UpdateTeamTemplateAuthors/{teamId}/{incidentType}?userId={userId}");
+            request = AddFunctionAuthHeaders(request);
+            request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+            return await _httpClient.SendAsync(request);
+        }
+
+        public async Task<HttpResponseMessage> GetAvailableValidations(string teamId, string incidentType, string userId)
+        {
+            ValidateTeamIdentifiers(teamId, incidentType);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{IncidentAssistEndpoint}/api/GetAvailableValidations/{teamId}/{incidentType}?userId={userId}");
+            request = AddFunctionAuthHeaders(request);
             return await _httpClient.SendAsync(request);
         }
 

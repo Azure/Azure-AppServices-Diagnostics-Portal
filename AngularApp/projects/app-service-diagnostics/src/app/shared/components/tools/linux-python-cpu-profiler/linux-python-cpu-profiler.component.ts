@@ -9,10 +9,10 @@ import { WebSitesService } from '../../../../resources/web-sites/services/web-si
   styleUrls: ['../styles/daasstyles.scss']
 })
 export class LinuxPythonCpuProfilerComponent extends DaasBaseComponent implements OnInit {
-  title: string = 'Collect Python CPU profiler trace';
-  description: string = 'If your app is consuming high CPU, you can collect a python CPU profiler trace to identify the root cause';
+  title: string = 'Collect Python profiler trace';
+  description: string = 'If your app is responding slowly, you can collect a python profiler trace to identify the root cause';
   thingsToKnowBefore: string[] = [
-    'The trace file helps in diagnosing High CPU issues in your python app.',
+    'The trace file helps in diagnosing performance issues in your python app.',
     'Your web app is not restarted while collecting the trace.'
   ];
   diagnoserNameLookup: string;

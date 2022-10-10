@@ -123,16 +123,10 @@
 
 <fab-panel [isOpen]="openResourceTypePanel == true" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
   [styles]="panelStyles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
-  (onDismiss)="dismissedHandler()">
+  (onDismiss)="dismissedHandler()" [headerText]="'Supported Resource Types'">
   <div>
     <div class="resource-content-container">
       <div>
-        <div style="margin-bottom: 10px">
-          <div
-            style="position: absolute; left:25px; right: 32px; top:0px; height: 32px; font-family: 'segoe UI'; font-size: 20px; line-height: 24px; font-weight: 630;display: flex; align-items: flex-end"
-            tabindex="0" aria-label="Suppored resource types">
-            Supported Resource Types</div>
-        </div>
         <div class="resource-content" style="margin-left:20px;font-size:16px">
           <div *ngFor="let item of resourceTypeList">
             <img [src]="item.imgSrc" style="height: 15px;width: 15px;" [alt]="item.type" class="mr-3" />

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DynamicAnalysisComponent } from './dynamic-analysis.component';
 
@@ -6,7 +6,7 @@ describe('DynamicAnalysisComponent', () => {
   let component: DynamicAnalysisComponent;
   let fixture: ComponentFixture<DynamicAnalysisComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DynamicAnalysisComponent ]
     })

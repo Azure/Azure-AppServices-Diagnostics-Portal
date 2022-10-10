@@ -25,19 +25,55 @@
           </div>
 
           <div style="max-height: calc(100vh - 140px);" *ngIf="!displayLoader && selectedTeam && !(templateLoadError && templateLoadError.length>0)">
+            <ngx-smart-modal #icmTemplatePermissionsModal identifier="icmTemplatePermissionsModal" [customClass]="'icm-template-permissions-dialog'">
+              <div style="display: flex;">
+                <label for="icm-template-authors-field" style="display: flex; flex: 1;">
+                  Template Authors <span class="required">*</span><span style="display: block; font-size: 0.9em;">(Comma separated string of user aliases)</span>
+                </label>
+                <fab-text-field id="icm-template-authors-field" [ariaLabel]="'Template Authors'" [(value)]="templateAuthors" [styles]="narrowTextFieldStyles"
+                  [placeholder]="'Comma separated string of user aliases'" style="display: flex; flex: 1;">
+                </fab-text-field>
+              </div>
+              <div style="display: flex;">
+                <div style="display: flex; flex: 1;">
+                  <div *ngIf="templateAuthorsErrorMessage && templateAuthorsErrorMessage!== ''" class="mt-3 error-message-container">
+                    <status-icon [status]="errorButtonStatus" style="display: inline-block;"></status-icon><span style="display: inline-block;" class="ml-3 error-message">{{templateAuthorsErrorMessage}}</span>
+                  </div>
+                  <div *ngIf="templateAuthorsSuccessMessage && templateAuthorsSuccessMessage!== ''" class="mt-3">
+                    <status-icon [status]="successButtonStatus" style="display: inline-block;"></status-icon><span style="display: inline-block;" class="ml-3 success-message">{{templateAuthorsSuccessMessage}}</span>
+                  </div>
+                </div>
+                <fab-primary-button id="update-template-authors-button" contentStyle="margin-top: 20px; margin-left: 0px;" style="display: flex; flex: 1;"
+                  type="Submit" text='Update Permissions' (click)="updatePermissions()" [disabled]="!(templateAuthors && templateAuthors.length > 3 && templateAuthors.length < 500 && templateAuthors !== teamTemplateAuthors)">
+                </fab-primary-button>
+              </div>
+            </ngx-smart-modal>
             <div class="form-group form-content">
+              <div class="form-row">
+                <fab-command-bar tabindex="0" [attr.id]="'fab-command-bar'" contentClass="fab-command-bar-class">
+                  <items>
+                    <!-- do not use *ngIf on these buttons  -->
+                    <fab-command-bar-item key="testTemplate" [text]="'Test'" [iconProps]="testIcon" (click)="onTestClick()"
+                    [disabled]="testButtonDisabled"></fab-command-bar-item>
+                    <fab-command-bar-item key="updateTemplate" [text]="'Update'" [iconProps]="updateIcon" (click)="onUpdateClick()"
+                    [disabled]="updateButtonDisabled"></fab-command-bar-item>
+                    <fab-command-bar-item key="authorPermissions" [text]="'Permissions'" [iconProps]="permissionsIcon" (click)="showPermissions()"></fab-command-bar-item>
+                    <fab-command-bar-item key="availableValidations" [text]="'Available Validations'" [iconProps]="checklistIcon" (click)="openAvailableValidations()"></fab-command-bar-item>
+                  </items>
+                  </fab-command-bar>
+              </div>
               <div class="form-row">
                 <ngx-monaco-editor [options]="editorOptions" [(ngModel)]="teamTemplate" style="height:600px">
                 </ngx-monaco-editor>
               </div>
             </div>
             <div class="form-group go-form">
-              <fab-primary-button id="test-template-button" contentStyle="margin-top: 20px; margin-left: 10px;"
+              <fab-primary-button id="test-template-button" [contentStyle]="'margin-top: 20px; margin-left: 10px;'"
                   type="Submit" text='Test Template' (click)="onTestClick()" [disabled]="testButtonDisabled">
               </fab-primary-button>
             </div>
             <div class="form-group go-form">
-              <fab-primary-button id="update-template-button" contentStyle="margin-top: 20px; margin-left: 10px;"
+              <fab-primary-button id="update-template-button" [contentStyle]="'margin-top: 20px; margin-left: 10px;'"
                   type="Submit" text='Update Template' (click)="onUpdateClick()" [disabled]="updateButtonDisabled">
               </fab-primary-button>
             </div>
@@ -59,9 +95,6 @@
                 <fab-text-field id="test-incident-input-field" [ariaLabel]="'Incident Id'" [(value)]="testIncidentId" [styles]="narrowTextFieldStyles"
                   [placeholder]="'Type an incident id'">
                 </fab-text-field>
-                <div *ngIf="testIncidentError && testIncidentError!== ''" class="mt-3 error-message-container">
-                  <status-icon [status]="errorButtonStatus"></status-icon><span class="ml-3 error-message">{{testIncidentError}}</span>
-                </div>
               </div>
             </div>
             <div *ngIf="teamIncidentsForTest && teamIncidentsForTest.length>0" class="section" style="margin-left: 10px;">
@@ -80,13 +113,16 @@
               </div>
             </div>
             <div class="section">
-              <fab-primary-button id="test-incident-template-button" contentStyle="margin-top: 20px; margin-left: 10px;"
+              <fab-primary-button id="test-incident-template-button" [contentStyle]="'margin-top: 20px; margin-left: 10px;'"
                   type="Submit" text='Test Incident' (click)="onTestIncidentClick()" [disabled]="!(testIncidentId && testIncidentId.length>6 && testIncidentId.length<15)">
               </fab-primary-button>
             </div>
-            <div *ngIf="testinIncidentLoader" class="loader-block">
+            <div *ngIf="testingIncidentLoader" class="loader-block">
               <i class="fa fa-spinner fa-spin loader-icon"></i>
               <span style="display: block;" class="loader-text" *ngIf="loaderMessage != null">{{loaderMessage}}</span>
+            </div>
+            <div *ngIf="testIncidentError && testIncidentError!== ''" class="mt-3 error-message-container">
+              <status-icon [status]="errorButtonStatus" style="display: inline-block;"></status-icon><span style="display: inline-block;" class="ml-3 error-message">{{testIncidentError}}</span>
             </div>
             <div class="section-wide" *ngIf="validationResponse && validationResponse.action">
               <b>Action:</b> &nbsp; {{validationResponse.action.actionType}} &nbsp; &nbsp;
@@ -96,6 +132,30 @@
             </div>
             <div class="section-wide" style="justify-content:space-between;" *ngIf="validationResponse && validationResponse.postMessage && validationResponse.postMessage.length>0">              
               <div [innerHTML]="(validationResponse.postMessage && validationResponse.postMessage.length>0? validationResponse.postMessage: '') | safeHtml"></div>
+            </div>
+          </div>
+        </fab-panel>
+        <fab-panel [isOpen]="showAvailableValidations" (onDismiss)="hideAvailableValidations()" [type]="panelType" [isBlocking]="false" [customWidth]="'60vw'">
+          <div class="panel-padding">
+            <div *ngIf="availableValidations && availableValidations.length>0" class="section" style="margin-left: 10px;">
+              <div style="width:100%;">
+                <span>Below is the list of validations available for use in your automation template</span>
+                <table style="margin-top: 6px;">
+                  <tr>
+                    <th>Name</th>
+                    <th>Usage</th>
+                    <th>Description</th>
+                  </tr>
+                  <tr *ngFor="let validation of availableValidations">
+                    <td>{{validation.name}}</td>
+                    <td>{{validation.usage}}</td>
+                    <td>{{validation.description}}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div *ngIf="availableValidationsError && availableValidationsError!== ''" class="mt-3 error-message-container">
+              <status-icon [status]="errorButtonStatus" style="display: inline-block;"></status-icon><span style="display: inline-block;" class="ml-3 error-message">{{availableValidationsError}}</span>
             </div>
           </div>
         </fab-panel>

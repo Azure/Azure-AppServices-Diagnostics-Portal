@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SectionDividerComponent } from './section-divider.component';
 
@@ -6,7 +6,7 @@ describe('SectionDividerComponent', () => {
   let component: SectionDividerComponent;
   let fixture: ComponentFixture<SectionDividerComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SectionDividerComponent ]
     })

@@ -1,11 +1,8 @@
 <fab-panel [isOpen]="globals.openSessionPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'" (onDismiss)="dismissedHandler()">
+  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'"
+  (onDismiss)="dismissedHandler()" [headerText]="'Diagnostic sessions'">
   <div class="row panel-padding">
     <div style="margin-bottom: 10px">
-      <div
-        style="position: absolute; left:25px; right: 32px; top:0px; height: 32px; font-family: 'segoe UI'; font-size: 18px; line-height: 24px; font-weight: 600;display: flex; align-items: flex-end"
-        tabindex="0" aria-label="Diagnostic sessions">
-        Diagnostic sessions</div>
       <p>
         Below is the list of all the diagnostic sessions collected in the past for this web app. To save disk space,
         older

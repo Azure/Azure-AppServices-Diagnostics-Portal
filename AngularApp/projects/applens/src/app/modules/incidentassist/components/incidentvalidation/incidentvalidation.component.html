@@ -32,10 +32,10 @@
               </div>
             </div>
             <div class="form-group go-form">
-              <fab-primary-button contentStyle="margin-top: 20px;"
+              <fab-primary-button [contentStyle]="'margin-top: 20px;'"
                   type="Submit" text='Check Validation and Run Diagnostics' (click)="onSubmit()" [disabled]="validationButtonDisabled">
               </fab-primary-button>
-              <fab-primary-button id="update-incident-button" contentStyle="margin-top: 20px; margin-left: 10px;"
+              <fab-primary-button id="update-incident-button" [contentStyle]="'margin-top: 20px; margin-left: 10px;'"
                   type="Submit" text='Update Incident' (click)="onUpdateClick()" [disabled]="updateButtonDisabled">
               </fab-primary-button>
             </div>

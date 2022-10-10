@@ -3,8 +3,8 @@ import {AdalService} from 'adal-angular4';
 import {SurveysService} from '../../services/surveys.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TelemetryService, TelemetryEventNames } from 'diagnostic-data';
-import { FabChoiceGroupComponent } from "@angular-react/fabric";
 import {IChoiceGroupOption, IDropdownOption, PanelType} from "office-ui-fabric-react";
+import { FabChoiceGroupComponent } from '@angular-react/fabric/lib/components/choice-group';
 
 @Component({
   selector: 'takesurvey',

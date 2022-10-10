@@ -18,7 +18,7 @@ export class CacheService {
     // This is useful to enable if you are trying to test and make sure this service is working properly
     private enableConsoleLogging: boolean = false;
 
-    constructor(private _telemetryService: TelemetryService) { }
+    constructor() { }
 
     get(key: string, fallback?: Observable<any>, invalidateCache: boolean = false, logDataForActualCall?: TelemetryPayload): Observable<any> | Subject<any> {
 
@@ -40,7 +40,7 @@ export class CacheService {
             this.inFlightObservables.set(key, new Subject());
             this.log(`%c Calling api for ${key}`, 'color: purple');
             if (!!logDataForActualCall && !!logDataForActualCall.eventIdentifier && !!logDataForActualCall.eventPayload) {
-                this._telemetryService.logEvent(logDataForActualCall.eventIdentifier, logDataForActualCall.eventPayload);
+                //this._telemetryService.logEvent(logDataForActualCall.eventIdentifier, logDataForActualCall.eventPayload);
             }
             return fallback.pipe(tap((value) => { this.set(key, value); }, error => this.inFlightObservables.delete(key)));
         } else {

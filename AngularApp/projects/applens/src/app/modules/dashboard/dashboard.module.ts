@@ -1,9 +1,8 @@
-import { NgModule, Injectable } from '@angular/core';
+import { NgModule, Injectable, SecurityContext, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DashboardComponent, FormatResourceNamePipe } from './dashboard/dashboard.component';
 import { SharedModule } from '../../shared/shared.module';
-import { ModuleWithProviders } from '@angular/compiler/src/core';
 import { RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AngularSplitModule } from 'angular-split-ng6';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
@@ -26,7 +25,6 @@ import { ApplensCommsService } from './services/applens-comms.service';
 import { ApplensSupportTopicService } from './services/applens-support-topic.service';
 import { ApplensContentService } from './services/applens-content.service';
 import { DiagnosticService, DiagnosticDataModule, CommsService, DetectorControlService, GenericSupportTopicService, GenericContentService, GenericDocumentsSearchService, GenieGlobals, SolutionOrchestratorComponent, TimePickerOptions, GenericBreadcrumbService, GenericUserSettingService } from 'diagnostic-data';
-import { FabBreadcrumbModule, FabButtonModule, FabCalendarComponent, FabCalendarModule, FabCalloutModule, FabCheckboxModule, FabChoiceGroupModule, FabCommandBarModule, FabDatePickerModule, FabDetailsListModule, FabDialogModule, FabDropdownModule, FabIconModule, FabPanelModule, FabPivotModule, FabSearchBoxModule, FabTextFieldModule, FabSpinnerModule, FabMessageBarModule } from '@angular-react/fabric';
 import { CollapsibleMenuModule } from '../../collapsible-menu/collapsible-menu.module';
 import { ObserverService } from '../../shared/services/observer.service';
 import { TabDataSourcesComponent } from './tabs/tab-data-sources/tab-data-sources.component';
@@ -45,7 +43,7 @@ import { GistChangelistComponent } from './gist-changelist/gist-changelist.compo
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TabAnalysisComponent } from './tabs/tab-analysis/tab-analysis.component';
 import { CategoryPageComponent } from './category-page/category-page.component';
-import { AvatarModule } from 'ngx-avatar';
+import { AvatarModule } from 'ngx-avatars';
 import { SupportTopicPageComponent } from './support-topic-page/support-topic-page.component';
 import { SelfHelpContentComponent } from './self-help-content/self-help-content.component';
 import { UserDetectorsComponent } from './user-detectors/user-detectors.component';
@@ -64,11 +62,33 @@ import { ResourceInfo } from '../../shared/models/resources';
 import { catchError, flatMap, map, take } from 'rxjs/operators';
 import { RecentResource } from '../../shared/models/user-setting';
 import { UserSettingService } from './services/user-setting.service';
-import { ApplensDocsComponent } from '../../shared/components/applens-docs/applens-docs.component';
+import { ApplensDocsComponent } from './applens-docs/applens-docs.component';
 import { TabKey } from './tabs/tab-key';
 import { UserActivePullrequestsComponent } from './user-active-pullrequests/user-active-pullrequests.component';
 import { BreadcrumbService } from './services/breadcrumb.service';
 import { FavoriteDetectorsComponent } from './favoite-detectors/favorite-detectors.component';
+import { ApplensDocSectionComponent } from './applens-doc-section/applens-doc-section.component';
+import { DevelopNavigationGuardService } from './develop-navigation-guard.service';
+import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
+import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
+import { FabCommandBarModule } from '@angular-react/fabric/lib/components/command-bar';
+import { FabIconModule } from '@angular-react/fabric/lib/components/icon';
+import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-field';
+import { FabSearchBoxModule } from '@angular-react/fabric/lib/components/search-box';
+import { FabDetailsListModule } from '@angular-react/fabric/lib/components/details-list';
+import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
+import { FabButtonModule } from '@angular-react/fabric/lib/components/button';
+import { FabCalloutModule } from '@angular-react/fabric/lib/components/callout';
+import { FabCheckboxModule } from '@angular-react/fabric/lib/components/checkbox';
+import { FabChoiceGroupModule } from '@angular-react/fabric/lib/components/choice-group';
+import { FabPivotModule } from '@angular-react/fabric/lib/components/pivot';
+import { FabDatePickerModule } from '@angular-react/fabric/lib/components/date-picker';
+import { FabCalendarModule } from '@angular-react/fabric/lib/components/calendar';
+import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown';
+import { FabBreadcrumbModule } from '@angular-react/fabric/lib/components/breadcrumb';
+import { FabMessageBarModule } from '@angular-react/fabric/lib/components/message-bar';
+import { CreateWorkflowComponent } from './workflow/create-workflow/create-workflow.component';
+import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -96,14 +116,14 @@ export class InitResolver implements Resolve<Observable<ResourceInfo>>{
             };
             return resourceInfo;
         }), flatMap(resourceInfo => {
-            return this._userSettingService.getUserSetting().pipe(take(1),catchError(_ => of(null)), map(_ => resourceInfo));
+            return this._userSettingService.getUserSetting().pipe(take(1), catchError(_ => of(null)), map(_ => resourceInfo));
         }), flatMap(resourceInfo => {
             return this._userSettingService.updateLandingInfo(recentResource).pipe(catchError(_ => of(null)), map(_ => resourceInfo));
         }));
     }
 }
 
-export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild([
+export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = RouterModule.forChild([
     {
         path: '',
         component: DashboardComponent,
@@ -159,18 +179,25 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
             },
             {
                 path: 'create',
-                component: OnboardingFlowComponent
+                component: OnboardingFlowComponent,
+                canDeactivate: [DevelopNavigationGuardService]
             },
             {
                 path: 'createGist',
-                component: GistComponent
+                component: GistComponent,
+                canDeactivate: [DevelopNavigationGuardService]
+            },
+            {
+                path: 'createWorkflow',
+                component: CreateWorkflowComponent,
+                canDeactivate: [DevelopNavigationGuardService]
             },
             {
                 path: 'solutionOrchestrator',
                 component: SolutionOrchestratorComponent
             },
             {
-                path: 'docs',
+                path: 'docs/:category/:doc',
                 component: ApplensDocsComponent
             },
             {
@@ -180,12 +207,14 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                     {
                         path: '',
                         component: TabGistDevelopComponent,
+                        canDeactivate: [DevelopNavigationGuardService],
                         data: {
                             tabKey: TabKey.Develop
                         }
                     }, {
                         path: 'edit',
-                        redirectTo: ''
+                        redirectTo: '',
+                        canDeactivate: [DevelopNavigationGuardService]
                     }, {
                         path: 'changelist',
                         component: TabChangelistComponent,
@@ -296,6 +325,7 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
                     {
                         path: 'edit',
                         component: TabDevelopComponent,
+                        canDeactivate: [DevelopNavigationGuardService],
                         data: {
                             tabKey: TabKey.Develop
                         }
@@ -398,7 +428,9 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         CollapsibleMenuModule,
         NgxSmartModalModule.forRoot(),
         NgSelectModule,
-        MarkdownModule.forRoot(),
+        MarkdownModule.forRoot({
+            sanitize: SecurityContext.STYLE
+        }),
         HighchartsChartModule,
         FabSpinnerModule,
         FabPanelModule,
@@ -418,7 +450,8 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         FabCalendarModule,
         FabDropdownModule,
         FabBreadcrumbModule,
-        FabMessageBarModule
+        FabMessageBarModule,
+        NgFlowchartModule
     ],
     providers: [
         ApplensDiagnosticService,
@@ -451,6 +484,7 @@ export const DashboardModuleRoutes: ModuleWithProviders = RouterModule.forChild(
         SearchMenuPipe, TabDataComponent, TabDevelopComponent, TabCommonComponent, TabDataSourcesComponent, TabMonitoringComponent,
         TabMonitoringDevelopComponent, TabAnalyticsDevelopComponent, TabAnalyticsDashboardComponent, GistComponent, TabGistCommonComponent,
         TabGistDevelopComponent, TabChangelistComponent, GistChangelistComponent, TabAnalysisComponent, CategoryPageComponent, SupportTopicPageComponent,
-        SelfHelpContentComponent, UserDetectorsComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent, L2SideNavComponent, UserActivePullrequestsComponent, FavoriteDetectorsComponent]
+        SelfHelpContentComponent, UserDetectorsComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent,
+        L2SideNavComponent, UserActivePullrequestsComponent, FavoriteDetectorsComponent, ApplensDocsComponent, ApplensDocSectionComponent,CreateWorkflowComponent]
 })
 export class DashboardModule { }

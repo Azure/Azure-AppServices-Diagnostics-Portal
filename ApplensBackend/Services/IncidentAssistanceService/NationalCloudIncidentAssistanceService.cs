@@ -38,6 +38,21 @@ namespace AppLensV3.Services
             return null;
         }
 
+        Task<HttpResponseMessage> IIncidentAssistanceService.GetTeamTemplateAuthors(string teamId, string incidentType, string userId)
+        {
+            return null;
+        }
+
+        Task<HttpResponseMessage> IIncidentAssistanceService.UpdateTeamTemplateAuthors(string teamId, string incidentType, object payload, string userId)
+        {
+            return null;
+        }
+
+        Task<HttpResponseMessage> IIncidentAssistanceService.GetAvailableValidations(string teamId, string incidentType, string userId)
+        {
+            return null;
+        }
+
         Task<List<IncidentInfo>> IIncidentAssistanceService.GetTopIncidentsForTeam(string teamId, string incidentType, int num = 5)
         {
             return null;

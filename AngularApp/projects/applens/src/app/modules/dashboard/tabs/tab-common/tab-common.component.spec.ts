@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { TabCommonComponent } from './tab-common.component';
 
@@ -6,7 +6,7 @@ describe('TabCommonComponent', () => {
   let component: TabCommonComponent;
   let fixture: ComponentFixture<TabCommonComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ TabCommonComponent ]
     })

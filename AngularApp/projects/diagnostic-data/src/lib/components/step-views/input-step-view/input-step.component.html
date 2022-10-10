@@ -11,7 +11,7 @@
         </div>
         <input class="input-box" placeholder="{{inputStepView.placeholder}}" title="{{inputStepView.tooltip}}" [(ngModel)]="inputStepView.text">
         <div class="input-error"><i class="ib-redx input-error-icon" *ngIf="inputStepView.error!=null"></i><div>{{inputStepView.error}}&nbsp;</div></div>
-        <fab-primary-button contentClass="input-check-button" (click)="inputStepView.callback(inputStepView.text)">
+        <fab-primary-button [contentClass]="'input-check-button'" (click)="inputStepView.callback(inputStepView.text)">
             {{inputStepView.buttonText}}
         </fab-primary-button>
     </div>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { DiagnosticApiService } from 'projects/applens/src/app/shared/services/diagnostic-api.service';
+import { ResourceService } from 'projects/applens/src/app/shared/services/resource.service';
 import { filter } from 'rxjs/operators';
 import { TabKey, Tab } from '../tab-key';
 
@@ -11,6 +12,7 @@ import { TabKey, Tab } from '../tab-key';
 })
 export class TabGistCommonComponent implements OnInit {
   showTabs: boolean = false;
+  commitHistoryEnabled: boolean = false;
   tabs: Tab[] = [
     {
       headerText: "Develop",
@@ -22,11 +24,17 @@ export class TabGistCommonComponent implements OnInit {
     }
   ];
   selectedTabKey: string;
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _diagnosticApiService: DiagnosticApiService) { }
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _diagnosticApiService: DiagnosticApiService, private resourceService: ResourceService) { }
 
   ngOnInit() {
+    //hide commit history
     this._diagnosticApiService.getEnableDetectorDevelopment().subscribe(enabledDetectorDevelopment => {
       this.showTabs = enabledDetectorDevelopment;
+      if (this.showTabs){
+        this._diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(config => {
+          if (config.graduationEnabled) this.showTabs = false;
+        });
+      }
     });
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(e => {
       const key: string = this._activatedRoute.firstChild.snapshot.data["tabKey"];

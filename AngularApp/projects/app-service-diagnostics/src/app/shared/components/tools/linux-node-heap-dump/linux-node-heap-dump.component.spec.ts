@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { LinuxNodeHeapDumpComponent } from './linux-node-heap-dump.component';
 
@@ -6,7 +6,7 @@ describe('LinuxNodeHeapDumpComponent', () => {
   let component: LinuxNodeHeapDumpComponent;
   let fixture: ComponentFixture<LinuxNodeHeapDumpComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LinuxNodeHeapDumpComponent ]
     })

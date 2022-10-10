@@ -453,7 +453,12 @@ export class DiagnosticApiService {
   }
 
   public getDetectorCode(detectorPath: string, branch: string, resourceUri: string): Observable<string> {
-    let path = `devops/getCode?filePathInRepo=${detectorPath}&branch=${branch}&resourceUri=${resourceUri}`;
+    let path = branch === null ? `devops/getCode?filePathInRepo=${detectorPath}&resourceUri=${resourceUri}` :`devops/getCode?filePathInRepo=${detectorPath}&branch=${branch}&resourceUri=${resourceUri}`;
+    return this.invoke(path, HttpMethod.GET, null, false);
+  }
+
+  public getDevOpsTree(devOpsPath: string, branch: string, resourceUri: string): Observable<any> {
+    let path = branch === null ? `devops/getTree?filePathInRepo=${devOpsPath}&resourceUri=${resourceUri}` :`devops/getTree?filePathInRepo=${devOpsPath}&branch=${branch}&resourceUri=${resourceUri}`;
     return this.invoke(path, HttpMethod.GET, null, false);
   }
 
@@ -512,8 +517,8 @@ export class DiagnosticApiService {
 
   public getEnableDetectorDevelopment(): Observable<boolean> {
     const path = "api/appsettings/DetectorDevelopmentEnabled";
-    return this.get<boolean>(path).pipe(map((res: string) => {
-      return res.toLowerCase() === "true";
+    return this.get<boolean>(path).pipe(map((res) => {
+      return res.toString().toLowerCase() === "true";
     }));
   }
   public getDevopsConfig(resourceProviderType: string): Observable<any> {
@@ -552,5 +557,12 @@ export class DiagnosticApiService {
   public idExists(id: string): Observable<boolean> {
     let path = `internal/idExists?detectorId=${id}`;
     return this.invoke(path, HttpMethod.GET, null, false);
+  }
+
+  public isStaging(): Observable<boolean> {
+    let path = "api/appsettings/APPLENS_ENVIRONMENT";
+    return this.get<boolean>(path).pipe(map((res) => {
+      return res.toString().toLowerCase() === 'staging';
+    }));
   }
 }

@@ -24,7 +24,7 @@ import { GenericPortalService } from 'diagnostic-data';
   declarations: []
 })
 export class StartupModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<StartupModule> {
     return {
       ngModule: StartupModule,
       providers: [

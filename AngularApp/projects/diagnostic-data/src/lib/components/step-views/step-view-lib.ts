@@ -444,7 +444,7 @@ export class PromiseCompletionSource<T> extends Promise<T>{
     private _reject: (reason?: any) => void;
     public loadingText: string;
 
-    constructor(timeoutInSec?: number) {
+    constructor() {
         var _resolve: (value: T | PromiseLike<T>) => void;
         var _reject: (reason?: any) => void;
         super((resolve, reject) => {
@@ -454,12 +454,6 @@ export class PromiseCompletionSource<T> extends Promise<T>{
 
         this._resolve = _resolve;
         this._reject = _reject;
-
-        if (timeoutInSec != null) {
-            delay(timeoutInSec).then(() => {
-                this._reject(`Timeout after ${timeoutInSec} seconds!`);
-            });
-        }
     }
 
     resolve(val: T | PromiseLike<T>) {

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DynamicDataComponent } from './dynamic-data.component';
 
@@ -6,7 +6,7 @@ describe('DynamicDataComponent', () => {
   let component: DynamicDataComponent;
   let fixture: ComponentFixture<DynamicDataComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DynamicDataComponent ]
     })

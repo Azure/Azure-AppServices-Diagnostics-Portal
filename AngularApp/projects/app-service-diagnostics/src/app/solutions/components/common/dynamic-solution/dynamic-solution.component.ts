@@ -13,15 +13,14 @@ import { RevertDeploymentComponent } from '../../specific-solutions/revert-deplo
     selector: 'dynamic-solution',
     template: `
     <div dynamic-solution-placeholder></div>
-    `,
-    entryComponents: [SiteRestartComponent, ScaleUpSolutionComponent, ScaleOutSolutionComponent, SplitSitesIntoDifferentServerFarmsSolutionComponent, RevertDeploymentComponent]
+    `
 })
 export class DynamicSolutionComponent implements AfterViewInit {
     currentComponent = null;
 
     @Input() solutionHolder: SolutionHolder;
 
-    @ViewChild(DynamicSolutionPlaceHolderDirective, { static: false }) solutionPlaceHolder: DynamicSolutionPlaceHolderDirective;
+    @ViewChild(DynamicSolutionPlaceHolderDirective) solutionPlaceHolder: DynamicSolutionPlaceHolderDirective;
 
     constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
 

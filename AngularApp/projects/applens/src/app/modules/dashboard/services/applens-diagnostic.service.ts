@@ -11,6 +11,7 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class ApplensDiagnosticService {
   public resourceId: string = "";
+  documentationResource: string = `subscriptions/1402be24-4f35-4ab7-a212-2cd496ebdf14/resourceGroups/Default-Web-WestUS/providers/Microsoft.Web/sites/buggyapp`;
   constructor(private _diagnosticApi: DiagnosticApiService, private _resourceService: ResourceService) {
     this.resourceId = this._resourceService.getCurrentResourceId(true);
     if (!this.resourceId.startsWith("/")) this.resourceId = "/" + this.resourceId;
@@ -146,8 +147,25 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getUserInfo(userId);
   }
 
-  getCompilerResponse(body: any, isSystemInvoker: boolean, detectorId: string = '', startTime: string = '', endTime: string = '', dataSource: string = '', timeRange: string = '', additionalParams: any, publishingDetectorId: string): Observable<QueryResponse<DetectorResponse>> {
-    if (isSystemInvoker === false) {
+  getCompilerResponse(body: any, isSystemInvoker: boolean, detectorId: string = '', startTime: string = '', endTime: string = '', dataSource: string = '', timeRange: string = '', additionalParams: any, publishingDetectorId: string, isDocumentation: boolean = false): Observable<QueryResponse<DetectorResponse>> {
+    if (isDocumentation === true){
+      return this._diagnosticApi.getCompilerResponse(
+        this._resourceService.versionPrefix,
+        //this._resourceService.getCurrentResourceId(true),
+        this.documentationResource,
+        body,
+        startTime,
+        endTime,
+        additionalParams, publishingDetectorId);
+      // return this._diagnosticApi.getSystemCompilerResponse(
+      //   this._resourceService.getCurrentResourceId(true),
+      //   body,
+      //   detectorId,
+      //   dataSource,
+      //   timeRange,
+      //   additionalParams);
+    }
+    else if (isSystemInvoker === false) {
       return this._diagnosticApi.getCompilerResponse(
         this._resourceService.versionPrefix,
         this._resourceService.getCurrentResourceId(true),
@@ -202,6 +220,10 @@ export class ApplensDiagnosticService {
 
   getDetectorCode(detectorPath: string, branch: string, resourceUri: string): Observable<string> {
     return this._diagnosticApi.getDetectorCode(detectorPath, branch, resourceUri);
+  }
+
+  getDevOpsTree(devOpsPath: string, branch: string, resourceUri: string): Observable<any> {
+    return this._diagnosticApi.getDevOpsTree(devOpsPath, branch, resourceUri);
   }
 
   pushDetectorChanges(branch: string, files: string[], repoPaths: string[], comment: string, changeType: string, resourceUri: string) {

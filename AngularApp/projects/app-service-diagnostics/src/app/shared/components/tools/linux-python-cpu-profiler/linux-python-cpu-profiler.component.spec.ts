@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { LinuxPythonCpuProfilerComponent } from './linux-python-cpu-profiler.component';
 
@@ -6,7 +6,7 @@ describe('LinuxPythonCpuProfilerComponent', () => {
   let component: LinuxPythonCpuProfilerComponent;
   let fixture: ComponentFixture<LinuxPythonCpuProfilerComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LinuxPythonCpuProfilerComponent ]
     })

@@ -1,8 +1,8 @@
 <div class="timepicker" id="timePicker">
   <!-- <div class="time-picker-container" *ngIf="globals.openTimePicker" (keydown.escape)="escapeHandler($event)" (keydown.Tab)="tabHandler($event)"> -->
-  <fab-callout *ngIf="openTimePickerCallout" [setInitialFocus]="true" [target]="target"
+  <fab-callout [hidden]="!openTimePickerCallout" [setInitialFocus]="true" [target]="target"
     (onDismiss)="cancelTimeRange()" [isBeakVisible]="false">
-    <div style="width: 320px;">
+    <div  *ngIf="openTimePickerCallout" style="width: 320px;">
       <div class="callout-padding">
         <fab-choice-group [options]="choiceGroupOptions" [defaultSelectedKey]="defaultSelectedKey">
         </fab-choice-group>
@@ -12,9 +12,9 @@
             <fab-date-picker [minDate]="minDate" [maxDate]="maxDate"
               placeholder="Select a date..." ariaLabel="Select start date" allowTextInput="true"
               showMonthPickerAsOverlay="true" (onSelectDate)="onSelectStartDateHandler($event)" [formatDate]="formatDate"
-              [value]="startDate" [parseDateFromString]="parseDateFromString" contentStyle="width:130px;">
+              [value]="startDate" [parseDateFromString]="parseDateFromString" [contentStyle]="'width:130px;'">
             </fab-date-picker>
-            <fab-masked-text-field contentClass="col-md-4" maxLength="6" [(value)]="startClock"
+            <fab-masked-text-field [contentClass]="'col-md-4'" maxLength="6" [(value)]="startClock"
               [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
               [getErrorMessage]="getErrorMessageOnTextField" [ariaLabel]="'startTime'" [styles]="maskTextFieldStyles">
             </fab-masked-text-field>
@@ -26,9 +26,9 @@
             <fab-date-picker [minDate]="minDate" [maxDate]="maxDate"
               placeholder="Select a date..." ariaLabel="Select end date" allowTextInput="true"
               showMonthPickerAsOverlay="true" (onSelectDate)="onSelectEndDateHandler($event)" [formatDate]="formatDate"
-              [value]="endDate" [parseDateFromString]="parseDateFromString" contentStyle="width:130px">
+              [value]="endDate" [parseDateFromString]="parseDateFromString" [contentStyle]="'width:130px'">
             </fab-date-picker>
-            <fab-masked-text-field contentClass="col-md-4" maxLength="6" [(value)]="endClock"
+            <fab-masked-text-field [contentClass]="'col-md-4'" maxLength="6" [(value)]="endClock"
               [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
               [getErrorMessage]="getErrorMessageOnTextField" [ariaLabel]="'endTime'" [styles]="maskTextFieldStyles">
             </fab-masked-text-field>
@@ -39,7 +39,7 @@
       </div>
       <div style="border-top: 1px solid gray;" class="pt-3 pb-3 callout-padding">
         <div class="mr-4">
-          <fab-primary-button (onClick)="applyTimeRange()" contentClass="mr-3">Apply
+          <fab-primary-button (onClick)="applyTimeRange()" [contentClass]="'mr-3'">Apply
           </fab-primary-button>
           <fab-default-button (onClick)="cancelTimeRange()">Cancel</fab-default-button>
         </div>
@@ -50,7 +50,7 @@
   <!-- </div> -->
 
   <fab-calendar *ngIf="showCalendar"
-    contentStyle="position: absolute;top: 20px;right: 0px ;background: #FFFFFF; padding: 8px; color: var(--infoItemValue); font-size: 14px;">
+    [contentStyle]="'position: absolute;top: 20px;right: 0px ;background: #FFFFFF; padding: 8px; color: var(--infoItemValue); font-size: 14px;'">
     <fab-calendar-strings [months]="dayPickerString.months" [shortMonths]="dayPickerString.shortMonths"
       [days]="dayPickerString.days" [shortDays]="dayPickerString.shortDays" [goToToday]="dayPickerString.goToToday"
       weekNumberFormatString="dayPickerString.weekNumberFormatString"></fab-calendar-strings>

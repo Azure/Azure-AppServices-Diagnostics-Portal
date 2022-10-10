@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { ContainerAppFinderComponent } from './containerapp-finder.component';
 
@@ -6,7 +6,7 @@ describe('ContainerAppFinderComponent', () => {
   let component: ContainerAppFinderComponent;
   let fixture: ComponentFixture<ContainerAppFinderComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ContainerAppFinderComponent ]
     })

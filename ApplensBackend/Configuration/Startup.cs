@@ -121,7 +121,7 @@ namespace AppLensV3
 
             if (Environment.IsDevelopment())
             {
-                services.AddSingleton<IAuthorizationHandler, SecurityGroupLocalDevelopment>();
+                services.AddSingleton<IAuthorizationHandler, SecurityGroupHandlerLocalDevelopment>();
             }
             else
             {

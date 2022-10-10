@@ -1,7 +1,7 @@
 <aside class="main-sidebar">
   <section class="sidebar" id="sidebar">
     <collapsible-menu theme="light">
-      <search-box tabindex="0" (searchValueChange)="updateSearch($event)" [searchValue]="searchValue"
+      <search-box tabindex="0" (searchValueChange)="updateSearch($event)"
         [ariaLabel]="searchAriaLabel"></search-box>
       <menu-scroll>
         <section-divider [label]="'Overview'" [selected]="isSectionHeaderSelected('')" [initiallyExpanded]="false"
@@ -25,7 +25,7 @@
             class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
         </section-divider>
         <section-divider [label]="'Develop'"
-          [selected]="isSectionHeaderSelected('users', false) || isSectionHeaderSelected('create') || isSectionHeaderSelected('creategist')"
+          [selected]="isSectionHeaderSelected('users', false) || isSectionHeaderSelected('create') || isSectionHeaderSelected('creategist') || isSectionHeaderSelected('createworkflow')"
           [initiallyExpanded]="false" [disableExpandIcon]="false">
           <i class="fa fa-code fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let item of createNew" [menuItem]="item"></collapsible-menu-item>
@@ -42,6 +42,13 @@
           <collapsible-menu-item *ngFor="let gist of gists" [searchValue]="searchValue" [menuItem]="gist">
           </collapsible-menu-item>
           <i *ngIf="!gistsCopy || gistsCopy.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
+        </section-divider>
+        <section-divider *ngIf="docs.length > 0" [selected]="isSectionHeaderSelected('docs/', false)"
+          [label]="'Documentation'" [initiallyExpanded]="false">
+          <i class="fa fa-file-text-o fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
+          <collapsible-menu-item *ngFor="let doc of docs;" [searchValue]="searchValue" [menuItem]="doc">
+          </collapsible-menu-item>
+          <i *ngIf="!docsCopy || docsCopy.length === 0" class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
         </section-divider>
         <section-divider [label]="'Configuration'" [selected]="isSectionHeaderSelected('kustoconfig')"
           [initiallyExpanded]="false">

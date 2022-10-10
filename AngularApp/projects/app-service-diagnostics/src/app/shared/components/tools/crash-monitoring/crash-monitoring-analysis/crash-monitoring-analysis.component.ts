@@ -4,13 +4,13 @@ import { DaasService } from '../../../../services/daas.service';
 import { SiteService } from '../../../../services/site.service';
 import * as momentNs from 'moment';
 import { CrashMonitoringSettings, DaasStorageConfiguration } from '../../../../models/daas';
-import moment = require('moment');
+import * as moment from 'moment';
 import { Subscription, interval, Observable } from 'rxjs';
 import { SiteDaasInfo } from '../../../../models/solution-metadata';
 import { Globals } from '../../../../../globals'
 import { TelemetryService } from 'diagnostic-data';
 import { DirectionalHint } from 'office-ui-fabric-react';
-import { ITooltipOptions } from '@angular-react/fabric';
+import { ITooltipOptions } from '@angular-react/fabric/lib/components/tooltip';
 
 const crashMonitoringDetectorName: string = "crashmonitoring";
 
