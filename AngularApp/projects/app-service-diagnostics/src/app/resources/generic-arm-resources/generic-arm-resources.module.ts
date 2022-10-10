@@ -16,10 +16,6 @@ const ResourceRoutes = RouterModule.forChild([
     path: '',
     loadChildren: () => import('../../home/home.module').then(m => m.HomeModule),
     resolve: { data: ResourceResolver }
-  },
-  {
-    path: 'tools',
-    loadChildren: '../../diagnostic-tools/diagnostic-tools.module#DiagnosticToolsModule'
   }
 ]);
 

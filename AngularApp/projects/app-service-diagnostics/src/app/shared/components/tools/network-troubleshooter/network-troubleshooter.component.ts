@@ -103,15 +103,30 @@ export class NetworkTroubleshooterComponent extends DataRenderBaseComponent impl
     ngAfterViewInit() {
         this.stepFlowManager.setDom(this.networkCheckingToolDiv.nativeElement);
     }
-  
+
+    getProviders(resourceUri: string) {
+        resourceUri = resourceUri.toLowerCase();
+        var m = resourceUri.match(/.*?\/providers\/microsoft\.(.*?)\/.*/);
+        if (m.length >= 2) {
+            return m[1];
+        } else {
+            throw new Error(`unknown provider ${resourceUri}`);
+        }
+    }
+
     async loadFlowsAsync(): Promise<void> {
         try {
             var globals = this._globals;
             var mgr = this.stepFlowManager;
-            
+
             globals.messagesData.currentNetworkCheckFlow = null;
             var telemetryService = this._telemetryService;
-            var flowSet:NetworkCheckFlowSet;
+            var flowSet: NetworkCheckFlowSet;
+
+            if (this.siteInfo.kind == null) {
+                this.siteInfo.kind = this.getProviders(this.siteInfo.resourceUri);
+            }
+
             if (this.siteInfo.kind.includes("functionapp") && !this.siteInfo.kind.includes("workflowapp")) {
                 // function app
                 if (this.supportTopic &&
@@ -125,39 +140,41 @@ export class NetworkTroubleshooterComponent extends DataRenderBaseComponent impl
                     return;
                 }
                 flowSet = new FunctionAppFlowSet();
-  
-            }else if(this.siteInfo.kind.includes("workflowapp")){
-              // logic apps
-              flowSet = new LogicAppFlowSet();
-            }else {
+
+            } else if (this.siteInfo.kind.includes("workflowapp")) {
+                // logic apps
+                flowSet = new LogicAppFlowSet();
+            } else if (this.siteInfo.kind == "apimanagement") {
+                flowSet = new ApimFlowSet();
+            } else {
                 flowSet = new WebAppFlowSet();
             }
             var flows = this.processFlows(flowSet.flows);
-  
-            if(window.location.hostname == "localhost" || this.debugMode){
-              flows = flows.concat(this.processFlows([sampleFlow]));
+
+            if (window.location.hostname == "localhost" || this.debugMode) {
+                flows = flows.concat(this.processFlows([sampleFlow]));
             }
-  
+
             if (this.debugMode) {
-              window["logDebugMessage"] = console.log.bind(console);
-              var remoteFlows: any = await CheckManager.loadRemoteCheckAsync(true);
-              if(Object.keys(remoteFlows).length > 0){
-                  var remoteStepFlows = this.processFlows(remoteFlows, "(debug)");
-                  flows = flows.concat(remoteStepFlows);
-                  mgr.addView(new CheckStepView({
-                      id: "debugCheckLoadingStatus",
-                      title: `Successfully load ${Object.keys(remoteFlows).length} debug flow(s)`,
-                      level: 0
-                  }));
-              }else{
-                  mgr.addView(new CheckStepView({
-                      id: "debugCheckLoadingStatus",
-                      title: `Failed to load any debug flow, is local check server running?`,
-                      level: 2
-                  }));
-              }
+                window["logDebugMessage"] = console.log.bind(console);
+                var remoteFlows: any = await CheckManager.loadRemoteCheckAsync(true);
+                if (Object.keys(remoteFlows).length > 0) {
+                    var remoteStepFlows = this.processFlows(remoteFlows, "(debug)");
+                    flows = flows.concat(remoteStepFlows);
+                    mgr.addView(new CheckStepView({
+                        id: "debugCheckLoadingStatus",
+                        title: `Successfully load ${Object.keys(remoteFlows).length} debug flow(s)`,
+                        level: 0
+                    }));
+                } else {
+                    mgr.addView(new CheckStepView({
+                        id: "debugCheckLoadingStatus",
+                        title: `Failed to load any debug flow, is local check server running?`,
+                        level: 2
+                    }));
+                }
             }
-            
+
             var dropDownView = new DropdownStepView({
                 id: "InitialDropDown",
                 description: "Tell us more about the problem you are experiencing:",
@@ -179,7 +196,7 @@ export class NetworkTroubleshooterComponent extends DataRenderBaseComponent impl
                     telemetryService.logEvent("NetworkCheck.DropdownDismissed", {});
                 },
                 afterInit: () => {
-                    telemetryService.logEvent("NetworkCheck.DropdownInitialized", {flowSet: flowSet.name});
+                    telemetryService.logEvent("NetworkCheck.DropdownInitialized", { flowSet: flowSet.name });
                 }
             });
             var state = mgr.addView(dropDownView);

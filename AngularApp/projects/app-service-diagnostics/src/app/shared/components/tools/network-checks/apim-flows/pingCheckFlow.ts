@@ -1,4 +1,3 @@
-import { Connection } from '@angular/http';
 import { CheckStepView, FormStepView, InfoStepView, InfoType, StatusStyles, StepView } from 'diagnostic-data';
 import { InputType } from 'projects/diagnostic-data/src/lib/models/form';
 import { DiagProvider } from '../diag-provider';

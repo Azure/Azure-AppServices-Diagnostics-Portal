@@ -168,8 +168,7 @@ export class DiagProvider {
 
     public extendedPostResourceAsync<T, S>(resourceUri: string, body?: S, apiVersion?: string): Promise<T> {
         return this._armService.requestResource<T, S>("POST", resourceUri, body, apiVersion).pipe<T>(
-            res1 => res1.flatMap(this.genObs2()),
-            catchError(err => of(err.error)),
+            res1 => res1.flatMap(this.genObs2())
         ).toPromise();
     }
 
