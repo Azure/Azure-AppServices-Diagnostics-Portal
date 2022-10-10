@@ -61,7 +61,7 @@
     "css-to-style": "^1.4.0",
     "font-awesome": "^4.7.0",
     "hammerjs": "^2.0.8",
-    "highcharts": "^8.1.2",
+    "highcharts": "^9.0.0",
     "highcharts-angular": "^2.4.0",
     "highcharts-custom-events": "^3.0.9",
     "ie-shim": "^0.1.0",
