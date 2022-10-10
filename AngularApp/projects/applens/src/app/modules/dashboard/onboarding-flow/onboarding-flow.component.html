@@ -139,10 +139,7 @@
     <div class="callout-padding">
     <fab-dialog-content [title]="dialogTitle" [subText]="dialogSubText" [styles]="publishDialogStyles">
       <p>Branch Name: </p><p style="text-decoration: underline; font-weight: bold; word-wrap: break-word;">{{Branch}}</p>
-      <!-- <fab-text-field [label]="branchName" [(value)]="Branch" [placeholder]="branchPlaceholder"></fab-text-field> -->
-      <fab-text-field [label]="PRName" [(value)]="PRTitle" [placeholder]="PRPlaceholder" [required]="true"></fab-text-field>
-      <!-- <fab-text-field [label]="PRDescription" [(value)]="PRDesc" [placeholder]="PRDescriptionPlaceholder"
-        [required]="true" [multiline]="true"></fab-text-field> -->
+      <input type="text" [placeholder]="PRPlaceholder" [(ngModel)]="PRTitle" style="color: black; width:100%"/>
         <search-term-addition [allUtterances]="allUtterances" [recommendedUtterances]="recommendedUtterances"
         [utteranceInput]="utteranceInput" [detectorId]="id"></search-term-addition>
       <div style="border-top: 1px solid gray;" class="pt-3 pb-3 callout-padding">

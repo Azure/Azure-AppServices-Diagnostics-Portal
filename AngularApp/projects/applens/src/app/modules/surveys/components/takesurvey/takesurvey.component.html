@@ -51,7 +51,7 @@
             </div>
             <div class="form-row" *ngIf="solutionFound.key=='y' && detectorHelped.key=='n'">
               <fab-text-field maxLength="500" [styles]="textFieldStyle" [rows]="4" [multiline]="true"
-                [(value)]="customSolution"
+                (onChange)="updateCustomSolution($event)"
                 [label]="'What specific resources helped you resolve the customer problem? (e.g. link to documentation, wiki, etc.)'">
               </fab-text-field>
             </div>

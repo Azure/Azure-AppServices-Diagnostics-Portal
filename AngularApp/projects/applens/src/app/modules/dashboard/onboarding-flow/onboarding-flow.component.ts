@@ -2034,4 +2034,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       queryParamsHandling: 'merge'
     })
   }
+
+  updatePRTitle(e: { event: Event, newValue?: string }) {
+    this.PRTitle = e.newValue.toString();
+  }
 }
