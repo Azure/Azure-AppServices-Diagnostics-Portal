@@ -43,7 +43,6 @@ import { GistChangelistComponent } from './gist-changelist/gist-changelist.compo
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TabAnalysisComponent } from './tabs/tab-analysis/tab-analysis.component';
 import { CategoryPageComponent } from './category-page/category-page.component';
-import { AvatarModule } from 'ngx-avatars';
 import { SupportTopicPageComponent } from './support-topic-page/support-topic-page.component';
 import { SelfHelpContentComponent } from './self-help-content/self-help-content.component';
 import { UserDetectorsComponent } from './user-detectors/user-detectors.component';
@@ -417,7 +416,6 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
 
 @NgModule({
     imports: [
-        AvatarModule,
         CommonModule,
         FormsModule,
         DashboardModuleRoutes,
