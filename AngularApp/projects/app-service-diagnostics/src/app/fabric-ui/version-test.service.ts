@@ -24,7 +24,8 @@ export const allowV3PResourceTypeList: { type: string, allowSwitchBack: boolean 
     { type: "microsoft.batch/batchaccounts", allowSwitchBack: false },
     { type: "microsoft.Web/staticsites", allowSwitchBack: false },
     { type: "microsoft.servicebus/namespaces", allowSwitchBack: false },
-    { type: "microsoft.eventhub/namespaces", allowSwitchBack: false }
+    { type: "microsoft.eventhub/namespaces", allowSwitchBack: false },
+    { type: "microsoft.containerinstance/containergroups", allowSwitchBack: false}
 ];
 
 
