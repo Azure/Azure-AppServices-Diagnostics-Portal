@@ -121,7 +121,7 @@ ngOnInit() {
       }
       });
     // Detecting whether Download Report button should be displayed or not
-    this.displayDownloadReportButton = this.checkIsWindowsApp() || this.checkIsLinuxApp();
+    this.displayDownloadReportButton = this.detector === "ResiliencyScore" && (this.checkIsWindowsApp() || this.checkIsLinuxApp());
 
     // Logging telemetry for Download Report button
     const dRBDEventProperties = {
