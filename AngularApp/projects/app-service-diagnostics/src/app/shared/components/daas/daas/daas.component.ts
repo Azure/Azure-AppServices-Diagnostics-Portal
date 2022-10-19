@@ -66,16 +66,12 @@ export class DaasComponent implements OnInit, OnDestroy {
   isWindowsApp: boolean = true;
   linuxDumpType: string = "Full";
   showCancelButton: boolean = false;
+  showAnalysisOption: boolean = false;
 
   constructor(private _serverFarmService: ServerFarmDataService, private _siteService: SiteService,
     private _daasService: DaasService, private _windowService: WindowService,
     private _logger: AvailabilityLoggingService, private _webSiteService: WebSitesService) {
     this.isWindowsApp = this._webSiteService.platform === OperatingSystem.windows;
-
-    //
-    // For Linux, only collection is supported currently
-    //
-    this.collectionMode = this.isWindowsApp ? SessionMode.CollectAndAnalyze : this.sessionMode.Collect;
   }
 
   public get sessionMode(): typeof SessionMode {
@@ -112,6 +108,13 @@ export class DaasComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    //
+    // Analysis option for Linux only available for Memory Dumps currently 
+    //
+
+    this.showAnalysisOption = this.isWindowsApp ? true : this.diagnoserName.startsWith('MemoryDump');
+    this.collectionMode = this.showAnalysisOption ? SessionMode.CollectAndAnalyze : SessionMode.Collect;
   }
 
   initWizard(): void {
@@ -130,7 +133,7 @@ export class DaasComponent implements OnInit, OnDestroy {
       CaptionCompleted: 'Step 2: ' + this.diagnoserName + ' Collected'
     });
 
-    if (this.isWindowsApp) {
+    if (this.showAnalysisOption) {
       this.WizardSteps.push({
         Caption: 'Step 3: Analyzing ' + this.diagnoserName,
         IconType: 'fa-cog',
