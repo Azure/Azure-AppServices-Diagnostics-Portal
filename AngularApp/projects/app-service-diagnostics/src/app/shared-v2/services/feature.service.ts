@@ -13,6 +13,7 @@ import { StartupInfo } from '../../shared/models/portal';
 import { VersionTestService } from '../../fabric-ui/version-test.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ToolIds, ToolNames } from '../../shared/models/tools-constants';
 
 const exclusiveDetectorTypes: DetectorType[] = [
   DetectorType.CategoryOverview
@@ -27,6 +28,7 @@ export class FeatureService {
   public featureSub: BehaviorSubject<Feature[]> = new BehaviorSubject<Feature[]>([]);
   protected isLegacy: boolean;
   protected _featureDisplayOrderSub: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
+  public diagnosticToolsForNonWeb: any[] = [];
   protected set _featureDisplayOrder(order: any[]) {
     this._featureDisplayOrderSub.next(order);
   }
@@ -35,6 +37,7 @@ export class FeatureService {
     this.versionTestService.isLegacySub.subscribe(isLegacy => {
       this.isLegacy = isLegacy;
       this._authService.getStartupInfo().subscribe(startupInfo => {
+        this.addDiagnosticToolsForNonWeb(startupInfo.resourceId);
         this._diagnosticApiService.getDetectors().subscribe(detectors => {
           this._categoryService.categories.subscribe(categories => {
             this._detectors = detectors;
@@ -240,5 +243,32 @@ export class FeatureService {
     if (this._features.findIndex(f => f.id === detector.id) > -1) return false;
 
     return (detector.category && detector.category.length > 0) || (detector.description && detector.description.length > 0)
+  }
+
+  protected navigateToTool(resourceId: string, toolId: string, category: string = "DiagnosticTools") {
+    const isHomepage = this._router.url.endsWith(resourceId);
+    //If in homepage then open second blade for Diagnostic Tool and second blade will continue to open third blade for
+    if (isHomepage) {
+      this._portalActionService.openBladeDiagnosticToolId(toolId, category);
+    } else {
+      this._router.navigateByUrl(`resource${resourceId}/categories/DiagnosticTools/tools/${toolId}`);
+    }
+  }
+  private addDiagnosticToolsForNonWeb(resourceId: string) {
+    this.diagnosticToolsForNonWeb = [
+      {
+        type: "microsoft.apimanagement/service",
+        item: {
+          id: ToolIds.NetworkChecks,
+          name: ToolNames.NetworkChecks,
+          category: 'Diagnostic Tools',
+          description: '',
+          featureType: DetectorType.DiagnosticTool,
+          clickAction: this._createFeatureAction(ToolNames.NetworkChecks, 'Diagnostic Tools', () => {
+            this.navigateToTool(resourceId, ToolIds.NetworkChecks);
+          })
+        }
+      }
+    ];
   }
 }
