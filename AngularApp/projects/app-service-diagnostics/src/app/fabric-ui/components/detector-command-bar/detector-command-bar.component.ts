@@ -101,10 +101,14 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       }
     }
     catch (error) {
-      loggingError.message = 'Error trying to retrieve showCoachmark from localStorage';
-      loggingError.stack = error;
-      let _severityLevel: SeverityLevel = SeverityLevel.Warning;
-      this.telemetryService.logException(loggingError, null, null, _severityLevel);
+      // Use TelemetryService logEvent when not able to access local storage.
+      // Most likely due to browsing in InPrivate/Incognito mode.
+      const eventProperties = {
+        'Subscription': this.subscriptionId,
+        'Error': error,
+        'Message': 'Error trying to retrieve showCoachmark from localStorage'        
+      }
+      this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
 
     //
@@ -156,7 +160,8 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       // Most likely due to browsing in InPrivate/Incognito mode.
       const eventProperties = {
         'Subscription': this.subscriptionId,
-        'Error': error
+        'Error': error,
+        'Message': 'Error trying to retrieve showCoachmark from localStorage'    
       }
       this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
