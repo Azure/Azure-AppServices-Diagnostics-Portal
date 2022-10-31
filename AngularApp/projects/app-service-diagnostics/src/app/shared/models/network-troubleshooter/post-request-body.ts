@@ -1,7 +1,16 @@
+export class WrappedManagementApiBody {
+    Properties: any
+}
+
 export class NetworkTroubleshooterPostAPIBody {
     ProviderType: string;
     Credentials: Credentials;
     ResourceMetadata: ResourceMetadata;
+}
+
+export class NetworkTroubleshooterPostTcpPingBody {
+    Host: string;
+    Port: number;
 }
 
 export class Credentials {

@@ -17,7 +17,7 @@ export var functionsFlow = {
     async func(siteInfo, diagProvider, flowMgr) {
 
         var isKuduAccessiblePromise = null;
-        if (siteInfo.kind.includes("linux") || siteInfo.kind.includes("container")) {
+        if (siteInfo.kind.includes("linux") ||siteInfo.kind.includes("container")) {
             isKuduAccessiblePromise = false;
         } else {
             isKuduAccessiblePromise = checkKuduAvailabilityAsync(diagProvider, flowMgr);
@@ -402,7 +402,7 @@ async function runConnectivityCheckAsync(hostname, port, dnsServers, diagProvide
     })();
 
     //TODO: Perform tcpping validation through NetworkValidationChecker endpoint instead of kudu
-    var tcpPingPromise = diagProvider.tcpPingAsync(hostname, port).catch(e => {
+    var tcpPingPromise = diagProvider.tcpPingNetworkTroubleshooterAsync(hostname, port).catch(e => {
         logDebugMessage(e);
         return {};
     });
@@ -445,8 +445,7 @@ async function runConnectivityCheckAsync(hostname, port, dnsServers, diagProvide
     var tcpPingResult = await tcpPingPromise;
     var status = tcpPingResult.status;
     if (status == 0) {
-        // Suppress successful checks to avoid clutter
-        //subChecks.push({ title: `TCP ping to ${hostname} was successful`, level: 0 });
+        subChecks.push({ title: `TCP ping to ${hostname} was successful`, level: 0 });
     } else if (status == 1) {
         var markdown = `Connectivity test failed at TCP level for hostname **${hostname}** via resolved IP address ${resolvedIp}.  ` +
             "This means the endpoint was not reachable at the network transport layer. Possible reasons can be:" +

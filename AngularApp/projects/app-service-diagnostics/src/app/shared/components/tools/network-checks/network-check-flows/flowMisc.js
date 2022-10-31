@@ -685,7 +685,28 @@ export function addSubnetSelectionDropDownView(siteInfo, diagProvider, flowMgr, 
 export async function checkNetworkTroubleshooterApiAsync(diagProvider) {
     var params = [];
     params.push("api-version=2015-08-01");
-    // TODO: determine/create an api that tells us if the backend is available to handle requests
+
+    // TODO :: Use the GET endpoint for the Network Troubleshooter to return version/status for health.
+    // This is currently not accessible through management plane. Possible to use SCM or to open route
+    // Temp - Use TCPPing to cover the functionality
+    var healthyTarget  = "www.microsoft.com";
+    var healthyPort = 80;
+    var tcpPingPromise = diagProvider.tcpPingNetworkTroubleshooterAsync(healthyTarget, healthyPort).catch(e => {
+        logDebugMessage(e);
+        return {};
+    });
+    var response = await tcpPingPromise;
+    var isAccessible = false;
+    if (response == null) {
+        throw new Error("Unexpected Null response in CheckNetworkTroubleShooterApiAsync for Tcppingpromise");
+    }
+    else
+    {
+        // ConnectionCheckStatus is a Enum defined in Diag-Provider.ts but, not exported that represents states all other than 0 is fail
+        isAccessible = response.status == 0;
+    }
+
+   // TODO: determine/create an api that tells us if the backend is available to handle requests
     //var versionInfo = await diagProvider.getDaaSExtApiAsync("Version",params);
     var isAccessible = true;
     /*if(versionInfo.status == "200") {
