@@ -17,10 +17,10 @@ export var functionsFlow = {
     async func(siteInfo, diagProvider, flowMgr) {
 
         var isKuduAccessiblePromise = null;
-        if (siteInfo.kind.includes("container")) {
+        if (siteInfo.kind.includes("linux") ||siteInfo.kind.includes("container")) {
             isKuduAccessiblePromise = false;
         } else {
-            isKuduAccessiblePromise = true; //checkKuduAvailabilityAsync(diagProvider, flowMgr);
+            isKuduAccessiblePromise = checkKuduAvailabilityAsync(diagProvider, flowMgr);
         }
         var dnsServers = null;
         var vnetConfigChecker = new VnetIntegrationConfigChecker(siteInfo, diagProvider);
@@ -44,7 +44,7 @@ export var functionsFlow = {
         }
 
         if (!await isKuduAccessiblePromise) {
-            if (siteInfo.kind.includes("container")) {
+            if (siteInfo.kind.includes("linux") || siteInfo.kind.includes("container")) {
                 flowMgr.addView(new CommonWordings().connectivityCheckUnsupported.get());
             } else {
                 flowMgr.addView(new VnetDnsWordings().cannotCheckWithoutKudu.get("Functions settings"));
@@ -445,7 +445,6 @@ async function runConnectivityCheckAsync(hostname, port, dnsServers, diagProvide
     var tcpPingResult = await tcpPingPromise;
     var status = tcpPingResult.status;
     if (status == 0) {
-        // Suppress successful checks to avoid clutter TODO CLINK : REDO
         subChecks.push({ title: `TCP ping to ${hostname} was successful`, level: 0 });
     } else if (status == 1) {
         var markdown = `Connectivity test failed at TCP level for hostname **${hostname}** via resolved IP address ${resolvedIp}.  ` +
