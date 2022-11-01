@@ -10,6 +10,7 @@
     "ncloud-applens-local": "npm run fixAngularReact && ng serve applens --configuration=nationalcloud-local",
     "ssl": "npm run fixAngularReact && node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng serve --host 0.0.0.0 app-service-diagnostics --ssl --ssl-cert ./ssl/server.crt --ssl-key ./ssl/server.key",
     "ssl-local": "npm run fixAngularReact && npm run ssl -- -c local",
+    "ssl-local-poll": "npm run fixAngularReact && npm run ssl -- --poll 2000 -c local",
     "asd": "concurrently -k \"npm run ssl\" \"npm run lib\"",
     "build-lib": "npm run fixAngularReact && node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build diagnostic-data",
     "build-applens": "npm run fixAngularReact && node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build applens --configuration production",
