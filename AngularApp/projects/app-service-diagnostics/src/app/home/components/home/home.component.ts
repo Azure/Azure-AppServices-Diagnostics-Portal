@@ -360,8 +360,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     clickQuickLink(feature: Feature) {
         this._telemetryService.logEvent(TelemetryEventNames.QuickLinkClicked, {
-            'id': feature.id,
-            'name': feature.name
+            'DetectorId': feature.id,
+            'DetectorName': feature.name
         });
         feature.clickAction();
     }

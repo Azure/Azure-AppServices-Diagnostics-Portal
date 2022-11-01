@@ -137,7 +137,7 @@ export class FabricSearchResultsComponent {
     this.telemetryService.logEvent('SearchItemClicked', {
       'SearchValue': this.searchValue,
       'SelectionId': feature.id,
-      'SelectionName': feature.name,
+      'DetectorName': feature.name,
       'Location': this.isInCategory ? 'CategoryOverview' : 'LandingPage'
     });
   }
