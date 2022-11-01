@@ -129,7 +129,7 @@ export class DiagProvider {
 
     public async postNetworkTroubleshooterApiAsync(api: string, body: any, timeoutInSec: number = 15): Promise<any> {
         var params = "api-version=2015-08-01";
-        var prefix = `management.azure.com/${this._siteInfo.resourceUri}/NetworkValidationChecker`;
+        var prefix = `management.azure.com/${this._siteInfo.resourceUri}`;
         var stack = new Error("error_message_placeholder").stack;
         var promise = this._armService.post(`https://${prefix}/${api}?${params}`, body)
             .toPromise()
