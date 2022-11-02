@@ -33,6 +33,7 @@ const moment = momentNs;
 import { ILinkProps, PanelType } from 'office-ui-fabric-react';
 import { GenericBreadcrumbService } from '../../services/generic-breadcrumb.service';
 import { GenericUserSettingService } from '../../services/generic-user-setting.service';
+import { GenericCategoryService } from '../../services/generic-category-service';
 
 const WAIT_TIME_IN_SECONDS_TO_ALLOW_DOWNTIME_INTERACTION: number = 58;
 const PERCENT_CHILD_DETECTORS_COMPLETED_TO_ALLOW_DOWNTIME_INTERACTION: number = 0.9;
@@ -133,7 +134,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         private _diagnosticService: DiagnosticService, private _detectorControl: DetectorControlService,
         protected telemetryService: TelemetryService, public _appInsightsService: AppInsightsQueryService,
         private _supportTopicService: GenericSupportTopicService, protected _globals: GenieGlobals, private _solutionService: SolutionService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, private _genericBreadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService) {
+        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, private _genericBreadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService, private _genericCategoryService: GenericCategoryService) {
         super(telemetryService);
         this.isPublic = config && config.isPublic;
 
@@ -983,16 +984,10 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     public selectDetector(viewModel: any) {
         if (viewModel != null && viewModel.model.metadata.id) {
             let detectorId = viewModel.model.metadata.id;
-            let categoryName = "";
+            let categoryId = "";
             const queryParams = this._activatedRoute.snapshot.queryParams;
-            if (viewModel.model.metadata.category) {
-                categoryName = viewModel.model.metadata.category.replace(/\s/g, '');
-            }
-            else {
-                // For uncategorized detectors:
-                // If it is home page, redirect to availability category. Otherwise stay in the current category page.
-                categoryName = this._router.url.split('/')[11] ? this._router.url.split('/')[11] : "availabilityandperformance";
-            }
+            const currentCategoryId = this._activatedRoute?.firstChild?.snapshot.params["category"];
+            categoryId = this._genericCategoryService.getCategoryIdByCategoryName(viewModel?.model?.metadata?.category, currentCategoryId);
 
             if (detectorId !== "") {
                 const clickDetectorEventProperties = {
@@ -1015,11 +1010,11 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                             return;
                         }
                         if (isHomepage) {
-                            this.openBladeDiagnoseDetectorId(categoryName, detectorId, DetectorType.Detector);
+                            this.openBladeDiagnoseDetectorId(categoryId, detectorId, DetectorType.Detector);
                         }
                         else {
                             this.logEvent(TelemetryEventNames.SearchResultClicked, { searchMode: this.searchMode, searchId: this.searchId, detectorId: detectorId, rank: 0, title: clickDetectorEventProperties.ChildDetectorName, status: clickDetectorEventProperties.Status, ts: Math.floor((new Date()).getTime() / 1000).toString() });
-                            let dest = `resource${this.resourceId}/categories/${categoryName}/detectors/${detectorId}`;
+                            let dest = `resource${this.resourceId}/categories/${categoryId}/detectors/${detectorId}`;
                             this._globals.openGeniePanel = false;
                             this._router.navigate([dest]);
                         }

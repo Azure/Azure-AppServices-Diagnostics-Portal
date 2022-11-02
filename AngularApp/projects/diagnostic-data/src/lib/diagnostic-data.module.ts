@@ -146,6 +146,7 @@ import { FabCalendarModule } from '@angular-react/fabric/lib/components/calendar
 import { FabDetailsListModule } from '@angular-react/fabric/lib/components/details-list';
 import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-field';
 import { ClientScriptViewComponent } from './components/client-script-view/client-script-view.component';
+import { GenericCategoryService } from './services/generic-category-service';
 
 @NgModule({
     imports: [
@@ -309,7 +310,8 @@ export class DiagnosticDataModule {
                 FeatureNavigationService,
                 AppInsightsQueryService,
                 ParseResourceService,
-                HighChartsHoverService
+                HighChartsHoverService,
+                GenericCategoryService
             ]
         };
     }

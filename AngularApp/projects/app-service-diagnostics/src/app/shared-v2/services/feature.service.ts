@@ -5,7 +5,6 @@ import { Feature, FeatureAction } from '../models/features';
 import { ContentService } from './content.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../startup/services/auth.service';
-import { LoggingV2Service } from './logging-v2.service';
 import { SiteService } from '../../shared/services/site.service';
 import { CategoryService } from '../../shared-v2/services/category.service';
 import { PortalActionService } from '../../shared/services/portal-action.service';
@@ -181,30 +180,9 @@ export class FeatureService {
     return this.getCategoryIdByCategoryName(detector.category);
   }
 
-  private getCategoryIdByCategoryName(name: string): string {
-    //Default set to "*",so it will still route to category-summary
-    let categoryId: string = this.categories.length > 0 ? this.categories[0].id : "*";
-    const currentCategoryId = this._activatedRoute.root?.firstChild?.firstChild?.firstChild?.firstChild?.firstChild.snapshot.params["category"];
-    //If category name is "XXX Tools" and has Diagnostic Tools category,then should belong to Diagnostic Tool Category.For now this should be working in Windows Web App
-    if ((name === "Diagnostic Tools" || name === "Support Tools" || name === "Proactive Tools") && this.categories.find(category => category.name === "Diagnostic Tools")) {
-      const category = this.categories.find(category => category.name === "Diagnostic Tools");
-      categoryId = category.id;
-    }
-    else if (name && this.categories.find(category => category.name === name)) {
-      const category = this.categories.find(category => category.name === name);
-      categoryId = category.id;
-    }
-    //In category-overview page and uncategoried detector,return current categoryId
-    else if (currentCategoryId) {
-      categoryId = currentCategoryId;
-    }
-    //In home page,no categoryId in router,return category as availability&perf
-    else if (this.categories.find(category => category.name === "Availability and Performance")) {
-      const category = this.categories.find(category => category.name === "Availability and Performance");
-      categoryId = category.id;
-    }
-    return categoryId;
-
+  private getCategoryIdByCategoryName(categoryId: string) {
+    const currentCategoryId = this._activatedRoute.root?.firstChild?.firstChild?.firstChild?.firstChild?.firstChild?.snapshot.params["category"];
+    return this._categoryService.getCategoryIdByCategoryName(categoryId,currentCategoryId);
   }
 
   private navigatTo(startupInfo: StartupInfo, category: string, detector: string, type: DetectorType) {

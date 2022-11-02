@@ -27,6 +27,7 @@ export * from './lib/services/portal-action.service';
 export * from './lib/services/generic-breadcrumb.service';
 export * from './lib/services/generic-user-setting.service';
 export * from './lib/services/generic-portal.service';
+export * from './lib/services/generic-category-service';
 export * from './lib/config/diagnostic-data-config';
 export * from './lib/diagnostic-data.module';
 
