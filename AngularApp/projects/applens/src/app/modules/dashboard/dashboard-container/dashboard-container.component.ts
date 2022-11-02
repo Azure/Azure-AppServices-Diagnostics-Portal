@@ -13,7 +13,7 @@ import { DetectorResponse, TelemetryEventNames, TelemetryService, ResiliencyScor
 import { SeverityLevel } from '@microsoft/applicationinsights-web';
 import { HttpClient } from '@angular/common/http';
 import { DetectorControlService } from 'diagnostic-data';
-import { Sku } from 'projects/app-service-diagnostics/src/app/shared/models/server-farm';
+import { ObserverSiteSku, ObserverSkuType } from '../../../shared/models/observer';
 
 @Component({
   selector: 'dashboard-container',
@@ -35,7 +35,7 @@ export class DashboardContainerComponent implements OnInit {
 
 // Variables used by Download Report button    
   detector: string = "";
-  siteSku: Observer.ObserverSiteSku;
+  siteSku: ObserverSiteSku;
   subscriptionId: string;
   displayDownloadReportButton: boolean = false;
   displayDownloadReportButtonStyle: any = {};
@@ -181,15 +181,15 @@ export class DashboardContainerComponent implements OnInit {
 
   // Check if the app is an App Service Windows Standard or higher SKU
   private checkIsWindowsApp() {
-    let _sku: Sku = Sku.All;      
-    _sku = Sku[this.siteSku.sku];
+    let _sku: ObserverSkuType = ObserverSkuType.All;
+    _sku = ObserverSkuType[this.siteSku.sku];
     return this.siteSku && this.getAppType(this.siteSku.kind.toLowerCase()) === "WebApp" && !this.siteSku.is_linux && _sku > 8; //Only for Web App (Windows) in Standard or higher SKU     
   }
 
   // Check if the app is an App Service Linux Standard or higher SKU
   private checkIsLinuxApp() {
-    let _sku: Sku = Sku.All;  
-    _sku = Sku[this.siteSku.sku];
+    let _sku: ObserverSkuType = ObserverSkuType.All;      
+    _sku = ObserverSkuType[this.siteSku.sku];
     return this.siteSku && this.getAppType(this.siteSku.kind.toLowerCase()) === "LinuxApp" && this.siteSku.is_linux && _sku > 8; //Only for Web App (Windows) in Standard or higher SKU 
   }
 

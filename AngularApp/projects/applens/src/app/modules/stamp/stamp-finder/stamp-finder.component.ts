@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ObserverStampResponse } from '../../../shared/models/observer';
 import { ObserverService } from '../../../shared/services/observer.service';
 import { StartupService } from '../../../shared/services/startup.service';
 
@@ -14,7 +15,7 @@ export class StampFinderComponent implements OnInit {
   loading: boolean = true;
   error: string;
 
-  matchingStamps: Observer.ObserverStampResponse[] = [];
+  matchingStamps: ObserverStampResponse[] = [];
 
   contentHeight: string;
 
@@ -43,7 +44,7 @@ export class StampFinderComponent implements OnInit {
     });
   }
 
-  navigateToStamp(matchingStamp: Observer.ObserverStampResponse) {
+  navigateToStamp(matchingStamp: ObserverStampResponse) {
     let resourceArray: string[] = [
       'stamps', matchingStamp.name];
 

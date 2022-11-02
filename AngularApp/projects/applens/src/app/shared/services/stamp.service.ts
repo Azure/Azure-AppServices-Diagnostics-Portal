@@ -7,13 +7,14 @@ import { ResourceService } from './resource.service';
 import { HttpResponse } from '@angular/common/http';
 import { DiagnosticApiService } from './diagnostic-api.service';
 import {DetectorControlService} from 'diagnostic-data';
+import { ObserverStampInfo, ObserverStampResponse } from '../models/observer';
 
 @Injectable()
 export class StampService extends ResourceService {
 
-  private _currentResource: BehaviorSubject<Observer.ObserverStampInfo> = new BehaviorSubject(null);
+  private _currentResource: BehaviorSubject<ObserverStampInfo> = new BehaviorSubject(null);
 
-  private _stampObject: Observer.ObserverStampInfo;
+  private _stampObject: ObserverStampInfo;
 
   constructor(@Inject(RESOURCE_SERVICE_INPUTS) inputs: ResourceServiceInputs, protected _observerApiService: ObserverService, protected _diagnosticApiService: DiagnosticApiService, protected _detectorControlService: DetectorControlService) {
     super(inputs);
@@ -21,7 +22,7 @@ export class StampService extends ResourceService {
 
   public startInitializationObservable() {
     this._initialized = this._observerApiService.getStamp(this._armResource.resourceName)
-      .pipe(map((observerResponse: Observer.ObserverStampResponse) => {
+      .pipe(map((observerResponse: ObserverStampResponse) => {
         this._observerResource = this._stampObject = this.getStampInfoFromObserverResponse(observerResponse);
         this._currentResource.next(this._stampObject);
         return new ResourceInfo(this.getResourceName(),this.imgSrc,this.displayName,this.getCurrentResourceId());
@@ -58,7 +59,7 @@ export class StampService extends ResourceService {
         }), catchError((err) => { return of({}); }));
       }
 
-    private getStampInfoFromObserverResponse(observerResponse: Observer.ObserverStampResponse): Observer.ObserverStampInfo {
+    private getStampInfoFromObserverResponse(observerResponse: ObserverStampResponse): ObserverStampInfo {
         return {
             Name: observerResponse.details.prod_environment.name,
             SubscriptionId: observerResponse.details.prod_environment.subscription_id,

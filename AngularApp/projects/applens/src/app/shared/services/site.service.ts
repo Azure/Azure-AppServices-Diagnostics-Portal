@@ -6,13 +6,14 @@ import { ObserverService } from './observer.service';
 import { ResourceService } from './resource.service';
 import { HttpResponse } from '@angular/common/http';
 import { SkuUtilities } from '../utilities/sku-utilities';
+import { ObserverSiteInfo, ObserverSiteResponse, ObserverSiteSku } from '../models/observer';
 
 @Injectable()
 export class SiteService extends ResourceService {
 
-    private _currentResource: BehaviorSubject<Observer.ObserverSiteInfo> = new BehaviorSubject(null);
+    private _currentResource: BehaviorSubject<ObserverSiteInfo> = new BehaviorSubject(null);
 
-    private _siteObject: Observer.ObserverSiteInfo;
+    private _siteObject: ObserverSiteInfo;
 
     constructor(@Inject(RESOURCE_SERVICE_INPUTS) inputs: ResourceServiceInputs, protected _observerApiService: ObserverService) {
         super(inputs);
@@ -21,7 +22,7 @@ export class SiteService extends ResourceService {
     public startInitializationObservable() {
         this._initialized = this._observerApiService.getSite(this._armResource.resourceName)
             .pipe(
-                map((observerResponse: Observer.ObserverSiteResponse) => {
+                map((observerResponse: ObserverSiteResponse) => {
                     const siteObject = this.getSiteFromObserverResponse(observerResponse);
                     return siteObject;
                 }), flatMap(site => {
@@ -55,7 +56,7 @@ export class SiteService extends ResourceService {
         return null;
     }
 
-    private getSiteFromObserverResponse(observerResponse: Observer.ObserverSiteResponse): Observer.ObserverSiteInfo {
+    private getSiteFromObserverResponse(observerResponse: ObserverSiteResponse): ObserverSiteInfo {
         return observerResponse.details.find(site =>
             site.Subscription.toLowerCase() === this._armResource.subscriptionId.toLowerCase() &&
             site.ResourceGroupName.toLowerCase() === this._armResource.resourceGroup.toLowerCase())
@@ -84,7 +85,7 @@ export class SiteService extends ResourceService {
         }
     }
 
-    private getSiteASPAndSKu(siteSku: Observer.ObserverSiteSku): string {
+    private getSiteASPAndSKu(siteSku: ObserverSiteSku): string {
         const priceTire = SkuUtilities.getPriceTireBySkuAndSize(siteSku.sku.toString(), siteSku.current_worker_size);
         const numberOfWorkers = siteSku.actual_number_of_workers;
         const aspName = siteSku.server_farm_name;
