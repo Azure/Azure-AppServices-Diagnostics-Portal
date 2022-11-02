@@ -1,4 +1,4 @@
-import { DetectorControlService, FeatureNavigationService, DetectorResponse, TelemetryEventNames, ResourceDescriptor, TelemetrySource, LoadingStatus } from 'diagnostic-data';
+import { DetectorControlService, FeatureNavigationService, TelemetryEventNames, ResourceDescriptor } from 'diagnostic-data';
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../../../shared-v2/models/category';
@@ -21,11 +21,8 @@ import { allowV3PResourceTypeList, VersionTestService } from '../../../fabric-ui
 import { SubscriptionPropertiesService } from '../../../shared/services/subscription-properties.service';
 import { Feature } from '../../../shared-v2/models/features';
 import { QuickLinkService } from '../../../shared-v2/services/quick-link.service';
-import { delay, map } from 'rxjs/operators';
-import { RiskHelper, RiskTile } from '../../models/risk';
 import { OperatingSystem } from '../../../shared/models/site';
 import { RiskAlertService } from '../../../shared-v2/services/risk-alert.service';
-import { mergeMap } from 'rxjs-compat/operator/mergeMap';
 import { ABTestingService } from '../../../shared/services/abtesting.service';
 import { SlotType } from '../../../shared/models/slottypes';
 
@@ -181,7 +178,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        this._telemetryService.updateCommonProperties({'Location': TelemetrySource.DiagAndSolveBlade});
         this.providerRegisterUrl = `/subscriptions/${this.subscriptionId}/providers/Microsoft.ChangeAnalysis/register`;
         if (!this._detectorControlService.startTime) {
             this._detectorControlService.setDefault();
@@ -348,13 +344,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
     openGeniePanel() {
         this.globals.openGeniePanel = true;
         this._telemetryService.logEvent(TelemetryEventNames.OpenGenie, {
-            'Location': TelemetrySource.LandingPage
+            'Place': "LandingPage"
         });
     }
 
     openFeedbackPanel() {
         this._telemetryService.logEvent(TelemetryEventNames.OpenFeedbackPanel), {
-            'Location': TelemetrySource.LandingPage
+            'Place': "LandingPage"
         }
         this.globals.openFeedback = true;
     }
@@ -369,7 +365,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     refreshPage() {
         this._telemetryService.logEvent(TelemetryEventNames.RefreshClicked, {
-            'Location': TelemetrySource.LandingPage
+            'Place': "LandingPage"
         });
 
         this._riskAlertService.getRiskAlertNotificationResponse(false, true).subscribe(() => {

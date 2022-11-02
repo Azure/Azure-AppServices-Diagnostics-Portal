@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TelemetryService, TelemetrySource } from 'diagnostic-data';
+import { TelemetryService } from 'diagnostic-data';
 
 @Component({
     selector: 'integrated-solutions-view',
@@ -17,7 +17,6 @@ export class IntegratedSolutionsViewComponent implements OnInit {
     constructor(private _activatedRoute: ActivatedRoute, private _telemetryService: TelemetryService) { }
 
     ngOnInit() {
-        this._telemetryService.updateCommonProperties({ 'Location': TelemetrySource.CaseSubmissionFlow });
         this._activatedRoute.paramMap.subscribe(params => {
             let currAnalysisId = params.get('analysisId');
             let currDetetctor = params.get('detectorName');

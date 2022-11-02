@@ -112,13 +112,9 @@ export const TelemetryEventNames = {
 };
 
 export const TelemetrySource = {
-    LandingPage: 'LandingPage',
-    CategoryPage: 'CategoryPage',
     CaseSubmissionFlow: 'CaseSubmissionFlow',
     DiagAndSolveBlade: 'DiagAndSolveBlade',
-    IntegratedSolution: 'IntegratedSolution',
-    OverviewPage:'OverviewPage',
-    DetectorPage: 'DetectorPage'
+    PortalReferral: 'PortalReferral',
 }
 
 export interface TelemetryPayload {

@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../startup/services/auth.service';
 import { ResourceService } from '../../../shared-v2/services/resource.service';
 import { PortalReferrerMap, PortalReferrerInfo } from '../../models/portal-referrer-map';
-import { DetectorType, TelemetryService, TelemetrySource } from 'diagnostic-data';
+import { DetectorType, TelemetryService } from 'diagnostic-data';
 import { ArmService } from '../../services/arm.service';
 import { WebSitesService } from '../../../resources/web-sites/services/web-sites.service';
 import { AppType } from '../../models/portal';
@@ -50,7 +50,6 @@ export class PortalReferrerResolverComponent implements OnInit {
   }
 
   matchReferrerAndRoute(referrer: PortalReferrerInfo): void {
-    this._logService.updateCommonProperties({ "Location": TelemetrySource.IntegratedSolution });
     let path = `resource${this._resourceService.resourceIdForRouting}`;
     let startTimeStr = "";
     let endTimeStr = "";

@@ -1,5 +1,5 @@
 import {
-  DetectorControlService, DiagnosticService, DetectorMetaData, DetectorResponse, TelemetryService, TelemetryEventNames, TelemetrySource, ResiliencyScoreReportHelper
+  DetectorControlService, DiagnosticService, DetectorMetaData, DetectorResponse, TelemetryService, TelemetryEventNames, ResiliencyScoreReportHelper
 } from 'diagnostic-data';
 import { Component, AfterViewInit, Input } from '@angular/core';
 import { Globals } from '../../../globals';
@@ -8,9 +8,8 @@ import { ResourceService } from '../../../shared-v2/services/resource.service';
 import { WebSitesService } from '../../../resources/web-sites/services/web-sites.service';
 import { OperatingSystem } from '../../../shared/models/site';
 import { AppType } from '../../../shared/models/portal';
-import { SeverityLevel } from '@microsoft/applicationinsights-web';
 import { DirectionalHint } from 'office-ui-fabric-react';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { DemoSubscriptions } from '../../../betaSubscriptions';
 import { Sku } from '../../../shared/models/server-farm';
 import { HttpClient } from '@angular/common/http';
@@ -125,14 +124,14 @@ export class DetectorCommandBarComponent implements AfterViewInit {
 
   toggleOpenState() {
     this.telemetryService.logEvent(TelemetryEventNames.OpenGenie, {
-      'Location': TelemetrySource.CategoryPage
+      'Place': 'LandingPage'
     })
     this.globals.openGeniePanel = !this.globals.openGeniePanel;
   }
 
   sendFeedback() {
     this.telemetryService.logEvent(TelemetryEventNames.OpenFeedbackPanel, {
-      'Location': TelemetrySource.CategoryPage
+      'Place': 'LandingPage'
     });
     this.globals.openFeedback = !this.globals.openFeedback;
   }
@@ -226,7 +225,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
 
     const eventProperties = {
       'Category': this._route.snapshot.params['category'],
-      'Location': TelemetrySource.CategoryPage
+      'Place': 'LandingPage'
     };
     if (childRouteType === "detectors") {
       eventProperties['Detector'] = childRouteSnapshot.params['detectorName'];
