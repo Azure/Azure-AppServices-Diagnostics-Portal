@@ -215,7 +215,10 @@ export class WebSitesService extends ResourceService {
     }
 
     private getHostingEnvirontmentKind(site: Site) {
-        let scmHostName = site.enabledHostNames.find(h => h.indexOf('.scm.') > 0);
+        let scmHostName = "";
+        if(Array.isArray(site.enabledHostNames)) {
+            scmHostName = site.enabledHostNames.find(h => h.indexOf('.scm.') > 0);
+        }
         return site.hostingEnvironmentId == null ? HostingEnvironmentKind.None : (scmHostName.toLowerCase().endsWith(".azurewebsites.net") ? HostingEnvironmentKind.Public : HostingEnvironmentKind.ILB);
     }
 }
