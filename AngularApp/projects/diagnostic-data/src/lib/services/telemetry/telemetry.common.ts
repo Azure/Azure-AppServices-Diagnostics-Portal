@@ -115,6 +115,8 @@ export const TelemetrySource = {
     LandingPage: 'LandingPage',
     CategoryPage: 'CategoryPage',
     CaseSubmissionFlow: 'CaseSubmissionFlow',
+    DiagAndSolveBlade: 'DiagAndSolveBlade',
+    IntegratedSolution: 'IntegratedSolution',
     OverviewPage:'OverviewPage',
     DetectorPage: 'DetectorPage'
 }

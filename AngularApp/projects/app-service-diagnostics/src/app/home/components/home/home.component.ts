@@ -181,6 +181,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
+        this._telemetryService.updateCommonProperties({'Location': TelemetrySource.DiagAndSolveBlade});
         this.providerRegisterUrl = `/subscriptions/${this.subscriptionId}/providers/Microsoft.ChangeAnalysis/register`;
         if (!this._detectorControlService.startTime) {
             this._detectorControlService.setDefault();

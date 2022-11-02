@@ -191,6 +191,6 @@ export class TelemetryService {
     }
 
     public updateCommonProperties(properties: { [name: string]: string }) {
-
+        this.commonProperties = {...this.commonProperties, ...properties};
     }
 }
