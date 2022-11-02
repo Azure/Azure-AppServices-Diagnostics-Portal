@@ -142,7 +142,8 @@ export class TabDataComponent implements OnInit {
         'AppType': this.siteSku.kind != undefined ? this.siteSku.kind.toLowerCase() === "app" ? "WebApp" : this.siteSku.kind.toString() : "",
         'resourceSku': this.siteSku.sku != undefined ? this.siteSku.sku.toString() : "",
         'ReportType': 'ResiliencyScore',
-        'Error': error
+        'Error': error,
+        'Message': 'Error trying to retrieve showCoachmark from localStorage'
       }
       this._telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
@@ -353,7 +354,8 @@ export class TabDataComponent implements OnInit {
         'Subscription': this.subscriptionId,
         'TimeClicked': sT.toUTCString(),
         'ReportType': 'ResiliencyScore',
-        'Error': error
+        'Error': error,
+        'Message': 'Error trying to retrieve showCoachmark from localStorage',
       }
       this._telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
