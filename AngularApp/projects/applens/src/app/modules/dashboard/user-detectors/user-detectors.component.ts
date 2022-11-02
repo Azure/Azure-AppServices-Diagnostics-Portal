@@ -158,17 +158,19 @@ export class UserDetectorsComponent implements OnInit {
   }
 
   private getSupportTopicName(supportTopicIds: SupportTopic[]): string {
-    const l2NameSet = new Set<string>();
+    const nameSet = new Set<string>();
     supportTopicIds.forEach(t => {
       const topic = this.supportTopics.find(topic => topic.supportTopicId === t.id);
       if (topic && topic.supportTopicL2Name) {
-        l2NameSet.add(topic.supportTopicL2Name);
+        nameSet.add(topic.supportTopicL2Name);
+        nameSet.add(topic.supportTopicL3Name);
       }
     });
-    const supportTopicNames = Array.from(l2NameSet);
+    const supportTopicNames = Array.from(nameSet);
 
-    if (l2NameSet.size === 0) return "None";
-    return supportTopicNames.join("; ");
+    if (nameSet.size === 0) return "None";
+    const supportTopicString  = supportTopicNames.join(";");
+    return supportTopicString;
   }
 }
 

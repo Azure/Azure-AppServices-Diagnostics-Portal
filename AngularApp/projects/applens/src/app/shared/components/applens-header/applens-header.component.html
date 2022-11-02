@@ -16,7 +16,7 @@
     </div>
 
     <div *ngIf="_searchService">
-      <fab-search-box (onSearch)="triggerSearch()" [value]="searchValue" [styles]="searchStyles" [placeholder]="'Describe your problem and hit enter'" (onChange)="updateSearchValue($event)"></fab-search-box>
+      <fab-search-box (onSearch)="triggerSearch()" [styles]="searchStyles" [placeholder]="'Describe your problem and hit enter'" (onChange)="updateSearchValue($event)"></fab-search-box>
     </div>
 
     <div class="user-photo-container" (click)="openCallout()" (keyup.enter)="openCallout()" tabindex="0">
