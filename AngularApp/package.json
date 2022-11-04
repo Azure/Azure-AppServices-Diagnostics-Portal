@@ -112,7 +112,7 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
     "protractor": "~7.0.0",
-    "selfsigned": "^1.10.2",
+    "selfsigned": "^2.1.1",
     "ts-node": "~4.1.0",
     "typescript": "~4.6.4",
     "webpack-bundle-analyzer": "^3.6.0"
