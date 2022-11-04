@@ -160,15 +160,15 @@ function generateRequirementViolationTable(requirements: RequirementResultsByNsg
     }
 
     return `
-        | Status | Rule Name | Description |
-        |--------|-----------|-------------|
-        ` + requirements.reqs.map((req: RequirementResult) => {
+| Status | Rule Name | Description |
+|--------|-----------|-------------|
+` + requirements.reqs.map((req: RequirementResult) => {
 
         let icon = statusIconMarkdown[req.status];
         let description = req.description.replace(/(\r\n|\n|\r)/gm, "");
         let link = `https://ms.portal.azure.com/#@microsoft.onmicrosoft.com/resource${requirements.id}/overview`;
 
-        return `    |   ${icon} | <a href="${link}" target="_blank">${req.name}</a> | ${description} |`;
+        return `|   ${icon} | <a href="${link}" target="_blank">${req.name}</a> | ${description} |`;
     }).join("\n");
 }
 
@@ -218,7 +218,7 @@ async function getVnetInfoView(
     let worstStatus = getWorstStatus(Object.values(violatedRequirementsByLocation).map(violatedRequirements => getWorstStatus(violatedRequirements.reqs.map(req => req.status))));
     let view = new CheckStepView({
         id: "netsec-view",
-        title: "VNET Status",
+        title: "Network Security Rule status",
         level: worstStatus,
         bodyMarkdown: `
             A network security group contains security rules that allow or deny inbound 

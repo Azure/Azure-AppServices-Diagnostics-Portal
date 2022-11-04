@@ -51,7 +51,7 @@ function generateStatusMarkdownTable(statuses: ConnectivityStatusContract[]): st
         return (now - 3 * 60 * 60 * 1000) > t.getTime();
     }
 
-    
+
     // let lastUpdated = statuses.length > 0 ? `${statuses[0].lastUpdated}` : "";
     let statusIconMarkdown = (stale: boolean, status: checkResultLevel): string => {
         let statusIcon = (icon: StatusStyles, text: string) => `<div style="${iconContainerStyles}"><i class="${icon}" style="${iconStyles}"></i><span>${text}</span></div>`;
@@ -61,7 +61,7 @@ function generateStatusMarkdownTable(statuses: ConnectivityStatusContract[]): st
                 case checkResultLevel.warning: return statusIcon(StatusStyles.CriticalIcon, "Error (Optional)");
                 case checkResultLevel.fail: return statusIcon(StatusStyles.CriticalIcon, "Error");
             }
-        } else  {
+        } else {
             switch (status) {
                 case checkResultLevel.pass: return statusIcon(StatusStyles.HealthyIcon, "Success");
                 case checkResultLevel.warning: return statusIcon(StatusStyles.CriticalIcon, "Error (Optional)");
@@ -71,7 +71,7 @@ function generateStatusMarkdownTable(statuses: ConnectivityStatusContract[]): st
     };
 
     let nowrap = (text: string) => `<span style="white-space: nowrap">${text}</span>`;
-    
+
     return `
     | ${nowrap("Status")} | ${nowrap("Name")} | ${nowrap("Resource Group")} | ${nowrap("Details")} |
     |--------|------|----------------|---------|
@@ -87,13 +87,13 @@ async function getNetworkStatusView(diagProvider: DiagProvider, resourceId: stri
     const networkStatusResponse = await diagProvider.getResource<NetworkStatusByLocationContract[]>(resourceId + "/networkstatus", APIM_API_VERSION);
     const networkStatuses = networkStatusResponse.body;
     const view = new CheckStepView({
-        title: "Network Status",
+        title: "Connectivity status",
         level: getWorstNetworkStatus(networkStatuses),
         id: "firstStep",
-        bodyMarkdown: 
-            "Connectivity to required dependencies (e.g. Azure Storage) is necessary to perform the core functions. " + 
-            "If the service cannot connect to optional dependencies (e.g. e-mail server), only the respective functionality " + 
-            "(e.g. e-mail notifications) will not work. " + 
+        bodyMarkdown:
+            "Connectivity to required dependencies (e.g. Azure Storage) is necessary to perform the core functions. " +
+            "If the service cannot connect to optional dependencies (e.g. e-mail server), only the respective functionality " +
+            "(e.g. e-mail notifications) will not work. " +
             "Stale status means that the service status has not updated in over 3 hours and could mean the service is experiencing network connection issues.",
         subChecks: networkStatuses.map(status => {
             let worstLocationStatus = getWorstNetworkStatusOfLocation(status.networkStatus.connectivityStatus);
