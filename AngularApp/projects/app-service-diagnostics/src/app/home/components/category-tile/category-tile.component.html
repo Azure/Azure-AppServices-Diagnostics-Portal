@@ -5,7 +5,13 @@
   </div>
   <div class="category-body">
     <p>{{category.description}}</p>
-    <div>
+    <div *ngIf="(!!category && !!category.categoryQuickLinks && category.categoryQuickLinks.length > 0); else keywordsTemplate">
+      <div class="quick-link" *ngFor="let quickLink of category.categoryQuickLinks">
+        <a tabindex="0" (click)="clickCategoryQuickLink($event, quickLink)" (keyup.enter)="clickCategoryQuickLink($event, quickLink)">{{quickLink.displayText}}</a>
+      </div>
+    </div>
+    <ng-template #keywordsTemplate>
+      <div>
         <span class="keyword-label">Keywords</span>
         <div class="keywords">
           <div class="keyword" [style.border-color]="category.color" *ngFor="let keyword of category.keywords">
@@ -13,6 +19,7 @@
           </div>
         </div>
       </div>
+    </ng-template>
   </div>
 
 </div>

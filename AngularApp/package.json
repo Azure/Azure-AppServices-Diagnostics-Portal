@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "applens": "npm run fixAngularReact && node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng serve applens",
+    "applens": "npm run fixAngularReact && node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng serve --host 0.0.0.0 applens",
     "ncloud-applens-prod": "npm run fixAngularReact && ng serve applens --configuration=nationalcloud-production",
     "ncloud-applens-local": "npm run fixAngularReact && ng serve applens --configuration=nationalcloud-local",
     "ssl": "npm run fixAngularReact && node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng serve --host 0.0.0.0 app-service-diagnostics --ssl --ssl-cert ./ssl/server.crt --ssl-key ./ssl/server.key",

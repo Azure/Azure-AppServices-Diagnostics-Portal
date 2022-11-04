@@ -1,6 +1,6 @@
 import { StepFlowManager } from "diagnostic-data";
+import { DiagProvider } from "projects/app-service-diagnostics/src/app/shared/components/tools/network-checks/diag-provider";
 import { Site, SiteInfoMetaData } from "../../../models/site";
-import { DiagProvider } from "./diag-provider";
 
 export interface NetworkCheckFlow {
     id: string;

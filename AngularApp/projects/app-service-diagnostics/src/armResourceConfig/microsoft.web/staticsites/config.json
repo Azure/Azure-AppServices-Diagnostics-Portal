@@ -1,7 +1,7 @@
 {
   "homePageText": {
     "title": "Static Web Apps Diagnostics",
-    "description": "Use Static Web Apps Diagnostics to investigate how your service is performing, diagnose issues, and discover how to improve its reliability. Select the problem category that best matches the information or tool that you're interested in:",
+    "description": "Investigate how your static web app is performing, diagnose issues, and discover how to improve its reliability.",
     "searchBarPlaceHolder": "Search Static Web Apps Diagnostics"
   },
   "matchRegEx": "/Microsoft.Web/staticSites/",
@@ -20,27 +20,32 @@
     {
       "id": "availabilityandperformancestaticapp",
       "name": "Availability and Performance",
-      "description": "Check your static web app's health and discover performance issues",
+      "description": "View health and performance stats",
       "keywords": [
         "Service Down",
-        "Platform Health"
+        "Platform Health",
+        "5xx",
+        "4xx",
+        "CDN"
       ],
       "color": "rgb(208, 175, 239)",
       "createFlowForCategory": true,
       "chatEnabled": false,
-      "overviewDetectorId": ""
+      "overviewDetectorId": "AvailabilityAndPerformanceOverview2"
     },
     {
       "id": "configurationandmanagementstaticapp",
       "name": "Configuration and Management",
-      "description": "Find out your static web app features are misconfigured",
+      "description": "See your app's configuration",
       "keywords": [
-        "Auth"
+        "Configuration",
+        "Management",
+        "Authentication"
       ],
       "color": "rgb(208, 175, 239)",
       "createFlowForCategory": true,
       "chatEnabled": false,
-      "overviewDetectorId": ""
+      "overviewDetectorId": "configurationAndManagementOverview2"
     },
     {
       "id": "contentdeploymentstaticapp",
@@ -52,7 +57,7 @@
       "color": "rgb(208, 175, 239)",
       "createFlowForCategory": true,
       "chatEnabled": false,
-      "overviewDetectorId": ""
+      "overviewDetectorId": "SWADeployment"
     }
   ],
   "pesId": "17265",

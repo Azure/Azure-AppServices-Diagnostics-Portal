@@ -1,9 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Category } from '../../../shared-v2/models/category';
+import { Category, CategoryQuickLinkDetails } from '../../../shared-v2/models/category';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { NotificationService } from '../../../shared-v2/services/notification.service';
 import { LoggingV2Service } from '../../../shared-v2/services/logging-v2.service';
-import { DiagnosticService, DetectorMetaData, DetectorType } from 'diagnostic-data';
+import { DiagnosticService, DetectorMetaData, DetectorType, TelemetryService, TelemetryEventNames } from 'diagnostic-data';
 import { ResourceService } from '../../../shared-v2/services/resource.service';
 
 @Component({
@@ -15,9 +15,24 @@ export class CategoryTileComponent implements OnInit {
 
   @Input() category: Category;
 
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _notificationService: NotificationService, private _logger: LoggingV2Service, private _diagnosticService: DiagnosticService, private _resourceService: ResourceService) { }
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _notificationService: NotificationService, private _logger: LoggingV2Service, private _diagnosticService: DiagnosticService, private _resourceService: ResourceService, private _telemetryService: TelemetryService) { }
 
   ngOnInit() {
+  }
+
+  clickCategoryQuickLink(e:Event, quickLink:CategoryQuickLinkDetails):void {
+    e.stopPropagation();
+    this._telemetryService.logEvent(TelemetryEventNames.QuickLinkOnCategoryTileClicked, {
+      'categoryId': this.category.id,
+      'quickLinkType': quickLink.type,
+      'quickLinkId': quickLink.id,
+      'quickLinkDisplayText': quickLink.displayText
+    });
+    if(quickLink.type === DetectorType.Detector) {
+      this._router.navigateByUrl(`resource${this._resourceService.resourceIdForRouting}/detectors/${quickLink.id}`);
+    } else if (quickLink.type === DetectorType.Analysis) {
+      this._router.navigateByUrl(`resource${this._resourceService.resourceIdForRouting}/analysis/${quickLink.id}`);
+    }
   }
 
   navigateToCategory(): void {

@@ -39,9 +39,17 @@ namespace AppLensV3.Configuration
         /// Initializes a new instance of the <see cref="StartupNationalCloud"/> class.
         /// </summary>
         /// <param name="configuration">DI Configuration.</param>
-        public StartupNationalCloud(IConfiguration configuration, IWebHostEnvironment env)
+        public StartupNationalCloud(IWebHostEnvironment env)
         {
-            this.configuration = configuration;
+            var builder = new ConfigurationBuilder()
+               .SetBasePath(env.ContentRootPath)
+               .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+               .AddJsonFile("appsettings.NationalCloud.json", optional: false, reloadOnChange: true)
+               .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+               .AddEnvironmentVariables();
+
+            this.configuration = builder.Build();
+
             this.env = env;
         }
 
@@ -82,6 +90,9 @@ namespace AppLensV3.Configuration
                 options.FileSizeLimit = 5 * 1024 * 1024; // 5 MB
                 options.RetainedFileCountLimit = 5;
             });
+
+            GenericCertLoader.Instance.Initialize();
+            SupportObserverCertLoader.Instance.Initialize(configuration);
 
 
             services.AddMemoryCache();

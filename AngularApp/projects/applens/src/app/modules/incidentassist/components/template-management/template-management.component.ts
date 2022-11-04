@@ -374,6 +374,14 @@ export class TemplateManagementComponent implements OnInit {
     this.validationResponse = {};
     this.testIncidentError = null;
   }
+
+  updateTemplateAuthors(e: { event: Event, newValue?: string }) {
+    this.teamTemplateAuthors = e.newValue.toString();
+  }
+
+  updateTestIncidentId(e: { event: Event, newValue?: string }) {
+    this.testIncidentId = e.newValue.toString();
+  }
 }
 
 interface OnboardedTeam{

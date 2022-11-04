@@ -293,7 +293,7 @@ export class SideNavComponent implements OnInit {
           let categories = [];
           content.folders.forEach(element => {
             let cn = element.split('/').at(-1);
-            if ( cn != this.docsRepoRoot)
+            if ( cn != this.docsRepoRoot && cn.at(0) != "_")
                   categories.push(cn)
           })
           let fileNamesObservables = [];
@@ -309,7 +309,7 @@ export class SideNavComponent implements OnInit {
               f.folders.forEach(element => {
                 let fn = element.split('/').at(-1);
                 let parent = element.split('/').at(-2);
-                if ( fn != categories[filesIndex] || fn === parent)
+                if ( (fn != categories[filesIndex] || fn === parent) && fn.at(0) != "_")
                   folderList.push(fn);
               });
               fileNames.push(folderList);

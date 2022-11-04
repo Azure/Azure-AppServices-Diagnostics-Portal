@@ -17,8 +17,8 @@ namespace AppLensV3.Configuration
         /// Initializes a new instance of the <see cref="StartupNationalCloudDevelopment"/> class.
         /// </summary>
         /// <param name="configuration">DI Configuration.</param>
-        public StartupNationalCloudDevelopment(IConfiguration configuration, IWebHostEnvironment env)
-            : base(configuration, env)
+        public StartupNationalCloudDevelopment(IWebHostEnvironment env)
+            : base(env)
         {
         }
 

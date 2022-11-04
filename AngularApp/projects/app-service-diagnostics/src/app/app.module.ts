@@ -47,6 +47,7 @@ import { QuickLinkService } from './shared-v2/services/quick-link.service';
 import { RiskAlertService } from './shared-v2/services/risk-alert.service';
 import { ThemeService } from './theme/theme.service';
 import { GenericThemeService } from 'diagnostic-data';
+import { ClientScriptService } from './shared-v2/services/client-script.service';
 
 @NgModule({
   imports: [
@@ -99,6 +100,7 @@ import { GenericThemeService } from 'diagnostic-data';
     { provide: GenieGlobals, useExisting: Globals },
     CategoryChatStateService,
     ContentService,
+    ClientScriptService,
     CategoryService,
     FeatureService,
     LoggingV2Service,

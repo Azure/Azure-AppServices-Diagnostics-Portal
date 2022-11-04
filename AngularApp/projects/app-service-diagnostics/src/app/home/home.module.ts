@@ -60,6 +60,8 @@ import { LinuxPythonCpuProfilerComponent } from '../shared/components/tools/linu
 import { FabSearchBoxModule } from '@angular-react/fabric/lib/components/search-box';
 import { FabCommandBarModule } from '@angular-react/fabric/lib/components/command-bar';
 import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
+import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
+import { ClientScriptService } from '../shared-v2/services/client-script.service';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -700,7 +702,8 @@ export const HomeRoutes = RouterModule.forChild([
             { provide: GenericContentService, useExisting: ContentService },
             { provide: GenericDocumentsSearchService, useExisting: DocumentSearchService },
             { provide: CXPChatService, useExisting: CXPChatCallerService },
-            { provide: GenericResourceService, useExisting: ResourceService }
+            { provide: GenericResourceService, useExisting: ResourceService },
+            { provide: GenericClientScriptService, useExisting: ClientScriptService}
         ],
 })
 export class HomeModule { }

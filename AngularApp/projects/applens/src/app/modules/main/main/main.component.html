@@ -19,7 +19,7 @@
       <div style="width: 50%;">
         <div class="section"
           *ngIf="caseNumberNeededForUser && (selectedResourceType && selectedResourceType.userAuthorizationEnabled)">
-          <fab-text-field [ariaLabel]="'Customer case number'" [(value)]="caseNumber"
+          <fab-text-field [ariaLabel]="'Customer case number'" (onChange)="updateCaseNumber($event)"
             [placeholder]="caseNumberPlaceholder" [label]="'Case Number'" [required]="true"
             [styles]="fabTextFieldStyles">
           </fab-text-field>
@@ -39,7 +39,7 @@
             types</a></div>
         <div class="section" style="margin-top: 15px;">
           <fab-text-field [ariaLabel]="selectedResourceType.resourceTypeLabel" (onChange)="updateResourceName($event)"
-            [(value)]="resourceName" [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel"
+            [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel"
             (keyup.enter)="onSubmit()" [required]="true" [label]="selectedResourceType.resourceTypeLabel"
             [styles]="fabTextFieldStyles">
           </fab-text-field>

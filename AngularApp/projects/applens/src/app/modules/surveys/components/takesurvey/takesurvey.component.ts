@@ -214,6 +214,10 @@ export class TakeSurveyComponent implements OnInit {
     this.footerMessage = null;
     this.footerMessageType = "none";
   }
+
+  updateCustomSolution(e: { event: Event, newValue?: string }) {
+    this.customSolution = e.newValue.toString();
+  }
 }
 
 interface SurveyInfo{

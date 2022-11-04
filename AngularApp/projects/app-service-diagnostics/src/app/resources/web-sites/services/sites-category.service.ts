@@ -8,6 +8,8 @@ import { SiteFilteredItem } from '../models/site-filter';
 import { Sku } from '../../../shared/models/server-farm';
 import { WebSitesService } from './web-sites.service';
 import { ArmService } from '../../../shared/services/arm.service';
+import { DetectorType } from 'diagnostic-data';
+import { ToolIds } from '../../../shared/models/tools-constants';
 
 @Injectable()
 export class SitesCategoryService extends CategoryService {
@@ -25,6 +27,22 @@ export class SitesCategoryService extends CategoryService {
         overviewDetectorId: 'AvailabilityAndPerformanceWindows',
         description: 'Check your app’s health and discover app or platform issues.',
         keywords: ['Downtime', '5xx', '4xx', 'CPU', 'Memory','SNAT'],
+        categoryQuickLinks:[{
+          type:DetectorType.Analysis,
+          id:'appDownAnalysis',
+          displayText:'Web App Down'
+          },
+          {
+            type:DetectorType.Analysis,
+            id:'perfAnalysis',
+            displayText:'Web App Slow'
+          },
+          {
+            type:DetectorType.Analysis,
+            id:'webappcpu',
+            displayText:'High CPU Analysis'
+          }
+        ],
         color: 'rgb(208, 175, 239)',
         createFlowForCategory: false,
         chatEnabled: false
@@ -43,6 +61,22 @@ export class SitesCategoryService extends CategoryService {
         overviewDetectorId: 'LinuxAvailabilityAndPerformance',
         description: 'Check your app’s health and discover app or platform issues.',
         keywords: ['Downtime', '5xx', '4xx', 'CPU', 'Memory','SNAT'],
+        categoryQuickLinks:[{
+          type:DetectorType.Detector,
+          id:'LinuxLogViewer',
+          displayText:'Application Logs'
+          },
+          {
+            type:DetectorType.Detector,
+            id:'LinuxContainerCrash',
+            displayText:'Container Crash'
+          },
+          {
+            type:DetectorType.Detector,
+            id:'http server errors',
+            displayText:'HTTP Server Errors'
+          }
+        ],
         color: 'rgb(208, 175, 239)',
         createFlowForCategory: false,
         chatEnabled: false
@@ -60,6 +94,22 @@ export class SitesCategoryService extends CategoryService {
         overviewDetectorId: 'ConfigurationAndManagement',
         description: 'Find out if your app service features are misconfigured.',
         keywords: ['Backups', 'Slots', 'Swaps', 'Scaling','IP Config'],
+        categoryQuickLinks:[{
+          type:DetectorType.Detector,
+          id:'EasyAuth',
+          displayText:'Investigate EasyAuth errors'
+          },
+          {
+            type:DetectorType.Detector,
+            id:'ipconfiguration',
+            displayText:'IP Address Configuration'
+          },
+          {
+            type:DetectorType.Detector,
+            id:'Migration',
+            displayText:'Migration Operations'
+          }
+        ],
         color: 'rgb(249, 213, 180)',
         createFlowForCategory: true,
         chatEnabled: false
@@ -78,6 +128,22 @@ export class SitesCategoryService extends CategoryService {
         overviewDetectorId: 'linuxconfigurationandmanagement',
         description: 'Find out if your app service features are misconfigured.',
         keywords: ['Backups', 'Slots', 'Swaps', 'Scaling','IP Config'],
+        categoryQuickLinks:[{
+          type:DetectorType.Detector,
+          id:'EasyAuth',
+          displayText:'Investigate EasyAuth errors'
+          },
+          {
+            type:DetectorType.Detector,
+            id:'ipconfiguration',
+            displayText:'IP Address Configuration'
+          },
+          {
+            type:DetectorType.Detector,
+            id:'allscalingoperations',
+            displayText:'All Scaling Operations'
+          }
+        ],
         color: 'rgb(249, 213, 180)',
         createFlowForCategory: true,
         chatEnabled: false
@@ -95,6 +161,22 @@ export class SitesCategoryService extends CategoryService {
         overviewDetectorId: 'SSLandDomains',
         description: 'Discover issues with certificates and custom domains.',
         keywords: ['4xx','Permissions','Auth','Binding','Cert Failures'],
+        categoryQuickLinks:[{
+          type:DetectorType.Detector,
+          id:'CustomDomainAndSSL',
+          displayText:'Binding & SSL Configuration'
+          },
+          {
+            type:DetectorType.Detector,
+            id:'CertificateBindingOperations',
+            displayText:'Certificate Binding Operations'
+          },
+          {
+            type:DetectorType.Detector,
+            id:'clientcertificateloadfailures',
+            displayText:'Client Certificate Failures'
+          }
+        ],
         color: 'rgb(186, 211, 245)',
         createFlowForCategory: true,
         chatEnabled: true
@@ -113,6 +195,17 @@ export class SitesCategoryService extends CategoryService {
         overviewDetectorId: 'BestPractices',
         description: 'Analyze your app for optimal performance and configurations.',
         keywords: ['Autoscale','AlwaysOn','Density','ARR','Health Check'],
+        categoryQuickLinks:[{
+          type:DetectorType.Detector,
+          id:'ParentAvailabilityAndPerformance',
+          displayText:'Availability risks'
+          },
+          {
+            type:DetectorType.Detector,
+            id:'ParentConfigurationManagement',
+            displayText:'Configuration risks'
+          }
+        ],
         color: 'rgb(208, 228, 176)',
         createFlowForCategory: true,
         chatEnabled: false
@@ -131,6 +224,17 @@ export class SitesCategoryService extends CategoryService {
         overviewDetectorId: 'LinuxBestPractices',
         description: 'Analyze your app for optimal performance and configurations.',
         keywords: ['Autoscale','AlwaysOn','Density','ARR','Health Check'],
+        categoryQuickLinks:[{
+          type:DetectorType.Detector,
+          id:'ParentAvailabilityAndPerformance',
+          displayText:'Availability risks'
+          },
+          {
+            type:DetectorType.Detector,
+            id:'ParentConfigurationManagement',
+            displayText:'Configuration risks'
+          }
+        ],
         color: 'rgb(208, 228, 176)',
         createFlowForCategory: true,
         chatEnabled: false
@@ -325,6 +429,22 @@ export class SitesCategoryService extends CategoryService {
         overviewDetectorId:'DiagnosticTools',
         description: 'Run proactive tools to automatically mitigate the app.',
         keywords: ['Auto-Heal'],
+        categoryQuickLinks:[{
+          type: DetectorType.DiagnosticTool,
+          id: ToolIds.EventViewer,
+          displayText: 'Application Event Logs'
+          },
+          {
+            type: DetectorType.DiagnosticTool,
+            id: ToolIds.AutoHealing,
+            displayText: 'Auto-Heal'
+          },
+          {
+            type: DetectorType.DiagnosticTool,
+            id: ToolIds.AdvancedAppRestart,
+            displayText: 'Advanced Application Restart'
+          }
+        ],
         color: 'rgb(170, 192, 208)',
         createFlowForCategory: false,
         overridePath: `resource${siteId}/diagnosticTools`
@@ -343,6 +463,22 @@ export class SitesCategoryService extends CategoryService {
           overviewDetectorId:'LinuxDiagnosticTools',
           description: 'Run proactive tools to automatically mitigate the app.',
           keywords: ['Auto-Heal'],
+          categoryQuickLinks:[{
+              type: DetectorType.DiagnosticTool,
+              id: ToolIds.AutoHealing,
+              displayText: 'Auto-Heal'
+            },
+            {
+              type: DetectorType.DiagnosticTool,
+              id: ToolIds.NetworkChecks,
+              displayText: 'Network Troubleshooter'
+            },
+            {
+              type: DetectorType.DiagnosticTool,
+              id: ToolIds.AdvancedAppRestart,
+              displayText: 'Advanced Application Restart'
+            }
+          ],
           color: 'rgb(170, 192, 208)',
           createFlowForCategory: false,
           overridePath: `resource${siteId}/diagnosticTools`
@@ -397,6 +533,24 @@ export class SitesCategoryService extends CategoryService {
             overviewDetectorId:'DiagnosticTools',
             description: 'Run proactive tools to automatically mitigate the app.',
             keywords: ['Network-Troubleshooter'],
+            color: 'rgb(170, 192, 208)',
+            createFlowForCategory: false,
+            overridePath: `resource${siteId}/diagnosticTools`
+          }
+        },
+        // For Workflow app on Windows
+        {
+          appType: AppType.WorkflowApp,
+          platform: OperatingSystem.windows,
+          stack: 'ASP.NET Core',
+          sku: Sku.NotDynamic,
+          hostingEnvironmentKind: HostingEnvironmentKind.All,
+          item: {
+            id: 'DiagnosticTools',
+            name: 'Diagnostic Tools',
+            overviewDetectorId:'DiagnosticTools',
+            description: 'Run proactive tools to automatically mitigate the app.',
+            keywords: ['Auto-Heal'],
             color: 'rgb(170, 192, 208)',
             createFlowForCategory: false,
             overridePath: `resource${siteId}/diagnosticTools`

@@ -1,9 +1,36 @@
 <fab-command-bar tabindex="0" [contentClass]="'fab-command-bar-class'">
   <items>
-    <fab-command-bar-item key="feedback" role="menu" text="Feedback" [iconProps]="{ iconName: 'Emoji2' }" (click)="openFeedback()">
-    </fab-command-bar-item>
+    <fab-command-bar-item key="feedback" role="menu" text="Feedback" [iconProps]="{ iconName: 'Emoji2' }" (click)="openFeedback()"></fab-command-bar-item>
+    <fab-command-bar-item *ngIf="displayDownloadReportButton" key="downloadReport" [text]="downloadReportText" [style]="displayDownloadReportButtonStyle" [id]="'downloadReportId'" 
+      [iconProps]="downloadReportIcon" (click)="downloadReport()" [disabled]="downloadReportButtonDisabled"></fab-command-bar-item>
   </items>
 </fab-command-bar>
+<fab-coachmark 
+   *ngIf="showCoachmark==true"
+  [attr.id]="'fab-coachmark'" 
+  [target]="downloadReportId" 
+  (onAnimationOpenEnd)="showingTeachingBubble()"
+  [positioningContainerProps]="coachmarkPositioningContainerProps"
+  delayBeforeCoachmarkAnimation="4000"
+  ariaAlertText="A coachmark has appeared"
+  ariaDescribedBy="coachmark-desc1" 
+  ariaLabelledBy="coachmark-label1"
+  ariaDescribedByText="Press enter or alt + C to open the coachmark notification"
+  ariaLabelledByText="Coachmark notification">
+  <fab-teachingbubble
+    *ngIf="showTeachingBubble==true"    
+    headline="Download Resiliency Score report here!" 
+    (onDismiss)="coachMarkViewed()" 
+    [target]="downloadReportId"    
+    [hasCloseIcon]="true" 
+    [calloutProps]="teachingBubbleCalloutProps"
+    closeButtonAriaLabel="Close"
+    hasCondensedHeadline="true"
+    ariaDescribedBy="downloadreport-description1" 
+    ariaLabelledBy="downloadreport-label1">
+    Click here to download a report to check how well this Web App scores against our recommended resiliency best practices.
+  </fab-teachingbubble>
+</fab-coachmark>
 <collapsible-list-fabric [collapsed]="false" [title]="'Resource Information'">
   <collapsible-list-item body>
     <div class="info-container">

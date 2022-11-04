@@ -1,9 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Category } from '../../../shared-v2/models/category';
+import { Category, CategoryQuickLinkDetails } from '../../../shared-v2/models/category';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { NotificationService } from '../../../shared-v2/services/notification.service';
 import { LoggingV2Service } from '../../../shared-v2/services/logging-v2.service';
-import { DiagnosticService, DetectorMetaData, DetectorType, TelemetryService } from 'diagnostic-data';
+import { DiagnosticService, DetectorMetaData, DetectorType, TelemetryService, TelemetryEventNames } from 'diagnostic-data';
 import { ResourceService } from '../../../shared-v2/services/resource.service';
 import { PortalActionService } from '../../../shared/services/portal-action.service';
 
@@ -24,6 +24,23 @@ export class CategoryTileV4Component implements OnInit {
   ngOnInit() {
     this.categoryImgPath = this.generateImagePath(this.category.id);
     this.keywords = this.category.keywords.join(", ");
+  }
+  clickCategoryQuickLink(e:Event, quickLink:CategoryQuickLinkDetails):void {
+    e.stopPropagation();
+    this._telemetryService.logEvent(TelemetryEventNames.QuickLinkOnCategoryTileClicked, {
+      'categoryId': this.category.id,
+      'quickLinkType': quickLink.type,
+      'quickLinkId': quickLink.id,
+      'quickLinkDisplayText': quickLink.displayText
+    });
+
+    if(quickLink.type === DetectorType.Detector || quickLink.type === DetectorType.Analysis) {
+      this._portalService.openBladeDiagnoseDetectorId(this.category.id, quickLink.id, quickLink.type);
+    } else if (quickLink.type === DetectorType.CategoryOverview) {
+      this._portalService.openBladeDiagnoseCategoryBlade(this.category.id);
+    } else  if(quickLink.type === DetectorType.DiagnosticTool) {
+      this._portalService.openBladeDiagnosticToolId(quickLink.id, this.category.id);
+    }    
   }
 
   openBladeDiagnoseCategoryBlade() {

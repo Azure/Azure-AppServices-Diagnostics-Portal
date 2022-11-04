@@ -30,7 +30,7 @@
                 <label for="icm-template-authors-field" style="display: flex; flex: 1;">
                   Template Authors <span class="required">*</span><span style="display: block; font-size: 0.9em;">(Comma separated string of user aliases)</span>
                 </label>
-                <fab-text-field id="icm-template-authors-field" [ariaLabel]="'Template Authors'" [(value)]="templateAuthors" [styles]="narrowTextFieldStyles"
+                <fab-text-field id="icm-template-authors-field" [ariaLabel]="'Template Authors'" (onChange)="updateTemplateAuthors($event)" [styles]="narrowTextFieldStyles"
                   [placeholder]="'Comma separated string of user aliases'" style="display: flex; flex: 1;">
                 </fab-text-field>
               </div>
@@ -92,7 +92,7 @@
                 <label for="test-incident-input-field">
                   Incident Id <span class="required">*</span>
                 </label>
-                <fab-text-field id="test-incident-input-field" [ariaLabel]="'Incident Id'" [(value)]="testIncidentId" [styles]="narrowTextFieldStyles"
+                <fab-text-field id="test-incident-input-field" [ariaLabel]="'Incident Id'" (onChange)="updateTestIncidentId($event)" [styles]="narrowTextFieldStyles"
                   [placeholder]="'Type an incident id'">
                 </fab-text-field>
               </div>

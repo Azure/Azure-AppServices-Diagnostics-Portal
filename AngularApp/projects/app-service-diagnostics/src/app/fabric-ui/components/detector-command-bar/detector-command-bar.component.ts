@@ -27,9 +27,9 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   detector: DetectorMetaData;
   fullReportPath: string;
+  subscriptionId: string;
 
-  displayRPDFButton: boolean = false;
-  _isBetaSubscription: boolean = false;
+  displayRPDFButton: boolean = false;  
   gRPDFButtonChild: Element;
   gRPDFButtonId: string;
   gRPDFCoachmarkId: string;
@@ -52,28 +52,36 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   resourceSku: Sku = Sku.All;
   vfsFonts: any;
 
-  public _checkIsWindowsApp(): boolean {
+  private _checkIsWebAppProdSku(platform: OperatingSystem): boolean {
     let webSiteService = this._resourceService as WebSitesService;
     this.resourcePlatform = webSiteService.platform;
     this.resourceAppType = webSiteService.appType;
     this.resourceSku = webSiteService.sku;
     return this._resourceService && this._resourceService instanceof WebSitesService
-      && (webSiteService.platform === OperatingSystem.windows) && (webSiteService.appType === AppType.WebApp) && (webSiteService.sku > 8); //Only for Web App (Windows) in Standard or higher
+      && ((webSiteService.platform === platform) && (webSiteService.appType === AppType.WebApp) && (webSiteService.sku > 8)); //Only for Web Apps  in Standard or higher
+  }
+
+  // add logic for presenting initially to 100% of Subscriptions:  percentageToRelease = 1 (1=100%)
+  private _percentageOfSubscriptions(subscriptionId: string, percentageToRelease: number): boolean {
+    let firstDigit = "0x" + subscriptionId.substring(0, 1);
+    // roughly split of percentageToRelease of subscriptions to use new feature.
+     return ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease);
   }
 
   ngOnInit(): void {
-    let subscriptionId = this._route.parent.snapshot.params['subscriptionid'];
+    let _isSubIdInPercentageToRelease: boolean = false;
+    let _isBetaSubscription: boolean = false;
+    this.subscriptionId = this._route.parent.snapshot.params['subscriptionid'];
     // allowlisting beta subscriptions for testing purposes
-    this._isBetaSubscription = DemoSubscriptions.betaSubscriptions.indexOf(subscriptionId) >= 0;
-    // add logic for presenting initially to 100% of Subscriptions:  percentageToRelease = 1 (1=100%)
-    let percentageToRelease = 1;
-    // roughly split of percentageToRelease of subscriptions to use new feature.
+    _isBetaSubscription = DemoSubscriptions.betaSubscriptions.indexOf(this.subscriptionId) >= 0;
+    // allowing 0% of subscriptions to use new feature
+    _isSubIdInPercentageToRelease = this._percentageOfSubscriptions(this.subscriptionId, 0);
 
-    let firstDigit = "0x" + subscriptionId.substr(0, 1);
-    this.displayRPDFButton = ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease || this._isBetaSubscription) && this._checkIsWindowsApp();
+    // Releasing to only Beta Subscriptions for Web App (Linux) in standard or higher and all Web App (Windows) in standard or higher
+    this.displayRPDFButton = ((this._checkIsWebAppProdSku(OperatingSystem.linux) && (_isSubIdInPercentageToRelease || _isBetaSubscription)) || this._checkIsWebAppProdSku(OperatingSystem.windows));
     const rSBDEventProperties = {
       'ResiliencyScoreButtonDisplayed': this.displayRPDFButton.toString(),
-      'Subscription': this._route.parent.snapshot.params['subscriptionid'],
+      'Subscription': this.subscriptionId,
       'Platform': this.resourcePlatform != undefined ? this.resourcePlatform.toString() : "",
       'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString(): "",
       'resourceSku': this.resourceSku != undefined ? this.resourceSku.toString(): "",
@@ -93,10 +101,14 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       }
     }
     catch (error) {
-      loggingError.message = 'Error trying to retrieve showCoachmark from localStorage';
-      loggingError.stack = error;
-      let _severityLevel: SeverityLevel = SeverityLevel.Warning;
-      this.telemetryService.logException(loggingError, null, null, _severityLevel);
+      // Use TelemetryService logEvent when not able to access local storage.
+      // Most likely due to browsing in InPrivate/Incognito mode.
+      const eventProperties = {
+        'Subscription': this.subscriptionId,
+        'Error': error,
+        'Message': 'Error trying to retrieve showCoachmark from localStorage'        
+      }
+      this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
 
     //
@@ -128,7 +140,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   generateResiliencyPDF() {
     let sT = new Date();
     const rSEventProperties = {
-      'Subscription': this._route.parent.snapshot.params['subscriptionid'],
+      'Subscription': this.subscriptionId,
       'TimeClicked': sT.toUTCString()
     };
     this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportButtonClicked, rSEventProperties);
@@ -144,11 +156,14 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       }
     }
     catch (error) {
-      //Use TelemetryService logException
-      loggingError.message = 'Error accessing localStorage. Most likely accessed via in InPrivate or Incognito mode';
-      loggingError.stack = error;
-      let _severityLevel: SeverityLevel = SeverityLevel.Warning;
-      this.telemetryService.logException(loggingError, null, null, _severityLevel);
+      // Use TelemetryService logEvent when not able to access local storage.
+      // Most likely due to browsing in InPrivate/Incognito mode.
+      const eventProperties = {
+        'Subscription': this.subscriptionId,
+        'Error': error,
+        'Message': 'Error trying to retrieve showCoachmark from localStorage'    
+      }
+      this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
     // Taking starting time
 
@@ -184,7 +199,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
         let totalTimeTaken = eT.getTime() - sT.getTime();
         // log telemetry for interaction
         const eventProperties = {
-          'Subscription': this._route.parent.snapshot.params['subscriptionid'],
+          'Subscription': this.subscriptionId,
           'CustomerName': JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName,
           'NameSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].Name,
           'ScoreSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].OverallScore,
@@ -290,11 +305,13 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       localStorage.setItem("showCoachmark", "false");
     }
     catch (error) {
-      //Use TelemetryService logException
-      loggingError.message = 'Error accessing localStorage. Most likely accessed via in InPrivate or Incognito mode';
-      loggingError.stack = error;
-      let _severityLevel: SeverityLevel = SeverityLevel.Warning;
-      this.telemetryService.logException(loggingError, null, null, _severityLevel);
+      // Use TelemetryService logEvent when not able to access local storage.
+      // Most likely due to browsing in InPrivate/Incognito mode.
+      const eventProperties = {
+        'Subscription': this.subscriptionId,
+        'Error': error
+      }
+      this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
 
     this.removeTeachingBubbleFromDom();

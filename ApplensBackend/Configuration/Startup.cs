@@ -29,6 +29,7 @@ namespace AppLensV3
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("appsettings.PublicAzure.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
 
@@ -58,6 +59,7 @@ namespace AppLensV3
             services.AddSingleton(Configuration);
 
             GenericCertLoader.Instance.Initialize();
+            SupportObserverCertLoader.Instance.Initialize(Configuration);
 
             services.AddSingleton<IObserverClientService, SupportObserverClientService>();
             services.AddSingleton<IDiagnosticClientService, DiagnosticClient>();

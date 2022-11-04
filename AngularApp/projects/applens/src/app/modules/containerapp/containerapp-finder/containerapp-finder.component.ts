@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ObserverContainerAppInfo } from '../../../shared/models/observer';
 import { ObserverService } from '../../../shared/services/observer.service';
 import { StartupService } from '../../../shared/services/startup.service';
 
@@ -14,7 +15,7 @@ export class ContainerAppFinderComponent implements OnInit {
   loading: boolean = true;
   error: string;
 
-  matchingSites: Observer.ObserverContainerAppInfo[] = [];
+  matchingSites: ObserverContainerAppInfo[] = [];
 
   contentHeight: string;
 
@@ -45,7 +46,7 @@ export class ContainerAppFinderComponent implements OnInit {
     });
   }
 
-  navigateToSite(matchingSite: Observer.ObserverContainerAppInfo) {
+  navigateToSite(matchingSite: ObserverContainerAppInfo) {
     let resourceArray: string[] = [
       'subscriptions', matchingSite.SubscriptionName,
       'resourceGroups', matchingSite.ResourceGroupName,

@@ -142,7 +142,7 @@ export class CategoryNavComponent implements OnInit {
             }
         });
         this.toolCategories.push(<SiteFilteredItem<any>>{
-            appType: AppType.WebApp | AppType.FunctionApp,
+            appType: AppType.WebApp | AppType.FunctionApp | AppType.WorkflowApp,
             platform: OperatingSystem.windows | OperatingSystem.linux | OperatingSystem.HyperV,
             sku: Sku.All,
             hostingEnvironmentKind: HostingEnvironmentKind.All,

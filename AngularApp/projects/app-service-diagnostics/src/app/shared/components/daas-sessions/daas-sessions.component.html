@@ -18,7 +18,7 @@
     <div *ngIf="sessions.length === 0">
       No sessions found
     </div>
-    <table *ngIf="sessions.length > 0" class="table table-hover table-bordered report-table">
+    <table *ngIf="sessions.length > 0" class="table table-bordered report-table">
       <thead class="thead-light">
         <tr>
           <th>Date</th>
@@ -116,12 +116,12 @@
               {{ session.deletingFailure}}
             </div>
             <div class="table-responsive">
-              <table class="table table-hover table-bordered">
+              <table class="table table-bordered">
                 <thead class="thead-light">
                   <tr>
                     <th style="width:250px">Diagnoser</th>
                     <th style="width:250px">Data</th>
-                    <th *ngIf="isWindowsApp">Reports</th>
+                    <th>Reports</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -155,7 +155,7 @@
                         </fab-tooltip-host>
                       </div>
                     </td>
-                    <td *ngIf="isWindowsApp">
+                    <td>
                       <ul *ngIf="isArrayWithItems(session.reports)" style="list-style: none;padding:0">
                         <li *ngFor="let report of session.reports">
                           <a tabindex="0" (click)="openUrl(report.relativePath)"

@@ -65,7 +65,7 @@ export class ApplensDocsComponent implements OnInit {
         this.doc = params.get('doc');
         this._diagnosticApi.isStaging().subscribe(isStaging => {
           if (isStaging){this.docsBranch = this.docStagingBranch;}
-          this.diagnosticApiService.getDetectorCode(`${this.docsRepoRoot}/${this.category}/${this.doc}/${this.doc}`, this.docsBranch, this.docsResource).subscribe(x=>{
+          this.diagnosticApiService.getDetectorCode(`${this.docsRepoRoot}/${this.category}/${this.doc}/${'index'}`, this.docsBranch, this.docsResource).subscribe(x=>{
             this.populateComponentsList(x);
             this.markdownCode = x.split(this.customTagRegEx);
             this.folders = this.getCodeFolders(x);
