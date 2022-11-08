@@ -5,7 +5,7 @@ import { ApplensDiagnosticService } from '../services/applens-diagnostic.service
 import { DataTableResponseColumn, DataTableResponseObject, DetectorMetaData, ExtendDetectorMetaData as ExtendedDetectorMetaData, SupportTopic, TableColumnOption, TableFilterSelectionOption } from 'diagnostic-data';
 import { ApplensSupportTopicService } from '../services/applens-support-topic.service';
 import { catchError } from 'rxjs/operators';
-import { of,forkJoin as observableForkJoin } from 'rxjs';
+import { of, forkJoin as observableForkJoin } from 'rxjs';
 import { ApplensGlobal } from '../../../applens-global';
 
 @Component({
@@ -36,7 +36,7 @@ export class UserDetectorsComponent implements OnInit {
     }
   ];
 
-  constructor(private _applensGlobal:ApplensGlobal, private _activatedRoute: ActivatedRoute, private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, private _supportTopicService: ApplensSupportTopicService) { }
+  constructor(private _applensGlobal: ApplensGlobal, private _activatedRoute: ActivatedRoute, private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, private _supportTopicService: ApplensSupportTopicService) { }
 
   ngOnInit() {
     this._applensGlobal.updateHeader("");
@@ -77,7 +77,8 @@ export class UserDetectorsComponent implements OnInit {
     const columns: DataTableResponseColumn[] = [
       { columnName: "Name" },
       { columnName: "Category" },
-      { columnName: "Support topic" },
+      { columnName: "L2 topic" },
+      { columnName: "L3 topic" },
       { columnName: "View" }
     ];
 
@@ -100,7 +101,7 @@ export class UserDetectorsComponent implements OnInit {
         const internalOnly = this.internalOnlyMap.get(detector.id);
         view = internalOnly ? "Internal Only" : "Internal & External";
       }
-      return [name, category, supportTopics, view];
+      return [name, category, supportTopics.l2NameString, supportTopics.l3NameString, view];
     });
     const dataTableObject: DataTableResponseObject = {
       columns: columns,
@@ -130,8 +131,7 @@ export class UserDetectorsComponent implements OnInit {
           <a href="${path}">${gist.name}</a>
         </markdown>`;
       const category = gist.category ? gist.category : "None";
-      const supportTopics = this.getSupportTopicName(gist.supportTopicList);
-      return [name, category, supportTopics];
+      return [name, category];
     });
     const dataTableObject: DataTableResponseObject = {
       columns: columns,
@@ -157,21 +157,35 @@ export class UserDetectorsComponent implements OnInit {
     this.isCurrentUser = currentUser.toLowerCase() === this.userId;
   }
 
-  private getSupportTopicName(supportTopicIds: SupportTopic[]): string {
-    const nameSet = new Set<string>();
+  private getSupportTopicName(supportTopicIds: SupportTopic[]): { l2NameString: string, l3NameString: string } {
+    const l2nameSet = new Set<string>();
+    const l3nameSet = new Set<string>();
+
     supportTopicIds.forEach(t => {
       const topic = this.supportTopics.find(topic => topic.supportTopicId === t.id);
       if (topic && topic.supportTopicL2Name) {
-        nameSet.add(topic.supportTopicL2Name);
-        nameSet.add(topic.supportTopicL3Name);
+        l2nameSet.add(topic.supportTopicL2Name);
+      }
+
+      if (topic && topic.supportTopicL3Name) {
+        l3nameSet.add(topic.supportTopicL3Name);
       }
     });
-    const supportTopicNames = Array.from(nameSet);
 
-    if (nameSet.size === 0) return "None";
-    //const supportTopicString  = supportTopicNames.join(";");
+    const l2NameString = this.convertSupportTopicNameSetToString(l2nameSet);
+    const l3NameString = this.convertSupportTopicNameSetToString(l3nameSet);
+
+    return {
+      l2NameString, l3NameString
+    };
+  }
+
+  private convertSupportTopicNameSetToString(supportTopicNameSet: Set<string>): string {
+    const supportTopicNames = Array.from(supportTopicNameSet);
+
+    if (supportTopicNameSet.size === 0) return "None";
     let supportTopicString = "<markdown>";
-    for(const name of supportTopicNames) {
+    for (const name of supportTopicNames) {
       supportTopicString += `<div>${name}</div></br>`;
     }
     supportTopicString += "</markdown>";
