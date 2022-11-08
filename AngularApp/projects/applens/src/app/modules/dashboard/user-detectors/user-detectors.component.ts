@@ -169,7 +169,12 @@ export class UserDetectorsComponent implements OnInit {
     const supportTopicNames = Array.from(nameSet);
 
     if (nameSet.size === 0) return "None";
-    const supportTopicString  = supportTopicNames.join(";");
+    //const supportTopicString  = supportTopicNames.join(";");
+    let supportTopicString = "<markdown>";
+    for(const name of supportTopicNames) {
+      supportTopicString += `<div>${name}</div></br>`;
+    }
+    supportTopicString += "</markdown>";
     return supportTopicString;
   }
 }
