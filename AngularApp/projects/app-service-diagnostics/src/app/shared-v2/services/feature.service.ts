@@ -44,14 +44,16 @@ export class FeatureService {
             detectors.forEach(detector => {
               if (this.validateDetectorMetadata(detector)) {
                 this._rewriteCategory(detector);
+                const categoryId = this.getCategoryIdByCategoryName(detector.category);
+                const categoryName = this._categoryService.getCategoryNameByCategoryId(categoryId);
                 if (detector.type === DetectorType.Detector) {
                   this._features.push(<Feature>{
                     id: detector.id,
                     description: detector.description,
-                    category: detector.category,
+                    category: categoryName,
                     featureType: DetectorType.Detector,
                     name: detector.name,
-                    clickAction: this._createFeatureAction(detector.name, detector.category, () => {
+                    clickAction: this._createFeatureAction(detector.name, categoryName, () => {
                       //Remove after A/B test
                       if (this.isLegacy) {
                         if (detector.id === 'appchanges') {
@@ -60,7 +62,6 @@ export class FeatureService {
                           this._router.navigateByUrl(`resource${startupInfo.resourceId}/detectors/${detector.id}`);
                         }
                       } else {
-                        const categoryId = this.getCategoryIdByCategoryName(detector.category);
                         this.navigatTo(startupInfo, categoryId, detector.id, DetectorType.Detector);
                       }
                     })
@@ -69,14 +70,13 @@ export class FeatureService {
                   this._features.push(<Feature>{
                     id: detector.id,
                     description: detector.description,
-                    category: detector.category,
+                    category: categoryName,
                     featureType: DetectorType.Analysis,
                     name: detector.name,
-                    clickAction: this._createFeatureAction(detector.name, detector.category, () => {
+                    clickAction: this._createFeatureAction(detector.name, categoryName, () => {
                       if (this.isLegacy) {
                         this._router.navigateByUrl(`resource${startupInfo.resourceId}/analysis/${detector.id}`);
                       } else {
-                        const categoryId = this.getCategoryIdByCategoryName(detector.category);
                         this.navigatTo(startupInfo, categoryId, detector.id, DetectorType.Analysis);
                       }
                     })
@@ -182,7 +182,7 @@ export class FeatureService {
 
   private getCategoryIdByCategoryName(categoryId: string) {
     const currentCategoryId = this._activatedRoute.root?.firstChild?.firstChild?.firstChild?.firstChild?.firstChild?.snapshot.params["category"];
-    return this._categoryService.getCategoryIdByCategoryName(categoryId,currentCategoryId);
+    return this._categoryService.getCategoryIdByNameAndCurrentCategory(categoryId,currentCategoryId);
   }
 
   private navigatTo(startupInfo: StartupInfo, category: string, detector: string, type: DetectorType) {

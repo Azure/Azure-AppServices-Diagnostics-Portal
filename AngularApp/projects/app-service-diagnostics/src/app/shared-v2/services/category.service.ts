@@ -42,7 +42,7 @@ export class CategoryService {
     this.categories.next(this._categories);
   }
 
-   getCategoryIdByCategoryName(name: string, currentCategoryId?: string): string {
+   getCategoryIdByNameAndCurrentCategory(name: string, currentCategoryId?: string): string {
     //Default set to "*",so it will still route to category-summary
     let categoryId: string = this._categories.length > 0 ? this._categories[0].id : "*";
     //If category name is "XXX Tools" and has Diagnostic Tools category,then should belong to Diagnostic Tool Category.For now this should be working in Windows Web App
@@ -64,5 +64,10 @@ export class CategoryService {
       categoryId = category.id;
     }
     return categoryId;
+  }
+
+  getCategoryNameByCategoryId(id: string): string {
+    const category = this._categories.find(c => c.id.toLowerCase() === id.toLowerCase());
+    return category ? category.name : "";
   }
 }
