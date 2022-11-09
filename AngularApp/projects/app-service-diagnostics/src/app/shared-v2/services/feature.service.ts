@@ -127,7 +127,7 @@ export class FeatureService {
     return () => {
       const eventProperties = {
         'Name': name,
-        'Category': category
+        'CategoryName': category
       }
       this._logger.logEvent('FeatureClicked', eventProperties);
       func();

@@ -1,17 +1,15 @@
-import { Component, OnInit, Injector, Pipe, PipeTransform } from '@angular/core';
-import { MessageProcessor } from '../../../supportbot/message-processor.service';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationExtras, NavigationEnd, Scroll } from '@angular/router';
 import { CategoryService } from '../../../shared-v2/services/category.service';
 import { Category } from '../../../shared-v2/models/category';
 import { CategoryChatStateService } from '../../../shared-v2/services/category-chat-state.service';
-import { INavProps, INavLink, INav, INavStyles } from 'office-ui-fabric-react';
-import { FeatureService } from '../../../shared-v2/services/feature.service';
+import { INavProps } from 'office-ui-fabric-react';
 import { Tile } from '../../../shared/components/tile-list/tile-list.component';
 import { Feature } from '../../../shared-v2/models/features';
 import { AuthService } from '../../../startup/services/auth.service';
-import { DiagnosticService, DetectorMetaData, icons } from 'diagnostic-data';
+import { DiagnosticService, DetectorMetaData, icons, TelemetryService, TelemetryEventNames } from 'diagnostic-data';
 import { filter } from 'rxjs/operators';
-import { CollapsibleMenuItem, CollapsibleMenuItemComponent } from '../collapsible-menu-item/collapsible-menu-item.component';
+import { CollapsibleMenuItem } from '../collapsible-menu-item/collapsible-menu-item.component';
 import { DetectorCategorizationService } from '../../../shared/services/detector-categorized.service';
 import { SiteFeatureService } from '../../../resources/web-sites/services/site-feature.service';
 import { SiteFilteredItem } from '../../../resources/web-sites/models/site-filter';
@@ -86,7 +84,7 @@ export class CategoryNavComponent implements OnInit {
 
     constructor(public siteFeatureService: SiteFeatureService, protected _diagnosticApiService: DiagnosticService, private _route: Router, private _activatedRoute: ActivatedRoute, private categoryService: CategoryService,
         private _chatState: CategoryChatStateService,
-        protected _authService: AuthService, public _detectorCategorization: DetectorCategorizationService, private _webSiteService: WebSitesService) { }
+        protected _authService: AuthService, public _detectorCategorization: DetectorCategorizationService, private _webSiteService: WebSitesService,private _telemetryService:TelemetryService) { }
 
     detectorDataLocalCopy: DetectorMetaData[] = [];
     detectorList: CollapsibleMenuItem[] = [];
@@ -136,8 +134,12 @@ export class CategoryNavComponent implements OnInit {
                     let isSelected = () => {
                         return this.checkIsSelected(tool.item.id);
                     };
+                    let onClick = () => {
+                        this.logCategoryNavClicked(tool.item.name, "Proactive Tools");
+                        tool.item.clickAction();
+                    }
                     let icon = this.getIconImagePath(tool.item.id);
-                    return new CollapsibleMenuItem(tool.item.name, tool.item.clickAction, isSelected, icon);
+                    return new CollapsibleMenuItem(tool.item.name, onClick, isSelected, icon);
                 })
             }
         });
@@ -150,21 +152,31 @@ export class CategoryNavComponent implements OnInit {
             item: {
                 title: 'Diagnostic Tools',
                 tools: this.siteFeatureService.diagnosticTools.filter(tool => this.stackMatchedForTools(tool)).map(tool => {
+                    let onClick = () => {
+                        this.logCategoryNavClicked(tool.item.name, "Diagnostic Tools");
+                        tool.item.clickAction();
+                    }
+                    
                     let isSelected = () => {
                         return this.checkIsSelected(tool.item.id);
                     };
                     let icon = this.getIconImagePath(tool.item.id);
-                    return new CollapsibleMenuItem(tool.item.name, tool.item.clickAction, isSelected, icon);
+                    return new CollapsibleMenuItem(tool.item.name, onClick, isSelected, icon);
                 })
             }
         });
 
         let supportTools = this.siteFeatureService.supportTools.filter(tool => this.stackMatchedForTools(tool)).map(tool => {
+            let onClick = () => {
+                this.logCategoryNavClicked(tool.item.name, "Support Tools");
+                tool.item.clickAction();
+            }
+
             let isSelected = () => {
                 return this.checkIsSelected(tool.item.id);
             };
             let icon = this.getIconImagePath(tool.item.id);
-            return new CollapsibleMenuItem(tool.item.name, tool.item.clickAction, isSelected, icon);
+            return new CollapsibleMenuItem(tool.item.name, onClick, isSelected, icon);
         });
 
         this.toolCategories.push(<SiteFilteredItem<any>>{
@@ -197,11 +209,16 @@ export class CategoryNavComponent implements OnInit {
             this.toolCategoriesFilteredByStack = this.transform(this.toolCategories);
         } else {
             const diagnosticToolsForNonWeb = this.siteFeatureService.diagnosticToolsForNonWeb.filter(t => t.type.toLowerCase() === resourceType.toLowerCase()).map(tool => {
+                let onClick = () => {
+                    this.logCategoryNavClicked(tool.item.name, "Diagnostic Tools");
+                    tool.item.clickAction();
+                }
+
                 let isSelected = () => {
                     return this.checkIsSelected(tool.item.id);
                 };
                 let icon = this.getIconImagePath(tool.item.id);
-                return new CollapsibleMenuItem(tool.item.name, tool.item.clickAction, isSelected, icon);
+                return new CollapsibleMenuItem(tool.item.name, onClick, isSelected, icon);
             });
             this.toolCategoriesFilteredByStack = [
                 { 
@@ -237,6 +254,7 @@ export class CategoryNavComponent implements OnInit {
                     if (!this.isDiagnosticTools) {
                         features.forEach(feature => {
                             let onClick = () => {
+                                this.logCategoryNavClicked(feature.name, feature.category);
                                 feature.clickAction();
                             }
                             let isSelected = () => {
@@ -278,6 +296,7 @@ export class CategoryNavComponent implements OnInit {
                                     };
                                     let icon = this.getIconImagePath(item.id);
                                     let onClick = () => {
+                                        this.logCategoryNavClicked(item.name, this.category.name);
                                         let dest1 = `resource${this.resourceId}/categories/${this.categoryId}/${routePath}/${item.id}`;
                                         this._route.navigate([dest1]);
                                     };
@@ -319,5 +338,12 @@ export class CategoryNavComponent implements OnInit {
     private checkIsFromAnotherCategory(categories: Category[], detector: DetectorMetaData, currentCategoryId: string): boolean {
         const detectorCategory = categories.find(c => c.name.toLowerCase() === detector.category.toLowerCase());
         return detectorCategory === undefined || detectorCategory.id.toLowerCase() !== currentCategoryId.toLowerCase();
+    }
+
+    private logCategoryNavClicked(name: string, category: string) {
+        this._telemetryService.logEvent(TelemetryEventNames.CategoryNavItemClicked,{
+            'DetectorName':name,
+            'CategoryName': category
+        });
     }
 }

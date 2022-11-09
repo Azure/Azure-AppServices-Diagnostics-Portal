@@ -138,6 +138,7 @@ export class FabricSearchResultsComponent {
       'SearchValue': this.searchValue,
       'SelectionId': feature.id,
       'DetectorName': feature.name,
+      'CategoryName': feature.category,
       'Place': this.isInCategory ? 'CategoryOverview' : 'LandingPage'
     });
   }
