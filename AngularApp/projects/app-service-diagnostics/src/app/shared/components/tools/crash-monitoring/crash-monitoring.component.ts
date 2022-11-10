@@ -10,10 +10,10 @@ import { TelemetryService, TelemetryEventNames } from 'diagnostic-data';
 import { SharedStorageAccountService } from 'projects/app-service-diagnostics/src/app/shared-v2/services/shared-storage-account.service';
 import { CrashMonitoringSettings } from '../../../models/daas';
 import { DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
-import { ITooltipOptions } from '@angular-react/fabric';
 import { CrashMonitoringAnalysisComponent } from './crash-monitoring-analysis/crash-monitoring-analysis.component';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ITooltipOptions } from '@angular-react/fabric/lib/components/tooltip';
 
 @Component({
   selector: 'crash-monitoring',
@@ -22,7 +22,7 @@ import { map } from 'rxjs/operators';
 })
 export class CrashMonitoringComponent implements OnInit {
 
-  @ViewChild('crashMonitoringAnalysisRef', { static: false }) crashMonitoringAnalysis: CrashMonitoringAnalysisComponent;
+  @ViewChild('crashMonitoringAnalysisRef') crashMonitoringAnalysis: CrashMonitoringAnalysisComponent;
 
   constructor(private _siteService: SiteService,
     private _daasService: DaasService, private globals: Globals, private telemetryService: TelemetryService,

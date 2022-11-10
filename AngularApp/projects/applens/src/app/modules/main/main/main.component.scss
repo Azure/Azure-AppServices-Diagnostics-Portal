@@ -131,3 +131,9 @@
   padding-left: 20px;
   color: var(--bodyText);
 }
+
+.btn-continuebtn:focus-visible {
+    border: solid 2px black;
+    background-color: #0367AC;
+    margin-top: -2px; 
+}

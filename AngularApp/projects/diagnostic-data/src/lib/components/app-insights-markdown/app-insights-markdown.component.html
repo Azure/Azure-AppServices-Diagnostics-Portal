@@ -20,13 +20,13 @@
   <div *ngFor="let metadata of appInsightQueryMetaDataList;let i = index" class="dynamic-data-container">
 
     <data-container *ngIf="metadata.dataTable == null" [title]="metadata.title" [description]="metadata.description"
-      [applicationInsightContainerStyle]="1">
+      [applicationInsightContainerStyle]="0">
       <markdown [data]="getMetaDataMarkdown(metadata)"></markdown>
     </data-container>
 
     <div *ngIf="metadata.dataTable != null">
       <div *ngFor="let data of appInsightDataList;let i = index" class="dynamic-data-container">
-        <data-container [title]="data.title" [description]="data.description" [applicationInsightContainerStyle]="1">
+        <data-container [title]="data.title" [description]="data.description" [applicationInsightContainerStyle]="0">
           <dynamic-data [diagnosticData]="data.diagnosticData" [startTime]="startTime" [endTime]="endTime">
           </dynamic-data>
         </data-container>
@@ -111,7 +111,7 @@
         <div *ngIf="!loadingAppInsightsQueryData; else loadingAppInsightsData">
           <div *ngFor="let data of appInsightDataList;let i = index" class="dynamic-data-container">
             <data-container [title]="data.title" [description]="data.description"
-              [applicationInsightContainerStyle]="1">
+              [applicationInsightContainerStyle]="0">
               <dynamic-data [diagnosticData]="data.diagnosticData" [startTime]="startTime" [endTime]="endTime">
               </dynamic-data>
               <button type="button" class="btn btn-info app-insights-blade"

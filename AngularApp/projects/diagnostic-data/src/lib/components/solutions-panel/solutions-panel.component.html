@@ -1,5 +1,5 @@
 <fab-panel [isOpen]="isOpen" [type]="panelType" [customWidth]="width" [isHiddenOnDismiss]="true" [isLightDismiss]="true"
-  [hasCloseButton]="true" [closeButtonAriaLabel]="'close'" (onDismiss)="dismissPanel()">
+  [hasCloseButton]="true" [closeButtonAriaLabel]="'close'" (onDismiss)="dismissPanel()" [className]="'solutionPanelComponentClass'">
   <div class="solutions-panel-container panel-padding">
     <div class="solution-section solution-head">
       <h3>{{title}}</h3>

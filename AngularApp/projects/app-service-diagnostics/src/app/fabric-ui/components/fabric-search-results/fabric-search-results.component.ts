@@ -25,6 +25,8 @@ export class FabricSearchResultsComponent {
   resultCount: number;
   features: Feature[] = [];
   searchLogTimout: any;
+  hideSearchIcon: boolean = false;
+  searchBoxInFocus: boolean = false;
   showSearchResults: boolean;
   clickSearchBox: BlurType = BlurType.Blur;
   //Only ture when press ESC and no word in search box,collapse search result.
@@ -140,13 +142,10 @@ export class FabricSearchResultsComponent {
     });
   }
 
-  updateSearchValue(searchValue: { newValue: any }) {
+  updateSearchValue(searchValue) {
     this.showSearchResults = !this.isEscape;
 
-   if (!!searchValue && !!searchValue.newValue && !!searchValue.newValue.currentTarget && !!searchValue.newValue.currentTarget.value)
-   {
-        this.searchValue = searchValue.newValue.currentTarget.value;
-   }
+    this.searchValue = searchValue ?? this.searchValue;
 
     if (this.searchLogTimout) {
       clearTimeout(this.searchLogTimout);
@@ -157,19 +156,12 @@ export class FabricSearchResultsComponent {
     }, 5000);
     this.features = this.featureService.getFeatures(this.searchValue);
     this.isEscape = false;
-
-    //remove tab for right Cross in search bar
-    //need async so when type first letter we can wait cross show up then disable it
-    setTimeout(() => {
-      const crossBtn: any = document.querySelector('.ms-SearchBox-clearButton button');
-      if (crossBtn) {
-        crossBtn.tabIndex = -1;
-      }
-    });
   }
 
   onSearchBoxFocus() {
+    this.searchBoxInFocus = true;
     this.showSearchResults = true;
+    this.hideSearchIcon = true;
     this.features = this.featureService.getFeatures(this.searchValue);
     //Disable AutoComplete
     if (document.querySelector("#fabSearchBox input")) {
@@ -183,12 +175,19 @@ export class FabricSearchResultsComponent {
     this.features = this.featureService.getFeatures(this.searchValue);
   }
 
-  clearSearchWithKey() {
-    //only true when trigger ESC
-    this.isEscape = this.searchValue === "";
+  @HostListener('keydown.Escape', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) { 
+    this.clearSearchWithKey(event);
+  }
+
+  clearSearchWithKey(event) {
+    this.clearSearch();
+    this.isEscape = true;
   }
 
   onBlurHandler() {
+    this.hideSearchIcon = false;
+    this.searchBoxInFocus = false;
     switch (this.clickSearchBox) {
       case BlurType.Blur:
         this.clearSearch();

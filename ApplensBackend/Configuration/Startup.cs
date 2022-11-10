@@ -29,6 +29,7 @@ namespace AppLensV3
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("appsettings.PublicAzure.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
 
@@ -58,6 +59,7 @@ namespace AppLensV3
             services.AddSingleton(Configuration);
 
             GenericCertLoader.Instance.Initialize();
+            SupportObserverCertLoader.Instance.Initialize(Configuration);
 
             services.AddSingleton<IObserverClientService, SupportObserverClientService>();
             services.AddSingleton<IDiagnosticClientService, DiagnosticClient>();
@@ -75,7 +77,6 @@ namespace AppLensV3
             services.AddSingleton<IGraphClientService, GraphClientService>();
             services.AddSingleton<ISupportTopicService, SupportTopicService>();
             services.AddSingleton<ISelfHelpContentService, SelfHelpContentService>();
-            services.AddSingleton<ICosmosDBHandlerBase<TemporaryAccessUser>, CosmosDBHandler<TemporaryAccessUser>>();
             services.AddSingleton<ICosmosDBHandlerBase<ResourceConfig>, CosmosDBHandler<ResourceConfig>>();
             services.AddSingleton<IIncidentAssistanceService, IncidentAssistanceService>();
             services.AddSingleton<IResourceConfigService, ResourceConfigService>();
@@ -108,9 +109,7 @@ namespace AppLensV3
             services.AddAuthorization(options =>
             {
                 var applensAccess = new SecurityGroupConfig();
-                var applensTesters = new SecurityGroupConfig();
                 Configuration.Bind("ApplensAccess", applensAccess);
-                Configuration.Bind("ApplensTesters", applensTesters);
 
                 options.AddPolicy("DefaultAccess", policy =>
                 {
@@ -120,15 +119,11 @@ namespace AppLensV3
                 {
                     policy.Requirements.Add(new SecurityGroupRequirement(applensAccess.GroupName, applensAccess.GroupId));
                 });
-                options.AddPolicy(applensTesters.GroupName, policy =>
-                {
-                    policy.Requirements.Add(new SecurityGroupRequirement(applensTesters.GroupName, applensTesters.GroupId));
-                });
             });
 
             if (Environment.IsDevelopment())
             {
-                services.AddSingleton<IAuthorizationHandler, SecurityGroupLocalDevelopment>();
+                services.AddSingleton<IAuthorizationHandler, SecurityGroupHandlerLocalDevelopment>();
             }
             else
             {
@@ -159,7 +154,7 @@ namespace AppLensV3
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowAnyOrigin()
-                .WithExposedHeaders(new string[] { HeaderConstants.ScriptEtagHeader, HeaderConstants.IsTemporaryAccessHeader, HeaderConstants.TemporaryAccessExpiresHeader })
+                .WithExposedHeaders(new string[] { HeaderConstants.ScriptEtagHeader })
             );
 
 

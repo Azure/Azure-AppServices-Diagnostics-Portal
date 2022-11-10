@@ -9,7 +9,7 @@ import { NotificationService } from './services/notification.service';
   declarations: []
 })
 export class SharedV2Module {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<SharedV2Module> {
     return {
       ngModule: SharedV2Module,
       providers: [

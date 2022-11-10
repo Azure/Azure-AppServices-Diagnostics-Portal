@@ -1,12 +1,3 @@
-<div *ngIf="_authGuardService.isTemporaryAccess && showBanner" class="top-banner">
-    <p class="banner-text">
-        <i class="fa fa-warning warning-icon"></i>
-        Your one-time temporary access <b>expires in {{_authGuardService.temporaryAccessExpiryDays}} days</b>. Make sure you have applied for
-        <a href="https://myaccess/identityiq/ui/rest/redirect?rp1=/accessRequest/accessRequest.jsf&rp2=accessRequest/review?role=AppLens+Access&autoSubmit=true" target="_blank" rel="noopener noreferrer">AppLens Access here
-        </a>
-        <i class="fa fa-times-thin fa-2x close-icon" (click)="hideBanner()"></i>
-    </p>    
-</div>
 <div style="height: 100vh;">
     <div class="app-container">
         <router-outlet></router-outlet>

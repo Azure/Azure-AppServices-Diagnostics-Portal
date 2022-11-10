@@ -1,4 +1,4 @@
-<div style="margin:5px 0px 0px 20px">
+<div *ngIf="!isPPE; else redirectMonitoringBlock" style="margin:5px 0px 0px 20px">
   <div class=" container" style="margin-left: 0px; padding-left: 0px; width: 100%">
     <div class="col-sm-6 titleElements">
         <h3 style="margin-top:8px">{{reportName}}</h3>
@@ -31,3 +31,17 @@
   <detector-view [detectorResponse]="systemInvokerResponse" [error]="error" [startTime]="startTime" [endTime]="endTime" [hideDetectorControl]="true" [isSystemInvoker]="true" [authorInfo]="authorInfo" [feedbackDetector]="detectorId">
   </detector-view>
 </div>
+<ng-template #redirectMonitoringBlock>
+    <div *ngIf="isPPE && statisticsType === 0; else redirectAnalyticsBlock" style="margin:5px 0px 0px 20px">
+      <div class=" container" style="margin-left: 0px; padding-left: 0px; width: 100%">
+        <p>Monitoring data for PPE is available to view on AppLens (Prod). Click <a [href]="prodMonitoringLink">here</a> to view the Monitoring tab on AppLens (Prod).</p>
+      </div>
+    </div>
+</ng-template>
+<ng-template #redirectAnalyticsBlock>
+  <div *ngIf="isPPE && statisticsType === 1" style="margin:5px 0px 0px 20px">
+    <div class=" container" style="margin-left: 0px; padding-left: 0px; width: 100%">
+      <p>Analytics data for PPE is available to view on AppLens (Prod). Click <a [href]="prodMonitoringLink">here</a> to view the Analytics tab on AppLens (Prod).</p>
+    </div>
+  </div>
+</ng-template>

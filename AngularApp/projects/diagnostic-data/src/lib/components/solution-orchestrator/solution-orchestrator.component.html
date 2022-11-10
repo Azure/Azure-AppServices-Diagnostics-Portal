@@ -8,7 +8,7 @@
     </div>
   </fab-panel>
   <div class="row" name="header">
-    <fab-command-bar [attr.id]="'fab-command-bar-sol-orch'"  contentStyle="border-bottom: 1px solid #ccc;font-weight:12px" contentClass="fab-command-bar-class" >
+    <fab-command-bar [attr.id]="'fab-command-bar-sol-orch'"  [contentStyle]="'border-bottom: 1px solid #ccc;font-weight:12px'" [contentClass]="'fab-command-bar-class'" >
       <items>
         <fab-command-bar-item *ngIf="inDrillDownMode" key="custom1" text="custom text">
           <render>

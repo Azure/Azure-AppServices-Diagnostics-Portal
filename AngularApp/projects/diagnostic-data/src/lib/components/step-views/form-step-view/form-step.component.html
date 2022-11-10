@@ -1,0 +1,68 @@
+<div class="form-step">
+    <p class="view-description">{{ formStepView.description }}</p>
+
+    <form (ngSubmit)="buttonClicked()" #pingForm="ngForm">
+    <div *ngFor="let input of formStepView.inputs; index as i">
+
+        <div [ngSwitch]="input.itype">
+            <!-- Textbox entry input -->
+            <div class="form-entry input-container" *ngSwitchCase="0">
+                <div class="input-entry">
+                    {{input.description}}
+                    <a class="input-tooltip" *ngIf="input.tooltip">
+                        <fab-tooltip-host [content]="input.tooltip">
+                            <i class="ib-info"></i>
+                        </fab-tooltip-host>
+                    </a>
+                </div>
+                <input 
+                    required
+                    class="input-box"
+                    pattern="{{input.pattern}}"
+                    name="{{input.id}}"
+                    id="{{input.id}}"
+                    title="{{input.tooltip}}"
+                    placeholder="{{input.placeholder}}" 
+                    [(ngModel)]="input.value" 
+                    (change)="onChange($event, i)">
+                <div class="input-error" *ngIf="input.error!=null">
+                    <i class="ib-redx input-error-icon"></i><div>{{input.error}}&nbsp;</div>
+                </div>
+            </div>
+
+            
+            <!-- Dropdown entry input -->
+
+            <div class="form-entry input-container" *ngSwitchCase="3">
+                <div class="input-entry">
+                    {{input.description}}
+                    <a class="input-tooltip" *ngIf="input.tooltip">
+                        <fab-tooltip-host [content]="input.tooltip">
+                            <i class="ib-info"></i>
+                        </fab-tooltip-host>
+                    </a>
+                </div>
+                <fab-dropdown 
+                    required
+                    class="input-box"
+                    id="{{input.id}}"
+                    [componentRef]="dropdownRef" 
+                    (onChange)="onChange($event, i)"
+                    (onDismiss)="formStepView.onDismiss()" 
+                    [disabled]="input.options.length==0"
+                    [options]="input | getDropdownOptions" 
+                    [defaultSelectedKey]="input.value" 
+                    contentStyle="width: 60%; max-width: 300px;">
+                </fab-dropdown>
+            </div>
+        </div>
+    </div>
+
+    <fab-primary-button 
+        type="submit"
+        contentClass="input-check-button" 
+        [disabled]="formStepView.disableButton || !pingForm.form.valid">
+        {{formStepView.buttonText}}
+    </fab-primary-button>
+    </form>
+</div>

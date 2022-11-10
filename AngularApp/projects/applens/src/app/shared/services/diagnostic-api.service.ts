@@ -120,26 +120,9 @@ export class DiagnosticApiService {
     return useCache ? this._cacheService.get(this.getCacheKey(HttpMethod.POST, url + body.toString()), request, invalidateCache) : request;
   }
 
-  public getHasTestersAccess(useCache: boolean = true, invalidateCache: boolean = false): Observable<any> {
-    let url: string = `${this.diagnosticApi}api/hasTestersAccess`;
-    let request = this._httpClient.get(url, {
-      headers: this._getHeaders()
-    });
-
-    return useCache ? this._cacheService.get(this.getCacheKey(HttpMethod.POST, url), request, invalidateCache) : request;
-  }
-
   public getKustoClusterForGeoRegion(geoRegion: string, useCache: boolean = true, invalidateCache: boolean = false): Observable<any> {
     let path = `api/kustogeo/${geoRegion}`;
     return this.get(path, invalidateCache);
-  }
-
-  public requestTemporaryAccess(): Observable<any> {
-    let url: string = `${this.diagnosticApi}temporaryAccess/requestAccess`;
-    let request = this._httpClient.post(url, {}, {
-      headers: this._getHeaders()
-    });
-    return request;
   }
 
   public getSupportTopics(pesId: any, useCache: boolean = true, invalidateCache: boolean = false): Observable<any> {
@@ -470,7 +453,12 @@ export class DiagnosticApiService {
   }
 
   public getDetectorCode(detectorPath: string, branch: string, resourceUri: string): Observable<string> {
-    let path = `devops/getCode?filePathInRepo=${detectorPath}&branch=${branch}&resourceUri=${resourceUri}`;
+    let path = branch === null ? `devops/getCode?filePathInRepo=${detectorPath}&resourceUri=${resourceUri}` :`devops/getCode?filePathInRepo=${detectorPath}&branch=${branch}&resourceUri=${resourceUri}`;
+    return this.invoke(path, HttpMethod.GET, null, false);
+  }
+
+  public getDevOpsTree(devOpsPath: string, branch: string, resourceUri: string): Observable<any> {
+    let path = branch === null ? `devops/getTree?filePathInRepo=${devOpsPath}&resourceUri=${resourceUri}` :`devops/getTree?filePathInRepo=${devOpsPath}&branch=${branch}&resourceUri=${resourceUri}`;
     return this.invoke(path, HttpMethod.GET, null, false);
   }
 
@@ -488,13 +476,14 @@ export class DiagnosticApiService {
     return this.invoke<any>(path, HttpMethod.POST, body, false, true, true, true, false);
   }
 
-  public makePullRequest(sourceBranch: string, targetBranch: string, title: string, resourceUri: string, description: string = "") {
+  public makePullRequest(sourceBranch: string, targetBranch: string, title: string, resourceUri: string, reviewers: string[] = [], description: string = "") {
 
     var body = {};
     body['sourceBranch'] = sourceBranch;
     body['targetBranch'] = targetBranch;
     body['title'] = title;
     body['resourceUri'] = resourceUri;
+    body['reviewers'] = reviewers;
     body['description'] = description;
 
     let path = `devops/makePR`;
@@ -528,8 +517,8 @@ export class DiagnosticApiService {
 
   public getEnableDetectorDevelopment(): Observable<boolean> {
     const path = "api/appsettings/DetectorDevelopmentEnabled";
-    return this.get<boolean>(path).pipe(map((res: string) => {
-      return res.toLowerCase() === "true";
+    return this.get<boolean>(path).pipe(map((res) => {
+      return res.toString().toLowerCase() === "true";
     }));
   }
   public getDevopsConfig(resourceProviderType: string): Observable<any> {
@@ -568,5 +557,12 @@ export class DiagnosticApiService {
   public idExists(id: string): Observable<boolean> {
     let path = `internal/idExists?detectorId=${id}`;
     return this.invoke(path, HttpMethod.GET, null, false);
+  }
+
+  public isStaging(): Observable<boolean> {
+    let path = "api/appsettings/APPLENS_ENVIRONMENT";
+    return this.get<boolean>(path).pipe(map((res) => {
+      return res.toString().toLowerCase() === 'staging';
+    }));
   }
 }

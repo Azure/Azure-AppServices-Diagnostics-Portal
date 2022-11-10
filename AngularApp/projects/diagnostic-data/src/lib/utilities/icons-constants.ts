@@ -25,6 +25,7 @@ export const icons: Set<string> = new Set(
         'configuringsslandcustomdomains',
         'appDownAnalysis',
         'ipaddressrestrictions',
+        'cappContainerAppAvailabilityMetrics',
 
         //Tools
 

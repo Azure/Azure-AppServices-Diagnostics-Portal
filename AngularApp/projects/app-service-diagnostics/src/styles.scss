@@ -113,3 +113,46 @@ fab-command-bar {
 blockquote p{
     color: var(--bodyText)!important;
 }
+
+// Adding these styles here are ngx-markdown removed all styling after version v6.3.0
+// https://github.com/jfcere/ngx-markdown/releases/tag/v6.3.0
+// Breaking Changes
+// Please note that markdown component/directive no longer comes with default styling. This change affects table and blockquote HTML elements only but still, we suggest you review your pages.
+// https://github.com/jfcere/ngx-markdown/pull/108
+
+
+markdown, .markdown {
+    table {
+        border-spacing: 0;
+        border-collapse: collapse;
+        margin-bottom: 16px;
+
+        th,
+        td {
+            padding: 6px 13px;
+            border: 1px solid #ddd;
+
+            &[align="left"] {
+                text-align: left;
+            }
+
+            &[align="center"] {
+                text-align: center;
+            }
+
+            &[align="right"] {
+                text-align: right;
+            }
+        }
+
+        tr:nth-child(2n) {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+    }
+
+    blockquote {
+        padding: 0 1em;
+        color: rgba(0, 0, 0, 0.535);
+        border-left: 0.25em solid rgba(0, 0, 0, 0.11);
+    }
+}

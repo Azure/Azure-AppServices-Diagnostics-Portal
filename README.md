@@ -2,27 +2,17 @@
 
 This is the repository for Azure App Service diagnostics experience.
 
-[![Build Status](https://dev.azure.com/app-service-diagnostics-portal/app-service-diagnostics-portal/_apis/build/status/Angular%20PR%20Build?branchName=master)](https://dev.azure.com/app-service-diagnostics-portal/app-service-diagnostics-portal/_build/latest?definitionId=1&branchName=master)
+[![Build Status](https://dev.azure.com/app-service-diagnostics-portal/app-service-diagnostics-portal/_apis/build/status/Angular%20PR%20Build?branchName=refs%2Fpull%2F1698%2Fmerge)](https://dev.azure.com/app-service-diagnostics-portal/app-service-diagnostics-portal/_build/latest?definitionId=1&branchName=refs%2Fpull%2F1698%2Fmerge)
 
-## Steps to upgrade to Angular 8 and run projects locally:
+## Running the project locally:
 
-- Install [Node 14.*](https://nodejs.org/en/download/)
-   - Download the .msi file from https://nodejs.org/en/download/ and install it on your machine
-- Install Angular-CLI 8
-   - `npm install -g @angular/cli@8`
-- Build the diagnostic-data lib, Applens and Diagnostics Portal:
-  - `npm run build`
+- Install [Node 14.*](https://nodejs.org/en/blog/release/v14.18.0/)
+   - Only version 14.* will work for this project as there are dependency changes in latter version of Node which our project is incompatible with.
+- Run `npm install`
+- Build the diagnostic-data lib, Applens and Diagnostics Portal: `npm run build`
 - Run the project locally:
    - To run Applens: `npm run applens`
    - To run Diagnostics Portal: <a class="anchor" aria-hidden="true" href="#app-service-diagnostics-portal">App Service Diagnostics Portal</a>
-  
-## First time set up prerequisites
-- [Node 12.*](https://nodejs.org/en/download/)
-- Node Package Manager (npm)
-- Typescript
-  `npm install -g typescript`
-- Angular-CLI
-  `npm install -g @angular/cli@8`
 
 ## Project Structure
 
@@ -59,9 +49,14 @@ root
 ## Getting Started
 
 - Clone repo `git clone https://github.com/Azure/Azure-AppServices-Diagnostics-Portal.git`
-- Either:
-  - Install required dependencies locally by navigating to the angular root folder `AngularApp` and runing `npm install` (This will install all the required packages.) OR
-  - Build and run a docker container that has all dependencies. Run AngularApp/buildimage.sh (or buildimage.bat on Windows) once to build an image locally and then AngularApp/startcontainer.sh (or startcontainer.bat on Windows) to build a container from that image and open a terminal on it.  Once the container is created, you can use the docker UI to stop/start and open a terminal to the container.
+- Choose one of the two options below:
+  - Setup local machine: Install required dependencies locally by navigating to the angular root folder `AngularApp` and runing `npm install` (This will install all the required packages.) OR
+  - Docker container: Build and run a docker container that has all necessary dependencies. 
+    - Install and run the docker desktop client.
+    - Run AngularApp/buildimage.sh (or buildimage.bat on Windows) once to build an image locally.
+    - Create a container from the image created above by running AngularApp/startcontainer.sh (or startcontainer.bat on Windows) to build a container and open a terminal session on it.  Alternately you can use the docker desktop UI to stop/start and open a terminal to the container.
+    - From within the container, cd to the `AngularApp` folder and restore packages via `npm install` to install npm packages.
+    - Continue to the next section.  Note: if you are only developing the diagnostic portal and not the backend, you can skip steps 2, 3 and 4.  In step 6, if working on Windows, run `npm run ssl-local-poll` as angular running in the container is unable to monitor the filesystem for changes (auto-recompile on file change)
 
 ## App Service Diagnostics Portal
 

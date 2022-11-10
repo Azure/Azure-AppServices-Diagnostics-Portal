@@ -37,6 +37,6 @@ export class SearchResultsComponent implements OnChanges {
 
   private _logSearchSelection(feature: Feature) {
     this._logSearch();
-    this._logger.LogSearchSelection(this.searchValue, feature.id, feature.name, feature.featureType.name);
+    this._logger.LogSearchSelection(this.searchValue, feature.id, feature.name, feature.featureType);
   }
 }

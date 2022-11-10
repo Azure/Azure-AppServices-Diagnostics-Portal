@@ -1,5 +1,6 @@
-import { Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Input, Output, EventEmitter, OnInit, Directive } from '@angular/core';
 
+@Directive()
 export abstract class AutohealingRuleComponent implements OnInit {
 
   ruleCopy: any;

@@ -1,25 +1,27 @@
 {
   "name": "diagnostic-data",
+  "sideEffects": true,
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "8.0.2",
-    "@angular/core": "8.0.2",
+    "@angular/common": "13.3.11",
+    "@angular/core": "13.3.11",
     "copy-html-to-clipboard": "^4.0.1",
     "@microsoft/applicationinsights-web": "^2.5.4",
     "ngx-monaco-editor": "^6.0.0"
   },
   "dependencies": {
-    "react": "16.3.2",
-    "react-dom": "16.3.2",
-    "@types/react": "16.3.11",
-    "@types/react-dom": "16.0.5",
-    "@angular-react/core": "1.0.1",
-    "@angular-react/fabric": "1.2.1",
-    "office-ui-fabric-react": "5.82.4",
-    "@angular/common": "8.0.2",
-    "@angular/core": "8.0.2",
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0",
+    "@types/react": "~16.8.6",
+    "@types/react-dom": "^16.8.6",
+    "@angular-react/core": "~4.0.2",
+    "@angular-react/fabric": "~4.0.2",
+    "office-ui-fabric-react": "^7.132.0",
+    "@angular/common": "13.3.11",
+    "@angular/core": "13.3.11",
     "@microsoft/applicationinsights-web": "^2.5.4",
     "copy-html-to-clipboard": "^4.0.1",
-    "ngx-monaco-editor": "^6.0.0"
+    "ngx-monaco-editor": "^8.1.1",
+    "tslib": "^2.0.0"
   }
 }

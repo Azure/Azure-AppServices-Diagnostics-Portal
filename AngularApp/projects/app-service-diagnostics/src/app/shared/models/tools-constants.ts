@@ -19,6 +19,9 @@ export class ToolNames {
     public static AppServicePlanMetrics: string = 'Metrics per Instance (App Service Plan)';
     public static AdvancedAppRestart: string = 'Advanced Application Restart';
     public static SecurityScanning: string = 'Security Scanning';
+    public static LinuxNodeHeapDump: string = "Node Heap Dump";
+    public static LinuxNodeCpuProfiler: string = "Node CPU Profiler";
+    public static LinuxPythonCpuProfiler: string = "Python CPU Profiler";
 }
 
 
@@ -41,4 +44,7 @@ export class ToolIds {
     public static AppServicePlanMetrics: string = SupportBladeDefinitions.AppServicePlanMetrics.Identifier;
     public static AdvancedAppRestart: string = 'advancedapprestart';
     public static SecurityScanning: string = 'tinfoil';
+    public static LinuxNodeHeapDump: string = "linuxnodeheapdump";
+    public static LinuxNodeCpuProfiler: string = "linuxnodecpuprofiler";
+    public static LinuxPythonCpuProfiler: string = "linuxpythoncpuprofiler";
 }

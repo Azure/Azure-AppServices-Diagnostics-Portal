@@ -19,6 +19,7 @@
     @extend .info-item;
     color: var(--sectionTitle);
     min-width: 400px;
+    display: inline-flex;
 }
 
 .info-item-splitter {
@@ -31,6 +32,7 @@
     padding: 0px 15px;
     max-width: 300px;
     min-width: 150px;
+    cursor: pointer;
 }
 
 .observer-link > a:focus {

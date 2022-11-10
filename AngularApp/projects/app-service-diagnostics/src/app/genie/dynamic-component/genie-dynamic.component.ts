@@ -27,12 +27,9 @@ import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'dynamic-component-genie',
-    entryComponents: [GenieTextMessageComponent, ButtonMessageComponent, FeedbackButtonMessageComponent,
-        GenieFeedbackComponent, SolutionsMessageComponent, GraphMessageComponent, TalkToAgentMessageComponent,
-        DetectorSummaryComponent, DocumentSearchComponent, DocumentSearchResultsComponent, DynamicAnalysisComponent],
     template: `
     <div #genieDynamicComponentContainer></div>
-  `,
+  `
 })
 export class GenieDynamicComponent {
     currentComponent = null;

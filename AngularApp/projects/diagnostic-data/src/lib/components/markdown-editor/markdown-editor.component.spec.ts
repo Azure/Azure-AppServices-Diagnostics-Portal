@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { MarkdownEditorComponent } from './markdown-editor.component';
 
@@ -6,7 +6,7 @@ describe('MarkdownEditorComponent', () => {
   let component: MarkdownEditorComponent;
   let fixture: ComponentFixture<MarkdownEditorComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ MarkdownEditorComponent ]
     })

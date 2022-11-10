@@ -7,8 +7,15 @@
     <div class="tile-content">
       <h3 class="tile-title">{{category.name}}</h3>
       <p class="tile-description">{{category.description}}</p>
-      <p class="tile-keywords">Ex: {{keywords}}</p>
-      <a>Troubleshoot</a>
+      <div *ngIf="(!!category && !!category.categoryQuickLinks && category.categoryQuickLinks.length > 0); else keywordsTemplate ">
+        <div class="quick-link" *ngFor="let quickLink of category.categoryQuickLinks">
+          <a tabindex="0" (click)="clickCategoryQuickLink($event, quickLink)" (keyup.enter)="clickCategoryQuickLink($event, quickLink)">{{quickLink.displayText}}</a>
+        </div>
+      </div>
+      <ng-template #keywordsTemplate>
+        <p class="tile-keywords">Ex: {{keywords}}</p>
+        <a>Troubleshoot</a>
+      </ng-template>      
     </div>
   </div>
 </div>

@@ -1,5 +1,5 @@
 <fab-default-button [id]="filterId" (click)="toggleCallout()" [styles]="buttonStyle" [ariaLabel]="displayName">{{displayName}}</fab-default-button>
-<fab-callout  *ngIf="isCallOutVisible" (onDismiss)="closeCallout()" [setInitialFocus]="true" [target]="filterSelector">
+<fab-callout  [hidden]="!isCallOutVisible" (onDismiss)="closeCallout()" [setInitialFocus]="true" [target]="filterSelector">
   <div class="filter-callout-container callout-padding" (keyup.escape)="closeCallout()">
     <ng-container *ngIf="filterOption === TableFilterSelectionOption.Multiple else singleSelection">
       <fab-checkbox [label]="'All'" [ariaLabel]="'All'" [checked]="getSelectedAllStatus()"
@@ -11,9 +11,9 @@
     </ng-container>
   </div>
   <div class="filter-callout-footer callout-padding">
-    <fab-primary-button (onClick)="updateTableWithOptions()" (keyup.enter)="updateTableWithOptions()" [ariaLabel]="'Apply'" contentClass="mr-3 callout-button" contentStyle="border-radius: 2px;">Apply
+    <fab-primary-button (onClick)="updateTableWithOptions()" (keyup.enter)="updateTableWithOptions()" [ariaLabel]="'Apply'" [contentClass]="'mr-3 callout-button'" [contentStyle]="'border-radius: 2px;'">Apply
     </fab-primary-button>
-    <fab-default-button (onClick)="closeCallout()" (keyup.enter)="closeCallout()" [ariaLabel]="'Cancel'" contentStyle="border-radius: 2px;">Cancel</fab-default-button>
+    <fab-default-button (onClick)="closeCallout()" (keyup.enter)="closeCallout()" [ariaLabel]="'Cancel'" [contentStyle]="'border-radius: 2px;'">Cancel</fab-default-button>
   </div>
 </fab-callout>
 

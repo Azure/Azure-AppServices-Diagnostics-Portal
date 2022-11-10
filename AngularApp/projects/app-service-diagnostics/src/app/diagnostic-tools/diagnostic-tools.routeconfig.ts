@@ -1,4 +1,4 @@
-import { ToolNames } from '../shared/models/tools-constants';
+import { ToolIds, ToolNames } from '../shared/models/tools-constants';
 import { ProfilerToolComponent } from '../shared/components/tools/profiler-tool/profiler-tool.component';
 import { MemoryDumpToolComponent } from '../shared/components/tools/memorydump-tool/memorydump-tool.component';
 import { JavaThreadDumpToolComponent } from '../shared/components/tools/java-threaddump-tool/java-threaddump-tool.component';
@@ -19,6 +19,9 @@ import { AuthService } from '../startup/services/auth.service';
 import { JavaFlightRecorderToolComponent } from '../shared/components/tools/java-flight-recorder-tool/java-flight-recorder-tool.component';
 import { CrashMonitoringComponent } from '../shared/components/tools/crash-monitoring/crash-monitoring.component';
 import { NetworkCheckComponent } from '../shared/components/tools/network-checks/network-checks.component';
+import { LinuxNodeHeapDumpComponent } from '../shared/components/tools/linux-node-heap-dump/linux-node-heap-dump.component';
+import { LinuxNodeCpuProfilerComponent } from '../shared/components/tools/linux-node-cpu-profiler/linux-node-cpu-profiler.component';
+import { LinuxPythonCpuProfilerComponent } from '../shared/components/tools/linux-python-cpu-profiler/linux-python-cpu-profiler.component';
 
 @Injectable()
 export class MetricsPerInstanceAppsResolver implements Resolve<Observable<boolean>> {
@@ -129,6 +132,33 @@ export const DiagnosticToolsRoutes: Route[] = [
         component: JavaFlightRecorderToolComponent,
         data: {
             navigationTitle: ToolNames.JavaFlightRecorder,
+            cacheComponent: true
+        }
+    },
+    // Linux Node Heap Dump
+    {
+        path: "linuxnodeheapdump",
+        component: LinuxNodeHeapDumpComponent,
+        data: {
+            navigationTitle: ToolNames.LinuxNodeHeapDump,
+            cacheComponent: true
+        }
+    },
+    // Linux Node Cpu Profiler
+    {
+        path: "linuxnodecpuprofiler",
+        component: LinuxNodeCpuProfilerComponent,
+        data: {
+            navigationTitle: ToolNames.LinuxNodeCpuProfiler,
+            cacheComponent: true
+        }
+    },
+    // Linux Python CPU Profiler
+    {
+        path: "linuxpythoncpuprofiler",
+        component: LinuxPythonCpuProfilerComponent,
+        data: {
+            navigationTitle: ToolNames.LinuxPythonCpuProfiler,
             cacheComponent: true
         }
     },

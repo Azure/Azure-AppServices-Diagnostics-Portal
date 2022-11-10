@@ -8,7 +8,7 @@ import { MessageProcessor } from './message-processor.service';
     providers: [MessageProcessor]
 })
 export class SupportBotComponent implements OnInit {
-    @ViewChild('scrollMe', { static: false }) myScrollContainer: ElementRef;
+    @ViewChild('scrollMe') myScrollContainer: ElementRef;
 
     messages: Message[];
     showTypingMessage: boolean;

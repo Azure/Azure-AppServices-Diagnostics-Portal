@@ -46,7 +46,7 @@
       <span class="fabric-dropdown-title">{{renderingProperties.title}}</span>
       <div style="display: flex">
         <fab-dropdown [styles]="styles" [label]="label" [options]="options" (onChange)="selectFabricKey($event)" [defaultSelectedKey]="selectedKey"
-          ></fab-dropdown>
+        [ariaLabel]="renderingProperties.title"></fab-dropdown>
       </div>
     </div>
     <div class="fabric-body-container">

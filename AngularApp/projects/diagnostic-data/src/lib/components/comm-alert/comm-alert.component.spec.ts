@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CommAlertComponent } from './comm-alert.component';
 
@@ -6,7 +6,7 @@ describe('CommAlertComponent', () => {
   let component: CommAlertComponent;
   let fixture: ComponentFixture<CommAlertComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CommAlertComponent ]
     })

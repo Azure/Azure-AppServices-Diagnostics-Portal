@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AutohealingSlowrequestsRuleComponent } from './autohealing-slowrequests-rule.component';
 
@@ -6,7 +6,7 @@ describe('AutohealingSlowrequestsRuleComponent', () => {
   let component: AutohealingSlowrequestsRuleComponent;
   let fixture: ComponentFixture<AutohealingSlowrequestsRuleComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ AutohealingSlowrequestsRuleComponent ]
     })

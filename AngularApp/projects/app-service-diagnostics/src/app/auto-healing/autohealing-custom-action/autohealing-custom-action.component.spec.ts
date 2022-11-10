@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { AutohealingCustomActionComponent } from './autohealing-custom-action.component';
 
@@ -6,7 +6,7 @@ describe('AutohealingCustomActionComponent', () => {
   let component: AutohealingCustomActionComponent;
   let fixture: ComponentFixture<AutohealingCustomActionComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ AutohealingCustomActionComponent ]
     })

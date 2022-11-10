@@ -127,7 +127,8 @@ export enum RenderingType {
     Tab,
     Section,
     StepViews,
-    Report
+    Report,
+    ClientScriptComponent
 }
 
 export enum TimeSeriesType {

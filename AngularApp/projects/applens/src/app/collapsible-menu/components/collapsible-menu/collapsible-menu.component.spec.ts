@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CollapsibleMenuComponent } from './collapsible-menu.component';
 
@@ -6,7 +6,7 @@ describe('CollapsibleMenuComponent', () => {
   let component: CollapsibleMenuComponent;
   let fixture: ComponentFixture<CollapsibleMenuComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CollapsibleMenuComponent ]
     })

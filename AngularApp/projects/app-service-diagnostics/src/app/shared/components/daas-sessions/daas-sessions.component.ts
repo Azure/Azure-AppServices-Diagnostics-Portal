@@ -10,10 +10,10 @@ import { FormatHelper } from '../../utilities/formattingHelper';
 import { ActivatedRoute } from '@angular/router';
 import { Globals } from '../../../globals';
 import { TelemetryService } from 'diagnostic-data';
-import { ITooltipOptions } from '@angular-react/fabric';
 import { DirectionalHint } from 'office-ui-fabric-react';
 import { WebSitesService } from '../../../resources/web-sites/services/web-sites.service';
 import { OperatingSystem } from '../../models/site';
+import { ITooltipOptions } from '@angular-react/fabric/lib/components/tooltip';
 
 @Component({
   selector: 'daas-sessions',

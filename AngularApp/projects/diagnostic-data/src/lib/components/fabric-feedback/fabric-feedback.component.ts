@@ -110,7 +110,7 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
   ngAfterViewInit() {
     setTimeout(() => {
       const eles = document.querySelectorAll("#feedback-icons i");
-      if (eles && eles.length > 0) {
+      if (eles && eles.length === this.feedbackIcons.length) {
         eles.forEach((ele, index) => {
           ele.setAttribute("role", "button");
           ele.setAttribute("name", this.feedbackIcons[index].text);

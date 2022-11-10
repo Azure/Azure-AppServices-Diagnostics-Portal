@@ -14,7 +14,7 @@ import { CXPChatCallerService } from '../../shared-v2/services/cxp-chat-caller.s
 const ResourceRoutes = RouterModule.forChild([
   {
     path: '',
-    loadChildren: '../../home/home.module#HomeModule',
+    loadChildren: () => import('../../home/home.module').then(m => m.HomeModule),
     resolve: { data: ResourceResolver }
   }
 ]);

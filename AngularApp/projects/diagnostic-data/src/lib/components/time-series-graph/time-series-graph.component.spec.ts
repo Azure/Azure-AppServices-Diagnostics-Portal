@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { TimeSeriesGraphComponent } from './time-series-graph.component';
 
@@ -6,7 +6,7 @@ describe('TimeSeriesGraphComponent', () => {
   let component: TimeSeriesGraphComponent;
   let fixture: ComponentFixture<TimeSeriesGraphComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ TimeSeriesGraphComponent ]
     })

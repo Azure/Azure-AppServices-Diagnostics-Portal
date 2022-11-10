@@ -47,4 +47,15 @@ export class UriUtilities {
     static removeChildDetectorStartAndEndTime(allQueryParams: { [key: string]: any }) {
         return UriUtilities.removeQueryParams(allQueryParams,["startTimeChildDetector","endTimeChildDetector", "branchInput"]);
     }
+
+
+    // Adds the additional query params to the url 
+    static addAdditionalQueryParams(additionalQueryParams: { [key: string]: any }, originalParams: string ) {
+        for(let key of Object.keys(additionalQueryParams)) {
+            if(originalParams.indexOf(key) === -1) {
+                originalParams += `&${key}=${additionalQueryParams[key]}`;
+            }
+        }
+        return originalParams;
+    }
 }

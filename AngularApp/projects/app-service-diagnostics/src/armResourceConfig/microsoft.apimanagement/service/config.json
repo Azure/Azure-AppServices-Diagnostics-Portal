@@ -76,6 +76,18 @@
       "createFlowForCategory": true,
       "chatEnabled": false,
       "overviewDetectorId": "apim-service-sku-recategory"
+    },
+    {
+      "id": "diagnostictoolsapim",
+      "name": "Diagnostic Tools",
+      "description": "Run diagnostic tool to identify issues within your API Management service",
+      "keywords": [
+        "Network Troubleshooter"
+      ],
+      "color": "rgb(186, 211, 245)",
+      "createFlowForCategory": true,
+      "chatEnabled": false,
+      "overviewDetectorId": ""
     }
   ],
   "quickLinks": [

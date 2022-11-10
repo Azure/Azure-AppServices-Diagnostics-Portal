@@ -1,11 +1,10 @@
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ModuleWithProviders } from '@angular/compiler/src/core';
 import { RouterModule } from '@angular/router';
 import { StampFinderComponent } from './stamp-finder/stamp-finder.component';
 import { SharedModule } from '../../shared/shared.module';
 
-export const StampModuleRoutes : ModuleWithProviders = RouterModule.forChild([
+export const StampModuleRoutes : ModuleWithProviders<StampModule> = RouterModule.forChild([
   {
     path: '',
     component: StampFinderComponent

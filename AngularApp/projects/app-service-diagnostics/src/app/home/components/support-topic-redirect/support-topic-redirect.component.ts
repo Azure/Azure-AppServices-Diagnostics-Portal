@@ -6,6 +6,7 @@ import { NotificationService, Notification } from '../../../shared-v2/services/n
 import { PortalKustoTelemetryService } from '../../../shared/services/portal-kusto-telemetry.service';
 import { SubscriptionPropertiesService } from '../../../shared/services/subscription-properties.service';
 import { RiskAlertService } from '../../../shared-v2/services/risk-alert.service';
+import { ResourceService } from '../../../shared-v2/services/resource.service';
 
 @Component({
   selector: 'support-topic-redirect',
@@ -15,7 +16,7 @@ import { RiskAlertService } from '../../../shared-v2/services/risk-alert.service
 export class SupportTopicRedirectComponent implements OnInit {
 
   constructor(private _activatedRoute: ActivatedRoute, private _router: Router, private _supportTopicService: GenericSupportTopicService, private _authService: AuthService,
-    private _notificationService: NotificationService, private portalKustoLogging: PortalKustoTelemetryService, private subscriptionPropertiesService: SubscriptionPropertiesService, private _riskAlertService: RiskAlertService) { }
+    private _notificationService: NotificationService, private portalKustoLogging: PortalKustoTelemetryService, private subscriptionPropertiesService: SubscriptionPropertiesService, private _riskAlertService: RiskAlertService,private _resourceService:ResourceService) { }
 
   ngOnInit() {
     this._supportTopicService.getPathForSupportTopic(this._activatedRoute.snapshot.queryParams.supportTopicId, this._activatedRoute.snapshot.queryParams.pesId, this._activatedRoute.snapshot.queryParams.caseSubject, this._activatedRoute.snapshot.queryParams.sapSupportTopicId, this._activatedRoute.snapshot.queryParams.sapProductId).subscribe(res => {
@@ -29,7 +30,7 @@ export class SupportTopicRedirectComponent implements OnInit {
     //     }
     //   });
 
-
+    this._riskAlertService.initRiskAlertsForArmResource(this._resourceService.resource.id);
     this._riskAlertService.getRiskAlertNotificationResponse(true).subscribe((res)=>{
         this._riskAlertService.riskPanelContentsSub.next(this._riskAlertService.risksPanelContents);
     });

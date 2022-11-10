@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FabSpinnerComponent } from '@angular-react/fabric';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { Guid } from '../../utilities/guid';

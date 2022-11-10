@@ -11,4 +11,7 @@
     <dynamic-data [diagnosticData]="insight.innerDiagnosticData" [startTime]="startTime" [endTime]="endTime">
     </dynamic-data>
   </div>
+  <div footer *ngIf="insight.hyperlink">
+    <fab-link (onClick)="clickHyperlink()">{{insight.hyperlinkText}}</fab-link>
+  </div>
 </fab-card>

@@ -42,16 +42,4 @@ export class PortalSettingsService {
       return scanEnabled;
     }));
   }
-
-  public getAppInsightsConnected(): Observable<boolean> {
-    let url = this.resourceId;
-    return this.armService.getResource<ResponseMessageEnvelope<any>>(url, '2018-02-01', true).pipe(map((data: ResponseMessageEnvelope<any>) => {
-      let resource = data;
-      let appInsightsConnected = false;
-      if (resource.tags && resource.tags['hidden-related:diagnostics/applicationInsightsSettings']) {
-        appInsightsConnected = true;
-      }
-      return appInsightsConnected;
-    }));
-  }
 }

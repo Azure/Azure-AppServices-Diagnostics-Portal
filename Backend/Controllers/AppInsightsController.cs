@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Services;
 using Backend.Helpers;
+using Backend.Models;
 
 namespace Backend.Controllers
 {
@@ -36,6 +37,7 @@ namespace Backend.Controllers
         [HttpOptions("validate")]
         public async Task<IActionResult> Validate()
         {
+            AppInsightsValidationResponse validationResponse;
             if (!Utility.TryGetHeaderValue(Request.Headers, "appinsights-app-id", out string appInsightsAppId))
             {
                 return BadRequest("Missing appinsights-app-id");
@@ -48,14 +50,24 @@ namespace Backend.Controllers
 
             try
             {
-                var appInsightsEnabled = await _appInsightsService.Validate(appInsightsAppId, encryptedKey);
+                string siteHostName = string.Empty;
+                if (Request.Host.HasValue)
+                {
+                    siteHostName = Request.Host.Value;
+                }
+
+                validationResponse = await _appInsightsService.Validate(appInsightsAppId, encryptedKey, siteHostName);
+            }
+            catch (UnauthorizedAccessException unAex)
+            {
+                return StatusCode(403, unAex.Message);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
 
-            return Ok(true);
+            return Ok(validationResponse);
         }
     }
 }

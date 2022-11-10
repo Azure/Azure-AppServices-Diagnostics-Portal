@@ -102,7 +102,7 @@
 
 
 <ng-template #newHomePage>
-  <fab-command-bar tabindex="0" contentClass="fab-command-bar-class">
+  <fab-command-bar tabindex="0" [contentClass]="'fab-command-bar-class'">
     <items>
       <fab-command-bar-item *ngIf="disableGenie==false" key="askGenie" text="Ask Genie" [iconProps]="{ iconName: 'ChatInviteFriend' }"
         (click)="openGeniePanel()" data-track-type="run"></fab-command-bar-item>

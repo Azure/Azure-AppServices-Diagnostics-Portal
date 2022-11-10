@@ -18,6 +18,7 @@ export class ResiliencyReportData {
     
 }
 
+
 export class ResiliencyResource {
      /**
      * Resource and all of the Resiliency Features evaluated to calculate the Resiliency Score

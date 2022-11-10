@@ -13,8 +13,6 @@ const postAuthRedirectKey = 'post_auth_redirect';
 @Injectable()
 export class AadAuthGuard implements CanActivate {
     isAuthorized: Boolean = false;
-    public isTemporaryAccess: Boolean = false;
-    public temporaryAccessExpiryDays: number = 0;
 
     constructor(private _router: Router, private _adalService: AdalService, private _diagnosticApiService: DiagnosticApiService, private _applensAITelemetry: ApplensAppinsightsTelemetryService) { }
 
@@ -38,10 +36,6 @@ export class AadAuthGuard implements CanActivate {
                 return true;
             }
             return this._diagnosticApiService.hasApplensAccess().pipe(map(res => {
-                this.isTemporaryAccess = (res.headers.get("IsTemporaryAccess") == "true");
-                if (this.isTemporaryAccess) {
-                    this.temporaryAccessExpiryDays = res.headers.get("TemporaryAccessExpires");
-                }
                 // Application insights initialization call requires user to be authorized first.
                 this._applensAITelemetry.initialize();
                 this.isAuthorized = true;

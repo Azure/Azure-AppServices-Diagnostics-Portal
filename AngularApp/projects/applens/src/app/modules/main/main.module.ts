@@ -3,14 +3,19 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MainComponent } from './main/main.component';
 import { FormsModule } from '@angular/forms';
-import { OwlDateTimeModule, OwlNativeDateTimeModule, OWL_DATE_TIME_FORMATS } from 'ng-pick-datetime';
-import { OwlMomentDateTimeModule } from 'ng-pick-datetime-moment';
-import { CUSTOM_MOMENT_FORMATS } from '../../shared/models/datetime';
-import { FabDialogModule, FabButtonModule, FabTextFieldModule, FabCalloutModule, FabChoiceGroupModule, FabIconModule, FabDropdownModule, FabPanelModule, FabSpinnerModule} from '@angular-react/fabric';
 import { DiagnosticDataModule } from 'diagnostic-data';
 import { SharedModule } from '../../shared/shared.module';
+import { FabButtonModule } from '@angular-react/fabric/lib/components/button';
+import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
+import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-field';
+import { FabCalloutModule } from '@angular-react/fabric/lib/components/callout';
+import { FabChoiceGroupModule } from '@angular-react/fabric/lib/components/choice-group';
+import { FabIconModule } from '@angular-react/fabric/lib/components/icon';
+import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown';
+import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
+import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
 
-export const MainModuleRoutes : ModuleWithProviders = RouterModule.forChild([
+export const MainModuleRoutes : ModuleWithProviders<MainModule> = RouterModule.forChild([
   {
     path: '',
     component: MainComponent
@@ -22,9 +27,6 @@ export const MainModuleRoutes : ModuleWithProviders = RouterModule.forChild([
     CommonModule,
     MainModuleRoutes,
     FormsModule,
-    OwlDateTimeModule,
-    OwlNativeDateTimeModule,
-    OwlMomentDateTimeModule ,
     SharedModule,
     FabButtonModule,
     FabDialogModule,
@@ -38,10 +40,7 @@ export const MainModuleRoutes : ModuleWithProviders = RouterModule.forChild([
     DiagnosticDataModule,
     SharedModule
   ],
-  providers: [{
-    provide: OWL_DATE_TIME_FORMATS,
-    useValue: CUSTOM_MOMENT_FORMATS
-  }],
+  providers: [],
   declarations: [MainComponent]
 })
 export class MainModule { }

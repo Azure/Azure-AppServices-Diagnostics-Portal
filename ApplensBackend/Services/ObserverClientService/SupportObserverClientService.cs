@@ -91,11 +91,22 @@ namespace AppLensV3
         /// </summary>
         private static readonly Lazy<HttpClient> _client = new Lazy<HttpClient>(() =>
             {
-                var client = new HttpClient();
+                var handler = new HttpClientHandler()
+                {
+                    ServerCertificateCustomValidationCallback = delegate { return true; },
+                };
+
+                if (SupportObserverCertLoader.Instance.Cert != null)
+                {
+                    handler.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
+                    handler.ClientCertificates.Add(SupportObserverCertLoader.Instance.Cert);
+                }
+
+                var client = new HttpClient(handler);
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.Timeout = TimeSpan.FromSeconds(30);
-
+                client.DefaultRequestHeaders.Add("User-Agent", "applens");
                 return client;
             }
         );
@@ -120,7 +131,7 @@ namespace AppLensV3
             return await GetSiteInternal(SupportObserverApiEndpoint + "sites/" + siteName + "/adminsites");
         }
 
-        public async Task<ObserverResponse> GetSiteSku(string stamp,string siteName)
+        public async Task<ObserverResponse> GetSiteSku(string stamp, string siteName)
         {
             return await GetAppInternal($"{SupportObserverApiEndpoint}stamps/{stamp}/sites/{siteName}/sku", "GetSiteSku");
         }
@@ -177,10 +188,7 @@ namespace AppLensV3
                 Method = HttpMethod.Get
             };
 
-            request.Headers.Add("Authorization", await GetSupportObserverAccessToken());
-            var response = await _httpClient.SendAsync(request);
-
-            ObserverResponse res = await CreateObserverResponse(response, apiName);
+            ObserverResponse res = await SendObserverRequestAsync(request, apiName);
             return res;
         }
 
@@ -199,11 +207,7 @@ namespace AppLensV3
                 Method = HttpMethod.Get
             };
 
-            var serializedParameters = JsonConvert.SerializeObject(new Dictionary<string, string>() { { "site", site } });
-            request.Headers.Add("Authorization", await GetSupportObserverAccessToken());
-            var response = await _httpClient.SendAsync(request);
-
-            ObserverResponse res = await CreateObserverResponse(response, "GetResourceGroup(2.0)");
+            ObserverResponse res = await SendObserverRequestAsync(request, "GetResourceGroup(2.0)");
             return res;
         }
 
@@ -220,11 +224,7 @@ namespace AppLensV3
                 Method = HttpMethod.Get
             };
 
-            var serializedParameters = JsonConvert.SerializeObject(new Dictionary<string, string>() { { "site", siteName } });
-            request.Headers.Add("Authorization", await GetSupportObserverAccessToken());
-            var response = await _httpClient.SendAsync(request);
-
-            ObserverResponse res = await CreateObserverResponse(response, "GetStamp");
+            ObserverResponse res = await SendObserverRequestAsync(request, "GetStamp");
             return res;
         }
 
@@ -236,11 +236,7 @@ namespace AppLensV3
                 Method = HttpMethod.Get
             };
 
-            var serializedParameters = JsonConvert.SerializeObject(new Dictionary<string, string>() { { "hostingEnvironment", hostingEnvironmentName } });
-            request.Headers.Add("Authorization", await GetSupportObserverAccessToken());
-            var response = await _httpClient.SendAsync(request);
-
-            ObserverResponse res = await CreateObserverResponse(response, "GetHostingEnvironmentDetails(2.0)");
+            ObserverResponse res = await SendObserverRequestAsync(request, "GetHostingEnvironmentDetails(2.0)");
             return res;
         }
 
@@ -252,10 +248,7 @@ namespace AppLensV3
                 Method = HttpMethod.Get
             };
 
-            request.Headers.Add("Authorization", await GetSupportObserverAccessToken());
-            var response = await _httpClient.SendAsync(request);
-
-            ObserverResponse res = await CreateObserverResponse(response, "GetSitePostBody");
+            ObserverResponse res = await SendObserverRequestAsync(request, "GetSitePostBody");
             return res;
         }
 
@@ -267,10 +260,7 @@ namespace AppLensV3
                 Method = HttpMethod.Get
             };
 
-            request.Headers.Add("Authorization", await GetSupportObserverAccessToken());
-            var response = await _httpClient.SendAsync(request);
-
-            ObserverResponse res = await CreateObserverResponse(response, "GetHostingEnvironmentPostBody");
+            ObserverResponse res = await SendObserverRequestAsync(request, "GetHostingEnvironmentPostBody");
             return res;
         }
 
@@ -287,10 +277,19 @@ namespace AppLensV3
                 Method = HttpMethod.Get
             };
 
-            request.Headers.Add("Authorization", await GetSupportObserverAccessToken());
-            var response = await _httpClient.SendAsync(request);
+            ObserverResponse res = await SendObserverRequestAsync(request, "GetStampBody");
+            return res;
+        }
 
-            ObserverResponse res = await CreateObserverResponse(response, "GetStampBody");
+        private async Task<ObserverResponse> SendObserverRequestAsync(HttpRequestMessage request, string apiName = "")
+        {
+            if (SupportObserverCertLoader.Instance.Cert == null)
+            {
+                request.Headers.Add("Authorization", await GetSupportObserverAccessToken());
+            }
+
+            var response = await _httpClient.SendAsync(request);
+            ObserverResponse res = await CreateObserverResponse(response, apiName);
             return res;
         }
 

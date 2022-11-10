@@ -1,5 +1,9 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "analytics": false,
+    "defaultCollection": "@angular-eslint/schematics"
+  },
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -37,7 +41,6 @@
               "node_modules/font-awesome/css/font-awesome.min.css",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/prismjs/themes/prism-okaidia.css",
-              "node_modules/ng-pick-datetime/assets/style/picker.min.css",
               "node_modules/ngx-smart-modal/ngx-smart-modal.css",
               "node_modules/admin-lte/dist/css/AdminLTE.min.css",
               "node_modules/admin-lte/dist/css/skins/skin-blue.css",
@@ -49,13 +52,19 @@
               "node_modules/moment/min/moment.min.js",
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/admin-lte/dist/js/adminlte.js",
-              "node_modules/marked/lib/marked.js",
+              "node_modules/marked/marked.min.js",
               "node_modules/prismjs/prism.js",
               "node_modules/prismjs/components/prism-clike.min.js",
               "node_modules/prismjs/components/prism-csharp.min.js",
               "node_modules/prismjs/components/prism-css.min.js",
               "node_modules/bootstrap/dist/js/bootstrap.min.js"
-            ]
+            ],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -68,7 +77,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -83,7 +91,7 @@
                 }
               ]
             },
-            "nationalcloud-production":{
+            "nationalcloud-production": {
               "fileReplacements": [
                 {
                   "replace": "projects/applens/src/environments/environment.ts",
@@ -97,14 +105,13 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true
             },
-            "nationalcloud-local":{
+            "nationalcloud-local": {
               "fileReplacements": [
                 {
                   "replace": "projects/applens/src/environments/environment.ts",
@@ -162,14 +169,11 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "projects/applens/tsconfig.app.json",
-              "projects/applens/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "projects/applens//**/*.ts",
+              "projects/applens//**/*.html"
             ]
           }
         }
@@ -195,11 +199,11 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": "projects/applens-e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "projects/applens-e2e//**/*.ts",
+              "projects/applens-e2e//**/*.html"
             ]
           }
         }
@@ -212,10 +216,15 @@
       "prefix": "",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/diagnostic-data/tsconfig.lib.json",
             "project": "projects/diagnostic-data/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/diagnostic-data/tsconfig.lib.prod.json"
+            }
           }
         },
         "test": {
@@ -227,14 +236,11 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "projects/diagnostic-data/tsconfig.lib.json",
-              "projects/diagnostic-data/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "projects/diagnostic-data/**/*.ts",
+              "projects/diagnostic-data/**/*.html"
             ]
           }
         }
@@ -287,10 +293,22 @@
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
               "node_modules/bootstrap/dist/js/bootstrap.min.js"
-            ]
+            ],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "projects/app-service-diagnostics/src/environments/environment.ts",
@@ -300,14 +318,18 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true
             },
             "local": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "projects/app-service-diagnostics/src/environments/environment.ts",
@@ -315,7 +337,8 @@
                 }
               ]
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -356,15 +379,11 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "projects/app-service-diagnostics/tsconfig.app.json",
-              "projects/app-service-diagnostics/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "**/availability/**"
+            "lintFilePatterns": [
+              "projects/app-service-diagnostics//**/*.ts",
+              "projects/app-service-diagnostics//**/*.html"
             ]
           }
         }
@@ -390,11 +409,48 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": "projects/app-service-diagnostics-e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "projects/app-service-diagnostics-e2e//**/*.ts",
+              "projects/app-service-diagnostics-e2e//**/*.html"
+            ]
+          }
+        }
+      }
+    },
+    "ng-flowchart": {
+      "projectType": "library",
+      "root": "projects/ng-flowchart",
+      "sourceRoot": "projects/ng-flowchart/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "projects/ng-flowchart/tsconfig.lib.json",
+            "project": "projects/ng-flowchart/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ng-flowchart/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ng-flowchart/src/test.ts",
+            "tsConfig": "projects/ng-flowchart/tsconfig.spec.json",
+            "karmaConfig": "projects/ng-flowchart/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/ng-flowchart/**/*.ts",
+              "projects/ng-flowchart/**/*.html"
             ]
           }
         }
@@ -404,7 +460,7 @@
   "defaultProject": "azure-web-apps-support-center",
   "schematics": {
     "@schematics/angular:component": {
-      "styleext": "scss"
+      "style": "scss"
     },
     "@schematics/angular:directive": {}
   }

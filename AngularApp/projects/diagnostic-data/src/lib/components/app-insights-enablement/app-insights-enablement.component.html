@@ -21,7 +21,7 @@
                           access App Insights information.
                         </td>
                         <td>
-                          <fab-primary-button contentClass="ml-2" (click)="connect()">
+                          <fab-primary-button [contentClass]="'ml-2'" (click)="connect()">
                             Connect
                           </fab-primary-button>
                         </td>
@@ -57,7 +57,7 @@
                 <ng-container *ngIf="!appInsightsValidated">
                   <table>
                     <tbody>
-                      <tr>
+                      <tr *ngIf="appInsightsValiationError.length === 0">
                         <td>
                           <i class="fa fa-exclamation-triangle warning-icon-color mr-2"></i>
                         </td>
@@ -65,7 +65,7 @@
                           is no more
                           valid. Please connect again.</td>
                         <td>
-                          <fab-primary-button contentClass="ml-2" (click)="connect()">
+                          <fab-primary-button [contentClass]="'ml-2'" (click)="connect()">
                             Connect
                           </fab-primary-button>
                         </td>
@@ -75,6 +75,13 @@
                             <i style="color: gray;" class="fa fa-info-circle info-icon-color fa-lg ml-2"></i>
                           </a>
                         </td>
+                      </tr>
+                      <tr *ngIf="appInsightsValiationError.length > 0">
+                        <td>
+                          <i class="fa fa-exclamation-triangle warning-icon-color mr-2"></i>
+                        </td>
+                        <td colspan="3">We failed to validate the saved AppInsights configuration. This might be a
+                          temporary error. Please retry after some time. Additional Details: {{ appInsightsValiationError }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -103,7 +110,7 @@
                       <td> Enable Application insights for your app to collect application level monitoring data
                       </td>
                       <td>
-                        <fab-primary-button contentClass="ml-2" (click)="enable()">
+                        <fab-primary-button [contentClass]="'ml-2'" (click)="enable()">
                           Enable
                         </fab-primary-button>
                       </td>

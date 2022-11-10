@@ -13,6 +13,7 @@ import { PortalKustoTelemetryService } from './portal-kusto-telemetry.service';
 import { Guid } from '../utilities/guid';
 import { Router } from '@angular/router';
 import { TelemetryPayload } from 'diagnostic-data';
+import { ArmResource } from '../../shared-v2/models/arm';
 
 @Injectable()
 export class ArmService {
@@ -130,26 +131,10 @@ export class ArmService {
     createUrl(resourceUri: string, apiVersion?: string) {
         const uri = `${this.armUrl}${resourceUri}${resourceUri.indexOf('?') >= 0 ? '&' : '?'}` +
             `api-version=${this.getApiVersion(resourceUri, apiVersion)}`
-
-        //Temporary solution for checking dependency call for missing api version exception, will remove after resolve exception
-        const exceptionUri = "management.azure.com/?clientOptimizations=undefined&l=en.en-us&trustedAuthority=https:%2F%2Fportal.azure.com&shellVersion=undefined#";
-        if (uri.includes(exceptionUri)) {
-            if (this.telemetryService) {
-                this.telemetryService.logEvent("MissingApiVersionParameter", {
-                    "resourceUri": resourceUri,
-                    "uri": uri,
-                    "armUrl": this.armUrl,
-                    "isInCaseSubmissionFlow": `${this.isInCaseSubmissionFlow}`,
-                    "effectivLocale": `${this.effectiveLocale}`
-                });
-            }
-            throw new Error("ARM Call Cause MissingApiVersionParameter Exception");
-        }
-
         return uri;
     }
 
-    getResource<T>(resourceUri: string, apiVersion?: string, invalidateCache: boolean = false): Observable<{} | ResponseMessageEnvelope<T>> {
+    getResource<T>(resourceUri: string, apiVersion?: string, invalidateCache: boolean = false, additionalHeaders?: Map<string, string>): Observable<{} | ResponseMessageEnvelope<T>> {
         if (!resourceUri.startsWith('/')) {
             resourceUri = '/' + resourceUri;
         }
@@ -158,7 +143,11 @@ export class ArmService {
         this.getSubscriptionLocation(resourceUri.split("subscriptions/")[1].split("/")[0]).subscribe(response => {
             subscriptionLocation = response.body['subscriptionPolicies'] ? response.body['subscriptionPolicies']['locationPlacementId'] : '';
         });
-        let additionalHeaders = new Map<string, string>();
+
+        if (!!additionalHeaders == false){
+            additionalHeaders = new Map<string, string>();
+        }
+
         additionalHeaders.set('x-ms-subscription-location-placementid', subscriptionLocation);
         // When x-ms-diagversion is set to 1, the requests will be sent to DiagnosticRole.
         //If the value is set to other than 1 or if the header is not present at all, requests will go to runtimehost
@@ -188,7 +177,7 @@ export class ArmService {
         const request = this._http.get<ResponseMessageEnvelope<T>>(url, {
             headers: requestHeaders
         }).pipe(
-            timeout(20000),
+            timeout(60000),
             retryWhen((attempts: Observable<any>) => {
                 let maxRetryAttempts = 3;
                 let scalingDuration = 1000;
@@ -583,6 +572,9 @@ export class ArmService {
     }
 
     getResourceCollection<T>(resourceId: string, apiVersion?: string, invalidateCache: boolean = false, queryParams: any[] = []): Observable<{} | ResponseMessageCollectionEnvelope<T>> {
+        if (!resourceId.startsWith('/')) {
+            resourceId = '/' + resourceId;
+        }
         var url = `${this.armUrl}${resourceId}?api-version=${this.getApiVersion(resourceId, apiVersion)}`;
         if (queryParams && queryParams.length > 0) {
             queryParams.forEach(param => {

@@ -41,7 +41,7 @@ export class AutohealingMemoryRuleComponent extends AutohealingRuleComponent {
   }
 
   isValid(): boolean {
-    if (this.ruleCopy <= 102400 || this.ruleCopy > 13 * 1024 * 1024) {
+    if (this.ruleCopy <= 102400 || this.ruleCopy > 32 * 1024 * 1024) {
       return false;
     } else {
       return true;

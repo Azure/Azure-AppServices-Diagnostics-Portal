@@ -17,10 +17,9 @@ import { Subscription } from 'rxjs';
 import { AutohealingDetectorComponent } from '../detectors/autohealing-detector/autohealing-detector.component';
 
 @Component({
-  selector: 'detector-loader',
-  templateUrl: './detector-loader.component.html',
-  styleUrls: ['./detector-loader.component.scss'],
-  entryComponents: [SiteCpuAnalysisDetectorComponent, SiteMemoryAnalysisDetectorComponent, ThreadDetectorComponent, FrebAnalysisDetectorComponent, PhpLogAnalyzerComponent, DockerContainerIntializationComponent, CommittedMemoryUsageComponent, PageFileOperationsComponent, AspNetCoreComponent, AutohealingDetectorComponent, DetectorViewBaseComponent],
+    selector: 'detector-loader',
+    templateUrl: './detector-loader.component.html',
+    styleUrls: ['./detector-loader.component.scss']
 })
 export class DetectorLoaderComponent implements OnInit, OnDestroy {
 

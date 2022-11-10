@@ -53,6 +53,7 @@ export class FavoriteDetectorsComponent implements OnInit {
   }
 
   public navigate(detector: DetectorMetaData) {
+    this._telemetryService.logEvent(TelemetryEventNames.FavoriteDetectorClicked, { 'detectorId': detector.id, 'location': 'OverViewPage' });
     if (detector.type === DetectorType.Detector) {
       this._router.navigate([`./detectors/${detector.id}`], { relativeTo: this._activatedRoute });
     } else {
@@ -65,7 +66,7 @@ export class FavoriteDetectorsComponent implements OnInit {
     this.panelMessage = "";
     this.panelHealthStatus = HealthStatus.Success;
 
-    this._telemetryService.logEvent(TelemetryEventNames.FavoriteDetectorRemoved, { 'detectorId': detector.id });
+    this._telemetryService.logEvent(TelemetryEventNames.FavoriteDetectorRemoved, { 'detectorId': detector.id, 'location': 'OverViewPage' });
 
     this._userSettingService.removeFavoriteDetector(detector.id).subscribe(_ => {
       this.autoDismissPanel();
@@ -93,14 +94,14 @@ export class FavoriteDetectorsComponent implements OnInit {
 
   private sortFavoriteDetectorsForDisplay(detectors: DetectorMetaData[]): void {
     detectors.sort((a, b) => {
-      if(a.category === b.category) return a.name > b.name ? 1 : -1;
+      if (a.category === b.category) return a.name > b.name ? 1 : -1;
       else return a.category > b.category ? 1 : -1;
     });
   }
 
   private autoDismissPanel() {
-      this.showPanel = true;
-      if(this.panelTimer !== null) {
+    this.showPanel = true;
+    if (this.panelTimer !== null) {
       clearTimeout(this.panelTimer);
     }
     this.panelTimer = setTimeout(() => {

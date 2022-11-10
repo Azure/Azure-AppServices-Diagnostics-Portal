@@ -12,9 +12,7 @@ import { AutohealingComponent } from './autohealing.component';
 import { ProactiveAutohealingComponent } from './proactive-autohealing/proactive-autohealing.component';
 import { AvailabilityModule } from '../availability/availability.module';
 import { DiagnosticDataModule } from 'diagnostic-data';
-import {
-  FabChoiceGroupModule
-} from '@angular-react/fabric';
+import { FabChoiceGroupModule } from '@angular-react/fabric/lib/components/choice-group';
 
 @NgModule({
   declarations: [

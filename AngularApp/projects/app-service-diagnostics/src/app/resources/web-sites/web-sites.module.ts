@@ -26,7 +26,7 @@ import { DiagnosticDataModule } from 'diagnostic-data';
 const ResourceRoutes = RouterModule.forChild([
   {
     path: '',
-    loadChildren: '../../home/home.module#HomeModule',
+    loadChildren: () => import('../../home/home.module').then(m => m.HomeModule),
     resolve: { data: ResourceResolver }
   },
   {
@@ -39,11 +39,11 @@ const ResourceRoutes = RouterModule.forChild([
   },
   {
     path: 'legacy',
-    loadChildren: '../../availability/availability.module#AvailabilityModule'
+    loadChildren: () => import('../../availability/availability.module').then(m => m.AvailabilityModule)
   },
   {
     path: 'tools',
-    loadChildren: '../../diagnostic-tools/diagnostic-tools.module#DiagnosticToolsModule'
+    loadChildren: () => import('../../diagnostic-tools/diagnostic-tools.module').then(m => m.DiagnosticToolsModule)
   }
 ]);
 

@@ -1,7 +1,7 @@
 <header>
   <nav class="navbar-fixed-top header-nav" role="navigation">
     <div style="display: flex;">
-      <div class="header-title" role="button" (click)="navigateToLandingPage()" (keyup.enter)="navigateToLandingPage()">
+      <div class="header-title" role="button" tabindex="0" (click)="navigateToLandingPage()" (keyup.enter)="navigateToLandingPage()">
         <img [src]="applensLogo" alt="Applens" class="header-img">
         <div class="ml-3" style="font-weight: 600;">AppLens {{envTag}}</div>
       </div>
@@ -20,7 +20,6 @@
     </div>
 
     <div class="user-photo-container" (click)="openCallout()" (keyup.enter)="openCallout()" tabindex="0">
-      <span class="image-label"> New! </span>
       <img *ngIf="userPhotoSource !== '';else userInitial" id="userId" [src]="userPhotoSource" alt="User Profile Photo" class="avatar">
     </div>
   </nav>
@@ -35,7 +34,7 @@
     </fab-choice-group>
   </div>
   <div class="user-setting-section" style="border-top: 1px solid gray;">
-    <fab-primary-button (onClick)="applyUserSettingChange()" contentClass="mr-5">Apply</fab-primary-button>
+    <fab-primary-button (onClick)="applyUserSettingChange()" [contentClass]="'mr-5'">Apply</fab-primary-button>
     <fab-default-button (onClick)="cancelUserSettingChange()">Cancel</fab-default-button>
   </div>
 </div>

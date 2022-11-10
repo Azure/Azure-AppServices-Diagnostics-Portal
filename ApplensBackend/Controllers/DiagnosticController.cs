@@ -28,6 +28,7 @@ using Newtonsoft.Json.Linq;
 using SendGrid.Helpers.Mail;
 using Microsoft.Extensions.Hosting;
 using static AppLensV3.Helpers.HeaderConstants;
+using AppLensV3.Services.DiagnosticClientService;
 
 namespace AppLensV3.Controllers
 {
@@ -43,6 +44,8 @@ namespace AppLensV3.Controllers
         private readonly string forbiddenDiagAscHeaderValue;
         private readonly bool detectorDevelopmentEnabled;
         private readonly IList<string> apiEndpointsForDetectorDevelopment;
+
+        private readonly string[] AllowedSections = new string[] { "ContentSearch", "DeepSearch", "ApplicationInsights", "AcceptOriginSuffix:Origins", "CodeCompletion", "DetectorDevelopmentEnabled", "DetectorDevelopmentEnv", "PPEHostname", "APPLENS_ENVIRONMENT", "APPLENS_HOST" };
 
         private class InvokeHeaders
         {
@@ -109,7 +112,14 @@ namespace AppLensV3.Controllers
                 return BadRequest("App setting name is empty");
             }
 
-            return Ok(config[name]);
+            if (AllowedSections != null && AllowedSections.Any(sectionName => name.StartsWith(sectionName)))
+            {
+                return Ok(config[name]);
+            }
+            else
+            {
+                return NotFound($"App setting with the name '{name}' is not found");
+            }
         }
 
         [HttpGet("invoke")]

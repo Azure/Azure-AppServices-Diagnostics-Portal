@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DataRenderBaseComponent } from './data-render-base.component';
 
@@ -6,7 +6,7 @@ describe('DataRenderBaseComponent', () => {
   let component: DataRenderBaseComponent;
   let fixture: ComponentFixture<DataRenderBaseComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DataRenderBaseComponent ]
     })

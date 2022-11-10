@@ -58,6 +58,8 @@ export const TelemetryEventNames = {
     AppInsightsResourceMissingWriteAccess: 'AppInsightsResourceMissingWriteAccess',
     AppInsightsMaxApiKeysExceeded: 'AppInsightsMaxApiKeysExceeded',
     AppInsightsConfigurationInvalid: 'AppInsightsConfigurationInvalid',
+    AppInsightsAppSettingsUpdatedWithLatestSecret: 'AppInsightsAppSettingsUpdatedWithLatestSecret',
+    AppInsightsFailedDuringKeyValidation: 'AppInsightsFailedDuringKeyValidation',
     SummaryCardClicked: 'SummaryCardClicked',
     ToolCardClicked: 'ToolCardClicked',
     TimePickerApplied: 'TimePickerApplied',
@@ -73,6 +75,7 @@ export const TelemetryEventNames = {
     OpenFeedbackPanel: 'OpenFeedbackPanel',
     RefreshClicked: 'RefreshClicked',
     QuickLinkClicked: 'QuickLinkClicked',
+    QuickLinkOnCategoryTileClicked: 'QuickLinkOnCategoryTileClicked',
     RiskTileClicked: 'RiskTileClicked',
     RiskTileLoaded: 'RiskTileLoaded',
     ArmConfigMergeError: 'ArmConfigMergeError',
@@ -96,9 +99,16 @@ export const TelemetryEventNames = {
     ResiliencyScoreReportButtonDisplayed: 'ResiliencyScoreReportButtonDisplayed',
     ResiliencyScoreReportButtonClicked: 'ResiliencyScoreReportButtonClicked', 
     ResiliencyScoreReportDownloaded: 'ResiliencyScoreReportDownloaded',
-    ResourceOutOfScopeUserResponse: 'ResourceOutOfScopeUserResponse',
+    ResiliencyScoreReportInPrivateAccess: 'ResiliencyScoreReportInPrivateAccess',
+    ResourceOutOfScopeUserResponse: 'ResourceOutOfScopeUserResponse',    
+    DownloadReportButtonDisplayed: 'DownloadReportButtonDisplayed',
+    DownloadReportButtonClicked: 'DownloadReportButtonClicked',    
     FavoriteDetectorAdded: 'FavoriteDetectorAdded',
-    FavoriteDetectorRemoved: 'FavoriteDetectorRemoved'
+    FavoriteDetectorClicked: 'FavoriteDetectorClicked',
+    FavoriteDetectorRemoved: 'FavoriteDetectorRemoved',
+    ICMTemplateManagementPage: 'ICMTemplateManagementPage',
+    ICMTeamTemplateLoaded: 'ICMTeamTemplateLoaded',
+    ICMTeamTemplateUpdate: 'ICMTeamTemplateUpdate',
 };
 
 export const TelemetrySource = {

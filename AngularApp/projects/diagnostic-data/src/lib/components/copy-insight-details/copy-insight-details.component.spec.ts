@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CopyInsightDetailsComponent } from './copy-insight-details.component';
 
@@ -6,7 +6,7 @@ describe('CopyInsightDetailsComponent', () => {
   let component: CopyInsightDetailsComponent;
   let fixture: ComponentFixture<CopyInsightDetailsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CopyInsightDetailsComponent ]
     })

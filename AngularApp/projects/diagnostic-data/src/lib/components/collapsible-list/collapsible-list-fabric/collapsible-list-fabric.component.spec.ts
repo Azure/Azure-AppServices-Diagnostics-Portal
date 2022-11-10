@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { CollapsibleListFabricComponent } from './collapsible-list-fabric.component';
 
@@ -6,7 +6,7 @@ describe('CollapsibleListFabricComponent', () => {
   let component: CollapsibleListFabricComponent;
   let fixture: ComponentFixture<CollapsibleListFabricComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CollapsibleListFabricComponent ]
     })

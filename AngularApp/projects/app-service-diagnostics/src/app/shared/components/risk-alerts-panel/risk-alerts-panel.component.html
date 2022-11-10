@@ -1,17 +1,7 @@
 <fab-panel [isOpen]="globals.openRiskAlertsPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
   [styles]="styles" [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'"
-  (onDismiss)="dismissedHandler()">
+  (onDismiss)="dismissedHandler()" [headerText]="riskPanelTitle">
   <div class="panel-padding">
-    <div class="row">
-      <div>
-        <div style="margin-bottom: 10px">
-          <div
-            style="position: absolute; left:25px; right: 32px; top:0px; height: 32px; font-family: 'segoe UI'; font-size: 18px; line-height: 24px; font-weight: 600;display: flex; align-items: flex-end"
-            tabindex="0" aria-label="Availability risk alerts">
-            {{riskPanelTitle}}</div>
-        </div>
-      </div>
-    </div>
     <ng-container *ngIf="!isContentEmpty(riskPanelContents) else loaderView">
       <div *ngFor="let item of riskPanelContents | keyvalue">
         <detector-view *ngIf="currentRiskPanelContentId === item.key" [analysisMode]="false" [isKeystoneView]="false"

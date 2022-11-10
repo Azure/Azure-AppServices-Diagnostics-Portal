@@ -19,14 +19,15 @@ import { DocumentSearchResultsComponent } from './message-flow/document-search-r
 import { SharedV2Module } from '../shared-v2/shared-v2.module';
 import { DiagnosticDataModule } from 'diagnostic-data';
 import { GenieChatFlow } from './message-flow/v2-flows/genie-chat.flow';
-import { FabIconModule,FabChoiceGroupModule } from '@angular-react/fabric';
 import { DynamicAnalysisComponent } from './message-flow/dynamic-analysis/dynamic-analysis.component';
 import { GeniePanelComponent } from '../fabric-ui/components/genie-panel/genie-panel.component';
 import { GenieDynamicComponent} from './dynamic-component/genie-dynamic.component';
 import { CommonModule } from '@angular/common';
-import { FabPanelModule } from '@angular-react/fabric';
 import { GenericResourceService } from 'diagnostic-data';
 import { ResourceService } from '../shared-v2/services/resource.service';
+import { FabIconModule } from '@angular-react/fabric/lib/components/icon';
+import { FabChoiceGroupModule } from '@angular-react/fabric/lib/components/choice-group';
+import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
 
 @NgModule({
     declarations: [

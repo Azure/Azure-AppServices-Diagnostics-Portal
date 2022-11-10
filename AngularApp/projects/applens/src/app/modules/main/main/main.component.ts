@@ -527,6 +527,10 @@ export class MainComponent implements OnInit {
     return time.isValid();
   }
 
+  updateCaseNumber(e: { event: Event, newValue?: string }) {
+    this.caseNumber = e.newValue.toString();
+  }
+
 }
 
 interface RecentResourceDisplay extends RecentResource {

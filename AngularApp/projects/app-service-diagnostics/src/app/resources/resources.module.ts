@@ -7,33 +7,33 @@ const ResourceRoutes = RouterModule.forChild([
   // Web Apps
   {
     path: 'subscriptions/:subscriptionid/resourcegroups/:resourcegroup/providers/microsoft.web/sites/:resourcename',
-    loadChildren: './web-sites/web-sites.module#WebSitesModule'
+    loadChildren: () => import('./web-sites/web-sites.module').then(m => m.WebSitesModule)
   },
   {
     path: 'subscriptions/:subscriptionid/resourcegroups/:resourcegroup/providers/microsoft.web/sites/:resourcename/:siteSuffix',
-    loadChildren: './web-sites/web-sites.module#WebSitesModule'
+    loadChildren: () => import('./web-sites/web-sites.module').then(m => m.WebSitesModule)
   },
   {
     path: 'subscriptions/:subscriptionid/resourcegroups/:resourcegroup/providers/microsoft.web/sites/:resourcename/slots/:slot',
-    loadChildren: './web-sites/web-sites.module#WebSitesModule'
+    loadChildren: () => import('./web-sites/web-sites.module').then(m => m.WebSitesModule)
   },
 
   // App Service Environment
   {
     path: 'subscriptions/:subscriptionid/resourcegroups/:resourcegroup/providers/microsoft.web/hostingenvironments/:resourcename',
-    loadChildren: './web-hosting-environments/web-hosting-environments.module#WebHostingEnvironmentsModule'
+    loadChildren: () => import('./web-hosting-environments/web-hosting-environments.module').then(m => m.WebHostingEnvironmentsModule)
   },
 
   // Generic ARM Resource
   {
     path: 'subscriptions/:subscriptionid/resourcegroups/:resourcegroup/providers/:providerName/:resourceTypeName/:resourcename',
-    loadChildren: './generic-arm-resources/generic-arm-resources.module#GenericArmResourcesModule'
+    loadChildren: () => import('./generic-arm-resources/generic-arm-resources.module').then(m => m.GenericArmResourcesModule)
   },
 
   //Generic ARM Resource with suffix
   {
     path: 'subscriptions/:subscriptionid/resourcegroups/:resourcegroup/providers/:providerName/:resourceTypeName/:resourcename/:armSuffix',
-    loadChildren: './generic-arm-resources/generic-arm-resources.module#GenericArmResourcesModule'
+    loadChildren: () => import('./generic-arm-resources/generic-arm-resources.module').then(m => m.GenericArmResourcesModule)
   }
 
 ]);

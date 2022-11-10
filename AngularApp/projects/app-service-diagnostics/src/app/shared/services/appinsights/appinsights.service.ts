@@ -37,6 +37,14 @@ export class AppInsightsService {
     public loadAppDiagnosticPropertiesObservable: BehaviorSubject<boolean>;
     public applicationInsightsValidForApp: BehaviorSubject<boolean>;
 
+    //
+    // Should be enabled only POST ANT 99 deployment finishes everywhere. When
+    // this flag is changed to true, AppInsights:UseCertificates should also be
+    // changed to true. Both these should remain in sync
+    //
+    private useAppSettingsForAppInsightEncryption: boolean = false;
+    private appInsightsEncryptedAppSettingName: string = 'WEBSITE_APPINSIGHTS_ENCRYPTEDAPIKEY';
+
     public appInsightsSettings: any = {
         validForStack: undefined,
         enabledForWebApp: undefined,
@@ -70,7 +78,15 @@ export class AppInsightsService {
                 this.siteName = resourceUriParts.siteName;
                 this.slotName = resourceUriParts.slotName;
 
-                this.loadAppInsightsSettings(resourceUriParts.subscriptionId, resourceUriParts.resourceGroup, resourceUriParts.siteName, resourceUriParts.slotName);
+                this._backendService.get<string>(`api/appsettings/AppInsights:UseCertificates`).subscribe(useCertificatesSetting => {
+                    if (useCertificatesSetting 
+                        && useCertificatesSetting.toString().toLowerCase() == 'true') {
+                            this.useAppSettingsForAppInsightEncryption = true;
+                    }
+                    this.loadAppInsightsSettings(resourceUriParts.subscriptionId, resourceUriParts.resourceGroup, resourceUriParts.siteName, resourceUriParts.slotName);
+                }, error => {
+                    this.loadAppInsightsSettings(resourceUriParts.subscriptionId, resourceUriParts.resourceGroup, resourceUriParts.siteName, resourceUriParts.slotName);
+                });
             }
         });
     }
@@ -271,18 +287,22 @@ export class AppInsightsService {
     }
 
     public openAppInsightsPerformanceBlade() {
-        this.portalActionService.openAppInsightsPerformanceBlade(this.appInsightsSettings.resouceUri);
+        this.portalActionService.openAppInsightsPerformanceBlade(this.appInsightsSettings.resourceUri);
     }
 
     public openAppInsightsExtensionBlade(detailBlade?: string) {
         return this.portalService.getAppInsightsResourceInfo().subscribe(
             (aiResource: string) => {
-                this.portalActionService.openAppInsightsExtensionBlade(detailBlade, aiResource);
+                if (this.isNotNullOrEmpty(aiResource)) {
+                    this.portalActionService.openAppInsightsExtensionBlade(detailBlade, aiResource);
+                } else if (this.isNotNullOrEmpty(this.appInsightsSettings.resourceUri)) {
+                    this.portalActionService.openAppInsightsExtensionBlade(detailBlade, this.appInsightsSettings.resourceUri);
+                } else {
+                    this.getAppInsightsResourceFromAppSettings().subscribe(aiResourceAppSettings => {
+                        this.portalActionService.openAppInsightsExtensionBlade(detailBlade, aiResourceAppSettings);
+                    });
+                }
             });
-    }
-
-    private isNotNullOrEmpty(item: any): boolean {
-        return (item != undefined && item != '');
     }
 
     public logAppInsightsError(resourceUri: string, telmetryEvent: string, error: any) {
@@ -325,35 +345,112 @@ export class AppInsightsService {
             }),
             mergeMap(encryptedKey => {
                 if (encryptedKey) {
-                    return this.getUpdatedTags(resourceUri, encryptedKey, appId).map(updatedTags => {
-                        return updatedTags;
-                    });
+                    if (this.useAppSettingsForAppInsightEncryption) {
+                        return this.updateAppInsightsEncryptedAppSettings(encryptedKey, appId);
+                    } else {
+                        return this.updateAppInsightsEncryptedArmTag(resourceUri, encryptedKey, appId);
+                    }
                 }
+            }));
+    }
+
+    public getAppInsightsConnected(resourceId: string): Observable<boolean> {
+        if (this.useAppSettingsForAppInsightEncryption) {
+            return this.getAppInsightsEncryptedAppSettings().pipe(
+                map(settingsResponse => {
+                    if (settingsResponse && settingsResponse.ApiKey != null && settingsResponse.AppId != null) {
+                        return true;
+                    }
+                    return false;
+                }),
+                mergeMap(isConnected => {
+                    if (isConnected) {
+                        return of(true);
+                    }
+
+                    return this.checkAppInsightsConnectedViaArmTag(resourceId).pipe(
+                        map(connectedViaArmTag => {
+                            return connectedViaArmTag;
+                        }));
+
+                }));
+        } else {
+            return this.checkAppInsightsConnectedViaArmTag(resourceId).pipe(
+                map(connectedViaArmTag => {
+                    return connectedViaArmTag;
+                }));
+        }
+    }
+
+    public updateAppInsightsEncryptedAppSettings(encryptedKey: string, appId: string): Observable<boolean> {
+        let settingValue = JSON.stringify({ ApiKey: encryptedKey, AppId: appId });
+        if (!this.useAppSettingsForAppInsightEncryption) {
+            return of(false);
+        }
+
+        return this.siteService.getSiteAppSettings(this.subscriptionId, this.resourceGroup, this.siteName, this.slotName).pipe(
+            map(settingsResponse => {
+                settingsResponse.properties[this.appInsightsEncryptedAppSettingName] = settingValue;
+                return settingsResponse;
+            }),
+            catchError(err => {
+                return throwError("Failed while getting App Settings for the resource - " + err);
+            }),
+            mergeMap(settingsResponse => {
+                return this.siteService.updateSiteAppSettings(this.subscriptionId, this.resourceGroup, this.siteName, this.slotName, settingsResponse).pipe(
+                    map(updateResponse => {
+                        return true;
+                    }),
+                    catchError(err => {
+                        return throwError("Failed while updating App Settings for the resource - " + err);
+                    }));
+
+            })
+        );
+    }
+
+    private isNotNullOrEmpty(item: any): boolean {
+        return (item != undefined && item != '');
+    }
+
+    private checkAppInsightsConnectedViaArmTag(resourceId: string): Observable<boolean> {
+        return this.getAppInsightsArmTag(resourceId).pipe(
+            map(appInsightsTag => {
+                if (appInsightsTag != null && appInsightsTag.AppId != null && appInsightsTag.ApiKey != null) {
+                    return true
+                }
+                return false;
+            }));
+    }
+
+    private updateAppInsightsEncryptedArmTag(resourceUri: string, encryptedKey: string, appId: string): Observable<any> {
+        return this.getUpdatedTags(resourceUri, encryptedKey, appId).pipe(
+            map(updatedTags => {
+                return updatedTags;
             }),
             mergeMap(updatedTags => {
-                if (updatedTags) {
-                    return this.armService.patchResourceFullResponse(resourceUri, { tags: updatedTags }, true, apiVersion)
-                        .pipe(
-                            catchError(err => {
-                                return throwError("Failed while updating ARM tags for the resource - " + err);
-                            })
-                        ).map(patchTagsResponse => {
-                            return patchTagsResponse;
-                        });
-                }
+                return this.armService.patchResourceFullResponse(resourceUri, { tags: updatedTags }, true, apiVersion).pipe(
+                    map(patchTagsResponse => {
+                        return patchTagsResponse;
+                    }),
+                    catchError(err => {
+                        return throwError("Failed while updating ARM tags for the resource - " + err);
+                    }));
+
             }));
     }
 
     private getExistingTags(resourceUri: string): Observable<{ [key: string]: string }> {
         return this.armService.getResourceFullResponse(resourceUri, true, apiVersion)
             .pipe(
+                map(response => {
+                    let armResource = <ArmResource>response.body;
+                    return armResource.tags;
+                }),
                 catchError(err => {
                     return throwError("Failed while getting ARM tags for the resource - " + err);
                 })
-            ).map(response => {
-                let armResource = <ArmResource>response.body;
-                return armResource.tags;
-            });
+            );
     }
 
     private getUpdatedTags(resourceUri: string, encryptedKey: string, appId: string) {
@@ -369,16 +466,52 @@ export class AppInsightsService {
         });
     }
 
-    public getAppInsightsArmTag(resourceUri: string): Observable<any> {
-        return this.getExistingTags(resourceUri).map(existingTags => {
-            if (existingTags[this.appInsightsTagName] != null) {
-                var appInsightsTag = JSON.parse(existingTags[this.appInsightsTagName]);
-                return appInsightsTag;
+    private getAppInsightsEncryptedAppSettings(): Observable<any> {
+        return this.siteService.getSiteAppSettings(this.subscriptionId, this.resourceGroup, this.siteName, this.slotName).pipe(
+            map((settingsResponse) => {
+                if (settingsResponse.properties && settingsResponse.properties[this.appInsightsEncryptedAppSettingName]) {
+                    var appInsightsSettingsJson = JSON.parse(settingsResponse.properties[this.appInsightsEncryptedAppSettingName]);
+                    return appInsightsSettingsJson;
+                } else {
+                    return null;
+                }
+            }),
+            catchError(err => {
+                return throwError("Failed while getting App Settings for the resource - " + err);
+            }));
+    }
 
-            } else {
-                return null;
-            }
-        });
+    public getAppInsightsStoredConfiguration(resourceUri: string): Observable<any> {
+        return this.getAppInsightsEncryptedAppSettings().pipe(
+            map(appInsightsSettingsJson => {
+                if (appInsightsSettingsJson != null && this.useAppSettingsForAppInsightEncryption) {
+                    return appInsightsSettingsJson;
+                }
+            }),
+            mergeMap(appInsightsSettingsJson => {
+                if (appInsightsSettingsJson != null) {
+                    return of(appInsightsSettingsJson);
+                }
+
+                return this.getAppInsightsArmTag(resourceUri).pipe(
+                    map(armTagJson => {
+                        return armTagJson;
+                    })
+                );
+            }));
+    }
+
+    public getAppInsightsArmTag(resourceUri: string): Observable<any> {
+        return this.getExistingTags(resourceUri).pipe(
+            map(existingTags => {
+                if (existingTags != null && existingTags[this.appInsightsTagName] != null) {
+                    var appInsightsTag = JSON.parse(existingTags[this.appInsightsTagName]);
+                    return appInsightsTag;
+
+                } else {
+                    return null;
+                }
+            }));
     }
 
     public checkAppInsightsAccess(appInsightsResourceUri: string): Observable<boolean> {

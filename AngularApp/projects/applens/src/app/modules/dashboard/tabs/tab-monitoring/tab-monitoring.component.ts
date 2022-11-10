@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DetectorResponse, DetectorMetaData } from 'diagnostic-data';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
 import { DiagnosticService } from 'diagnostic-data';
 import * as momentNs from 'moment';
@@ -21,7 +21,7 @@ export enum StatisticsType {
 })
 
 export class TabMonitoringComponent implements OnInit {
-  constructor(private _route: ActivatedRoute, private _diagnosticApiService: ApplensDiagnosticService, private _diagnosticService: DiagnosticService) { }
+  constructor(private _route: ActivatedRoute, private _diagnosticApiService: ApplensDiagnosticService, private _diagnosticService: DiagnosticService, private _router: Router) { }
 
   systemInvokerResponse: DetectorResponse;
   detectorAuthor: String = "";
@@ -40,10 +40,11 @@ export class TabMonitoringComponent implements OnInit {
   ]);
   private analyticsDataSourceMapping: Map<string, string> = new Map<string, string>([
     ["Applens",  "1"],
-    ["Azure Portal", "2"]
+    ["Azure Portal", "2"],
+    ["PPE", "3"]
   ]);
   dataSourceKeys: string[];
-  selectedDataSource: string = "All";
+  selectedDataSource: string = "All Prod";
   private dataSourceFlag: string = "0";
 
   private timeRangeMapping: Map<string, string> = new Map<string, string>([
@@ -75,10 +76,26 @@ export class TabMonitoringComponent implements OnInit {
 
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
+  isPPE: boolean = false;
+  prodMonitoringLink: string;
+
   ngOnInit() {
+    if (!!this._route.snapshot.queryParams['dataSource']) this.selectedDataSource = this._route.snapshot.queryParams['dataSource'];
+    this._diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
+      this.prodMonitoringLink = `https://applens.trafficmanager.net${this._router.url}&dataSource=PPE`;
+      this.isPPE = env === "PPE";
+    });
     this.getMonitoringResponse();
     this.getDetectorResponse();
-    this.selectedDataSource  = this.statisticsType === StatisticsType.Analytics ? "Azure Portal" : "All";
+    if (this.statisticsType === StatisticsType.Monitoring && this.monitoringDataSourceMapping.has(this.selectedDataSource)){
+      this.setDataSource(this.selectedDataSource);
+    }
+    else if (this.statisticsType === StatisticsType.Analytics && this.analyticsDataSourceMapping.has(this.selectedDataSource)){
+      this.setDataSource(this.selectedDataSource);
+    }
+    else{
+      this.selectedDataSource  = this.statisticsType === StatisticsType.Analytics ? "Azure Portal" : "All Prod";
+    }
     this.setDataSource(this.selectedDataSource);
     this.dataSourceKeys = this.statisticsType === StatisticsType.Analytics ? Array.from(this.analyticsDataSourceMapping.keys()) : Array.from(this.monitoringDataSourceMapping.keys());
     this.timeRangeKeys = Array.from(this.timeRangeMapping.keys());

@@ -105,10 +105,10 @@ export class TabAnalysisComponent implements OnInit {
     this.panelHealthStatus = HealthStatus.Success;
 
     if (this.pinnedDetector) {
-      this._telemetryService.logEvent(TelemetryEventNames.FavoriteDetectorRemoved, { 'detectorId': this.analysisId });
+      this._telemetryService.logEvent(TelemetryEventNames.FavoriteDetectorRemoved, { 'detectorId': this.analysisId, 'location': 'CommandBar' });
       this.removeFavoriteDetector();
     } else {
-      this._telemetryService.logEvent(TelemetryEventNames.FavoriteDetectorAdded, { 'detectorId': this.analysisId });
+      this._telemetryService.logEvent(TelemetryEventNames.FavoriteDetectorAdded, { 'detectorId': this.analysisId, 'location': 'CommandBar' });
       this.addFavoriteDetector();
     }
   }

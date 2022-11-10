@@ -11,7 +11,7 @@ import { WebSitesService } from '../../../../resources/web-sites/services/web-si
 import { catchError, delay, map, retry, retryWhen, take } from 'rxjs/operators';
 import { SiteDaasInfo } from '../../../models/solution-metadata';
 import { OperatingSystem } from '../../../models/site';
-import moment = require('moment');
+import * as moment from 'moment';
 
 class InstanceSelection {
   InstanceName: string;
@@ -28,7 +28,7 @@ export class DaasComponent implements OnInit, OnDestroy {
 
   @Input() siteToBeDiagnosed: SiteDaasInfo;
   @Input() scmPath: string;
-  @Input() diagnoserName: string;
+  @Input() diagnoserName: string = '';
   @Input() diagnoserNameLookup: string = '';
   @Input() allLinuxInstancesOnAnt98: boolean;
 
@@ -60,23 +60,18 @@ export class DaasComponent implements OnInit, OnDestroy {
   cancellingSession: boolean = false;
   collectionMode: SessionMode = SessionMode.CollectAndAnalyze;
   showInstanceWarning: boolean = false;
-  sessionHasBlobSasUri: boolean = false;
 
   activeInstance: ActiveInstance;
   logFiles: LogFile[] = [];
   isWindowsApp: boolean = true;
   linuxDumpType: string = "Full";
   showCancelButton: boolean = false;
+  showAnalysisOption: boolean = false;
 
   constructor(private _serverFarmService: ServerFarmDataService, private _siteService: SiteService,
     private _daasService: DaasService, private _windowService: WindowService,
     private _logger: AvailabilityLoggingService, private _webSiteService: WebSitesService) {
     this.isWindowsApp = this._webSiteService.platform === OperatingSystem.windows;
-
-    //
-    // For Linux, only collection is supported currently
-    //
-    this.collectionMode = this.isWindowsApp ? SessionMode.CollectAndAnalyze : this.sessionMode.Collect;
   }
 
   public get sessionMode(): typeof SessionMode {
@@ -113,6 +108,13 @@ export class DaasComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    //
+    // Analysis option for Linux only available for Memory Dumps currently 
+    //
+
+    this.showAnalysisOption = this.isWindowsApp ? true : this.diagnoserName.startsWith('MemoryDump');
+    this.collectionMode = this.showAnalysisOption ? SessionMode.CollectAndAnalyze : SessionMode.Collect;
   }
 
   initWizard(): void {
@@ -131,7 +133,7 @@ export class DaasComponent implements OnInit, OnDestroy {
       CaptionCompleted: 'Step 2: ' + this.diagnoserName + ' Collected'
     });
 
-    if (this.isWindowsApp) {
+    if (this.showAnalysisOption) {
       this.WizardSteps.push({
         Caption: 'Step 3: Analyzing ' + this.diagnoserName,
         IconType: 'fa-cog',
@@ -346,7 +348,6 @@ export class DaasComponent implements OnInit, OnDestroy {
           return false;
         }
 
-        this.sessionHasBlobSasUri = this.validationResult.BlobSasUri.length > 0;
         this.sessionInProgress = true;
         this.sessionStatus = 1;
         this.updateInstanceInformation();
@@ -444,7 +445,7 @@ export class DaasComponent implements OnInit, OnDestroy {
     }
   }
 
-  openLog(log: LogFile, hasBlobSasUri: boolean) {
+  openLog(log: LogFile) {
     this._windowService.open(`${log.RelativePath}`);
   }
 

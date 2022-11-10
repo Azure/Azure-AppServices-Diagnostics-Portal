@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { UserActivePullrequestsComponent } from './user-active-pullrequests.component';
 
@@ -6,7 +6,7 @@ describe('UserActivePullrequestsComponent', () => {
   let component: UserActivePullrequestsComponent;
   let fixture: ComponentFixture<UserActivePullrequestsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ UserActivePullrequestsComponent ]
     })

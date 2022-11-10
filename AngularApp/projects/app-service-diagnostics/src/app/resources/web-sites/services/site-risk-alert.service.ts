@@ -35,7 +35,11 @@ export class SiteRiskAlertService extends RiskAlertService {
         }
     ];
 
-    private _linuxFunctionAppRiskAlertConfigs = [];
+    private _linuxFunctionAppRiskAlertConfigs = [{
+        title: "Availability",
+        riskAlertDetectorId: "funcAvailablityRiskAlert",
+        enableForCaseSubmissionFlow: true,
+    }];
 
     private _windowsFunctionAppRiskAlertConfigs = [{
         title: "Availability",

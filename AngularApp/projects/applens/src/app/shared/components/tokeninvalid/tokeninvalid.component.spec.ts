@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { TokenInvalidComponent } from './tokeninvalid.component';
 
@@ -6,7 +6,7 @@ describe('TokenInvalidComponent', () => {
   let component: TokenInvalidComponent;
   let fixture: ComponentFixture<TokenInvalidComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ TokenInvalidComponent ]
     })

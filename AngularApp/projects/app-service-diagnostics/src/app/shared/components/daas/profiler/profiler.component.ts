@@ -34,8 +34,11 @@ export class ProfilerComponent extends DaasComponent implements OnInit, OnDestro
     private _daasServiceLocal: DaasService, private _windowServiceLocal: WindowService,
     private _loggerLocal: AvailabilityLoggingService, private _webSiteServiceLocal: WebSitesService) {
     super(_serverFarmServiceLocal, _siteServiceLocal, _daasServiceLocal, _windowServiceLocal, _loggerLocal, _webSiteServiceLocal);
-    this.diagnoserName = 'Profiler';
-    this.diagnoserNameLookup = 'Profiler';
+
+    if (this.diagnoserName === '') {
+      this.diagnoserName = 'Profiler';
+      this.diagnoserNameLookup = 'Profiler';
+    }
     this.collectStackTraces = this.isWindowsApp;
     this.diagnoserName = this.collectStackTraces ? 'Profiler with Thread Stacks' : 'Profiler';
   }

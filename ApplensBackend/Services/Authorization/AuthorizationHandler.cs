@@ -1,16 +1,13 @@
 using AppLensV3.Helpers;
-using AppLensV3.Models;
-using AppLensV3.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,18 +21,18 @@ namespace AppLensV3.Authorization
         /// <summary>
         /// Gets or sets Name of Security Group.
         /// </summary>
-        public string GroupName {get; set; }
+        public string GroupName { get; set; }
 
         /// <summary>
         /// Gets or sets Object Id of Security Group.
         /// </summary>
-        public string GroupId {get; set; }
+        public string GroupId { get; set; }
     }
 
     /// <summary>
     /// Security Group Requirement to be met.
     /// </summary>
-    class SecurityGroupRequirement: IAuthorizationRequirement
+    class SecurityGroupRequirement : IAuthorizationRequirement
     {
         public SecurityGroupRequirement(string securityGroupName, string securityGroupObjectId)
         {
@@ -58,7 +55,7 @@ namespace AppLensV3.Authorization
         }
     }
 
-    class SecurityGroupLocalDevelopment : AuthorizationHandler<SecurityGroupRequirement>
+    class SecurityGroupHandlerLocalDevelopment : AuthorizationHandler<SecurityGroupRequirement>
     {
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, SecurityGroupRequirement requirement)
         {
@@ -68,7 +65,7 @@ namespace AppLensV3.Authorization
         }
     }
 
-    class DefaultAuthorizationRequirement : IAuthorizationRequirement{}
+    class DefaultAuthorizationRequirement : IAuthorizationRequirement { }
 
     class DefaultAuthorizationHandler : AuthorizationHandler<DefaultAuthorizationRequirement>
     {
@@ -79,10 +76,12 @@ namespace AppLensV3.Authorization
         }
     }
 
-    class CachedUser{
-        public DateTime UserSince {get; set;}
-        public long ts {get; set;}
-        public CachedUser(DateTime userSince, long timestamp){
+    class CachedUser
+    {
+        public DateTime UserSince { get; set; }
+        public long ts { get; set; }
+        public CachedUser(DateTime userSince, long timestamp)
+        {
             this.ts = timestamp;
             this.UserSince = userSince;
         }
@@ -93,52 +92,23 @@ namespace AppLensV3.Authorization
     /// </summary>
     class SecurityGroupHandler : AuthorizationHandler<SecurityGroupRequirement>
     {
-        private readonly string graphUrl = "https://graph.microsoft.com/v1.0/users/{0}/checkMemberGroups";
         private readonly int loggedInUserCacheClearIntervalInMs = 60 * 60 * 1000; // 1 hour
         private readonly int loggedInUserExpiryIntervalInSeconds = 6 * 60 * 60; // 6 hours
-        private ICosmosDBHandlerBase<TemporaryAccessUser> _cosmosDBHandler;
-        private readonly long temporaryAccessExpiryInSeconds;
-        private readonly int temporaryAccessDays = 7;
+        private readonly ILogger<SecurityGroupHandler> _logger;
+        private ConcurrentDictionary<string, CachedUser> loggedInUsersCache;
 
-        public SecurityGroupHandler(IHttpContextAccessor httpContextAccessor, IConfiguration configuration, ICosmosDBHandlerBase<TemporaryAccessUser> cosmosDBHandler)
+        public SecurityGroupHandler(IHttpContextAccessor httpContextAccessor, IConfiguration configuration, ILogger<SecurityGroupHandler> logger)
         {
-            loggedInUsersCache = new Dictionary<string, Dictionary<string, CachedUser>>();
+            _logger = logger;
+            loggedInUsersCache = new ConcurrentDictionary<string, CachedUser>();
             var applensAccess = new SecurityGroupConfig();
-            var applensTesters = new SecurityGroupConfig();
             configuration.Bind("ApplensAccess", applensAccess);
-            configuration.Bind("ApplensTesters", applensTesters);
-            loggedInUsersCache[applensAccess.GroupId] = new Dictionary<string, CachedUser>();
-            loggedInUsersCache[applensTesters.GroupId] = new Dictionary<string, CachedUser>();
-            loggedInUsersCache.Add("TemporaryAccess", new Dictionary<string, CachedUser>());
 
             ClearLoggedInUserCache();
             _httpContextAccessor = httpContextAccessor;
-            
-            var accessDurationInDays = configuration["ApplensTemporaryAccess:AccessDurationInDays"];
-            int.TryParse(accessDurationInDays.ToString(), out temporaryAccessDays);
-            temporaryAccessExpiryInSeconds = temporaryAccessDays * 24 * 60* 60;
-            _cosmosDBHandler = cosmosDBHandler;
-
         }
 
         private IHttpContextAccessor _httpContextAccessor = null;
-        private Dictionary<string, Dictionary<string, CachedUser>> loggedInUsersCache;
-
-        private readonly Lazy<HttpClient> _client = new Lazy<HttpClient>(() =>
-        {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            return client;
-        });
-
-        private HttpClient _httpClient
-        {
-            get
-            {
-                return _client.Value;
-            }
-        }
 
         /// <summary>
         /// Task to clear expired users from cache at regular interval.
@@ -148,16 +118,14 @@ namespace AppLensV3.Authorization
         {
             while (true)
             {
+                _logger.LogInformation($"Clearing LoggedInUserCache to remove entries older than {loggedInUserExpiryIntervalInSeconds} seconds.");
                 long now = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-                foreach (KeyValuePair<string, Dictionary<string, CachedUser>> securityGroupCache in loggedInUsersCache)
+                foreach (KeyValuePair<string, CachedUser> user in loggedInUsersCache)
                 {
-                    foreach (KeyValuePair<string, CachedUser> user in securityGroupCache.Value)
+                    if ((now - user.Value.ts) > loggedInUserExpiryIntervalInSeconds)
                     {
-                        if ((now - user.Value.ts) > loggedInUserExpiryIntervalInSeconds)
-                        {
-                            // Pop out user from logged in users list
-                            securityGroupCache.Value.Remove(user.Key);
-                        }
+                        // Pop out user from logged in users list
+                        loggedInUsersCache.TryRemove(user);
                     }
                 }
 
@@ -168,73 +136,32 @@ namespace AppLensV3.Authorization
         /// <summary>
         /// Adds user to cached dictionary.
         /// </summary>
-        /// <param name="groupId">groupId.</param>
         /// <param name="userId">userId.</param>
-        private void AddUserToCache(string groupId, string userId, DateTime userSince)
+        /// <param name="userSince">userSince.</param>
+        private void AddUserToCache(string userId, DateTime userSince)
         {
-            Dictionary<string, CachedUser> securityGroup;
-            if (loggedInUsersCache.TryGetValue(groupId, out securityGroup))
+            CachedUser user;
+            long ts = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            if (loggedInUsersCache.TryGetValue(userId, out user))
             {
-                CachedUser user;
-                long ts = (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-                if (securityGroup.TryGetValue(userId, out user))
-                {
-                    securityGroup[userId].ts = ts;
-                }
-                else
-                {
-                    securityGroup.Add(userId, new CachedUser(userSince, ts));
-                }
+                loggedInUsersCache[userId].ts = ts;
+            }
+            else
+            {
+                loggedInUsersCache.TryAdd(userId, new CachedUser(userSince, ts));
             }
         }
 
         /// <summary>
         /// Checks cached dictionary to find if user exists.
         /// </summary>
-        /// <param name="groupId">groupId.</param>
         /// <param name="userId">userId.</param>
         /// <returns>boolean value.</returns>
-        private bool IsUserInCache(string groupId, string userId, out DateTime userSince)
+        private bool IsUserInCache(string userId)
         {
-            Dictionary<string, CachedUser> securityGroup;
-            if (loggedInUsersCache.TryGetValue(groupId, out securityGroup))
+            CachedUser user;
+            if (loggedInUsersCache.TryGetValue(userId, out user))
             {
-                CachedUser user;
-                if (securityGroup.TryGetValue(userId, out user))
-                {
-                    userSince = user.UserSince;
-                    return true;
-                }
-            }
-
-            userSince = DateTime.UtcNow;
-            return false;
-        }
-
-        private bool IsUserInCache(string groupId, string userId)
-        {
-            Dictionary<string, CachedUser> securityGroup;
-            if (loggedInUsersCache.TryGetValue(groupId, out securityGroup))
-            {
-                CachedUser user;
-                if (securityGroup.TryGetValue(userId, out user))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private async Task<Boolean> CheckTemporaryAccess(string userId)
-        {
-            var result = await _cosmosDBHandler.GetItemAsync(userId, "TemporaryAccessUser");
-            if (result != null && ((long)DateTime.UtcNow.Subtract(result.AccessStartDate).TotalSeconds) < temporaryAccessExpiryInSeconds)
-            {
-                HttpContext context = _httpContextAccessor.HttpContext;
-                context.Response.Headers["IsTemporaryAccess"] = "true";
-                context.Response.Headers["TemporaryAccessExpires"] = (result.AccessStartDate.AddDays(temporaryAccessDays) - DateTime.UtcNow).Days.ToString();
-                AddUserToCache("TemporaryAccess", userId, result.AccessStartDate);
                 return true;
             }
 
@@ -252,11 +179,11 @@ namespace AppLensV3.Authorization
             bool isUserPartOfSecurityGroup = await Utilities.CheckUserGroupMembership(userId, securityGroupObjectId);
             if (isUserPartOfSecurityGroup)
             {
-                AddUserToCache(securityGroupObjectId, userId, DateTime.UtcNow);
+                AddUserToCache(userId, DateTime.UtcNow);
                 return true;
             }
 
-            return await CheckTemporaryAccess(userId);
+            return false;
         }
 
         /// <summary>
@@ -282,13 +209,8 @@ namespace AppLensV3.Authorization
                     DateTime userSince;
                     if (userId != null)
                     {
-                        if (IsUserInCache(requirement.SecurityGroupObjectId, userId))
+                        if (IsUserInCache(userId))
                         {
-                            isMember = true;
-                        }
-                        else if (IsUserInCache("TemporaryAccess", userId, out userSince)) {
-                            httpContext.Response.Headers["IsTemporaryAccess"] = "true";
-                            httpContext.Response.Headers["TemporaryAccessExpires"] = (userSince.AddDays(temporaryAccessDays) - DateTime.UtcNow).Days.ToString();
                             isMember = true;
                         }
                         else
@@ -300,6 +222,7 @@ namespace AppLensV3.Authorization
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Exception occurred while checking user authorization status. userId: {userId}. Exception: {ex.ToString()}");
                 isMember = false;
             }
 
@@ -317,6 +240,7 @@ namespace AppLensV3.Authorization
                 byte[] message = Encoding.ASCII.GetBytes("User is not an authorized member of " + requirement.SecurityGroupName + " group.");
                 await response.Body.WriteAsync(message, 0, message.Length);
             });
+            _logger.LogInformation($"UnauthorizedUser: {userId}");
             context.Fail();
             return;
         }

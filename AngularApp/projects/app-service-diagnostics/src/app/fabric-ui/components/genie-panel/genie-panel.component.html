@@ -1,17 +1,9 @@
 <fab-panel [isOpen]="globals.openGeniePanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
   [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'"
-  (onDismiss)="genieDismissedHandler()">
+  (onDismiss)="genieDismissedHandler()" [headerText]="'Ask Genie'">
   <div class="row panel-padding">
     <div>
       <div style="margin-bottom: 10px">
-        <div
-          style="position: absolute; left:25px; right: 32px; top:0px; height: 32px; font-family: 'segoe UI'; font-size: 18px; line-height: 24px; font-weight: 600;display: flex; align-items: flex-end"
-          tabindex="0" aria-label="App Service Diagnostics Genie">
-          Ask Genie</div>
-        <div
-          class="genie-panel-description"
-          tabindex="0" aria-label="An interactive self-serve diagnostics tool">
-          An interactive self-serve diagnostics tool</div>
         <div style="position: absolute; top:10px; right: 10px; align-items: flex-end; cursor: pointer; "
           class="button-container" (keydown.enter)="closeGeniePanel()" (click)="closeGeniePanel()">
           <div tabindex="0" aria-label="Collapse">

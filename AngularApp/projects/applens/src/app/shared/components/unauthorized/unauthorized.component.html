@@ -2,19 +2,7 @@
     <div class="unauthorized-div">
         <img src="assets/img/unauthorized.svg" class="unauthorized-icon"/>
         <p class="unauthorized-header">Unauthorized! Its easy to gain access to AppLens.</p>
-        <div style="display: flex; flex-direction: row;" *ngIf="!isDurianEnabled">
-            <div style="flex: 0 1 auto; max-width: 50%;">
-                <div>
-                    <p class="unauthorized-sub-header">Need Quick Access?</p>
-                    <div *ngIf="!temporaryAccessFailed && !temporaryAccessSucceeded" class="temporary-access-link" (click)="requestTemporaryAccess()">
-                        Click here to request <strong>one time</strong> temporary access for 7 days
-                    </div>
-                    <div *ngIf="temporaryAccessFailed">{{accessFailedReason}}</div>
-                    <div *ngIf="temporaryAccessSucceeded">{{temporaryAccessSuccessMessage}} Redirecting to home....</div>
-                    <div *ngIf="!temporaryAccessFailed"><strong>Disclaimer:</strong> This is temporary access only and will expire after 7 days. <u>Please make sure to apply for AppLens Access</u> as described on the right.</div>
-                </div>
-            </div>
-            <div style="flex: 0 1 auto; min-width: 50px; height: 100%; text-align: center; font-size: 18px; font-weight: 700;">or</div>
+        <div style="display: flex; flex-direction: row;">
             <div style="flex: 0 1 auto;">
                 <p class="unauthorized-sub-header">Request for AppLens Access based on your role</p>
                 <ol>
@@ -26,25 +14,6 @@
                     <li>Go to <a href="https://myaccess" target="_blank" rel="noopener noreferrer">MyAccess</a></li>
                     <li>Click on <strong>Request Access</strong></li>
                     <li>Search for AppLens and select <strong>AppLens CSS Access</strong> or <strong>AppLens Non-CSS Access</strong> based on your role requirements.</li>
-                    <li>Click <strong>Next</strong> and move to Review and Submit</li>
-                </ol>
-            </div>
-        </div>
-        <div style="display: flex; flex-direction: row;" *ngIf="isDurianEnabled">
-            <div style="flex: 0 1 auto; max-width: 50%;">
-                <p class="unauthorized-sub-header">Request for AppLens Access based on your role</p>
-                <ol>
-                    <li><a href="https://myaccess/identityiq/ui/rest/redirect?rp1=/accessRequest/accessRequest.jsf&rp2=accessRequest/review?role=AppLens+CSS+Access&autoSubmit=true" target="_blank" rel="noopener noreferrer">AppLens CSS Access</a> (for CSS Engineers and TAs only)</li>
-                    <li><a href="https://myaccess/identityiq/ui/rest/redirect?rp1=/accessRequest/accessRequest.jsf&rp2=accessRequest/review?role=AppLens+Non-CSS+Access&autoSubmit=true" target="_blank" rel="noopener noreferrer">AppLens Non-CSS Access</a> (for Escalation Engineers and Internal Microsoft Teams)</li>
-                </ol>
-            </div>
-            <div style="flex: 0 1 auto; min-width: 50px; height: 100%; text-align: center; font-size: 18px; font-weight: 700;">or</div>
-            <div style="flex: 0 1 auto;">
-                <p><u>If the direct links do not work</u>, please follow the below steps to apply for access.</p>
-                <ol>
-                    <li>Go to <a href="https://myaccess" target="_blank" rel="noopener noreferrer">MyAccess</a></li>
-                    <li>Click on <strong>Request Access</strong></li>
-                    <li>Search for AppLens and select <strong>AppLens CSS Access</strong> or <strong>AppLens PG Access</strong> based on your role requirements.</li>
                     <li>Click <strong>Next</strong> and move to Review and Submit</li>
                 </ol>
             </div>

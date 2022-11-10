@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { LoaderViewComponent } from './loader-view.component';
 
@@ -6,7 +6,7 @@ describe('LoaderViewComponent', () => {
   let component: LoaderViewComponent;
   let fixture: ComponentFixture<LoaderViewComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LoaderViewComponent ]
     })

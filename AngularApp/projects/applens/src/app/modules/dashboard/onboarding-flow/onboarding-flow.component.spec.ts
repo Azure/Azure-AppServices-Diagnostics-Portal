@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { OnboardingFlowComponent } from './onboarding-flow.component';
 
@@ -6,7 +6,7 @@ describe('OnboardingFlowComponent', () => {
   let component: OnboardingFlowComponent;
   let fixture: ComponentFixture<OnboardingFlowComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ OnboardingFlowComponent ]
     })

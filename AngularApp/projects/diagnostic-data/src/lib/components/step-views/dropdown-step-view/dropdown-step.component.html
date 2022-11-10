@@ -9,7 +9,7 @@
             [disabled]="dropdownStepView.dropdowns[i].options.length==0" 
             [options]="dropdownStepView.dropdowns[i] | getDropdownOptions" 
             [defaultSelectedKey]="null" 
-            contentStyle="width:{{dropdownStepView.width}};">
+            [contentStyle]="'width:{{dropdownStepView.width}};'">
         </fab-dropdown>
     </div>
 </div>

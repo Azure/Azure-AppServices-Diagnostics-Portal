@@ -23,7 +23,7 @@ export const applensDocs: { name: string, link: string } [] = [
     },
     {
         name:"Make your Detector Production-Ready",
-        link:"https://microsoft-my.sharepoint.com/personal/nmallick_microsoft_com/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fnmallick%5Fmicrosoft%5Fcom%2FDocuments%2FRecordings%2FAppLens%20101%20Workshop%20%2D%20Continued%2D20210922%5F095038%2DMeeting%20Recording%2Emp4&parent=%2Fpersonal%2Fnmallick%5Fmicrosoft%5Fcom%2FDocuments%2FRecordings&originalPath=aHR0cHM6Ly9taWNyb3NvZnQtbXkuc2hhcmVwb2ludC5jb20vOnY6L3Avbm1hbGxpY2svRVZDZkVqbDV5bGhGbXo4ME9ybnRERHNCbFVtSkNKR0Zib29RTnZ0dkVQSGNnQT9ydGltZT1qUXAxbDlLTTJVZw"
+        link:"https://microsoft-my.sharepoint.com/:v:/p/nmallick/EVCfEjl5ylhFmz80OrntDDsBlUmJCJGFbooQNvtvEPHcgA?e=ifE2s3"
     },
     {
         name: "Join AppLens Partners to stay up to date",

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +17,8 @@ namespace Backend.Controllers
         private IConfiguration config;
         private IWebHostEnvironment env;
 
+        private string[] AllowedSections = new string[] { "Arm", "ContentSearch", "DeepSearch", "ApplicationInsights", "ASD_ENVIRONMENT", "ASD_HOST", "AcceptOriginSuffix:Origins", "AppInsights:UseCertificates" };
+
         public AppSettingsController(IConfiguration configuration, IWebHostEnvironment env)
         {
             this.config = configuration;
@@ -31,7 +33,14 @@ namespace Backend.Controllers
                 return BadRequest("App setting name is empty");
             }
 
-            return Ok(config[name]);
+            if (AllowedSections != null && AllowedSections.Any(sectionName => name.StartsWith(sectionName)))
+            {
+                return Ok(config[name]);
+            }
+            else
+            {
+                return NotFound($"App setting with the name '{name}' is not found");
+            }
         }
     }
 }

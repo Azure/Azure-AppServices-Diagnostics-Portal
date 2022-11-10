@@ -3,7 +3,7 @@ import { Observable, of } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { ResourceService } from '../../shared-v2/services/resource.service';
 import { ArmResource } from '../../shared-v2/models/arm';
-import { DetectorControlService, TelemetryService, TimePickerOptions } from 'diagnostic-data';
+import { DetectorControlService, TimePickerOptions } from 'diagnostic-data';
 
 @Injectable()
 export class ResourceResolver implements Resolve<Observable<{} | ArmResource>> {
@@ -31,7 +31,6 @@ export class ResourceResolver implements Resolve<Observable<{} | ArmResource>> {
 
         //Try get resourceUri from activatedRoute,if not then get from Routerstate
         let resourceUri = activatedRouteSnapshot.parent.url
-            .filter(x => x.path !== 'new' && x.path !== 'categories')
             .map(x => x.path)
             .join('/');
 
@@ -52,7 +51,6 @@ export class ResourceResolver implements Resolve<Observable<{} | ArmResource>> {
         }else {
             return of({});
         }
-
     }
 
     private checkResourceUriIsEmpty(resourceUri: string): boolean {

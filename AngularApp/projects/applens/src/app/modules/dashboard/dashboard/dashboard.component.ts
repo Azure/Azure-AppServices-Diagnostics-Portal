@@ -46,6 +46,7 @@ export class DashboardComponent implements OnDestroy {
   currentRoutePath: string[];
   resource: any;
   observerLink: string = "";
+  stampAppLensLink: string = "";
   showUserInformation: boolean;
   resourceReady: Observable<any>;
   resourceDetailsSub: Subscription;
@@ -71,6 +72,18 @@ export class DashboardComponent implements OnDestroy {
   breadcrumbStyles: IBreadcrumbProps['styles'] = {
     itemLink: {
       fontSize:"14px",
+      textDecoration: 'underline',
+      selectors: {
+        ':hover': {
+          textDecoration: 'underline',
+        },
+        ':focus': {
+          textDecoration: 'underline',
+        },
+        ':hover:focus': {
+          textDecoration: 'underline',
+        },
+      },
     },
   }
   breadcrumbTooltipHostProps: IBreadcrumbProps['tooltipHostProps'] = {
@@ -241,7 +254,22 @@ export class DashboardComponent implements OnDestroy {
     }
   }
 
+  addCaseNumberToLinks(caseNumber){
+    if (caseNumber && caseNumber.length > 0) {
+      var x = document.getElementsByTagName("a");
+      for (var i = 0; i < x.length; i++) {
+        let link = x[i].href;
+        if (link && (link.startsWith("https://applens.azurewebsites.net") || link.startsWith("https://applens.trafficmanager.net")) && !(link.includes("caseNumber"))) {
+          x[i].href = link + (link.includes("?")? "&": "?") + "caseNumber=" + caseNumber;
+        }
+      }
+    }
+  }
+
   ngOnInit() {
+    if (this._diagnosticApiService.CustomerCaseNumber && this._diagnosticApiService.CustomerCaseNumber.length>0) {
+      setInterval(() => {this.addCaseNumberToLinks(this._diagnosticApiService.CustomerCaseNumber)}, 500);
+    }
     this.examineUserAccess();
     this.stillLoading = true;
     this._diagnosticService.getDetectors().subscribe(detectors => {
@@ -314,6 +342,9 @@ export class DashboardComponent implements OnDestroy {
         }
 
         this.keys = Object.keys(this.resource);
+        if (this.keys.indexOf("StampName")>=0){
+          this.stampAppLensLink = `${window.location.origin}/stamps/${this.resource.StampName}`;
+        }
         this.keys.sort((a,b) => a.localeCompare(b));
         this.replaceResourceEmptyValue();
         if (serviceInputs.resourceType.toString().toLowerCase() == "stamps") {

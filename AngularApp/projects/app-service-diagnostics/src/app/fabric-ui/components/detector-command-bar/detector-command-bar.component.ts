@@ -1,5 +1,5 @@
 import {
-  DetectorControlService, DiagnosticService, DetectorMetaData, DetectorResponse, TelemetryService, TelemetryEventNames, TelemetrySource
+  DetectorControlService, DiagnosticService, DetectorMetaData, DetectorResponse, TelemetryService, TelemetryEventNames, TelemetrySource, ResiliencyScoreReportHelper
 } from 'diagnostic-data';
 import { Component, AfterViewInit, Input } from '@angular/core';
 import { Globals } from '../../../globals';
@@ -10,10 +10,10 @@ import { OperatingSystem } from '../../../shared/models/site';
 import { AppType } from '../../../shared/models/portal';
 import { SeverityLevel } from '@microsoft/applicationinsights-web';
 import { DirectionalHint } from 'office-ui-fabric-react';
-import { ResiliencyScoreReportHelper } from '../../../shared/utilities/resiliencyScoreReportHelper';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { DemoSubscriptions } from '../../../betaSubscriptions';
 import { Sku } from '../../../shared/models/server-farm';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'detector-command-bar',
@@ -27,9 +27,9 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   detector: DetectorMetaData;
   fullReportPath: string;
+  subscriptionId: string;
 
-  displayRPDFButton: boolean = false;
-  _isBetaSubscription: boolean = false;
+  displayRPDFButton: boolean = false;  
   gRPDFButtonChild: Element;
   gRPDFButtonId: string;
   gRPDFCoachmarkId: string;
@@ -50,29 +50,38 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   resourcePlatform: OperatingSystem = OperatingSystem.any;
   resourceAppType: AppType = AppType.WebApp;
   resourceSku: Sku = Sku.All;
+  vfsFonts: any;
 
-  public _checkIsWindowsApp(): boolean {
+  private _checkIsWebAppProdSku(platform: OperatingSystem): boolean {
     let webSiteService = this._resourceService as WebSitesService;
     this.resourcePlatform = webSiteService.platform;
     this.resourceAppType = webSiteService.appType;
     this.resourceSku = webSiteService.sku;
     return this._resourceService && this._resourceService instanceof WebSitesService
-      && (webSiteService.platform === OperatingSystem.windows) && (webSiteService.appType === AppType.WebApp) && (webSiteService.sku > 8); //Only for Web App (Windows) in Standard or higher
+      && ((webSiteService.platform === platform) && (webSiteService.appType === AppType.WebApp) && (webSiteService.sku > 8)); //Only for Web Apps  in Standard or higher
+  }
+
+  // add logic for presenting initially to 100% of Subscriptions:  percentageToRelease = 1 (1=100%)
+  private _percentageOfSubscriptions(subscriptionId: string, percentageToRelease: number): boolean {
+    let firstDigit = "0x" + subscriptionId.substring(0, 1);
+    // roughly split of percentageToRelease of subscriptions to use new feature.
+     return ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease);
   }
 
   ngOnInit(): void {
-    let subscriptionId = this._route.parent.snapshot.params['subscriptionid'];
+    let _isSubIdInPercentageToRelease: boolean = false;
+    let _isBetaSubscription: boolean = false;
+    this.subscriptionId = this._route.parent.snapshot.params['subscriptionid'];
     // allowlisting beta subscriptions for testing purposes
-    this._isBetaSubscription = DemoSubscriptions.betaSubscriptions.indexOf(subscriptionId) >= 0;
-    // add logic for presenting initially to 100% of Subscriptions:  percentageToRelease = 1 (1=100%)
-    let percentageToRelease = 1;
-    // roughly split of percentageToRelease of subscriptions to use new feature.
+    _isBetaSubscription = DemoSubscriptions.betaSubscriptions.indexOf(this.subscriptionId) >= 0;
+    // allowing 0% of subscriptions to use new feature
+    _isSubIdInPercentageToRelease = this._percentageOfSubscriptions(this.subscriptionId, 0);
 
-    let firstDigit = "0x" + subscriptionId.substr(0, 1);
-    this.displayRPDFButton = ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease || this._isBetaSubscription) && this._checkIsWindowsApp();
+    // Releasing to only Beta Subscriptions for Web App (Linux) in standard or higher and all Web App (Windows) in standard or higher
+    this.displayRPDFButton = ((this._checkIsWebAppProdSku(OperatingSystem.linux) && (_isSubIdInPercentageToRelease || _isBetaSubscription)) || this._checkIsWebAppProdSku(OperatingSystem.windows));
     const rSBDEventProperties = {
       'ResiliencyScoreButtonDisplayed': this.displayRPDFButton.toString(),
-      'Subscription': this._route.parent.snapshot.params['subscriptionid'],
+      'Subscription': this.subscriptionId,
       'Platform': this.resourcePlatform != undefined ? this.resourcePlatform.toString() : "",
       'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString(): "",
       'resourceSku': this.resourceSku != undefined ? this.resourceSku.toString(): "",
@@ -92,14 +101,26 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       }
     }
     catch (error) {
-      loggingError.message = 'Error trying to retrieve showCoachmark from localStorage';
-      loggingError.stack = error;
-      let _severityLevel: SeverityLevel = SeverityLevel.Warning;
-      this.telemetryService.logException(loggingError, null, null, _severityLevel);
+      // Use TelemetryService logEvent when not able to access local storage.
+      // Most likely due to browsing in InPrivate/Incognito mode.
+      const eventProperties = {
+        'Subscription': this.subscriptionId,
+        'Error': error,
+        'Message': 'Error trying to retrieve showCoachmark from localStorage'        
+      }
+      this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
+
+    //
+    // Retrieving custom fonts from assets/vfs_fonts.json in each project, to be passed to 
+    // PDFMake to generate ResiliencyScoreReport. 
+    // Using this as an alternative to using the vfs_fonts.js build with PDFMake's build-vfs.js
+    // as this file caused problems when being compiled in a library project like diagnostic-data
+    //
+    this.http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => {this.vfsFonts=data}); 
   }
 
-  constructor(private globals: Globals, private _detectorControlService: DetectorControlService, private _diagnosticService: DiagnosticService, private _route: ActivatedRoute, private router: Router, private telemetryService: TelemetryService, private _resourceService: ResourceService) {
+  constructor(private globals: Globals, private _detectorControlService: DetectorControlService, private _diagnosticService: DiagnosticService, private _route: ActivatedRoute, private router: Router, private telemetryService: TelemetryService, private _resourceService: ResourceService, private http: HttpClient) {
   }
 
   toggleOpenState() {
@@ -119,7 +140,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   generateResiliencyPDF() {
     let sT = new Date();
     const rSEventProperties = {
-      'Subscription': this._route.parent.snapshot.params['subscriptionid'],
+      'Subscription': this.subscriptionId,
       'TimeClicked': sT.toUTCString()
     };
     this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportButtonClicked, rSEventProperties);
@@ -135,11 +156,14 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       }
     }
     catch (error) {
-      //Use TelemetryService logException
-      loggingError.message = 'Error accessing localStorage. Most likely accessed via in InPrivate or Incognito mode';
-      loggingError.stack = error;
-      let _severityLevel: SeverityLevel = SeverityLevel.Warning;
-      this.telemetryService.logException(loggingError, null, null, _severityLevel);
+      // Use TelemetryService logEvent when not able to access local storage.
+      // Most likely due to browsing in InPrivate/Incognito mode.
+      const eventProperties = {
+        'Subscription': this.subscriptionId,
+        'Error': error,
+        'Message': 'Error trying to retrieve showCoachmark from localStorage'    
+      }
+      this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
     // Taking starting time
 
@@ -152,20 +176,22 @@ export class DetectorCommandBarComponent implements AfterViewInit {
         }
       }
     };
-    this.gRPDFButtonDisabled = true;
+    this.gRPDFButtonDisabled = true;    
     this._diagnosticService.getDetector("ResiliencyScore", this._detectorControlService.startTimeString, this._detectorControlService.endTimeString)
       .subscribe((httpResponse: DetectorResponse) => {
         //If the page hasn't been refreshed this will use a cached request, so changing File Name to use the same name + "(cached)" to let them know they are seeing a cached version.
         let eT = new Date();
         let detectorTimeTaken = eT.getTime() - sT.getTime();
+        
+        
         if (this.gRPDFFileName == undefined) {
           this.generatedOn = ResiliencyScoreReportHelper.generatedOn();
-          this.gRPDFFileName = `ResiliencyReport-${JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName}-${this.generatedOn.replace(":", "-")}`;
-          ResiliencyScoreReportHelper.generateResiliencyReport(httpResponse.dataset[0].table, `${this.gRPDFFileName}`, this.generatedOn);
+          this.gRPDFFileName = `ResiliencyReport-${JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName}-${this.generatedOn.replace(":", "-")}`;          
+          ResiliencyScoreReportHelper.generateResiliencyReport(httpResponse.dataset[0].table, `${this.gRPDFFileName}`, this.generatedOn, this.vfsFonts);
         }
         else {
           this.gRPDFFileName = `${this.gRPDFFileName}`;
-          ResiliencyScoreReportHelper.generateResiliencyReport(httpResponse.dataset[0].table, `${this.gRPDFFileName}_(cached)`, this.generatedOn);
+          ResiliencyScoreReportHelper.generateResiliencyReport(httpResponse.dataset[0].table, `${this.gRPDFFileName}_(cached)`, this.generatedOn, this.vfsFonts);
         }
         // Time after downloading report
         eT = new Date();
@@ -173,7 +199,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
         let totalTimeTaken = eT.getTime() - sT.getTime();
         // log telemetry for interaction
         const eventProperties = {
-          'Subscription': this._route.parent.snapshot.params['subscriptionid'],
+          'Subscription': this.subscriptionId,
           'CustomerName': JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName,
           'NameSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].Name,
           'ScoreSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].OverallScore,
@@ -257,6 +283,19 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   }
 
   coachMarkViewed() {
+    if (!this.showTeachingBubble){
+      
+      //
+      // TeachingBubbles inherit from Callout react component and they have a 
+      // some issue in the current version of the libaray with *ngIf and they are
+      // not disposed properly. Due to this, the event keeps getting fired when a
+      //  user clicks anywhere in the portal. Avoid executing the rest of the function
+      //  if teachingBubble was already dismissed
+      //
+
+      return;
+    }
+
     const loggingError = new Error();
     // Stop showing TeachingBubble
     this.showTeachingBubble = false;
@@ -266,17 +305,33 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       localStorage.setItem("showCoachmark", "false");
     }
     catch (error) {
-      //Use TelemetryService logException
-      loggingError.message = 'Error accessing localStorage. Most likely accessed via in InPrivate or Incognito mode';
-      loggingError.stack = error;
-      let _severityLevel: SeverityLevel = SeverityLevel.Warning;
-      this.telemetryService.logException(loggingError, null, null, _severityLevel);
+      // Use TelemetryService logEvent when not able to access local storage.
+      // Most likely due to browsing in InPrivate/Incognito mode.
+      const eventProperties = {
+        'Subscription': this.subscriptionId,
+        'Error': error
+      }
+      this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
+
+    this.removeTeachingBubbleFromDom();
   }
 
   showingTeachingBubble(){
     if (this.displayRPDFButton){
       this.showTeachingBubble = true;
+    }
+  }
+
+  //
+  // This is risky if we ever add another teaching bubble and if by
+  // any chance two teachingBubbles end up showing at the same time
+  //
+
+  removeTeachingBubbleFromDom() {
+    const htmlElements = document.querySelectorAll<HTMLElement>('.ms-Callout.ms-TeachingBubble');
+    if (htmlElements.length > 0) {
+      htmlElements[0].parentElement.remove();
     }
   }
 }

@@ -9,6 +9,7 @@ import { VersionService } from '../version.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DiagnosticSiteService } from '../diagnostic-site.service';
 import { HttpClient } from '@angular/common/http';
+import { GenericPortalService } from '../generic-portal.service';
 
 @Injectable()
 export class TelemetryService {
@@ -19,9 +20,10 @@ export class TelemetryService {
     private isLegacy: boolean;
     private initializedPortalVersion: string = "v2";
     private isPublic: boolean;
+    private ticketBladeWorkflowId: string = "";
     private enabledResourceTypes: { resourceType: string, searchSuffix: string }[] = [];
     constructor(private _appInsightsService: AppInsightsTelemetryService, private _kustoService: KustoTelemetryService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _versionService: VersionService, private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticSiteService: DiagnosticSiteService, private _http: HttpClient) {
+        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _versionService: VersionService, private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticSiteService: DiagnosticSiteService, private _http: HttpClient, private _genericPortalService: GenericPortalService) {
         if (config.useKustoForTelemetry) {
             this.telemetryProviders.push(this._kustoService);
         }
@@ -43,7 +45,12 @@ export class TelemetryService {
         this._versionService.slot.subscribe(slot => this.slot = slot);
         this._http.get<any>('assets/enabledResourceTypes.json').subscribe(res => {
             this.enabledResourceTypes = res.enabledResourceTypes;
-        })
+        });
+        this._genericPortalService.getStartupInfo().subscribe(startupInfo => {
+            if (startupInfo && startupInfo.workflowId) {
+                this.ticketBladeWorkflowId = startupInfo.workflowId;
+            }
+        });
     }
 
     /**
@@ -166,6 +173,10 @@ export class TelemetryService {
         productName = this.findProductName(this._router.url);
         if (productName !== "") {
             properties["productName"] = productName;
+        }
+
+        if (this.ticketBladeWorkflowId !== "") {
+            properties["ticketBladeWorkflowId"] = this.ticketBladeWorkflowId;
         }
     }
 }

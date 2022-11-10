@@ -6,6 +6,7 @@ import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { LoadingStatus } from '../../models/loading';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'dynamic-insight-v4',
@@ -19,7 +20,7 @@ export class DynamicInsightV4Component extends DataRenderBaseComponent {
   insight: DynamicInsight;
 
   InsightStatus = HealthStatus;
-  constructor(private _markdownService: MarkdownService, protected telemetryService: TelemetryService) {
+  constructor(private _markdownService: MarkdownService, protected telemetryService: TelemetryService, private _router: Router) {
     super(telemetryService);
   }
 
@@ -76,6 +77,12 @@ export class DynamicInsightV4Component extends DataRenderBaseComponent {
       insight.isRated = true;
       insight.isHelpful = isHelpful;
       this.logEvent(TelemetryEventNames.InsightRated, eventProps);
+    }
+  }
+
+  clickHyperlink(){
+    if(this.insight?.hyperlink){
+      this._router.navigateByUrl(this.insight.hyperlink);
     }
   }
 

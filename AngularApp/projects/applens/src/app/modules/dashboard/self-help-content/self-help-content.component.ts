@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { SupportTopicItem, SupportTopicResult } from '../resource-home/resource-home.component';
 import { map } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
-import { AvatarModule } from 'ngx-avatar';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { ApplensSupportTopicService } from '../services/applens-support-topic.service';
 import { ResourceService } from '../../../shared/services/resource.service';

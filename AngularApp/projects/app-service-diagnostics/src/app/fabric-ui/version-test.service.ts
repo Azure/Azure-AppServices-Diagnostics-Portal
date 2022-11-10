@@ -22,7 +22,10 @@ export const allowV3PResourceTypeList: { type: string, allowSwitchBack: boolean 
     { type: "microsoft.servicefabric/clusters", allowSwitchBack: false },
     { type: "microsoft.resourceconnector/appliances", allowSwitchBack: false },
     { type: "microsoft.batch/batchaccounts", allowSwitchBack: false },
-    { type: "microsoft.Web/staticsites", allowSwitchBack: false }
+    { type: "microsoft.Web/staticsites", allowSwitchBack: false },
+    { type: "microsoft.servicebus/namespaces", allowSwitchBack: false },
+    { type: "microsoft.eventhub/namespaces", allowSwitchBack: false },
+    { type: "microsoft.containerinstance/containergroups", allowSwitchBack: false}
 ];
 
 
@@ -34,13 +37,13 @@ export class VersionTestService {
     public isVnextSub: boolean = false;
     public isVnextOnlyResource: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
     public initializedPortalVersion: BehaviorSubject<string> = new BehaviorSubject<string>("v2");
-    public slot:BehaviorSubject<string> = new BehaviorSubject<string>("");
+    public slot: BehaviorSubject<string> = new BehaviorSubject<string>("");
     // If overrideUseLegacy is not set, we still use the logic to return true for windows web app, return false for other resource types
     // If overrideUseLegacy is set, this will take precedence of our existing logic:
     // overrideUseLegacy = 1, we switch to the old experience.
     // overrideUseLegacy = 2, we switch to the new experience.
     public overrideUseLegacy: BehaviorSubject<number> = new BehaviorSubject(0);
-    constructor(private _authService: AuthService, private _siteService: SiteService,private _portalService:PortalService) {
+    constructor(private _authService: AuthService, private _siteService: SiteService, private _portalService: PortalService) {
         this._authService.getStartupInfo().subscribe(startupInfo => {
             const resourceType = this._authService.resourceType;
             const resourceId = startupInfo.resourceId;

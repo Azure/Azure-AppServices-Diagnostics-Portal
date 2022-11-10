@@ -3,6 +3,7 @@
   "compilerOptions": {
     "jsx": "preserve",
     "baseUrl": "./",
+    "module": "es2020",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -20,7 +21,7 @@
       ],
       "diagnostic-data": [
         "projects/diagnostic-data/src/public_api",
-        "../projects/diagnostic-data/src/public_api",
+        "../projects/diagnostic-data/src/public_api"
       ]
     },
     "lib": [

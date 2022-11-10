@@ -54,7 +54,7 @@
   <ng-container [ngSwitch]="solutionButtonType">
     <ng-container *ngSwitchCase="SolutionButtonType.Button">
       <div style="margin-bottom: 15px;">
-        <fab-primary-button (onClick)="openSolutionPanel(insight)" contentStyle="border-radius: 2px;font-size: 13px;">{{solutionButtonLabel}}</fab-primary-button>
+        <fab-primary-button (onClick)="openSolutionPanel(insight)" [contentStyle]="'border-radius: 2px;font-size: 13px;'">{{solutionButtonLabel}}</fab-primary-button>
       </div>
     </ng-container>
     <ng-container *ngSwitchCase="SolutionButtonType.Link">

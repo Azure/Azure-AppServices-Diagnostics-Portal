@@ -6,7 +6,7 @@
     <div class="check-title {{bold ? 'bold':''}}" [innerHtml]="check.title">
       <!-- Angular strips risky html contents like <script> out, see https://angular.io/guide/security#preventing-cross-site-scripting-xss-->
     </div>
-    <span class="expand-icon" *ngIf="check.subChecks?.length>0; else elseBlock"> <a tabindex="0"
+    <span class="expand-icon" *ngIf="check.subChecks?.length>0 || check.bodyMarkdown; else elseBlock"> <a tabindex="0"
         (click)="toggleSubChecks()"> <i class="ms-Icon ms-Icon--{{expanded ? 'ChevronUpMed' : 'ChevronDownMed'}} "></i>
       </a></span>
     <ng-template #elseBlock>
@@ -14,11 +14,35 @@
           (click)="toggleDetails()">details</a></span>
     </ng-template>
   </div>
-  <div class="subchecks-container" *ngIf="expanded">
-    <div class="sub-check" *ngFor="let subCheck of check.subChecks; let i = index">
-      <check [check]="subCheck"></check>
+
+  <div *ngIf="expanded">
+    
+    <div *ngIf="check.bodyMarkdown?.length > 0">
+      <div class="markdown-container body-content">
+        <div class="markdown">
+          <markdown ngPreserveWhitespaces [data]="check.bodyMarkdown"></markdown>
+        </div>
+      </div>
+    </div>
+    
+    <div class="subchecks-container" *ngIf="check.subChecks?.length>0">
+      <div class="sub-check" *ngFor="let subCheck of check.subChecks; let i = index">
+        <check [check]="subCheck"></check>
+      </div>
+    </div>
+    
+    <div class="actions-container" *ngIf="check.action != null;">
+      <button 
+        type="button" 
+        class="btn btn-primary" 
+        style="border-radius: 0;"
+        [disabled]="check.action.hidden" 
+        (click)="check.action.hidden=true;check.action.callback()">
+        {{check.action.text}}
+      </button>
     </div>
   </div>
+
   <fab-panel *ngIf="check.detailsMarkdown!=null" [isOpen]="detailsPanelOpened" [type]="7" customWidth="fit-content"
     [isHiddenOnDismiss]="true" [styles]="{overlay:{visibility: 'hidden'}, content:{minWidth:'300px', maxWidth:'60vw'}}"
     [isLightDismiss]="true" [isBlocking]="false" [hasCloseButton]="true" (onDismiss)="detailsPanelDismissedHandler()">

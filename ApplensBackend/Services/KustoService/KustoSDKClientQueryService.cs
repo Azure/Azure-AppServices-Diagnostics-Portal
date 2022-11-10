@@ -146,7 +146,7 @@ namespace AppLensV3.Services
         {
             string clusterQuery = @$"WawsAn_regionsincluster
                                     | where pdate >= ago(2d)
-                                    | where tolower(Region) == '{geoRegionName}'
+                                    | where tolower(Region) =~ '{geoRegionName}'
                                     | take 1
                                     | project ClusterName";
             var clusterResult = await ExecuteQueryAsync("wawseusfollower", "wawsprod", clusterQuery, "GetKustoClusterByGeoRegion");

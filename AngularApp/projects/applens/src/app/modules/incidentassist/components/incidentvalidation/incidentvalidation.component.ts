@@ -34,7 +34,7 @@ export class IncidentValidationComponent implements OnInit {
   ngOnInit() {
     let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
     this.userId = alias.replace('@microsoft.com', '').toLowerCase();
-    this.incidentId = this._route.snapshot.params['incidentId'];
+    this.incidentId = this._route.snapshot.params['incidentId'].trim();
     this._telemetryService.logPageView(TelemetryEventNames.IncidentAssistancePage, {IncidentId: this.incidentId, userId: this.userId});
     if (this.incidentId && this.incidentId.length>0){
       this.pageLoading = true;

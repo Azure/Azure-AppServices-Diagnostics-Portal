@@ -11,6 +11,7 @@ import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 import { DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
 import { IDropdownOption, IDropdown } from 'office-ui-fabric-react';
+import { UriUtilities } from '../../utilities/uri-utilities';
 
 @Component({
   selector: 'custom-form',
@@ -25,7 +26,7 @@ export class FormComponent extends DataRenderBaseComponent {
   directionalHint = DirectionalHint.topLeftEdge;
 
 
-  @ViewChild ('formDropdown', {static: false}) formdropDownRef: ElementRef<IDropdown>;
+  @ViewChild('formDropdown') formdropDownRef: ElementRef<IDropdown>;
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _diagnosticService: DiagnosticService, private _router: Router, protected telemetryService: TelemetryService,
     private detectorControlService: DetectorControlService,
     private activatedRoute: ActivatedRoute,
@@ -95,7 +96,7 @@ export class FormComponent extends DataRenderBaseComponent {
           }
           else if(this.isDropdown(formInputs[ip]["inputType"])) {
               this.detectorForms[i].formInputs.push(new Dropdown(
-                `${this.detectorForms[i].formId}.${formInputs[ip]["inputId"]}`,
+                `formDropdown-${this.detectorForms[i].formId}-${formInputs[ip]["inputId"]}`,
                 formInputs[ip]["inputId"],
                 formInputs[ip]["inputType"],
                 formInputs[ip]["label"],
@@ -147,6 +148,9 @@ export class FormComponent extends DataRenderBaseComponent {
                 queryParams += `&inpId=${ip.inputId}&val=${ip.inputValue}&inpType=${ip.inputType}`;
             }
           }
+      });
+      this.activatedRoute.queryParams.subscribe(allRouteParams => {
+        queryParams = UriUtilities.addAdditionalQueryParams(allRouteParams, queryParams);
       });
       // Send telemetry event for Form Button click
       this.logFormButtonClick(formToExecute.formTitle);
@@ -318,8 +322,8 @@ export class FormComponent extends DataRenderBaseComponent {
     let data = event.option["data"];
     let isMultiSelect = data["isMultiSelect"];
     let internalId = data["internalId"];
-    let formId = internalId.split(".")[0];
-    let inputId = internalId.split(".")[1];
+    let formId = internalId.split("-")[1];
+    let inputId = internalId.split("-")[2];
     // Find matching form
     let form = this.detectorForms.find(f => f.formId == formId);
     // Find the input

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { JavaFlightRecorderToolComponent } from './java-flight-recorder-tool.component';
 
@@ -6,7 +6,7 @@ describe('JavaFlightRecorderToolComponent', () => {
   let component: JavaFlightRecorderToolComponent;
   let fixture: ComponentFixture<JavaFlightRecorderToolComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ JavaFlightRecorderToolComponent ]
     })

@@ -32,6 +32,7 @@ const moment = momentNs;
 export class HighchartsGraphComponent implements OnInit {
     Highcharts: typeof Highcharts = Highcharts;
     options: any;
+    labelFontColor: string = "A9A9A9" // Dark gray to comply with contrast requirements with a transparent background for Accessibility purposes
 
 
     @Input() HighchartData: any = [];
@@ -482,12 +483,15 @@ export class HighchartsGraphComponent implements OnInit {
             switch (this.currentTheme) {
                 case 'dark':
                     highchartsDarkTheme(Highcharts);
+                    this.labelFontColor = "#E0E0E3"; //Dark theme's default color
                     break;
                 case 'high-contrast-light':
                     highchartsHighContrastLightTheme(Highcharts);
+                    this.labelFontColor = "#E0E0E3"; //Dark theme's default color
                     break;
                 case 'high-contrast-dark':
                     highchartsHighContrastDarkTheme(Highcharts);
+                    this.labelFontColor = "#E0E0E3"; //Dark theme's default color
                     break;
                 default:
                     Highcharts.setOptions(Highcharts.getOptions());
@@ -814,7 +818,8 @@ export class HighchartsGraphComponent implements OnInit {
                 },
                 labels: {
                     style: {
-                        whiteSpace: 'nowrap'
+                        whiteSpace: 'nowrap',
+                        color: this.labelFontColor,
                     }
                 },
                 plotBands: [],
@@ -842,7 +847,8 @@ export class HighchartsGraphComponent implements OnInit {
                 labels: {
                     format: '{value:.2f}',
                     style: {
-                        whiteSpace: 'nowrap'
+                        whiteSpace: 'nowrap',
+                        color: this.labelFontColor,
                     }
                 },
             },

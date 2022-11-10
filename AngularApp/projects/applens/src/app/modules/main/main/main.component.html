@@ -10,7 +10,7 @@
     {{userAccessErrorMessage}}
   </div>
   <div class="main-row" style="margin: 0px auto;width: 1240px;" *ngIf="!displayLoader">
-    <div *ngIf="userGivenName" class="welcome-word">Welcome to AppLens, {{userGivenName}}!</div>
+    <div *ngIf="userGivenName" class="welcome-word"><h1>Welcome to AppLens, {{userGivenName}}!</h1></div>
     <div class="main-content main-card" style="width: 100%;margin-bottom: 15px;">
       <div class="main-content-header">
         <img src="assets/img/applens-skeleton/main/troubleshoot.svg" alt="troubleshoot" class="mr-3">
@@ -19,7 +19,7 @@
       <div style="width: 50%;">
         <div class="section"
           *ngIf="caseNumberNeededForUser && (selectedResourceType && selectedResourceType.userAuthorizationEnabled)">
-          <fab-text-field [ariaLabel]="'Customer case number'" [(value)]="caseNumber"
+          <fab-text-field [ariaLabel]="'Customer case number'" (onChange)="updateCaseNumber($event)"
             [placeholder]="caseNumberPlaceholder" [label]="'Case Number'" [required]="true"
             [styles]="fabTextFieldStyles">
           </fab-text-field>
@@ -39,7 +39,7 @@
             types</a></div>
         <div class="section" style="margin-top: 15px;">
           <fab-text-field [ariaLabel]="selectedResourceType.resourceTypeLabel" (onChange)="updateResourceName($event)"
-            [(value)]="resourceName" [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel"
+            [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel"
             (keyup.enter)="onSubmit()" [required]="true" [label]="selectedResourceType.resourceTypeLabel"
             [styles]="fabTextFieldStyles">
           </fab-text-field>
@@ -57,7 +57,7 @@
         </div>
 
         <div class="section">
-          <button type="button" class="btn btn-sm btn-primary" [disabled]="disableSubmitButton"
+          <button type="button" class="btn btn-sm btn-primary btn-continuebtn" [disabled]="disableSubmitButton"
             (click)="onSubmit()">Continue</button>
           <div *ngIf="accessErrorMessage && accessErrorMessage!== ''" class="mt-3 error-message-container">
             <status-icon [status]="status"></status-icon><span class="ml-3 error-message">{{accessErrorMessage}}</span>
@@ -123,16 +123,10 @@
 
 <fab-panel [isOpen]="openResourceTypePanel == true" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
   [styles]="panelStyles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
-  (onDismiss)="dismissedHandler()">
+  (onDismiss)="dismissedHandler()" [headerText]="'Supported Resource Types'">
   <div>
     <div class="resource-content-container">
       <div>
-        <div style="margin-bottom: 10px">
-          <div
-            style="position: absolute; left:25px; right: 32px; top:0px; height: 32px; font-family: 'segoe UI'; font-size: 20px; line-height: 24px; font-weight: 630;display: flex; align-items: flex-end"
-            tabindex="0" aria-label="Suppored resource types">
-            Supported Resource Types</div>
-        </div>
         <div class="resource-content" style="margin-left:20px;font-size:16px">
           <div *ngFor="let item of resourceTypeList">
             <img [src]="item.imgSrc" style="height: 15px;width: 15px;" [alt]="item.type" class="mr-3" />

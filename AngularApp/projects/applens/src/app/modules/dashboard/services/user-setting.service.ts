@@ -4,6 +4,7 @@ import { map } from "rxjs/operators";
 import { BehaviorSubject, Observable, throwError } from "rxjs";
 import { FavoriteDetectorProp, FavoriteDetectors, LandingInfo, RecentResource, UserPanelSetting, UserSetting, } from "../../../shared/models/user-setting";
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
+import { Params } from "@angular/router";
 
 @Injectable()
 export class UserSettingService {
@@ -13,6 +14,7 @@ export class UserSettingService {
     currentThemeSub: BehaviorSubject<string> = new BehaviorSubject<string>("light");
     currentViewModeSub: BehaviorSubject<string> = new BehaviorSubject<string>("smarter");
     isWaterfallViewSub: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    private readonly queryParamsToExclude: string[] = ["branchInput"];
     public defaultServiceType: string = "";
     private set _userSetting(userSetting: UserSetting) {
         this._userSettingSubject.next(userSetting);
@@ -27,7 +29,7 @@ export class UserSettingService {
     }
 
     private readonly maxRecentResources = 5;
-    public readonly maxFavoriteDetectors = 5;
+    public readonly maxFavoriteDetectors = 10;
 
     constructor(private _diagnosticApiService: DiagnosticApiService, private _adalService: AdalService) {
     }
@@ -51,6 +53,15 @@ export class UserSettingService {
 
     isWaterfallViewMode() {
         return this.getUserSetting().pipe(map(userSetting => { return userSetting.viewMode == "waterfall" }));
+    }
+
+    excludeQueryParams(qp: Params){
+        let newParams: Params = {};
+        const keys = Object.keys(qp);
+        keys.forEach(x => {
+            if (!this.queryParamsToExclude.includes(x)) { newParams[x] = qp[x] }
+        });
+        return newParams;
     }
 
 

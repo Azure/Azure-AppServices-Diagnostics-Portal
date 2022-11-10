@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpResponse, HttpErrorResponse, HttpHandler, HttpEvent } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Observable, of, pipe } from 'rxjs';
+import { map, catchError, mergeMap } from 'rxjs/operators';
 import { AlertService } from './alert.service';
+import {AdalService} from 'adal-angular4';
 import { AlertInfo, ConfirmationOption, UserAccessStatus } from '../models/alerts';
 import { HealthStatus } from "diagnostic-data";
 
@@ -10,7 +11,8 @@ import { HealthStatus } from "diagnostic-data";
   providedIn: 'root'
 })
 export class AppLensInterceptorService implements HttpInterceptor {
-  constructor(private _alertService: AlertService) { }
+  tokenRefreshRetry: boolean = true;
+  constructor(private _alertService: AlertService, private _adalService: AdalService) { }
 
   raiseAlert(event){
     let errormsg = event.error;
@@ -46,7 +48,20 @@ export class AppLensInterceptorService implements HttpInterceptor {
           this.raiseAlert(error);
         }
         else if ((error.status === 401 || error.status === 403) && error.url.includes("api/invoke")) {
-          this._alertService.notifyUnAuthorized(error);
+          if (errorObj.DetailText && errorObj.DetailText.includes("the token is expired")) {
+            this._adalService.clearCache();
+            return this._adalService.acquireToken(this._adalService.config.clientId).pipe(mergeMap((token: string) => {
+              this._adalService.userInfo.token = token;
+              return next.handle(req);
+            }),
+            catchError((err) => {
+              location.reload();
+              return of(null);
+            }));
+          }
+          else {
+            this._alertService.notifyUnAuthorized(error);
+          }
         }
         return Observable.throw(error);
       }));

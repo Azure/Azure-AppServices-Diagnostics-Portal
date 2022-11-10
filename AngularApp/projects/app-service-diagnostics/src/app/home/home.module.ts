@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, SecurityContext } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../shared/shared.module';
 import { RouterModule } from '@angular/router';
@@ -27,7 +27,6 @@ import { MarkdownModule } from 'ngx-markdown';
 import { CXPChatService } from 'diagnostic-data';
 import { PortalReferrerResolverComponent } from '../shared/components/portal-referrer-resolver/portal-referrer-resolver.component';
 import { CXPChatCallerService } from '../shared-v2/services/cxp-chat-caller.service';
-import { FabCommandBarModule, FabSearchBoxModule, FabSpinnerModule } from '@angular-react/fabric';
 import { UncategorizedDetectorsResolver } from './resolvers/uncategorized-detectors.resolver';
 import { DetectorCategorizationService } from '../shared/services/detector-categorized.service';
 import { ToolNames } from '../shared/models/tools-constants';
@@ -54,7 +53,15 @@ import { CrashMonitoringComponent } from '../shared/components/tools/crash-monit
 import { RiskTileComponent } from './components/risk-tile/risk-tile.component';
 import { IntegratedSolutionsViewComponent } from '../shared/components/integrated-solutions-view/integrated-solutions-view.component';
 import { HomeContainerComponent } from './components/home-container/home-container.component';
-import {SolutionOrchestratorComponent} from "diagnostic-data";
+import { SolutionOrchestratorComponent } from "diagnostic-data";
+import { LinuxNodeHeapDumpComponent } from '../shared/components/tools/linux-node-heap-dump/linux-node-heap-dump.component';
+import { LinuxNodeCpuProfilerComponent } from '../shared/components/tools/linux-node-cpu-profiler/linux-node-cpu-profiler.component';
+import { LinuxPythonCpuProfilerComponent } from '../shared/components/tools/linux-python-cpu-profiler/linux-python-cpu-profiler.component';
+import { FabSearchBoxModule } from '@angular-react/fabric/lib/components/search-box';
+import { FabCommandBarModule } from '@angular-react/fabric/lib/components/command-bar';
+import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
+import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
+import { ClientScriptService } from '../shared-v2/services/client-script.service';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -276,6 +283,33 @@ export const HomeRoutes = RouterModule.forChild([
                             cacheComponent: true
                         }
                     },
+                    // Linux Node Heap Dump
+                    {
+                        path: 'tools/linuxnodeheapdump',
+                        component: LinuxNodeHeapDumpComponent,
+                        data: {
+                            navigationTitle: ToolNames.LinuxNodeHeapDump,
+                            cacheComponent: true
+                        }
+                    },
+                    // Linux Node Cpu Profiler
+                    {
+                        path: 'tools/linuxnodecpuprofiler',
+                        component: LinuxNodeCpuProfilerComponent,
+                        data: {
+                            navigationTitle: ToolNames.LinuxNodeCpuProfiler,
+                            cacheComponent: true
+                        }
+                    },
+                    // Linux Python CPU Profiler
+                    {
+                        path: 'tools/linuxpythoncpuprofiler',
+                        component: LinuxPythonCpuProfilerComponent,
+                        data: {
+                            navigationTitle: ToolNames.LinuxPythonCpuProfiler,
+                            cacheComponent: true
+                        }
+                    },
                     // Database Test Tool(connection string)
                     {
                         path: 'tools/databasetester',
@@ -487,6 +521,52 @@ export const HomeRoutes = RouterModule.forChild([
                         }
                     },
                     {
+                        path: 'analysis/:analysisId/dynamic',
+                        component: GenericAnalysisComponent,
+                        data: {
+                            cacheComponent: true
+                        },
+                        children: [
+                            {
+                                path: 'detectors/:detectorName',
+                                component: GenericDetectorComponent,
+                                data: {
+                                    analysisMode: true,
+                                    cacheComponent: false
+                                },
+                                resolve: {
+                                    time: TimeControlResolver,
+                                    navigationTitle: TabTitleResolver,
+                                }
+                            }
+                        ],
+                        resolve: {
+                            time: TimeControlResolver,
+                            navigationTitle: TabTitleResolver,
+                        }
+                    },
+                    {
+                        path: 'analysis/:analysisId/dynamic/detectors',
+                        component: GenericAnalysisComponent,
+                        data: {
+                            cacheComponent: true
+                        },
+                        children: [
+                            {
+                                path: '',
+                                component: GenericDetectorComponent,
+                                data: {
+                                    analysisMode: true,
+                                    cacheComponent: true
+                                }
+                            }
+                        ],
+                        resolve: {
+                            time: TimeControlResolver,
+                            navigationTitle: TabTitleResolver,
+                        }
+                    },
+                    {
                         path: 'analysis/:analysisId/detectors',
                         component: GenericAnalysisComponent,
                         data: {
@@ -644,7 +724,9 @@ export const HomeRoutes = RouterModule.forChild([
         GenieModule,
         FabricModule,
         FormsModule,
-        MarkdownModule.forRoot(),
+        MarkdownModule.forRoot({
+            sanitize: SecurityContext.STYLE
+        }),
         FabSearchBoxModule,
         FabCommandBarModule,
         FabSpinnerModule
@@ -666,7 +748,8 @@ export const HomeRoutes = RouterModule.forChild([
             { provide: GenericContentService, useExisting: ContentService },
             { provide: GenericDocumentsSearchService, useExisting: DocumentSearchService },
             { provide: CXPChatService, useExisting: CXPChatCallerService },
-            { provide: GenericResourceService, useExisting: ResourceService }
+            { provide: GenericResourceService, useExisting: ResourceService },
+            { provide: GenericClientScriptService, useExisting: ClientScriptService}
         ],
 })
 export class HomeModule { }

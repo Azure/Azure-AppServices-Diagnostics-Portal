@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DetectorCommandBarComponent } from './detector-command-bar.component';
 
@@ -6,7 +6,7 @@ describe('DetectorCommandBarComponent', () => {
   let component: DetectorCommandBarComponent;
   let fixture: ComponentFixture<DetectorCommandBarComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DetectorCommandBarComponent ]
     })

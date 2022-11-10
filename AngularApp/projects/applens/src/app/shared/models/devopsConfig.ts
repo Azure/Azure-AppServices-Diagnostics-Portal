@@ -19,11 +19,11 @@ export class DevopsConfig{
         if (!!devopsConfig.reviewers && devopsConfig.reviewers.length != 0) {
             if (!!devopsConfig.reviewers[0])
                 Object.keys(devopsConfig.reviewers[0].platformtype).forEach(platRev => {
-                    this.platformReviewers[platRev] = devopsConfig.reviewers[0].platformtype[platRev];
+                    this.platformReviewers[platRev] = devopsConfig.reviewers[0].platformtype[platRev].split(',');
                 });
             if (!!devopsConfig.reviewers[1])
                 Object.keys(devopsConfig.reviewers[1].apptype).forEach(appRev => {
-                    this.appTypeReviewers[appRev] = devopsConfig.reviewers[1].apptype[appRev];
+                    this.appTypeReviewers[appRev] = devopsConfig.reviewers[1].apptype[appRev].split(',');
                 });
         }
         this.resourceProvider = devopsConfig.resourceProvider;

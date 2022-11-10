@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { ReactWrapperComponent } from '@angular-react/core';
+import { AngularReact, ReactWrapperComponent } from '@angular-react/core';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import { ITeachingBubbleProps, ITeachingBubbleStyles  } from 'office-ui-fabric-react/lib/TeachingBubble';
 
+@AngularReact()
 @Component({
   selector: 'fab-teachingbubble',
   exportAs: 'fabTeachingbubble',
@@ -41,7 +42,7 @@ import { ITeachingBubbleProps, ITeachingBubbleStyles  } from 'office-ui-fabric-r
       <ReactContent><ng-content></ng-content></ReactContent>
     </TeachingBubble>
   `,
-  styles: ['react-renderer'],
+  styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FabTeachingBubbleComponent extends ReactWrapperComponent<ITeachingBubbleProps> {

@@ -36,16 +36,16 @@ namespace AppLensV3.Models
         [JsonProperty(PropertyName = "favoriteDetectors")]
         public Dictionary<string, FavoriteDetectorProp> FavoriteDetectors { get; set; }
 
-        public UserSetting(string id)
+        public UserSetting(string id, UserSetting defaultUserSetting = null)
         {
             Id = id;
             Resources = new List<RecentResource>();
             PartitionKey = UserSettingConstant.PartitionKey;
-            Theme = "light";
-            ViewMode = "smarter";
-            ExpandAnalysisCheckCard = false;
-            DefaultServiceType = string.Empty;
-            FavoriteDetectors = new Dictionary<string, FavoriteDetectorProp>();
+            Theme = defaultUserSetting?.Theme ?? UserSettingConstant.DefaultTheme;
+            ViewMode = defaultUserSetting?.ViewMode ?? UserSettingConstant.DefaultViewMode;
+            DefaultServiceType = defaultUserSetting?.DefaultServiceType ?? string.Empty;
+            FavoriteDetectors = defaultUserSetting?.FavoriteDetectors ?? new Dictionary<string, FavoriteDetectorProp>();
+            ExpandAnalysisCheckCard = defaultUserSetting != null && defaultUserSetting.ExpandAnalysisCheckCard ? true : false;
         }
     }
 
@@ -54,7 +54,7 @@ namespace AppLensV3.Models
     {
         public string ResourceUri { get; set; }
         public string Kind { get; set; }
-        public Dictionary<string,string> QueryParams { get; set; }
+        public Dictionary<string, string> QueryParams { get; set; }
     }
 
     public class FavoriteDetectorProp
@@ -65,5 +65,7 @@ namespace AppLensV3.Models
     public class UserSettingConstant
     {
         public static readonly string PartitionKey = "RecentResources";
+        public static readonly string DefaultTheme = "light";
+        public static readonly string DefaultViewMode = "smarter";
     }
 }
