@@ -595,7 +595,7 @@
             "service": "ResourceService",
             "resourceType": "Microsoft.Communication/CommunicationServices",
             "templateFileName": "CommunicationServices",
-            "imgSrc": "assets/img/CommunicationServices-Logo",
+            "imgSrc": "assets/img/CommunicationServices-Logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
             "pesId": "17327",
