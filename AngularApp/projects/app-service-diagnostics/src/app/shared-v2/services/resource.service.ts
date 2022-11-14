@@ -1,5 +1,5 @@
 
-import {of,  Observable, BehaviorSubject } from 'rxjs';
+import { of, Observable, BehaviorSubject } from 'rxjs';
 import { map, flatMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { ArmResource } from '../models/arm';
@@ -7,9 +7,9 @@ import { ArmService } from '../../shared/services/arm.service';
 import { ArmResourceConfig } from '../../shared/models/arm/armResourceConfig';
 import { GenericArmConfigService } from '../../shared/services/generic-arm-config.service';
 import { PortalReferrerMap } from '../../shared/models/portal-referrer-map';
-import { ResourceDescriptor, ResourceDescriptorGroups } from 'diagnostic-data';
+import { DetectorType } from 'diagnostic-data';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class ResourceService {
 
   protected _subscription: string;
@@ -39,37 +39,43 @@ export class ResourceService {
     }
   }
 
-  public getIbizaBladeToDetectorMapings():Observable<PortalReferrerMap[]> {
-    return of(null);
+  public getIbizaBladeToDetectorMapings(): Observable<PortalReferrerMap[]> {
+    return of([{
+      ReferrerExtensionName: 'Microsoft_Azure_ApiManagement',
+      ReferrerBladeName: 'NetworkBlade',
+      ReferrerTabName: '',
+      DetectorType: DetectorType.DiagnosticTool,
+      DetectorId: 'networkchecks'
+    }]);
   }
 
-  public getPesId(): Observable<string>{
-    if (this.armResourceConfig){
+  public getPesId(): Observable<string> {
+    if (this.armResourceConfig) {
       return of(this.armResourceConfig.pesId);
     }
     return of(null);
   }
 
-  public getSapProductId(): Observable<string>{
-    if (this.armResourceConfig){
+  public getSapProductId(): Observable<string> {
+    if (this.armResourceConfig) {
       return of(this.armResourceConfig.sapProductId);
     }
     return of(null);
   }
 
-  public getKeystoneDetectorId(): Observable<string>{
-      if (this.armResourceConfig) {
-          return of(this.armResourceConfig.keystoneDetectorId);
-      }
-      return of(null);
+  public getKeystoneDetectorId(): Observable<string> {
+    if (this.armResourceConfig) {
+      return of(this.armResourceConfig.keystoneDetectorId);
+    }
+    return of(null);
   }
 
-  public isGenieDisabled(): boolean{
+  public isGenieDisabled(): boolean {
     if (this.armResourceConfig) {
-        return this.armResourceConfig.disableGenie;
+      return this.armResourceConfig.disableGenie;
     }
     return false;
-}
+  }
 
   public get searchSuffix(): string {
     if (this._genericArmConfigService) {
@@ -120,7 +126,7 @@ export class ResourceService {
     }
   }
 
-  public get isArmApiResponseBase64Encoded():boolean {
+  public get isArmApiResponseBase64Encoded(): boolean {
     if (this._genericArmConfigService) {
       return this._genericArmConfigService.isArmApiResponseBase64Encoded(this.resource.id);
     }
@@ -132,7 +138,7 @@ export class ResourceService {
   public get isApplicableForLiveChat(): boolean {
     if (this._genericArmConfigService) {
       let currConfig: ArmResourceConfig = this._genericArmConfigService.getArmResourceConfig(this.resource.id);
-      if ( currConfig.liveChatConfig && typeof currConfig.liveChatConfig.isApplicableForLiveChat == 'boolean') {
+      if (currConfig.liveChatConfig && typeof currConfig.liveChatConfig.isApplicableForLiveChat == 'boolean') {
         return currConfig.liveChatConfig.isApplicableForLiveChat;
       }
       else {
@@ -144,13 +150,13 @@ export class ResourceService {
     }
   }
 
-  public get liveChatEnabledSupportTopicIds():string[] {
-    if(this._genericArmConfigService) {
+  public get liveChatEnabledSupportTopicIds(): string[] {
+    if (this._genericArmConfigService) {
       let currConfig: ArmResourceConfig = this._genericArmConfigService.getArmResourceConfig(this.resource.id);
-      if(this.isApplicableForLiveChat === true) {
-        if ( currConfig.liveChatConfig && currConfig.liveChatConfig.supportTopicIds
-          &&  currConfig.liveChatConfig.supportTopicIds instanceof Array
-          && currConfig.liveChatConfig.supportTopicIds.length > 0 ) {
+      if (this.isApplicableForLiveChat === true) {
+        if (currConfig.liveChatConfig && currConfig.liveChatConfig.supportTopicIds
+          && currConfig.liveChatConfig.supportTopicIds instanceof Array
+          && currConfig.liveChatConfig.supportTopicIds.length > 0) {
           return currConfig.liveChatConfig.supportTopicIds;
         }
         else {
@@ -163,13 +169,13 @@ export class ResourceService {
     }
   }
 
-  public get liveChatEnabledSapSupportTopicIds():string[] {
-    if(this._genericArmConfigService) {
+  public get liveChatEnabledSapSupportTopicIds(): string[] {
+    if (this._genericArmConfigService) {
       let currConfig: ArmResourceConfig = this._genericArmConfigService.getArmResourceConfig(this.resource.id);
-      if(this.isApplicableForLiveChat === true) {
-        if ( currConfig.liveChatConfig && currConfig.liveChatConfig.sapSupportTopicIds
-          &&  currConfig.liveChatConfig.sapSupportTopicIds instanceof Array
-          && currConfig.liveChatConfig.sapSupportTopicIds.length > 0 ) {
+      if (this.isApplicableForLiveChat === true) {
+        if (currConfig.liveChatConfig && currConfig.liveChatConfig.sapSupportTopicIds
+          && currConfig.liveChatConfig.sapSupportTopicIds instanceof Array
+          && currConfig.liveChatConfig.sapSupportTopicIds.length > 0) {
           return currConfig.liveChatConfig.sapSupportTopicIds;
         }
         else {

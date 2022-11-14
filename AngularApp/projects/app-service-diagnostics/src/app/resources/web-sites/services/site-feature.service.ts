@@ -135,7 +135,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/mitigate`);
             } else {
-              this.navigateTo(resourceId, ToolIds.AutoHealing);
+              this.navigateToTool(resourceId, ToolIds.AutoHealing);
             }
           })
         }
@@ -159,7 +159,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/cpumonitoring`);
             } else {
-              this.navigateTo(resourceId, ToolIds.CpuMonitoring);
+              this.navigateToTool(resourceId, ToolIds.CpuMonitoring);
             }
           })
         }
@@ -181,7 +181,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/crashmonitoring`);
             } else {
-              this.navigateTo(resourceId, ToolIds.CrashMonitoring);
+              this.navigateToTool(resourceId, ToolIds.CrashMonitoring);
             }
           })
         }
@@ -211,7 +211,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/profiler`);
             } else {
-              this.navigateTo(resourceId, ToolIds.Profiler);
+              this.navigateToTool(resourceId, ToolIds.Profiler);
             }
           })
         }
@@ -233,7 +233,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/profiler`);
             } else {
-              this.navigateTo(resourceId, ToolIds.Profiler);
+              this.navigateToTool(resourceId, ToolIds.Profiler);
             }
           })
         }
@@ -255,7 +255,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/memorydump`);
             } else {
-              this.navigateTo(resourceId, ToolIds.MemoryDump);
+              this.navigateToTool(resourceId, ToolIds.MemoryDump);
             }
           })
         }
@@ -277,7 +277,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/databasetester`);
             } else {
-              this.navigateTo(resourceId, ToolIds.DatabaseTester);
+              this.navigateToTool(resourceId, ToolIds.DatabaseTester);
             }
           })
         }
@@ -299,7 +299,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/networktrace`);
             } else {
-              this.navigateTo(resourceId, ToolIds.NetworkTrace);
+              this.navigateToTool(resourceId, ToolIds.NetworkTrace);
             }
           })
         }
@@ -321,7 +321,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/javamemorydump`);
             } else {
-              this.navigateTo(resourceId, ToolIds.JavaMemoryDump);
+              this.navigateToTool(resourceId, ToolIds.JavaMemoryDump);
             }
           })
         }
@@ -343,7 +343,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/javathreaddump`);
             } else {
-              this.navigateTo(resourceId, ToolIds.JavaThreadDump);
+              this.navigateToTool(resourceId, ToolIds.JavaThreadDump);
             }
           })
         }
@@ -365,7 +365,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/javaflightrecorder`);
             } else {
-              this.navigateTo(resourceId, ToolIds.JavaFlightRecorder);
+              this.navigateToTool(resourceId, ToolIds.JavaFlightRecorder);
             }
           })
         }
@@ -387,7 +387,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/networkchecks`);
             } else {
-              this.navigateTo(resourceId, ToolIds.NetworkChecks);
+              this.navigateToTool(resourceId, ToolIds.NetworkChecks);
             }
           })
         }
@@ -409,7 +409,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/networkchecks`);
             } else {
-              this.navigateTo(resourceId, ToolIds.NetworkChecks, "Networking");
+              this.navigateToTool(resourceId, ToolIds.NetworkChecks, "Networking");
             }
           })
         }
@@ -485,7 +485,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/eventviewer`);
             } else {
-              this.navigateTo(resourceId, ToolIds.EventViewer);
+              this.navigateToTool(resourceId, ToolIds.EventViewer);
             }
           })
         }
@@ -507,7 +507,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/eventviewer`);
             } else {
-              this.navigateTo(resourceId, ToolIds.EventViewer);
+              this.navigateToTool(resourceId, ToolIds.EventViewer);
             }
           })
         }
@@ -529,7 +529,7 @@ export class SiteFeatureService extends FeatureService {
             if (this.isLegacy) {
               this._router.navigateByUrl(`resource${resourceId}/tools/frebviewer`);
             } else {
-              this.navigateTo(resourceId, ToolIds.FrebViewer);
+              this.navigateToTool(resourceId, ToolIds.FrebViewer);
             }
           })
         }
@@ -560,15 +560,5 @@ export class SiteFeatureService extends FeatureService {
     this._websiteFilter.transform(this.supportTools).forEach(tool => {
       this._features.push(tool);
     });
-  }
-
-  private navigateTo(resourceId: string, toolId: string, category: string = "DiagnosticTools") {
-    const isHomepage = this._router.url.endsWith(resourceId);
-    //If in homepage then open second blade for Diagnostic Tool and second blade will continue to open third blade for
-    if (isHomepage) {
-      this._portalActionService.openBladeDiagnosticToolId(toolId, category);
-    } else {
-      this._router.navigateByUrl(`resource${resourceId}/categories/${category}/tools/${toolId}`);
-    }
   }
 }

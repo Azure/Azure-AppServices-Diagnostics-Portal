@@ -162,7 +162,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   PRDesc: string = "";
   Branch: string = "";
   tempBranch: string = "";
-  showBranches: IChoiceGroupOption[] = [];
+  showBranches: IChoiceGroupOption[] = [{key: "", text: ""}];
   displayBranch: string = "";
   optionsForSingleChoice: IChoiceGroupOption[] = [];
   openTimePickerCallout: boolean = false;
@@ -543,7 +543,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
   getBranchList() {
     this.optionsForSingleChoice = [];
-    this.showBranches = [];
+    //callout stops working if showBranches ever becomes empty
+    this.showBranches = [{key: "", text: ""}];
     this.resourceId = this.resourceId == undefined || this.resourceId == '' ? this.resourceService.getCurrentResourceId() : this.resourceId;
     this.diagnosticApiService.getBranches(this.resourceId).subscribe(branches => {
       var branchRegEx = this.gistMode ? new RegExp(`^dev\/.*\/gist\/${this.id}$`, "i") : new RegExp(`^dev\/.*\/detector\/${this.id}$`, "i");
@@ -569,6 +570,10 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
             text: String(`${branch.text.split("/")[1]} : ${branch.text.split("/")[3]}`)
           });
         }
+      });
+      // remove temp value from showBranches
+      this.showBranches = this.showBranches.filter(branchName => {
+        return branchName.key != '';
       });
       if (this.showBranches.length < 1 || this.mode == DevelopMode.EditMonitoring || this.mode == DevelopMode.EditAnalytics) {
         this.noBranchesAvailable();

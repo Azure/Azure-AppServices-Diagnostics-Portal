@@ -28,7 +28,7 @@ import { Sku } from '../../../shared/models/server-farm';
 export class CategoryNavComponent implements OnInit {
     imageRootPath = '../../../../assets/img/detectors';
     toolCategories: SiteFilteredItem<any>[] = [];
-    toolCategoriesFilteredByStack: SiteFilteredItem<any>[] = [];
+    toolCategoriesFilteredByStack: any[] = [];
     currentRoutePath: string[];
     allProblemCategories: Category[] = [];
     features: Feature[];
@@ -103,7 +103,7 @@ export class CategoryNavComponent implements OnInit {
         }
 
         if (this._activatedRoute && this._activatedRoute.firstChild && this._activatedRoute.firstChild.snapshot) {
-            if(this._activatedRoute.firstChild.snapshot.routeConfig.path.startsWith("tools/")){
+            if (this._activatedRoute.firstChild.snapshot.routeConfig.path.startsWith("tools/")) {
                 this.currentDetectorId = this._activatedRoute.firstChild.snapshot.routeConfig.path.split("/")[1];
             }
             else if (!this._activatedRoute.firstChild.snapshot.params['analysisId']) {
@@ -191,7 +191,28 @@ export class CategoryNavComponent implements OnInit {
             }
         });
 
-        this.toolCategoriesFilteredByStack = this.transform(this.toolCategories);
+        const resourceType:string = this._activatedRoute.parent.snapshot.data.data.type;
+
+        if (resourceType.toLowerCase() === "microsoft.web/sites") {
+            this.toolCategoriesFilteredByStack = this.transform(this.toolCategories);
+        } else {
+            const diagnosticToolsForNonWeb = this.siteFeatureService.diagnosticToolsForNonWeb.filter(t => t.type.toLowerCase() === resourceType.toLowerCase()).map(tool => {
+                let isSelected = () => {
+                    return this.checkIsSelected(tool.item.id);
+                };
+                let icon = this.getIconImagePath(tool.item.id);
+                return new CollapsibleMenuItem(tool.item.name, tool.item.clickAction, isSelected, icon);
+            });
+            this.toolCategoriesFilteredByStack = [
+                { 
+                    item: {
+                        title: 'Diagnostic Tools',
+                        tools: diagnosticToolsForNonWeb
+                    } 
+                    
+                }
+            ];
+        }
 
         this.categoryService.categories.subscribe(categories => {
             let decodedCategoryName = "";
@@ -202,7 +223,7 @@ export class CategoryNavComponent implements OnInit {
                 this._chatState.category = this.category;
                 this.categoryName = this.category.name;
                 this.categoryId = this.category.id;
-                this.isDiagnosticTools = this.category.id === "DiagnosticTools";
+                this.isDiagnosticTools = this.category.id.toLowerCase().startsWith("diagnostictools");
 
                 this.orphanDetectorList = this._detectorCategorization.detectorlistCategories[this.category.id] ? this._detectorCategorization.detectorlistCategories[this.category.id] : [];
 

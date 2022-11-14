@@ -43,14 +43,14 @@
                     <status-icon [status]="successButtonStatus" style="display: inline-block;"></status-icon><span style="display: inline-block;" class="ml-3 success-message">{{templateAuthorsSuccessMessage}}</span>
                   </div>
                 </div>
-                <fab-primary-button id="update-template-authors-button" contentStyle="margin-top: 20px; margin-left: 0px;" style="display: flex; flex: 1;"
+                <fab-primary-button id="update-template-authors-button" [contentStyle]="'margin-top: 20px; margin-left: 0px;'" style="display: flex; flex: 1;"
                   type="Submit" text='Update Permissions' (click)="updatePermissions()" [disabled]="!(templateAuthors && templateAuthors.length > 3 && templateAuthors.length < 500 && templateAuthors !== teamTemplateAuthors)">
                 </fab-primary-button>
               </div>
             </ngx-smart-modal>
             <div class="form-group form-content">
               <div class="form-row">
-                <fab-command-bar tabindex="0" [attr.id]="'fab-command-bar'" contentClass="fab-command-bar-class">
+                <fab-command-bar tabindex="0" [attr.id]="'fab-command-bar'" [contentClass]="fab-command-bar-class">
                   <items>
                     <!-- do not use *ngIf on these buttons  -->
                     <fab-command-bar-item key="testTemplate" [text]="'Test'" [iconProps]="testIcon" (click)="onTestClick()"

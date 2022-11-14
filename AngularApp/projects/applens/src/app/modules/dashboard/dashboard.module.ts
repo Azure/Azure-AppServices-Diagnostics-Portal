@@ -43,7 +43,6 @@ import { GistChangelistComponent } from './gist-changelist/gist-changelist.compo
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TabAnalysisComponent } from './tabs/tab-analysis/tab-analysis.component';
 import { CategoryPageComponent } from './category-page/category-page.component';
-import { AvatarModule } from 'ngx-avatars';
 import { SupportTopicPageComponent } from './support-topic-page/support-topic-page.component';
 import { SelfHelpContentComponent } from './self-help-content/self-help-content.component';
 import { UserDetectorsComponent } from './user-detectors/user-detectors.component';
@@ -89,6 +88,8 @@ import { FabBreadcrumbModule } from '@angular-react/fabric/lib/components/breadc
 import { FabMessageBarModule } from '@angular-react/fabric/lib/components/message-bar';
 import { CreateWorkflowComponent } from './workflow/create-workflow/create-workflow.component';
 import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
+import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
+import { ClientScriptService } from './services/client-script.service';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -417,7 +418,6 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
 
 @NgModule({
     imports: [
-        AvatarModule,
         CommonModule,
         FormsModule,
         DashboardModuleRoutes,
@@ -463,6 +463,7 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         InitResolver,
         ApplensGlobals,
         BreadcrumbService,
+        ClientScriptService,
         {
             provide: ResourceService,
             useFactory: ResourceServiceFactory,
@@ -478,7 +479,8 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         { provide: SolutionService, useExisting: GenericSolutionService },
         { provide: GenieGlobals, useExisting: ApplensGlobals },
         { provide: GenericBreadcrumbService, useExisting: BreadcrumbService },
-        { provide: GenericUserSettingService, useExisting: UserSettingService }
+        { provide: GenericUserSettingService, useExisting: UserSettingService },
+        { provide: GenericClientScriptService, useExisting: ClientScriptService}
     ],
     declarations: [DashboardComponent, SideNavComponent, ResourceMenuItemComponent, ResourceHomeComponent, OnboardingFlowComponent, SearchTermAdditionComponent,
         SearchMenuPipe, TabDataComponent, TabDevelopComponent, TabCommonComponent, TabDataSourcesComponent, TabMonitoringComponent,

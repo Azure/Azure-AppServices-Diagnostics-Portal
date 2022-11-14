@@ -1,4 +1,5 @@
 import { ChangeDetectorRef } from "@angular/core";
+import { InputType } from "../../models/form";
 import { SeverityLevel } from "../../models/telemetry";
 import { TelemetryService } from "../../services/telemetry/telemetry.service";
 import { Guid } from "../../utilities/guid";
@@ -15,7 +16,8 @@ export enum StepViewType {
     check,
     input,
     info,
-    button
+    button,
+    form
 }
 
 // for angular component variable binding
@@ -77,6 +79,54 @@ export class DropdownStepView extends StepView {
     }
 }
 
+export interface FormAttributes {
+    itype: InputType;
+    id: string;
+    description: string;
+    tooltip?: string;
+    value?: string | number;
+    callback?: (input: string) => Promise<void | string>;
+
+    options?: string[]; // dropdown only
+    
+    placeholder?: string | number; // textbox only
+    error?: string; // textbox only
+    pattern?: string;
+}
+
+export class FormStepView extends StepView {
+    public inputs: FormAttributes[];
+    public width?: string;
+    public bordered?: boolean;
+    public description: string;
+    public expandByDefault: boolean;
+    public buttonText: string;
+    public callback: (data: { [key: string]: string }) => Promise<void>;
+    public onDismiss?: () => void;
+    public afterInit?: () => void;
+
+    public disableButton?: boolean = false;
+
+    constructor(view: FormStepView) {
+        super(view);
+        this.type = StepViewType.form;
+        this.inputs = view.inputs;
+        for(let i = 0; i<view.inputs.length; ++i){
+            if(view.inputs[i].itype == InputType.DropDown && view.inputs[i].options == null){
+                throw new Error("dropdown option should not be null");
+            }
+        }
+        this.buttonText = view.buttonText;
+        this.callback = view.callback;
+        this.bordered = view.bordered || false;
+        this.width = view.width || "100%";
+        this.description = view.description || undefined;
+        this.expandByDefault = view.expandByDefault || false;
+        this.onDismiss = view.onDismiss || (() => { });
+        this.afterInit = view.afterInit || (() => { });
+    }
+}
+
 export class ButtonStepView extends StepView {
     public callback: () => Promise<void>;
     public text:string;
@@ -102,16 +152,20 @@ export interface Check {
     title: string;
     level: number;
     subChecks?: Check[];
+    bodyMarkdown?: string;
     detailsMarkdown?: string;
     expandByDefault?: boolean;
+    action?: ButtonStepView;
 }
 
 export class CheckStepView extends StepView implements Check {
     title: string;
     level: number;
     subChecks?: Check[];
+    bodyMarkdown?: string;
     detailsMarkdown?: string;
     expandByDefault?: boolean;
+    action?: ButtonStepView;
 
     constructor(view: CheckStepView) {
         super(view);
@@ -120,11 +174,13 @@ export class CheckStepView extends StepView implements Check {
         this.level = view.level;
         this.subChecks = view.subChecks || [];
         this.expandByDefault = view.expandByDefault;
+        this.bodyMarkdown = view.bodyMarkdown;
         this.detailsMarkdown = view.detailsMarkdown;
+        this.action = view.action;
     }
 }
 
-enum InfoType {
+export enum InfoType {
     recommendation,
     diagnostic
 }

@@ -14,19 +14,19 @@ import { FormsModule } from '@angular/forms';
 import { CardSelectionComponent } from './components/card-selection/card-selection.component';
 import { CommAlertComponent } from './components/comm-alert/comm-alert.component';
 import {
-  CopyInsightDetailsComponent
+    CopyInsightDetailsComponent
 } from './components/copy-insight-details/copy-insight-details.component';
 import { DataContainerComponent } from './components/data-container/data-container.component';
 import { DataRenderBaseComponent } from './components/data-render-base/data-render-base.component';
 import { DataSummaryComponent } from './components/data-summary/data-summary.component';
 import {
-  DetectorContainerComponent
+    DetectorContainerComponent
 } from './components/detector-container/detector-container.component';
 import {
-  DetectorControlComponent, InternalPipe
+    DetectorControlComponent, InternalPipe
 } from './components/detector-control/detector-control.component';
 import {
-  DetectorListComponent, DetectorOrderPipe
+    DetectorListComponent, DetectorOrderPipe
 } from './components/detector-list/detector-list.component';
 import { DetectorViewComponent } from './components/detector-view/detector-view.component';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
@@ -39,18 +39,18 @@ import { LoaderViewComponent } from './components/loader-view/loader-view.compon
 import { MarkdownEditorComponent } from './components/markdown-editor/markdown-editor.component';
 import { MarkdownViewComponent } from './components/markdown-view/markdown-view.component';
 import {
-  StarRatingFeedbackComponent
+    StarRatingFeedbackComponent
 } from './components/star-rating-feedback/star-rating-feedback.component';
 import { StarRatingComponent } from './components/star-rating/star-rating.component';
 import { StatusIconComponent } from './components/status-icon/status-icon.component';
 import {
-  TimeSeriesGraphComponent
+    TimeSeriesGraphComponent
 } from './components/time-series-graph/time-series-graph.component';
 import {
-  TimeSeriesInstanceGraphComponent
+    TimeSeriesInstanceGraphComponent
 } from './components/time-series-instance-graph/time-series-instance-graph.component';
 import {
-  DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig, INTERNAL_PROD_CONFIGURATION
+    DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig, INTERNAL_PROD_CONFIGURATION
 } from './config/diagnostic-data-config';
 import { ClipboardService } from './services/clipboard.service';
 import { CommsService } from './services/comms.service';
@@ -123,6 +123,7 @@ import { DetectorTimePickerComponent } from './components/detector-time-picker/d
 import { FabricFeedbackComponent } from './components/fabric-feedback/fabric-feedback.component';
 import { GenericBreadcrumbService } from './services/generic-breadcrumb.service';
 import { GenericUserSettingService } from './services/generic-user-setting.service';
+import { FormStepComponent } from './components/step-views/form-step-view/form-step.component';
 import { GenericPortalService } from './services/generic-portal.service';
 
 import { FabIconModule } from '@angular-react/fabric/lib/components/icon';
@@ -144,6 +145,8 @@ import { FabSearchBoxModule } from '@angular-react/fabric/lib/components/search-
 import { FabCalendarModule } from '@angular-react/fabric/lib/components/calendar';
 import { FabDetailsListModule } from '@angular-react/fabric/lib/components/details-list';
 import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-field';
+import { ClientScriptViewComponent } from './components/client-script-view/client-script-view.component';
+import { GenericCategoryService } from './services/generic-category-service';
 
 @NgModule({
     imports: [
@@ -210,6 +213,7 @@ import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-fi
         WebSearchComponent,
         RenderFilterPipe,
         DynamicInsightV4Component,
+        ClientScriptViewComponent,
         MarkdownTextComponent,
         DataTableV4Component,
         DocumentsSearchComponent,
@@ -237,10 +241,12 @@ import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-fi
         FabDataTableComponent,
         SolutionsPanelComponent,
         DetectorTimePickerComponent,
-        FabricFeedbackComponent
+        FabricFeedbackComponent,
+        FormStepComponent,
+        ClientScriptViewComponent
     ],
     exports: [
-        FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent,
+        FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
         DataSummaryComponent, LoaderViewComponent, LoaderDetectorViewComponent, StatusIconComponent, DetectorControlComponent,
         DetectorContainerComponent, InternalPipe, CommAlertComponent, GuageControlComponent, SolutionComponent,
         FormComponent, VerticalDisplayListComponent, VerticalDisplayListItemComponent, SolutionTypeTagComponent, DataContainerComponent,
@@ -261,6 +267,7 @@ import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-fi
         CollapsibleListItemComponent,
         InputStepComponent,
         StepViewsRendererComponent,
+        ClientScriptViewComponent,
         InfoStepComponent,
         DropDownStepComponent,
         ButtonStepComponent,
@@ -275,35 +282,37 @@ import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-fi
         FabricFeedbackComponent,
         FabDataTableComponent,
         DetectorTimePickerComponent,
-        FabCardComponent
+        FabCardComponent,
+        FormStepComponent
     ]
 })
 export class DiagnosticDataModule {
-  static forRoot(config: DiagnosticDataConfig = INTERNAL_PROD_CONFIGURATION): ModuleWithProviders<DiagnosticDataModule> {
-    return {
-      ngModule: DiagnosticDataModule,
-      providers: [
-        DiagnosticService,
-        GenericSupportTopicService,
-        GenericThemeService,
-        GenericContentService,
-        GenericDocumentsSearchService,
-        GenericBreadcrumbService,
-        GenericUserSettingService,
-        GenericPortalService,
-        { provide: DIAGNOSTIC_DATA_CONFIG, useValue: config },
-        CXPChatService,
-        KustoTelemetryService,
-        GenieGlobals,
-        AppInsightsTelemetryService,
-        TelemetryService,
-        DetectorControlService,
-        CommsService,
-        FeatureNavigationService,
-        AppInsightsQueryService,
-        ParseResourceService,
-        HighChartsHoverService
-      ]
-    };
-  }
+    static forRoot(config: DiagnosticDataConfig = INTERNAL_PROD_CONFIGURATION): ModuleWithProviders<DiagnosticDataModule> {
+        return {
+            ngModule: DiagnosticDataModule,
+            providers: [
+                DiagnosticService,
+                GenericSupportTopicService,
+                GenericThemeService,
+                GenericContentService,
+                GenericDocumentsSearchService,
+                GenericBreadcrumbService,
+                GenericUserSettingService,
+                GenericPortalService,
+                { provide: DIAGNOSTIC_DATA_CONFIG, useValue: config },
+                CXPChatService,
+                KustoTelemetryService,
+                GenieGlobals,
+                AppInsightsTelemetryService,
+                TelemetryService,
+                DetectorControlService,
+                CommsService,
+                FeatureNavigationService,
+                AppInsightsQueryService,
+                ParseResourceService,
+                HighChartsHoverService,
+                GenericCategoryService
+            ]
+        };
+    }
 }

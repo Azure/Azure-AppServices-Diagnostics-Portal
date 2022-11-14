@@ -2,7 +2,7 @@ import {
   CommsService, DiagnosticDataModule, DiagnosticService, DiagnosticSiteService,
   PUBLIC_DEV_CONFIGURATION, PUBLIC_PROD_CONFIGURATION, SolutionService, SettingsService,
   BackendCtrlQueryService, GenieGlobals, VersionService, PortalActionGenericService,
-  KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService
+  KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService, GenericCategoryService
 } from 'diagnostic-data';
 import { SiteService } from 'projects/app-service-diagnostics/src/app/shared/services/site.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -47,6 +47,7 @@ import { QuickLinkService } from './shared-v2/services/quick-link.service';
 import { RiskAlertService } from './shared-v2/services/risk-alert.service';
 import { ThemeService } from './theme/theme.service';
 import { GenericThemeService } from 'diagnostic-data';
+import { ClientScriptService } from './shared-v2/services/client-script.service';
 
 @NgModule({
   imports: [
@@ -99,7 +100,8 @@ import { GenericThemeService } from 'diagnostic-data';
     { provide: GenieGlobals, useExisting: Globals },
     CategoryChatStateService,
     ContentService,
-    CategoryService,
+    ClientScriptService,
+    { provide: GenericCategoryService, useExisting: CategoryService },
     FeatureService,
     LoggingV2Service,
     SupportTopicService,
