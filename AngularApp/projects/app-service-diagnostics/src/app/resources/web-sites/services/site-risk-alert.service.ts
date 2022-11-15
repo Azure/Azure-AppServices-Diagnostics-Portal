@@ -123,7 +123,7 @@ export class SiteRiskAlertService extends RiskAlertService {
     ];
 
     constructor(private _websiteFilter: WebSiteFilter, protected _featureService: FeatureService, protected _diagnosticService: DiagnosticService, protected _detectorControlService: DetectorControlService, protected _telemetryService: TelemetryService, protected globals: Globals, protected _genericArmConfigService?: GenericArmConfigService) {
-        super(_featureService, _diagnosticService, _detectorControlService, _telemetryService, globals, _genericArmConfigService);
+        super(_diagnosticService, _detectorControlService, _telemetryService, globals, _genericArmConfigService);
         const riskAlertConfigs = this._websiteFilter.transform(this._siteRiskAlertConfigs);
         const notificationConfigs = this._websiteFilter.transform(this._siteRiskNotificationMessageConfig);
         let siteRiskAlertConfigs: RiskAlertConfig[] = [];

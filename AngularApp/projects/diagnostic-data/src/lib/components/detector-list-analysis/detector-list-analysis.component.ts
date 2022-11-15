@@ -33,7 +33,7 @@ const moment = momentNs;
 import { ILinkProps, PanelType } from 'office-ui-fabric-react';
 import { GenericBreadcrumbService } from '../../services/generic-breadcrumb.service';
 import { GenericUserSettingService } from '../../services/generic-user-setting.service';
-import { GenericCategoryService } from '../../services/generic-category-service';
+import { GenericFeatureService } from '../../services/generic-feature-service';
 
 const WAIT_TIME_IN_SECONDS_TO_ALLOW_DOWNTIME_INTERACTION: number = 58;
 const PERCENT_CHILD_DETECTORS_COMPLETED_TO_ALLOW_DOWNTIME_INTERACTION: number = 0.9;
@@ -134,7 +134,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         private _diagnosticService: DiagnosticService, private _detectorControl: DetectorControlService,
         protected telemetryService: TelemetryService, public _appInsightsService: AppInsightsQueryService,
         private _supportTopicService: GenericSupportTopicService, protected _globals: GenieGlobals, private _solutionService: SolutionService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, private _genericBreadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService, private _genericCategoryService: GenericCategoryService) {
+        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, private _genericBreadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService, private _genericCategoryService: GenericFeatureService) {
         super(telemetryService);
         this.isPublic = config && config.isPublic;
 
@@ -987,7 +987,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
             let categoryId = "";
             const queryParams = this._activatedRoute.snapshot.queryParams;
             const currentCategoryId = this._activatedRoute?.firstChild?.snapshot.params["category"];
-            categoryId = this._genericCategoryService.getCategoryIdByCategoryName(viewModel?.model?.metadata?.category, currentCategoryId);
+            categoryId = this._genericCategoryService.getCategoryIdByNameAndCurrentCategory(viewModel?.model?.metadata?.category, currentCategoryId);
 
             if (detectorId !== "") {
                 const clickDetectorEventProperties = {

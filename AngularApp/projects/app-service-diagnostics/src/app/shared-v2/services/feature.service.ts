@@ -23,7 +23,7 @@ export class FeatureService {
 
   private _detectors: DetectorMetaData[];
   protected _features: Feature[] = [];
-  private categories: Category[] = [];
+  protected categories: Category[] = [];
   public featureSub: BehaviorSubject<Feature[]> = new BehaviorSubject<Feature[]>([]);
   protected isLegacy: boolean;
   protected _featureDisplayOrderSub: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
@@ -40,17 +40,19 @@ export class FeatureService {
         this._diagnosticApiService.getDetectors().subscribe(detectors => {
           this._categoryService.categories.subscribe(categories => {
             this._detectors = detectors;
-            this.categories = categories;
+            if(categories.length > 0) {
+              this.categories = categories;
+            }
             detectors.forEach(detector => {
               if (this.validateDetectorMetadata(detector)) {
                 this._rewriteCategory(detector);
                 const categoryId = this.getCategoryIdByCategoryName(detector.category);
-                const categoryName = this._categoryService.getCategoryNameByCategoryId(categoryId);
+                const categoryName = this.getCategoryNameByCategoryId(categoryId);
                 if (detector.type === DetectorType.Detector) {
                   this._features.push(<Feature>{
                     id: detector.id,
                     description: detector.description,
-                    category: categoryName,
+                    category: detector.category,
                     featureType: DetectorType.Detector,
                     name: detector.name,
                     clickAction: this._createFeatureAction(detector.name, categoryName, () => {
@@ -182,7 +184,36 @@ export class FeatureService {
 
   private getCategoryIdByCategoryName(categoryId: string) {
     const currentCategoryId = this._activatedRoute.root?.firstChild?.firstChild?.firstChild?.firstChild?.firstChild?.snapshot.params["category"];
-    return this._categoryService.getCategoryIdByNameAndCurrentCategory(categoryId,currentCategoryId);
+    return this.getCategoryIdByNameAndCurrentCategory(categoryId,currentCategoryId);
+  }
+
+  getCategoryIdByNameAndCurrentCategory(name: string, currentCategoryId?: string): string {
+    //Default set to "*",so it will still route to category-summary
+    let categoryId: string = this.categories.length > 0 ? this.categories[0].id : "*";
+    //If category name is "XXX Tools" and has Diagnostic Tools category,then should belong to Diagnostic Tool Category.For now this should be working in Windows Web App
+    if ((name === "Diagnostic Tools" || name === "Support Tools" || name === "Proactive Tools") && this.categories.find(category => category.name === "Diagnostic Tools")) {
+      const category = this.categories.find(category => category.name === "Diagnostic Tools");
+      categoryId = category.id;
+    }
+    else if (name && this.categories.find(category => category.name === name)) {
+      const category = this.categories.find(category => category.name === name);
+      categoryId = category.id;
+    }
+    //In category-overview page and uncategoried detector,return current categoryId
+    else if (currentCategoryId) {
+      categoryId = currentCategoryId;
+    }
+    //In home page,no categoryId in router,return category as availability&perf
+    else if (this.categories.find(category => category.name === "Availability and Performance")) {
+      const category = this.categories.find(category => category.name === "Availability and Performance");
+      categoryId = category.id;
+    }
+    return categoryId;
+  }
+
+  getCategoryNameByCategoryId(id: string): string {
+    const category = this.categories.find(c => c.id.toLowerCase() === id.toLowerCase());
+    return category ? category.name : "";
   }
 
   private navigatTo(startupInfo: StartupInfo, category: string, detector: string, type: DetectorType) {

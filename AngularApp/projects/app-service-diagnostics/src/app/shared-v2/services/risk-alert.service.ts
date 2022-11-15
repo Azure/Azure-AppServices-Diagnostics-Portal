@@ -27,7 +27,7 @@ export class RiskAlertService {
     caseSubmissionRiskNotificationId: string = "";
     notificationMessageBar: NotificationMessageBar = null;
 
-    constructor(protected _featureService: FeatureService, protected _diagnosticService: DiagnosticService, protected _detectorControlService: DetectorControlService, protected _telemetryService: TelemetryService, protected globals: Globals, protected _genericArmConfigService?: GenericArmConfigService) { }
+    constructor(protected _diagnosticService: DiagnosticService, protected _detectorControlService: DetectorControlService, protected _telemetryService: TelemetryService, protected globals: Globals, protected _genericArmConfigService?: GenericArmConfigService) { }
 
     public initRiskAlertsForArmResource(resourceUri: string) {
         if (this._genericArmConfigService) {

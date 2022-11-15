@@ -14,7 +14,7 @@ export class QuickLinkService {
         this.quickLinksSub.next(links);
     }
 
-    constructor(protected _featureService: FeatureService, private _genericArmConfigService?: GenericArmConfigService) {}
+    constructor(private _genericArmConfigService?: GenericArmConfigService) {}
     
     public initQuickLinksForArmResource(resourceUri: string) {
         if (this._genericArmConfigService) {
