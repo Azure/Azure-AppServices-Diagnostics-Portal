@@ -64,6 +64,7 @@ root
   - Docker container: Build and run a docker container that has all necessary dependencies. 
     - Install and run the docker desktop client.
     - Run AngularApp/buildimage.sh (or buildimage.bat on Windows) once to build an image locally.
+    - Note : To build the image you may need to change installNode14Repo.sh from CRLF to LF in order to run the script in docker
     - Create a container from the image created above by running AngularApp/startcontainer.sh (or startcontainer.bat on Windows) to build a container and open a terminal session on it.  Alternately you can use the docker desktop UI to stop/start and open a terminal to the container.
     - From within the container, cd to the `AngularApp` folder and restore packages via `npm install` to install npm packages.
     - Continue to the next section.  Note: if you are only developing the diagnostic portal and not the backend, you can skip steps 2, 3 and 4.  In step 6, if working on Windows, run `npm run ssl-local-poll` as angular running in the container is unable to monitor the filesystem for changes (auto-recompile on file change)
