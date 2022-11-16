@@ -813,8 +813,9 @@ export class DetectorViewComponent implements OnInit {
   }
 
   navigateForBreadCrumb() {
+    const combinedParams = {...this._route.snapshot.queryParams, ...this.breadCrumb.queryParams};
     if (this.breadCrumb) {
-      this._router.navigate([this.breadCrumb.fullPath], { queryParams: this.breadCrumb.queryParams });
+      this._router.navigate([this.breadCrumb.fullPath], { queryParams: combinedParams });
     }
   }
 }
