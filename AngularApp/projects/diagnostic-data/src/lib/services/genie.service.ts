@@ -1,5 +1,6 @@
 import { Injectable} from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { BreadcrumbNavigationItem } from './generic-breadcrumb.service';
 
 @Injectable({
     providedIn: 'root'
@@ -10,6 +11,7 @@ export class GenieGlobals {
     openGeniePanel: boolean = false;
     openFeedback: boolean = false;
     messagesData: { [id: string]: any } = {};
+    breadCrumb: BreadcrumbNavigationItem = null;
 
     getDetectorName():string {
         return "";
