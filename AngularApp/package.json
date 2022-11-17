@@ -28,8 +28,8 @@
     "bundle-report": "webpack-bundle-analyzer ../Backend/wwwroot/stats.json -p 8889"
   },
   "dependencies": {
-    "@angular-builders/custom-webpack": "^13.1.0",
-    "@angular-devkit/build-angular": "^13.3.9",
+    "@angular-builders/custom-webpack": "^14.1.0",
+    "@angular-devkit/build-angular": "^15.0.0",
     "@angular-devkit/core": "^13.3.9",
     "@angular-react/core": "^4.1.0",
     "@angular-react/fabric": "^4.1.0",
@@ -102,7 +102,7 @@
     "@types/node": "^12.11.1",
     "@types/ua-parser-js": "^0.7.32",
     "@types/vscode": "1.67.0",
-    "awesome-typescript-loader": "^2.2.1",
+    "awesome-typescript-loader": "^5.2.1",
     "concurrently": "^4.1.0",
     "jasmine": "^3.0.0",
     "jasmine-core": "~3.8.0",
