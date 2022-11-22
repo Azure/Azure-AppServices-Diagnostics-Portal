@@ -146,7 +146,7 @@ import { FabCalendarModule } from '@angular-react/fabric/lib/components/calendar
 import { FabDetailsListModule } from '@angular-react/fabric/lib/components/details-list';
 import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-field';
 import { ClientScriptViewComponent } from './components/client-script-view/client-script-view.component';
-import { GenericCategoryService } from './services/generic-category-service';
+import { GenericFeatureService } from './services/generic-feature-service';
 import { GanttChartTaskbarColorsComponent } from './components/gantt-chart-taskbar-colors/gantt-chart-taskbar-colors.component';
 
 @NgModule({
@@ -359,7 +359,7 @@ export class DiagnosticDataModule {
         AppInsightsQueryService,
         ParseResourceService,
         HighChartsHoverService,
-        GenericCategoryService,
+        GenericFeatureService,
       ],
     };
   }
