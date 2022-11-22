@@ -1,12 +1,48 @@
 <ng-template #highchartGraphView>
-<highcharts-graph [HighchartData]="selectedHighChartSeries" [chartDescription]="renderingProperties.description" [chartType]="renderingProperties.graphType" [chartOptions]="graphOptions"
-[xAxisPlotBands]="xAxisPlotBands" [zoomBehavior] = "zoomBehavior" (XAxisSelection)="onXAxisSelection($event)">
-</highcharts-graph >
+  <div
+    *ngFor="let view of graphOptions.innerMarkdownData"
+    style="margin: 1rem 0"
+  >
+    <markdown-text
+      *ngIf="view.position === InnerMarkdownPosition.AboveChart"
+      [markdownData]="view.markdownData"
+      [isMarkdownView]="true"
+    ></markdown-text>
+  </div>
+  <highcharts-graph
+    [HighchartData]="selectedHighChartSeries"
+    [chartDescription]="renderingProperties.description"
+    [chartType]="renderingProperties.graphType"
+    [chartOptions]="graphOptions"
+    [xAxisPlotBands]="xAxisPlotBands"
+    [yAxisCategories]="yAxisCategories"
+    [zoomBehavior]="zoomBehavior"
+    (XAxisSelection)="onXAxisSelection($event)"
+  >
+  </highcharts-graph>
+  <div
+    *ngFor="let view of graphOptions.innerMarkdownData"
+    style="margin: 1rem 0"
+  >
+    <markdown-text
+      *ngIf="view.position === InnerMarkdownPosition.BelowChart"
+      [markdownData]="view.markdownData"
+      [isMarkdownView]="true"
+    ></markdown-text>
+  </div>
   <div *ngIf="!selectedSeries">Loading Data...</div>
+  <gantt-chart-taskbar-colors
+    *ngIf="graphOptions?.taskBar?.useCustomColor && !!formattedGanttChartData.length"
+    [formattedGanttChartData]="formattedGanttChartData"
+    [graphOptions]="graphOptions"
+  ></gantt-chart-taskbar-colors>
 </ng-template>
 
-<data-container *ngIf="renderingProperties.title; else noContainerHighChart" [title]="renderingProperties.title"
-    [description]="renderingProperties.description">
+<data-container
+  *ngIf="renderingProperties.title; else noContainerHighChart"
+  [title]="renderingProperties.title"
+  [description]="renderingProperties.description"
+>
   <ng-container *ngTemplateOutlet="highchartGraphView"></ng-container>
 </data-container>
 
