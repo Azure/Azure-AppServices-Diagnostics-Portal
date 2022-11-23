@@ -358,7 +358,7 @@ export class TimeSeriesGraphComponent
 
       value.forEach((data: any) => {
         xAxisData.push({
-          id: data[customTooltipColumnName] || null,
+          id: data[customTooltipColumnName] || key,
           x2: Date.parse(data.EndTime),
           x: Date.parse(data[this.timestampColumnName]),
           y: yIndex,
