@@ -107,13 +107,16 @@ export class TimeSeriesGraphComponent
   }
 
   private _processDiagnosticDataForGanttChart(diagnosticData: DiagnosticData) {
-    const {
-      taskBar: { customColorColumnName, useCustomColor },
-      timeGrain,
-    } = this.graphOptions || {};
-    const { columns, rows } = diagnosticData.table || {};
+    const { timeGrain } = this.graphOptions || {};
+    const { columns, rows } = diagnosticData?.table || {};
+    const { eventStatusColumnName, seriesColumns } =
+      this.renderingProperties || {};
 
-    if (!this.renderingProperties?.seriesColumns?.length || timeGrain == null)
+    if (
+      !seriesColumns?.length ||
+      eventStatusColumnName == null ||
+      timeGrain == null
+    )
       return;
 
     const { columnName: yAxisColumnName } =
@@ -139,9 +142,8 @@ export class TimeSeriesGraphComponent
 
         if (
           diffInMinutes !== 0 ||
-          (useCustomColor &&
-            data[customColorColumnName] !==
-              lastElementInChartRowDataArray[customColorColumnName])
+          data[eventStatusColumnName] !==
+            lastElementInChartRowDataArray[eventStatusColumnName]
         ) {
           chartRowData.push({
             ...data,
@@ -344,13 +346,9 @@ export class TimeSeriesGraphComponent
   }
 
   private _processCategoriesAndSeriesData() {
-    const {
-      taskBar: {
-        useCustomColor,
-        customTooltipColumnName,
-        customColorColumnName,
-      },
-    } = this.graphOptions || {};
+    const { useCustomColor, customTooltipColumnName, customColorColumnName } =
+      this.graphOptions?.taskBar || {};
+
     let yIndex = 0;
     const xAxisData = [],
       yAxisCategories = [];
