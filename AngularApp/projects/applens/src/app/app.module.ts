@@ -173,8 +173,7 @@ export const Routes = RouterModule.forRoot([
     FabPanelModule,
     FabDialogModule,
     FabButtonModule,
-    FabChoiceGroupModule,
-    HighchartsChartModule,
+    FabChoiceGroupModule
   ],
   providers: [
     {
