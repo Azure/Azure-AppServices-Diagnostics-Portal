@@ -140,6 +140,7 @@ export * from './lib/components/vertical-display-list/vertical-display-list-item
 export * from './lib/components/web-search/web-search.component'
 export * from './lib/modules/fab-coachmark/coachmark.component'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.component'
+export * from './lib/components/gantt-chart-taskbar-colors/gantt-chart-taskbar-colors.component'
 
 export * from './lib/modules/fab-coachmark/coachmark.module'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.module'
