@@ -647,27 +647,27 @@ export class HighchartsGraphComponent implements OnInit {
         }
     }
 
-  private _updateObject(obj: Object, replacement: any): Object {
-    // The option keys are different from nvd3. eg. In order to override default colors,
-    // use "colors" as key  instead of "color"
-    Object.keys(replacement).forEach((key) => {
-      const subItem = obj[key];
-      const replace = replacement[key];
+    private _updateObject(obj: Object, replacement: any): Object {
+        // The option keys are different from nvd3. eg. In order to override default colors,
+        // use "colors" as key  instead of "color"
+        Object.keys(replacement).forEach(key => {
+            const subItem = obj[key];
+            const replace = replacement[key];
 
-      // Below returns true if subItem is an object
-      if (subItem === Object(subItem)) {
-        obj[key] = this._updateObject(subItem, replace);
-      } else {
-        // Special handling for the key to override colors. In highchart library, the key should be "colors" instead of "colors"
-        if (key === 'color' || key === 'colors') {
-          key = 'colors';
-        }
-        obj[key] = replace;
-      }
-    });
+            // Below returns true if subItem is an object
+            if (subItem === Object(subItem)) {
+                obj[key] = this._updateObject(subItem, replace);
+            } else {
+                // Special handling for the key to override colors. In highchart library, the key should be "colors" instead of "colors"
+                if (key === "color" || key === "colors") {
+                    key = "colors";
+                }
+                obj[key] = replace;
+            }
+        });
 
-    return obj;
-  }
+        return obj;
+    }
 
     private _setOptions() {
         this.options = {
