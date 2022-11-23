@@ -1074,6 +1074,7 @@ export class HighchartsGraphComponent implements OnInit {
           },
           useHTML: true,
         },
+        reversed: this.isGanttChart,
       },
       series: this.HighchartData,
     } as Highcharts.Options;
