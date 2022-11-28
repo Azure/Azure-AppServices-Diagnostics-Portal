@@ -91,8 +91,8 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
         const { columnName: yAxisColumnName } =
         this._getCounterValueColumns()[0] || {};
 
-        const timestampColumn = this._getTimeStampColumnIndex();
-        this.timestampColumnName = columns[timestampColumn].columnName;
+        const timestampColumnIndex = this._getTimeStampColumnIndex();
+        this.timestampColumnName = columns[timestampColumnIndex].columnName;
 
         this.formattedGanttChartData = this._getFormattedChartData(rows, columns);
         this.formattedGanttChartData.forEach((data) => {
@@ -114,26 +114,32 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
             data[eventStatusColumnName] !==
                 lastElementInChartRowDataArray[eventStatusColumnName]
             ) {
-            chartRowData.push({
-                ...data,
-                [this.timestampColumnName]: momentNs.utc(currentTime).toDate(),
-                EndTime: momentNs.utc(currentTime).add(timeGrain, 'm').toDate(),
-            });
-            } else {
-            lastElementInChartRowDataArray.EndTime = momentNs
-                .utc(currentTime)
-                .add(timeGrain, 'm')
-                .toDate();
-            }
-        } else {
-            this.mappedGanttChartData[key] = [
-            {
-                ...data,
-                [this.timestampColumnName]: momentNs.utc(currentTime).toDate(),
-                EndTime: momentNs.utc(currentTime).add(timeGrain, 'm').toDate(),
-            },
-            ];
-        }
+                chartRowData.push({
+                    ...data,
+                    [this.timestampColumnName]: momentNs.utc(currentTime).toISOString(),
+                    EndTime: momentNs
+                      .utc(currentTime)
+                      .add(timeGrain, 'm')
+                      .toISOString(),
+                  });
+                } else {
+                  lastElementInChartRowDataArray.EndTime = momentNs
+                    .utc(currentTime)
+                    .add(timeGrain, 'm')
+                    .toISOString();
+                }
+              } else {
+                this.mappedGanttChartData[key] = [
+                  {
+                    ...data,
+                    [this.timestampColumnName]: momentNs.utc(currentTime).toISOString(),
+                    EndTime: momentNs
+                      .utc(currentTime)
+                      .add(timeGrain, 'm')
+                      .toISOString(),
+                  },
+                ];
+              }
         });
     }
 
@@ -325,8 +331,19 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
     }
 
     private _getDifferenceInMinutes(currentTime: string, endTime: string) {
-        const diffInMilliseconds = +new Date(currentTime) - +new Date(endTime);
-        return Math.round(((diffInMilliseconds % 86400000) % 3600000) / 60000);
+        const diff =
+          (this._getTimeStamp(currentTime) - this._getTimeStamp(endTime)) /
+          1000 /
+          60;
+        return Math.abs(Math.round(diff));
+      }
+    
+    private _getTimeStamp(datetimeString: string) {
+        const dateTimeWithoutMilliseconds = datetimeString.includes('.')
+            ? datetimeString.split('.')[0] + 'Z'
+            : datetimeString;
+
+        return new Date(dateTimeWithoutMilliseconds).getTime();
     }
 
     private _getGreatestCommonFactor(timestamp: momentNs.Moment): momentNs.Duration {
