@@ -109,7 +109,7 @@ namespace AppLensV3.Services
         public IncidentAssistanceService(IConfiguration configuration, IKustoQueryService kustoQueryService)
         {
             _kustoQueryService = kustoQueryService;
-            if (!bool.TryParse(configuration["IncidentAssistance:IsEnabled"].ToString(), out isEnabled))
+            if (!bool.TryParse(configuration["IncidentAssistance:Enabled"].ToString(), out isEnabled))
             {
                 isEnabled = false;
             }

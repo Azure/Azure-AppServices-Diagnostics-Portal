@@ -29,7 +29,7 @@ namespace AppLensV3
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("appsettings.PublicAzure.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{System.Environment.GetEnvironmentVariable("CloudDomain") ?? "PublicAzure"}.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
 
@@ -63,32 +63,46 @@ namespace AppLensV3
 
             services.AddSingleton<IObserverClientService, SupportObserverClientService>();
             services.AddSingleton<IDiagnosticClientService, DiagnosticClient>();
-            services.AddSingleton<IGithubClientService, GithubClientService>();
 
-            if (Configuration.GetValue("Kusto:Enabled", false))
-            {
-                services.AddSingleton<IKustoAuthProvider, KustoAuthProvider>();
-                services.AddSingleton<IKustoQueryService, KustoSDKClientQueryService>();
-            }
+            services.AddSingletonWhenEnabled<IGithubClientService, GithubClientService>(Configuration, "Github");
 
-            services.AddSingleton<IOutageCommunicationService, OutageCommunicationService>();
-            services.AddSingleton<ILocalDevelopmentClientService, LocalDevelopmentClientService>();
-            services.AddSingleton<IEmailNotificationService, EmailNotificationService>();
-            services.AddSingleton<IGraphClientService, GraphClientService>();
-            services.AddSingleton<ISupportTopicService, SupportTopicService>();
-            services.AddSingleton<ISelfHelpContentService, SelfHelpContentService>();
-            services.AddSingleton<ICosmosDBHandlerBase<ResourceConfig>, CosmosDBHandler<ResourceConfig>>();
-            services.AddSingleton<IIncidentAssistanceService, IncidentAssistanceService>();
-            services.AddSingleton<IResourceConfigService, ResourceConfigService>();
-            services.AddSingleton<IHealthCheckService, HealthCheckService>();
-            services.AddSingleton<ISurveysService, SurveysService>();
-            services.AddSingleton<ICosmosDBUserSettingHandler, CosmosDBUserSettingHandler>();
-            services.AddSingleton<IDetectorGistTemplateService, TemplateService>();
+            services.AddSingletonWhenEnabled<IKustoAuthProvider, KustoAuthProvider>(Configuration, "Kusto");
+
+            services.AddSingletonWhenEnabled<IKustoQueryService, KustoSDKClientQueryService>(Configuration, "Kusto");
+
+            services.AddSingletonWhenEnabled<IOutageCommunicationService, OutageCommunicationService>(Configuration, "OutageComms");
+
+            services.AddSingletonWhenEnabled<ILocalDevelopmentClientService, LocalDevelopmentClientService>(Configuration, "LocalDevelopment");
+
+            services.AddSingletonWhenEnabled<IEmailNotificationService, EmailNotificationService, NullableEmailNotificationService>(Configuration, "EmailNotification");
+
+            services.AddSingletonWhenEnabled<IGraphClientService, GraphClientService, NullableGraphClientService>(Configuration, "Graph");
+
+            services.AddSingletonWhenEnabled<ISupportTopicService, SupportTopicService>(Configuration, "SupportTopicService");
+
+            services.AddSingletonWhenEnabled<ISelfHelpContentService, SelfHelpContentService>(Configuration, "SelfHelpContent");
+
+            services.AddSingletonWhenEnabled<ICosmosDBHandlerBase<ResourceConfig>, CosmosDBHandler<ResourceConfig>>(Configuration, "ApplensTemporaryAccess");
+
+            services.AddSingletonWhenEnabled<IIncidentAssistanceService, IncidentAssistanceService, NullableIncidentAssistanceService>(Configuration, "SelfHelpContent");
+
+            services.AddSingletonWhenEnabled<IResourceConfigService, ResourceConfigService, NullableResourceConfigService>(Configuration, "ResourceConfig");
+
+            services.AddSingletonWhenEnabled<IHealthCheckService, HealthCheckService>(Configuration, "HealthCheckSettings");
+
+            services.AddSingletonWhenEnabled<ISurveysService, SurveysService, NullableSurveysService>(Configuration, "Surveys");
+
+            services.AddSingletonWhenEnabled<ICosmosDBUserSettingHandler, CosmosDBUserSettingHandler>(Configuration, "UserSetting");
+
+            services.AddSingletonWhenEnabled<IDetectorGistTemplateService, TemplateService>(Configuration, "DetectorGistTemplateService");
 
             services.AddMemoryCache();
             services.AddMvc().AddNewtonsoftJson();
 
-            GraphTokenService.Instance.Initialize(Configuration);
+            if (Configuration.GetValue("Graph:Enabled", false))
+            {
+                GraphTokenService.Instance.Initialize(Configuration);
+            }
 
             // If we are using runtime host directly
             DiagnosticClientToken.Instance.Initialize(Configuration);
@@ -129,15 +143,15 @@ namespace AppLensV3
             {
                 services.AddSingleton<IAuthorizationHandler, SecurityGroupHandler>();
             }
-            services.AddSingleton<IAuthorizationHandler, DefaultAuthorizationHandler>();
 
+            services.AddSingleton<IAuthorizationHandler, DefaultAuthorizationHandler>();
 
             if (Configuration["ServerMode"] == "internal")
             {
                 services.AddTransient<IFilterProvider, LocalFilterProvider>();
             }
 
-            services.AddSingleton<IAppSvcUxDiagnosticDataService, AppSvcUxDiagnosticDataService>();
+            services.AddSingletonWhenEnabled<IAppSvcUxDiagnosticDataService, AppSvcUxDiagnosticDataService, NullableAppSvcUxDiagnosticDataService>(Configuration, "LocationPlacementIdService");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

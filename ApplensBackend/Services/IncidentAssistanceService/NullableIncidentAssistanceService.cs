@@ -7,7 +7,7 @@ using System.Net.Http;
 
 namespace AppLensV3.Services
 {
-    public class NationalCloudIncidentAssistanceService : IIncidentAssistanceService
+    public class NullableIncidentAssistanceService : IIncidentAssistanceService
     {
         public async Task<bool> IsEnabled()
         {

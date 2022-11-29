@@ -47,7 +47,7 @@ namespace AppLensV3.Services
 
         public SurveysService(IConfiguration configuration)
         {
-            if (!bool.TryParse(configuration["Surveys:IsEnabled"].ToString(), out isEnabled))
+            if (!bool.TryParse(configuration["Surveys:Enabled"].ToString(), out isEnabled))
             {
                 isEnabled = false;
             }
