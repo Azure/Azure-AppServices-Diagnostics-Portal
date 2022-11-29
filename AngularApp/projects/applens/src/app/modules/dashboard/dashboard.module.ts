@@ -58,7 +58,7 @@ import { L2SideNavComponent } from './l2-side-nav/l2-side-nav.component';
 import { ApplensCommandBarService } from './services/applens-command-bar.service';
 import { ApplensGlobal as ApplensGlobals } from '../../applens-global';
 import { ResourceInfo } from '../../shared/models/resources';
-import { catchError, flatMap, map, take } from 'rxjs/operators';
+import { catchError, map, mergeMap, take } from 'rxjs/operators';
 import { RecentResource } from '../../shared/models/user-setting';
 import { UserSettingService } from './services/user-setting.service';
 import { ApplensDocsComponent } from './applens-docs/applens-docs.component';
@@ -103,8 +103,8 @@ export class InitResolver implements Resolve<Observable<ResourceInfo>>{
         this._detectorControlService.updateTimePickerInfo({
             selectedKey: TimePickerOptions.Custom,
             selectedText: TimePickerOptions.Custom,
-            startDate: new Date(startTime),
-            endDate: new Date(endTime)
+            startDate: new Date(this._detectorControlService.startTimeString),
+            endDate: new Date(this._detectorControlService.endTimeString)
         });
 
         //Wait for getting UserSetting and update landingPage info before going to dashboard/detector page
@@ -117,9 +117,9 @@ export class InitResolver implements Resolve<Observable<ResourceInfo>>{
                 queryParams: queryParams
             };
             return resourceInfo;
-        }), flatMap(resourceInfo => {
+        }), mergeMap(resourceInfo => {
             return this._userSettingService.getUserSetting().pipe(take(1), catchError(_ => of(null)), map(_ => resourceInfo));
-        }), flatMap(resourceInfo => {
+        }), mergeMap(resourceInfo => {
             return this._userSettingService.updateLandingInfo(recentResource).pipe(catchError(_ => of(null)), map(_ => resourceInfo));
         }));
     }
