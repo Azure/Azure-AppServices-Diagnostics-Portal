@@ -4,9 +4,11 @@ import { numberFormat } from 'highcharts';
 import { resetControlledWarnings } from 'office-ui-fabric-react';
 import { forkJoin } from 'rxjs';
 import { ApplensGlobal } from '../../../applens-global';
+import { DocumentationRepoSettings } from '../../../shared/models/documentationRepoSettings';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { applensDocs } from '../../../shared/utilities/applens-docs-constant';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
+import { ApplensDocumentationService } from '../services/applens-documentation.service';
 
 export enum ComponentType {
   Markdown,
@@ -23,7 +25,7 @@ export enum ComponentType {
 export class ApplensDocsComponent implements OnInit {
   applensDocs = applensDocs;
   constructor(private _applensGlobal:ApplensGlobal, private diagnosticApiService: ApplensDiagnosticService, private ref: ChangeDetectorRef,
-    private _activatedRoute: ActivatedRoute, private _diagnosticApi: DiagnosticApiService, private _router: Router) {
+    private _activatedRoute: ActivatedRoute, private _diagnosticApi: DiagnosticApiService, private _router: Router, private _documentationService: ApplensDocumentationService) {
    }
 
   ComponentType = ComponentType;
@@ -52,30 +54,31 @@ export class ApplensDocsComponent implements OnInit {
 
   componentsList: {Type: Number, Component: Number}[] = [];
 
-  docsRepoRoot: string = `AppLensDocumentation`;
+  documentationRepoSettings: DocumentationRepoSettings;
   docsBranch = null;
-  docsResource: string = `AppServiceDiagnostics`
-  docStagingBranch: string = 'DocumentationStagingBranch';
   
   ngOnInit() {
-      this._applensGlobal.updateHeader("");
-      this._activatedRoute.paramMap.subscribe(params => {
-        this.reset();
-        this.category = params.get('category');
-        this.doc = params.get('doc');
-        this._diagnosticApi.isStaging().subscribe(isStaging => {
-          if (isStaging){this.docsBranch = this.docStagingBranch;}
-          this.diagnosticApiService.getDetectorCode(`${this.docsRepoRoot}/${this.category}/${this.doc}/${'index'}`, this.docsBranch, this.docsResource).subscribe(x=>{
-            this.populateComponentsList(x);
-            this.markdownCode = x.split(this.customTagRegEx);
-            this.folders = this.getCodeFolders(x);
-            this.folders.forEach(f => {
-              this.getFiles(f);
-            });
-            this.inPageLinks = this.getInPageLinks(x);
+    this._applensGlobal.updateHeader("");
+    this._activatedRoute.paramMap.subscribe(params => {
+      this.reset();
+      this.category = params.get('category');
+      this.doc = params.get('doc');
+
+      this._documentationService.getDocsRepoSettings().subscribe(settings => {
+        this.documentationRepoSettings = settings;
+
+        if (this.documentationRepoSettings.isStaging) { this.docsBranch = this.documentationRepoSettings.stagingBranch; }
+        this.diagnosticApiService.getDetectorCode(`${this.documentationRepoSettings.root}/${this.category}/${this.doc}/${'index'}`, this.docsBranch, this.documentationRepoSettings.resourceId).subscribe(x => {
+          this.populateComponentsList(x);
+          this.markdownCode = x.split(this.customTagRegEx);
+          this.folders = this.getCodeFolders(x);
+          this.folders.forEach(f => {
+            this.getFiles(f);
           });
+          this.inPageLinks = this.getInPageLinks(x);
         });
       });
+    });
   }
   reset(){
     this.componentsList = [];
@@ -134,13 +137,13 @@ export class ApplensDocsComponent implements OnInit {
     let fileIndex = this.files.length;
     this.files.push([]);
     this.fileNames.push([]);
-    this.diagnosticApiService.getDevOpsTree(`${this.docsRepoRoot}/${this.category}/${this.doc}/${folderName}`, this.docsBranch, this.docsResource).subscribe(names => {
+    this.diagnosticApiService.getDevOpsTree(`${this.documentationRepoSettings.root}/${this.category}/${this.doc}/${folderName}`, this.docsBranch, this.documentationRepoSettings.resourceId).subscribe(names => {
       names.files.forEach(element => {
         this.fileNames[fileIndex].push(element.split('/').at(-1));
       });
       let getFileObservables = [];
       this.fileNames[fileIndex].forEach(f => {
-        getFileObservables.push(this.diagnosticApiService.getDetectorCode(`${this.docsRepoRoot}/${this.category}/${this.doc}/${folderName}/${f}`, this.docsBranch, this.docsResource)); 
+        getFileObservables.push(this.diagnosticApiService.getDetectorCode(`${this.documentationRepoSettings.root}/${this.category}/${this.doc}/${folderName}/${f}`, this.docsBranch, this.documentationRepoSettings.resourceId)); 
       });
       forkJoin(getFileObservables).subscribe(fileContent => {
         this.files[fileIndex] = fileContent;

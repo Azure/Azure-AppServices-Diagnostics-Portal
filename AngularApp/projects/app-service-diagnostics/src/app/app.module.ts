@@ -2,7 +2,7 @@ import {
   CommsService, DiagnosticDataModule, DiagnosticService, DiagnosticSiteService,
   PUBLIC_DEV_CONFIGURATION, PUBLIC_PROD_CONFIGURATION, SolutionService, SettingsService,
   BackendCtrlQueryService, GenieGlobals, VersionService, PortalActionGenericService,
-  KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService
+  KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService, GenericFeatureService
 } from 'diagnostic-data';
 import { SiteService } from 'projects/app-service-diagnostics/src/app/shared/services/site.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -102,7 +102,7 @@ import { ClientScriptService } from './shared-v2/services/client-script.service'
     ContentService,
     ClientScriptService,
     CategoryService,
-    FeatureService,
+    { provide: GenericFeatureService, useExisting: FeatureService },
     LoggingV2Service,
     SupportTopicService,
     ResourceResolver,

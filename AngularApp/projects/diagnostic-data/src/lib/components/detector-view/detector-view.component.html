@@ -14,14 +14,9 @@
   </div>
 </h2>
 
-<div *ngIf="detectorDataLocalCopy" class="detector-control">
-  <!-- Debug -->
-  <!-- <div>isAnalysisView: {{isAnalysisView}}</div>
-  <div>hideDetectorHeader: {{hideDetectorHeader}}</div>
-  <div>isPublic: {{isPublic}}</div>
-  <div>isSystemInvoker: {{isSystemInvoker}}</div> -->
-  <!-- <div>supportsDownTime {{supportsDownTime}}</div> -->
+<a *ngIf="breadCrumb &&breadCrumb.name && isPublic" (click)="navigateForBreadCrumb()" (keyup.enter)="navigateForBreadCrumb()">Go Back to {{breadCrumb.name}}</a>
 
+<div *ngIf="detectorDataLocalCopy" class="detector-control">
   <div *ngIf="!hideDetectorControl && !insideDetectorList">
     <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>
   </div>

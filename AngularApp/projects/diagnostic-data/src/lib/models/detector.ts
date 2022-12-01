@@ -70,7 +70,6 @@ export interface ExtendDetectorMetaData extends DetectorMetaDataBase {
 export interface DataProviderMetadata {
     providerName: string;
     propertyBag: PropertyBag[];
-
 }
 
 export interface PropertyBag {
@@ -135,7 +134,8 @@ export enum TimeSeriesType {
     LineGraph = 0,
     BarGraph,
     StackedAreaGraph,
-    StackedBarGraph
+    StackedBarGraph,
+    GanttChart
 }
 
 export class DataTableDataType {
@@ -169,7 +169,6 @@ export interface DataTableRendering extends Rendering {
     searchPlaceholder: string;
 }
 
-
 export interface TimeSeriesRendering extends Rendering {
     defaultValue: number;
     graphType: TimeSeriesType;
@@ -178,6 +177,7 @@ export interface TimeSeriesRendering extends Rendering {
     counterColumnName: string;
     seriesColumns: string[];
     metricType: MetricType;
+    eventStatusColumnName: string;
 }
 
 export interface TimeSeriesPerInstanceRendering extends Rendering {
@@ -261,3 +261,8 @@ export const DowntimeInteractionSource = {
     DefaultFromQueryParams: 'DefaultFromQueryParams',
     DefaultFromUI: 'DefaultFromUI'
 };
+
+export enum GanttChartInnerMarkdownPosition {
+    BelowChart = 0,
+    AboveChart,
+}

@@ -333,6 +333,9 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   }
   showBranchInfo:boolean = false;
   owners: string[] = [];
+  //to direct system invoker detectors to the correct repo
+  SYSTEM_INVOKER_RESOURCE_ID: string = '';
+  SYSTEM_INVOKER_MAIN_BRANCH: string = '';
 
   codeOnDefaultBranch: boolean = false;
   constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService, private detectorGistApiService: DetectorGistApiService,
@@ -420,13 +423,27 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.tempBranch = event.option.key;
   }
 
-  updateBranch() {
+  systemInvokerUpdateBranch(){
     this.Branch = this.tempBranch;
     this.displayBranch = this.Branch;
-    this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`, this.Branch, this.resourceId).subscribe(x => {
+    let sysId = this.mode === DevelopMode.EditMonitoring ? '__monitoring' : `__analytics`;
+    this.diagnosticApiService.getDetectorCode(`${sysId.toLowerCase()}/${sysId.toLowerCase()}.csx`, this.Branch, this.SYSTEM_INVOKER_RESOURCE_ID).subscribe(x => {
       this.code = x;
-      this.lastSavedVersion = this.code
+      this.lastSavedVersion = this.code;
     });
+  }
+
+  updateBranch() {
+    if (this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics)
+      this.systemInvokerUpdateBranch();
+    else {
+      this.Branch = this.tempBranch;
+      this.displayBranch = this.Branch;
+      this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`, this.Branch, this.resourceId).subscribe(x => {
+        this.code = x;
+        this.lastSavedVersion = this.code
+      });
+    }
     this.closeCallout();
   }
 
@@ -482,14 +499,24 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
   startUp(){
     this.detectorGraduation = true;
+    let isSystemInvoker: boolean = this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics;
     this.branchInput = this._activatedRoute.snapshot.queryParams['branchInput'];
+    if(isSystemInvoker){
+      this._diagnosticApi.getAppSetting("SystemInvokers:ResourceIDString").subscribe(resource => {
+        this.SYSTEM_INVOKER_RESOURCE_ID = resource;
+      });
+      this._diagnosticApi.getAppSetting("SystemInvokers:DiagnosticsMainBranch").subscribe(bn => {
+        this.SYSTEM_INVOKER_MAIN_BRANCH = bn;
+      });
+    }
+    
     this.diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(devopsConfig => {
       this.detectorGraduation = devopsConfig.graduationEnabled;
       this.DevopsConfig = new DevopsConfig(devopsConfig);
 
       this.commitHistoryLink = (devopsConfig.folderPath === "/") ? `https://dev.azure.com/${devopsConfig.organization}/${devopsConfig.project}/_git/${devopsConfig.repository}?path=${devopsConfig.folderPath}${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&_a=history` : `https://dev.azure.com/${devopsConfig.organization}/${devopsConfig.project}/_git/${devopsConfig.repository}?path=${devopsConfig.folderPath}/${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&_a=history`;
 
-      this.deleteVisibilityStyle = !(this.detectorGraduation === true && this.mode !== DevelopMode.Create) ? { display: "none" } : {};
+      this.deleteVisibilityStyle = !(this.detectorGraduation === true && this.mode === DevelopMode.Edit) ? { display: "none" } : {};
       this.saveButtonVisibilityStyle = !(this.detectorGraduation === true ) ? { display: "none" } : {};
       this.commitHistoryVisibilityStyle = !(this.detectorGraduation === true && this.mode !== DevelopMode.Create) ? { display: "none" } : {};
 
@@ -511,7 +538,9 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
         }
       });
 
-      if (this.detectorGraduation)
+      if (isSystemInvoker)
+        this.getSystemInvokerBranchList();
+      else if (this.detectorGraduation)
         this.getBranchList();
 
       if (!this.initialized && !this.detectorGraduation) {
@@ -541,6 +570,67 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     });
   }
 
+  getSystemInvokerBranchList(){
+    this.optionsForSingleChoice = [];
+    //callout stops working if showBranches ever becomes empty
+    this.showBranches = [{key: "", text: ""}];
+    let sysId = this.mode === DevelopMode.EditMonitoring ? '__monitoring' : `__analytics`;
+
+    this.diagnosticApiService.getBranches(this.SYSTEM_INVOKER_RESOURCE_ID).subscribe(branches => {
+      var branchRegEx = new RegExp(`^dev\/.*\/detector\/${sysId}$`, "i");
+      branches.forEach(option => {
+        this.optionsForSingleChoice.push({
+          key: String(option["branchName"]),
+          text: String(option["branchName"])
+        });
+
+        if (option["isMainBranch"].toLowerCase() === "true") {
+          this.defaultBranch = String(option["branchName"]);
+        }
+        if ((option["isMainBranch"].toLowerCase() === "true")) {
+          this.showBranches.push({
+            key: String(option["branchName"]),
+            text: String(option["branchName"])
+          });
+        }
+      });
+
+      this.optionsForSingleChoice.forEach(branch => {
+        if (branchRegEx.test(branch.text) && sysId.toLowerCase() != "") {
+          this.showBranches.push({
+            key: String(branch.key),
+            text: String(`${branch.text.split("/")[1]} : ${branch.text.split("/")[3]}`)
+          });
+        }
+      });
+
+      // remove temp value from showBranches
+      this.showBranches = this.showBranches.filter(branchName => {
+        return branchName.key != '';
+      });
+
+      if (this.showBranches.length < 1) {
+        this.noBranchesAvailable();
+      }
+      else {
+        var targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${sysId.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${sysId.toLowerCase()}`;
+        
+          this.Branch = this.targetInShowBranches(targetBranch) ? targetBranch : this.showBranches[0].key;
+          this.displayBranch = this.Branch;
+          this.tempBranch = this.Branch;
+        this.updateBranch();
+        this.showBranchInfo = true;
+      }
+
+      if (!this.initialized) {
+        this.initialize();
+        this.initialized = true;
+        this._telemetryService.logPageView(TelemetryEventNames.OnboardingFlowLoaded, {});
+      }
+    });
+    
+  }
+  
   getBranchList() {
     this.optionsForSingleChoice = [];
     //callout stops working if showBranches ever becomes empty
@@ -1435,6 +1525,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.modalPublishingButtonDisabled = true;
     this.modalPublishingButtonText = this.detectorGraduation ? "Sending PR" : "Publishing";
     var isOriginalCodeMarkedPublic: boolean = this.IsDetectorMarkedPublic(this.originalCode);
+
     if (this.detectorGraduation) {
       this.gradPublish();
     }
@@ -1498,8 +1589,10 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
     //var pushToMain = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && this.queryResponse.invocationOutput['appFilter']['InternalOnly'] === 'True' && !this.IsDetectorMarkedPublic(this.originalCode));
 
-    const commitType = this.mode == DevelopMode.Create && !this.isSaved || (this.useAutoMergeText && !this.codeOnDefaultBranch) ? "add" : "edit";
-    const commitMessageStart = this.mode == DevelopMode.Create && !this.isSaved || (this.useAutoMergeText && !this.codeOnDefaultBranch) ? "Adding" : "Editing";
+    let isSystemInvoker: boolean = this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics;
+    
+    const commitType = (this.mode == DevelopMode.Create && !this.isSaved || (this.useAutoMergeText && !this.codeOnDefaultBranch) && !isSystemInvoker) ? "add" : "edit";
+    const commitMessageStart = (this.mode == DevelopMode.Create && !this.isSaved || (this.useAutoMergeText && !this.codeOnDefaultBranch) && !isSystemInvoker) ? "Adding" : "Editing";
 
     let gradPublishFiles: string[] = [
       this.publishingPackage.codeString,
@@ -1522,20 +1615,19 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       gradPublishFiles.push(reviewers);
     }
 
-    var requestBranch = this.Branch;
-    if (this.useAutoMergeText) {
+    var requestBranch = isSystemInvoker ? `dev/${this.userName.split("@")[0]}/detector/${this.publishingPackage.id.toLowerCase()}` : this.Branch;
+    if (this.useAutoMergeText && !isSystemInvoker) {
       requestBranch = this.defaultBranch;
       this.useAutoMergeText = true;
     }
-
     
     let link = this.gistMode ? `${this.PPEHostname}/${this.resourceId}/gists/${this.publishingPackage.id}?branchInput=${this.Branch}` : `${this.PPEHostname}/${this.resourceId}/detectors/${this.publishingPackage.id}/edit?branchInput=${this.Branch}`;
     let description = `This Pull Request was created via AppLens. To make edits, go to ${link}`;
-    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`, commitType, this.resourceId);
-    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(requestBranch, this.defaultBranch, this.PRTitle, this.resourceId, this.owners, description);
+    const DetectorObservable = isSystemInvoker ? this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`, commitType, this.SYSTEM_INVOKER_RESOURCE_ID) : this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`, commitType, this.resourceId);
+    const makePullRequestObservable = isSystemInvoker ? this.diagnosticApiService.makePullRequest(requestBranch, this.SYSTEM_INVOKER_MAIN_BRANCH, this.PRTitle, this.SYSTEM_INVOKER_RESOURCE_ID, this.owners, description) : this.diagnosticApiService.makePullRequest(requestBranch, this.defaultBranch, this.PRTitle, this.resourceId, this.owners, description);
 
     DetectorObservable.subscribe(_ => {
-      if (!this.useAutoMergeText) {
+      if (!this.useAutoMergeText || isSystemInvoker) {
         makePullRequestObservable.subscribe(_ => {
           this.PRLink = `${_["webUrl"]}/pullrequest/${_["prId"]}`
           this.publishSuccess = true;
@@ -1632,6 +1724,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.setTargetBranch(this.saveTempId);
     this.publishDialogHidden = true;
 
+    let isSystemInvoker: boolean = this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics;
+
     const commitType = this.mode == DevelopMode.Create && !this.isSaved ? "add" : "edit";
     const commitMessageStart = this.mode == DevelopMode.Create && !this.isSaved ? "Adding" : "Editing";
 
@@ -1662,14 +1756,19 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       gradPublishFiles.push(reviewers);
     }
 
-    const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${idForSave} Author : ${this.userName}`, commitType, this.resourceId);
+    let invokerbranch = '';
+    if(isSystemInvoker){
+      invokerbranch = this.mode === DevelopMode.EditMonitoring ? `dev/${this.userName.split("@")[0]}/detector/__monitoring` : `dev/${this.userName.split("@")[0]}/detector/__analytics`
+    }
+
+    const DetectorObservable = isSystemInvoker ? this.diagnosticApiService.pushDetectorChanges(invokerbranch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${idForSave} Author : ${this.userName}`, commitType, this.SYSTEM_INVOKER_RESOURCE_ID) : this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${idForSave} Author : ${this.userName}`, commitType, this.resourceId);
     
     this.saveButtonText = "Saving";
     this.publishDialogHidden = true;
     this.disableSaveButton();
 
     // successfully ran or edit mode
-    if (!!this.publishingPackage || this.mode == DevelopMode.Edit){
+    if (!!this.publishingPackage || this.mode != DevelopMode.Create){
       DetectorObservable.subscribe(_ => {
         this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${idForSave}/${idForSave}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${this.Branch}`;
         this.saveSuccess = true;
@@ -1918,12 +2017,12 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       }
       case DevelopMode.EditMonitoring: {
         this.fileName = '__monitoring.csx';
-        detectorFile = this.githubService.getSourceFile("__monitoring");
+        detectorFile = this.diagnosticApiService.getDetectorCode('__monitoring/__monitoring.csx', this.Branch, this.SYSTEM_INVOKER_RESOURCE_ID);
         break;
       }
       case DevelopMode.EditAnalytics: {
         this.fileName = '__analytics.csx';
-        detectorFile = this.githubService.getSourceFile("__analytics");
+        detectorFile = this.diagnosticApiService.getDetectorCode('__analytics/__analytics.csx', this.Branch, this.SYSTEM_INVOKER_RESOURCE_ID);
         break;
       }
     }

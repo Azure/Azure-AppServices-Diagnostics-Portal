@@ -90,6 +90,7 @@ import { CreateWorkflowComponent } from './workflow/create-workflow/create-workf
 import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
 import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
 import { ClientScriptService } from './services/client-script.service';
+import { ApplensDocumentationService } from './services/applens-documentation.service';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -460,6 +461,7 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         ApplensSupportTopicService,
         ApplensContentService,
         ApplensCommandBarService,
+        ApplensDocumentationService,
         InitResolver,
         ApplensGlobals,
         BreadcrumbService,

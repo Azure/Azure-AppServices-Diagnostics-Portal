@@ -31,12 +31,13 @@ import * as momentNs from 'moment';
 const moment = momentNs;
 
 import { ILinkProps, PanelType } from 'office-ui-fabric-react';
-import { GenericBreadcrumbService } from '../../services/generic-breadcrumb.service';
+import { BreadcrumbNavigationItem, GenericBreadcrumbService } from '../../services/generic-breadcrumb.service';
 import { GenericUserSettingService } from '../../services/generic-user-setting.service';
+import { GenericFeatureService } from '../../services/generic-feature-service';
 
 const WAIT_TIME_IN_SECONDS_TO_ALLOW_DOWNTIME_INTERACTION: number = 58;
 const PERCENT_CHILD_DETECTORS_COMPLETED_TO_ALLOW_DOWNTIME_INTERACTION: number = 0.9;
-const DEFAULT_DESCRIPTION_FOR_DETECTORS_WITH_NO_INSIGHT:string = 'View more details here';
+const DEFAULT_DESCRIPTION_FOR_DETECTORS_WITH_NO_INSIGHT: string = 'View more details here';
 
 @Component({
     selector: 'detector-list-analysis',
@@ -126,14 +127,14 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
     solutionTitle: string = "";
     expandIssuedAnalysisChecks: boolean = false;
-    allDetectors:DetectorMetaData[] = [];
-    
+    allDetectors: DetectorMetaData[] = [];
+
 
     constructor(public _activatedRoute: ActivatedRoute, private _router: Router,
         private _diagnosticService: DiagnosticService, private _detectorControl: DetectorControlService,
         protected telemetryService: TelemetryService, public _appInsightsService: AppInsightsQueryService,
         private _supportTopicService: GenericSupportTopicService, protected _globals: GenieGlobals, private _solutionService: SolutionService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, private _genericBreadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService) {
+        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, private _genericBreadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService, private _genericCategoryService: GenericFeatureService) {
         super(telemetryService);
         this.isPublic = config && config.isPublic;
 
@@ -353,7 +354,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                             if (this.analysisId == "supportTopicAnalysis") {
                                 this.showAppInsightsSection = false;
                                 this._diagnosticService.getDetectors().subscribe(detectorList => {
-                                    if (detectorList) {                                        
+                                    if (detectorList) {
                                         this._supportTopicService.getMatchingDetectors().subscribe(matchingDetectors => {
                                             var analysisToProcess: string[] = [];
                                             matchingDetectors.forEach(matchingDetector => {
@@ -506,16 +507,25 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                     this.showPreLoader = false;
                     this.showPreLoadingError = false;
                     var searchResults: DetectorMetaData[] = results[0];
+                    var detectorList = results[1];
+                    var logDetail = "";
+
+                    // When this happens this means that the RP is not sending the search term parameter to Runtimehost API
+                    if (searchResults.length == detectorList.length) {
+                        searchResults = [];
+                        logDetail = "Search results is same as detector list. This means that the search term is not being sent to Runtimehost API";
+                    }
                     this.logEvent(TelemetryEventNames.SearchQueryResults, {
                         searchMode: this.searchMode,
                         searchId: this.searchId,
                         query: this.searchTerm, results: JSON.stringify(searchResults.map((det: DetectorMetaData) => new Object({
                             id: det.id,
                             score: det.score
-                        }))), ts: Math.floor((new Date()).getTime() / 1000).toString()
+                        }))), ts: Math.floor((new Date()).getTime() / 1000).toString(),
+                        logDetail: logDetail
                     });
-                    var detectorList = results[1];
-                    if (detectorList) {
+
+                    if (detectorList && searchResults && searchResults.length > 0) {
                         searchResults.forEach(result => {
                             if (result.type === DetectorType.Detector) {
                                 this.insertInDetectorArray({ name: result.name, id: result.id, score: result.score });
@@ -603,33 +613,33 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         }
     }
 
-    containsAnyDisplayableRenderingType(response:DetectorResponse):boolean {
-        let DetctorNonDisplayableRenderingTypes:RenderingType[] = [
-            RenderingType.DetectorList, 
-            RenderingType.DownTime, 
+    containsAnyDisplayableRenderingType(response: DetectorResponse): boolean {
+        let DetctorNonDisplayableRenderingTypes: RenderingType[] = [
+            RenderingType.DetectorList,
+            RenderingType.DownTime,
             RenderingType.AppInsightEnablement
-        ];        
-        let index = response.dataset.findIndex(set => 
-            DetctorNonDisplayableRenderingTypes.find(renderingType=>renderingType === (<Rendering>set.renderingProperties).type ) == undefined 
-            );
+        ];
+        let index = response.dataset.findIndex(set =>
+            DetctorNonDisplayableRenderingTypes.find(renderingType => renderingType === (<Rendering>set.renderingProperties).type) == undefined
+        );
         return index > -1;
     }
 
-    containsChildDetectors(response:DetectorResponse):boolean {
-        return response.dataset.findIndex(set=> (<Rendering>set.renderingProperties).type === RenderingType.DetectorList) > -1;
+    containsChildDetectors(response: DetectorResponse): boolean {
+        return response.dataset.findIndex(set => (<Rendering>set.renderingProperties).type === RenderingType.DetectorList) > -1;
     }
 
-    processParentChildHierarchy(response:DetectorResponse, currDowntime:DownTime, containsDownTime:boolean) {
-        if(this.containsChildDetectors(response)) {
-            let currDetectorList:DetectorMetaData[] = [];
+    processParentChildHierarchy(response: DetectorResponse, currDowntime: DownTime, containsDownTime: boolean) {
+        if (this.containsChildDetectors(response)) {
+            let currDetectorList: DetectorMetaData[] = [];
             response.dataset.forEach(diagnosticData => {
-                if((<Rendering>diagnosticData.renderingProperties).type === RenderingType.DetectorList) {
+                if ((<Rendering>diagnosticData.renderingProperties).type === RenderingType.DetectorList) {
                     // Doesn't support cross resource child detectors yet.
-                    let currChildDetectorRendering:DetectorListRendering = <DetectorListRendering>diagnosticData.renderingProperties;
-                    if(!!currChildDetectorRendering.detectorIds && currChildDetectorRendering.detectorIds.length > 0) {
+                    let currChildDetectorRendering: DetectorListRendering = <DetectorListRendering>diagnosticData.renderingProperties;
+                    if (!!currChildDetectorRendering.detectorIds && currChildDetectorRendering.detectorIds.length > 0) {
                         currChildDetectorRendering.detectorIds.forEach(childDetectorId => {
-                            let matchingDetector = this.allDetectors.find(d=>d.id == childDetectorId);
-                            if(!!matchingDetector && !!matchingDetector.name && !!matchingDetector.id &&
+                            let matchingDetector = this.allDetectors.find(d => d.id == childDetectorId);
+                            if (!!matchingDetector && !!matchingDetector.name && !!matchingDetector.id &&
                                 this.insertInDetectorArray({ name: matchingDetector.name, id: matchingDetector.id })) {
                                 currDetectorList.push(matchingDetector);
                             }
@@ -638,20 +648,20 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                 }
             });
 
-            if(currDetectorList.length > 0) {
+            if (currDetectorList.length > 0) {
                 this.startDetectorRendering(currDetectorList, currDowntime, containsDownTime, true);
             }
         }
     }
 
-    insertInDetectorViewModel(detectorViewModel:any):boolean {
-        if(!this.detectorViewModels || (!!this.detectorViewModels && this.detectorViewModels.length < 1)) {
+    insertInDetectorViewModel(detectorViewModel: any): boolean {
+        if (!this.detectorViewModels || (!!this.detectorViewModels && this.detectorViewModels.length < 1)) {
             this.detectorViewModels.push(detectorViewModel);
             return true;
-        } 
+        }
         else {
-            if(this.detectorViewModels.findIndex(currViewModel=> 
-                (<DetectorMetaData>currViewModel.metadata).id == (<DetectorMetaData>detectorViewModel.metadata).id  && 
+            if (this.detectorViewModels.findIndex(currViewModel =>
+                (<DetectorMetaData>currViewModel.metadata).id == (<DetectorMetaData>detectorViewModel.metadata).id &&
                 currViewModel.startTime == detectorViewModel.startTime &&
                 currViewModel.endTime == detectorViewModel.endTime
             ) < 0) {
@@ -662,24 +672,24 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         return false;
     }
 
-    startDetectorRendering(detectorList, downTime: DownTime, containsDownTime: boolean, isReEntry:boolean = false) {
+    startDetectorRendering(detectorList, downTime: DownTime, containsDownTime: boolean, isReEntry: boolean = false) {
         if (this.showWebSearchTimeout) {
             clearTimeout(this.showWebSearchTimeout);
         }
         this.showWebSearchTimeout = setTimeout(() => { this.showWebSearch = true; }, 3000);
 
-        if(!isReEntry) {
+        if (!isReEntry) {
             this.allDetectors = detectorList;
             this.issueDetectedViewModels = [];
         }
-        
+
         const requests: Observable<any>[] = [];
 
         this.detectorMetaData = detectorList.filter(detector => this.detectors.findIndex(d => d.id === detector.id) >= 0);
-        
+
         // Because startDetectorRendering is being called in a recursive manner, insert elements into detectorViewModels only if the current viewModel is not already in it.
         let viewModelsToProcess = this.detectorMetaData.map(detector => this.getDetectorViewModel(detector, downTime, containsDownTime));
-        if(!isReEntry) {
+        if (!isReEntry) {
             this.detectorViewModels = viewModelsToProcess;
         }
         else {
@@ -711,16 +721,16 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                             this.issueDetectedViewModels.push(issueDetectedViewModel);
                             this.issueDetectedViewModels = this.issueDetectedViewModels.sort((n1, n2) => n1.model.status - n2.model.status);
                         } else {
-                            if(this.containsAnyDisplayableRenderingType(response)) {
+                            if (this.containsAnyDisplayableRenderingType(response)) {
                                 let insight = this.getDetectorInsight(viewModelsToProcess[index]);
-                                if(!insight) {
+                                if (!insight) {
                                     // The detector loaded successfully, however did not generate an insight.
                                     insight = { title: DEFAULT_DESCRIPTION_FOR_DETECTORS_WITH_NO_INSIGHT, description: '' };
-                                    if(!viewModelsToProcess[index].status || viewModelsToProcess[index].status == HealthStatus.None ) {
+                                    if (!viewModelsToProcess[index].status || viewModelsToProcess[index].status == HealthStatus.None) {
                                         viewModelsToProcess[index].status = HealthStatus.Info;
                                     }
                                 }
-                            
+
                                 let successViewModel = { model: viewModelsToProcess[index], insightTitle: insight.title, insightDescription: insight.description };
 
                                 if (this.successfulViewModels.length > 0) {
@@ -792,7 +802,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         return detectorList.filter(element => (element.analysisTypes != null && element.analysisTypes.length > 0 && element.analysisTypes.findIndex(x => x == analysisId) >= 0)).map(element => { return { name: element.name, id: element.id }; });
     }
 
-    insertInDetectorArray(detectorItem):boolean {
+    insertInDetectorArray(detectorItem): boolean {
         if (this.withinGenie) {
             if (this.detectors.findIndex(x => x.id === detectorItem.id) < 0 && detectorItem.score >= this.targetedScore) {
                 this.detectors.push(detectorItem);
@@ -940,9 +950,9 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
             this._router.navigate([`../../../../${this.analysisId}/search`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', queryParams: { searchTerm: this.searchTerm } });
         }
         else {
-            if (this.analysisId === 'supportTopicAnalysis' && this.searchTerm) {                
-                if(this.detectorId == '') {
-                    this._router.navigate([`../../${this.analysisId}/dynamic`],  { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', queryParams: { searchTerm: this.searchTerm }, replaceUrl: true });
+            if (this.analysisId === 'supportTopicAnalysis' && this.searchTerm) {
+                if (this.detectorId == '') {
+                    this._router.navigate([`../../${this.analysisId}/dynamic`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', queryParams: { searchTerm: this.searchTerm }, replaceUrl: true });
                 }
                 else {
                     this._router.navigate([`../../../../${this.analysisId}/dynamic/`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', queryParams: { searchTerm: this.searchTerm }, replaceUrl: true });
@@ -974,16 +984,10 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     public selectDetector(viewModel: any) {
         if (viewModel != null && viewModel.model.metadata.id) {
             let detectorId = viewModel.model.metadata.id;
-            let categoryName = "";
+            let categoryId = "";
             const queryParams = this._activatedRoute.snapshot.queryParams;
-            if (viewModel.model.metadata.category) {
-                categoryName = viewModel.model.metadata.category.replace(/\s/g, '');
-            }
-            else {
-                // For uncategorized detectors:
-                // If it is home page, redirect to availability category. Otherwise stay in the current category page.
-                categoryName = this._router.url.split('/')[11] ? this._router.url.split('/')[11] : "availabilityandperformance";
-            }
+            const currentCategoryId = this._activatedRoute?.firstChild?.snapshot.params["category"];
+            categoryId = this._genericCategoryService.getCategoryIdByNameAndCurrentCategory(viewModel?.model?.metadata?.category, currentCategoryId);
 
             if (detectorId !== "") {
                 const clickDetectorEventProperties = {
@@ -1006,11 +1010,11 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                             return;
                         }
                         if (isHomepage) {
-                            this.openBladeDiagnoseDetectorId(categoryName, detectorId, DetectorType.Detector);
+                            this.openBladeDiagnoseDetectorId(categoryId, detectorId, DetectorType.Detector);
                         }
                         else {
                             this.logEvent(TelemetryEventNames.SearchResultClicked, { searchMode: this.searchMode, searchId: this.searchId, detectorId: detectorId, rank: 0, title: clickDetectorEventProperties.ChildDetectorName, status: clickDetectorEventProperties.Status, ts: Math.floor((new Date()).getTime() / 1000).toString() });
-                            let dest = `resource${this.resourceId}/categories/${categoryName}/detectors/${detectorId}`;
+                            let dest = `resource${this.resourceId}/categories/${categoryId}/detectors/${detectorId}`;
                             this._globals.openGeniePanel = false;
                             this._router.navigate([dest]);
                         }
@@ -1032,7 +1036,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                             relativeTo: this._activatedRoute,
                             queryParamsHandling: 'merge',
                             preserveFragment: true,
-                            queryParams: { startTime: viewModel.model.startTime, endTime: viewModel.model.endTime, searchTerm: this.searchTerm } 
+                            queryParams: { startTime: viewModel.model.startTime, endTime: viewModel.model.endTime, searchTerm: this.searchTerm }
                         });
                     }
                     else {
@@ -1049,7 +1053,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                                     startDate: new Date(viewModel.model.startTime),
                                     endDate: new Date(viewModel.model.endTime)
                                 });
-                                this.updateBreadcrumb();
+                                this.updateBreadcrumb(viewModel);
 
                                 //Remove queryParams startTimeChildDetector and endTimeChildDetector. Update startTime and endTime to downtime period
                                 const updatedParams = { ...queryParams };
@@ -1061,7 +1065,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                                 this._router.navigate([`../../detectors/${detectorId}`], { relativeTo: this._activatedRoute, queryParams: updatedParams });
                             }
                             else {
-                                this.updateBreadcrumb();
+                                this.updateBreadcrumb(viewModel);
                                 this._router.navigate([`../../detectors/${detectorId}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', preserveFragment: true });
                             }
                         }
@@ -1144,15 +1148,30 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         }
     }
 
-    private updateBreadcrumb() {
-        if (this.isPublic || this.withinGenie) return;
+    private updateBreadcrumb(viewModel: any) {
+        if (this.withinGenie) {
+            return;
+        }
 
-        const queryParams = this._activatedRoute.snapshot.queryParams;
-        this._genericBreadcrumbService.updateBreadCrumbSubject({
+        const queryParams = { ...this._activatedRoute.snapshot.queryParams };
+        if (viewModel.model.startTime != null) {
+            queryParams.startTimeChildDetector = viewModel.model.startTime
+        }
+        if (viewModel.model.endTime != null) {
+            queryParams.endTimeChildDetector = viewModel.model.endTime
+        }
+
+        const fullPath = this._router.url.split("?")[0];
+
+        const breadcrumbItem: BreadcrumbNavigationItem = {
             name: this.analysisName,
-            id: this.analysisId,
-            isDetector: false,
+            fullPath: fullPath,
             queryParams: queryParams
-        });
+        };
+        if (this.isPublic) {
+            this._globals.breadCrumb = breadcrumbItem;
+        } else {
+            this._genericBreadcrumbService.updateBreadCrumbSubject(breadcrumbItem);
+        }
     }
 }

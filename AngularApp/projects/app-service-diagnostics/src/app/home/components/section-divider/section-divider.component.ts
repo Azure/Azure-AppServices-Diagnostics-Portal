@@ -23,6 +23,7 @@ export class SectionDividerComponent implements OnInit {
   @Input() disableExpandIcon: boolean = false;
   @Input() routePath: string="";
   @Input() initiallyExpanded: boolean = true;
+  @Input() category: string = "";
   expanded: boolean = true;
   overviewImagePath:string = "../../../../assets/img/detectors/Overview.svg";
   selected: boolean = true;
@@ -47,7 +48,8 @@ export class SectionDividerComponent implements OnInit {
 
   sectionHeaderClick() {
       this.telemetryService.logEvent(TelemetryEventNames.CategoryNavItemClicked,{
-        'Title':this.label
+        'DetectorName':this.label,
+        'CategoryName': this.category
       });
       this.navigateTo(`${this.routePath}`);
   }

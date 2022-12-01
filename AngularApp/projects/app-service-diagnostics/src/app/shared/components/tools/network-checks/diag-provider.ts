@@ -5,9 +5,11 @@ import { stringify } from 'querystring';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, mergeMap } from 'rxjs/operators';
 import { ResponseMessageEnvelope } from '../../../models/responsemessageenvelope';
+import { NetworkTroubleshooterPostAPIBody, Credentials, CredentialReference, ResourceMetadata, NetworkTroubleshooterPostTcpPingBody, WrappedManagementApiBody, NetworkTroubleshooterTcpPingResponse } from '../../../models/network-troubleshooter/post-request-body'
 import { Site, SiteInfoMetaData } from '../../../models/site';
 import { ArmService } from '../../../services/arm.service';
 import { SiteService } from '../../../services/site.service';
+
 
 enum ConnectionCheckStatus { success, timeout, hostNotFound, blocked, refused }
 export enum OutboundType { SWIFT, gateway };
@@ -61,6 +63,7 @@ export class DiagProvider {
     public async getVNetIntegrationStatusAsync() {
         var result = { isVnetIntegrated: false, outboundType: <OutboundType>null, outboundSubnets: [], inboundType: <InboundType>null, inboundSubnets: [], siteVnetInfo: null };
         var siteArmId = this._siteInfo["id"];
+
         var siteVnetInfo = await this.getWebAppVnetInfo();
         result.siteVnetInfo = siteVnetInfo;
         if (siteVnetInfo != null) {
@@ -172,26 +175,58 @@ export class DiagProvider {
         ).toPromise();
     }
 
-    public postDaaSExtApiAsync(api: string, body?: any, timeoutInSec: number = 15): Promise<any> {
+    public async postNetworkTroubleshooterApiAsync(api: string, body: any, timeoutInSec: number = 15): Promise<any> {
         var params = "api-version=2015-08-01";
-        var prefix = `management.azure.com/${this._siteInfo.resourceUri}/extensions/DaaS/api`;
-
+        var prefix = `management.azure.com/${this._siteInfo.resourceUri}`;
         var stack = new Error("error_message_placeholder").stack;
         var promise = this._armService.post(`https://${prefix}/${api}?${params}`, body)
             .toPromise()
             .catch(e => {
                 e.stack = stack.replace("error_message_placeholder", e);
                 throw e;
+            });     
+            var timeoutPromise = delay(timeoutInSec).then(() => {
+                throw new Error(`postNetworkTroubleshooterApiAsync timeout after ${timeoutInSec}s`);
             });
-        var timeoutPromise = delay(timeoutInSec).then(() => {
-            throw new Error(`postDaaSExtApiAsync timeout after ${timeoutInSec}s`);
-        });
-        return Promise.race([promise, timeoutPromise]);
+            return Promise.race([promise, timeoutPromise]);
     }
 
-    public async checkConnectionStringAsync(connectionString: string, type: string, timeoutInSec: number = 30): Promise<any> {
-        var result: any = await this.postDaaSExtApiAsync("connectionstringvalidation/validate", { "ConnectionString": connectionString, "Type": type }, timeoutInSec);
-        return result;
+    public static wrapManagementRequest(body: any): any {
+        // Managment requests need to be wrapped and unwrapped.
+        // The content that we are after should be nested in Properties
+        var managementRequestBody = new WrappedManagementApiBody();
+        managementRequestBody.properties = body;
+        return managementRequestBody;
+    }
+
+    public static unWrapManagementRequest(response: WrappedManagementApiBody): any
+    {
+        return response.properties;
+    }
+
+    public async checkConnectionViaAppSettingAsync(appSetting: string, type: string, entityName?: string, timeoutInSec: number = 30): Promise<any> {
+        var requestBody = new NetworkTroubleshooterPostAPIBody();
+        requestBody.ProviderType = type;
+        requestBody.Credentials = new Credentials();
+        requestBody.Credentials.CredentialType = "CredentialReference";
+        requestBody.Credentials.CredentialReference = new CredentialReference(); 
+        requestBody.Credentials.CredentialReference.ReferenceType = "AppSetting";
+        requestBody.Credentials.CredentialReference.ReferenceName = appSetting;
+        requestBody.ResourceMetadata = new ResourceMetadata();
+        requestBody.ResourceMetadata.EntityName = entityName;
+
+        var wrappedBody = DiagProvider.wrapManagementRequest(requestBody);
+        var wrappedResponse: WrappedManagementApiBody = await this.postNetworkTroubleshooterApiAsync("connectivityCheck", wrappedBody, timeoutInSec);
+        var response = DiagProvider.unWrapManagementRequest(wrappedResponse);
+        if (response == null )
+        {
+          throw Error("No response received when calling the network troubleshooter endpoint via postNetworkTroubleshooterApiAsync().");
+        }
+        else if (response.statusText == null)
+        {
+            throw Error("Invalid response without statusText received when calling the network troubleshooter endpoint via postNetworkTroubleshooterApiAsync().");
+        }
+        return response;
     }
 
     public getKuduApiAsync(uri: string, instance?: string, timeoutInSec: number = 15, scm = false): Promise<any> {
@@ -299,6 +334,56 @@ export class DiagProvider {
         });
     }
 
+    public async tcpPingNetworkTroubleshooterAsync(hostname: string, port: number, count: number = 1, timeout: number = 10, instance?: string): Promise<{ status: ConnectionCheckStatus, statuses: ConnectionCheckStatus[] }> {
+        var requestBody = new NetworkTroubleshooterPostTcpPingBody();
+        requestBody.Host = hostname;
+        requestBody.Port = port;
+        var wrappedBody = DiagProvider.wrapManagementRequest(requestBody);
+        var wrappedResponse: WrappedManagementApiBody = await this.postNetworkTroubleshooterApiAsync("tcpPingCheck", wrappedBody, timeout);
+        var response : NetworkTroubleshooterTcpPingResponse = DiagProvider.unWrapManagementRequest(wrappedResponse)
+        if (response == null)
+        {
+          throw Error("No response received when calling the Network Troubleshooter for tcpPingNetworkTroubleshooterAsync().");
+        }
+        else if ( response.connectionStatus == null || response.connectionStatusDetails == null) {
+            throw Error("Invalid response when calling Network Troublershooter tcpPing endpoint. Status or Details null");
+        }
+        else 
+        {
+            var responseConnectionStatus = response.connectionStatus;
+            var status: ConnectionCheckStatus;
+            if (responseConnectionStatus == "Success") 
+            {
+                status = ConnectionCheckStatus.success;
+            }
+            // TODO : determing how to respond to other results here . 
+            var statuses: ConnectionCheckStatus[] = [];
+            var responseConnectionstatusDetails = response.connectionStatusDetails;
+            var splited = responseConnectionstatusDetails.split("\r\n");
+            for (var i in splited) {
+                var line = splited[i];
+                if (line.startsWith("Connected to ")) {
+                    statuses.push(ConnectionCheckStatus.success);
+                } else if (line.includes("No such host is known")) {
+                    statuses.push(ConnectionCheckStatus.hostNotFound);
+                } else if (line.includes("Connection timed out")) {
+                    statuses.push(ConnectionCheckStatus.timeout);
+                } else if (line.startsWith("Connection attempt failed: An attempt was made to access a socket")) {
+                    statuses.push(ConnectionCheckStatus.blocked);
+                } else if (line.startsWith("Complete")) {
+                    break;
+                } else {
+                    throw new Error(`tcpPingAsync: unknown status ${responseConnectionstatusDetails}`);
+                }
+            }
+            if (status != ConnectionCheckStatus.success) 
+            {
+                status = statuses.some(s => s == ConnectionCheckStatus.success) ? ConnectionCheckStatus.success : statuses[0];
+            }
+            return { status, statuses };
+        }
+    }
+
     public async nameResolveAsync(hostname: string, dns: string, instance?: string): Promise<{ ip: string, aliases: string }> {
         var ip: string = null, aliases: string = null;
         if (this.isIp(hostname)) {
@@ -360,17 +445,7 @@ export class DiagProvider {
             return false;
         }
     }
-
-    public async checkDaasExtReachable(timeoutInSec: number): Promise<boolean> {
-        try {
-            var result = await this.checkConnectionStringAsync("dummy-connection-string", "StorageAccount");
-
-            return (result != undefined);
-        } catch (error) {
-            return false;
-        }
-    }
-
+    
     public async getWebAppVnetInfo(): Promise<any> {
         //This is the regional VNet Integration endpoint
         var swiftUrl = this._siteInfo["id"] + "/config/virtualNetwork";

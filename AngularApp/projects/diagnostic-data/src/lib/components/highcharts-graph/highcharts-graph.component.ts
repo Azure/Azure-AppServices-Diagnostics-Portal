@@ -15,12 +15,19 @@ import highchartsDarkTheme from 'highcharts/themes/dark-unica';
 import highchartsLightTheme from 'highcharts/themes/sand-signika';
 import highchartsHighContrastDarkTheme from 'highcharts/themes/high-contrast-dark';
 import highchartsHighContrastLightTheme from 'highcharts/themes/high-contrast-light';
+import xrange from 'highcharts/modules/xrange';
 
-declare var require: any
+declare var require: any;
 var Highcharts = require('highcharts'),
-    HighchartsCustomEvents = require('highcharts-custom-events')(Highcharts);
+  HighchartsCustomEvents = require('highcharts-custom-events')(Highcharts);
 HC_exporting(Highcharts);
 AccessibilityModule(Highcharts);
+xrange(Highcharts);
+
+// Introducing properties.
+interface ExtendedPoint extends Highcharts.Point {
+  id: string;
+}
 
 const moment = momentNs;
 
@@ -33,7 +40,7 @@ export class HighchartsGraphComponent implements OnInit {
     Highcharts: typeof Highcharts = Highcharts;
     options: any;
     labelFontColor: string = "A9A9A9" // Dark gray to comply with contrast requirements with a transparent background for Accessibility purposes
-
+    isGanttChart: boolean = false;
 
     @Input() HighchartData: any = [];
 
@@ -42,6 +49,8 @@ export class HighchartsGraphComponent implements OnInit {
     @Input() chartType: TimeSeriesType;
 
     @Input() chartOptions: any;
+
+    @Input() yAxisCategories: any = [];
 
     @Input() startTime: momentNs.Moment;
 
@@ -215,7 +224,7 @@ export class HighchartsGraphComponent implements OnInit {
 
     private getCurrentChartContainerId(): string {
         if (this.el.nativeElement.getElementsByClassName('highcharts-container') && this.el.nativeElement.getElementsByClassName('highcharts-container').length > 0) {
-            return this.el.nativeElement.getElementsByClassName('highcharts-container')[0].id;;
+            return this.el.nativeElement.getElementsByClassName('highcharts-container')[0].id;
         }
         else {
             return '';
@@ -509,6 +518,7 @@ export class HighchartsGraphComponent implements OnInit {
 
     ngOnInit() {
         this.backgroundColor = this.themeService.getPropertyValue("--bodyBackground");
+        this.isGanttChart = this.chartType === TimeSeriesType.GanttChart;
         this.bodyText = this.themeService.getPropertyValue("--bodyText");
         this.initializeChart();
     }
@@ -566,7 +576,6 @@ export class HighchartsGraphComponent implements OnInit {
     }
 
     private _updateOptions() {
-
         let type: string = 'line';
         let stacking = undefined;
 
@@ -587,13 +596,15 @@ export class HighchartsGraphComponent implements OnInit {
                 case TimeSeriesType.BarGraph:
                     type = 'column';
                     break;
+                case TimeSeriesType.GanttChart:
+                    type = 'x-range';
+                    break;
                 case TimeSeriesType.LineGraph:
                 default:
                     type = 'line';
                     break;
             }
         }
-
 
         if (this.chartOptions && this.chartOptions["type"]) {
             type = this.chartOptions["type"];
@@ -619,7 +630,6 @@ export class HighchartsGraphComponent implements OnInit {
                     id: (!!plotBand.id) ? plotBand.id : ''
                 };
                 chartPlotBands.push(currPlotBand);
-
             });
             this.options.xAxis.plotBands = chartPlotBands;
         }
@@ -630,6 +640,10 @@ export class HighchartsGraphComponent implements OnInit {
 
         if (this.startTime && this.endTime) {
             this.options.forceX = [this.startTime, this.endTime];
+        }
+
+        if (this.yAxisCategories?.length > 0) {
+            this.options.yAxis.categories = this.yAxisCategories;
         }
     }
 
@@ -693,8 +707,10 @@ export class HighchartsGraphComponent implements OnInit {
                 panning: true,
                 resetZoomButton: {
                     position: {
+                        ...(!this.isGanttChart && {
                         x: -80,
-                        y: -19
+                        }),
+                        y: -19,
                     },
                     relativeTo: "spacingBox",
                     theme: {
@@ -752,12 +768,32 @@ export class HighchartsGraphComponent implements OnInit {
                 }
             },
             tooltip: {
-                shared: true,
+                shared: !this.isGanttChart,
                 enabled: true,
                 valueDecimals: 2,
                 useHTML: true,
                 outside: true,
                 backgroundColor: this.backgroundColor,
+                ...(this.isGanttChart && {
+                    formatter: function () {
+                        var dateFormat = Highcharts.dateFormat,
+                        point = this.point,
+                        format = '%m/%d/%Y %H:%M:%S %p';
+                        var from = dateFormat(format, point.x),
+                        to = dateFormat(format, point.x2),
+                        id = (point as ExtendedPoint)?.id;
+                        return (
+                        `${
+                            !!id
+                            ? '<span style="font-weight: bold;">' + id + '</span>' + ' | '
+                            : ''
+                        }` +
+                        from +
+                        ' - ' +
+                        to
+                        );
+                    },
+                }),
             },
             navigation: {
                 buttonOptions: {
@@ -843,14 +879,17 @@ export class HighchartsGraphComponent implements OnInit {
                         whiteSpace: 'nowrap'
                     }
                 },
+                categories: undefined,
                 endOnTick: false,
                 labels: {
                     format: '{value:.2f}',
                     style: {
                         whiteSpace: 'nowrap',
                         color: this.labelFontColor,
-                    }
+                    },
+                    useHTML: true,
                 },
+                reversed: this.isGanttChart,
             },
             series: this.HighchartData
         } as Highcharts.Options
@@ -880,4 +919,5 @@ export interface HighchartGraphSeries {
     data: any;
     events: Function;
     accessibility: any;
+    dataLabels?: any;
 }
