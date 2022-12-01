@@ -41,7 +41,7 @@
     <div style="overflow-y: hidden;height:0px" [@expand]="viewModel.expanded ? 'shown' : 'hidden'">
       <div class="detector-body">
         <detector-view [insideDetectorList]="true" [parentDetectorId]="detectorEventProperties.DetectorId"
-          [detectorResponse]="viewModel.response" [startTime]="startTime" [endTime]="endTime"></detector-view>
+          [detectorResponse]="viewModel.response" [startTime]="startTime" [endTime]="endTime" [detector]="viewModel.metadata.id"></detector-view>
       </div>
     </div>
   </div>

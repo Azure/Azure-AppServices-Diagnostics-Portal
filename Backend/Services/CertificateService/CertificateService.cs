@@ -118,23 +118,31 @@ namespace Backend.Services
                 var expiredCertificates = new List<X509Certificate2>();
                 var certificateVersions = _certificateClient.GetPropertiesOfCertificateVersions(_certificateName).ToArray();
                 _telemetryClient.TrackTrace($"Got {certificateVersions.Length} certificate versions in KeyVault for {_certificateName}");
-                foreach (var certVersion in certificateVersions)
+
+                var latestCertVersion = certificateVersions.Where(x => x.Enabled is true).OrderByDescending(x => x.CreatedOn).FirstOrDefault();
+                if (latestCertVersion == null)
                 {
-                    if (certVersion.ExpiresOn <= DateTimeOffset.UtcNow)
-                    {
-                        string thumbprint = certVersion.GetThumbprint();
-                        if (!_expiredCertificatesCache.ContainsKey(thumbprint))
-                        {
-                            expiredCertificates.Add(CreateX509Certificate(certVersion));
-                        }
-                    }
-                    else
+                    _telemetryClient.TrackTrace("Failed to find any certificate in KeyVault which is current enabled");
+                    return;
+                }
+
+                foreach (var certVersion in certificateVersions.Where(x => x.Enabled is true))
+                {
+                    if (certVersion.Version == latestCertVersion.Version)
                     {
                         if (_currentCertificate == null
                             || !IsMatchingCurrentCertificate(certVersion))
                         {
                             _currentCertificate = CreateX509Certificate(certVersion);
                             _telemetryClient.TrackTrace($"Updated currentCertificate as {_currentCertificate.Thumbprint} {_currentCertificate.Subject}");
+                        }
+                    }
+                    else
+                    {
+                        string thumbprint = certVersion.GetThumbprint();
+                        if (!_expiredCertificatesCache.ContainsKey(thumbprint))
+                        {
+                            expiredCertificates.Add(CreateX509Certificate(certVersion));
                         }
                     }
                 }

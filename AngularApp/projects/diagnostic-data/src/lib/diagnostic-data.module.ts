@@ -146,7 +146,8 @@ import { FabCalendarModule } from '@angular-react/fabric/lib/components/calendar
 import { FabDetailsListModule } from '@angular-react/fabric/lib/components/details-list';
 import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-field';
 import { ClientScriptViewComponent } from './components/client-script-view/client-script-view.component';
-import { GenericCategoryService } from './services/generic-category-service';
+import { GenericFeatureService } from './services/generic-feature-service';
+import { GanttChartTaskbarColorsComponent } from './components/gantt-chart-taskbar-colors/gantt-chart-taskbar-colors.component';
 
 @NgModule({
     imports: [
@@ -243,7 +244,8 @@ import { GenericCategoryService } from './services/generic-category-service';
         DetectorTimePickerComponent,
         FabricFeedbackComponent,
         FormStepComponent,
-        ClientScriptViewComponent
+        ClientScriptViewComponent,
+        GanttChartTaskbarColorsComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -283,7 +285,8 @@ import { GenericCategoryService } from './services/generic-category-service';
         FabDataTableComponent,
         DetectorTimePickerComponent,
         FabCardComponent,
-        FormStepComponent
+        FormStepComponent,
+        GanttChartTaskbarColorsComponent
     ]
 })
 export class DiagnosticDataModule {
@@ -311,7 +314,7 @@ export class DiagnosticDataModule {
                 AppInsightsQueryService,
                 ParseResourceService,
                 HighChartsHoverService,
-                GenericCategoryService
+                GenericFeatureService
             ]
         };
     }

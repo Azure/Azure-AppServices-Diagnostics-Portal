@@ -18,8 +18,9 @@ import { IButtonStyles } from 'office-ui-fabric-react/lib/components/Button';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/components/ChoiceGroup';
 import { IDropdownOption } from 'office-ui-fabric-react/lib/components/Dropdown';
 import { IIconProps } from 'office-ui-fabric-react/lib/components/Icon';
-import { filter } from 'rxjs/operators';
 import { GenericUserSettingService } from '../../services/generic-user-setting.service';
+import { GenieGlobals } from '../../services/genie.service';
+import { BreadcrumbNavigationItem } from '../../services/generic-breadcrumb.service';
 
 const moment = momentNs;
 const minSupportedDowntimeDuration: number = 10;
@@ -79,7 +80,7 @@ export class DetectorViewComponent implements OnInit {
   timePickerButtonStr: string = "";
   buttonStyle: IButtonStyles = {
     root: {
-     // color: "#323130",
+      // color: "#323130",
       borderRadius: "12px",
       margin: " 0px 5px",
       background: "rgba(0, 120, 212, 0.1)",
@@ -91,7 +92,7 @@ export class DetectorViewComponent implements OnInit {
       border: "2px solid black",
     }
   }
-  iconStyles:IIconProps["styles"] = {
+  iconStyles: IIconProps["styles"] = {
     root: {
       color: "#0078d4"
     }
@@ -127,7 +128,7 @@ export class DetectorViewComponent implements OnInit {
   @Input() isKeystoneView: boolean = false;
   @Input() isRiskAlertDetector: boolean = false;
   @Input() overWriteDetectorDescription: string = "";
-  @Input() overWriteDetectorName:string = "";
+  @Input() overWriteDetectorName: string = "";
   feedbackButtonLabel: string = 'Send Feedback';
   hideShieldComponent: boolean = false;
 
@@ -176,18 +177,21 @@ export class DetectorViewComponent implements OnInit {
 
   @Output() downTimeChanged: EventEmitter<DownTime> = new EventEmitter<DownTime>();
   private isLegacy: boolean;
+  public breadCrumb: BreadcrumbNavigationItem;
 
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private telemetryService: TelemetryService,
-    private detectorControlService: DetectorControlService, private _supportTopicService: GenericSupportTopicService, private _cxpChatService: CXPChatService, protected _route: ActivatedRoute, private versionService: VersionService, private _router: Router, private _genericUserSettingsService: GenericUserSettingService) {
+    private detectorControlService: DetectorControlService, private _supportTopicService: GenericSupportTopicService, private _cxpChatService: CXPChatService, protected _route: ActivatedRoute, private versionService: VersionService, private _router: Router, private _genericUserSettingsService: GenericUserSettingService, private _global: GenieGlobals) {
     this.isPublic = config && config.isPublic;
     this.feedbackButtonLabel = this.isPublic ? 'Send Feedback' : 'Rate Detector';
   }
 
   ngOnInit() {
     if (this._route.snapshot.data.tabKey == 'Monitoring' || this._route.snapshot.data.tabKey == 'Analytics')
-        this.buttonStyle = {root:{display: "none"}};
+      this.buttonStyle = { root: { display: "none" } };
     this.versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
     this._route.params.subscribe(p => {
+      this.breadCrumb = { ...this._global.breadCrumb };
+      this._global.breadCrumb = null;
       this.loadDetector();
     });
 
@@ -228,23 +232,18 @@ export class DetectorViewComponent implements OnInit {
 
   protected loadDetector() {
     this.detectorResponseSubject.subscribe((data: DetectorResponse) => {
-      if (!this.isPublic)
-      {
-        this._genericUserSettingsService.isWaterfallViewMode().subscribe(isWaterfallViewMode =>
-            {
-                if (isWaterfallViewMode)
-                {
-                    this.detectorDataLocalCopy = data;
-                }
-                else
-                {
-                    this.detectorDataLocalCopy = this.mergeDetectorListResponse(data);
-                }
-            });
-      }
-      else
-      {
+      if (!this.isPublic) {
+        this._genericUserSettingsService.isWaterfallViewMode().subscribe(isWaterfallViewMode => {
+          if (isWaterfallViewMode) {
+            this.detectorDataLocalCopy = data;
+          }
+          else {
             this.detectorDataLocalCopy = this.mergeDetectorListResponse(data);
+          }
+        });
+      }
+      else {
+        this.detectorDataLocalCopy = this.mergeDetectorListResponse(data);
       }
 
 
@@ -515,10 +514,10 @@ export class DetectorViewComponent implements OnInit {
 
       this.fabChoiceGroupOptions.push(this.getDefaultFabricDownTimeEntry());
       const defaultDowntime = this.downTimes.find(x => x.isSelected);
-      if(defaultDowntime != null) {
+      if (defaultDowntime != null) {
         this.selectedKey = this.getKeyForDownTime(defaultDowntime);
         this.selectedDownTime = defaultDowntime;
-      } else if(this.fabChoiceGroupOptions.length > 0) {
+      } else if (this.fabChoiceGroupOptions.length > 0) {
         this.selectedKey = this.fabChoiceGroupOptions[0].key;
         this.selectedDownTime = this.fabChoiceGroupOptions.length > 1 ? this.downTimes[0] : this.getDefaultDowntimeEntry();
       }
@@ -743,7 +742,7 @@ export class DetectorViewComponent implements OnInit {
 
   renderCXPChatButton() {
     if (this.cxpChatTrackingId === '' && this.cxpChatUrl === '') {
-      let effectiveSupportTopicId:string = '';
+      let effectiveSupportTopicId: string = '';
       effectiveSupportTopicId = (this._supportTopicService && this._supportTopicService.sapSupportTopicId) ? this._supportTopicService.sapSupportTopicId : this._supportTopicService.supportTopicId;
       if (this._supportTopicService && this._cxpChatService && this._cxpChatService.isSupportTopicEnabledForLiveChat(effectiveSupportTopicId)) {
         this.cxpChatTrackingId = this._cxpChatService.generateTrackingId(effectiveSupportTopicId);
@@ -779,29 +778,29 @@ export class DetectorViewComponent implements OnInit {
   }
 
   //Merge all child detectors and put it into last place
-  private mergeDetectorListResponse(response: DetectorResponse):DetectorResponse {
+  private mergeDetectorListResponse(response: DetectorResponse): DetectorResponse {
 
-    if(!response || !response.dataset || !response.dataset.find(d => d.renderingProperties.type === RenderingType.DetectorList)) return response;
+    if (!response || !response.dataset || !response.dataset.find(d => d.renderingProperties.type === RenderingType.DetectorList)) return response;
 
-    const mergedResponse = {...response};
+    const mergedResponse = { ...response };
     let lastIndex = 0;
-    const detectorIds:string[] = [];
-    for(let i = 0;i < response.dataset.length;i++){
+    const detectorIds: string[] = [];
+    for (let i = 0; i < response.dataset.length; i++) {
       const data = response.dataset[i];
       const isVisible = (<Rendering>data.renderingProperties).isVisible;
-      if(data.renderingProperties.type === RenderingType.DetectorList && isVisible !== false){
+      if (data.renderingProperties.type === RenderingType.DetectorList && isVisible !== false) {
         lastIndex = i;
-        const detectors:string[] = data.renderingProperties.detectorIds ? data.renderingProperties.detectorIds : [];
+        const detectors: string[] = data.renderingProperties.detectorIds ? data.renderingProperties.detectorIds : [];
         detectorIds.push(...detectors);
       }
     }
 
-    const dataSet = mergedResponse.dataset.filter((data,index) => {
+    const dataSet = mergedResponse.dataset.filter((data, index) => {
       return data.renderingProperties.type !== RenderingType.DetectorList || index === lastIndex;
     });
 
     const detectorMetaData = dataSet.find(d => d.renderingProperties.type === RenderingType.DetectorList);
-    if(detectorMetaData){
+    if (detectorMetaData) {
       detectorMetaData.renderingProperties.detectorIds = detectorIds;
     }
 
@@ -811,6 +810,13 @@ export class DetectorViewComponent implements OnInit {
 
   closeDownTimeCallOut() {
     this.showDowntimeCallout = false;
+  }
+
+  navigateForBreadCrumb() {
+    const combinedParams = {...this._route.snapshot.queryParams, ...this.breadCrumb.queryParams};
+    if (this.breadCrumb) {
+      this._router.navigate([this.breadCrumb.fullPath], { queryParams: combinedParams });
+    }
   }
 }
 

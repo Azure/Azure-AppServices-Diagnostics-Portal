@@ -30,7 +30,7 @@
                 <label for="icm-template-authors-field" style="display: flex; flex: 1;">
                   Template Authors <span class="required">*</span><span style="display: block; font-size: 0.9em;">(Comma separated string of user aliases)</span>
                 </label>
-                <fab-text-field id="icm-template-authors-field" [ariaLabel]="'Template Authors'" (onChange)="updateTemplateAuthors($event)" [styles]="narrowTextFieldStyles"
+                <fab-text-field id="icm-template-authors-field" [ariaLabel]="'Template Authors'" [defaultValue]="teamTemplateAuthors" (onChange)="updateTemplateAuthors($event)" [styles]="narrowTextFieldStyles"
                   [placeholder]="'Comma separated string of user aliases'" style="display: flex; flex: 1;">
                 </fab-text-field>
               </div>

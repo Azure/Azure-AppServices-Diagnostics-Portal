@@ -565,4 +565,11 @@ export class DiagnosticApiService {
       return res.toString().toLowerCase() === 'staging';
     }));
   }
+
+  public getAppSetting(appSettingName: string): Observable<string> {
+    const path = `api/appsettings/${appSettingName}`;
+    return this.get(path).pipe(map((res: string) => {
+      return res;
+    }));
+  }
 }

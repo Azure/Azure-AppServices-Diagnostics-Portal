@@ -9,7 +9,6 @@ export class GenericBreadcrumbService {
 
 export interface BreadcrumbNavigationItem {
     name: string;
-    id?: string;
-    isDetector?: boolean;
+    fullPath: string;
     queryParams?: any;
 }

@@ -25,6 +25,7 @@ import { TelemetryService } from 'diagnostic-data';
 import { TelemetryEventNames } from 'diagnostic-data';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserAccessStatus } from "../../../shared/models/alerts";
+import { defaultResourceTypes } from '../../../shared/utilities/main-page-menu-options';
 
 @Component({
   selector: 'dashboard',
@@ -108,6 +109,7 @@ export class DashboardComponent implements OnDestroy {
   alertDialogProps = {isBlocking: true}
   dialogType: DialogType = DialogType.normal;
   crossSubJustification: string = '';
+  defaultResourceTypes = defaultResourceTypes;
 
   constructor(public resourceService: ResourceService, private startupService: StartupService,  private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
@@ -189,10 +191,12 @@ export class DashboardComponent implements OnDestroy {
 
   navigateBackToHomePage() {
     let resourceInfo = this._startupService.getResourceInfo();
+    let resourceProviderFull = `${resourceInfo.provider}/${resourceInfo.resourceTypeName}`.toLowerCase();
+    let mainPageResourceType = this.defaultResourceTypes.find(x => x.resourceType && x.resourceType.toLowerCase() === resourceProviderFull);
     let queryParams = {
       caseNumber: this._diagnosticApiService.CustomerCaseNumber,
       errorMessage: this.accessError,
-      resourceType: `${resourceInfo.provider}/${resourceInfo.resourceTypeName}`,
+      resourceType: mainPageResourceType? mainPageResourceType.resourceType: "",
       resourceName: resourceInfo.resourceName,
       resourceId: this._resourceService.getCurrentResourceId()
     };

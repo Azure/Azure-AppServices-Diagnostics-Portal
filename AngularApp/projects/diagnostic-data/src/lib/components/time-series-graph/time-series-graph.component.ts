@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DataTableDataType, DiagnosticData, TimeSeriesRendering, DataTableResponseObject, RenderingType } from '../../models/detector';
+import { DataTableDataType, DiagnosticData, GanttChartInnerMarkdownPosition, TimeSeriesRendering, DataTableResponseObject, RenderingType, TimeSeriesType } from '../../models/detector';
 import { HighchartsData, HighchartGraphSeries } from '../highcharts-graph/highcharts-graph.component';
 import { DataRenderBaseComponent, DataRenderer } from '../data-render-base/data-render-base.component';
 import { TimeSeries, TablePoint, HighChartTimeSeries, MetricType,GraphSeries, GraphPoint } from '../../models/time-series';
@@ -15,8 +15,8 @@ const moment = momentNs;
     styleUrls: ['./time-series-graph.component.scss']
 })
 export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements OnInit, DataRenderer {
-
     DataRenderingType = RenderingType.TimeSeries;
+    InnerMarkdownPosition = GanttChartInnerMarkdownPosition;
 
     constructor(protected telemetryService: TelemetryService) {
         super(telemetryService);
@@ -31,6 +31,11 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
 
     selectedSeries: GraphSeries[];
     selectedHighChartSeries: HighchartGraphSeries[];
+
+    yAxisCategories: any = [];
+    formattedGanttChartData: any[] = [];
+    mappedGanttChartData: { [key: string]: any[] } = {};
+    timestampColumnName: string;
 
     renderingProperties: TimeSeriesRendering;
     dataTable: DataTableResponseObject;
@@ -55,8 +60,13 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
             this.customizeXAxis = this.graphOptions && this.graphOptions.customizeX && this.graphOptions.customizeX === 'true';
             this.timeGrain = this._getInitialTimegrain();
             this.dataTable = data.table;
-            this._processDiagnosticData(data);
-            this.selectSeries();
+            if (this.renderingProperties?.graphType === TimeSeriesType.GanttChart) {
+                this._processDiagnosticDataForGanttChart(data);
+                this._processCategoriesAndSeriesData();
+            } else {
+                this._processDiagnosticDataForOtherCharts(data);
+                this.selectSeries();
+            }
         }
     }
 
@@ -65,7 +75,75 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
         this.selectedHighChartSeries = this.allHighChartSeries.map(series => series.series);
     }
 
-    private _processDiagnosticData(data: DiagnosticData) {
+    private _processDiagnosticDataForGanttChart(diagnosticData: DiagnosticData) {
+        const { timeGrain } = this.graphOptions || {};
+        const { columns, rows } = diagnosticData?.table || {};
+        const { eventStatusColumnName, seriesColumns } =
+        this.renderingProperties || {};
+
+        if (
+        !seriesColumns?.length ||
+        eventStatusColumnName == null ||
+        timeGrain == null
+        )
+        return;
+
+        const { columnName: yAxisColumnName } =
+        this._getCounterValueColumns()[0] || {};
+
+        const timestampColumnIndex = this._getTimeStampColumnIndex();
+        this.timestampColumnName = columns[timestampColumnIndex].columnName;
+
+        this.formattedGanttChartData = this._getFormattedChartData(rows, columns);
+        this.formattedGanttChartData.forEach((data) => {
+        const key = data[yAxisColumnName];
+        const currentTime: string = data[this.timestampColumnName];
+
+        const chartRowData = this.mappedGanttChartData[key];
+        if (chartRowData != null) {
+            const lastElementInChartRowDataArray =
+            chartRowData[chartRowData.length - 1];
+            const endTime: string = lastElementInChartRowDataArray.EndTime;
+            const diffInMinutes = this._getDifferenceInMinutes(
+            currentTime,
+            endTime
+            );
+
+            if (
+            diffInMinutes !== 0 ||
+            data[eventStatusColumnName] !==
+                lastElementInChartRowDataArray[eventStatusColumnName]
+            ) {
+                chartRowData.push({
+                    ...data,
+                    [this.timestampColumnName]: momentNs.utc(currentTime).toISOString(),
+                    EndTime: momentNs
+                      .utc(currentTime)
+                      .add(timeGrain, 'm')
+                      .toISOString(),
+                  });
+                } else {
+                  lastElementInChartRowDataArray.EndTime = momentNs
+                    .utc(currentTime)
+                    .add(timeGrain, 'm')
+                    .toISOString();
+                }
+              } else {
+                this.mappedGanttChartData[key] = [
+                  {
+                    ...data,
+                    [this.timestampColumnName]: momentNs.utc(currentTime).toISOString(),
+                    EndTime: momentNs
+                      .utc(currentTime)
+                      .add(timeGrain, 'm')
+                      .toISOString(),
+                  },
+                ];
+              }
+        });
+    }
+
+    private _processDiagnosticDataForOtherCharts(data: DiagnosticData) {
         const timestampColumn = this._getTimeStampColumnIndex();
         const counterNameColumnIndex = this._getCounterNameColumnIndex();
         const numberValueColumns = this._getCounterValueColumns();
@@ -191,6 +269,83 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
         });
     }
 
+    private _processCategoriesAndSeriesData() {
+        const { useCustomColor, customTooltipColumnName, customColorColumnName } =
+        this.graphOptions?.taskBar || {};
+
+        let yIndex = 0;
+        const xAxisData = [],
+        yAxisCategories = [];
+
+        for (const [key, value] of Object.entries(this.mappedGanttChartData)) {
+        yAxisCategories.push(key);
+
+        value.forEach((data: any) => {
+            xAxisData.push({
+            id: data[customTooltipColumnName] || key,
+            x2: Date.parse(data.EndTime),
+            x: Date.parse(data[this.timestampColumnName]),
+            y: yIndex,
+            ...(!!useCustomColor && {
+                color: data[customColorColumnName],
+            }),
+            });
+        });
+        yIndex++;
+        }
+
+        const highchartData = [
+        {
+            type: 'xrange',
+            name: this.renderingProperties?.title,
+            data: xAxisData,
+            dataLabels: {
+            enabled: true,
+            },
+            accessibility: {},
+            events: () => {},
+        },
+        ];
+
+        this.selectedHighChartSeries = highchartData;
+        this.selectedSeries = [];
+        this.yAxisCategories = yAxisCategories;
+    }
+
+    private _getFormattedChartData(rows: any[], columns: any[]) {
+        return rows
+        .map((row: any[]) => {
+            const obj = {};
+            row.forEach((value, index) => {
+            Object.assign(obj, { [columns[index].columnName]: value });
+            });
+
+            return obj;
+        })
+        .sort((a, b) => {
+            return (
+            new Date(a[this.timestampColumnName]).getTime() -
+            new Date(b[this.timestampColumnName]).getTime()
+            );
+        });
+    }
+
+    private _getDifferenceInMinutes(currentTime: string, endTime: string) {
+        const diff =
+          (this._getTimeStamp(currentTime) - this._getTimeStamp(endTime)) /
+          1000 /
+          60;
+        return Math.abs(Math.round(diff));
+      }
+    
+    private _getTimeStamp(datetimeString: string) {
+        const dateTimeWithoutMilliseconds = datetimeString.includes('.')
+            ? datetimeString.split('.')[0] + 'Z'
+            : datetimeString;
+
+        return new Date(dateTimeWithoutMilliseconds).getTime();
+    }
+
     private _getGreatestCommonFactor(timestamp: momentNs.Moment): momentNs.Duration {
         const minuteGcf = this._gcd(timestamp.minutes(), this.timeGrain.asMinutes());
         if (minuteGcf !== 60) { return moment.duration(minuteGcf, 'minutes'); }
@@ -203,7 +358,6 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
         if (daysGcf !== daysInMonth) { return moment.duration(daysGcf, 'days'); }
 
         return moment.duration(1, 'month');
-
     }
 
     private _gcd(a: number, b: number) {
@@ -293,10 +447,9 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
 
     private _getCounterValueColumns() {
         const columns = this.renderingProperties.seriesColumns ?
-            this.dataTable.columns.filter(column => this.renderingProperties.seriesColumns.indexOf(column.columnName) > 0) :
+            this.dataTable.columns.filter(column => this.renderingProperties.seriesColumns.indexOf(column.columnName) >= 0) :
             this.dataTable.columns.filter(column => DataTableDataType.NumberTypes.indexOf(column.dataType) >= 0);
 
         return columns;
     }
-
 }

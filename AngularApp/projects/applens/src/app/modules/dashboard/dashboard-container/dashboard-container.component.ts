@@ -184,14 +184,14 @@ export class DashboardContainerComponent implements OnInit {
   private checkIsWindowsApp() {
     let _sku: ObserverSkuType = ObserverSkuType.All;
     _sku = ObserverSkuType[this.siteSku.sku];
-    return this.siteSku && this.getAppType(this.siteSku.kind.toLowerCase()) === "WebApp" && !this.siteSku.is_linux && _sku > 8; //Only for Web App (Windows) in Standard or higher SKU     
+    return this.siteSku && this.getAppType(this.siteSku.kind.toLowerCase()) === "WebApp" && !this.siteSku.is_linux && _sku >= 8; //Only for Web App (Windows) in Standard or higher SKU
   }
 
   // Check if the app is an App Service Linux Standard or higher SKU
   private checkIsLinuxApp() {
     let _sku: ObserverSkuType = ObserverSkuType.All;      
     _sku = ObserverSkuType[this.siteSku.sku];
-    return this.siteSku && this.getAppType(this.siteSku.kind.toLowerCase()) === "LinuxApp" && this.siteSku.is_linux && _sku > 8; //Only for Web App (Windows) in Standard or higher SKU 
+    return this.siteSku && this.getAppType(this.siteSku.kind.toLowerCase()) === "LinuxApp" && this.siteSku.is_linux && _sku >= 8; //Only for Web App (Linux) in Standard or higher SKU
   }
 
   //To do, Add a utility method to check kind and use in main.component and site.service

@@ -127,7 +127,6 @@ export class FormComponent extends DataRenderBaseComponent {
   }
 
   OnSubmitFormAction(formId: any, buttonId: any) {
-
     let formToExecute = this.detectorForms.find(form => form.formId == formId);
     if (formToExecute != undefined) {
       // validate inputs. If there are validation errors displayed, do not proceed to execution
@@ -182,6 +181,7 @@ export class FormComponent extends DataRenderBaseComponent {
             formToExecute.errorMessage = 'Something went wrong while loading data';
           }));
       } else {
+        // Forms specific params
         let detectorParams = {
           'detectorId': this.detector,
           'fId': formId,
@@ -206,6 +206,13 @@ export class FormComponent extends DataRenderBaseComponent {
                       });
                 }
             }
+        });
+        this.activatedRoute.queryParams.subscribe(allRouteParams => {
+          for(let key of Object.keys(allRouteParams)) {
+            if(!detectorParams.hasOwnProperty(key)) {
+                detectorParams[key] = allRouteParams[key];
+            }
+        }
         });
         let detectorQueryParamsString = JSON.stringify(detectorParams);
         if (!this.isPublic) {

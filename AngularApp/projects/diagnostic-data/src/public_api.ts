@@ -27,7 +27,7 @@ export * from './lib/services/portal-action.service';
 export * from './lib/services/generic-breadcrumb.service';
 export * from './lib/services/generic-user-setting.service';
 export * from './lib/services/generic-portal.service';
-export * from './lib/services/generic-category-service';
+export * from './lib/services/generic-feature-service';
 export * from './lib/config/diagnostic-data-config';
 export * from './lib/diagnostic-data.module';
 
@@ -140,6 +140,7 @@ export * from './lib/components/vertical-display-list/vertical-display-list-item
 export * from './lib/components/web-search/web-search.component'
 export * from './lib/modules/fab-coachmark/coachmark.component'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.component'
+export * from './lib/components/gantt-chart-taskbar-colors/gantt-chart-taskbar-colors.component'
 
 export * from './lib/modules/fab-coachmark/coachmark.module'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.module'

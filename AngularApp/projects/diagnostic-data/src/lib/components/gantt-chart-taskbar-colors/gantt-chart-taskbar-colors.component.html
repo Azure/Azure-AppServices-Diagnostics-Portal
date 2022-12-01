@@ -1,0 +1,19 @@
+<div *ngIf="customColorData.length > 0">
+  <div class="color-code-description-container">
+    <div>
+      <span class="fa status-icon fa-info-circle" style="width: 20px"></span
+      ><span class="title">What do the colors mean?</span>
+    </div>
+    <div *ngFor="let item of customColorData">
+      <div class="custom-colors-container">
+        <div class="color-code">
+          <span [style.backgroundColor]="item.colorCode"></span>
+        </div>
+        <div
+          class="color-description"
+          [innerHTML]="item.colorDescription"
+        ></div>
+      </div>
+    </div>
+  </div>
+</div>
