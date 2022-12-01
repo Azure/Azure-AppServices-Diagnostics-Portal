@@ -18,11 +18,15 @@ using AppLensV3.Services.ApplensTelemetryInitializer;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using AppLensV3.Services.AppSvcUxDiagnosticDataService;
 using Microsoft.Extensions.Hosting;
+using System.Configuration;
+using System;
 
 namespace AppLensV3
 {
     public class Startup
     {
+        private IStartup cloudEnvironmentStartup;
+
         public Startup(IWebHostEnvironment env)
         {
             Environment = env;
@@ -39,6 +43,15 @@ namespace AppLensV3
             }
 
             Configuration = builder.Build();
+
+            if (Configuration.IsPublicAzure())
+            {
+                cloudEnvironmentStartup = new StartupPublicAzure();
+            }
+            else if (Configuration.IsAzureUSGovernment() || Configuration.IsAzureChinaCloud() || Configuration.IsAirGappedCloud())
+            {
+                cloudEnvironmentStartup = new StartupNationalCloud();
+            }
         }
 
         public IConfiguration Configuration { get; }
@@ -96,6 +109,8 @@ namespace AppLensV3
 
             services.AddSingletonWhenEnabled<IDetectorGistTemplateService, TemplateService>(Configuration, "DetectorGistTemplateService");
 
+            services.AddSingletonWhenEnabled<IAppSvcUxDiagnosticDataService, AppSvcUxDiagnosticDataService, NullableAppSvcUxDiagnosticDataService>(Configuration, "LocationPlacementIdService");
+
             services.AddMemoryCache();
             services.AddMvc().AddNewtonsoftJson();
 
@@ -107,96 +122,10 @@ namespace AppLensV3
             // If we are using runtime host directly
             DiagnosticClientToken.Instance.Initialize(Configuration);
 
-            services.AddAuthentication(auth =>
-            {
-                auth.DefaultScheme = AzureADDefaults.BearerAuthenticationScheme;
-            })
-            .AddAzureADBearer(options =>
-            {
-                Configuration.Bind("AzureAd", options);
-            });
-            if (Configuration["ServerMode"] != "internal")
-            {
-                services.AddHttpContextAccessor();
-                AuthorizationTokenService.Instance.Initialize(Configuration);
-            }
-            services.AddAuthorization(options =>
-            {
-                var applensAccess = new SecurityGroupConfig();
-                Configuration.Bind("ApplensAccess", applensAccess);
-
-                options.AddPolicy("DefaultAccess", policy =>
-                {
-                    policy.Requirements.Add(new DefaultAuthorizationRequirement());
-                });
-                options.AddPolicy(applensAccess.GroupName, policy =>
-                {
-                    policy.Requirements.Add(new SecurityGroupRequirement(applensAccess.GroupName, applensAccess.GroupId));
-                });
-            });
-
-            if (Environment.IsDevelopment())
-            {
-                services.AddSingleton<IAuthorizationHandler, SecurityGroupHandlerLocalDevelopment>();
-            }
-            else
-            {
-                services.AddSingleton<IAuthorizationHandler, SecurityGroupHandler>();
-            }
-
-            services.AddSingleton<IAuthorizationHandler, DefaultAuthorizationHandler>();
-
-            if (Configuration["ServerMode"] == "internal")
-            {
-                services.AddTransient<IFilterProvider, LocalFilterProvider>();
-            }
-
-            services.AddSingletonWhenEnabled<IAppSvcUxDiagnosticDataService, AppSvcUxDiagnosticDataService, NullableAppSvcUxDiagnosticDataService>(Configuration, "LocationPlacementIdService");
+            cloudEnvironmentStartup.AddCloudSpecificServices(services, Configuration, Environment);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-
-            app.UseCors(cors =>
-                cors
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin()
-                .WithExposedHeaders(new string[] { HeaderConstants.ScriptEtagHeader })
-            );
-
-
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-
-
-
-            app.Use(async (context, next) =>
-            {
-                await next();
-                if (context.Response.StatusCode == 404 &&
-                    !Path.HasExtension(context.Request.Path.Value) &&
-                    !context.Request.Path.Value.StartsWith("/api/"))
-                {
-                    context.Request.Path = "/index.html";
-                    await next();
-                }
-            });
-
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-        }
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) => cloudEnvironmentStartup.Configure(app, env);
     }
 }
