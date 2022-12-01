@@ -60,7 +60,7 @@ namespace AppLensV3.Services.DiagnosticClientService
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Add("User-Agent", "AppLens");
 
-            if ((environment.IsProduction() || environment.IsStaging()) && !environment.IsEnvironment("NationalCloud"))
+            if ((environment.IsProduction() || environment.IsStaging()))
             {
                 LoadCert();
                 byte[] certContent = Cert.Export(X509ContentType.Cert);
