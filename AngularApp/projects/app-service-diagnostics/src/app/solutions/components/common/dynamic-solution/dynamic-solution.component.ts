@@ -1,4 +1,10 @@
-import { Component, Input, AfterViewInit, ViewChild, ComponentFactoryResolver } from '@angular/core';
+import {
+  Component,
+  Input,
+  AfterViewInit,
+  ViewChild,
+  ComponentFactoryResolver
+} from '@angular/core';
 import { DynamicSolutionPlaceHolderDirective } from '../../../directives/dynamic-solution-placeholder.directive';
 import { SolutionHolder } from '../../../../shared/models/solution-holder';
 import { SolutionBaseComponent } from '../solution-base/solution-base.component';
@@ -8,29 +14,31 @@ import { ScaleOutSolutionComponent } from '../../specific-solutions/scale-out-so
 import { SplitSitesIntoDifferentServerFarmsSolutionComponent } from '../../specific-solutions/split-sites-serverfarms-solution/split-sites-serverfarms-solution.component';
 import { RevertDeploymentComponent } from '../../specific-solutions/revert-deployment-solution/revert-deployment-solution.component';
 
-
 @Component({
-    selector: 'dynamic-solution',
-    template: `
-    <div dynamic-solution-placeholder></div>
-    `
+  selector: 'dynamic-solution',
+  template: ` <div dynamic-solution-placeholder></div> `
 })
 export class DynamicSolutionComponent implements AfterViewInit {
-    currentComponent = null;
+  currentComponent = null;
 
-    @Input() solutionHolder: SolutionHolder;
+  @Input() solutionHolder: SolutionHolder;
 
-    @ViewChild(DynamicSolutionPlaceHolderDirective) solutionPlaceHolder: DynamicSolutionPlaceHolderDirective;
+  @ViewChild(DynamicSolutionPlaceHolderDirective)
+  solutionPlaceHolder: DynamicSolutionPlaceHolderDirective;
 
-    constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
-    ngAfterViewInit(): void {
-        const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.solutionHolder.component);
+  ngAfterViewInit(): void {
+    const componentFactory =
+      this.componentFactoryResolver.resolveComponentFactory(
+        this.solutionHolder.component
+      );
 
-        const viewContainerRef = this.solutionPlaceHolder.viewContainerRef;
-        viewContainerRef.clear();
+    const viewContainerRef = this.solutionPlaceHolder.viewContainerRef;
+    viewContainerRef.clear();
 
-        const componentRef = viewContainerRef.createComponent(componentFactory);
-        (<SolutionBaseComponent>componentRef.instance).data = this.solutionHolder.data;
-    }
+    const componentRef = viewContainerRef.createComponent(componentFactory);
+    (<SolutionBaseComponent>componentRef.instance).data =
+      this.solutionHolder.data;
+  }
 }

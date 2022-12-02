@@ -1,32 +1,70 @@
-<fabric-feedback *ngIf="!stillLoading && showDashboardContent"></fabric-feedback>
+<fabric-feedback
+  *ngIf="!stillLoading && showDashboardContent"
+></fabric-feedback>
 <div *ngIf="!stillLoading && displayAlertDialog">
-  <fab-dialog [hidden]="!displayAlertDialog" [styles]="alertDialogStyles" [modalProps]="alertDialogProps" [forceFocusInsideTrap]="true">
+  <fab-dialog
+    [hidden]="!displayAlertDialog"
+    [styles]="alertDialogStyles"
+    [modalProps]="alertDialogProps"
+    [forceFocusInsideTrap]="true"
+  >
     <fab-dialog-content [title]="alertInfo.header" tabindex="1">
-      <p>{{alertInfo.details}}</p>
+      <p>{{ alertInfo.details }}</p>
       <label for="cross-subscription-justification">
         Justification <span class="required">*</span>
       </label>
-      <fab-text-field [ariaLabel]="'Justification for accessing resource out of case subscription'" [(value)]="crossSubJustification"
-        [placeholder]="'Justification for accessing resource out of case subscription'" id="cross-subscription-justification">
+      <fab-text-field
+        [ariaLabel]="
+          'Justification for accessing resource out of case subscription'
+        "
+        [(value)]="crossSubJustification"
+        [placeholder]="
+          'Justification for accessing resource out of case subscription'
+        "
+        id="cross-subscription-justification"
+      >
       </fab-text-field>
     </fab-dialog-content>
     <fab-dialog-footer>
       <div class="mt-5">
-        <fab-primary-button (onClick)="handleUserResponse(alertInfo.confirmationOptions[0])" [contentClass]="'mr-3'" tabindex="1" [disabled]="!(crossSubJustification && crossSubJustification.length>0)">
-          {{!showLoaderInDialog? alertInfo.confirmationOptions[0].label: 'Loading...'}}
+        <fab-primary-button
+          (onClick)="handleUserResponse(alertInfo.confirmationOptions[0])"
+          [contentClass]="'mr-3'"
+          tabindex="1"
+          [disabled]="
+            !(crossSubJustification && crossSubJustification.length > 0)
+          "
+        >
+          {{
+            !showLoaderInDialog
+              ? alertInfo.confirmationOptions[0].label
+              : 'Loading...'
+          }}
         </fab-primary-button>
-        <fab-default-button (onClick)="handleUserResponse(alertInfo.confirmationOptions[1])" tabindex="1">
-          {{alertInfo.confirmationOptions[1].label}}
+        <fab-default-button
+          (onClick)="handleUserResponse(alertInfo.confirmationOptions[1])"
+          tabindex="1"
+        >
+          {{ alertInfo.confirmationOptions[1].label }}
         </fab-default-button>
       </div>
-      <div class="mt-5" *ngIf="displayErrorInDialog" tabindex="1" style="font-size:12px;color:red;">
-        {{errorInDialog}}
+      <div
+        class="mt-5"
+        *ngIf="displayErrorInDialog"
+        tabindex="1"
+        style="font-size: 12px; color: red"
+      >
+        {{ errorInDialog }}
       </div>
     </fab-dialog-footer>
   </fab-dialog>
 </div>
 <applens-header *ngIf="!stillLoading && showDashboardContent"></applens-header>
-<div class="main-row" style="margin: 0px auto; width: 100%;margin-top: 50px;" *ngIf="stillLoading">
+<div
+  class="main-row"
+  style="margin: 0px auto; width: 100%; margin-top: 50px"
+  *ngIf="stillLoading"
+>
   <fab-spinner [size]="loaderSize" [label]="'Loading...'"></fab-spinner>
 </div>
 <side-nav *ngIf="!stillLoading && showDashboardContent"></side-nav>
@@ -65,47 +103,87 @@
     </div>
   </nav>
 </header> -->
-<div *ngIf="!stillLoading && showDashboardContent" class="dashboard-container content-under-header" [ngStyle]="getContainerStyle()">
+<div
+  *ngIf="!stillLoading && showDashboardContent"
+  class="dashboard-container content-under-header"
+  [ngStyle]="getContainerStyle()"
+>
   <div class="dashboard-content">
     <applens-preview-banner></applens-preview-banner>
     <comm-alert></comm-alert>
-    <div style="margin-left: 12px;">
-      <fab-breadcrumb [items]="breadcrumbItems" [styles]="breadcrumbStyles" [tooltipHostProps]="breadcrumbTooltipHostProps"></fab-breadcrumb>
+    <div style="margin-left: 12px">
+      <fab-breadcrumb
+        [items]="breadcrumbItems"
+        [styles]="breadcrumbStyles"
+        [tooltipHostProps]="breadcrumbTooltipHostProps"
+      ></fab-breadcrumb>
     </div>
     <div *ngIf="title && title.length > 0" class="dashboard-title">
-      {{title}}
+      {{ title }}
     </div>
-    <div [class.content-with-side-nav]="showL2SideNav" style="padding: 0px 20px;">
+    <div
+      [class.content-with-side-nav]="showL2SideNav"
+      style="padding: 0px 20px"
+    >
       <router-outlet></router-outlet>
     </div>
   </div>
 </div>
 
-<fab-panel *ngIf="!stillLoading && showDashboardContent" [isOpen]="_applensGlobal.openResourceInfoPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-[styles]="panelStyles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
-(onDismiss)="dismissedHandler()" [headerText]="'Resource Information'">
-<div>
-  <div class="resource-content-container">
-    <div>
-      <div class="resource-content">
-        <div *ngIf="observerLink !== ''">
-          <a href="{{observerLink}}" target="_blank">Observer Link
-            <i class="fa fa-link" aria-hidden="true"></i>
-          </a>
-        </div>
-        <div *ngFor="let key of keys">
-          <b>{{key}}:</b> &nbsp;<div style="display:inline">{{resource[key]}}</div>&nbsp;
-          <div style="display: inline;" *ngIf="key == 'StampName' && stampAppLensLink !== ''">
-            <a href="{{stampAppLensLink}}" target="_blank">Open in AppLens<i class="hyper-link-icon ml-1"
-                aria-hidden="true"></i></a>
+<fab-panel
+  *ngIf="!stillLoading && showDashboardContent"
+  [isOpen]="_applensGlobal.openResourceInfoPanel"
+  [type]="type"
+  [customWidth]="width"
+  [isHiddenOnDismiss]="true"
+  [styles]="panelStyles"
+  [isLightDismiss]="true"
+  [hasCloseButton]="true"
+  [closeButtonAriaLabel]="'close'"
+  (onDismiss)="dismissedHandler()"
+  [headerText]="'Resource Information'"
+>
+  <div>
+    <div class="resource-content-container">
+      <div>
+        <div class="resource-content">
+          <div *ngIf="observerLink !== ''">
+            <a href="{{ observerLink }}" target="_blank"
+              >Observer Link
+              <i class="fa fa-link" aria-hidden="true"></i>
+            </a>
           </div>
-          <span *ngIf="resource[key] !== '' && !checkWithHref(resource[key])" style="cursor: pointer;"><img
-              src="/assets/img/copy-icon.png" style="height: 12px;background-color:var(--imgButtonBackground);"
-              (click)="copyToClipboard(resource[key], $event)" alt="Copy to clipboard" />
-          </span>
+          <div *ngFor="let key of keys">
+            <b>{{ key }}:</b> &nbsp;
+            <div style="display: inline">{{ resource[key] }}</div>
+            &nbsp;
+            <div
+              style="display: inline"
+              *ngIf="key === 'StampName' && stampAppLensLink !== ''"
+            >
+              <a href="{{ stampAppLensLink }}" target="_blank"
+                >Open in AppLens<i
+                  class="hyper-link-icon ml-1"
+                  aria-hidden="true"
+                ></i
+              ></a>
+            </div>
+            <span
+              *ngIf="resource[key] !== '' && !checkWithHref(resource[key])"
+              style="cursor: pointer"
+              ><img
+                src="/assets/img/copy-icon.png"
+                style="
+                  height: 12px;
+                  background-color: var(--imgButtonBackground);
+                "
+                (click)="copyToClipboard(resource[key], $event)"
+                alt="Copy to clipboard"
+              />
+            </span>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </fab-panel>

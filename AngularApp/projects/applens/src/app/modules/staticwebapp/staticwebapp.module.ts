@@ -4,19 +4,16 @@ import { RouterModule } from '@angular/router';
 import { SharedModule } from '../../shared/shared.module';
 import { StaticWebAppFinderComponent } from './staticwebapp-finder/staticwebapp-finder.component';
 
-export const StaticWebAppAppModuleRoutes: ModuleWithProviders<StaticWebAppModule> = RouterModule.forChild([
-  {
-    path: '',
-    component: StaticWebAppFinderComponent
-  }
-]);
+export const StaticWebAppAppModuleRoutes: ModuleWithProviders<StaticWebAppModule> =
+  RouterModule.forChild([
+    {
+      path: '',
+      component: StaticWebAppFinderComponent
+    }
+  ]);
 
 @NgModule({
-  imports: [
-    CommonModule,
-    StaticWebAppAppModuleRoutes,
-    SharedModule
-  ],
+  imports: [CommonModule, StaticWebAppAppModuleRoutes, SharedModule],
   declarations: [StaticWebAppFinderComponent]
 })
-export class StaticWebAppModule { }
+export class StaticWebAppModule {}

@@ -14,8 +14,13 @@
   </ng-container>
 </div> -->
 
-<highcharts-chart *ngIf="HighchartData && !loading" [Highcharts]="Highcharts" [options]="options" style="display: block;">
+<highcharts-chart
+  *ngIf="HighchartData && !loading"
+  [Highcharts]="Highcharts"
+  [options]="options"
+  style="display: block"
+>
 </highcharts-chart>
-<div *ngIf="!HighchartData || loading" style="height:200px">
+<div *ngIf="!HighchartData || loading" style="height: 200px">
   <i class="fa fa-circle-o-notch fa-spin"></i>
 </div>

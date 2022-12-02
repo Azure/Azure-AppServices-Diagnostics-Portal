@@ -16,17 +16,14 @@ import { CXPChatCallerService } from '../../shared-v2/services/cxp-chat-caller.s
 const ResourceRoutes = RouterModule.forChild([
   {
     path: '',
-    loadChildren: () => import('../../home/home.module').then(m => m.HomeModule),
+    loadChildren: () =>
+      import('../../home/home.module').then((m) => m.HomeModule),
     resolve: { data: ResourceResolver }
   }
 ]);
 
 @NgModule({
-  imports: [
-    CommonModule,
-    SharedV2Module,
-    ResourceRoutes
-  ],
+  imports: [CommonModule, SharedV2Module, ResourceRoutes],
   declarations: [],
   providers: [
     ContentService,
@@ -40,4 +37,4 @@ const ResourceRoutes = RouterModule.forChild([
     ResourceResolver
   ]
 })
-export class WebHostingEnvironmentsModule { }
+export class WebHostingEnvironmentsModule {}

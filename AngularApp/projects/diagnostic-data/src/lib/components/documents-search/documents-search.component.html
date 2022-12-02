@@ -1,54 +1,80 @@
 <div *ngIf="enabled">
-  <span *ngIf="showPreLoadingError" style="margin-top:10px;">{{preLoadingErrorMessage}}</span>
-    <span *ngIf="showPreLoader" style="margin-top:10px;">
-        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-        <span style="margin-left:5px">Fetching results from Deep Search...</span>
+  <span *ngIf="showPreLoadingError" style="margin-top: 10px">{{
+    preLoadingErrorMessage
+  }}</span>
+  <span *ngIf="showPreLoader" style="margin-top: 10px">
+    <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+    <span style="margin-left: 5px">Fetching results from Deep Search...</span>
   </span>
-  
-  <div *ngIf="!isChildComponent && showSearchTermPractices" class="no-results-section">
-      <span class="no-results-header">Your search "{{searchTermDisplay}}" did not yield any results from Deep Search.</span>
-      <span class="no-results-content">Suggestions:</span>
-      <ul class="no-results-content">
-          <li>Make sure all words are spelled correctly.</li>
-          <li>Try different keywords.</li>
-          <li>Try more general keywords.</li>
-      </ul>
+
+  <div
+    *ngIf="!isChildComponent && showSearchTermPractices"
+    class="no-results-section"
+  >
+    <span class="no-results-header"
+      >Your search "{{ searchTermDisplay }}" did not yield any results from Deep
+      Search.</span
+    >
+    <span class="no-results-content">Suggestions:</span>
+    <ul class="no-results-content">
+      <li>Make sure all words are spelled correctly.</li>
+      <li>Try different keywords.</li>
+      <li>Try more general keywords.</li>
+    </ul>
   </div>
-  <div *ngIf="deepSearchResults && deepSearchResults.length> 0 ">
+  <div *ngIf="deepSearchResults && deepSearchResults.length > 0">
     <div class="article-container">
-      <div class="article-heading" tabindex="0">Here are some documents from the Deep Search that might help you</div>
-      
+      <div class="article-heading" tabindex="0">
+        Here are some documents from the Deep Search that might help you
+      </div>
+
       <!--View Results from CSS Wiki chekbox only for Internal:-->
-      <div [hidden]="isPublic" > <!--hidden = true for External-->
-        <input  type="checkbox" name="onlyCSSWiki" 
-                [checked]="viewResultsFromCSSWikionly" 
-                (click)="toggleCSSWikiResults()">
-        <label for="onlyCSSWiki"> View Results only from CSS wiki </label><br>
+      <div [hidden]="isPublic">
+        <!--hidden = true for External-->
+        <input
+          type="checkbox"
+          name="onlyCSSWiki"
+          [checked]="viewResultsFromCSSWikionly"
+          (click)="toggleCSSWikiResults()"
+        />
+        <label for="onlyCSSWiki"> View Results only from CSS wiki </label><br />
       </div>
 
       <!--Iterate over deep search results-->
-      <div *ngFor="let document of deepSearchResults;let i = index">
-        <div  class="article" 
-              [hidden]="(!isPublic || i < numDocumentsExpanded ) ? false : !viewRemainingDocuments" 
-              (click)="selectResult(document)" tabindex="0" 
-              (keyup.enter)="selectResult(document)" >
-          <a style="font-weight: 600;">{{ limitTextCharacters(document.title, 100 )}}
+      <div *ngFor="let document of deepSearchResults; let i = index">
+        <div
+          class="article"
+          [hidden]="
+            !isPublic || i < numDocumentsExpanded
+              ? false
+              : !viewRemainingDocuments
+          "
+          (click)="selectResult(document)"
+          tabindex="0"
+          (keyup.enter)="selectResult(document)"
+        >
+          <a style="font-weight: 600"
+            >{{ limitTextCharacters(document.title, 100) }}
             <i class="fa fa-external-link"></i>
           </a>
-          <div class="article-link">{{getLinkText(document.url)}}  </div>
-          
-          <div [innerHtml] = "limitTextCharacters(document.description,300)" >  </div>
+          <div class="article-link">{{ getLinkText(document.url) }}</div>
+
+          <div
+            [innerHtml]="limitTextCharacters(document.description, 300)"
+          ></div>
         </div>
       </div>
 
       <!--Available only for external ; hidden = true for Internal-->
-      <a  [hidden]="!isPublic" 
-          (click)="showRemainingArticles()"> 
-        {{viewOrHideAnchorTagText(viewRemainingDocuments , deepSearchResults.length , numDocumentsExpanded )}}   
+      <a [hidden]="!isPublic" (click)="showRemainingArticles()">
+        {{
+          viewOrHideAnchorTagText(
+            viewRemainingDocuments,
+            deepSearchResults.length,
+            numDocumentsExpanded
+          )
+        }}
       </a>
-    
     </div>
   </div>
-
 </div>
-

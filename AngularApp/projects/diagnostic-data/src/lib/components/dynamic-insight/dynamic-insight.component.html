@@ -1,51 +1,94 @@
-<div class="panel panel-default insight-panel"
+<div
+  class="panel panel-default insight-panel"
   [class.critical-insight-panel]="insight.status === InsightStatus.Critical"
   [class.warning-insight-panel]="insight.status === InsightStatus.Warning"
   [class.success-insight-panel]="insight.status === InsightStatus.Success"
   [class.info-insight-panel]="insight.status === InsightStatus.Info"
-  tabindex="0">
+  tabindex="0"
+>
   <div class="panel-heading">
-    <h5 class="panel-title" [class.clickable-header]="insight.innerDiagnosticData"  (click)="toggleInsightExpanded(insight)" (keyup.enter)="toggleInsightExpanded(insight)" tabindex="0">
-      <div style="display: table;">
+    <h5
+      class="panel-title"
+      [class.clickable-header]="insight.innerDiagnosticData"
+      (click)="toggleInsightExpanded(insight)"
+      (keyup.enter)="toggleInsightExpanded(insight)"
+      tabindex="0"
+    >
+      <div style="display: table">
         <div style="display: table-row">
           <div style="display: table-cell">
-            <span class="fa insight-expand-icon" [class.fa-angle-right]="insight.innerDiagnosticData && !insight.isExpanded"
-              [class.fa-angle-down]="insight.innerDiagnosticData && insight.isExpanded"></span>
+            <span
+              class="fa insight-expand-icon"
+              [class.fa-angle-right]="
+                insight.innerDiagnosticData && !insight.isExpanded
+              "
+              [class.fa-angle-down]="
+                insight.innerDiagnosticData && insight.isExpanded
+              "
+            ></span>
           </div>
           <div style="display: table-cell">
-            <span class="fa status-icon" [class.fa-exclamation-circle]="insight.status === InsightStatus.Critical"
-              [class.fa-exclamation-triangle]="insight.status === InsightStatus.Warning"
+            <span
+              class="fa status-icon"
+              [class.fa-exclamation-circle]="
+                insight.status === InsightStatus.Critical
+              "
+              [class.fa-exclamation-triangle]="
+                insight.status === InsightStatus.Warning
+              "
               [class.fa-check-circle]="insight.status === InsightStatus.Success"
-              [class.fa-info-circle]="insight.status === InsightStatus.Info"></span>
+              [class.fa-info-circle]="insight.status === InsightStatus.Info"
+            ></span>
           </div>
-          <div style="display: table-cell;width:100%">
-            {{insight.title}}
+          <div style="display: table-cell; width: 100%">
+            {{ insight.title }}
           </div>
           <div style="display: table-cell">
             <div class="pull-right" style="white-space: nowrap">
-              <div [ngClass]="{'con-tooltip bottom':!insight.isRated}"
-                class="insight-rating">
-                <a attr.name="Thumbs up for insight: {{insight.title}}" role="button" tabindex="0"
-                  attr.aria-label="Thumbs up for insight: {{insight.title}}"
-                  (click)="setInsightComment(insight, true)" (keyup.enter)="setInsightComment(insight, true)"> <i
+              <div
+                [ngClass]="{ 'con-tooltip bottom': !insight.isRated }"
+                class="insight-rating"
+              >
+                <a
+                  attr.name="Thumbs up for insight: {{ insight.title }}"
+                  role="button"
+                  tabindex="0"
+                  attr.aria-label="Thumbs up for insight: {{ insight.title }}"
+                  (click)="setInsightComment(insight, true)"
+                  (keyup.enter)="setInsightComment(insight, true)"
+                >
+                  <i
                     class="fa fa-thumbs-o-up fa-lg"
-                    [ngStyle]="{'color':insight.isRated && insight.isHelpful ? 'green': 'gray'}"></i>
+                    [ngStyle]="{
+                      color:
+                        insight.isRated && insight.isHelpful ? 'green' : 'gray'
+                    }"
+                  ></i>
                 </a>
-                <div class="tooltip ">
-                  Helpful
-                </div>
+                <div class="tooltip">Helpful</div>
               </div>
-              <div style=" display: inline-block;" [ngClass]="{'con-tooltip bottom':!insight.isRated}"
-                class="insight-rating">
-                <a attr.name="Thumbs down for insight: {{insight.title}}" role="button" tabindex="0"
-                  attr.aria-label="Thumbs down for insight: {{insight.title}}"
-                  (click)="setInsightComment(insight, false)" (keyup.enter)="setInsightComment(insight, false)"> <i
+              <div
+                style="display: inline-block"
+                [ngClass]="{ 'con-tooltip bottom': !insight.isRated }"
+                class="insight-rating"
+              >
+                <a
+                  attr.name="Thumbs down for insight: {{ insight.title }}"
+                  role="button"
+                  tabindex="0"
+                  attr.aria-label="Thumbs down for insight: {{ insight.title }}"
+                  (click)="setInsightComment(insight, false)"
+                  (keyup.enter)="setInsightComment(insight, false)"
+                >
+                  <i
                     class="fa fa-thumbs-o-down fa-lg"
-                    [ngStyle]="{'color':insight.isRated && !insight.isHelpful ? 'red': 'gray'}"></i>
+                    [ngStyle]="{
+                      color:
+                        insight.isRated && !insight.isHelpful ? 'red' : 'gray'
+                    }"
+                  ></i>
                 </a>
-                <div class="tooltip ">
-                  Not Helpful
-                </div>
+                <div class="tooltip">Not Helpful</div>
               </div>
             </div>
           </div>
@@ -56,8 +99,15 @@
 
   <div class="panel-body" *ngIf="insight.isExpanded">
     <div *ngIf="insight.description" [innerHtml]="insight.description"></div>
-    <dynamic-data [diagnosticData]="insight.innerDiagnosticData" [startTime]="startTime" [endTime]="endTime"  [xAxisPlotBands]="xAxisPlotBands" 
-    [zoomBehavior] = "zoomBehavior" (XAxisSelection)="onXAxisSelection($event)"  [isAnalysisView]="isAnalysisView">
+    <dynamic-data
+      [diagnosticData]="insight.innerDiagnosticData"
+      [startTime]="startTime"
+      [endTime]="endTime"
+      [xAxisPlotBands]="xAxisPlotBands"
+      [zoomBehavior]="zoomBehavior"
+      (XAxisSelection)="onXAxisSelection($event)"
+      [isAnalysisView]="isAnalysisView"
+    >
     </dynamic-data>
   </div>
 </div>

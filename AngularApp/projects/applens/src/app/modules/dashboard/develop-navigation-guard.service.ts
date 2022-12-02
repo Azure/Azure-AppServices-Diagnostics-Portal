@@ -11,19 +11,20 @@ export interface IDeactivateComponent {
 @Injectable({
   providedIn: 'root'
 })
-export class DevelopNavigationGuardService implements CanDeactivate<OnboardingFlowComponent> {
-
+export class DevelopNavigationGuardService
+  implements CanDeactivate<OnboardingFlowComponent>
+{
   component: Object;
   route: ActivatedRouteSnapshot;
 
-  constructor() { }
+  constructor() {}
 
-  canDeactivate(component:IDeactivateComponent,
-      route: ActivatedRouteSnapshot, 
-      state: RouterStateSnapshot,
-      nextState: RouterStateSnapshot) : Observable<boolean> | Promise<boolean> | boolean {
-
+  canDeactivate(
+    component: IDeactivateComponent,
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot,
+    nextState: RouterStateSnapshot
+  ): Observable<boolean> | Promise<boolean> | boolean {
     return component.canExit ? component.canExit() : true;
-
   }
 }

@@ -1,8 +1,20 @@
 import {
-  CommsService, DiagnosticDataModule, DiagnosticService, DiagnosticSiteService,
-  PUBLIC_DEV_CONFIGURATION, PUBLIC_PROD_CONFIGURATION, SolutionService, SettingsService,
-  BackendCtrlQueryService, GenieGlobals, VersionService, PortalActionGenericService,
-  KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService, GenericFeatureService
+  CommsService,
+  DiagnosticDataModule,
+  DiagnosticService,
+  DiagnosticSiteService,
+  PUBLIC_DEV_CONFIGURATION,
+  PUBLIC_PROD_CONFIGURATION,
+  SolutionService,
+  SettingsService,
+  BackendCtrlQueryService,
+  GenieGlobals,
+  VersionService,
+  PortalActionGenericService,
+  KustoTelemetryService,
+  AppInsightsTelemetryService,
+  UnhandledExceptionHandlerService,
+  GenericFeatureService
 } from 'diagnostic-data';
 import { SiteService } from 'projects/app-service-diagnostics/src/app/shared/services/site.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -11,9 +23,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
-import {
-  ResourceRedirectComponent
-} from './shared/components/resource-redirect/resource-redirect.component';
+import { ResourceRedirectComponent } from './shared/components/resource-redirect/resource-redirect.component';
 import { TestInputComponent } from './shared/components/test-input/test-input.component';
 import { GenericApiService } from './shared/services/generic-api.service';
 import { GenericCommsService } from './shared/services/generic-comms.service';
@@ -41,7 +51,7 @@ import { ResourcesModule } from './resources/resources.module';
 import { WebSitesModule } from './resources/web-sites/web-sites.module';
 import { VersionTestService } from './fabric-ui/version-test.service';
 import { BackendCtrlService } from './shared/services/backend-ctrl.service';
-import { PortalActionService} from './shared/services/portal-action.service';
+import { PortalActionService } from './shared/services/portal-action.service';
 import { FabricModule } from './fabric-ui/fabric.module';
 import { QuickLinkService } from './shared-v2/services/quick-link.service';
 import { RiskAlertService } from './shared-v2/services/risk-alert.service';
@@ -57,35 +67,55 @@ import { ClientScriptService } from './shared-v2/services/client-script.service'
     WebSitesModule,
     SharedModule.forRoot(),
     StartupModule.forRoot(),
-    DiagnosticDataModule.forRoot(environment.production ? PUBLIC_PROD_CONFIGURATION : PUBLIC_DEV_CONFIGURATION),
+    DiagnosticDataModule.forRoot(
+      environment.production
+        ? PUBLIC_PROD_CONFIGURATION
+        : PUBLIC_DEV_CONFIGURATION
+    ),
     BrowserAnimationsModule,
-    RouterModule.forRoot([
-    {
-        path: 'test',
-        component: TestInputComponent,
-    },
-    {
-        path: 'resourceRedirect',
-        component: ResourceRedirectComponent,
-    },
-    {
-        path: 'resource',
-        loadChildren: () => import('./resources/resources.module').then(m => m.ResourcesModule),
-    }
-], { relativeLinkResolution: 'legacy' }),
+    RouterModule.forRoot(
+      [
+        {
+          path: 'test',
+          component: TestInputComponent
+        },
+        {
+          path: 'resourceRedirect',
+          component: ResourceRedirectComponent
+        },
+        {
+          path: 'resource',
+          loadChildren: () =>
+            import('./resources/resources.module').then(
+              (m) => m.ResourcesModule
+            )
+        }
+      ],
+      { relativeLinkResolution: 'legacy' }
+    ),
     CustomMaterialModule,
     HighchartsChartModule,
     FabricModule
   ],
-  declarations: [
-    AppComponent,
-  ],
+  declarations: [AppComponent],
   providers: [
-    { provide: KustoTelemetryService, useExisting: PortalKustoTelemetryService },
-    { provide: AppInsightsTelemetryService, useExisting: PortalAppInsightsTelemetryService },
+    {
+      provide: KustoTelemetryService,
+      useExisting: PortalKustoTelemetryService
+    },
+    {
+      provide: AppInsightsTelemetryService,
+      useExisting: PortalAppInsightsTelemetryService
+    },
     {
       provide: DiagnosticService,
-      useFactory: (_localBackendService: LocalBackendService, _genericApiService: GenericApiService) => environment.useApplensBackend ? _localBackendService : _genericApiService,
+      useFactory: (
+        _localBackendService: LocalBackendService,
+        _genericApiService: GenericApiService
+      ) =>
+        environment.useApplensBackend
+          ? _localBackendService
+          : _genericApiService,
       deps: [LocalBackendService, GenericApiService]
     },
     { provide: CommsService, useExisting: GenericCommsService },
@@ -108,12 +138,12 @@ import { ClientScriptService } from './shared-v2/services/client-script.service'
     ResourceResolver,
     { provide: VersionService, useExisting: VersionTestService },
     { provide: BackendCtrlQueryService, useExisting: BackendCtrlService },
-    { provide: PortalActionGenericService, useExisting: PortalActionService},
+    { provide: PortalActionGenericService, useExisting: PortalActionService },
     QuickLinkService,
     RiskAlertService,
     ThemeService,
-    { provide: GenericThemeService, useExisting: ThemeService },
+    { provide: GenericThemeService, useExisting: ThemeService }
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

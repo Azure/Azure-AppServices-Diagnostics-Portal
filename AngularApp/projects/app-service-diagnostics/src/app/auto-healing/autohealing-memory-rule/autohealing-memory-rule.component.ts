@@ -8,7 +8,6 @@ import { FormatHelper } from '../../shared/utilities/formattingHelper';
   styleUrls: ['../autohealing.component.scss']
 })
 export class AutohealingMemoryRuleComponent extends AutohealingRuleComponent {
-
   constructor() {
     super();
   }
@@ -28,7 +27,6 @@ export class AutohealingMemoryRuleComponent extends AutohealingRuleComponent {
     this.editMode = false;
     this.ruleChange.emit(this.rule);
   }
-
 
   deleteRule() {
     this.displayDeleteRuleMessage = true;
@@ -51,6 +49,4 @@ export class AutohealingMemoryRuleComponent extends AutohealingRuleComponent {
   formatBytes(bytes) {
     return FormatHelper.formatBytes(bytes, 2);
   }
-
-
 }

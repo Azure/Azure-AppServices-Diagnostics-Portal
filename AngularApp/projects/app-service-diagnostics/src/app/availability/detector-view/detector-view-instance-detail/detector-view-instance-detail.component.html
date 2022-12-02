@@ -1,4 +1,15 @@
-<metric-graph [metricSets]="detectorMetrics" [title]="detectorMetricsTitle" [chartType]="metricsChartType" [description]="detectorMetricsDescription"
-    [yAxisLabel]="detectorMetricsYAxisLabel"></metric-graph>
-<instance-view-graph [metricSets]="instanceDetailMetrics" [title]="instanceDetailTitle" [chartType]="instanceDetailChartType"
-    [yAxisLabel]="instanceDetailYAxisLabel" [description]="instanceDetailDescription" (updateInstance)="logInstanceSelected($event)"></instance-view-graph>
+<metric-graph
+  [metricSets]="detectorMetrics"
+  [title]="detectorMetricsTitle"
+  [chartType]="metricsChartType"
+  [description]="detectorMetricsDescription"
+  [yAxisLabel]="detectorMetricsYAxisLabel"
+></metric-graph>
+<instance-view-graph
+  [metricSets]="instanceDetailMetrics"
+  [title]="instanceDetailTitle"
+  [chartType]="instanceDetailChartType"
+  [yAxisLabel]="instanceDetailYAxisLabel"
+  [description]="instanceDetailDescription"
+  (updateInstance)="logInstanceSelected($event)"
+></instance-view-graph>

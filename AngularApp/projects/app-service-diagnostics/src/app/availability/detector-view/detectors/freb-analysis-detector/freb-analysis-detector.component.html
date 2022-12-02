@@ -1,36 +1,57 @@
-<metric-graph 
-    [metricSets]="detectorMetrics" 
-    [title]="detectorMetricsTitle" 
-    [chartType]="metricsChartType" 
-    [description]="detectorMetricsDescription" 
-    [yAxisLabel]="detectorMetricsYAxisLabel">
+<metric-graph
+  [metricSets]="detectorMetrics"
+  [title]="detectorMetricsTitle"
+  [chartType]="metricsChartType"
+  [description]="detectorMetricsDescription"
+  [yAxisLabel]="detectorMetricsYAxisLabel"
+>
 </metric-graph>
 
 <div class="focus-box focus-box-info">
-    In order to further investigate failed requests, you can look in the following places:
-    <ul style="list-style: none; padding-top: 5px">
-        <li>
-            <a (click)="openSupportBlade(eventLog)">Event Logs <i class="fa fa-arrow-circle-o-right" style="font-size: 15px" ></i></a>
-            <div style="padding-left:10px">
-                Use Event Logs to see the exception that caused the failed request along with stack trace. Using the stack trace, you can identify the part of your application that is causing the failed requests. 
-            </div>
-        </li>
-        <li>
-            <a (click)="openSupportBlade(frebLog)">Failed Request Tracing Logs <i class="fa fa-arrow-circle-o-right" style="font-size: 15px" ></i></a> 
-            <div style="padding-left:10px">
-                These logs will give you detailed information about any failed requests. They include the trace of all IIS components that are used to process the request and the time taken of each component.
-                be useful if you are attempting to increase site performance or isolate what is causing a specific HTTP error to be returned. 
-            </div>
-        </li>
-        <li>
-            <a (click)="openAppInsightsBlade()">Application Insights <i class="fa fa-arrow-circle-o-right" style="font-size: 15px" ></i></a>
-            <div style="padding-left:10px">
-                Use Application Insights if you are using an ASP.NET application. If you want to investigate uncaught exceptions that are causing failed requests, 
-                Application Insights makes it very easy to <a (click)="openNewTab('https://goo.gl/Ulp8Jb')">capture any unhandled exception <i class="fa fa-external-link" style="font-size: 15px" ></i></a>
-            </div>
-        </li>
-    </ul>
+  In order to further investigate failed requests, you can look in the following
+  places:
+  <ul style="list-style: none; padding-top: 5px">
+    <li>
+      <a (click)="openSupportBlade(eventLog)"
+        >Event Logs
+        <i class="fa fa-arrow-circle-o-right" style="font-size: 15px"></i
+      ></a>
+      <div style="padding-left: 10px">
+        Use Event Logs to see the exception that caused the failed request along
+        with stack trace. Using the stack trace, you can identify the part of
+        your application that is causing the failed requests.
+      </div>
+    </li>
+    <li>
+      <a (click)="openSupportBlade(frebLog)"
+        >Failed Request Tracing Logs
+        <i class="fa fa-arrow-circle-o-right" style="font-size: 15px"></i
+      ></a>
+      <div style="padding-left: 10px">
+        These logs will give you detailed information about any failed requests.
+        They include the trace of all IIS components that are used to process
+        the request and the time taken of each component. be useful if you are
+        attempting to increase site performance or isolate what is causing a
+        specific HTTP error to be returned.
+      </div>
+    </li>
+    <li>
+      <a (click)="openAppInsightsBlade()"
+        >Application Insights
+        <i class="fa fa-arrow-circle-o-right" style="font-size: 15px"></i
+      ></a>
+      <div style="padding-left: 10px">
+        Use Application Insights if you are using an ASP.NET application. If you
+        want to investigate uncaught exceptions that are causing failed
+        requests, Application Insights makes it very easy to
+        <a (click)="openNewTab('https://goo.gl/Ulp8Jb')"
+          >capture any unhandled exception
+          <i class="fa fa-external-link" style="font-size: 15px"></i
+        ></a>
+      </div>
+    </li>
+  </ul>
 </div>
 
-<br/>
-<feedback-form [source]='getDetectorName()'></feedback-form>
+<br />
+<feedback-form [source]="getDetectorName()"></feedback-form>

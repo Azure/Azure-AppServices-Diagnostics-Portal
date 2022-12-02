@@ -8,9 +8,8 @@ describe('ConnectAppInsightsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConnectAppInsightsComponent ]
-    })
-    .compileComponents();
+      declarations: [ConnectAppInsightsComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -8,9 +8,8 @@ describe('CategoryTileV4Component', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CategoryTileV4Component ]
-    })
-    .compileComponents();
+      declarations: [CategoryTileV4Component]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

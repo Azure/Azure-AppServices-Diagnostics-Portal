@@ -6,7 +6,9 @@ describe('BackendCtrlQueryService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: BackendCtrlQueryService = TestBed.get(BackendCtrlQueryService);
+    const service: BackendCtrlQueryService = TestBed.get(
+      BackendCtrlQueryService
+    );
     expect(service).toBeTruthy();
   });
 });

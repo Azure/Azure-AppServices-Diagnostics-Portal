@@ -6,7 +6,9 @@ describe('ApplensAppinsightsTelemetryService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: ApplensAppinsightsTelemetryService = TestBed.get(ApplensAppinsightsTelemetryService);
+    const service: ApplensAppinsightsTelemetryService = TestBed.get(
+      ApplensAppinsightsTelemetryService
+    );
     expect(service).toBeTruthy();
   });
 });

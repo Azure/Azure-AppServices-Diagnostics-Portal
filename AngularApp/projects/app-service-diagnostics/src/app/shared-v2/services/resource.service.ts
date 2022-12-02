@@ -1,4 +1,3 @@
-
 import { of, Observable, BehaviorSubject } from 'rxjs';
 import { map, flatMap } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
@@ -11,15 +10,18 @@ import { DetectorType } from 'diagnostic-data';
 
 @Injectable({ providedIn: 'root' })
 export class ResourceService {
-
   protected _subscription: string;
 
   public resource: ArmResource;
 
-  public warmUpCallFinished: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
+  public warmUpCallFinished: BehaviorSubject<boolean> =
+    new BehaviorSubject<boolean>(null);
   public error: any;
 
-  constructor(protected _armService: ArmService, private _genericArmConfigService?: GenericArmConfigService) { }
+  constructor(
+    protected _armService: ArmService,
+    private _genericArmConfigService?: GenericArmConfigService
+  ) {}
 
   private _initialize() {
     const pieces = this.resource.id.toLowerCase().split('/');
@@ -32,21 +34,24 @@ export class ResourceService {
 
   public get armResourceConfig(): ArmResourceConfig {
     if (this._genericArmConfigService) {
-      return this._genericArmConfigService.getArmResourceConfig(this.resource.id);
-    }
-    else {
+      return this._genericArmConfigService.getArmResourceConfig(
+        this.resource.id
+      );
+    } else {
       return null;
     }
   }
 
   public getIbizaBladeToDetectorMapings(): Observable<PortalReferrerMap[]> {
-    return of([{
-      ReferrerExtensionName: 'Microsoft_Azure_ApiManagement',
-      ReferrerBladeName: 'NetworkBlade',
-      ReferrerTabName: '',
-      DetectorType: DetectorType.DiagnosticTool,
-      DetectorId: 'networkchecks'
-    }]);
+    return of([
+      {
+        ReferrerExtensionName: 'Microsoft_Azure_ApiManagement',
+        ReferrerBladeName: 'NetworkBlade',
+        ReferrerTabName: '',
+        DetectorType: DetectorType.DiagnosticTool,
+        DetectorId: 'networkchecks'
+      }
+    ]);
   }
 
   public getPesId(): Observable<string> {
@@ -79,30 +84,28 @@ export class ResourceService {
 
   public get searchSuffix(): string {
     if (this._genericArmConfigService) {
-      let currConfig: ArmResourceConfig = this._genericArmConfigService.getArmResourceConfig(this.resource.id);
+      let currConfig: ArmResourceConfig =
+        this._genericArmConfigService.getArmResourceConfig(this.resource.id);
       if (currConfig.searchSuffix) {
         return currConfig.searchSuffix;
-      }
-      else {
+      } else {
         return 'Azure';
       }
-    }
-    else {
+    } else {
       return 'Azure';
     }
   }
 
   public get azureServiceName(): string {
     if (this._genericArmConfigService) {
-      let currConfig: ArmResourceConfig = this._genericArmConfigService.getArmResourceConfig(this.resource.id);
+      let currConfig: ArmResourceConfig =
+        this._genericArmConfigService.getArmResourceConfig(this.resource.id);
       if (currConfig.azureServiceName) {
         return currConfig.azureServiceName;
-      }
-      else {
+      } else {
         return '';
       }
-    }
-    else {
+    } else {
       return '';
     }
   }
@@ -113,57 +116,65 @@ export class ResourceService {
 
   public get isLiabilityCheckEnabled(): boolean {
     if (this._genericArmConfigService) {
-      let currConfig: ArmResourceConfig = this._genericArmConfigService.getArmResourceConfig(this.resource.id);
-      if (currConfig.liabilityCheckConfig && typeof currConfig.liabilityCheckConfig.isLiabilityCheckEnabled == 'boolean') {
+      let currConfig: ArmResourceConfig =
+        this._genericArmConfigService.getArmResourceConfig(this.resource.id);
+      if (
+        currConfig.liabilityCheckConfig &&
+        typeof currConfig.liabilityCheckConfig.isLiabilityCheckEnabled ==
+          'boolean'
+      ) {
         return currConfig.liabilityCheckConfig.isLiabilityCheckEnabled;
-      }
-      else {
+      } else {
         return false;
       }
-    }
-    else {
+    } else {
       return false;
     }
   }
 
   public get isArmApiResponseBase64Encoded(): boolean {
     if (this._genericArmConfigService) {
-      return this._genericArmConfigService.isArmApiResponseBase64Encoded(this.resource.id);
-    }
-    else {
+      return this._genericArmConfigService.isArmApiResponseBase64Encoded(
+        this.resource.id
+      );
+    } else {
       return false;
     }
   }
 
   public get isApplicableForLiveChat(): boolean {
     if (this._genericArmConfigService) {
-      let currConfig: ArmResourceConfig = this._genericArmConfigService.getArmResourceConfig(this.resource.id);
-      if (currConfig.liveChatConfig && typeof currConfig.liveChatConfig.isApplicableForLiveChat == 'boolean') {
+      let currConfig: ArmResourceConfig =
+        this._genericArmConfigService.getArmResourceConfig(this.resource.id);
+      if (
+        currConfig.liveChatConfig &&
+        typeof currConfig.liveChatConfig.isApplicableForLiveChat == 'boolean'
+      ) {
         return currConfig.liveChatConfig.isApplicableForLiveChat;
-      }
-      else {
+      } else {
         return false;
       }
-    }
-    else {
+    } else {
       return false;
     }
   }
 
   public get liveChatEnabledSupportTopicIds(): string[] {
     if (this._genericArmConfigService) {
-      let currConfig: ArmResourceConfig = this._genericArmConfigService.getArmResourceConfig(this.resource.id);
+      let currConfig: ArmResourceConfig =
+        this._genericArmConfigService.getArmResourceConfig(this.resource.id);
       if (this.isApplicableForLiveChat === true) {
-        if (currConfig.liveChatConfig && currConfig.liveChatConfig.supportTopicIds
-          && currConfig.liveChatConfig.supportTopicIds instanceof Array
-          && currConfig.liveChatConfig.supportTopicIds.length > 0) {
+        if (
+          currConfig.liveChatConfig &&
+          currConfig.liveChatConfig.supportTopicIds &&
+          currConfig.liveChatConfig.supportTopicIds instanceof Array &&
+          currConfig.liveChatConfig.supportTopicIds.length > 0
+        ) {
           return currConfig.liveChatConfig.supportTopicIds;
-        }
-        else {
+        } else {
           return [];
         }
-      }
-      else {
+      } else {
         return [];
       }
     }
@@ -171,45 +182,51 @@ export class ResourceService {
 
   public get liveChatEnabledSapSupportTopicIds(): string[] {
     if (this._genericArmConfigService) {
-      let currConfig: ArmResourceConfig = this._genericArmConfigService.getArmResourceConfig(this.resource.id);
+      let currConfig: ArmResourceConfig =
+        this._genericArmConfigService.getArmResourceConfig(this.resource.id);
       if (this.isApplicableForLiveChat === true) {
-        if (currConfig.liveChatConfig && currConfig.liveChatConfig.sapSupportTopicIds
-          && currConfig.liveChatConfig.sapSupportTopicIds instanceof Array
-          && currConfig.liveChatConfig.sapSupportTopicIds.length > 0) {
+        if (
+          currConfig.liveChatConfig &&
+          currConfig.liveChatConfig.sapSupportTopicIds &&
+          currConfig.liveChatConfig.sapSupportTopicIds instanceof Array &&
+          currConfig.liveChatConfig.sapSupportTopicIds.length > 0
+        ) {
           return currConfig.liveChatConfig.sapSupportTopicIds;
-        }
-        else {
+        } else {
           return [];
         }
-      }
-      else {
+      } else {
         return [];
       }
     }
   }
 
   public registerResource(resourceUri: string): Observable<{} | ArmResource> {
-    if (this._genericArmConfigService && resourceUri.indexOf('hostingenvironments') < 0) {
+    if (
+      this._genericArmConfigService &&
+      resourceUri.indexOf('hostingenvironments') < 0
+    ) {
       return this._genericArmConfigService.initArmConfig(resourceUri).pipe(
-        flatMap(value => {
+        flatMap((value) => {
           return this._armService.getArmResource<ArmResource>(resourceUri).pipe(
-            map(resource => {
+            map((resource) => {
               this.resource = resource;
               this._initialize();
               this.makeWarmUpCalls();
               return resource;
-            }));
+            })
+          );
         })
       );
-    }
-    else {
+    } else {
       return this._armService.getArmResource<ArmResource>(resourceUri).pipe(
-        map(resource => {
+        map((resource) => {
           this.resource = resource;
           this._initialize();
           this.makeWarmUpCalls();
           return resource;
-        }));
+        })
+      );
     }
   }
 

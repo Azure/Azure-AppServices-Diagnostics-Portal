@@ -1,72 +1,88 @@
-<default-solution-template [title]="title" [description]="description" [tags]="data.tags">
-    <div *ngIf="includeTargetedAppRestart">
-        <div class="header2">Option #1: Advanced Application Restart</div>
-        <p>{{advancedAppRestartDescription}}</p>
-    
-        <div class="action-box">
-            <div>
-
-                <div>
-                    We detected the following app as the cause of High CPU
-                </div>
-                <table style="border:none;margin-bottom: 10px;">
-                    <tr>
-                        <td>App to be Restarted: </td>
-                        <td class="highlight-blue">
-                            <b>{{siteToBeRestarted.siteName}}</b>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Unhealthy Instance(s):
-                        </td>
-                        <td class="highlight-blue">
-                                {{instanceList}}
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div style="text-align:right">
-                <button class="btn btn-primary" (click)="advancedAppRestartSite()">Restart App On Specified Instances</button>
-            </div>
-
-            <div *ngIf="targetedRestartAppStatus && targetedRestartAppStatus.length > 0">
-                Status for each instance:
-                <div *ngFor="let instanceStatus of targetedRestartAppStatus">
-                     <b>{{instanceStatus.instance}}: </b>
-                        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true" *ngIf="instanceStatus.status === actionStatus.Running"></i>
-                        <span *ngIf="instanceStatus.status === actionStatus.Passed">{{targetedRestartAppSuccessMessage}}</span>
-                        <span *ngIf="instanceStatus.status === actionStatus.Failed">{{targetedRestartAppFailureMessage}}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="header2"><span *ngIf="includeTargetedAppRestart">Option #2:</span> App Restart</div>
-    <p>{{appRestartDescription}}</p>
+<default-solution-template
+  [title]="title"
+  [description]="description"
+  [tags]="data.tags"
+>
+  <div *ngIf="includeTargetedAppRestart">
+    <div class="header2">Option #1: Advanced Application Restart</div>
+    <p>{{ advancedAppRestartDescription }}</p>
 
     <div class="action-box">
-        <div>
-            <table style="border:none">
-                <tr>
-                    <td>App to be Restarted: </td>
-                    <td class="highlight-blue">
-                        <b>{{siteToBeRestarted.siteName}}</b>
-                    </td>
-                </tr>
-            </table>
+      <div>
+        <div>We detected the following app as the cause of High CPU</div>
+        <table style="border: none; margin-bottom: 10px">
+          <tr>
+            <td>App to be Restarted:</td>
+            <td class="highlight-blue">
+              <b>{{ siteToBeRestarted.siteName }}</b>
+            </td>
+          </tr>
+          <tr>
+            <td>Unhealthy Instance(s):</td>
+            <td class="highlight-blue">
+              {{ instanceList }}
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div style="text-align: right">
+        <button class="btn btn-primary" (click)="advancedAppRestartSite()">
+          Restart App On Specified Instances
+        </button>
+      </div>
+
+      <div
+        *ngIf="targetedRestartAppStatus && targetedRestartAppStatus.length > 0"
+      >
+        Status for each instance:
+        <div *ngFor="let instanceStatus of targetedRestartAppStatus">
+          <b>{{ instanceStatus.instance }}: </b>
+          <i
+            class="fa fa-circle-o-notch fa-spin spin-icon"
+            aria-hidden="true"
+            *ngIf="instanceStatus.status === actionStatus.Running"
+          ></i>
+          <span *ngIf="instanceStatus.status === actionStatus.Passed">{{
+            targetedRestartAppSuccessMessage
+          }}</span>
+          <span *ngIf="instanceStatus.status === actionStatus.Failed">{{
+            targetedRestartAppFailureMessage
+          }}</span>
         </div>
-        <div style="text-align:right">
-            <button class="btn btn-primary" (click)="restartSite()">Restart App</button>
-        </div>
-        <solution-operation [operationStatus]="restartAppStatus" [failureMessage]="[restartAppFailureMessage]" [successMessage]="restartAppSuccessMessage"></solution-operation>
+      </div>
     </div>
+  </div>
 
+  <div class="header2">
+    <span *ngIf="includeTargetedAppRestart">Option #2:</span> App Restart
+  </div>
+  <p>{{ appRestartDescription }}</p>
 
-    <div class="header2">What you should know before performing a restart</div>
-    <ul>
-        <li *ngFor="let statement of thingsToKnowBefore">{{statement}}</li>
-    </ul>
+  <div class="action-box">
+    <div>
+      <table style="border: none">
+        <tr>
+          <td>App to be Restarted:</td>
+          <td class="highlight-blue">
+            <b>{{ siteToBeRestarted.siteName }}</b>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div style="text-align: right">
+      <button class="btn btn-primary" (click)="restartSite()">
+        Restart App
+      </button>
+    </div>
+    <solution-operation
+      [operationStatus]="restartAppStatus"
+      [failureMessage]="[restartAppFailureMessage]"
+      [successMessage]="restartAppSuccessMessage"
+    ></solution-operation>
+  </div>
 
-
+  <div class="header2">What you should know before performing a restart</div>
+  <ul>
+    <li *ngFor="let statement of thingsToKnowBefore">{{ statement }}</li>
+  </ul>
 </default-solution-template>

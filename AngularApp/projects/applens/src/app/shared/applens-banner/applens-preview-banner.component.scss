@@ -1,11 +1,11 @@
-@import "../../../../../app-service-diagnostics/src/styles/icons.scss";
+@import '../../../../../app-service-diagnostics/src/styles/icons.scss';
 .home-banner {
-    font-size: 16px;
-    line-height: 32px;
-    padding: 2px 5px;
-    background-color: var(--homeBannerBackground);
+  font-size: 16px;
+  line-height: 32px;
+  padding: 2px 5px;
+  background-color: var(--homeBannerBackground);
 }
 
 .home-banner a:hover {
-    cursor: pointer;
+  cursor: pointer;
 }

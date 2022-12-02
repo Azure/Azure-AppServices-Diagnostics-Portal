@@ -1,4 +1,13 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  ViewChild,
+  AfterViewInit
+} from '@angular/core';
 import { ServerFarmDataService } from '../../shared/services/server-farm-data.service';
 import { SiteService } from '../../shared/services/site.service';
 import { SiteInfoMetaData } from '../../shared/models/site';
@@ -7,22 +16,31 @@ import { DaasService } from '../../shared/services/daas.service';
 import { DaasValidatorComponent } from '../../shared/components/daas/daas-validator.component';
 import { DaasValidationResult } from '../../shared/models/daas';
 
-const daasConsolePath: string = "D:\\home\\data\\DaaS\\bin\\DaasConsole.exe";
+const daasConsolePath: string = 'D:\\home\\data\\DaaS\\bin\\DaasConsole.exe';
 
 @Component({
   selector: 'autohealing-custom-action',
   templateUrl: './autohealing-custom-action.component.html',
-  styleUrls: ['./autohealing-custom-action.component.scss', '../autohealing.component.scss']
+  styleUrls: [
+    './autohealing-custom-action.component.scss',
+    '../autohealing.component.scss'
+  ]
 })
-export class AutohealingCustomActionComponent implements OnInit, OnChanges, AfterViewInit {
-  constructor(private _serverFarmService: ServerFarmDataService, private _siteService: SiteService, private _daasService: DaasService) {
-  }
+export class AutohealingCustomActionComponent
+  implements OnInit, OnChanges, AfterViewInit
+{
+  constructor(
+    private _serverFarmService: ServerFarmDataService,
+    private _siteService: SiteService,
+    private _daasService: DaasService
+  ) {}
 
   @ViewChild('daasValidatorRef') daasValidatorRef: DaasValidatorComponent;
 
   @Input() siteToBeDiagnosed: SiteInfoMetaData;
   @Input() customAction: AutoHealCustomAction;
-  @Output() customActionChanged: EventEmitter<AutoHealCustomAction> = new EventEmitter<AutoHealCustomAction>();
+  @Output() customActionChanged: EventEmitter<AutoHealCustomAction> =
+    new EventEmitter<AutoHealCustomAction>();
 
   diagnoser: any = null;
   diagnoserOption: any = null;
@@ -30,16 +48,54 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
   validationResult: DaasValidationResult = new DaasValidationResult();
   updatedCustomAction: AutoHealCustomAction = new AutoHealCustomAction();
 
-
-  Diagnosers = [{ Name: 'Memory Dump', Enabled: true, Description: 'Collects memory dumps of the process and the child processes hosting your app and analyzes them for errors' },
-  { Name: 'CLR Profiler', Enabled: true, Description: 'Profiles ASP.NET application code to identify exceptions and performance issues' },
-  { Name: 'CLR Profiler with Thread Stacks', Enabled: true, Description: 'Profiles ASP.NET application code to identify exceptions and performance issues and dumps stacks to identify deadlocks' },
-  { Name: 'JAVA Memory Dump', Enabled: true, Description: 'Collects a binary memory dump using jMap of all java.exe processes running for this web app' },
-  { Name: 'JAVA Thread Dump', Enabled: true, Description: 'Collects jStack output of all java.exe processes running for this app and analyzes the same' }];
+  Diagnosers = [
+    {
+      Name: 'Memory Dump',
+      Enabled: true,
+      Description:
+        'Collects memory dumps of the process and the child processes hosting your app and analyzes them for errors'
+    },
+    {
+      Name: 'CLR Profiler',
+      Enabled: true,
+      Description:
+        'Profiles ASP.NET application code to identify exceptions and performance issues'
+    },
+    {
+      Name: 'CLR Profiler with Thread Stacks',
+      Enabled: true,
+      Description:
+        'Profiles ASP.NET application code to identify exceptions and performance issues and dumps stacks to identify deadlocks'
+    },
+    {
+      Name: 'JAVA Memory Dump',
+      Enabled: true,
+      Description:
+        'Collects a binary memory dump using jMap of all java.exe processes running for this web app'
+    },
+    {
+      Name: 'JAVA Thread Dump',
+      Enabled: true,
+      Description:
+        'Collects jStack output of all java.exe processes running for this app and analyzes the same'
+    }
+  ];
   DiagnoserOptions = [
-    { option: 'CollectKillAnalyze', Description: 'With this option, the above selected tool\'s data will collected, analyzed and the process will be recycled.' },
-    { option: 'CollectLogs', Description: 'With this option, only the above selected tool\'s data will collected. No analysis will be performed and process will not be restarted.' },
-    { option: 'Troubleshoot', Description: 'With this option, the above selected tool\'s data will collected and then analyzed. This will not cause the process to restart. ' }
+    {
+      option: 'CollectKillAnalyze',
+      Description:
+        "With this option, the above selected tool's data will collected, analyzed and the process will be recycled."
+    },
+    {
+      option: 'CollectLogs',
+      Description:
+        "With this option, only the above selected tool's data will collected. No analysis will be performed and process will not be restarted."
+    },
+    {
+      option: 'Troubleshoot',
+      Description:
+        "With this option, the above selected tool's data will collected and then analyzed. This will not cause the process to restart. "
+    }
   ];
   customActionType: string = 'Diagnostics';
 
@@ -61,12 +117,13 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
   }
 
   makeDaasWarmupCall(): any {
-    this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(siteDaasInfo => {
-      this._daasService.getDiagnosers(siteDaasInfo).subscribe(resp => {
-        //do nothing with resp
+    this._siteService
+      .getSiteDaasInfoFromSiteMetadata()
+      .subscribe((siteDaasInfo) => {
+        this._daasService.getDiagnosers(siteDaasInfo).subscribe((resp) => {
+          //do nothing with resp
+        });
       });
-    });
-
   }
   initComponent() {
     if (this.customAction == null) {
@@ -103,10 +160,14 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
   isDiagnosticsConfigured(): boolean {
     let invalidSetting = false;
     if (this.customAction != null) {
-      if (this.customAction.exe.toLowerCase() === daasConsolePath.toLowerCase()) {
+      if (
+        this.customAction.exe.toLowerCase() === daasConsolePath.toLowerCase()
+      ) {
         this.customActionType = 'Diagnostics';
         if (this.customAction.parameters !== '') {
-          invalidSetting = this.getDiagnoserNameAndOptionFromParameter(this.customAction.parameters);
+          invalidSetting = this.getDiagnoserNameAndOptionFromParameter(
+            this.customAction.parameters
+          );
         }
         if (invalidSetting) {
           this.initDiagnosticsIfRequired();
@@ -139,12 +200,14 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
       this.showDiagnoserOptionWarning = false;
     }
     this.updateDaasAction(false);
-
   }
 
   resetCustomAction() {
     this.customActionType = 'Custom';
-    if (this.customAction == null || this.customAction.exe.toLowerCase() === daasConsolePath.toLowerCase()) {
+    if (
+      this.customAction == null ||
+      this.customAction.exe.toLowerCase() === daasConsolePath.toLowerCase()
+    ) {
       this.updatedCustomAction.exe = '';
       this.updatedCustomAction.parameters = '';
     } else {
@@ -155,11 +218,9 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
 
   updateCustomActionExe(exe: string) {
     this.updatedCustomAction.exe = exe;
-
   }
   updateCustomActionParams(params: string) {
     this.updatedCustomAction.parameters = params;
-
   }
   updateCustomAction() {
     this.customActionChanged.emit(this.updatedCustomAction);
@@ -171,9 +232,11 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
       if (this.validationResult.ConfiguredAsAppSetting) {
         this.updatedCustomAction.parameters = `-${this.diagnoserOption.option} "${this.diagnoser.Name}"`;
       } else {
-        this.updatedCustomAction.parameters = this.validationResult.BlobSasUri.length > 0 ? `-${this.diagnoserOption.option} "${this.diagnoser.Name}" -BlobSasUri:"${this.validationResult.BlobSasUri}"` : `-${this.diagnoserOption.option} "${this.diagnoser.Name}"`;
+        this.updatedCustomAction.parameters =
+          this.validationResult.BlobSasUri.length > 0
+            ? `-${this.diagnoserOption.option} "${this.diagnoser.Name}" -BlobSasUri:"${this.validationResult.BlobSasUri}"`
+            : `-${this.diagnoserOption.option} "${this.diagnoser.Name}"`;
       }
-
     } else {
       this.updatedCustomAction.exe = '';
       this.updatedCustomAction.parameters = '';
@@ -182,7 +245,6 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
     if (emitEvent) {
       this.customActionChanged.emit(this.updatedCustomAction);
     }
-
   }
 
   getDiagnoserNameAndOptionFromParameter(param: string): boolean {
@@ -192,7 +254,9 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
     if (diagnoserOption.startsWith('-')) {
       diagnoserOption = diagnoserOption.substring(1);
 
-      const diagnoserOptionIndex = this.DiagnoserOptions.findIndex(item => item.option === diagnoserOption);
+      const diagnoserOptionIndex = this.DiagnoserOptions.findIndex(
+        (item) => item.option === diagnoserOption
+      );
       if (diagnoserOptionIndex > -1) {
         this.diagnoserOption = this.DiagnoserOptions[diagnoserOptionIndex];
         if (this.diagnoserOption.option !== 'CollectKillAnalyze') {
@@ -216,7 +280,9 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
         let diagnoserName = '';
         if (secondQuote > firstQuote && secondQuote > 0 && firstQuote > 0) {
           diagnoserName = param.substring(firstQuote + 1, secondQuote);
-          const diagnoserIndex = this.Diagnosers.findIndex(item => item.Name === diagnoserName);
+          const diagnoserIndex = this.Diagnosers.findIndex(
+            (item) => item.Name === diagnoserName
+          );
           if (diagnoserIndex > -1) {
             this.diagnoser = this.Diagnosers[diagnoserIndex];
             invalidSetting = false;

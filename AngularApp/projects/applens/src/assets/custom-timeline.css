@@ -1,13 +1,13 @@
 .vis-item.green {
-    background-color: lightseagreen;
-    border-color: green;
+  background-color: lightseagreen;
+  border-color: green;
 }
 
 .vis-item.blue {
-    background-color: lightblue;
-    border-color: blue;
+  background-color: lightblue;
+  border-color: blue;
 }
 
 .vis-item {
-    cursor: pointer;
+  cursor: pointer;
 }

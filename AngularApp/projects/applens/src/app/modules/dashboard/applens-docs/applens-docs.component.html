@@ -1,7 +1,21 @@
 <div>
-<div *ngFor="let component of componentsList">
-  <markdown ngPreserveWhitespaces *ngIf="component.Type == ComponentType.Markdown" [data]="markdownCode[component.Component].trim()"></markdown>
-  <applens-doc-section *ngIf="component.Type == ComponentType.CodeWindow" [files]="files[component.Component]" [fileNames]="fileNames[component.Component]" [image]="images[component.Component]"></applens-doc-section>
-  <a *ngIf="component.Type == ComponentType.InPageLink" (click)="scrollToSection(inPageLinks[component.Component].Target)" style="cursor: pointer;">{{inPageLinks[component.Component].Text}}</a>
-</div>
+  <div *ngFor="let component of componentsList">
+    <markdown
+      ngPreserveWhitespaces
+      *ngIf="component.Type == ComponentType.Markdown"
+      [data]="markdownCode[component.Component].trim()"
+    ></markdown>
+    <applens-doc-section
+      *ngIf="component.Type == ComponentType.CodeWindow"
+      [files]="files[component.Component]"
+      [fileNames]="fileNames[component.Component]"
+      [image]="images[component.Component]"
+    ></applens-doc-section>
+    <a
+      *ngIf="component.Type == ComponentType.InPageLink"
+      (click)="scrollToSection(inPageLinks[component.Component].Target)"
+      style="cursor: pointer"
+      >{{ inPageLinks[component.Component].Text }}</a
+    >
+  </div>
 </div>

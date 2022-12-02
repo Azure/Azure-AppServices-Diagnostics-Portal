@@ -1,16 +1,22 @@
-fieldset, label { margin: 0; padding: 0; }
-body{ margin: 20px; }
+fieldset,
+label {
+  margin: 0;
+  padding: 0;
+}
+body {
+  margin: 20px;
+}
 
 .review-container {
-    border: 1px solid rgb(223, 223, 223);
-    border-top: none;
-    border-bottom: 2px solid rgb(223, 223, 223);
+  border: 1px solid rgb(223, 223, 223);
+  border-top: none;
+  border-bottom: 2px solid rgb(223, 223, 223);
 }
 
 .feedback-button {
-    color: white;
-    background:#416dea;
-    border: 1px solid #4b90d5;
+  color: white;
+  background: #416dea;
+  border: 1px solid #4b90d5;
 }
 
 textarea {
@@ -25,7 +31,7 @@ textarea {
 }
 
 textarea:focus {
-  box-shadow: 0 0 10px #719ECE;
+  box-shadow: 0 0 10px #719ece;
 }
 
 .rating-container {
@@ -33,7 +39,7 @@ textarea:focus {
 }
 
 .review-header {
-  margin-top:10px;
+  margin-top: 10px;
   min-height: 20px;
   border-radius: 2px;
   background-color: #f5f5f5;
@@ -46,11 +52,11 @@ textarea:focus {
   padding: 10px 5px;
   margin: 0px;
   font-size: 12px;
-  font-family: "Segoe UI", "Segoe", Tahoma, Helvetica, Arial, sans-serif;
+  font-family: 'Segoe UI', 'Segoe', Tahoma, Helvetica, Arial, sans-serif;
 }
 
 .review-container > h1 {
-  color:  #3c8dbc;
+  color: #3c8dbc;
 }
 
 .feedback-response {
@@ -63,22 +69,24 @@ textarea:focus {
 }
 
 .rating-row {
-  width:150px;
+  width: 150px;
   margin-top: 0px;
 }
 
-.rating > input { display: none; }
+.rating > input {
+  display: none;
+}
 .rating > label:before {
   margin: 5px;
   font-size: 1.5em;
   font-family: FontAwesome;
   display: inline-block;
-  content: "\f005";
+  content: '\f005';
 }
 
 .rating > .half:before {
   font-size: 1.5em;
-  content: "\f089";
+  content: '\f089';
   position: absolute;
 }
 
@@ -88,43 +96,49 @@ textarea:focus {
 }
 
 /***** CSS Magic to Highlight Stars on Hover *****/
-.rating:not(:hover) > input:checked ~ label  { color: #FFD700;  } /* show gold star when clicked */
-.rating:not(:checked) > label:hover ~ label { color: #FFED85;  } /* hover previous stars in list */
-.rating:not(:checked) > label:hover { color: #FFED85;  } /* hover current star */
+.rating:not(:hover) > input:checked ~ label {
+  color: #ffd700;
+} /* show gold star when clicked */
+.rating:not(:checked) > label:hover ~ label {
+  color: #ffed85;
+} /* hover previous stars in list */
+.rating:not(:checked) > label:hover {
+  color: #ffed85;
+} /* hover current star */
 
 .rating-div {
   padding: 15px, 0px, 15px, 15px;
   max-width: 350px;
   border-right: rgb(169, 169, 169);
-  margin-left:0px;
+  margin-left: 0px;
 }
 
 .rating-hint {
   font-size: 12px;
-  font-weight:500;
-  padding-top:12px;
-  margin-left:2px;
+  font-weight: 500;
+  padding-top: 12px;
+  margin-left: 2px;
 }
 
 .rating-button {
-  margin-top:5px;
+  margin-top: 5px;
 }
 
 .thanks-message {
-  margin-top:12px;
+  margin-top: 12px;
 }
 
 .rating-comments {
   width: 100%;
-  border:white;
-  margin-bottom:-5px;
-  padding:5px 15px 0px 15px;
-  height:60px;
-  font-size:12px;
+  border: white;
+  margin-bottom: -5px;
+  padding: 5px 15px 0px 15px;
+  height: 60px;
+  font-size: 12px;
 }
 
-.rating-form{
-  padding-top:5px;
+.rating-form {
+  padding-top: 5px;
 }
 
 .custom-button-align-left {

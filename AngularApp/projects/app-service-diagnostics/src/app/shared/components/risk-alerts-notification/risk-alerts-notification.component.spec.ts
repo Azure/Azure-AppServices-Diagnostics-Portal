@@ -8,9 +8,8 @@ describe('RiskAlertsNotificationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ RiskAlertsNotificationComponent ]
-    })
-    .compileComponents();
+      declarations: [RiskAlertsNotificationComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

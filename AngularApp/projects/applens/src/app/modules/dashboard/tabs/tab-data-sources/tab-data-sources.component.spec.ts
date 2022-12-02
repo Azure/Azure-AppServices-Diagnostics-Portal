@@ -8,9 +8,8 @@ describe('DataSourcesComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TabDataSourcesComponent ]
-    })
-    .compileComponents();
+      declarations: [TabDataSourcesComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

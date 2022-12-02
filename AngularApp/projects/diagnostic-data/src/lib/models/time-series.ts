@@ -7,9 +7,9 @@ export interface TimeSeries {
 }
 
 export interface HighChartTimeSeries {
-    name: string;
-    series: HighchartGraphSeries;
-  }
+  name: string;
+  series: HighchartGraphSeries;
+}
 
 export interface InstanceTimeSeries extends TimeSeries {
   aggregated: boolean;
@@ -25,24 +25,25 @@ export interface DetailedInstanceTimeSeries extends TimeSeries {
   instance: InstanceDetails;
 }
 
-export interface DetailedInstanceHighChartTimeSeries extends HighChartTimeSeries {
+export interface DetailedInstanceHighChartTimeSeries
+  extends HighChartTimeSeries {
   instance: InstanceDetails;
 }
 
 export class xAxisPlotBand {
-  public color:string;
+  public color: string;
   public from: momentNs.Moment;
   public to: momentNs.Moment;
   public style?: xAxisPlotBandStyles;
   public borderColor?: string;
-  public borderWidth?:number;
-  public id?:string;
+  public borderWidth?: number;
+  public id?: string;
 }
 
 export enum xAxisPlotBandStyles {
-  BehindPlotLines = "0",
-  AbovePlotLines = "3",
-  AbovePlotLinesAndSeries = "5"
+  BehindPlotLines = '0',
+  AbovePlotLines = '3',
+  AbovePlotLinesAndSeries = '5'
 }
 
 export enum zoomBehaviors {
@@ -51,14 +52,14 @@ export enum zoomBehaviors {
   FireXAxisSelectionEvent = 4,
   ShowXAxisSelectionDisabledMessage = 8,
   GeryOutGraph = 16,
-  UnGreyGraph = 32,
+  UnGreyGraph = 32
 }
 
 export class XAxisSelection {
-  public chart:Highcharts.Chart;
-  public _rawEventArgs:Highcharts.ChartSelectionContextObject;
-  public fromTime:momentNs.Moment;
-  public toTime:momentNs.Moment;
+  public chart: Highcharts.Chart;
+  public _rawEventArgs: Highcharts.ChartSelectionContextObject;
+  public fromTime: momentNs.Moment;
+  public toTime: momentNs.Moment;
 }
 
 export class InstanceDetails {
@@ -81,16 +82,21 @@ export class InstanceDetails {
       return this.machineName;
     }
 
-    const truncatedTenant = this.tenant && this.tenant !== '' ? this.tenant.substr(0, 4) + '-' : '';
-    const truncatedInstance = this.roleInstance.replace('DedicatedWebWorkerRole_IN', '').replace('DedicatedLinuxWebWorkerRole_IN', '');
+    const truncatedTenant =
+      this.tenant && this.tenant !== '' ? this.tenant.substr(0, 4) + '-' : '';
+    const truncatedInstance = this.roleInstance
+      .replace('DedicatedWebWorkerRole_IN', '')
+      .replace('DedicatedLinuxWebWorkerRole_IN', '');
 
     return `${truncatedTenant}${truncatedInstance}`;
   }
 
   equals(instance: InstanceDetails): boolean {
-    return this.roleInstance === instance.roleInstance &&
+    return (
+      this.roleInstance === instance.roleInstance &&
       this.tenant === instance.tenant &&
-      this.machineName === instance.machineName;
+      this.machineName === instance.machineName
+    );
   }
 }
 
@@ -106,16 +112,15 @@ export enum MetricType {
   Avg,
   Min,
   Max,
-  Sum,
+  Sum
 }
 
 export interface GraphPoint {
-    x: momentNs.Moment;
-    y: number;
-  }
+  x: momentNs.Moment;
+  y: number;
+}
 
-  export interface GraphSeries {
-    key: string;
-    values: GraphPoint[];
-  }
-
+export interface GraphSeries {
+  key: string;
+  values: GraphPoint[];
+}

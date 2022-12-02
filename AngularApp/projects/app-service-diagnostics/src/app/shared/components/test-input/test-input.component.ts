@@ -8,16 +8,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./test-input.component.scss']
 })
 export class TestInputComponent implements OnInit {
-
   token: string;
   resourceId: string;
 
   readonly tokenSaveName: string = 'app-service-diagnostics-token';
   readonly resourceIdSaveName: string = 'app-service-diagnostics-resourceId';
 
-  constructor(private _authService: AuthService, private _router: Router) {
-
-  }
+  constructor(private _authService: AuthService, private _router: Router) {}
 
   ngOnInit() {
     this.token = localStorage.getItem(this.tokenSaveName);
@@ -25,7 +22,9 @@ export class TestInputComponent implements OnInit {
   }
 
   submit() {
-    this.token = this.token.startsWith('Bearer ') ? this.token.replace('Bearer ', '') : this.token;
+    this.token = this.token.startsWith('Bearer ')
+      ? this.token.replace('Bearer ', '')
+      : this.token;
     localStorage.setItem(this.tokenSaveName, this.token);
     localStorage.setItem(this.resourceIdSaveName, this.resourceId);
 
@@ -33,7 +32,4 @@ export class TestInputComponent implements OnInit {
 
     this._router.navigateByUrl(this.resourceId.toLowerCase());
   }
-
-
-
 }

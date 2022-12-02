@@ -1,20 +1,18 @@
 <div class="blog-container" (click)="openBlogUrl()">
-    <div class="blog-row">
-        <div class="blog-image-container">
-            <img [src]='blogEntry.og_ImageUrl' />
-        </div>
-        <div class="blog-text-container">
-            <div class="row blog-title-container">
-                <h5 class="section-header blog-title">
-                    {{blogEntry.og_Title}}
-                    <i class="fa fa-external-link pull-right" aria-hidden="true"></i>
-                </h5>
-
-            </div>
-            <div class="row blog-description-container">
-                <h6 class="blog-description">{{blogEntry.og_Description}}</h6>
-            </div>
-
-        </div>
+  <div class="blog-row">
+    <div class="blog-image-container">
+      <img [src]="blogEntry.og_ImageUrl" />
     </div>
+    <div class="blog-text-container">
+      <div class="row blog-title-container">
+        <h5 class="section-header blog-title">
+          {{ blogEntry.og_Title }}
+          <i class="fa fa-external-link pull-right" aria-hidden="true"></i>
+        </h5>
+      </div>
+      <div class="row blog-description-container">
+        <h6 class="blog-description">{{ blogEntry.og_Description }}</h6>
+      </div>
+    </div>
+  </div>
 </div>

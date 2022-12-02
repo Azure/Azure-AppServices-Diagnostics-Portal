@@ -1,93 +1,86 @@
 .insight-container {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .insight-container:last-child {
-    margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .table-key {
-    width: 20%;
+  width: 20%;
 }
 
 table {
-    width: 100%;
+  width: 100%;
 }
 
 .status-icon {
-    margin-right: 25px;
+  margin-right: 25px;
 }
 
 .fa-exclamation-circle {
-    color: #ff0000;
+  color: #ff0000;
 }
 
 .fa-exclamation-triangle {
-    color: #ff9104;
+  color: #ff9104;
 }
 
 .fa-check-circle {
-    color: #3da907;
+  color: #3da907;
 }
 
 .fa-info-circle {
-    color: #3a9bc7;
+  color: #3a9bc7;
 }
 
 td {
-    vertical-align: text-top;
-    padding-bottom: 10px;
+  vertical-align: text-top;
+  padding-bottom: 10px;
 }
 
-.app-insights-internal-markdown
-{
-    background-color:#8a47a7; 
-    color:white
+.app-insights-internal-markdown {
+  background-color: #8a47a7;
+  color: white;
 }
 
-.app-insights-internal-markdown span
-{
-    color:white
+.app-insights-internal-markdown span {
+  color: white;
 }
 
-.app-insights-markdown
-{
-    margin-top:10px;
-    color:#505050
+.app-insights-markdown {
+  margin-top: 10px;
+  color: #505050;
 }
 
 .app-insights-header {
-    background-color:#7f5292; 
-    color:white
+  background-color: #7f5292;
+  color: white;
 }
 
-.app-insights-header span
-{
-    color:white
+.app-insights-header span {
+  color: white;
 }
 
-.app-insights-blade
-{
-    min-width:200px;
-    margin-top:10px; 
-    background-color:#5c2d91; 
-    border-color:#5c2d91;
-    color: white;
+.app-insights-blade {
+  min-width: 200px;
+  margin-top: 10px;
+  background-color: #5c2d91;
+  border-color: #5c2d91;
+  color: white;
 }
 
-.app-insights-blade i
-{
-    margin-left:10px
+.app-insights-blade i {
+  margin-left: 10px;
 }
 
-.app-insights-disabled
-{
-    font-weight:500;
-    font-size:14px;
-    text-decoration:underline
+.app-insights-disabled {
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: underline;
 }
 
-.app-insights-disabled-sitename
-{
-    font-weight:500;color:black
+.app-insights-disabled-sitename {
+  font-weight: 500;
+  color: black;
 }

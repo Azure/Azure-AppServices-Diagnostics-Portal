@@ -9,7 +9,10 @@ describe('SitesCategoryService', () => {
     });
   });
 
-  it('should be created', inject([SitesCategoryService], (service: SitesCategoryService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [SitesCategoryService],
+    (service: SitesCategoryService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

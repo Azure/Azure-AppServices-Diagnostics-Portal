@@ -1,99 +1,240 @@
 <div class="main-container">
-    <div class="top-banner">
-      <div class="banner-text"><span style="color:#ffb353;">App</span>Lens Incident Assistance</div>
+  <div class="top-banner">
+    <div class="banner-text">
+      <span style="color: #ffb353">App</span>Lens Incident Assistance
     </div>
-    <div *ngIf="alternateContent!=null" class="row main-row" style="margin-left:25px;">
-      {{alternateContent}}
-    </div>
-    <div *ngIf="!alternateContent" class="row main-row">
-      <div>
-        <div *ngIf="displayLoader" class="loader-block">
-          <i class="fa fa-spinner fa-spin loader-icon"></i>
-          <span style="display: block;" class="loader-text" *ngIf="loaderMessage != null">{{loaderMessage}}</span>
+  </div>
+  <div
+    *ngIf="alternateContent != null"
+    class="row main-row"
+    style="margin-left: 25px"
+  >
+    {{ alternateContent }}
+  </div>
+  <div *ngIf="!alternateContent" class="row main-row">
+    <div>
+      <div *ngIf="displayLoader" class="loader-block">
+        <i class="fa fa-spinner fa-spin loader-icon"></i>
+        <span
+          style="display: block"
+          class="loader-text"
+          *ngIf="loaderMessage != null"
+          >{{ loaderMessage }}</span
+        >
+      </div>
+      <div class="card-box" style="width: 64%" *ngIf="!pageLoading">
+        <div class="box-header with-border">
+          <h3 class="box-title">
+            Incident
+            <a
+              href="{{
+                'https://portal.microsofticm.com/imp/v3/incidents/details/' +
+                  incidentInfo.incidentId +
+                  '/home'
+              }}"
+              target="_blank"
+              >{{ incidentInfo.incidentId }}</a
+            >
+            &nbsp; {{ incidentInfo.title }}
+          </h3>
         </div>
-        <div class="card-box" style="width:64%" *ngIf="!pageLoading">
-          <div class="box-header with-border">
-            <h3 class="box-title">Incident <a href="{{'https://portal.microsofticm.com/imp/v3/incidents/details/' + incidentInfo.incidentId + '/home'}}" target="_blank">{{incidentInfo.incidentId}}</a> &nbsp; {{incidentInfo.title}}</h3>
-          </div>
 
-          <div style="max-height: calc(100vh - 140px);">
-            <div class="form-group form-content">
-              <div class="form-row" *ngFor="let field of incidentInfo.validationResults;">
-                  <div class="col-md-12 field-box">
-                      <label>{{field.name}}</label>
-                      <div style="display:block;">
-                        <input class="form-control input-box" [(ngModel)]="field.value" (ngModelChange)="refreshButtonStatus()" name="fieldValue" type="text" placeholder="">
-                        <i class="fa fa-check-circle pass-icon" *ngIf="field.validationStatus"></i>
-                      </div>
-                      <div *ngIf = "(!field.validationStatus)&&(field.value==field.oldValue)" class="error-message col-md-12" style="padding-left: 0px;">
-                        {{field.validationMessage}}
-                      </div>
-                  </div>
+        <div style="max-height: calc(100vh - 140px)">
+          <div class="form-group form-content">
+            <div
+              class="form-row"
+              *ngFor="let field of incidentInfo.validationResults"
+            >
+              <div class="col-md-12 field-box">
+                <label>{{ field.name }}</label>
+                <div style="display: block">
+                  <input
+                    class="form-control input-box"
+                    [(ngModel)]="field.value"
+                    (ngModelChange)="refreshButtonStatus()"
+                    name="fieldValue"
+                    type="text"
+                    placeholder=""
+                  />
+                  <i
+                    class="fa fa-check-circle pass-icon"
+                    *ngIf="field.validationStatus"
+                  ></i>
+                </div>
+                <div
+                  *ngIf="
+                    !field.validationStatus && field.value == field.oldValue
+                  "
+                  class="error-message col-md-12"
+                  style="padding-left: 0px"
+                >
+                  {{ field.validationMessage }}
+                </div>
               </div>
             </div>
-            <div class="form-group go-form">
-              <fab-primary-button [contentStyle]="'margin-top: 20px;'"
-                  type="Submit" text='Check Validation and Run Diagnostics' (click)="onSubmit()" [disabled]="validationButtonDisabled">
-              </fab-primary-button>
-              <fab-primary-button id="update-incident-button" [contentStyle]="'margin-top: 20px; margin-left: 10px;'"
-                  type="Submit" text='Update Incident' (click)="onUpdateClick()" [disabled]="updateButtonDisabled">
-              </fab-primary-button>
-            </div>
-            <div *ngIf="footerMessage!=null" [class.success-message]="footerMessageType=='success'" [class.failed-message]="footerMessageType=='error'">
-              {{footerMessage}}
-            </div>
+          </div>
+          <div class="form-group go-form">
+            <fab-primary-button
+              [contentStyle]="'margin-top: 20px;'"
+              type="Submit"
+              text="Check Validation and Run Diagnostics"
+              (click)="onSubmit()"
+              [disabled]="validationButtonDisabled"
+            >
+            </fab-primary-button>
+            <fab-primary-button
+              id="update-incident-button"
+              [contentStyle]="'margin-top: 20px; margin-left: 10px;'"
+              type="Submit"
+              text="Update Incident"
+              (click)="onUpdateClick()"
+              [disabled]="updateButtonDisabled"
+            >
+            </fab-primary-button>
+          </div>
+          <div
+            *ngIf="footerMessage != null"
+            [class.success-message]="footerMessageType === 'success'"
+            [class.failed-message]="footerMessageType === 'error'"
+          >
+            {{ footerMessage }}
           </div>
         </div>
-        <fab-panel [isOpen]="showSolutions" (onDismiss)="hideSolutions()" [type]="panelType" [isBlocking]="false" [customWidth]="'60vw'">
-          <div class="panel-padding">
-            <div>
-            <svg style="vertical-align: text-bottom; height: 25px;" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 18 18">
+      </div>
+      <fab-panel
+        [isOpen]="showSolutions"
+        (onDismiss)="hideSolutions()"
+        [type]="panelType"
+        [isBlocking]="false"
+        [customWidth]="'60vw'"
+      >
+        <div class="panel-padding">
+          <div>
+            <svg
+              style="vertical-align: text-bottom; height: 25px"
+              xmlns="http://www.w3.org/2000/svg"
+              width="40"
+              height="40"
+              viewBox="0 0 18 18"
+            >
               <defs>
-                <linearGradient id="b64029dc-53b6-43b2-8aae-92413846e51c" y1="9" x2="18" y2="9" gradientUnits="userSpaceOnUse">
+                <linearGradient
+                  id="b64029dc-53b6-43b2-8aae-92413846e51c"
+                  y1="9"
+                  x2="18"
+                  y2="9"
+                  gradientUnits="userSpaceOnUse"
+                >
                   <stop offset="0" stop-color="#5ea0ef" />
                   <stop offset="1" stop-color="#0078d4" />
                 </linearGradient>
-                <linearGradient id="bfc54d5e-2678-40a3-87f5-a3381ba974de" x1="3.092" y1="8.98" x2="14.9" y2="8.98" gradientUnits="userSpaceOnUse">
+                <linearGradient
+                  id="bfc54d5e-2678-40a3-87f5-a3381ba974de"
+                  x1="3.092"
+                  y1="8.98"
+                  x2="14.9"
+                  y2="8.98"
+                  gradientUnits="userSpaceOnUse"
+                >
                   <stop offset="0" stop-color="#50e6ff" />
                   <stop offset="1" stop-color="#32bedd" />
                 </linearGradient>
-                <linearGradient id="b1aeb350-670b-47cd-881a-82e451a61e61" x1="3.154" y1="6.215" x2="10.922" y2="6.215" gradientUnits="userSpaceOnUse">
+                <linearGradient
+                  id="b1aeb350-670b-47cd-881a-82e451a61e61"
+                  x1="3.154"
+                  y1="6.215"
+                  x2="10.922"
+                  y2="6.215"
+                  gradientUnits="userSpaceOnUse"
+                >
                   <stop offset="0" stop-color="#5ea0ef" />
                   <stop offset="0.432" stop-color="#3890e4" />
                   <stop offset="1" stop-color="#0078d4" />
                 </linearGradient>
               </defs>
               <g id="a8e49afa-0212-415e-a59c-566b1a954500">
-                <path d="M9.276,0A8.957,8.957,0,0,0,3.968,1.54a.6.6,0,0,0-.138.873l.788.993A7.1,7.1,0,1,1,2.084,7.359a.6.6,0,0,0-.412-.707l-.657-.2a.6.6,0,0,0-.763.434A9,9,0,1,0,9.276,0Z" fill="url(#b64029dc-53b6-43b2-8aae-92413846e51c)" />
+                <path
+                  d="M9.276,0A8.957,8.957,0,0,0,3.968,1.54a.6.6,0,0,0-.138.873l.788.993A7.1,7.1,0,1,1,2.084,7.359a.6.6,0,0,0-.412-.707l-.657-.2a.6.6,0,0,0-.763.434A9,9,0,1,0,9.276,0Z"
+                  fill="url(#b64029dc-53b6-43b2-8aae-92413846e51c)"
+                />
                 <circle cx="13.69" cy="7.663" r="1.437" fill="#f78d1e" />
                 <circle cx="7.896" cy="13.799" r="1.437" fill="#f78d1e" />
-                <path d="M6.125,6.191,4.993,4.659a5.9,5.9,0,0,1,8.859.983c-.054,0-.106-.016-.162-.016a2.027,2.027,0,0,0-1.617.812,3.984,3.984,0,0,0-5.948-.247ZM5.859,13.8a2.027,2.027,0,0,1,.761-1.575A4,4,0,0,1,5.022,9.6a4.043,4.043,0,0,1,.024-1.338.6.6,0,0,0-.409-.689l-.66-.205a.6.6,0,0,0-.766.448A5.876,5.876,0,0,0,5.879,14C5.873,13.93,5.859,13.866,5.859,13.8ZM13.69,9.7a2.01,2.01,0,0,1-.721-.138,4.016,4.016,0,0,1-3.233,3.376,1.987,1.987,0,0,1-.114,1.93A5.9,5.9,0,0,0,14.9,9.293,2.025,2.025,0,0,1,13.69,9.7Z" fill="url(#bfc54d5e-2678-40a3-87f5-a3381ba974de)" />
-                <path d="M9.253,7.094a1.929,1.929,0,0,0-.834.074L3.973,1.507l-.59.463a.6.6,0,0,0-.1.843L7.359,8A1.909,1.909,0,0,0,7.1,9.26,1.923,1.923,0,1,0,9.253,7.094Z" fill="url(#b1aeb350-670b-47cd-881a-82e451a61e61)" />
+                <path
+                  d="M6.125,6.191,4.993,4.659a5.9,5.9,0,0,1,8.859.983c-.054,0-.106-.016-.162-.016a2.027,2.027,0,0,0-1.617.812,3.984,3.984,0,0,0-5.948-.247ZM5.859,13.8a2.027,2.027,0,0,1,.761-1.575A4,4,0,0,1,5.022,9.6a4.043,4.043,0,0,1,.024-1.338.6.6,0,0,0-.409-.689l-.66-.205a.6.6,0,0,0-.766.448A5.876,5.876,0,0,0,5.879,14C5.873,13.93,5.859,13.866,5.859,13.8ZM13.69,9.7a2.01,2.01,0,0,1-.721-.138,4.016,4.016,0,0,1-3.233,3.376,1.987,1.987,0,0,1-.114,1.93A5.9,5.9,0,0,0,14.9,9.293,2.025,2.025,0,0,1,13.69,9.7Z"
+                  fill="url(#bfc54d5e-2678-40a3-87f5-a3381ba974de)"
+                />
+                <path
+                  d="M9.253,7.094a1.929,1.929,0,0,0-.834.074L3.973,1.507l-.59.463a.6.6,0,0,0-.1.843L7.359,8A1.909,1.909,0,0,0,7.1,9.26,1.923,1.923,0,1,0,9.253,7.094Z"
+                  fill="url(#b1aeb350-670b-47cd-881a-82e451a61e61)"
+                />
               </g>
             </svg>
-            <span style="font-size: 24px;">AppLens Incident Assistance</span>
-            </div>
-            <p>The incident information was validated successfully. We ran some analysis for this resource. Here is a summary of issues detected. Please explore 'More info' links to dig into details of <b>potential issues with the resource</b>.</p>
-            <table style="width: 100%">
-              <tbody>
-                <tr>
-                  <th style="width:20%">Issue</th>
-                  <th style="width:60%">Description</th>
-                  <th style="width:20%">Link</th>
-                </tr>
-                <tr *ngFor="let solution of solutions">
-                  <td style="width:20%">
-                    <div *ngIf="solution.Status==0" style="color:red;font-weight:bold;border-radius:10px;text-align:center;width:20px;height:20px;padding-top:3px;display:inline;margin-right:10px;background-color:white;">!</div>
-                    <div *ngIf="solution.Status==1" style="color:rgb(240,171,44);font-weight:bold;border-radius:10px;text-align:center;width:20px;height:20px;padding-top:3px;display:inline;margin-right:10px;background-color:white;"><span style="top:-4px;position:relative;">&#9888;</span></div>
-                    <div style="display:inline;font-weight:700;">{{solution.Title}}</div>
-                  </td>
-                  <td style="width:60%"><div [innerHTML]="solution.Description"></div></td>
-                  <td style="width:20%"><a href="{{solution.Uri}}" target="_blank">More Info</a></td>
-                </tr>
-              </tbody>
-            </table>
+            <span style="font-size: 24px">AppLens Incident Assistance</span>
           </div>
-        </fab-panel>
-      </div>
+          <p>
+            The incident information was validated successfully. We ran some
+            analysis for this resource. Here is a summary of issues detected.
+            Please explore 'More info' links to dig into details of
+            <b>potential issues with the resource</b>.
+          </p>
+          <table style="width: 100%">
+            <tbody>
+              <tr>
+                <th style="width: 20%">Issue</th>
+                <th style="width: 60%">Description</th>
+                <th style="width: 20%">Link</th>
+              </tr>
+              <tr *ngFor="let solution of solutions">
+                <td style="width: 20%">
+                  <div
+                    *ngIf="solution.Status == 0"
+                    style="
+                      color: red;
+                      font-weight: bold;
+                      border-radius: 10px;
+                      text-align: center;
+                      width: 20px;
+                      height: 20px;
+                      padding-top: 3px;
+                      display: inline;
+                      margin-right: 10px;
+                      background-color: white;
+                    "
+                  >
+                    !
+                  </div>
+                  <div
+                    *ngIf="solution.Status == 1"
+                    style="
+                      color: rgb(240, 171, 44);
+                      font-weight: bold;
+                      border-radius: 10px;
+                      text-align: center;
+                      width: 20px;
+                      height: 20px;
+                      padding-top: 3px;
+                      display: inline;
+                      margin-right: 10px;
+                      background-color: white;
+                    "
+                  >
+                    <span style="top: -4px; position: relative">&#9888;</span>
+                  </div>
+                  <div style="display: inline; font-weight: 700">
+                    {{ solution.Title }}
+                  </div>
+                </td>
+                <td style="width: 60%">
+                  <div [innerHTML]="solution.Description"></div>
+                </td>
+                <td style="width: 20%">
+                  <a href="{{ solution.Uri }}" target="_blank">More Info</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </fab-panel>
     </div>
+  </div>
 </div>

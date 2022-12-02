@@ -6,7 +6,9 @@ describe('SubscriptionPropertiesService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: SubscriptionPropertiesService = TestBed.get(SubscriptionPropertiesService);
+    const service: SubscriptionPropertiesService = TestBed.get(
+      SubscriptionPropertiesService
+    );
     expect(service).toBeTruthy();
   });
 });

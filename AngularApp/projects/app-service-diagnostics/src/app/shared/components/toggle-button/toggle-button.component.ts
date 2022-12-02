@@ -7,17 +7,29 @@ import { IChoiceGroupOption } from 'office-ui-fabric-react';
   styleUrls: ['./toggle-button.component.scss']
 })
 export class ToggleButtonComponent implements OnInit {
-
-  selectedKey: string = "on";
-  constructor() { }
+  selectedKey: string = 'on';
+  constructor() {}
 
   ngOnInit() {
     this.updateSelectedKey();
   }
 
   choiceGroupOptions: IChoiceGroupOption[] = [
-    { key: 'on', text: 'On', defaultChecked: true, onClick: () => { this.setSelected(true) } },
-    { key: 'off', text: 'Off', onClick: () => { this.setSelected(false) } }
+    {
+      key: 'on',
+      text: 'On',
+      defaultChecked: true,
+      onClick: () => {
+        this.setSelected(true);
+      }
+    },
+    {
+      key: 'off',
+      text: 'Off',
+      onClick: () => {
+        this.setSelected(false);
+      }
+    }
   ];
 
   @Input() selected: boolean;

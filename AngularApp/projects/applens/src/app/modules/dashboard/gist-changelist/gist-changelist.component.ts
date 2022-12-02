@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Commit } from '../../../shared/models/commit';
 import { ActivatedRoute } from '@angular/router';
 import { GithubApiService } from '../../../shared/services/github-api.service';
@@ -10,7 +10,6 @@ import { GenericThemeService } from 'diagnostic-data';
   styleUrls: ['./gist-changelist.component.scss']
 })
 export class GistChangelistComponent implements OnInit {
-
   @Input() id: string;
   @Input() version: string;
   @Output() change: EventEmitter<object> = new EventEmitter<object>();
@@ -48,48 +47,54 @@ export class GistChangelistComponent implements OnInit {
     folding: true
   };
 
-  constructor(private _route: ActivatedRoute, private githubService: GithubApiService, private _themeService: GenericThemeService) {
-      this.options = this.lightOptions;
-   }
+  constructor(
+    private _route: ActivatedRoute,
+    private githubService: GithubApiService,
+    private _themeService: GenericThemeService
+  ) {
+    this.options = this.lightOptions;
+  }
 
   setCodeDiffView(commit: Commit) {
     this.version = commit.sha;
 
-    this.githubService.getCommitContent(this.id, commit.sha).subscribe(code => {
-      if (code) {
-        this.currentSha = commit.sha;
-        this.currentCode = code;
-        this.change.emit({version: this.version, code: this.currentCode});
-      }
-    });
+    this.githubService
+      .getCommitContent(this.id, commit.sha)
+      .subscribe((code) => {
+        if (code) {
+          this.currentSha = commit.sha;
+          this.currentCode = code;
+          this.change.emit({ version: this.version, code: this.currentCode });
+        }
+      });
   }
 
   ngOnChanges() {
-    if(this.initialized){
+    if (this.initialized) {
       this.initialize();
-      this._themeService.currentThemeSub.subscribe((theme) =>
-      {
-          this.options = theme == "dark" ? this.darkOptions : this.lightOptions;
-      })
+      this._themeService.currentThemeSub.subscribe((theme) => {
+        this.options = theme == 'dark' ? this.darkOptions : this.lightOptions;
+      });
     }
   }
 
   ngOnInit() {
-    if(!this.initialized){
+    if (!this.initialized) {
       this.initialize();
       this.initialized = true;
     }
   }
 
-  private initialize(){
-    this.githubService.getChangelist(this.id).subscribe(commits => {
+  private initialize() {
+    this.githubService.getChangelist(this.id).subscribe((commits) => {
       this.commitsList = commits;
       if (commits && commits.length > 0) {
-        let defaultCommit = this.commitsList.filter(c => c.sha == this.version)[0];
+        let defaultCommit = this.commitsList.filter(
+          (c) => c.sha == this.version
+        )[0];
         this.setCodeDiffView(defaultCommit);
         this.noCommitsHistory = false;
-      }
-      else {
+      } else {
         this.noCommitsHistory = true;
       }
     });

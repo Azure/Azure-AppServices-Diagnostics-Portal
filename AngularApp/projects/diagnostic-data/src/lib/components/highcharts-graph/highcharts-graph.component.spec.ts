@@ -8,9 +8,8 @@ describe('HighchartsGraphComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ HighchartsGraphComponent ]
-    })
-    .compileComponents();
+      declarations: [HighchartsGraphComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

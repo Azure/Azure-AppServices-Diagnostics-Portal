@@ -6,12 +6,13 @@ import { NgxSmartModalModule } from 'ngx-smart-modal';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CasecleansingmodalComponent } from './casecleansingmodal/casecleansingmodal.component';
 
-export const CaseCleansingModuleRoutes : ModuleWithProviders<CasecleansingModule> = RouterModule.forChild([
-  {
-    path: '',
-    component: CaseCleansingComponent
-  }
-]);
+export const CaseCleansingModuleRoutes: ModuleWithProviders<CasecleansingModule> =
+  RouterModule.forChild([
+    {
+      path: '',
+      component: CaseCleansingComponent
+    }
+  ]);
 
 @NgModule({
   imports: [
@@ -22,4 +23,4 @@ export const CaseCleansingModuleRoutes : ModuleWithProviders<CasecleansingModule
   ],
   declarations: [CaseCleansingComponent, CasecleansingmodalComponent]
 })
-export class CasecleansingModule { }
+export class CasecleansingModule {}

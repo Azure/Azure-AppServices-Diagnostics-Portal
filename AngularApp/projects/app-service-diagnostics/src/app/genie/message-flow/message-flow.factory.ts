@@ -3,32 +3,32 @@ import { IMessageFlowProvider } from '../interfaces/imessageflowprovider';
 
 // @dynamic
 export class MessageFlowFactory {
-    public static _registeredMessageFlowProviders: any[] = [];
+  public static _registeredMessageFlowProviders: any[] = [];
 
-    public static registerMessageFlowProvider(messageFlowProvider: any) {
-        if (messageFlowProvider) {
-            this._registeredMessageFlowProviders.push(messageFlowProvider);
-        }
+  public static registerMessageFlowProvider(messageFlowProvider: any) {
+    if (messageFlowProvider) {
+      this._registeredMessageFlowProviders.push(messageFlowProvider);
     }
+  }
 
-    public static getMessageFlowProviders(): any[] {
-        return this._registeredMessageFlowProviders;
-    }
+  public static getMessageFlowProviders(): any[] {
+    return this._registeredMessageFlowProviders;
+  }
 
-    public static getMessageGroups(): MessageGroup[] {
-        let result: MessageGroup[] = [];
+  public static getMessageGroups(): MessageGroup[] {
+    let result: MessageGroup[] = [];
 
-        this._registeredMessageFlowProviders.forEach((p: any) => {
-            result = result.concat(p.prototype.GetMessageFlowList());
-        });
+    this._registeredMessageFlowProviders.forEach((p: any) => {
+      result = result.concat(p.prototype.GetMessageFlowList());
+    });
 
-        return result;
-    }
+    return result;
+  }
 }
 
 // Custom Decorator for Message Providers to register with Factory.
 export function RegisterMessageFlowWithFactory() {
-    return function (target: any) {
-        MessageFlowFactory.registerMessageFlowProvider(target);
-    };
+  return function (target: any) {
+    MessageFlowFactory.registerMessageFlowProvider(target);
+  };
 }

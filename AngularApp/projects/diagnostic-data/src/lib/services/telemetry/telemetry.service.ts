@@ -1,196 +1,262 @@
-import { Injectable, Inject } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { ITelemetryProvider } from './telemetry.common';
-import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
+import {
+  DIAGNOSTIC_DATA_CONFIG,
+  DiagnosticDataConfig
+} from '../../config/diagnostic-data-config';
 import { AppInsightsTelemetryService } from './appinsights-telemetry.service';
 import { KustoTelemetryService } from './kusto-telemetry.service';
 import { BehaviorSubject } from 'rxjs';
 import { SeverityLevel } from '../../models/telemetry';
 import { VersionService } from '../version.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DiagnosticSiteService } from '../diagnostic-site.service';
 import { HttpClient } from '@angular/common/http';
 import { GenericPortalService } from '../generic-portal.service';
 
 @Injectable()
 export class TelemetryService {
-    private telemetryProviders: ITelemetryProvider[] = [];
-    eventPropertiesSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-    private eventPropertiesLocalCopy: { [name: string]: string } = {};
-    private slot: string = "";
-    private isLegacy: boolean;
-    private initializedPortalVersion: string = "v2";
-    private isPublic: boolean;
-    private ticketBladeWorkflowId: string = "";
-    private enabledResourceTypes: { resourceType: string, searchSuffix: string }[] = [];
-    private commonProperties: { [name: string]: string } = {};
-    constructor(private _appInsightsService: AppInsightsTelemetryService, private _kustoService: KustoTelemetryService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _versionService: VersionService, private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticSiteService: DiagnosticSiteService, private _http: HttpClient, private _genericPortalService: GenericPortalService) {
-        if (config.useKustoForTelemetry) {
-            this.telemetryProviders.push(this._kustoService);
-        }
-        if (config.useAppInsightsForTelemetry) {
-            this.telemetryProviders.push(this._appInsightsService);
-        }
-        this.isPublic = config && config.isPublic;
-        this.eventPropertiesSubject.subscribe((data: any) => {
-            if (data) {
-                for (const id of Object.keys(data)) {
-                    if (data.hasOwnProperty(id)) {
-                        this.eventPropertiesLocalCopy[id] = String(data[id]);
-                    }
-                }
-            }
-        });
-        this._versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
-        this._versionService.initializedPortalVersion.subscribe(initializedVersion => this.initializedPortalVersion = initializedVersion);
-        this._versionService.slot.subscribe(slot => this.slot = slot);
-        this._http.get<any>('assets/enabledResourceTypes.json').subscribe(res => {
-            this.enabledResourceTypes = res.enabledResourceTypes;
-        });
-        this._genericPortalService.getStartupInfo().subscribe(startupInfo => {
-            if (startupInfo && startupInfo.workflowId) {
-                this.ticketBladeWorkflowId = startupInfo.workflowId;
-            }
-        });
+  private telemetryProviders: ITelemetryProvider[] = [];
+  eventPropertiesSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  private eventPropertiesLocalCopy: { [name: string]: string } = {};
+  private slot: string = '';
+  private isLegacy: boolean;
+  private initializedPortalVersion: string = 'v2';
+  private isPublic: boolean;
+  private ticketBladeWorkflowId: string = '';
+  private enabledResourceTypes: {
+    resourceType: string;
+    searchSuffix: string;
+  }[] = [];
+  private commonProperties: { [name: string]: string } = {};
+  constructor(
+    private _appInsightsService: AppInsightsTelemetryService,
+    private _kustoService: KustoTelemetryService,
+    @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig,
+    private _versionService: VersionService,
+    private _activatedRoute: ActivatedRoute,
+    private _router: Router,
+    private _diagnosticSiteService: DiagnosticSiteService,
+    private _http: HttpClient,
+    private _genericPortalService: GenericPortalService
+  ) {
+    if (config.useKustoForTelemetry) {
+      this.telemetryProviders.push(this._kustoService);
     }
-
-    /**
-     * Writes event to the registered logging providers.
-     */
-    public logEvent(eventMessage: string, properties: { [name: string]: string } = {}, measurements?: any) {
-        if (this.eventPropertiesLocalCopy) {
-            for (const id of Object.keys(this.eventPropertiesLocalCopy)) {
-                if (this.eventPropertiesLocalCopy.hasOwnProperty(id)) {
-                    properties[id] = String(this.eventPropertiesLocalCopy[id]);
-                }
-            }
-        }
-        this.addProperties();
-        properties = properties || {};
-        properties = { ...properties, ...this.commonProperties };
-        for (const telemetryProvider of this.telemetryProviders) {
-            if (telemetryProvider) {
-                telemetryProvider.logEvent(eventMessage, properties, measurements);
-            }
-        }
+    if (config.useAppInsightsForTelemetry) {
+      this.telemetryProviders.push(this._appInsightsService);
     }
-
-    public logPageView(name: string, properties?: any, measurements?: any, url?: string, duration?: number) {
-        this.addProperties();
-        properties = properties || {};
-        properties = { ...properties, ...this.commonProperties };
-        for (const telemetryProvider of this.telemetryProviders) {
-            if (!url) {
-                url = window.location.href;
-            }
-            if (telemetryProvider) {
-                telemetryProvider.logPageView(name, url, properties, measurements, duration);
-            }
+    this.isPublic = config && config.isPublic;
+    this.eventPropertiesSubject.subscribe((data: any) => {
+      if (data) {
+        for (const id of Object.keys(data)) {
+          if (data.hasOwnProperty(id)) {
+            this.eventPropertiesLocalCopy[id] = String(data[id]);
+          }
         }
+      }
+    });
+    this._versionService.isLegacySub.subscribe(
+      (isLegacy) => (this.isLegacy = isLegacy)
+    );
+    this._versionService.initializedPortalVersion.subscribe(
+      (initializedVersion) =>
+        (this.initializedPortalVersion = initializedVersion)
+    );
+    this._versionService.slot.subscribe((slot) => (this.slot = slot));
+    this._http.get<any>('assets/enabledResourceTypes.json').subscribe((res) => {
+      this.enabledResourceTypes = res.enabledResourceTypes;
+    });
+    this._genericPortalService.getStartupInfo().subscribe((startupInfo) => {
+      if (startupInfo && startupInfo.workflowId) {
+        this.ticketBladeWorkflowId = startupInfo.workflowId;
+      }
+    });
+  }
+
+  /**
+   * Writes event to the registered logging providers.
+   */
+  public logEvent(
+    eventMessage: string,
+    properties: { [name: string]: string } = {},
+    measurements?: any
+  ) {
+    if (this.eventPropertiesLocalCopy) {
+      for (const id of Object.keys(this.eventPropertiesLocalCopy)) {
+        if (this.eventPropertiesLocalCopy.hasOwnProperty(id)) {
+          properties[id] = String(this.eventPropertiesLocalCopy[id]);
+        }
+      }
     }
-
-    public logException(exception: Error, handledAt?: string, properties?: any, severityLevel?: SeverityLevel) {
-        try {
-            this.addProperties();
-            properties = properties || {};
-            properties = { ...properties, ...this.commonProperties };
-        } catch (e) {
-        }
-        for (const telemetryProvider of this.telemetryProviders) {
-            if (telemetryProvider) {
-                telemetryProvider.logException(exception, handledAt, properties, severityLevel);
-            }
-        }
+    this.addProperties();
+    properties = properties || {};
+    properties = { ...properties, ...this.commonProperties };
+    for (const telemetryProvider of this.telemetryProviders) {
+      if (telemetryProvider) {
+        telemetryProvider.logEvent(eventMessage, properties, measurements);
+      }
     }
+  }
 
-    public logTrace(message: string, properties?: any, severityLevel?: any) {
-        this.addProperties();
-        properties = properties || {};
-        properties = { ...properties, ...this.commonProperties };
-        for (const telemetryProvider of this.telemetryProviders) {
-            if (telemetryProvider) {
-                telemetryProvider.logTrace(message, properties, severityLevel);
-            }
-        }
+  public logPageView(
+    name: string,
+    properties?: any,
+    measurements?: any,
+    url?: string,
+    duration?: number
+  ) {
+    this.addProperties();
+    properties = properties || {};
+    properties = { ...properties, ...this.commonProperties };
+    for (const telemetryProvider of this.telemetryProviders) {
+      if (!url) {
+        url = window.location.href;
+      }
+      if (telemetryProvider) {
+        telemetryProvider.logPageView(
+          name,
+          url,
+          properties,
+          measurements,
+          duration
+        );
+      }
     }
+  }
 
-    public logMetric(name: string, average: number, sampleCount?: number, min?: number, max?: number, properties?: any) {
-        this.addProperties();
-        properties = properties || {};
-        properties = { ...properties, ...this.commonProperties };
-        for (const telemetryProvider of this.telemetryProviders) {
-            if (telemetryProvider) {
-                telemetryProvider.logMetric(name, average, sampleCount, min, max, properties);
-            }
-        }
+  public logException(
+    exception: Error,
+    handledAt?: string,
+    properties?: any,
+    severityLevel?: SeverityLevel
+  ) {
+    try {
+      this.addProperties();
+      properties = properties || {};
+      properties = { ...properties, ...this.commonProperties };
+    } catch (e) {}
+    for (const telemetryProvider of this.telemetryProviders) {
+      if (telemetryProvider) {
+        telemetryProvider.logException(
+          exception,
+          handledAt,
+          properties,
+          severityLevel
+        );
+      }
     }
+  }
 
-    private findProductName(url: string): string {
-        let productName = "";
-        let type = "";
-        //match substring which is "providers/*/:resourceName"
-        try {
-            const routeParams = this._activatedRoute.root.firstChild.firstChild.firstChild.snapshot.params;
-            const resourceName = this.isPublic ? routeParams['resourcename'] : routeParams['resourceName'];
-            const reString = `providers\/.*\/${resourceName}`;
-            const re = new RegExp(reString);
-            const matched = url.match(re);
-            if (!matched || matched.length <= 0 || matched[0].length <= 0) {
-                return "";
-            }
+  public logTrace(message: string, properties?: any, severityLevel?: any) {
+    this.addProperties();
+    properties = properties || {};
+    properties = { ...properties, ...this.commonProperties };
+    for (const telemetryProvider of this.telemetryProviders) {
+      if (telemetryProvider) {
+        telemetryProvider.logTrace(message, properties, severityLevel);
+      }
+    }
+  }
 
-            const s = matched[0].split('/');
-            if (s.length < 3) {
-                return "";
-            }
-            type = `${s[1]}/${s[2]}`;
-        } catch (e) {
+  public logMetric(
+    name: string,
+    average: number,
+    sampleCount?: number,
+    min?: number,
+    max?: number,
+    properties?: any
+  ) {
+    this.addProperties();
+    properties = properties || {};
+    properties = { ...properties, ...this.commonProperties };
+    for (const telemetryProvider of this.telemetryProviders) {
+      if (telemetryProvider) {
+        telemetryProvider.logMetric(
+          name,
+          average,
+          sampleCount,
+          min,
+          max,
+          properties
+        );
+      }
+    }
+  }
 
-        }
-        const resourceType = this.enabledResourceTypes.find(t => t.resourceType.toLowerCase() === type.toLowerCase());
-        productName = resourceType ? resourceType.searchSuffix : type;
+  private findProductName(url: string): string {
+    let productName = '';
+    let type = '';
+    //match substring which is "providers/*/:resourceName"
+    try {
+      const routeParams =
+        this._activatedRoute.root.firstChild.firstChild.firstChild.snapshot
+          .params;
+      const resourceName = this.isPublic
+        ? routeParams['resourcename']
+        : routeParams['resourceName'];
+      const reString = `providers\/.*\/${resourceName}`;
+      const re = new RegExp(reString);
+      const matched = url.match(re);
+      if (!matched || matched.length <= 0 || matched[0].length <= 0) {
+        return '';
+      }
 
-        //If it's a web app, Check the kind of web app(Function/Linux)
-        //If it's not Function/Linux, keep productNamse as it is
-        if (type.toLowerCase() === "microsoft.web/sites") {
-            if (!this._diagnosticSiteService.currentSite.value || !this._diagnosticSiteService.currentSite.value.kind) {
-                return productName;
-            }
-            const kind = this._diagnosticSiteService.currentSite.value.kind;
+      const s = matched[0].split('/');
+      if (s.length < 3) {
+        return '';
+      }
+      type = `${s[1]}/${s[2]}`;
+    } catch (e) {}
+    const resourceType = this.enabledResourceTypes.find(
+      (t) => t.resourceType.toLowerCase() === type.toLowerCase()
+    );
+    productName = resourceType ? resourceType.searchSuffix : type;
 
-            if (kind.indexOf('linux') >= 0 && kind.indexOf('functionapp') >= 0) {
-                productName = "Azure Linux Function App";
-            }
-            else if (kind.indexOf('linux') >= 0) {
-                productName = "Azure Linux App";
-            } else if (kind.indexOf('functionapp') >= 0) {
-                productName = "Azure Function App";
-            }
-        }
-
+    //If it's a web app, Check the kind of web app(Function/Linux)
+    //If it's not Function/Linux, keep productNamse as it is
+    if (type.toLowerCase() === 'microsoft.web/sites') {
+      if (
+        !this._diagnosticSiteService.currentSite.value ||
+        !this._diagnosticSiteService.currentSite.value.kind
+      ) {
         return productName;
+      }
+      const kind = this._diagnosticSiteService.currentSite.value.kind;
+
+      if (kind.indexOf('linux') >= 0 && kind.indexOf('functionapp') >= 0) {
+        productName = 'Azure Linux Function App';
+      } else if (kind.indexOf('linux') >= 0) {
+        productName = 'Azure Linux App';
+      } else if (kind.indexOf('functionapp') >= 0) {
+        productName = 'Azure Function App';
+      }
     }
 
-    private addProperties(): void {
-        this.commonProperties["portalVersion"] = this.isLegacy ? 'v2' : 'v3';
-        this.commonProperties["slot"] = this.slot;
-        if (!(this.commonProperties["url"] || this.commonProperties["Url"])) {
-            this.commonProperties["url"] = this._router.url;
-        }
+    return productName;
+  }
 
-        let productName = "";
-        productName = this.findProductName(this._router.url);
-        if (productName !== "") {
-            this.commonProperties["ProductName"] = productName;
-            this.commonProperties["productName"] = productName;
-        }
-
-        if (this.ticketBladeWorkflowId !== "") {
-            this.commonProperties["ticketBladeWorkflowId"] = this.ticketBladeWorkflowId;
-        }
+  private addProperties(): void {
+    this.commonProperties['portalVersion'] = this.isLegacy ? 'v2' : 'v3';
+    this.commonProperties['slot'] = this.slot;
+    if (!(this.commonProperties['url'] || this.commonProperties['Url'])) {
+      this.commonProperties['url'] = this._router.url;
     }
 
-    public updateCommonProperties(properties: { [name: string]: string }) {
-        this.commonProperties = {...this.commonProperties, ...properties};
+    let productName = '';
+    productName = this.findProductName(this._router.url);
+    if (productName !== '') {
+      this.commonProperties['ProductName'] = productName;
+      this.commonProperties['productName'] = productName;
     }
+
+    if (this.ticketBladeWorkflowId !== '') {
+      this.commonProperties['ticketBladeWorkflowId'] =
+        this.ticketBladeWorkflowId;
+    }
+  }
+
+  public updateCommonProperties(properties: { [name: string]: string }) {
+    this.commonProperties = { ...this.commonProperties, ...properties };
+  }
 }

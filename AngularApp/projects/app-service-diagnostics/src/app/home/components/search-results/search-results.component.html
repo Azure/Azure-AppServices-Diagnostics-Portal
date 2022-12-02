@@ -1,18 +1,25 @@
 <div class="search-result-container">
-  <div class="search-result" *ngFor="let feature of features" (mousedown)="navigateToFeature(feature)"
-    (keyup.enter)="navigateToFeature(feature)" tabindex="0">
+  <div
+    class="search-result"
+    *ngFor="let feature of features"
+    (mousedown)="navigateToFeature(feature)"
+    (keyup.enter)="navigateToFeature(feature)"
+    tabindex="0"
+  >
     <div class="feature-icon">
-      <div class="feature-icon-circle" [style.background-color]="feature.featureType.color">
+      <div
+        class="feature-icon-circle"
+        [style.background-color]="feature.featureType.color"
+      >
         <i class="fa" [ngClass]="feature.featureType.icon"></i>
       </div>
     </div>
     <div>
-      <div class="feature-title">{{feature.name}}</div>
+      <div class="feature-title">{{ feature.name }}</div>
       <div class="feature-category">
-        {{feature.category}}
+        {{ feature.category }}
       </div>
-      <div>{{feature.description}}</div>
+      <div>{{ feature.description }}</div>
     </div>
-
   </div>
 </div>

@@ -1,65 +1,60 @@
 @import '../../../../../../app-service-diagnostics/src/styles/icons.scss';
 
-.check-container{
+.check-container {
+  .check-content {
+    margin: -21px 3px 0px 30px;
+  }
 
-    .check-content{
-        margin: -21px 3px 0px 30px;
+  .check-title {
+    font-size: 13px;
+    display: inline;
+    margin-right: 45px;
+  }
+
+  .bold {
+    font-weight: 500;
+  }
+
+  .subchecks-container {
+    padding-left: 25px;
+    .sub-check {
+      padding-top: 10px;
     }
+  }
 
-    .check-title{
-        font-size: 13px;
-        display: inline;
-        margin-right: 45px;
+  .details-link {
+    margin-left: -35px;
+    display: inline;
+  }
+
+  .expand-icon {
+    position: absolute;
+    margin-top: 1px;
+    margin-left: -35px;
+    .ms-Icon {
+      color: var(--bodyText);
     }
+  }
 
-    .bold{
-        font-weight: 500;
-    }
+  .body-content {
+    padding: 10px 10px 0px 30px;
+    overflow-x: auto;
 
-    .subchecks-container{
-        padding-left: 25px;
-        .sub-check{
-            padding-top: 10px;
-        }
-    }
+    // table {
+    //     line-break: anywhere;
+    // }
+  }
 
-    .details-link{
-        margin-left: -35px;
-        display: inline;
-    }
-
-    .expand-icon{
-        position: absolute;
-        margin-top: 1px;
-        margin-left: -35px;
-        .ms-Icon{
-            color: var(--bodyText);
-        }
-    }
-
-    .body-content {
-        padding: 10px 10px 0px 30px;
-        overflow-x: auto;
-
-        // table {
-        //     line-break: anywhere;
-        // }
-    }
-
-    .actions-container {
-        padding: 10px 10px 10px 30px;
-    }
+  .actions-container {
+    padding: 10px 10px 10px 30px;
+  }
 }
 
 .status-icon {
-    display: flex;
-    align-items: center;
-    padding-left: 1px;
-    width: 75px;
-    height: 100%;
-    padding-bottom: 1px;
+  display: flex;
+  align-items: center;
+  padding-left: 1px;
+  width: 75px;
+  height: 100%;
+  padding-bottom: 1px;
 }
-
-
-
-

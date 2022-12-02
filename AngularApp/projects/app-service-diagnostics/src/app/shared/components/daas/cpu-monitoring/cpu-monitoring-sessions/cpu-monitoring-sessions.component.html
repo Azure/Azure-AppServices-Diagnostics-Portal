@@ -1,14 +1,21 @@
 <div class="container">
   <div class="row">
     <div class="col-sm-10">
-      <div *ngIf="gettingSessions" style="margin-top:15px;">
-        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+      <div *ngIf="gettingSessions" style="margin-top: 15px">
+        <i
+          class="fa fa-circle-o-notch fa-spin spin-icon"
+          aria-hidden="true"
+        ></i>
         Getting monitoring rules...
       </div>
-      <div *ngIf="!gettingSessions" style="margin-top:15px">
-        <p style="margin-bottom:15px">{{ description }}</p>
+      <div *ngIf="!gettingSessions" style="margin-top: 15px">
+        <p style="margin-bottom: 15px">{{ description }}</p>
 
-        <div tabindex="0" *ngIf="monitoringSessions == null || monitoringSessions.length === 0" class="message">
+        <div
+          tabindex="0"
+          *ngIf="monitoringSessions == null || monitoringSessions.length === 0"
+          class="message"
+        >
           No rules found!
         </div>
 
@@ -24,57 +31,119 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let monitoringSession of monitoringSessions"
-                [ngClass]="{'active-rule':isSessionActive(monitoringSession)}">
+              <tr
+                *ngFor="let monitoringSession of monitoringSessions"
+                [ngClass]="{
+                  'active-rule': isSessionActive(monitoringSession)
+                }"
+              >
                 <td>
-                  <div> CPU &gt; {{ monitoringSession.CpuThreshold }}% for &gt;
+                  <div>
+                    CPU &gt; {{ monitoringSession.CpuThreshold }}% for &gt;
                     {{ monitoringSession.ThresholdSeconds }}s
                   </div>
                 </td>
                 <td>
-                  <div> {{ monitoringSession.Mode }} </div>
+                  <div>{{ monitoringSession.Mode }}</div>
                 </td>
                 <td>
                   <div [innerHTML]="formatStartDate(monitoringSession)"></div>
                 </td>
                 <td>
-                  <div [ngClass]="{'active-rule-bold':isSessionActive(monitoringSession)}">
-                    {{ isSessionActive(monitoringSession) ? 'Active' : 'Completed' }}</div>
+                  <div
+                    [ngClass]="{
+                      'active-rule-bold': isSessionActive(monitoringSession)
+                    }"
+                  >
+                    {{
+                      isSessionActive(monitoringSession)
+                        ? 'Active'
+                        : 'Completed'
+                    }}
+                  </div>
                 </td>
                 <td>
                   <div *ngIf="monitoringSession.Mode !== 'Kill'">
                     <div
-                      *ngIf="monitoringSession.FilesCollected == null || monitoringSession.FilesCollected.length === 0">
-                      <span>{{ isSessionActive(monitoringSession) ? 'Waiting for dumps...' : 'No dumps collected' }}</span>
+                      *ngIf="
+                        monitoringSession.FilesCollected == null ||
+                        monitoringSession.FilesCollected.length === 0
+                      "
+                    >
+                      <span>{{
+                        isSessionActive(monitoringSession)
+                          ? 'Waiting for dumps...'
+                          : 'No dumps collected'
+                      }}</span>
                     </div>
-                    <ul *ngIf="monitoringSession.FilesCollected.length > 0" style="list-style-type:none;padding:0">
+                    <ul
+                      *ngIf="monitoringSession.FilesCollected.length > 0"
+                      style="list-style-type: none; padding: 0"
+                    >
                       <li *ngFor="let file of monitoringSession.FilesCollected">
                         {{ getfileNameFromPath(file.RelativePath) }}.dmp
-                        <a (click)="openReport(file.RelativePath, monitoringSession.BlobSasUri)">
+                        <a
+                          (click)="
+                            openReport(
+                              file.RelativePath,
+                              monitoringSession.BlobSasUri
+                            )
+                          "
+                        >
                           <i class="fa fa-external-link"></i>
                         </a>
                       </li>
                     </ul>
 
-                    <button class="btn btn-sm btn-primary"
-                      *ngIf="!monitoringSession.AnalysisSubmitted && monitoringSession.AnalysisStatus === 'NotStarted' && monitoringSession.FilesCollected != null && monitoringSession.FilesCollected.length > 0 && !isSessionActive(monitoringSession)"
-                      (click)="analyzeSession(monitoringSession)">Analyze</button>
+                    <button
+                      class="btn btn-sm btn-primary"
+                      *ngIf="
+                        !monitoringSession.AnalysisSubmitted &&
+                        monitoringSession.AnalysisStatus === 'NotStarted' &&
+                        monitoringSession.FilesCollected != null &&
+                        monitoringSession.FilesCollected.length > 0 &&
+                        !isSessionActive(monitoringSession)
+                      "
+                      (click)="analyzeSession(monitoringSession)"
+                    >
+                      Analyze
+                    </button>
 
-                    <div class="focus-box focus-box-warning" *ngIf="monitoringSession.ErrorSubmittingAnalysis">
+                    <div
+                      class="focus-box focus-box-warning"
+                      *ngIf="monitoringSession.ErrorSubmittingAnalysis"
+                    >
                       <strong>Error</strong> - {{ error }}
                     </div>
 
                     <div
-                      *ngIf="monitoringSession.AnalysisStatus === 'InProgress' || monitoringSession.AnalysisSubmitted">
-                      <i class=" fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+                      *ngIf="
+                        monitoringSession.AnalysisStatus === 'InProgress' ||
+                        monitoringSession.AnalysisSubmitted
+                      "
+                    >
+                      <i
+                        class="fa fa-circle-o-notch fa-spin spin-icon"
+                        aria-hidden="true"
+                      ></i>
                       Analysis in progress...
                     </div>
-                    <div *ngIf="monitoringSession.AnalysisStatus !== 'NotStarted'">
-                      <ul style="list-style-type:none;padding:0">
-                        <li *ngFor="let file of monitoringSession.FilesCollected">
+                    <div
+                      *ngIf="monitoringSession.AnalysisStatus !== 'NotStarted'"
+                    >
+                      <ul style="list-style-type: none; padding: 0">
+                        <li
+                          *ngFor="let file of monitoringSession.FilesCollected"
+                        >
                           <div *ngIf="file.ReportFileRelativePath != null">
-                            {{ getfileNameFromPath(file.ReportFileRelativePath) }}.mht
-                            <a (click)="openReport(file.ReportFileRelativePath, '')">
+                            {{
+                              getfileNameFromPath(file.ReportFileRelativePath)
+                            }}.mht
+                            <a
+                              (click)="
+                                openReport(file.ReportFileRelativePath, '')
+                              "
+                            >
                               <i class="fa fa-external-link"></i>
                             </a>
                           </div>
@@ -83,9 +152,7 @@
                     </div>
                   </div>
 
-                  <div *ngIf="monitoringSession.Mode === 'Kill'">
-                    None
-                  </div>
+                  <div *ngIf="monitoringSession.Mode === 'Kill'">None</div>
                 </td>
               </tr>
             </tbody>

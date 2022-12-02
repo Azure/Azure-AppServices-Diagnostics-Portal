@@ -1,20 +1,38 @@
-<div [ngClass]="{'animated bounceOutLeft': showComponent === false}" *ngIf="showComponent">
-    <button *ngFor="let item of buttonList; let i = index" type="button" class="custom-button bot-button" style="margin-right:20px;min-width:150px" (click)="onClick(item)">
-        {{item.title}}
-    </button>
+<div
+  [ngClass]="{ 'animated bounceOutLeft': showComponent === false }"
+  *ngIf="showComponent"
+>
+  <button
+    *ngFor="let item of buttonList; let i = index"
+    type="button"
+    class="custom-button bot-button"
+    style="margin-right: 20px; min-width: 150px"
+    (click)="onClick(item)"
+  >
+    {{ item.title }}
+  </button>
 </div>
 
 <div *ngIf="showComponent">
   <div></div>
-  <button *ngFor="let item of buttonList; let i = index" type="button" class="custom-button bot-button" style="margin-right:20px;min-width:150px" (click)="onClick(item)">
-      {{item.title}}
+  <button
+    *ngFor="let item of buttonList; let i = index"
+    type="button"
+    class="custom-button bot-button"
+    style="margin-right: 20px; min-width: 150px"
+    (click)="onClick(item)"
+  >
+    {{ item.title }}
   </button>
 </div>
-
 
 <div>
-  <button *ngFor="let item of buttonList; let i = index" type="button" class='custom-button bot-button' (click)="onClick(item)">
-      {{item.title}}
+  <button
+    *ngFor="let item of buttonList; let i = index"
+    type="button"
+    class="custom-button bot-button"
+    (click)="onClick(item)"
+  >
+    {{ item.title }}
   </button>
 </div>
-

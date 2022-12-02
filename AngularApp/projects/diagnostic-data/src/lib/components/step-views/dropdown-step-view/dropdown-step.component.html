@@ -1,15 +1,21 @@
-<div class="dropdown-step{{dropdownStepView.bordered?' bordered':''}}">
-    <p class="view-description">{{ dropdownStepView.description }}</p>
-    <div class="dropdown-container" *ngFor="let dropdown of dropdownStepView.dropdowns; index as i">
-        <p class="description" *ngIf="dropdown.description">{{ dropdown.description }}</p>
-        <fab-dropdown 
-            [componentRef]="dropdownRef" 
-            (onChange)="onChange($event, i)" 
-            (onDismiss)="dropdownStepView.onDismiss()" 
-            [disabled]="dropdownStepView.dropdowns[i].options.length==0" 
-            [options]="dropdownStepView.dropdowns[i] | getDropdownOptions" 
-            [defaultSelectedKey]="null" 
-            [contentStyle]="'width:{{dropdownStepView.width}};'">
-        </fab-dropdown>
-    </div>
+<div class="dropdown-step{{ dropdownStepView.bordered ? ' bordered' : '' }}">
+  <p class="view-description">{{ dropdownStepView.description }}</p>
+  <div
+    class="dropdown-container"
+    *ngFor="let dropdown of dropdownStepView.dropdowns; index as i"
+  >
+    <p class="description" *ngIf="dropdown.description">
+      {{ dropdown.description }}
+    </p>
+    <fab-dropdown
+      [componentRef]="dropdownRef"
+      (onChange)="onChange($event, i)"
+      (onDismiss)="dropdownStepView.onDismiss()"
+      [disabled]="dropdownStepView.dropdowns[i].options.length == 0"
+      [options]="dropdownStepView.dropdowns[i] | getDropdownOptions"
+      [defaultSelectedKey]="null"
+      [contentStyle]="'width:{{dropdownStepView.width}};'"
+    >
+    </fab-dropdown>
+  </div>
 </div>

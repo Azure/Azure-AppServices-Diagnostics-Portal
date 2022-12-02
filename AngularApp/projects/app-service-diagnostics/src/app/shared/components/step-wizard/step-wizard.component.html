@@ -1,29 +1,37 @@
 <div id="wizard-progress">
-    <ol class="step-indicator">
-        <li *ngFor="let wizardstep of WizardSteps; let idx = index"
-            [ngClass]="{'':CurrentStep < (idx+1), 'active' : CurrentStep === (idx+1) , 'complete' : CurrentStep > (idx+1)}">
-            <div class="step">
-                <i class="fa {{ wizardstep.IconType }}"></i>
-            </div>
-            <div class="caption hidden-xs hidden-sm">
-                <i *ngIf="CurrentStep === (idx + 1)" class="fa fa-circle-o-notch fa-spin spin-icon"
-                    aria-hidden="true"></i>
-                <ng-container *ngIf="CurrentStep >= (idx+2); else beforeCompletion">
-                    {{ wizardstep.CaptionCompleted }}
-                </ng-container>
-                <ng-template #beforeCompletion>
-                    {{ wizardstep.Caption }}
-                </ng-template>
-
-            </div>
-        </li>
-    </ol>
-    <div *ngFor="let wizardstep of WizardSteps; let idx = index">
-        <div *ngIf="CurrentStep === (idx + 1) && wizardstep.AdditionalText">
-            {{ wizardstep.AdditionalText }}
-        </div>
+  <ol class="step-indicator">
+    <li
+      *ngFor="let wizardstep of WizardSteps; let idx = index"
+      [ngClass]="{
+        '': CurrentStep < idx + 1,
+        active: CurrentStep === idx + 1,
+        complete: CurrentStep > idx + 1
+      }"
+    >
+      <div class="step">
+        <i class="fa {{ wizardstep.IconType }}"></i>
+      </div>
+      <div class="caption hidden-xs hidden-sm">
+        <i
+          *ngIf="CurrentStep === idx + 1"
+          class="fa fa-circle-o-notch fa-spin spin-icon"
+          aria-hidden="true"
+        ></i>
+        <ng-container *ngIf="CurrentStep >= idx + 2; else beforeCompletion">
+          {{ wizardstep.CaptionCompleted }}
+        </ng-container>
+        <ng-template #beforeCompletion>
+          {{ wizardstep.Caption }}
+        </ng-template>
+      </div>
+    </li>
+  </ol>
+  <div *ngFor="let wizardstep of WizardSteps; let idx = index">
+    <div *ngIf="CurrentStep === idx + 1 && wizardstep.AdditionalText">
+      {{ wizardstep.AdditionalText }}
     </div>
-    <div *ngIf="WizardStepStatus" class="wizard-status">
-        {{ WizardStepStatus }}
-    </div>
+  </div>
+  <div *ngIf="WizardStepStatus" class="wizard-status">
+    {{ WizardStepStatus }}
+  </div>
 </div>

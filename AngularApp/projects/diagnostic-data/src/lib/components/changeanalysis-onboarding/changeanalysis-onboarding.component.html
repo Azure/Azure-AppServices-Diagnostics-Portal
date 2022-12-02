@@ -1,26 +1,48 @@
 <data-container *ngIf="!isPublic; else publicView">
-    <div class="insight-container" role="button" tabindex="0" attr.aria-label="{{onboardingText}}">
-        <div class="panel panel-default insight-panel">
-          <div class="panel-heading">
-
-          <h5 class="panel-title"> <span class="fa status-icon fa-exclamation-triangle"></span>{{onboardingText}}</h5>
-          </div>
-        </div>
+  <div
+    class="insight-container"
+    role="button"
+    tabindex="0"
+    attr.aria-label="{{ onboardingText }}"
+  >
+    <div class="panel panel-default insight-panel">
+      <div class="panel-heading">
+        <h5 class="panel-title">
+          <span class="fa status-icon fa-exclamation-triangle"></span
+          >{{ onboardingText }}
+        </h5>
       </div>
+    </div>
+  </div>
 </data-container>
 
 <ng-template #publicView>
-    <div class="insight-container hyperlink" (click)="navigateToSettings()" role="button" tabindex="0" attr.aria-label="{{onboardingText}}">
-        <div class="panel panel-default insight-panel">
-          <div class="panel-heading">
-
-          <h5 class="panel-title"> <span class="fa status-icon gift fa-gift"></span> {{onboardingText}}</h5>
-            <div class="pull-right" tabindex="0" role="button" (keyup.enter)="navigateToSettings()">
-              <h5 class="panel-title enable-now text-primary" (click)="navigateToSettings()"> <a>Enable now! </a></h5>
-            </div>
-
+  <div
+    class="insight-container hyperlink"
+    (click)="navigateToSettings()"
+    role="button"
+    tabindex="0"
+    attr.aria-label="{{ onboardingText }}"
+  >
+    <div class="panel panel-default insight-panel">
+      <div class="panel-heading">
+        <h5 class="panel-title">
+          <span class="fa status-icon gift fa-gift"></span> {{ onboardingText }}
+        </h5>
+        <div
+          class="pull-right"
+          tabindex="0"
+          role="button"
+          (keyup.enter)="navigateToSettings()"
+        >
+          <h5
+            class="panel-title enable-now text-primary"
+            (click)="navigateToSettings()"
+          >
+            <a>Enable now! </a>
+          </h5>
         </div>
       </div>
-      </div>
+    </div>
+  </div>
 </ng-template>
-

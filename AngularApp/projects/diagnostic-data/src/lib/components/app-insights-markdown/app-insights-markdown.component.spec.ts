@@ -8,9 +8,8 @@ describe('AppInsightsMarkdownComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppInsightsMarkdownComponent ]
-    })
-    .compileComponents();
+      declarations: [AppInsightsMarkdownComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -8,9 +8,8 @@ describe('CategoryTileComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CategoryTileComponent ]
-    })
-    .compileComponents();
+      declarations: [CategoryTileComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

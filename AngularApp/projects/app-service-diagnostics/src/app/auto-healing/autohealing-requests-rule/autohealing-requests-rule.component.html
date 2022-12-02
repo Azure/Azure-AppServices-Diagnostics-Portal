@@ -1,8 +1,14 @@
 <div *ngIf="rule == null && !editMode">
-  Configure a rule based on number of requests served by the App. This is useful in case your app to take an action when it
-  has served X number of requests in Y amount of time.
+  Configure a rule based on number of requests served by the App. This is useful
+  in case your app to take an action when it has served X number of requests in
+  Y amount of time.
   <div class="rule-button">
-    <button tabindex="0" type="button" class="btn btn-primary btn-sm" (click)="addNewRule()">
+    <button
+      tabindex="0"
+      type="button"
+      class="btn btn-primary btn-sm"
+      (click)="addNewRule()"
+    >
       Configure Request Count rule
     </button>
   </div>
@@ -16,15 +22,9 @@
 <table class="table table-bordered" *ngIf="!editMode && rule != null">
   <thead>
     <tr>
-      <th tabindex="0">
-        Request Count
-      </th>
-      <th tabindex="0">
-        Duration
-      </th>
-      <th tabindex="0">
-        Action
-      </th>
+      <th tabindex="0">Request Count</th>
+      <th tabindex="0">Duration</th>
+      <th tabindex="0">Action</th>
     </tr>
   </thead>
   <tbody>
@@ -32,10 +32,22 @@
       <td tabindex="0">{{ rule.count }}</td>
       <td tabindex="0">{{ rule.timeInterval }}</td>
       <td tabindex="0">
-        <button class="image-btn" *ngIf="!editMode" (click)="editRule()" title="Edit rule" name="editRule">
+        <button
+          class="image-btn"
+          *ngIf="!editMode"
+          (click)="editRule()"
+          title="Edit rule"
+          name="editRule"
+        >
           <i class="fa fa-edit"></i>
         </button>
-        <button class="image-btn" *ngIf="!editMode" (click)="deleteRule()" title="Delete rule" name="deleteRule">
+        <button
+          class="image-btn"
+          *ngIf="!editMode"
+          (click)="deleteRule()"
+          title="Delete rule"
+          name="deleteRule"
+        >
           <i class="fa fa-trash"></i>
         </button>
       </td>
@@ -46,28 +58,60 @@
 <div class="form-group" *ngIf="editMode">
   <div class="row">
     <div class="col-sm-6">
-      <label id="requestCountHelp" aria-placeholder="Enter count" for="requestCount">After how many requests you want this condition to kick in?</label>
+      <label
+        id="requestCountHelp"
+        aria-placeholder="Enter count"
+        for="requestCount"
+        >After how many requests you want this condition to kick in?</label
+      >
     </div>
     <div class="col-sm-4">
-      <input aria-required="true" type="number" id="requestCount" placeholder="Enter count" [(ngModel)]="ruleCopy.count" min="1" max="4294967295">
-      <span style="color:red">*</span>
-      <div *ngIf="ruleCopy.count <=0" class="alert alert-danger" role="alert" style="margin-top:5px">
+      <input
+        aria-required="true"
+        type="number"
+        id="requestCount"
+        placeholder="Enter count"
+        [(ngModel)]="ruleCopy.count"
+        min="1"
+        max="4294967295"
+      />
+      <span style="color: red">*</span>
+      <div
+        *ngIf="ruleCopy.count <= 0"
+        class="alert alert-danger"
+        role="alert"
+        style="margin-top: 5px"
+      >
         Request count should be more than zero
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col-sm-6">
-      <label for="durationCount">What is the time interval (in seconds) in which the above condition should be met?</label>
+      <label for="durationCount"
+        >What is the time interval (in seconds) in which the above condition
+        should be met?</label
+      >
     </div>
     <div class="col-sm-4">
-      <timespan ControlId="durationCount" [(timeSpan)]="ruleCopy.timeInterval" placeholder="e.g. 60"></timespan>
+      <timespan
+        ControlId="durationCount"
+        [(timeSpan)]="ruleCopy.timeInterval"
+        placeholder="e.g. 60"
+      ></timespan>
     </div>
   </div>
 
   <div class="row">
     <div class="col-sm-4">
-      <button type="button" class="btn btn-primary btn-sm" [disabled]="!isValid()" (click)="saveRule()">Ok</button>
+      <button
+        type="button"
+        class="btn btn-primary btn-sm"
+        [disabled]="!isValid()"
+        (click)="saveRule()"
+      >
+        Ok
+      </button>
     </div>
   </div>
 </div>

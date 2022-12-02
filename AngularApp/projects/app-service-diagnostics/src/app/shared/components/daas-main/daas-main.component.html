@@ -1,69 +1,112 @@
 <div class="container">
-    <div class="header1">Diagnostics as a Service </div>
+  <div class="header1">Diagnostics as a Service</div>
 
-    <p>
-        Diagnostics as a Service provides a rich set of tools that help you analyze performance and availability issues in your app.
-        If your app is down or performing slow, you can leverage these tools to identify the root cause. These tools leverage
-        diagnostic capabilities of different technology stacks to provide you insights on your app performance and availability.
-        To get started, click on the tile for the tool you want to use.
-    </p>
-    <div *ngIf="!checkingSupportedTier && !supportedTier">
-        <div class="focus-box focus-box-warning" style="margin-top:20px">
-            <div>
-                <strong>Error</strong> - This tool is supported only on
-                <b>Standard, Premium </b> and
-                <b>Isolated</b> SKU's only.
-            </div>
-        </div>
-        <daas-scaleup></daas-scaleup>
+  <p>
+    Diagnostics as a Service provides a rich set of tools that help you analyze
+    performance and availability issues in your app. If your app is down or
+    performing slow, you can leverage these tools to identify the root cause.
+    These tools leverage diagnostic capabilities of different technology stacks
+    to provide you insights on your app performance and availability. To get
+    started, click on the tile for the tool you want to use.
+  </p>
+  <div *ngIf="!checkingSupportedTier && !supportedTier">
+    <div class="focus-box focus-box-warning" style="margin-top: 20px">
+      <div>
+        <strong>Error</strong> - This tool is supported only on
+        <b>Standard, Premium </b> and <b>Isolated</b> SKU's only.
+      </div>
     </div>
-    <div style="margin-bottom: 10px;" *ngIf="platform !=null && platform === operatingSystem.windows && supportedTier">
-
-        <div *ngIf="toolCategory !=null && (toolCategory.Subcategories | toolstack:AppStack | platformfilter:platform  | apptype:appType).length > 0">
-            <div class="col zoomIn animated category-box" *ngFor="let subcategory of toolCategory.Subcategories | toolstack:AppStack | platformfilter:platform | apptype:appType"
-                [style.background-color]="toolCategory.BgColor" [style.color]="toolCategory.TextColor" [routerLink]="getRoute(subcategory.Href)"
-                (click)="logCategorySelected(subcategory.Name)">
-                <div class="category-content">{{subcategory.Name}}</div>
-            </div>
-            <div class="area">
-                <div class="content">
-                    Showing tools for
-                    <strong>{{ AppStack }}</strong>.
-                    <div style="display:inline-block" class="dropdown">
-                        <a class="dropdown-toggle" (click)="showToolsDropdown = !showToolsDropdown">Change Stack</a>
-                        <ul class="dropdown-menu" style="cursor: pointer" aria-labelledby="dropdownMenu1" [ngClass]="{'show': showToolsDropdown ===
-                                    true, 'hide': showToolsDropdown === false}">
-                            <li (click)="onStackChanged('ASP.Net')">
-                                <a>ASP.Net</a>
-                            </li>
-                            <li (click)="onStackChanged('ASP.Net Core')">
-                                <a>ASP.NET Core</a>
-                            </li>
-                            <li (click)="onStackChanged('Java')">
-                                <a>Java</a>
-                            </li>
-                            <li (click)="onStackChanged('PHP')">
-                                <a>PHP</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+    <daas-scaleup></daas-scaleup>
+  </div>
+  <div
+    style="margin-bottom: 10px"
+    *ngIf="
+      platform != null && platform === operatingSystem.windows && supportedTier
+    "
+  >
+    <div
+      *ngIf="
+        toolCategory != null &&
+        (
+          toolCategory.Subcategories
+          | toolstack : AppStack
+          | platformfilter : platform
+          | apptype : appType
+        ).length > 0
+      "
+    >
+      <div
+        class="col zoomIn animated category-box"
+        *ngFor="
+          let subcategory of toolCategory.Subcategories
+            | toolstack : AppStack
+            | platformfilter : platform
+            | apptype : appType
+        "
+        [style.background-color]="toolCategory.BgColor"
+        [style.color]="toolCategory.TextColor"
+        [routerLink]="getRoute(subcategory.Href)"
+        (click)="logCategorySelected(subcategory.Name)"
+      >
+        <div class="category-content">{{ subcategory.Name }}</div>
+      </div>
+      <div class="area">
+        <div class="content">
+          Showing tools for
+          <strong>{{ AppStack }}</strong
+          >.
+          <div style="display: inline-block" class="dropdown">
+            <a
+              class="dropdown-toggle"
+              (click)="showToolsDropdown = !showToolsDropdown"
+              >Change Stack</a
+            >
+            <ul
+              class="dropdown-menu"
+              style="cursor: pointer"
+              aria-labelledby="dropdownMenu1"
+              [ngClass]="{
+                show: showToolsDropdown === true,
+                hide: showToolsDropdown === false
+              }"
+            >
+              <li (click)="onStackChanged('ASP.Net')">
+                <a>ASP.Net</a>
+              </li>
+              <li (click)="onStackChanged('ASP.Net Core')">
+                <a>ASP.NET Core</a>
+              </li>
+              <li (click)="onStackChanged('Java')">
+                <a>Java</a>
+              </li>
+              <li (click)="onStackChanged('PHP')">
+                <a>PHP</a>
+              </li>
+            </ul>
+          </div>
         </div>
-
-        <div style="margin-top:20px">
-            <p>
-                Below is the list of all the diagnostic sessions collected in the past for this web app. To save disk space, older diagnostic sessions and their data collected will be deleted automatically.
-            </p>
-            <div class="sessions">
-                <daas-sessions [diagnoserNameLookup]="" [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed"></daas-sessions>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <div *ngIf="platform !=null && platform === operatingSystem.linux">
-        <div class="alert alert-danger" role="alert">
-            Diagnostics as a Service is supported on Windows Platform only.
-        </div>
+    <div style="margin-top: 20px">
+      <p>
+        Below is the list of all the diagnostic sessions collected in the past
+        for this web app. To save disk space, older diagnostic sessions and
+        their data collected will be deleted automatically.
+      </p>
+      <div class="sessions">
+        <daas-sessions
+          [diagnoserNameLookup]=""
+          [scmPath]="scmPath"
+          [siteToBeDiagnosed]="siteToBeDiagnosed"
+        ></daas-sessions>
+      </div>
     </div>
+  </div>
+
+  <div *ngIf="platform != null && platform === operatingSystem.linux">
+    <div class="alert alert-danger" role="alert">
+      Diagnostics as a Service is supported on Windows Platform only.
+    </div>
+  </div>
 </div>

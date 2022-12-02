@@ -6,7 +6,9 @@ describe('ApplensDocumentsSearchService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: ApplensDocumentsSearchService = TestBed.get(ApplensDocumentsSearchService);
+    const service: ApplensDocumentsSearchService = TestBed.get(
+      ApplensDocumentsSearchService
+    );
     expect(service).toBeTruthy();
   });
 });

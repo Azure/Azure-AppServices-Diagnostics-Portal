@@ -1,40 +1,40 @@
 .option-group {
-    display: flex;
+  display: flex;
 }
 
 .settings-label {
-    color: black;
-    font-size: 13px;
+  color: black;
+  font-size: 13px;
 }
 
 .toggle-button {
-    min-width: 180px;
+  min-width: 180px;
 }
 
 .insight-expand-icon {
-    font-weight: bold;
-    float:left;
-    font-size:18px;
-    min-height: 1px;
-    min-width: 1.5%;
-    margin-right:10px;
+  font-weight: bold;
+  float: left;
+  font-size: 18px;
+  min-height: 1px;
+  min-width: 1.5%;
+  margin-right: 10px;
 }
 .webapp-icon-row {
-    min-width: 8.5%;
+  min-width: 8.5%;
 }
 .asp-icon {
-    display: inline-block;
-    height: 20px;
-    width: 20px;
-    background-image: url(../../../../assets/img/azure-icons/AppServicePlan.svg);
-    background-repeat: no-repeat;
-    margin-right:10px;
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  background-image: url(../../../../assets/img/azure-icons/AppServicePlan.svg);
+  background-repeat: no-repeat;
+  margin-right: 10px;
 }
 .webapp-icon {
-    display: inline-block;
-    height: 20px;
-    width: 20px;
-    background-image: url(../../../../assets/img/azure-icons/webapp.svg);
-    background-repeat: no-repeat;
-    margin-right:10px;
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  background-image: url(../../../../assets/img/azure-icons/webapp.svg);
+  background-repeat: no-repeat;
+  margin-right: 10px;
 }

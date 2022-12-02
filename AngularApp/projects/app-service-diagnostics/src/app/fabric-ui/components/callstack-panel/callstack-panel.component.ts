@@ -8,19 +8,16 @@ import { PanelType } from 'office-ui-fabric-react';
   styleUrls: ['./callstack-panel.component.scss']
 })
 export class CallstackPanelComponent implements OnInit {
-
   type: PanelType = PanelType.custom;
-  width: string = "850px";
-  
-  constructor(public globals: Globals) { }
+  width: string = '850px';
 
-  ngOnInit() {
-  }
+  constructor(public globals: Globals) {}
+
+  ngOnInit() {}
 
   dismissedHandler() {
     this.globals.openCallStackPanel = false;
-    this.globals.callStackDetails.callStack = "";
-    this.globals.callStackDetails.managedException = "";
+    this.globals.callStackDetails.callStack = '';
+    this.globals.callStackDetails.managedException = '';
   }
-
 }

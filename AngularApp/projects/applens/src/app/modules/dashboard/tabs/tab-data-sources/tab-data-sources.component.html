@@ -1,28 +1,60 @@
-<div style="padding:20px">
-
+<div style="padding: 20px">
   <div *ngIf="detectorResponse && !detectorResponse.dataProvidersMetadata">
     No data provider metadata in response
   </div>
 
-  <div class="panel-group" *ngIf="detectorResponse && dataProviderMetadata.length > 0">
-    <div *ngFor="let providerMetadata of dataProviderMetadata" class="panel panel-default"
-      [style.border-color]="getColorForProvider(providerMetadata.providerName)">
-      <div class="panel-heading" [style.background]="getColorForProvider(providerMetadata.providerName)">
+  <div
+    class="panel-group"
+    *ngIf="detectorResponse && dataProviderMetadata.length > 0"
+  >
+    <div
+      *ngFor="let providerMetadata of dataProviderMetadata"
+      class="panel panel-default"
+      [style.border-color]="getColorForProvider(providerMetadata.providerName)"
+    >
+      <div
+        class="panel-heading"
+        [style.background]="getColorForProvider(providerMetadata.providerName)"
+      >
         <div class="provider-name">
-          <img [attr.src]="getImageForProvider(providerMetadata.providerName)" class="provider-image" />
+          <img
+            [attr.src]="getImageForProvider(providerMetadata.providerName)"
+            class="provider-image"
+          />
           {{ providerMetadata.providerName }}
         </div>
       </div>
-      <div class="panel-body" style="background-color: var(--bodyBackground);">
+      <div class="panel-body" style="background-color: var(--bodyBackground)">
         <div class="panel-body data-container-body">
           <ng-container *ngFor="let property of providerMetadata.propertyBag">
-            <div style="margin-bottom: 10px" *ngIf="property.key == 'Query' && property.value">
-              <div class="operationName" [style.background-color]="getColorForProvider(providerMetadata.providerName)"
-                *ngIf="property.value.operationName"> {{ property.value.operationName }} </div>
-              <pre style="border-radius: 0px; color:var(--bodyText);background-color:var(--bodyBackground)"><code>{{ property.value.text }}</code></pre>
+            <div
+              style="margin-bottom: 10px"
+              *ngIf="property.key === 'Query' && property.value"
+            >
+              <div
+                class="operationName"
+                [style.background-color]="
+                  getColorForProvider(providerMetadata.providerName)
+                "
+                *ngIf="property.value.operationName"
+              >
+                {{ property.value.operationName }}
+              </div>
+              <pre
+                style="
+                  border-radius: 0px;
+                  color: var(--bodyText);
+                  background-color: var(--bodyBackground);
+                "
+              ><code>{{ property.value.text }}</code></pre>
               <div style="margin-bottom: 5px">
-                <a class="datasourcelink" [attr.href]="property.value.url" style="text-decoration: none;"
-                  target='_blank'>{{getProviderText(providerMetadata.providerName)}}</a>
+                <a
+                  class="datasourcelink"
+                  [attr.href]="property.value.url"
+                  style="text-decoration: none"
+                  target="_blank"
+                  >{{ getProviderText(providerMetadata.providerName) }}</a
+                >
               </div>
             </div>
           </ng-container>

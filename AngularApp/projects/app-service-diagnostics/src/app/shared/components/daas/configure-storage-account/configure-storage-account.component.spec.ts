@@ -8,9 +8,8 @@ describe('ConfigureStorageAccountComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConfigureStorageAccountComponent ]
-    })
-    .compileComponents();
+      declarations: [ConfigureStorageAccountComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

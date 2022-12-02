@@ -1,7 +1,12 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { SiteDaasInfo } from '../../../models/solution-metadata';
 import { SiteService } from '../../../services/site.service';
-import { MonitoringSession, MonitoringLogsPerInstance, ActiveMonitoringSession, DaasValidationResult } from '../../../models/daas';
+import {
+  MonitoringSession,
+  MonitoringLogsPerInstance,
+  ActiveMonitoringSession,
+  DaasValidationResult
+} from '../../../models/daas';
 import { interval, Subscription } from 'rxjs';
 import { DaasService } from '../../../services/daas.service';
 
@@ -11,7 +16,6 @@ import { DaasService } from '../../../services/daas.service';
   styleUrls: ['./cpu-monitoring.component.scss']
 })
 export class CpuMonitoringComponent implements OnInit, OnDestroy {
-
   monitoringSessions: MonitoringSession[];
   gettingSessions: boolean = true;
   checkingActiveSessionOnComponentLoad: boolean = true;
@@ -22,7 +26,7 @@ export class CpuMonitoringComponent implements OnInit, OnDestroy {
   @Input() siteToBeDiagnosed: SiteDaasInfo;
   @Input() scmPath: string;
 
-  validationResult:DaasValidationResult = new DaasValidationResult();
+  validationResult: DaasValidationResult = new DaasValidationResult();
   subscription: Subscription;
   inFlightSessionsSubscription: Subscription;
   inFlightActiveSessionSubscription: Subscription;
@@ -30,14 +34,18 @@ export class CpuMonitoringComponent implements OnInit, OnDestroy {
   configCollapsed: boolean = false;
   monitoringCollapsed: boolean = true;
   sessionsCollapsed: boolean = true;
-  blobSasUri:string ="";
+  blobSasUri: string = '';
 
   titles: string[] = ['1. Configure', '2. Observe', '3. Analyze'];
-  constructor(private _siteService: SiteService, private _daasService: DaasService) {
-
-    this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(site => {
+  constructor(
+    private _siteService: SiteService,
+    private _daasService: DaasService
+  ) {
+    this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe((site) => {
       this.siteToBeDiagnosed = site;
-      this.scmPath = this._siteService.currentSiteStatic.enabledHostNames.find(hostname => hostname.indexOf('.scm.') > 0);
+      this.scmPath = this._siteService.currentSiteStatic.enabledHostNames.find(
+        (hostname) => hostname.indexOf('.scm.') > 0
+      );
     });
   }
 
@@ -48,38 +56,45 @@ export class CpuMonitoringComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getMonitoringSessions(true);
-    this.subscription = interval(30000).subscribe(res => {
+    this.subscription = interval(30000).subscribe((res) => {
       this.getMonitoringSessions(false);
     });
   }
 
   getMonitoringSessions(initialLoad: boolean) {
-    this.inFlightSessionsSubscription = this._daasService.getAllMonitoringSessions(this.siteToBeDiagnosed).subscribe(resp => {
-      if (resp && Array.isArray(resp)) {
-        resp = resp.sort(function (a, b) {
-          return Number(new Date(b.StartDate)) - Number(new Date(a.StartDate));
-        });
+    this.inFlightSessionsSubscription = this._daasService
+      .getAllMonitoringSessions(this.siteToBeDiagnosed)
+      .subscribe((resp) => {
+        if (resp && Array.isArray(resp)) {
+          resp = resp.sort(function (a, b) {
+            return (
+              Number(new Date(b.StartDate)) - Number(new Date(a.StartDate))
+            );
+          });
 
-        this.inFlightActiveSessionSubscription = this._daasService.getActiveMonitoringSessionDetails(this.siteToBeDiagnosed).subscribe(activeMonitoringSession => {
-          this.refreshingConfiguration = false;
-          if (initialLoad) {
-            this.checkingActiveSessionOnComponentLoad = false;
-          }
-          this.monitoringSessions = resp;
-          this.gettingSessions = false;
-          if (activeMonitoringSession && activeMonitoringSession.Session) {
-            if (initialLoad) {
-              this.showLogsAndSessions(true);
-            }
-            this.monitoringSessions.unshift(activeMonitoringSession.Session);
-            this.activeMonitoringSession = activeMonitoringSession;
-          }
-          else {
-            this.activeMonitoringSession = null;
-          }
-        });
-      }
-    });
+          this.inFlightActiveSessionSubscription = this._daasService
+            .getActiveMonitoringSessionDetails(this.siteToBeDiagnosed)
+            .subscribe((activeMonitoringSession) => {
+              this.refreshingConfiguration = false;
+              if (initialLoad) {
+                this.checkingActiveSessionOnComponentLoad = false;
+              }
+              this.monitoringSessions = resp;
+              this.gettingSessions = false;
+              if (activeMonitoringSession && activeMonitoringSession.Session) {
+                if (initialLoad) {
+                  this.showLogsAndSessions(true);
+                }
+                this.monitoringSessions.unshift(
+                  activeMonitoringSession.Session
+                );
+                this.activeMonitoringSession = activeMonitoringSession;
+              } else {
+                this.activeMonitoringSession = null;
+              }
+            });
+        }
+      });
   }
 
   ngOnDestroy() {
@@ -91,8 +106,7 @@ export class CpuMonitoringComponent implements OnInit, OnDestroy {
       this.configCollapsed = true;
       this.sessionsCollapsed = false;
       this.monitoringCollapsed = false;
-    }
-    else {
+    } else {
       this.configCollapsed = false;
       this.sessionsCollapsed = true;
       this.monitoringCollapsed = true;
@@ -103,12 +117,12 @@ export class CpuMonitoringComponent implements OnInit, OnDestroy {
     this.refreshingConfiguration = true;
     this.showLogsAndSessions(true);
     this.getMonitoringSessions(false);
-    this.subscription = interval(30000).subscribe(res => {
+    this.subscription = interval(30000).subscribe((res) => {
       this.getMonitoringSessions(false);
     });
   }
 
-  savingMonitoringConfiguration(saving:boolean){
+  savingMonitoringConfiguration(saving: boolean) {
     this.stopAllSubscriptions();
   }
 

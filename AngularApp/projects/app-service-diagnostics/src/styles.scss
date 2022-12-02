@@ -1,117 +1,111 @@
-
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
-@import "../src/styles/icons.scss";
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import '../src/styles/icons.scss';
 
 body {
-    background-color: var(--bodyBackground)!important;
-  }
-
-.btn {
-    & + & {
-        margin-left:5px;
-    }
+  background-color: var(--bodyBackground) !important;
 }
 
-
+.btn {
+  & + & {
+    margin-left: 5px;
+  }
+}
 
 /* highchart container configuration */
 .highcharts-container {
-    overflow: visible !important;
-    width:100%!important;
-  }
+  overflow: visible !important;
+  width: 100% !important;
+}
 
 .highcharts-container svg {
-    overflow: visible !important;
-    width:100%!important;
+  overflow: visible !important;
+  width: 100% !important;
 }
 
 highcharts-chart {
-    overflow: visible!important;
+  overflow: visible !important;
 }
 
 .highcharts-tooltip-container span {
-    font-size: "12px";
-    font-weight: "normal";
-    font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif!important;
+  font-size: '12px';
+  font-weight: 'normal';
+  font-family: 'Lucida Grande', 'Lucida Sans Unicode', Arial, Helvetica,
+    sans-serif !important;
 }
 
 fab-command-bar .ms-SearchBox {
-    border-width: 0px!important;
+  border-width: 0px !important;
 }
 
 .ms-Callout-container .root-136 {
-    overflow-y: hidden!important;
-    right: 20px!important;
-    top: 40px!important;
-    padding: 10px!important;
-    left: unset!important;
-    background-color: var(--bodyBackground)!important;
-    width: 270px;
+  overflow-y: hidden !important;
+  right: 20px !important;
+  top: 40px !important;
+  padding: 10px !important;
+  left: unset !important;
+  background-color: var(--bodyBackground) !important;
+  width: 270px;
 }
 
 .ms-Callout-container .ms-Callout-main {
-    overflow-y: hidden!important;
+  overflow-y: hidden !important;
 }
 
-
 .ms-Callout-container fab-date-picker {
-    padding-right:0px!important;
+  padding-right: 0px !important;
 }
 
 .ms-Callout-container fab-masked-text-field {
-    padding-left:0px!important;
-}s
-
-.ms-CommandBar {
-    height: 34px;
+  padding-left: 0px !important;
 }
-.ms-CommandBar, .ms-Button--commandBar{
-    background-color: var(--bodyBackground)!important;
+s .ms-CommandBar {
+  height: 34px;
+}
+.ms-CommandBar,
+.ms-Button--commandBar {
+  background-color: var(--bodyBackground) !important;
 }
 
 .ms-Button--commandBar:hover {
-    background-color: rgba(85, 179, 255, 0.1)!important;
+  background-color: rgba(85, 179, 255, 0.1) !important;
 }
 
 fab-command-bar {
-    border-bottom: 1px solid rgb(204, 204, 204)!important;
-    font-size: 12px!important;
-    height: 34px;
+  border-bottom: 1px solid rgb(204, 204, 204) !important;
+  font-size: 12px !important;
+  height: 34px;
 }
-
 
 .fab-command-bar-class {
-    border-bottom: 1px solid rgb(204, 204, 204)!important;
-    font-size: 12px!important;
-    height: 34px;
-    background-color: var(--bodyBackground)!important;
+  border-bottom: 1px solid rgb(204, 204, 204) !important;
+  font-size: 12px !important;
+  height: 34px;
+  background-color: var(--bodyBackground) !important;
 }
 
-
 .fab-command-bar-class .ms-CommandBar {
-    height: 33px;
+  height: 33px;
 }
 
 .ms-Fabric {
-    color: var(--bodyText);
+  color: var(--bodyText);
 }
 
 .ms-Panel-content textarea {
-    background-color: var(--bodyBackground);
-    color: var(--bodyText);
-  }
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
+}
 
-
-.ms-Panel-content textarea::placeholder{
-    color: var(--inputPlaceholderText);
+.ms-Panel-content textarea::placeholder {
+  color: var(--inputPlaceholderText);
 }
 
 .ms-Panel-main {
-    border: 1px solid var(--panelBorder)
+  border: 1px solid var(--panelBorder);
 }
 
-blockquote p{
-    color: var(--bodyText)!important;
+blockquote p {
+  color: var(--bodyText) !important;
 }
 
 // Adding these styles here are ngx-markdown removed all styling after version v6.3.0
@@ -120,39 +114,39 @@ blockquote p{
 // Please note that markdown component/directive no longer comes with default styling. This change affects table and blockquote HTML elements only but still, we suggest you review your pages.
 // https://github.com/jfcere/ngx-markdown/pull/108
 
+markdown,
+.markdown {
+  table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin-bottom: 16px;
 
-markdown, .markdown {
-    table {
-        border-spacing: 0;
-        border-collapse: collapse;
-        margin-bottom: 16px;
+    th,
+    td {
+      padding: 6px 13px;
+      border: 1px solid #ddd;
 
-        th,
-        td {
-            padding: 6px 13px;
-            border: 1px solid #ddd;
+      &[align='left'] {
+        text-align: left;
+      }
 
-            &[align="left"] {
-                text-align: left;
-            }
+      &[align='center'] {
+        text-align: center;
+      }
 
-            &[align="center"] {
-                text-align: center;
-            }
-
-            &[align="right"] {
-                text-align: right;
-            }
-        }
-
-        tr:nth-child(2n) {
-            background-color: rgba(0, 0, 0, 0.03);
-        }
+      &[align='right'] {
+        text-align: right;
+      }
     }
 
-    blockquote {
-        padding: 0 1em;
-        color: rgba(0, 0, 0, 0.535);
-        border-left: 0.25em solid rgba(0, 0, 0, 0.11);
+    tr:nth-child(2n) {
+      background-color: rgba(0, 0, 0, 0.03);
     }
+  }
+
+  blockquote {
+    padding: 0 1em;
+    color: rgba(0, 0, 0, 0.535);
+    border-left: 0.25em solid rgba(0, 0, 0, 0.11);
+  }
 }

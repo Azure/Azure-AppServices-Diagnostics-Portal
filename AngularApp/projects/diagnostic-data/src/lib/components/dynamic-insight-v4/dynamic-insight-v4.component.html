@@ -1,17 +1,34 @@
-<fab-card *ngIf="insight" [isExpandable]="true" [expanded]="insight.isExpanded" [ariaLabel]="insight.title">
+<fab-card
+  *ngIf="insight"
+  [isExpandable]="true"
+  [expanded]="insight.isExpanded"
+  [ariaLabel]="insight.title"
+>
   <div header>
-    <div style="display: flex;align-items: center;min-height: 40px;">
-      <status-icon class="mr-3" [status]="insight.status" [size]="16"></status-icon>
-      <div><strong>{{insight.title}}</strong></div>
+    <div style="display: flex; align-items: center; min-height: 40px">
+      <status-icon
+        class="mr-3"
+        [status]="insight.status"
+        [size]="16"
+      ></status-icon>
+      <div>
+        <strong>{{ insight.title }}</strong>
+      </div>
     </div>
   </div>
 
-  <div body style="margin-bottom: 10px;">
+  <div body style="margin-bottom: 10px">
     <div *ngIf="insight.description" [innerHtml]="insight.description"></div>
-    <dynamic-data [diagnosticData]="insight.innerDiagnosticData" [startTime]="startTime" [endTime]="endTime">
+    <dynamic-data
+      [diagnosticData]="insight.innerDiagnosticData"
+      [startTime]="startTime"
+      [endTime]="endTime"
+    >
     </dynamic-data>
   </div>
   <div footer *ngIf="insight.hyperlink">
-    <fab-link (onClick)="clickHyperlink()">{{insight.hyperlinkText}}</fab-link>
+    <fab-link (onClick)="clickHyperlink()">{{
+      insight.hyperlinkText
+    }}</fab-link>
   </div>
 </fab-card>

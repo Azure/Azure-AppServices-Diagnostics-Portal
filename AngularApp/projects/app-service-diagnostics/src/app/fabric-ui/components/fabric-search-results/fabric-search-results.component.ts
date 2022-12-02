@@ -1,12 +1,18 @@
-import { Component, HostListener, ViewChild, ElementRef, Renderer2 } from "@angular/core";
-import { Feature } from "../../../shared-v2/models/features";
-import { FeatureService } from "../../../shared-v2/services/feature.service";
-import { LoggingV2Service } from "../../../shared-v2/services/logging-v2.service";
-import { NotificationService } from "../../../shared-v2/services/notification.service";
-import { Globals } from "../../../globals";
-import { SelectionMode } from 'office-ui-fabric-react/lib/DetailsList'
-import { Router } from "@angular/router";
-import { TelemetryService, icons } from "diagnostic-data";
+import {
+  Component,
+  HostListener,
+  ViewChild,
+  ElementRef,
+  Renderer2
+} from '@angular/core';
+import { Feature } from '../../../shared-v2/models/features';
+import { FeatureService } from '../../../shared-v2/services/feature.service';
+import { LoggingV2Service } from '../../../shared-v2/services/logging-v2.service';
+import { NotificationService } from '../../../shared-v2/services/notification.service';
+import { Globals } from '../../../globals';
+import { SelectionMode } from 'office-ui-fabric-react/lib/DetailsList';
+import { Router } from '@angular/router';
+import { TelemetryService, icons } from 'diagnostic-data';
 
 enum BlurType {
   //click other place to close panel
@@ -20,8 +26,8 @@ enum BlurType {
   styleUrls: ['./fabric-search-results.component.scss']
 })
 export class FabricSearchResultsComponent {
-  searchPlaceHolder: string = "Search for common problems or tools";
-  searchValue: string = "";
+  searchPlaceHolder: string = 'Search for common problems or tools';
+  searchValue: string = '';
   resultCount: number;
   features: Feature[] = [];
   searchLogTimout: any;
@@ -35,9 +41,12 @@ export class FabricSearchResultsComponent {
   isInCategory: boolean;
   get inputAriaLabel(): string {
     const resultCount = this.features.length;
-    let searchResultAriaLabel = "";
+    let searchResultAriaLabel = '';
     if (resultCount >= 1) {
-      searchResultAriaLabel = resultCount > 1 ? `Found ${resultCount} Results` : `Found ${resultCount} Result`;
+      searchResultAriaLabel =
+        resultCount > 1
+          ? `Found ${resultCount} Results`
+          : `Found ${resultCount} Result`;
     } else {
       searchResultAriaLabel = `No results were found.`;
     }
@@ -47,25 +56,30 @@ export class FabricSearchResultsComponent {
   @HostListener('mousedown', ['$event.target'])
   onClick(ele: HTMLElement) {
     //If is cross icon in search box
-    if ((ele.tagName === "DIV" && ele.className.indexOf("ms-SearchBox-clearButton") > -1) ||
-      (ele.tagName === "BUTTON" && ele.className.indexOf("ms-Button--icon") > -1) ||
-      (ele.tagName === "DIV" && ele.className.indexOf("ms-Button-flexContainer") > -1) ||
-      (ele.tagName === "I" && ele.className.indexOf("ms-Button-icon") > -1)) {
+    if (
+      (ele.tagName === 'DIV' &&
+        ele.className.indexOf('ms-SearchBox-clearButton') > -1) ||
+      (ele.tagName === 'BUTTON' &&
+        ele.className.indexOf('ms-Button--icon') > -1) ||
+      (ele.tagName === 'DIV' &&
+        ele.className.indexOf('ms-Button-flexContainer') > -1) ||
+      (ele.tagName === 'I' && ele.className.indexOf('ms-Button-icon') > -1)
+    ) {
       this.clickSearchBox = BlurType.None;
       //Async set to BlurType.Blur,so after clean result it will set to Blur for next onBlur action
-      setTimeout(() => { this.clickSearchBox = BlurType.Blur }, 0);
-    }
-    else if (this.isInCategory) {
+      setTimeout(() => {
+        this.clickSearchBox = BlurType.Blur;
+      }, 0);
+    } else if (this.isInCategory) {
       this.clickSearchBox = BlurType.Blur;
-    }
-    else {
+    } else {
       this.clickSearchBox = BlurType.Blur;
     }
   }
 
   @HostListener('keydown.Tab', ['$event.target'])
   onKeyDown(ele: HTMLElement) {
-    if (ele.tagName === "INPUT") {
+    if (ele.tagName === 'INPUT') {
       if (this.isInCategory) {
         this.clickSearchBox = BlurType.Blur;
         this.onBlurHandler();
@@ -74,12 +88,13 @@ export class FabricSearchResultsComponent {
       }
     }
     //If in genie or detailLists then blur after tab
-    else if (ele.innerText === "Ask chatbot Genie" ||
-      ele.className.indexOf("ms-FocusZone") > -1) {
+    else if (
+      ele.innerText === 'Ask chatbot Genie' ||
+      ele.className.indexOf('ms-FocusZone') > -1
+    ) {
       this.clickSearchBox = BlurType.Blur;
       this.onBlurHandler();
-    }
-    else {
+    } else {
       this.clickSearchBox = BlurType.Blur;
     }
   }
@@ -90,8 +105,12 @@ export class FabricSearchResultsComponent {
     if (this.isInCategory) {
       this.clickSearchBox = BlurType.None;
       const list = <any[]>Array.from(ele.parentElement.children);
-      const index = list.findIndex(e => ele === e);
-      if (ele.tagName === "A" && this.features.length > 0 && index === this.features.length - 1) {
+      const index = list.findIndex((e) => ele === e);
+      if (
+        ele.tagName === 'A' &&
+        this.features.length > 0 &&
+        index === this.features.length - 1
+      ) {
         this.clickSearchBox = BlurType.Blur;
         this.onBlurHandler();
       }
@@ -103,8 +122,16 @@ export class FabricSearchResultsComponent {
     }
   }
 
-  @ViewChild('fabSearchResult', { static: true }) fabSearchResult: ElementRef
-  constructor(public featureService: FeatureService, private _logger: LoggingV2Service, private _notificationService: NotificationService, private globals: Globals, private router: Router, private render: Renderer2, private telemetryService: TelemetryService) {
+  @ViewChild('fabSearchResult', { static: true }) fabSearchResult: ElementRef;
+  constructor(
+    public featureService: FeatureService,
+    private _logger: LoggingV2Service,
+    private _notificationService: NotificationService,
+    private globals: Globals,
+    private router: Router,
+    private render: Renderer2,
+    private telemetryService: TelemetryService
+  ) {
     this.isInCategory = this.router.url.includes('/categories');
 
     this.render.listen('window', 'click', (e: Event) => {
@@ -127,19 +154,19 @@ export class FabricSearchResultsComponent {
 
   private _logSearch() {
     this.telemetryService.logEvent('Search', {
-      'SearchValue': this.searchValue,
-      'Place': this.isInCategory ? 'CategoryOverview' : 'LandingPage'
+      SearchValue: this.searchValue,
+      Place: this.isInCategory ? 'CategoryOverview' : 'LandingPage'
     });
   }
 
   private _logSearchSelection(feature: Feature) {
     this._logSearch();
     this.telemetryService.logEvent('SearchItemClicked', {
-      'SearchValue': this.searchValue,
-      'SelectionId': feature.id,
-      'DetectorName': feature.name,
-      'CategoryName': feature.category,
-      'Place': this.isInCategory ? 'CategoryOverview' : 'LandingPage'
+      SearchValue: this.searchValue,
+      SelectionId: feature.id,
+      DetectorName: feature.name,
+      CategoryName: feature.category,
+      Place: this.isInCategory ? 'CategoryOverview' : 'LandingPage'
     });
   }
 
@@ -165,19 +192,19 @@ export class FabricSearchResultsComponent {
     this.hideSearchIcon = true;
     this.features = this.featureService.getFeatures(this.searchValue);
     //Disable AutoComplete
-    if (document.querySelector("#fabSearchBox input")) {
-      const input = <any>document.querySelector("#fabSearchBox input");
-      input.autocomplete = "off";
+    if (document.querySelector('#fabSearchBox input')) {
+      const input = <any>document.querySelector('#fabSearchBox input');
+      input.autocomplete = 'off';
     }
   }
 
   clearSearch() {
-    this.searchValue = "";
+    this.searchValue = '';
     this.features = this.featureService.getFeatures(this.searchValue);
   }
 
   @HostListener('keydown.Escape', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) { 
+  handleKeyboardEvent(event: KeyboardEvent) {
     this.clearSearchWithKey(event);
   }
 
@@ -206,7 +233,7 @@ export class FabricSearchResultsComponent {
   }
 
   getIconImagePath(name: string) {
-    const basePath = "../../../../assets/img/detectors";
+    const basePath = '../../../../assets/img/detectors';
     const fileName = icons.has(name) ? name : 'default';
     return `${basePath}/${fileName}.svg`;
   }

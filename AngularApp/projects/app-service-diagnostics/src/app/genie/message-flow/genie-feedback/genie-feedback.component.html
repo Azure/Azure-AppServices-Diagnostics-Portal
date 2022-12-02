@@ -1,24 +1,49 @@
 <div *ngIf="showComponent">
-    <div style="display: flex; font-size: 25px;">
-        <div *ngFor="let feedbackIcon of feedbackIcons;let i = index" (click)="setRating(i)"
-            [ngClass]="{'selected-icon':rating - 1 === i}" style="padding: 5px;" (keyup.enter)="setRating(i)" tabindex="0">
-            <fab-icon [iconName]="feedbackIcon.id" [ariaLabel]="feedbackIcon.text"></fab-icon>
-        </div>
+  <div style="display: flex; font-size: 25px">
+    <div
+      *ngFor="let feedbackIcon of feedbackIcons; let i = index"
+      (click)="setRating(i)"
+      [ngClass]="{ 'selected-icon': rating - 1 === i }"
+      style="padding: 5px"
+      (keyup.enter)="setRating(i)"
+      tabindex="0"
+    >
+      <fab-icon
+        [iconName]="feedbackIcon.id"
+        [ariaLabel]="feedbackIcon.text"
+      ></fab-icon>
     </div>
-    <div class="row" [ngClass]="{'animated fadeOut': showComponent === false}"
-        style="padding-right:10px;margin: 10px 0px;">
-        <div class="row" style="width:50%">
-            <div class="col col-sm-12">
-                <textarea aria-label="Enter feedback here" [(ngModel)]="feedbackMessage" class="form-control" rows="3"
-                    placeholder="Enter feedback here..."></textarea>
-            </div>
-        </div>
+  </div>
+  <div
+    class="row"
+    [ngClass]="{ 'animated fadeOut': showComponent === false }"
+    style="padding-right: 10px; margin: 10px 0px"
+  >
+    <div class="row" style="width: 50%">
+      <div class="col col-sm-12">
+        <textarea
+          aria-label="Enter feedback here"
+          [(ngModel)]="feedbackMessage"
+          class="form-control"
+          rows="3"
+          placeholder="Enter feedback here..."
+        ></textarea>
+      </div>
     </div>
-    <div [ngClass]="{'animated bounceOutLeft': showComponent === false}">
-        <button *ngFor="let item of buttonList; let i = index" type="button" class="custom-button bot-button"
-            style="margin-right:20px;min-width:150px" (click)="onClick(item)">
-            {{item.title}}
-        </button>
-        <span *ngIf="invalidRating" style="color: red;">Please choose rating icons or enter valid feedback message before you submit.</span>
-    </div>
+  </div>
+  <div [ngClass]="{ 'animated bounceOutLeft': showComponent === false }">
+    <button
+      *ngFor="let item of buttonList; let i = index"
+      type="button"
+      class="custom-button bot-button"
+      style="margin-right: 20px; min-width: 150px"
+      (click)="onClick(item)"
+    >
+      {{ item.title }}
+    </button>
+    <span *ngIf="invalidRating" style="color: red"
+      >Please choose rating icons or enter valid feedback message before you
+      submit.</span
+    >
+  </div>
 </div>

@@ -8,9 +8,8 @@ describe('DiagosticSessionsPanelComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DiagosticSessionsPanelComponent ]
-    })
-    .compileComponents();
+      declarations: [DiagosticSessionsPanelComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

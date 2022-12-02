@@ -1,53 +1,51 @@
-@import "../../../../styles/main.scss";
+@import '../../../../styles/main.scss';
 
-.category-container{
-    margin: 1px 30px 25px 0px;
-    width:100%;
-    padding-left:30px;
+.category-container {
+  margin: 1px 30px 25px 0px;
+  width: 100%;
+  padding-left: 30px;
 }
 
-.search-box{
-    width:330px;
-    height: 23px;
-    margin-bottom: 15px;
+.search-box {
+  width: 330px;
+  height: 23px;
+  margin-bottom: 15px;
 }
 
 .genie-title {
-    margin: 0px 5px;
+  margin: 0px 5px;
 }
 
 .genie {
-    height: 20px;
-    width: 20px;
-    background: #0078d4;
-    margin-right: 5px;
-    border-radius: 10px;
+  height: 20px;
+  width: 20px;
+  background: #0078d4;
+  margin-right: 5px;
+  border-radius: 10px;
 }
 
 .genie-message {
-    position: absolute;
-    right: 0px;
-    width: 461px;
-    background-color: #0078D4;;
-    color: white;
-    border-radius: 15px;
+  position: absolute;
+  right: 0px;
+  width: 461px;
+  background-color: #0078d4;
+  color: white;
+  border-radius: 15px;
 }
 
 .chat-message {
-    position: absolute;
-    right: 0px;
-    width: 461px;
-    background-color: #0078D4;;
-    color: white;
-    border-radius: 15px;
+  position: absolute;
+  right: 0px;
+  width: 461px;
+  background-color: #0078d4;
+  color: white;
+  border-radius: 15px;
 }
 
 .scrollableContent {
-    overflow-y: hidden;
+  overflow-y: hidden;
 }
 
 .close-button:hover {
-    color: #0078d4;
+  color: #0078d4;
 }
-
-

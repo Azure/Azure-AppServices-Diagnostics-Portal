@@ -9,21 +9,23 @@ import { NotificationService } from '../../../shared-v2/services/notification.se
   styleUrls: ['./notification.component.scss']
 })
 export class NotificationComponent implements OnInit {
-
-  constructor(public notificationService: NotificationService) { }
+  constructor(public notificationService: NotificationService) {}
 
   styles: any = {
     root: {
-        height: '49px',
-        backgroundColor: '#F0F6FF',
-        marginBottom: '13px'
+      height: '49px',
+      backgroundColor: '#F0F6FF',
+      marginBottom: '13px'
     }
-}
+  };
 
   ngOnInit() {
-      if (this.notificationService.activeNotification && this.notificationService.activeNotification.color)
-      {
-          this.styles.root.backgroundColor = this.notificationService.activeNotification.color;
-      }
+    if (
+      this.notificationService.activeNotification &&
+      this.notificationService.activeNotification.color
+    ) {
+      this.styles.root.backgroundColor =
+        this.notificationService.activeNotification.color;
+    }
   }
 }

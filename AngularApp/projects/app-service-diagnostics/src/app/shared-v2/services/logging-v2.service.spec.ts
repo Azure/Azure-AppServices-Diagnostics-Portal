@@ -9,7 +9,10 @@ describe('LoggingV2Service', () => {
     });
   });
 
-  it('should be created', inject([LoggingV2Service], (service: LoggingV2Service) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [LoggingV2Service],
+    (service: LoggingV2Service) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

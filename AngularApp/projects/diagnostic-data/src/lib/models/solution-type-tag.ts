@@ -1,6 +1,6 @@
 export enum SolutionTypeTag {
-    Mitigation,
-    Investigation,
-    Monitoring,
-    Prevention
+  Mitigation,
+  Investigation,
+  Monitoring,
+  Prevention
 }

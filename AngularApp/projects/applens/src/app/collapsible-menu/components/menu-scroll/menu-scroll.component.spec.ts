@@ -8,9 +8,8 @@ describe('MenuScrollComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ MenuScrollComponent ]
-    })
-    .compileComponents();
+      declarations: [MenuScrollComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

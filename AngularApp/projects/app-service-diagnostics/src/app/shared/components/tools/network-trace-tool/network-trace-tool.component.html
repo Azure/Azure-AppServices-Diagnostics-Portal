@@ -1,125 +1,200 @@
 <div class="container">
-    <h2>{{ title }}</h2>
-    <p>{{ description }}</p>
+  <h2>{{ title }}</h2>
+  <p>{{ description }}</p>
 
-    <div class="focus-box focus-box-warning">
-        Analyzing network traces is complex and time consuming task. Before collecting a network trace, please make
-        sure you understand
-        that you really need to collect a network trace to troubleshoot the problem.
+  <div class="focus-box focus-box-warning">
+    Analyzing network traces is complex and time consuming task. Before
+    collecting a network trace, please make sure you understand that you really
+    need to collect a network trace to troubleshoot the problem.
+  </div>
+
+  <h3>What you should know before collecting a Network Trace</h3>
+  <ul>
+    <li>
+      Network traces are helpful to troubleshoot TCP packet loss and to check
+      HTTP communication that your App is making with the remote endpoints.
+    </li>
+    <li>
+      After the network trace is started, you should reproduce the problem so
+      that outbound traffic from your App gets captured in the trace.
+    </li>
+    <li>
+      If the remote endpoints are called over TLS or SSL (i.e. HTTPS), then the
+      traffic in the trace will be encrypted.
+    </li>
+    <li>
+      Network traces are collected on all the instance(s) serving your App.
+    </li>
+    <li>
+      Traces are captured only of processes that are running when the trace is
+      started. The trace does not capture packets of any processes that start
+      <strong>after the capture is started.</strong>
+    </li>
+    <li>
+      To analyze the Network Trace, you need tools like
+      <a
+        href="https://www.microsoft.com/en-in/download/details.aspx?id=4865"
+        target="_blank"
+        aria-label="Download link for Microsoft Network Monitor"
+        >Network Monitor
+      </a>
+      or
+      <a
+        href="https://www.wireshark.org/"
+        aria-label="Download link for Wireshark tool"
+        target="_blank"
+        >Wireshark</a
+      >
+      that can open the network captures.
+    </li>
+  </ul>
+
+  <div *ngIf="!checkingValidity && networkTraceDisabled">
+    <div class="focus-box focus-box-warning" style="margin-top: 20px">
+      <div
+        *ngIf="
+          traceDisabledReason ===
+          NetworkTraceDisabledReasonType.AppNotOnDedicatedTier
+        "
+      >
+        <strong>Error</strong> - This tool is supported only on App running on
+        Dedicated SKU's (Basic, Standard, Isolated, Premium and PremiumV2)
+      </div>
+      <div
+        *ngIf="
+          traceDisabledReason ===
+          NetworkTraceDisabledReasonType.NoPermsOnAppServicePlan
+        "
+      >
+        <strong>Error</strong> - It appears that you do not have permissions on
+        the App Service Plan. This happens typically if you have Website
+        Contributor access only and no permissions on the App Service Plan
+      </div>
+      <div *ngIf="errorMessage !== ''">
+        <strong>Error</strong> - {{ errorMessage }}
+      </div>
+    </div>
+  </div>
+
+  <div class="col" *ngIf="checkingValidity">
+    <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+    Checking App configuration...
+  </div>
+
+  <div
+    *ngIf="
+      !checkingValidity &&
+      !networkTraceDisabled &&
+      status < NetworkTraceStatus.Started
+    "
+  >
+    <div class="pastNetworkTracesMessage">
+      View past collected Network traces in
+      <strong>{{ traceLocation }}</strong> folder in
+      <a href="https://{{ scmPath }}" target="_blank">Kudu Console</a> for the
+      App.
     </div>
 
-    <h3>What you should know before collecting a Network Trace</h3>
-    <ul>
-        <li>Network traces are helpful to troubleshoot TCP packet loss and to check HTTP communication that your App is
-            making
-            with the remote endpoints.</li>
-        <li>After the network trace is started, you should reproduce the problem so that outbound traffic from your App
-            gets
-            captured in the trace.</li>
-        <li>If the remote endpoints are called over TLS or SSL (i.e. HTTPS), then the traffic in the trace will be
-            encrypted.</li>
-        <li>Network traces are collected on all the instance(s) serving your App.</li>
-        <li>Traces are captured only of processes that are running when the trace is started. The trace does not
-            capture packets of any processes that start <strong>after the capture is started.</strong></li>
-        <li>To analyze the Network Trace, you need tools like
-            <a href='https://www.microsoft.com/en-in/download/details.aspx?id=4865' target="_blank"
-                aria-label="Download link for Microsoft Network Monitor">Network Monitor </a> or
-            <a href='https://www.wireshark.org/' aria-label="Download link for Wireshark tool"
-                target="_blank">Wireshark</a> that can open the network captures. </li>
-    </ul>
-
-    <div *ngIf="!checkingValidity && networkTraceDisabled">
-        <div class="focus-box focus-box-warning" style="margin-top:20px">
-            <div *ngIf="traceDisabledReason === NetworkTraceDisabledReasonType.AppNotOnDedicatedTier">
-                <strong>Error</strong> - This tool is supported only on App running on Dedicated SKU's (Basic,
-                Standard, Isolated, Premium and PremiumV2)
-            </div>
-            <div *ngIf="traceDisabledReason === NetworkTraceDisabledReasonType.NoPermsOnAppServicePlan">
-                <strong>Error</strong> - It appears that you do not have permissions on the App Service Plan. This
-                happens typically if you have Website Contributor access only and no permissions on the App Service
-                Plan
-            </div>
-            <div *ngIf="errorMessage !=''">
-                <strong>Error</strong> - {{ errorMessage }}
-            </div>
-        </div>
+    <div style="margin-top: 20px">
+      Choose duration to collect the Network Trace
+      <select
+        [attr.aria-label]="'select duration'"
+        [(ngModel)]="duration"
+        [disabled]="status >= NetworkTraceStatus.Starting"
+      >
+        <option value="60">60 seconds</option>
+        <option value="120">2 minutes</option>
+        <option value="180">3 minutes</option>
+        <option value="300">5 minutes</option>
+        <option value="600">10 minutes</option>
+        <option value="900">15 minutes</option>
+      </select>
     </div>
 
-    <div class="col" *ngIf="checkingValidity">
-        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-        Checking App configuration...
+    <div style="margin-top: 10px">
+      <button
+        [disabled]="status >= NetworkTraceStatus.Starting"
+        class="btn btn-primary"
+        (click)="collectNetworkTrace()"
+      >
+        Collect Network Trace
+      </button>
+    </div>
+  </div>
+  <div style="margin-top: 20px; display: table">
+    <div *ngIf="status === NetworkTraceStatus.Started">
+      <div style="display: table-row">
+        <div style="display: table-cell">
+          <i
+            class="fa fa-circle-o-notch fa-spin spin-icon"
+            aria-hidden="true"
+          ></i>
+        </div>
+        <div
+          *ngIf="durationRemaining > 0"
+          style="display: table-cell"
+          role="timer"
+          aria-live="polite"
+        >
+          Network trace started and will automatically stop after
+          <strong>{{ durationRemaining }}</strong> seconds.
+        </div>
+        <div *ngIf="durationRemaining > 0">
+          Network traces collected will be available in
+          <strong>{{ traceLocation }}</strong> folder in
+          <a
+            aria-label="link to Kudu Console"
+            href="https://{{ scmPath }}"
+            target="_blank"
+            >Kudu Console</a
+          >
+          for the App.
+        </div>
+        <div
+          *ngIf="durationRemaining <= 0"
+          style="display: table-cell"
+          aria-live="polite"
+        >
+          Stopping trace and collecting files (Note:This step can take a few
+          minutes to complete)
+        </div>
+      </div>
     </div>
 
-    <div *ngIf="!checkingValidity && !networkTraceDisabled && status < NetworkTraceStatus.Started">
-
-        <div class="pastNetworkTracesMessage">
-            View past collected Network traces in <strong>{{traceLocation}}</strong> folder in <a
-                href='https://{{scmPath}}' target="_blank">Kudu
-                Console</a> for the App.
-        </div>
-
-        <div style="margin-top:20px;">
-            Choose duration to collect the Network Trace
-            <select [attr.aria-label]="'select duration'" [(ngModel)]="duration"
-                [disabled]="status >= NetworkTraceStatus.Starting">
-                <option value="60">60 seconds</option>
-                <option value="120">2 minutes</option>
-                <option value="180">3 minutes</option>
-                <option value="300">5 minutes</option>
-                <option value="600">10 minutes</option>
-                <option value="900">15 minutes</option>
-            </select>
-        </div>
-
-        <div style="margin-top:10px">
-            <button [disabled]="status >= NetworkTraceStatus.Starting" class="btn btn-primary"
-                (click)="collectNetworkTrace()">Collect
-                Network Trace</button>
-        </div>
+    <div
+      *ngIf="status === NetworkTraceStatus.Completed"
+      style="display: table-row"
+    >
+      <div style="display: table-cell">
+        <i
+          class="fa health-icon fa-check-circle healthy-icon-color"
+          aria-hidden="true"
+        ></i>
+      </div>
+      <div style="display: table-cell">
+        Network trace collection completed.
+        <ul>
+          <li *ngFor="let file of files">
+            <a href="{{ file.url }}" target="_blank"> {{ file.name }}</a>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div style="margin-top:20px; display: table;">
-        <div *ngIf="status === NetworkTraceStatus.Started">
-            <div style="display: table-row">
-                <div style="display: table-cell;">
-                    <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-                </div>
-                <div *ngIf="durationRemaining > 0" style="display: table-cell;" role="timer" aria-live="polite">
-                    Network trace started and will automatically stop after
-                    <strong>{{ durationRemaining }}</strong> seconds.
-                </div>
-                <div *ngIf="durationRemaining > 0">
-                    Network traces collected will be available in
-                    <strong>{{traceLocation}}</strong> folder in <a aria-label="link to Kudu Console"
-                        href='https://{{scmPath}}' target="_blank">Kudu Console</a> for
-                    the App.
-                </div>
-                <div *ngIf="durationRemaining <= 0" style="display: table-cell;" aria-live="polite">
-                    Stopping trace and collecting files (Note:This step can take a few minutes to complete)
-                </div>
-            </div>
-        </div>
+  </div>
 
-        <div *ngIf="status === NetworkTraceStatus.Completed" style="display: table-row">
-            <div style="display: table-cell;">
-                <i class="fa health-icon fa-check-circle healthy-icon-color" aria-hidden="true"></i>
-            </div>
-            <div style="display: table-cell;">
-                Network trace collection completed.
-                <ul>
-                    <li *ngFor="let file of files">
-                        <a href="{{ file.url}}" target="_blank"> {{ file.name }}</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div *ngIf="status === NetworkTraceStatus.AlreadyRunning">
-        <span style="padding: 0px 10px 0px 0px">
-            <i class="fa health-icon fa-exclamation-circle unhealthy-icon-color" aria-hidden="true"></i>
-            It appears there is already a network trace running for this app. Check the
-            <a href='https://{{this.scmPath}}/debugconsole' target="blank">Kudu console</a> in
-            <strong>{{ traceLocation }}</strong> folder after some time to see the trace files.
-        </span>
-    </div>
+  <div *ngIf="status === NetworkTraceStatus.AlreadyRunning">
+    <span style="padding: 0px 10px 0px 0px">
+      <i
+        class="fa health-icon fa-exclamation-circle unhealthy-icon-color"
+        aria-hidden="true"
+      ></i>
+      It appears there is already a network trace running for this app. Check
+      the
+      <a href="https://{{ this.scmPath }}/debugconsole" target="blank"
+        >Kudu console</a
+      >
+      in <strong>{{ traceLocation }}</strong> folder after some time to see the
+      trace files.
+    </span>
+  </div>
 </div>

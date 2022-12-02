@@ -1,54 +1,54 @@
-.collapsable-list{
-    margin-top:10px; 
-    padding: 0px 10px;
+.collapsable-list {
+  margin-top: 10px;
+  padding: 0px 10px;
 }
-.list-header{
-    font-size: 14px;
-    font-weight: 500;
-    border-bottom:1px solid #eef;
-    cursor:pointer;
+.list-header {
+  font-size: 14px;
+  font-weight: 500;
+  border-bottom: 1px solid #eef;
+  cursor: pointer;
 
-    -webkit-user-select: none; /* Chrome/Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+ */
-    -o-user-select: none;
-    user-select: none;
-    background-color: transparent;
-    text-align: left;
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
+  -o-user-select: none;
+  user-select: none;
+  background-color: transparent;
+  text-align: left;
 }
-.collapse-icon{
-    /*float:right;*/
-    font-size: 10px;
+.collapse-icon {
+  /*float:right;*/
+  font-size: 10px;
 }
-.list-items-container{
-    margin-left:10px;
+.list-items-container {
+  margin-left: 10px;
 }
 .list-item {
-    padding-top: 10px;
+  padding-top: 10px;
 }
 .list-item > a {
-    cursor:pointer;
-    color:#3999c6;
+  cursor: pointer;
+  color: #3999c6;
 }
 /* .list-item:hover{
     text-decoration: underline;
 } */
-.list-item.disabled{
-    color:#8e8e8e;
-    cursor: not-allowed;
+.list-item.disabled {
+  color: #8e8e8e;
+  cursor: not-allowed;
 }
-.list-item.disabled:hover{
-    text-decoration: none;
+.list-item.disabled:hover {
+  text-decoration: none;
 }
 
 button {
-    all: inherit;
-    border: 0;
-    width: 100%;
-  }
+  all: inherit;
+  border: 0;
+  width: 100%;
+}
 
 button:focus {
-    outline-color: #00bcf2;
-    outline-width: 1px;
-    outline-style: dashed;
-  }
+  outline-color: #00bcf2;
+  outline-width: 1px;
+  outline-style: dashed;
+}

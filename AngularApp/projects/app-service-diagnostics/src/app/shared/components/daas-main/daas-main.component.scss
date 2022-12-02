@@ -1,42 +1,41 @@
 .header1 {
-    font-size: 24px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+  font-size: 24px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .container {
-    margin-left:20px;
-    margin-top:20px;
+  margin-left: 20px;
+  margin-top: 20px;
 }
 
 .sessions {
-    margin-top:20px;
-    margin-left:20px;
+  margin-top: 20px;
+  margin-left: 20px;
 }
 
-.category-box
-{
-    width: 120px;
-    height: 70px;
-    border-radius: 3px;
-    display: inline-block;
-    margin: 10px;
-    vertical-align: top;
-    cursor: pointer;
+.category-box {
+  width: 120px;
+  height: 70px;
+  border-radius: 3px;
+  display: inline-block;
+  margin: 10px;
+  vertical-align: top;
+  cursor: pointer;
 }
 
 .area {
-    text-align: center;
-    display:block;
-    margin-left: 15px;
+  text-align: center;
+  display: block;
+  margin-left: 15px;
 }
 
 .content {
-    display:table;
-    vertical-align:middle;
+  display: table;
+  vertical-align: middle;
 }
 
-.change-stack{
-    cursor:pointer;
-    color:#3999c6;
+.change-stack {
+  cursor: pointer;
+  color: #3999c6;
 }

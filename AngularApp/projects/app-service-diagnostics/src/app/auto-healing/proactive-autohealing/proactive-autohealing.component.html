@@ -1,36 +1,62 @@
-<div style="margin-top:30px;margin-bottom: 20px">
-  <strong>Proactive Auto-Heal</strong> is an extension to the auto healing feature of Azure App Service. It will
-  only take corrective actions for the sites that we have deemed to be in a bad state for which the best way to recover
-  is to simply restart them. <a href="https://azure.github.io/AppService/2017/08/17/Introducing-Proactive-Auto-Heal.html" target="_blank">Proactive Auto-Heal</a> monitors for high memory and slow response situations and recycles the
-  app when one of these conditions is met.
+<div style="margin-top: 30px; margin-bottom: 20px">
+  <strong>Proactive Auto-Heal</strong> is an extension to the auto healing
+  feature of Azure App Service. It will only take corrective actions for the
+  sites that we have deemed to be in a bad state for which the best way to
+  recover is to simply restart them.
+  <a
+    href="https://azure.github.io/AppService/2017/08/17/Introducing-Proactive-Auto-Heal.html"
+    target="_blank"
+    >Proactive Auto-Heal</a
+  >
+  monitors for high memory and slow response situations and recycles the app
+  when one of these conditions is met.
 </div>
 
-<div style="margin-bottom:20px">
+<div style="margin-bottom: 20px">
   <div *ngIf="retrievingProactiveSettings">
     <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
     Retrieving proactive autoheal settings...
   </div>
-  <div *ngIf="errorMessage" class="alert alert-danger" role="alert" style="margin-top:5px">
+  <div
+    *ngIf="errorMessage"
+    class="alert alert-danger"
+    role="alert"
+    style="margin-top: 5px"
+  >
     {{ errorMessage }}
   </div>
   <div *ngIf="!retrievingProactiveSettings">
-    <toggle-button ToggleText="Proactive Auto-Heal" [selected]="proactiveAutoHealEnabled"
-      (selectedChange)="proactiveAutoHealEnabled = $event;checkForChanges()"></toggle-button>
+    <toggle-button
+      ToggleText="Proactive Auto-Heal"
+      [selected]="proactiveAutoHealEnabled"
+      (selectedChange)="proactiveAutoHealEnabled = $event; checkForChanges()"
+    ></toggle-button>
 
-    <div *ngIf="!retrievingProactiveSettings  && !errorMessage && saveEnabled" class="alert alert-danger alert-section">
-      <strong>CAUTION</strong>: Saving pro-active autoheal settings will restart the application domain
-      for the web app and this can cause logged-in user information, sessions, and in-memory cache to be cleared.
-      Hence, it is advised to make these changes during non-business hours.
+    <div
+      *ngIf="!retrievingProactiveSettings && !errorMessage && saveEnabled"
+      class="alert alert-danger alert-section"
+    >
+      <strong>CAUTION</strong>: Saving pro-active autoheal settings will restart
+      the application domain for the web app and this can cause logged-in user
+      information, sessions, and in-memory cache to be cleared. Hence, it is
+      advised to make these changes during non-business hours.
     </div>
 
-    <button style="margin-top:5px" type="button" class="btn btn-primary" [disabled]="!saveEnabled"
-      (click)="saveChanges()">Save</button>
+    <button
+      style="margin-top: 5px"
+      type="button"
+      class="btn btn-primary"
+      [disabled]="!saveEnabled"
+      (click)="saveChanges()"
+    >
+      Save
+    </button>
 
     <div *ngIf="savingProactiveAutohealSettings">
       <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
       Saving proactive autoheal settings...
     </div>
-    <div *ngIf="changesSaved" class="inline" style="color:#0058ad">
+    <div *ngIf="changesSaved" class="inline" style="color: #0058ad">
       Changes Saved!
     </div>
   </div>

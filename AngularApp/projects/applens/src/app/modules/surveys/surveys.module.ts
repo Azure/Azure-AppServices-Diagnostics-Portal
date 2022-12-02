@@ -4,7 +4,7 @@ import { TakeSurveyComponent } from './components/takesurvey/takesurvey.componen
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '../../shared/shared.module';
 import { FormsModule } from '@angular/forms';
-import {SurveysService} from "./services/surveys.service";
+import { SurveysService } from './services/surveys.service';
 import { HttpClientModule } from '@angular/common/http';
 import { FabButtonModule } from '@angular-react/fabric/lib/components/button';
 import { FabChoiceGroupModule } from '@angular-react/fabric/lib/components/choice-group';
@@ -12,13 +12,13 @@ import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-fi
 import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown';
 import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
 
-
-export const SurveysModuleRoutes : ModuleWithProviders<SurveysModule> = RouterModule.forChild([
-  {
-    path: '',
-    component: TakeSurveyComponent
-  }
-]);
+export const SurveysModuleRoutes: ModuleWithProviders<SurveysModule> =
+  RouterModule.forChild([
+    {
+      path: '',
+      component: TakeSurveyComponent
+    }
+  ]);
 
 @NgModule({
   imports: [
@@ -27,9 +27,13 @@ export const SurveysModuleRoutes : ModuleWithProviders<SurveysModule> = RouterMo
     SharedModule,
     HttpClientModule,
     FormsModule,
-    FabButtonModule, FabChoiceGroupModule, FabTextFieldModule, FabDropdownModule, FabPanelModule
+    FabButtonModule,
+    FabChoiceGroupModule,
+    FabTextFieldModule,
+    FabDropdownModule,
+    FabPanelModule
   ],
   providers: [SurveysService],
   declarations: [TakeSurveyComponent]
 })
-export class SurveysModule { }
+export class SurveysModule {}

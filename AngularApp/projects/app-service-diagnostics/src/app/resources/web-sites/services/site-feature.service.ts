@@ -1,12 +1,23 @@
 import { Injectable } from '@angular/core';
 import { FeatureService } from '../../../shared-v2/services/feature.service';
-import { DetectorType, DiagnosticService, TelemetryService } from 'diagnostic-data';
+import {
+  DetectorType,
+  DiagnosticService,
+  TelemetryService
+} from 'diagnostic-data';
 import { ContentService } from '../../../shared-v2/services/content.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../startup/services/auth.service';
 import { Feature } from '../../../shared-v2/models/features';
-import { AppType, SupportBladeDefinitions } from '../../../shared/models/portal';
-import { OperatingSystem, Site, HostingEnvironmentKind } from '../../../shared/models/site';
+import {
+  AppType,
+  SupportBladeDefinitions
+} from '../../../shared/models/portal';
+import {
+  OperatingSystem,
+  Site,
+  HostingEnvironmentKind
+} from '../../../shared/models/site';
 import { SiteFilteredItem } from '../models/site-filter';
 import { Sku } from '../../../shared/models/server-farm';
 import { ToolNames, ToolIds } from '../../../shared/models/tools-constants';
@@ -21,31 +32,63 @@ import { SubscriptionPropertiesService } from '../../../shared/services/subscrip
 
 @Injectable()
 export class SiteFeatureService extends FeatureService {
-
   public diagnosticTools: SiteFilteredItem<Feature>[];
   public proactiveTools: SiteFilteredItem<Feature>[];
   public supportTools: SiteFilteredItem<Feature>[];
   public subscriptionId: string;
-  constructor(protected _diagnosticApiService: DiagnosticService, protected _resourceService: WebSitesService, protected _contentService: ContentService, protected _router: Router,
-    protected _authService: AuthService, protected _portalActionService: PortalActionService, private _websiteFilter: WebSiteFilter, protected _logger: TelemetryService, protected armService: ArmService,
-    protected subscriptionPropertiesService: SubscriptionPropertiesService, protected _siteService: SiteService, protected _categoryService: CategoryService, protected _activedRoute: ActivatedRoute, protected _versionTestService: VersionTestService) {
-
-    super(_diagnosticApiService, _contentService, _router, _authService, _logger, _siteService, _categoryService, _activedRoute, _portalActionService, _versionTestService);
-    this._featureDisplayOrder = [{
-      category: "Availability and Performance",
-      platform: OperatingSystem.windows,
-      appType: AppType.WebApp,
-      order: ['appdownanalysis', 'perfanalysis', 'webappcpu', 'memoryusage', 'webapprestart']
-    }];
-    this._authService.getStartupInfo().subscribe(startupInfo => {
-      this.subscriptionId = startupInfo.resourceId.split("subscriptions/")[1].split("/")[0];
+  constructor(
+    protected _diagnosticApiService: DiagnosticService,
+    protected _resourceService: WebSitesService,
+    protected _contentService: ContentService,
+    protected _router: Router,
+    protected _authService: AuthService,
+    protected _portalActionService: PortalActionService,
+    private _websiteFilter: WebSiteFilter,
+    protected _logger: TelemetryService,
+    protected armService: ArmService,
+    protected subscriptionPropertiesService: SubscriptionPropertiesService,
+    protected _siteService: SiteService,
+    protected _categoryService: CategoryService,
+    protected _activedRoute: ActivatedRoute,
+    protected _versionTestService: VersionTestService
+  ) {
+    super(
+      _diagnosticApiService,
+      _contentService,
+      _router,
+      _authService,
+      _logger,
+      _siteService,
+      _categoryService,
+      _activedRoute,
+      _portalActionService,
+      _versionTestService
+    );
+    this._featureDisplayOrder = [
+      {
+        category: 'Availability and Performance',
+        platform: OperatingSystem.windows,
+        appType: AppType.WebApp,
+        order: [
+          'appdownanalysis',
+          'perfanalysis',
+          'webappcpu',
+          'memoryusage',
+          'webapprestart'
+        ]
+      }
+    ];
+    this._authService.getStartupInfo().subscribe((startupInfo) => {
+      this.subscriptionId = startupInfo.resourceId
+        .split('subscriptions/')[1]
+        .split('/')[0];
       this.addDiagnosticTools(startupInfo.resourceId);
       this.addProactiveTools(startupInfo.resourceId);
     });
   }
 
   sortFeatures() {
-    this._featureDisplayOrderSub.subscribe(featureOrder => {
+    this._featureDisplayOrderSub.subscribe((featureOrder) => {
       this._sortFeaturesHelper(featureOrder);
     });
   }
@@ -54,70 +97,101 @@ export class SiteFeatureService extends FeatureService {
     let featureDisplayOrder = displayOrder;
     let locationPlacementId = '';
     if (this.subscriptionPropertiesService) {
-      this.subscriptionPropertiesService.getSubscriptionProperties(this.subscriptionId).subscribe(response => {
-        locationPlacementId = response.body['subscriptionPolicies']['locationPlacementId'];
-      });
+      this.subscriptionPropertiesService
+        .getSubscriptionProperties(this.subscriptionId)
+        .subscribe((response) => {
+          locationPlacementId =
+            response.body['subscriptionPolicies']['locationPlacementId'];
+        });
     }
     // remove features not applicable
-    if (locationPlacementId && locationPlacementId.toLowerCase() === 'geos_2020-01-01') {
-      this._features = this._features.filter(x => {
+    if (
+      locationPlacementId &&
+      locationPlacementId.toLowerCase() === 'geos_2020-01-01'
+    ) {
+      this._features = this._features.filter((x) => {
         return x.id !== 'appchanges';
-      })
+      });
     }
 
-    featureDisplayOrder.forEach(displayOrder => {
-
-      if (displayOrder.platform === this._resourceService.platform && this._resourceService.appType === displayOrder.appType) {
+    featureDisplayOrder.forEach((displayOrder) => {
+      if (
+        displayOrder.platform === this._resourceService.platform &&
+        this._resourceService.appType === displayOrder.appType
+      ) {
         // Add all the features for this category to a temporary array
         let categoryFeatures: Feature[] = [];
-        this._features.forEach(x => {
-          if (x.category != null && x.category.indexOf(displayOrder.category) > -1) {
+        this._features.forEach((x) => {
+          if (
+            x.category != null &&
+            x.category.indexOf(displayOrder.category) > -1
+          ) {
             categoryFeatures.push(x);
           }
         });
 
         // Remove all the features for the sorted category
-        this._features = this._features.filter(x => {
+        this._features = this._features.filter((x) => {
           return x.category !== displayOrder.category;
         });
 
-
-        const categoryOrder = featureDisplayOrder.find(x => x.category.toLowerCase().startsWith(displayOrder.category.toLowerCase()));
+        const categoryOrder = featureDisplayOrder.find((x) =>
+          x.category
+            .toLowerCase()
+            .startsWith(displayOrder.category.toLowerCase())
+        );
         let preOrderedFeatures: Feature[] = [];
         let unOrderedFeatures: Feature[] = [];
 
         //Follow order array in _featureDisplayOrder.order for preordered features
-        if(categoryOrder && categoryOrder.order.length > 0) {
-          categoryOrder.order.forEach((id:string) => {
-            const index = categoryFeatures.findIndex(f => f.id.toLowerCase() === id.toLowerCase());
-            if(index > -1) {
+        if (categoryOrder && categoryOrder.order.length > 0) {
+          categoryOrder.order.forEach((id: string) => {
+            const index = categoryFeatures.findIndex(
+              (f) => f.id.toLowerCase() === id.toLowerCase()
+            );
+            if (index > -1) {
               preOrderedFeatures.push(categoryFeatures[index]);
             }
           });
         }
 
-        unOrderedFeatures = categoryFeatures.filter(feature => preOrderedFeatures.findIndex(preFeature => preFeature.id === feature.id) === -1);
+        unOrderedFeatures = categoryFeatures.filter(
+          (feature) =>
+            preOrderedFeatures.findIndex(
+              (preFeature) => preFeature.id === feature.id
+            ) === -1
+        );
 
         this.sortFeaturesBase(unOrderedFeatures);
 
         // add the sorted features for this category back to the array, with pre-ordered then rest features
-        this._features = this._features.concat([...preOrderedFeatures,...unOrderedFeatures]);
+        this._features = this._features.concat([
+          ...preOrderedFeatures,
+          ...unOrderedFeatures
+        ]);
       }
     });
 
     //For resource have no pre-defined order
-    if (featureDisplayOrder.findIndex(d => d.platform === this._resourceService.platform && this._resourceService.appType === d.appType) === -1) {
+    if (
+      featureDisplayOrder.findIndex(
+        (d) =>
+          d.platform === this._resourceService.platform &&
+          this._resourceService.appType === d.appType
+      ) === -1
+    ) {
       this.sortFeaturesBase(this._features);
     }
-
   }
-
 
   addProactiveTools(resourceId: string) {
     this.proactiveTools = [
       {
         appType: AppType.WebApp | AppType.FunctionApp,
-        platform: OperatingSystem.windows | OperatingSystem.linux | OperatingSystem.HyperV,
+        platform:
+          OperatingSystem.windows |
+          OperatingSystem.linux |
+          OperatingSystem.HyperV,
         sku: Sku.NotDynamic,
         hostingEnvironmentKind: HostingEnvironmentKind.All,
         stack: '',
@@ -127,19 +201,26 @@ export class SiteFeatureService extends FeatureService {
           category: 'Proactive Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.AutoHealing, 'Proactive Tools', () => {
-            // this.navigateTo(resourceId,ToolIds.AutoHealing);
-            // this._router.navigateByUrl(`resource${resourceId}/categories/DiagnosticTools/tools/mitigate`);
+          clickAction: this._createFeatureAction(
+            ToolNames.AutoHealing,
+            'Proactive Tools',
+            () => {
+              // this.navigateTo(resourceId,ToolIds.AutoHealing);
+              // this._router.navigateByUrl(`resource${resourceId}/categories/DiagnosticTools/tools/mitigate`);
 
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/mitigate`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.AutoHealing);
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/mitigate`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.AutoHealing);
+              }
             }
-          })
+          )
         }
-      }, {
+      },
+      {
         appType: AppType.WebApp | AppType.FunctionApp,
         platform: OperatingSystem.windows,
         sku: Sku.NotDynamic,
@@ -151,19 +232,26 @@ export class SiteFeatureService extends FeatureService {
           category: 'Proactive Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.CpuMonitoring, 'Proactive Tools', () => {
-            // this.navigateTo(resourceId,ToolIds.CpuMonitoring);
-            // this._router.navigateByUrl(`resource${resourceId}/categories/DiagnosticTools/tools/cpumonitoring`);
+          clickAction: this._createFeatureAction(
+            ToolNames.CpuMonitoring,
+            'Proactive Tools',
+            () => {
+              // this.navigateTo(resourceId,ToolIds.CpuMonitoring);
+              // this._router.navigateByUrl(`resource${resourceId}/categories/DiagnosticTools/tools/cpumonitoring`);
 
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/cpumonitoring`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.CpuMonitoring);
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/cpumonitoring`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.CpuMonitoring);
+              }
             }
-          })
+          )
         }
-      }, {
+      },
+      {
         appType: AppType.WebApp | AppType.FunctionApp,
         platform: OperatingSystem.windows,
         sku: Sku.NotDynamic,
@@ -175,20 +263,25 @@ export class SiteFeatureService extends FeatureService {
           category: 'Proactive Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.CrashMonitoring, 'Proactive Tools', () => {
-
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/crashmonitoring`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.CrashMonitoring);
+          clickAction: this._createFeatureAction(
+            ToolNames.CrashMonitoring,
+            'Proactive Tools',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/crashmonitoring`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.CrashMonitoring);
+              }
             }
-          })
+          )
         }
       }
     ];
 
-    this._websiteFilter.transform(this.proactiveTools).forEach(tool => {
+    this._websiteFilter.transform(this.proactiveTools).forEach((tool) => {
       this._features.push(tool);
     });
   }
@@ -206,14 +299,20 @@ export class SiteFeatureService extends FeatureService {
           category: 'Diagnostic Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.Profiler, 'Diagnostic Tools', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/profiler`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.Profiler);
+          clickAction: this._createFeatureAction(
+            ToolNames.Profiler,
+            'Diagnostic Tools',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/profiler`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.Profiler);
+              }
             }
-          })
+          )
         }
       },
       {
@@ -228,14 +327,20 @@ export class SiteFeatureService extends FeatureService {
           category: 'Diagnostic Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.Profiler, 'Diagnostic Tools', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/profiler`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.Profiler);
+          clickAction: this._createFeatureAction(
+            ToolNames.Profiler,
+            'Diagnostic Tools',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/profiler`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.Profiler);
+              }
             }
-          })
+          )
         }
       },
       {
@@ -250,14 +355,20 @@ export class SiteFeatureService extends FeatureService {
           category: 'Diagnostic Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.MemoryDump, 'Diagnostic Tools', () => {
-            //Need remove after A/B tes
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/memorydump`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.MemoryDump);
+          clickAction: this._createFeatureAction(
+            ToolNames.MemoryDump,
+            'Diagnostic Tools',
+            () => {
+              //Need remove after A/B tes
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/memorydump`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.MemoryDump);
+              }
             }
-          })
+          )
         }
       },
       {
@@ -272,14 +383,20 @@ export class SiteFeatureService extends FeatureService {
           category: 'Diagnostic Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.DatabaseTester, 'Diagnostic Tools', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/databasetester`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.DatabaseTester);
+          clickAction: this._createFeatureAction(
+            ToolNames.DatabaseTester,
+            'Diagnostic Tools',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/databasetester`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.DatabaseTester);
+              }
             }
-          })
+          )
         }
       },
       {
@@ -294,14 +411,20 @@ export class SiteFeatureService extends FeatureService {
           category: 'Diagnostic Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.NetworkTrace, 'Diagnostic Tools', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/networktrace`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.NetworkTrace);
+          clickAction: this._createFeatureAction(
+            ToolNames.NetworkTrace,
+            'Diagnostic Tools',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/networktrace`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.NetworkTrace);
+              }
             }
-          })
+          )
         }
       },
       {
@@ -316,14 +439,20 @@ export class SiteFeatureService extends FeatureService {
           category: 'Diagnostic Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.JavaMemoryDump, 'Diagnostic Tools', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/javamemorydump`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.JavaMemoryDump);
+          clickAction: this._createFeatureAction(
+            ToolNames.JavaMemoryDump,
+            'Diagnostic Tools',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/javamemorydump`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.JavaMemoryDump);
+              }
             }
-          })
+          )
         }
       },
       {
@@ -338,14 +467,20 @@ export class SiteFeatureService extends FeatureService {
           category: 'Diagnostic Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.JavaThreadDump, 'Diagnostic Tools', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/javathreaddump`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.JavaThreadDump);
+          clickAction: this._createFeatureAction(
+            ToolNames.JavaThreadDump,
+            'Diagnostic Tools',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/javathreaddump`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.JavaThreadDump);
+              }
             }
-          })
+          )
         }
       },
       {
@@ -360,14 +495,20 @@ export class SiteFeatureService extends FeatureService {
           category: 'Diagnostic Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.JavaFlightRecorder, 'Diagnostic Tools', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/javaflightrecorder`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.JavaFlightRecorder);
+          clickAction: this._createFeatureAction(
+            ToolNames.JavaFlightRecorder,
+            'Diagnostic Tools',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/javaflightrecorder`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.JavaFlightRecorder);
+              }
             }
-          })
+          )
         }
       },
       {
@@ -382,14 +523,20 @@ export class SiteFeatureService extends FeatureService {
           category: 'Diagnostic Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.NetworkChecks, 'Diagnostic Tools', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/networkchecks`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.NetworkChecks);
+          clickAction: this._createFeatureAction(
+            ToolNames.NetworkChecks,
+            'Diagnostic Tools',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/networkchecks`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.NetworkChecks);
+              }
             }
-          })
+          )
         }
       },
       {
@@ -404,14 +551,24 @@ export class SiteFeatureService extends FeatureService {
           category: 'Networking',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(ToolNames.NetworkChecks, 'Networking', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/networkchecks`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.NetworkChecks, "Networking");
+          clickAction: this._createFeatureAction(
+            ToolNames.NetworkChecks,
+            'Networking',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/networkchecks`
+                );
+              } else {
+                this.navigateToTool(
+                  resourceId,
+                  ToolIds.NetworkChecks,
+                  'Networking'
+                );
+              }
             }
-          })
+          )
         }
       },
       {
@@ -426,9 +583,13 @@ export class SiteFeatureService extends FeatureService {
           category: 'Diagnostic Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction('AdvancedAppRestart', 'Support Tools', () => {
-            this._portalActionService.openBladeAdvancedAppRestartBladeForCurrentSite();
-          })
+          clickAction: this._createFeatureAction(
+            'AdvancedAppRestart',
+            'Support Tools',
+            () => {
+              this._portalActionService.openBladeAdvancedAppRestartBladeForCurrentSite();
+            }
+          )
         }
       }
     ];
@@ -446,9 +607,13 @@ export class SiteFeatureService extends FeatureService {
           category: 'Support Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(SupportBladeDefinitions.MetricPerInstance.Identifier, 'Support Tools', () => {
-            this._portalActionService.openMdmMetricsV3Blade();
-          })
+          clickAction: this._createFeatureAction(
+            SupportBladeDefinitions.MetricPerInstance.Identifier,
+            'Support Tools',
+            () => {
+              this._portalActionService.openMdmMetricsV3Blade();
+            }
+          )
         }
       },
       {
@@ -463,9 +628,15 @@ export class SiteFeatureService extends FeatureService {
           category: 'Support Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(SupportBladeDefinitions.AppServicePlanMetrics.Identifier, 'Support Tools', () => {
-            this._portalActionService.openMdmMetricsV3Blade(this._resourceService.resource.properties.serverFarmId);
-          })
+          clickAction: this._createFeatureAction(
+            SupportBladeDefinitions.AppServicePlanMetrics.Identifier,
+            'Support Tools',
+            () => {
+              this._portalActionService.openMdmMetricsV3Blade(
+                this._resourceService.resource.properties.serverFarmId
+              );
+            }
+          )
         }
       },
       {
@@ -478,16 +649,23 @@ export class SiteFeatureService extends FeatureService {
           id: SupportBladeDefinitions.EventViewer.Identifier,
           name: ToolNames.EventViewer,
           category: 'Support Tools',
-          description: 'View event logs(containing exceptions, errors etc) generated by your application.',
+          description:
+            'View event logs(containing exceptions, errors etc) generated by your application.',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(SupportBladeDefinitions.EventViewer.Identifier, 'Support Tools', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/eventviewer`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.EventViewer);
+          clickAction: this._createFeatureAction(
+            SupportBladeDefinitions.EventViewer.Identifier,
+            'Support Tools',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/eventviewer`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.EventViewer);
+              }
             }
-          })
+          )
         }
       },
       {
@@ -500,16 +678,23 @@ export class SiteFeatureService extends FeatureService {
           id: SupportBladeDefinitions.EventViewer.Identifier,
           name: ToolNames.EventViewer,
           category: 'Support Tools',
-          description: 'View event logs(containing exceptions, errors etc) generated by your function app.',
+          description:
+            'View event logs(containing exceptions, errors etc) generated by your function app.',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(SupportBladeDefinitions.EventViewer.Identifier, 'Support Tools', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/eventviewer`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.EventViewer);
+          clickAction: this._createFeatureAction(
+            SupportBladeDefinitions.EventViewer.Identifier,
+            'Support Tools',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/eventviewer`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.EventViewer);
+              }
             }
-          })
+          )
         }
       },
       {
@@ -524,19 +709,25 @@ export class SiteFeatureService extends FeatureService {
           category: 'Support Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction(SupportBladeDefinitions.FREBLogs.Identifier, 'Support Tools', () => {
-            //Need remove after A/B test
-            if (this.isLegacy) {
-              this._router.navigateByUrl(`resource${resourceId}/tools/frebviewer`);
-            } else {
-              this.navigateToTool(resourceId, ToolIds.FrebViewer);
+          clickAction: this._createFeatureAction(
+            SupportBladeDefinitions.FREBLogs.Identifier,
+            'Support Tools',
+            () => {
+              //Need remove after A/B test
+              if (this.isLegacy) {
+                this._router.navigateByUrl(
+                  `resource${resourceId}/tools/frebviewer`
+                );
+              } else {
+                this.navigateToTool(resourceId, ToolIds.FrebViewer);
+              }
             }
-          })
+          )
         }
       },
       {
         appType: AppType.WebApp,
-        platform: OperatingSystem.windows | OperatingSystem.HyperV,   // For Linux, there is no category called Support Tools. So this tool is part of Diagnostics Tools section
+        platform: OperatingSystem.windows | OperatingSystem.HyperV, // For Linux, there is no category called Support Tools. So this tool is part of Diagnostics Tools section
         sku: Sku.Paid,
         hostingEnvironmentKind: HostingEnvironmentKind.All,
         stack: '',
@@ -546,18 +737,22 @@ export class SiteFeatureService extends FeatureService {
           category: 'Support Tools',
           description: '',
           featureType: DetectorType.DiagnosticTool,
-          clickAction: this._createFeatureAction('AdvancedAppRestart', 'Support Tools', () => {
-            this._portalActionService.openBladeAdvancedAppRestartBladeForCurrentSite();
-          })
+          clickAction: this._createFeatureAction(
+            'AdvancedAppRestart',
+            'Support Tools',
+            () => {
+              this._portalActionService.openBladeAdvancedAppRestartBladeForCurrentSite();
+            }
+          )
         }
       }
     ];
 
-    this._websiteFilter.transform(this.diagnosticTools).forEach(tool => {
+    this._websiteFilter.transform(this.diagnosticTools).forEach((tool) => {
       this._features.push(tool);
     });
 
-    this._websiteFilter.transform(this.supportTools).forEach(tool => {
+    this._websiteFilter.transform(this.supportTools).forEach((tool) => {
       this._features.push(tool);
     });
   }

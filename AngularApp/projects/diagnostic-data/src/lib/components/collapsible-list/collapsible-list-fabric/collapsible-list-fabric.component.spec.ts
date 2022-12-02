@@ -8,9 +8,8 @@ describe('CollapsibleListFabricComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CollapsibleListFabricComponent ]
-    })
-    .compileComponents();
+      declarations: [CollapsibleListFabricComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

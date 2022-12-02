@@ -1,8 +1,14 @@
 <div *ngIf="(rule == 0 || rule == null) && !editMode">
-  Configure a rule based on the private byte consumption of the process serving your web app. This is useful in case your app
-  is consuming high memory and you want to quickly recycle or collect some data to identify the root cause.
+  Configure a rule based on the private byte consumption of the process serving
+  your web app. This is useful in case your app is consuming high memory and you
+  want to quickly recycle or collect some data to identify the root cause.
   <div class="rule-button">
-    <button tabindex="0" type="button" class="btn btn-primary btn-sm" (click)="addNewRule()">
+    <button
+      tabindex="0"
+      type="button"
+      class="btn btn-primary btn-sm"
+      (click)="addNewRule()"
+    >
       Configure Private Bytes rule
     </button>
   </div>
@@ -16,22 +22,30 @@
 <table class="table table-bordered" *ngIf="!editMode && rule > 0">
   <thead>
     <tr>
-      <th tabindex="0">
-        Private Bytes
-      </th>
-      <th tabindex="0">
-        Action
-      </th>
+      <th tabindex="0">Private Bytes</th>
+      <th tabindex="0">Action</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td tabindex="0">{{ formatBytes(rule * 1024) }}</td>
       <td tabindex="0">
-        <button class="image-btn" *ngIf="!editMode" (click)="editRule()" title="Edit rule" name="editRule">
+        <button
+          class="image-btn"
+          *ngIf="!editMode"
+          (click)="editRule()"
+          title="Edit rule"
+          name="editRule"
+        >
           <i class="fa fa-edit"></i>
         </button>
-        <button class="image-btn" *ngIf="!editMode" (click)="deleteRule()" title="Delete rule" name="deleteRule">
+        <button
+          class="image-btn"
+          *ngIf="!editMode"
+          (click)="deleteRule()"
+          title="Delete rule"
+          name="deleteRule"
+        >
           <i class="fa fa-trash"></i>
         </button>
       </td>
@@ -42,20 +56,44 @@
 <div class="form-group" *ngIf="editMode">
   <div class="row">
     <div class="col-sm-6">
-      <label for="idPrivateBytes">What is the memory threshold (private bytes) in KB you want to configure ?</label>
+      <label for="idPrivateBytes"
+        >What is the memory threshold (private bytes) in KB you want to
+        configure ?</label
+      >
     </div>
     <div class="col-sm-4">
-      <input aria-required="true" type="number" min="1" id="idPrivateBytes" aria-describedby="privateBytesHelp" placeholder="Enter private bytes in KB" min="1" max="4294967295"
-        [(ngModel)]="ruleCopy">
-      <span style="color:red">*</span>
-      <div *ngIf="ruleCopy !== null && ruleCopy !=0 && !isValid()" class="alert alert-danger" role="alert" style="margin-top:5px">
+      <input
+        aria-required="true"
+        type="number"
+        min="1"
+        id="idPrivateBytes"
+        aria-describedby="privateBytesHelp"
+        placeholder="Enter private bytes in KB"
+        min="1"
+        max="4294967295"
+        [(ngModel)]="ruleCopy"
+      />
+      <span style="color: red">*</span>
+      <div
+        *ngIf="ruleCopy !== null && ruleCopy != 0 && !isValid()"
+        class="alert alert-danger"
+        role="alert"
+        style="margin-top: 5px"
+      >
         Private should be > 102400 KB (100 MB) to 33554432 KB (32 GB)
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col-sm-4">
-      <button type="button" class="btn btn-primary btn-sm" [disabled]="!isValid()" (click)="saveRule()">Ok</button>
+      <button
+        type="button"
+        class="btn btn-primary btn-sm"
+        [disabled]="!isValid()"
+        (click)="saveRule()"
+      >
+        Ok
+      </button>
     </div>
   </div>
 </div>

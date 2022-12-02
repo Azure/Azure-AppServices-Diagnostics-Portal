@@ -8,9 +8,8 @@ describe('SolutionOrchestratorComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SolutionOrchestratorComponent ]
-    })
-    .compileComponents();
+      declarations: [SolutionOrchestratorComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,90 +1,90 @@
 .insight-container {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .insight-container:last-child {
-    margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .insight-panel {
-    border-left-width: 4px;
-    background-color: var(--bodyBackground);
-    border-radius: 3px;
+  border-left-width: 4px;
+  background-color: var(--bodyBackground);
+  border-radius: 3px;
 }
 
 .success-insight-panel {
-    border-left-color: #3da907;
+  border-left-color: #3da907;
 }
 
 .warning-insight-panel {
-    border-left-color: #ff9104;
+  border-left-color: #ff9104;
 }
 
 .critical-insight-panel {
-    border-left-color: red;
+  border-left-color: red;
 }
 
 .info-insight-panel {
-    border-left-color: #3a9bc7
+  border-left-color: #3a9bc7;
 }
 
 .insight-expand-icon {
-    font-weight: bold;
-    float:left;
-    font-size:18px;
-    min-height: 1px;
-    min-width: 1.5%;
-    margin-right:10px;
+  font-weight: bold;
+  float: left;
+  font-size: 18px;
+  min-height: 1px;
+  min-width: 1.5%;
+  margin-right: 10px;
 }
 
 .card-header {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 .clickable-header {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .card-body {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .table-key {
-    width: 20%;
+  width: 20%;
 }
 
 table {
-    width: 100%;
+  width: 100%;
 }
 
 .status-icon {
-    margin-right: 25px;
+  margin-right: 25px;
 }
 
 .fa-exclamation-circle {
-    color: #ff0000;
+  color: #ff0000;
 }
 
 .fa-exclamation-triangle {
-    color: #ff9104;
+  color: #ff9104;
 }
 
 .fa-check-circle {
-    color: #3da907;
+  color: #3da907;
 }
 
 .fa-info-circle {
-    color: #3a9bc7;
+  color: #3a9bc7;
 }
 
 .expand-icon {
-    float:right;
-    font-size: 20px;
+  float: right;
+  font-size: 20px;
 }
 
 td {
-    vertical-align: text-top;
-    padding-bottom: 10px;
+  vertical-align: text-top;
+  padding-bottom: 10px;
 }
 
 /*tooltip Box*/
@@ -98,13 +98,13 @@ td {
 .tooltip {
   visibility: hidden;
   z-index: 1;
-  opacity: .40;
+  opacity: 0.4;
   width: max-content;
   padding: 5px 5px 2px 5px;
   background: #333;
-  color: #E086D3;
+  color: #e086d3;
   position: absolute;
-  top:-140%;
+  top: -140%;
   left: -25%;
   border-radius: 9px;
   font: 16px;
@@ -113,10 +113,9 @@ td {
   box-shadow: 0 0 3px rgba(56, 54, 54, 0.86);
 }
 
-
 /* tooltip  after*/
 .tooltip::after {
-  content: " ";
+  content: ' ';
   width: 0;
   height: 0;
   border-style: solid;
@@ -126,50 +125,54 @@ td {
   left: 40%;
 }
 
-.con-tooltip:hover .tooltip{
+.con-tooltip:hover .tooltip {
   visibility: visible;
   transform: translateY(-10px);
   opacity: 1;
-  transition: .3s linear;
-  animation: tooltipmove 1s ease-in-out infinite  alternate;
+  transition: 0.3s linear;
+  animation: tooltipmove 1s ease-in-out infinite alternate;
 }
 @keyframes tooltipmove {
-  0%{
+  0% {
     transform: translateY(6px);
   }
 
-  100%{
+  100% {
     transform: translateY(1px);
   }
-
 }
 
 /*hover ToolTip*/
-.bottom:hover {transform: translateY(6px);}
+.bottom:hover {
+  transform: translateY(6px);
+}
 
 /*bottom*/
-.bottom .tooltip { top:115%; left:-20%; }
+.bottom .tooltip {
+  top: 115%;
+  left: -20%;
+}
 
-.bottom .tooltip::after{
-  top:-17%;
-  left:40%;
+.bottom .tooltip::after {
+  top: -17%;
+  left: 40%;
   transform: rotate(180deg);
 }
 
-.con-tooltip > a{
-    color: rgb(51, 51, 51)
+.con-tooltip > a {
+  color: rgb(51, 51, 51);
 }
 
-.con-tooltip > a:hover{
-    color: #015cda
+.con-tooltip > a:hover {
+  color: #015cda;
 }
 
-.con-tooltip > a:visited{
-    color: #015cda
+.con-tooltip > a:visited {
+  color: #015cda;
 }
 
 .insight-rating {
-    padding-left: 10px;
-    padding-right: 10px;
-    display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  display: inline-block;
 }

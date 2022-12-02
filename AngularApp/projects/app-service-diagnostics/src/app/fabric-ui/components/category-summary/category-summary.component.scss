@@ -1,10 +1,39 @@
- //Hide side nav and content take over whole page
+//Hide side nav and content take over whole page
+section.sidebar {
+  display: none;
+}
+
+section.content {
+  width: 100%;
+  top: 0px;
+  bottom: 0px;
+  left: 265px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.body-content {
+  display: flex !important;
+  color: var(--bodyText);
+  border: bold;
+}
+
+//display side nav for 100% zooming
+@media (min-width: 640px) {
   section.sidebar {
-    display: none;
+    display: block;
+    width: 265px;
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    border-right: 1px solid #eee;
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
 
   section.content {
-    width: 100%;
+    position: fixed;
+    width: calc(100% - 265px);
     top: 0px;
     bottom: 0px;
     left: 265px;
@@ -13,90 +42,60 @@
   }
 
   .body-content {
-    display: flex!important;
-    color: var(--bodyText);
-    border:bold;
+    display: flex !important;
+    height: calc(100vh - 100px);
   }
+}
 
-  //display side nav for 100% zooming
-  @media(min-width: 640px){
-    section.sidebar {
-      display: block;
-      width: 265px;
-      position: fixed;
-      top: 0px;
-      bottom: 0px;
-      border-right: 1px solid #eee;
-      overflow-y: scroll;
-      overflow-x: hidden;
-    }
+section.content-hide-nav {
+  min-width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 
-    section.content {
-      position: fixed;
-      width: calc(100% - 265px);
-      top: 0px;
-      bottom: 0px;
-      left: 265px;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
+.sidebar,
+.content {
+  flex-basis: auto;
+}
 
-    .body-content {
-      display: flex!important;
-      height: calc(100vh - 100px);
-    }
-  }
+.app .header {
+  position: fixed;
+  height: 43px;
+  width: 100%;
+  padding-left: 25px;
+  padding-right: 115px;
+  box-shadow: inset 0px -1px 0px rgba(204, 204, 204, 0.8);
+  border-bottom: 1px solid #eee;
+}
 
+.category-label {
+  font-family: Segoe UI;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  height: 25px;
+}
 
+.category-description {
+  font-family: Segoe UI;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 10px;
+  line-height: 14px;
+  height: 18px;
+  color: var(--summaryText);
+}
 
-  section.content-hide-nav{
-    min-width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+.collapsible-button:hover {
+  background-color: #f3f2f1;
+}
 
-  .sidebar, .content{
-    flex-basis: auto;
-  }
-
-  .app .header {
-    position: fixed;
-    height: 43px;
-    width: 100%;
-    padding-left: 25px;
-    padding-right: 115px;
-    box-shadow: inset 0px -1px 0px rgba(204, 204, 204, 0.8);
-    border-bottom: 1px solid #eee;
-  }
-
-  .category-label {
-    font-family: Segoe UI;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 18px;
-    line-height: 24px;
-    height: 25px;
-  }
-
-  .category-description {
-    font-family: Segoe UI;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 10px;
-    line-height: 14px;
-    height: 18px;
-    color: var(--summaryText);
-  }
-
-  .collapsible-button:hover {
-    background-color: #f3f2f1;
-  }
-
-  .collapsible-button {
-    outline-style: dashed;
-    outline-width: 1px;
-    outline-color: #00bcf2;;
-  }
+.collapsible-button {
+  outline-style: dashed;
+  outline-width: 1px;
+  outline-color: #00bcf2;
+}
 .mainContentSection {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }

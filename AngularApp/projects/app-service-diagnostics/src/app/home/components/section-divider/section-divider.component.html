@@ -1,17 +1,33 @@
-<div [id]="label" class="section-divider" tabindex="0" (keyup.enter)="sectionHeaderClick()" [attr.aria-label]="label" [class.overview-header]="isOverview" [class.not-expandable]="!collapsible" [class.selected]="isSelected()"
-  (click)="sectionHeaderClick()" >
+<div
+  [id]="label"
+  class="section-divider"
+  tabindex="0"
+  (keyup.enter)="sectionHeaderClick()"
+  [attr.aria-label]="label"
+  [class.overview-header]="isOverview"
+  [class.not-expandable]="!collapsible"
+  [class.selected]="isSelected()"
+  (click)="sectionHeaderClick()"
+>
   <div>
     <ng-content select=".menu-icon"></ng-content>
   </div>
   <div class="menu-label">
-    <img *ngIf="label === 'Overview'" [src]="overviewImagePath" alt="Overview" class="menu-title-icon">
-    <span class="menu-title">{{label}}</span>
+    <img
+      *ngIf="label === 'Overview'"
+      [src]="overviewImagePath"
+      alt="Overview"
+      class="menu-title-icon"
+    />
+    <span class="menu-title">{{ label }}</span>
   </div>
-  <div class="menu-expand-icon">
-  </div>
+  <div class="menu-expand-icon"></div>
 </div>
 <div class="section-children">
-  <div class="expandable-content" [@expand]="collapsible && expanded ? 'shown' : 'hidden'">
+  <div
+    class="expandable-content"
+    [@expand]="collapsible && expanded ? 'shown' : 'hidden'"
+  >
     <ng-content select="collapsible-menu-item"></ng-content>
     <ng-content select=".fa-spin "></ng-content>
   </div>

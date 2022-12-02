@@ -4,7 +4,7 @@ import { TreeViewComponent } from './components/tree-view/tree-view.component';
 import { DiagnosticApiService } from './services/diagnostic-api.service';
 import { HttpClientModule } from '@angular/common/http';
 import { SiteService } from './services/site.service';
-import { ContainerAppService } from "./services/containerapp.service";
+import { ContainerAppService } from './services/containerapp.service';
 import { FormsModule } from '@angular/forms';
 import { StartupService } from './services/startup.service';
 import { ObserverService } from './services/observer.service';
@@ -48,8 +48,19 @@ import { FabChoiceGroupModule } from '@angular-react/fabric/lib/components/choic
     FabToggleModule,
     FabChoiceGroupModule
   ],
-  declarations: [TreeViewComponent, LoginComponent, ApplensBannerComponent, L1SideNavComponent, ApplensHeaderComponent],
-  exports: [TreeViewComponent, ApplensBannerComponent, L1SideNavComponent, ApplensHeaderComponent]
+  declarations: [
+    TreeViewComponent,
+    LoginComponent,
+    ApplensBannerComponent,
+    L1SideNavComponent,
+    ApplensHeaderComponent
+  ],
+  exports: [
+    TreeViewComponent,
+    ApplensBannerComponent,
+    L1SideNavComponent,
+    ApplensHeaderComponent
+  ]
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders<SharedModule> {
@@ -75,6 +86,6 @@ export class SharedModule {
         DetectorGistApiService,
         AlertService
       ]
-    }
+    };
   }
 }

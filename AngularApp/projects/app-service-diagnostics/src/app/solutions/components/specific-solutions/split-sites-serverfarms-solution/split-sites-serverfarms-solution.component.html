@@ -1,37 +1,51 @@
-<default-solution-template [title]="title" [description]="description" [tags]="data.tags">
-    
-        <div class="action-box">
-            <div *ngIf="currentServerFarm && sitesInServerFarm">
-                <div>Current App Service Plan</div>
-                <table style="border:none;padding:5px">
-                    <tr style="font-size:20px;font-weight:500;color: #286090;" *ngIf="currentServerFarm">
-                        <td>{{currentServerFarm.sku.name + ' ' + currentServerFarm.sku.tier}}</td>
-                        <td>{{currentServerFarm.additionalProperties.ramInGB}}
-                            <span style="font-size:16px">GB</span>
-                        </td>
-                        <td>{{currentServerFarm.sku.capacity}}</td>
-                        <td>{{currentServerFarm.properties.numberOfSites}}</td>
-                    </tr>
-                    <tr id="table-labels" style="font-size:11px">
-                        <td>Tier</td>
-                        <td>RAM</td>
-                        <td>Instance Count</td>
-                        <td>App Count</td>
-                    </tr>
-                </table>
-                <br/>
-                <p [innerHtml]="suggestion"></p>    
-            </div>
-            <div style="text-align:center" *ngIf="!currentServerFarm">
-                <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-            </div>
-    
-        </div>
-    
-        <p style="padding: 10px 0px 0px 0px" [innerHtml]="secondarySuggestion" *ngIf="secondarySuggestion"></p>
-    
-        <div class="header2">Strategies for Splitting Apps Between App Service Plans</div>
-        <ul>
-            <li *ngFor="let statement of appServicePlanStrategies">{{statement}}</li>
-        </ul>    
-    </default-solution-template>
+<default-solution-template
+  [title]="title"
+  [description]="description"
+  [tags]="data.tags"
+>
+  <div class="action-box">
+    <div *ngIf="currentServerFarm && sitesInServerFarm">
+      <div>Current App Service Plan</div>
+      <table style="border: none; padding: 5px">
+        <tr
+          style="font-size: 20px; font-weight: 500; color: #286090"
+          *ngIf="currentServerFarm"
+        >
+          <td>
+            {{ currentServerFarm.sku.name + ' ' + currentServerFarm.sku.tier }}
+          </td>
+          <td>
+            {{ currentServerFarm.additionalProperties.ramInGB }}
+            <span style="font-size: 16px">GB</span>
+          </td>
+          <td>{{ currentServerFarm.sku.capacity }}</td>
+          <td>{{ currentServerFarm.properties.numberOfSites }}</td>
+        </tr>
+        <tr id="table-labels" style="font-size: 11px">
+          <td>Tier</td>
+          <td>RAM</td>
+          <td>Instance Count</td>
+          <td>App Count</td>
+        </tr>
+      </table>
+      <br />
+      <p [innerHtml]="suggestion"></p>
+    </div>
+    <div style="text-align: center" *ngIf="!currentServerFarm">
+      <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+    </div>
+  </div>
+
+  <p
+    style="padding: 10px 0px 0px 0px"
+    [innerHtml]="secondarySuggestion"
+    *ngIf="secondarySuggestion"
+  ></p>
+
+  <div class="header2">
+    Strategies for Splitting Apps Between App Service Plans
+  </div>
+  <ul>
+    <li *ngFor="let statement of appServicePlanStrategies">{{ statement }}</li>
+  </ul>
+</default-solution-template>

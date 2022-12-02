@@ -1,44 +1,104 @@
 <header>
   <nav class="navbar-fixed-top header-nav" role="navigation">
-    <div style="display: flex;">
-      <div class="header-title" role="button" tabindex="0" (click)="navigateToLandingPage()" (keyup.enter)="navigateToLandingPage()">
-        <img [src]="applensLogo" alt="Applens" class="header-img">
-        <div class="ml-3" style="font-weight: 600;">AppLens {{envTag}}</div>
+    <div style="display: flex">
+      <div
+        class="header-title"
+        role="button"
+        tabindex="0"
+        (click)="navigateToLandingPage()"
+        (keyup.enter)="navigateToLandingPage()"
+      >
+        <img [src]="applensLogo" alt="Applens" class="header-img" />
+        <div class="ml-3" style="font-weight: 600">AppLens {{ envTag }}</div>
       </div>
       <div class="resource-info">
-        <img *ngIf="resourceInfo.imgSrc" class="header-img ml-3" [src]="resourceInfo.imgSrc" [alt]="resourceInfo.searchSuffix">
-        <span *ngIf="resourceInfo.resourceName" class="ml-3" style="font-weight: 600;">{{resourceInfo.resourceName}}</span>
-        <span *ngIf="resourceInfo.searchSuffix" class="ml-3" style="color: var(--summaryText);">{{resourceInfo.searchSuffix}}</span>
-        <div *ngIf="resourceInfo.resourceName" class='resource-summary' (click)="openResourceInfoModal()">
+        <img
+          *ngIf="resourceInfo.imgSrc"
+          class="header-img ml-3"
+          [src]="resourceInfo.imgSrc"
+          [alt]="resourceInfo.searchSuffix"
+        />
+        <span
+          *ngIf="resourceInfo.resourceName"
+          class="ml-3"
+          style="font-weight: 600"
+          >{{ resourceInfo.resourceName }}</span
+        >
+        <span
+          *ngIf="resourceInfo.searchSuffix"
+          class="ml-3"
+          style="color: var(--summaryText)"
+          >{{ resourceInfo.searchSuffix }}</span
+        >
+        <div
+          *ngIf="resourceInfo.resourceName"
+          class="resource-summary"
+          (click)="openResourceInfoModal()"
+        >
           <i class="fa fa-info-circle" aria-hidden="true"></i>
         </div>
       </div>
     </div>
 
     <div *ngIf="_searchService">
-      <input class="header-search" type="text" aria-label="Describe your problem and Search" autocomplete="off" [(ngModel)]="searchValue" (keyup.enter)="triggerSearch()" placeholder="Describe your problem and hit enter">
+      <input
+        class="header-search"
+        type="text"
+        aria-label="Describe your problem and Search"
+        autocomplete="off"
+        [(ngModel)]="searchValue"
+        (keyup.enter)="triggerSearch()"
+        placeholder="Describe your problem and hit enter"
+      />
     </div>
 
-    <div class="user-photo-container" (click)="openCallout()" (keyup.enter)="openCallout()" tabindex="0">
-      <img *ngIf="userPhotoSource !== '';else userInitial" id="userId" [src]="userPhotoSource" alt="User Profile Photo" class="avatar">
+    <div
+      class="user-photo-container"
+      (click)="openCallout()"
+      (keyup.enter)="openCallout()"
+      tabindex="0"
+    >
+      <img
+        *ngIf="userPhotoSource !== ''; else userInitial"
+        id="userId"
+        [src]="userPhotoSource"
+        alt="User Profile Photo"
+        class="avatar"
+      />
     </div>
   </nav>
 </header>
 
 <div *ngIf="showCallout" class="header-callout">
-  <div class="user-setting-section" style="height: 80%;">
+  <div class="user-setting-section" style="height: 80%">
     <!-- <fab-toggle [onnText]="'Expand'" [offText]="'Collapse'" [label]="'Expand Analysis Card'" [checked]="expandCheckCard" (onChange)="toggleExpandCheckCard($event)"></fab-toggle> -->
-    <fab-toggle [onnText]="'Dark'" [offText]="'Light'" [label]="'Dark Theme'" [checked]="darkThemeChecked" (onChange)="toggleTheme($event)"></fab-toggle>
+    <fab-toggle
+      [onnText]="'Dark'"
+      [offText]="'Light'"
+      [label]="'Dark Theme'"
+      [checked]="darkThemeChecked"
+      (onChange)="toggleTheme($event)"
+    ></fab-toggle>
     <br />
-    <fab-choice-group [label]="'Detector View Mode'" [options]="choiceGroupOptions"  [selectedKey]="selectedKey">
+    <fab-choice-group
+      [label]="'Detector View Mode'"
+      [options]="choiceGroupOptions"
+      [selectedKey]="selectedKey"
+    >
     </fab-choice-group>
   </div>
-  <div class="user-setting-section" style="border-top: 1px solid gray;">
-    <fab-primary-button (onClick)="applyUserSettingChange()" [contentClass]="'mr-5'">Apply</fab-primary-button>
-    <fab-default-button (onClick)="cancelUserSettingChange()">Cancel</fab-default-button>
+  <div class="user-setting-section" style="border-top: 1px solid gray">
+    <fab-primary-button
+      (onClick)="applyUserSettingChange()"
+      [contentClass]="'mr-5'"
+      >Apply</fab-primary-button
+    >
+    <fab-default-button (onClick)="cancelUserSettingChange()"
+      >Cancel</fab-default-button
+    >
   </div>
 </div>
 
 <ng-template #userInitial>
-  <div class="avatar user-initial">{{userNameInitial}}</div>
+  <div class="avatar user-initial">{{ userNameInitial }}</div>
 </ng-template>

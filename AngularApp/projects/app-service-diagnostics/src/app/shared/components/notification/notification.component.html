@@ -1,5 +1,14 @@
 <ng-container *ngIf="notificationService.activeNotification">
-<fab-message-bar [messageBarType]="notificationService.activeNotification.type" isMultiline="false" dismissButtonAriaLabel="Close" [dismissable]="!notificationService.activeNotification.disableDismiss" [truncated]="true" [styles]="styles" (click)="notificationService.currentNotificationAction()"
-  overflowButtonAriaLabel="See more">{{notificationService.activeNotification.title}}</fab-message-bar>
-<div style="margin-bottom: 5px;"></div>
+  <fab-message-bar
+    [messageBarType]="notificationService.activeNotification.type"
+    isMultiline="false"
+    dismissButtonAriaLabel="Close"
+    [dismissable]="!notificationService.activeNotification.disableDismiss"
+    [truncated]="true"
+    [styles]="styles"
+    (click)="notificationService.currentNotificationAction()"
+    overflowButtonAriaLabel="See more"
+    >{{ notificationService.activeNotification.title }}</fab-message-bar
+  >
+  <div style="margin-bottom: 5px"></div>
 </ng-container>

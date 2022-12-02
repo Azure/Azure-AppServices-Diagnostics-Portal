@@ -1,9 +1,19 @@
 import { Moment } from 'moment';
 import { BehaviorSubject } from 'rxjs';
 import {
-  Component, Input, OnInit, ViewChild, ViewContainerRef, Output, EventEmitter
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+  ViewContainerRef
 } from '@angular/core';
-import { DiagnosticData, Rendering, RenderingType } from '../../models/detector';
+import {
+  DiagnosticData,
+  Rendering,
+  RenderingType
+} from '../../models/detector';
 import { CardSelectionComponent } from '../card-selection/card-selection.component';
 import { AppInsightsMarkdownComponent } from '../app-insights-markdown/app-insights-markdown.component';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
@@ -17,9 +27,7 @@ import { MarkdownViewComponent } from '../markdown-view/markdown-view.component'
 import { SolutionComponent } from '../solution/solution.component';
 import { GuageControlComponent } from '../guage-control/guage-control.component';
 import { TimeSeriesGraphComponent } from '../time-series-graph/time-series-graph.component';
-import {
-  TimeSeriesInstanceGraphComponent
-} from '../time-series-instance-graph/time-series-instance-graph.component';
+import { TimeSeriesInstanceGraphComponent } from '../time-series-instance-graph/time-series-instance-graph.component';
 import { FormComponent } from '../form/form.component';
 import { CompilationProperties } from '../../models/compilation-properties';
 import { ChangeAnalysisOnboardingComponent } from '../changeanalysis-onboarding/changeanalysis-onboarding.component';
@@ -32,7 +40,11 @@ import { CardSelectionV4Component } from '../card-selection-v4/card-selection-v4
 import { VersionService } from '../../services/version.service';
 import { ConnectAppInsightsComponent } from '../connect-app-insights/connect-app-insights.component';
 import { DetectorSearchComponent } from '../detector-search/detector-search.component';
-import { xAxisPlotBand, zoomBehaviors, XAxisSelection } from '../../models/time-series';
+import {
+  XAxisSelection,
+  xAxisPlotBand,
+  zoomBehaviors
+} from '../../models/time-series';
 import { DynamicInsightV4Component } from '../dynamic-insight-v4/dynamic-insight-v4.component';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { DataTableV4Component } from '../data-table-v4/data-table-v4.component';
@@ -53,8 +65,8 @@ import { ClientScriptViewComponent } from '../client-script-view/client-script-v
   styleUrls: ['./dynamic-data.component.scss']
 })
 export class DynamicDataComponent implements OnInit {
-
-  private dataBehaviorSubject: BehaviorSubject<DiagnosticData> = new BehaviorSubject<DiagnosticData>(null);
+  private dataBehaviorSubject: BehaviorSubject<DiagnosticData> =
+    new BehaviorSubject<DiagnosticData>(null);
 
   @Input() set diagnosticData(data: DiagnosticData) {
     this.dataBehaviorSubject.next(data);
@@ -73,7 +85,7 @@ export class DynamicDataComponent implements OnInit {
   private _instanceRef: DataRenderBaseComponent = null;
   private _xAxisPlotBands: xAxisPlotBand[] = null;
   @Input() public set xAxisPlotBands(value: xAxisPlotBand[]) {
-    if (!!value) {
+    if (value) {
       this._xAxisPlotBands = value;
       if (this._instanceRef != null) {
         this._instanceRef.xAxisPlotBands = value;
@@ -86,7 +98,7 @@ export class DynamicDataComponent implements OnInit {
 
   private _zoomBehavior: zoomBehaviors = zoomBehaviors.Zoom;
   @Input() public set zoomBehavior(value: zoomBehaviors) {
-    if (!!value) {
+    if (value) {
       this._zoomBehavior = value;
       if (this._instanceRef != null) {
         this._instanceRef.zoomBehavior = value;
@@ -97,23 +109,35 @@ export class DynamicDataComponent implements OnInit {
     return this._zoomBehavior;
   }
 
-  @Output() XAxisSelection: EventEmitter<XAxisSelection> = new EventEmitter<XAxisSelection>();
+  @Output() XAxisSelection: EventEmitter<XAxisSelection> =
+    new EventEmitter<XAxisSelection>();
 
-  @ViewChild('dynamicDataContainer', { read: ViewContainerRef, static: true }) dynamicDataContainer: ViewContainerRef;
+  @ViewChild('dynamicDataContainer', { read: ViewContainerRef, static: true })
+  dynamicDataContainer: ViewContainerRef;
   private isLegacy: boolean;
-  constructor(private versionService: VersionService, private telemetryService: TelemetryService) { }
+  constructor(
+    private versionService: VersionService,
+    private telemetryService: TelemetryService
+  ) {}
 
   ngOnInit(): void {
-    this.versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
+    this.versionService.isLegacySub.subscribe(
+      (isLegacy) => (this.isLegacy = isLegacy)
+    );
     this.dataBehaviorSubject.subscribe((diagnosticData: DiagnosticData) => {
-      const isVisible = (<Rendering>diagnosticData.renderingProperties).isVisible;
+      const isVisible = (<Rendering>diagnosticData.renderingProperties)
+        .isVisible;
       if (isVisible !== undefined && !isVisible) {
         return;
       }
-      const component = this._findInputComponent((<Rendering>diagnosticData.renderingProperties).type);
+      const component = this._findInputComponent(
+        (<Rendering>diagnosticData.renderingProperties).type
+      );
       if (component == null) {
         const rendering = (<Rendering>diagnosticData.renderingProperties).type;
-        this.telemetryService.logTrace(`No component found for rendering type : ${RenderingType[rendering]}`);
+        this.telemetryService.logTrace(
+          `No component found for rendering type : ${RenderingType[rendering]}`
+        );
         return;
       }
 
@@ -121,7 +145,7 @@ export class DynamicDataComponent implements OnInit {
       viewContainerRef.clear();
 
       const componentRef = viewContainerRef.createComponent(component);
-      const instance = <DataRenderBaseComponent>(componentRef.instance);
+      const instance = <DataRenderBaseComponent>componentRef.instance;
       instance.diagnosticDataInput = diagnosticData;
       instance.startTime = this.startTime;
       instance.endTime = this.endTime;
@@ -133,7 +157,7 @@ export class DynamicDataComponent implements OnInit {
       instance.isAnalysisView = this.isAnalysisView;
       instance.xAxisPlotBands = this.xAxisPlotBands;
       instance.zoomBehavior = this.zoomBehavior;
-      instance.XAxisSelection.subscribe(XAxisSelectionEventArgs => {
+      instance.XAxisSelection.subscribe((XAxisSelectionEventArgs) => {
         this.XAxisSelection.emit(XAxisSelectionEventArgs);
       });
       this._instanceRef = instance;
@@ -155,7 +179,9 @@ export class DynamicDataComponent implements OnInit {
       case RenderingType.TimeSeriesPerInstance:
         return TimeSeriesInstanceGraphComponent;
       case RenderingType.DynamicInsight:
-        return this.isLegacy ? DynamicInsightComponent : DynamicInsightV4Component;
+        return this.isLegacy
+          ? DynamicInsightComponent
+          : DynamicInsightV4Component;
       case RenderingType.Markdown:
         return MarkdownViewComponent;
       case RenderingType.DetectorList:
@@ -163,7 +189,9 @@ export class DynamicDataComponent implements OnInit {
       case RenderingType.DropDown:
         return DropdownV4Component;
       case RenderingType.Cards:
-        return this.isLegacy ? CardSelectionComponent : CardSelectionV4Component;
+        return this.isLegacy
+          ? CardSelectionComponent
+          : CardSelectionV4Component;
       case RenderingType.Solution:
         return SolutionComponent;
       case RenderingType.Guage:
@@ -183,8 +211,7 @@ export class DynamicDataComponent implements OnInit {
       case RenderingType.SearchComponent:
         if (!this.hideShieldComponent) {
           return DetectorSearchComponent;
-        }
-        else {
+        } else {
           return null;
         }
       case RenderingType.AppInsightEnablement:
@@ -205,5 +232,4 @@ export class DynamicDataComponent implements OnInit {
         return null;
     }
   }
-
 }

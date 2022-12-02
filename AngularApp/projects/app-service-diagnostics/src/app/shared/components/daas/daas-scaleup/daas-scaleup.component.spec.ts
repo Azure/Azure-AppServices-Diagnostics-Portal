@@ -8,9 +8,8 @@ describe('DaasScaleupComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DaasScaleupComponent ]
-    })
-    .compileComponents();
+      declarations: [DaasScaleupComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

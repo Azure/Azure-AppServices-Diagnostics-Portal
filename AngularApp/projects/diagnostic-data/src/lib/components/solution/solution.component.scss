@@ -1,6 +1,7 @@
 @import '../../../../../app-service-diagnostics/src/styles/main.scss';
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
 }
@@ -10,26 +11,26 @@ html, body {
 }
 
 .custom-solution-button {
-    margin-left: 0px;
-    display: inline-block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    background-color: #0078d4;
-    border-color: #0078d4;
-    color: #fff;
-    fill: white;
-    font-size: 13px;
-    box-sizing: border-box;
-    height: 24px;
-    font-size: 13px;
-    line-height: 20px;
-    font-weight: 600;
-    cursor: pointer;
-    border: 1px solid;
-    padding: 0 20px;
-    margin: 0;
-  }
+  margin-left: 0px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-color: #0078d4;
+  border-color: #0078d4;
+  color: #fff;
+  fill: white;
+  font-size: 13px;
+  box-sizing: border-box;
+  height: 24px;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid;
+  padding: 0 20px;
+  margin: 0;
+}
 
 .solution-action {
   display: inline-block;
@@ -64,7 +65,7 @@ html, body {
   .custom-button.deny {
     background-color: white;
     color: gray;
-    margin-right: .25em;
+    margin-right: 0.25em;
   }
 }
 

@@ -1,6 +1,10 @@
 import { MarkdownService } from 'ngx-markdown';
 import { Component } from '@angular/core';
-import { DiagnosticData, DynamicInsightRendering, HealthStatus } from '../../models/detector';
+import {
+  DiagnosticData,
+  DynamicInsightRendering,
+  HealthStatus
+} from '../../models/detector';
 import { DynamicInsight } from '../../models/insight';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
@@ -11,22 +15,30 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'dynamic-insight-v4',
   templateUrl: './dynamic-insight-v4.component.html',
-  styleUrls: ['./dynamic-insight-v4.component.scss', '../insights-v4/insights-v4.component.scss']
+  styleUrls: [
+    './dynamic-insight-v4.component.scss',
+    '../insights-v4/insights-v4.component.scss'
+  ]
 })
 export class DynamicInsightV4Component extends DataRenderBaseComponent {
-
   renderingProperties: DynamicInsightRendering;
 
   insight: DynamicInsight;
 
   InsightStatus = HealthStatus;
-  constructor(private _markdownService: MarkdownService, protected telemetryService: TelemetryService, private _router: Router) {
+  constructor(
+    private _markdownService: MarkdownService,
+    protected telemetryService: TelemetryService,
+    private _router: Router
+  ) {
     super(telemetryService);
   }
 
   protected processData(data: DiagnosticData) {
     super.processData(data);
-    this.renderingProperties = <DynamicInsightRendering>data.renderingProperties;
+    this.renderingProperties = <DynamicInsightRendering>(
+      data.renderingProperties
+    );
 
     this.parseInsight();
   }
@@ -34,15 +46,20 @@ export class DynamicInsightV4Component extends DataRenderBaseComponent {
   private parseInsight() {
     if (this.renderingProperties) {
       // Make sure that we don't render a box within the insight
-      if(this.renderingProperties.innerRendering) {
+      if (this.renderingProperties.innerRendering) {
         this.renderingProperties.innerRendering.title = '';
       }
 
       this.insight = <DynamicInsight>{
         title: this.renderingProperties.title,
-        description: this._markdownService.compile(this.renderingProperties.description),
+        description: this._markdownService.compile(
+          this.renderingProperties.description
+        ),
         status: this.renderingProperties.status,
-        isExpanded: this.renderingProperties.expanded != undefined ? this.renderingProperties.expanded : true,
+        isExpanded:
+          this.renderingProperties.expanded != undefined
+            ? this.renderingProperties.expanded
+            : true,
         innerDiagnosticData: <DiagnosticData>{
           renderingProperties: this.renderingProperties.innerRendering,
           table: this.diagnosticData.table
@@ -55,14 +72,22 @@ export class DynamicInsightV4Component extends DataRenderBaseComponent {
 
   toggleInsightExpanded(insight: DynamicInsight) {
     insight.isExpanded = !insight.isExpanded;
-    this.logInsightClickEvent(insight.title, insight.isExpanded, HealthStatus[insight.status]);
+    this.logInsightClickEvent(
+      insight.title,
+      insight.isExpanded,
+      HealthStatus[insight.status]
+    );
   }
 
-  logInsightClickEvent(insightName: string, isExpanded: boolean, status: string) {
+  logInsightClickEvent(
+    insightName: string,
+    isExpanded: boolean,
+    status: string
+  ) {
     const eventProps: { [name: string]: string } = {
-      'Title': insightName,
-      'IsExpanded': String(isExpanded),
-      'Status': status
+      Title: insightName,
+      IsExpanded: String(isExpanded),
+      Status: status
     };
 
     this.logEvent(TelemetryEventNames.InsightTitleClicked, eventProps);
@@ -71,19 +96,18 @@ export class DynamicInsightV4Component extends DataRenderBaseComponent {
   setInsightComment(insight: any, isHelpful: boolean) {
     if (!insight.isRated) {
       const eventProps: { [name: string]: string } = {
-        'Title': insight.title,
-        'IsHelpful': String(isHelpful)
-      }
+        Title: insight.title,
+        IsHelpful: String(isHelpful)
+      };
       insight.isRated = true;
       insight.isHelpful = isHelpful;
       this.logEvent(TelemetryEventNames.InsightRated, eventProps);
     }
   }
 
-  clickHyperlink(){
-    if(this.insight?.hyperlink){
+  clickHyperlink() {
+    if (this.insight?.hyperlink) {
       this._router.navigateByUrl(this.insight.hyperlink);
     }
   }
-
 }

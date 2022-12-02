@@ -8,9 +8,8 @@ describe('WebSearchComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ WebSearchComponent ]
-    })
-    .compileComponents();
+      declarations: [WebSearchComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,8 +1,8 @@
 .main-sidebar {
   height: calc(100vh - 50px);
   padding: 0;
-  border-right:1px solid white;
-  width:250px;
+  border-right: 1px solid white;
+  width: 250px;
 }
 
 menu-scroll {
@@ -11,81 +11,80 @@ menu-scroll {
 }
 
 .sidebar-menu > li > a {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .sidenav-item-selected {
-    background-color: #1f1f1f;
+  background-color: #1f1f1f;
 }
 
 .applens-menu-item {
-    color: #eeeeee;
-    word-wrap: break-word;
+  color: #eeeeee;
+  word-wrap: break-word;
 }
 
 .applens-menu-item:hover {
-    color: #ffffff;
+  color: #ffffff;
 }
 
-.secondary-icon{
-    font-size:12px;
-    margin-left:5px;
+.secondary-icon {
+  font-size: 12px;
+  margin-left: 5px;
 }
 
 .resource-container {
-    height: 40px;
-    font-size: 16px;
+  height: 40px;
+  font-size: 16px;
 }
 
-
 .user-panel > .info {
-    left: 30px;
+  left: 30px;
 }
 
 .user-panel {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .user-panel.active,
 .user-panel {
-    background: #1e282c;
+  background: #1e282c;
 }
 
 .menu-icon-create {
-    color: green;
+  color: green;
 }
 
 .menu-icon {
-    font-size: medium;
+  font-size: medium;
 }
 
 .menu-icon-documentation {
-    color: #367fa9;
+  color: #367fa9;
 }
 
 .menu-icon-analysis {
-    color: #bf0505f7;
+  color: #bf0505f7;
 }
 
 .menu-icon-detectors {
-    color: #175817;
+  color: #175817;
 }
 
 .menu-icon-gists {
-    color: #707070;
+  color: #707070;
 }
 
 .loading-menu {
-    margin: 60px;
+  margin: 60px;
 }
 
-.icon-colleapse-side-nav :hover{
-    cursor: pointer;
+.icon-colleapse-side-nav :hover {
+  cursor: pointer;
 }
 
 ::ng-deep {
-    .ms-GroupHeader-title{
-        font-size: 14px;
-        font-weight: 600;
-    }
+  .ms-GroupHeader-title {
+    font-size: 14px;
+    font-weight: 600;
+  }
 }

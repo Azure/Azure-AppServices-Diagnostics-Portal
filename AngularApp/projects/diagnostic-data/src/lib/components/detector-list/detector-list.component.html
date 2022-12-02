@@ -1,19 +1,38 @@
 <div role="group" aria-label="Detector list">
   <div *ngIf="overrideResourceUri !== ''" class="list-wrapper">
-    <div *ngIf="internalErrorMsg !== '' || errorMsg !== '' || detectorViewModels.length > 0">
-
-      <div *ngIf="!(imgSrc !== '' && (internalErrorMsg !== '' || errorMsg !== ''))" class="red-line"></div>
+    <div
+      *ngIf="
+        internalErrorMsg !== '' ||
+        errorMsg !== '' ||
+        detectorViewModels.length > 0
+      "
+    >
+      <div
+        *ngIf="!(imgSrc !== '' && (internalErrorMsg !== '' || errorMsg !== ''))"
+        class="red-line"
+      ></div>
       <div class="list-item-wrapper">
-        <img *ngIf="imgSrc !== ''" [src]="imgSrc" class="resource-icon">
-        <div *ngIf="errorMsg !== ''" class="error-msg" [attr.aria-label]="errorMsg">
-          {{errorMsg}}
+        <img *ngIf="imgSrc !== ''" [src]="imgSrc" class="resource-icon" />
+        <div
+          *ngIf="errorMsg !== ''"
+          class="error-msg"
+          [attr.aria-label]="errorMsg"
+        >
+          {{ errorMsg }}
         </div>
-        <div *ngIf="internalErrorMsg !== '' && !isPublic" class="error-msg" [attr.aria-label]="internalErrorMsg">
-          {{internalErrorMsg}}
+        <div
+          *ngIf="internalErrorMsg !== '' && !isPublic"
+          class="error-msg"
+          [attr.aria-label]="internalErrorMsg"
+        >
+          {{ internalErrorMsg }}
         </div>
-        <div *ngIf="internalErrorMsg === '' && errorMsg === ''" class="list-item">
+        <div
+          *ngIf="internalErrorMsg === '' && errorMsg === ''"
+          class="list-item"
+        >
           <div class="resource-text" [attr.aria-label]="resourceText">
-            {{resourceText}}
+            {{ resourceText }}
           </div>
         </div>
       </div>
@@ -21,137 +40,243 @@
   </div>
 </div>
 
-<ng-container *ngIf="!isPublic&&isWaterfallViewMode else smartViewContainer">
-  <div class="detector-container" *ngFor="let viewModel of detectorViewModelsWaterfall">
-    <div class="detector-header" (click)="toggleDetectorHeaderStatus(viewModel)"
-      (keyup.enter)="toggleDetectorHeaderStatus(viewModel)" tabindex="0" role="button"
-      attr.aria-expanded="{{viewModel.expanded}}" attr.aria-label="Detector title {{viewModel.title}}">
+<ng-container *ngIf="!isPublic && isWaterfallViewMode; else smartViewContainer">
+  <div
+    class="detector-container"
+    *ngFor="let viewModel of detectorViewModelsWaterfall"
+  >
+    <div
+      class="detector-header"
+      (click)="toggleDetectorHeaderStatus(viewModel)"
+      (keyup.enter)="toggleDetectorHeaderStatus(viewModel)"
+      tabindex="0"
+      role="button"
+      attr.aria-expanded="{{ viewModel.expanded }}"
+      attr.aria-label="Detector title {{ viewModel.title }}"
+    >
       <div class="status-icon">
-        <status-icon [loading]="viewModel.loadingStatus" [status]="viewModel.status" [size]="20"></status-icon>
+        <status-icon
+          [loading]="viewModel.loadingStatus"
+          [status]="viewModel.status"
+          [size]="20"
+        ></status-icon>
       </div>
       <div class="detector-title">
-        {{viewModel.title}} <span style="margin-left: 20px;font-size: 16px"
-          *ngIf="viewModel.loadingStatus == LoadingStatus.Failed" (click)="retryRequest(viewModel)">Error: Click to
-          retry</span>
+        {{ viewModel.title }}
+        <span
+          style="margin-left: 20px; font-size: 16px"
+          *ngIf="viewModel.loadingStatus == LoadingStatus.Failed"
+          (click)="retryRequest(viewModel)"
+          >Error: Click to retry</span
+        >
       </div>
-      <div class="expand-icon" role="button" attr.aria-expanded="{{viewModel.expanded}}">
-        <span class="fa" [class.fa-angle-down]="!viewModel.expanded" [class.fa-angle-up]="viewModel.expanded"></span>
+      <div
+        class="expand-icon"
+        role="button"
+        attr.aria-expanded="{{ viewModel.expanded }}"
+      >
+        <span
+          class="fa"
+          [class.fa-angle-down]="!viewModel.expanded"
+          [class.fa-angle-up]="viewModel.expanded"
+        ></span>
       </div>
     </div>
-    <div style="overflow-y: hidden;height:0px" [@expand]="viewModel.expanded ? 'shown' : 'hidden'">
+    <div
+      style="overflow-y: hidden; height: 0px"
+      [@expand]="viewModel.expanded ? 'shown' : 'hidden'"
+    >
       <div class="detector-body">
-        <detector-view [insideDetectorList]="true" [parentDetectorId]="detectorEventProperties.DetectorId"
-          [detectorResponse]="viewModel.response" [startTime]="startTime" [endTime]="endTime" [detector]="viewModel.metadata.id"></detector-view>
+        <detector-view
+          [insideDetectorList]="true"
+          [parentDetectorId]="detectorEventProperties.DetectorId"
+          [detectorResponse]="viewModel.response"
+          [startTime]="startTime"
+          [endTime]="endTime"
+          [detector]="viewModel.metadata.id"
+        ></detector-view>
       </div>
     </div>
   </div>
 </ng-container>
 
-
-
 <!-- New View -->
 <ng-template #smartViewContainer>
-<div style="margin-bottom: 30px;" *ngIf="loading === LoadingStatus.Loading">
-  <div class="dot-flashing"></div>
-</div>
-<!-- <ng-container *ngIf="!inDrillDownMode else drilldownTemplate"> -->
-<div *ngIf="issueDetectedViewModels.length > 0">
-  <collapsible-list-fabric [collapsed]="false"
-    [title]="'Observations and Solutions (' + issueDetectedViewModels.length + ')'">
-    <collapsible-list-item body>
-      <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
-        <fab-card [expanded]="!isPublic" [isExpandable]="!!viewModel.insightDescription" [isAlign]="true">
-          <div header>
-            <div style="display: flex;align-items: center;min-height: 40px;">
-              <status-icon class="mr-3" [status]="viewModel.model.status"></status-icon>
-              <div class="list-view-title">{{viewModel.model.title}}</div>
-            </div>
-            <div style="margin: 12px 0px 16px 0px;">{{viewModel.insightTitle}}</div>
-          </div>
-          <div body>
-            <markdown-text [markdownData]="viewModel.insightDescription"></markdown-text>
-          </div>
-          <div footer>
-            <div style="display: flex;align-items: center;margin-bottom: 15px;">
-              <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" [contentClass]="'mr-5'"
-                (onClick)="openSolutionPanel(viewModel)" [contentStyle]="'border-radius: 2px;font-size: 13px;'">
-                View Solutions</fab-primary-button>
-                <fab-link *ngIf="this.overrideResourceUri == ''" (onClick)="selectDetector(viewModel)">View details</fab-link>
-                <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open in new tab]</fab-link>
-            </div>
-          </div>
-        </fab-card>
-      </div>
-    </collapsible-list-item>
-  </collapsible-list-fabric>
-</div>
-
-<br />
-<div *ngIf="successfulViewModels.length > 0">
-  <collapsible-list-fabric [collapsed]="issueDetectedViewModels.length > 0 || loading === LoadingStatus.Loading"
-    [title]="'Successful Checks (' + successfulViewModels.length + ')'">
-    <collapsible-list-item body>
-      <div class="list-text">
-        <div *ngFor="let viewModel of successfulViewModels" style="margin-bottom: 8px;">
-          <fab-card [expanded]="false">
+  <div style="margin-bottom: 30px" *ngIf="loading === LoadingStatus.Loading">
+    <div class="dot-flashing"></div>
+  </div>
+  <!-- <ng-container *ngIf="!inDrillDownMode else drilldownTemplate"> -->
+  <div *ngIf="issueDetectedViewModels.length > 0">
+    <collapsible-list-fabric
+      [collapsed]="false"
+      [title]="
+        'Observations and Solutions (' + issueDetectedViewModels.length + ')'
+      "
+    >
+      <collapsible-list-item body>
+        <div
+          *ngFor="let viewModel of issueDetectedViewModels"
+          style="margin-bottom: 8px"
+        >
+          <fab-card
+            [expanded]="!isPublic"
+            [isExpandable]="!!viewModel.insightDescription"
+            [isAlign]="true"
+          >
             <div header>
-              <div style="display: flex;align-items: center;min-height: 40px;">
-                <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status">
-                </status-icon>
-                <div class="list-view-title">{{viewModel.model.title}}</div>
+              <div style="display: flex; align-items: center; min-height: 40px">
+                <status-icon
+                  class="mr-3"
+                  [status]="viewModel.model.status"
+                ></status-icon>
+                <div class="list-view-title">{{ viewModel.model.title }}</div>
+              </div>
+              <div style="margin: 12px 0px 16px 0px">
+                {{ viewModel.insightTitle }}
               </div>
             </div>
             <div body>
-              <div style="margin-bottom: 10px;">{{viewModel.insightTitle}}</div>
+              <markdown-text
+                [markdownData]="viewModel.insightDescription"
+              ></markdown-text>
             </div>
             <div footer>
-              <div style="margin-bottom: 12px;">
-                <fab-link *ngIf="this.overrideResourceUri == ''" (onClick)="selectDetector(viewModel)">View details</fab-link>
-                <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open in new tab]</fab-link>
+              <div
+                style="display: flex; align-items: center; margin-bottom: 15px"
+              >
+                <fab-primary-button
+                  *ngIf="allSolutionsMap.has(viewModel.model.title)"
+                  [contentClass]="'mr-5'"
+                  (onClick)="openSolutionPanel(viewModel)"
+                  [contentStyle]="'border-radius: 2px;font-size: 13px;'"
+                >
+                  View Solutions</fab-primary-button
+                >
+                <fab-link
+                  *ngIf="this.overrideResourceUri === ''"
+                  (onClick)="selectDetector(viewModel)"
+                  >View details</fab-link
+                >
+                <fab-link
+                  *ngIf="!isPublic"
+                  (onClick)="selectDetectorNewTab(viewModel)"
+                  [styles]="linkStyle"
+                  >[Open in new tab]</fab-link
+                >
               </div>
             </div>
           </fab-card>
         </div>
-      </div>
-    </collapsible-list-item>
-  </collapsible-list-fabric>
-</div>
-<br />
+      </collapsible-list-item>
+    </collapsible-list-fabric>
+  </div>
 
-<div *ngIf="failedLoadingViewModels.length > 0">
-  <collapsible-list-fabric [collapsed]="false" [title]="'Failed Loading Checks (' + failedLoadingViewModels.length + ')'">
-    <collapsible-list-item body>
-
-      <div class="list-text">
-        <div *ngFor="let viewModel of failedLoadingViewModels" style="margin-bottom: 8px;">
-          <fab-card [isExpandable]="false" [isAlign]="true">
-            <div header>
-              <div style="display: flex;align-items: center;min-height: 40px;">
-                <status-icon class="mr-3" [status]="HealthStatus.Warning">
-                </status-icon>
-                <div class="list-view-title">{{viewModel.model.title}}</div>
+  <br />
+  <div *ngIf="successfulViewModels.length > 0">
+    <collapsible-list-fabric
+      [collapsed]="
+        issueDetectedViewModels.length > 0 || loading === LoadingStatus.Loading
+      "
+      [title]="'Successful Checks (' + successfulViewModels.length + ')'"
+    >
+      <collapsible-list-item body>
+        <div class="list-text">
+          <div
+            *ngFor="let viewModel of successfulViewModels"
+            style="margin-bottom: 8px"
+          >
+            <fab-card [expanded]="false">
+              <div header>
+                <div
+                  style="display: flex; align-items: center; min-height: 40px"
+                >
+                  <status-icon
+                    class="mr-3"
+                    [loading]="viewModel.model.loadingStatus"
+                    [status]="viewModel.model.status"
+                  >
+                  </status-icon>
+                  <div class="list-view-title">{{ viewModel.model.title }}</div>
+                </div>
               </div>
-            </div>
-            <div body>
-              <div style="margin-bottom: 10px;">Sorry there was a problem. Please try viewing the detector here</div>
-            </div>
-            <div footer>
-              <div style="margin-bottom: 12px;">
-                <fab-link *ngIf="this.overrideResourceUri == ''" (onClick)="selectDetector(viewModel)">View details</fab-link>
-                <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open in new tab]</fab-link>
+              <div body>
+                <div style="margin-bottom: 10px">
+                  {{ viewModel.insightTitle }}
+                </div>
               </div>
-            </div>
-          </fab-card>
+              <div footer>
+                <div style="margin-bottom: 12px">
+                  <fab-link
+                    *ngIf="this.overrideResourceUri === ''"
+                    (onClick)="selectDetector(viewModel)"
+                    >View details</fab-link
+                  >
+                  <fab-link
+                    *ngIf="!isPublic"
+                    (onClick)="selectDetectorNewTab(viewModel)"
+                    [styles]="linkStyle"
+                    >[Open in new tab]</fab-link
+                  >
+                </div>
+              </div>
+            </fab-card>
+          </div>
         </div>
-      </div>
+      </collapsible-list-item>
+    </collapsible-list-fabric>
+  </div>
+  <br />
 
-    </collapsible-list-item>
-  </collapsible-list-fabric>
+  <div *ngIf="failedLoadingViewModels.length > 0">
+    <collapsible-list-fabric
+      [collapsed]="false"
+      [title]="'Failed Loading Checks (' + failedLoadingViewModels.length + ')'"
+    >
+      <collapsible-list-item body>
+        <div class="list-text">
+          <div
+            *ngFor="let viewModel of failedLoadingViewModels"
+            style="margin-bottom: 8px"
+          >
+            <fab-card [isExpandable]="false" [isAlign]="true">
+              <div header>
+                <div
+                  style="display: flex; align-items: center; min-height: 40px"
+                >
+                  <status-icon class="mr-3" [status]="HealthStatus.Warning">
+                  </status-icon>
+                  <div class="list-view-title">{{ viewModel.model.title }}</div>
+                </div>
+              </div>
+              <div body>
+                <div style="margin-bottom: 10px">
+                  Sorry there was a problem. Please try viewing the detector
+                  here
+                </div>
+              </div>
+              <div footer>
+                <div style="margin-bottom: 12px">
+                  <fab-link
+                    *ngIf="this.overrideResourceUri === ''"
+                    (onClick)="selectDetector(viewModel)"
+                    >View details</fab-link
+                  >
+                  <fab-link
+                    *ngIf="!isPublic"
+                    (onClick)="selectDetectorNewTab(viewModel)"
+                    [styles]="linkStyle"
+                    >[Open in new tab]</fab-link
+                  >
+                </div>
+              </div>
+            </fab-card>
+          </div>
+        </div>
+      </collapsible-list-item>
+    </collapsible-list-fabric>
+  </div>
 
-</div>
-
-
-<!-- <ng-template #drilldownTemplate>
+  <!-- <ng-template #drilldownTemplate>
   <div>
     <div style="display: inline-block;margin-left: 20px">
       <h2>{{ drilldownDetectorName }}</h2>
@@ -164,6 +289,10 @@
   <router-outlet></router-outlet>
 </ng-template> -->
 
-<solutions-panel [isPanelOpenObservable]="solutionPanelOpenSubject" [solutions]="allSolutions" [title]="solutionTitle">
-</solutions-panel>
+  <solutions-panel
+    [isPanelOpenObservable]="solutionPanelOpenSubject"
+    [solutions]="allSolutions"
+    [title]="solutionTitle"
+  >
+  </solutions-panel>
 </ng-template>

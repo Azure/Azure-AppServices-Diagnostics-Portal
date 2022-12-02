@@ -13,51 +13,68 @@ import { AppInsightsService } from './appinsights/appinsights.service';
   providedIn: 'root'
 })
 export class GenericSolutionService {
-
   allowedRoutes = {
-    'restart': ['post'],
-    'reboot': ['post'],
+    restart: ['post'],
+    reboot: ['post'],
     'config/web': ['get', 'put', 'patch'],
     'config/appsettings/list': ['get', 'put'],
     'config/logs': ['put']
-  }
+  };
 
-  constructor(private armService: ArmService, private portalService: PortalService,
-    private logService: TelemetryService, private portalNavService: PortalActionService,
-    private appInsightsService:AppInsightsService,
-    private _daasService: DaasService, private _router: Router) {}
+  constructor(
+    private armService: ArmService,
+    private portalService: PortalService,
+    private logService: TelemetryService,
+    private portalNavService: PortalActionService,
+    private appInsightsService: AppInsightsService,
+    private _daasService: DaasService,
+    private _router: Router
+  ) {}
 
   assertPropertyExists(dict: {}, property: string) {
     if (!(property in dict) || property == undefined) {
-      throw new Error(`Property Not Found: expected property named "${property}"`);
+      throw new Error(
+        `Property Not Found: expected property named "${property}"`
+      );
     }
   }
 
-  validateArmApiOptions(options: {route: string, verb: string}) {
+  validateArmApiOptions(options: { route: string; verb: string }) {
     for (let prop of ['route', 'verb']) {
       this.assertPropertyExists(options, prop);
     }
 
-    let cleanedRoute = options.route.startsWith('/') ? options.route.substring(1) : options.route;
+    let cleanedRoute = options.route.startsWith('/')
+      ? options.route.substring(1)
+      : options.route;
     cleanedRoute = cleanedRoute.toLowerCase();
 
-    if (!(this.allowedRoutes[cleanedRoute].includes(options.verb.toLowerCase()))) {
-      throw new Error(`Invalid Operation: cannot perform ${options.verb} on route ${cleanedRoute}`)
+    if (
+      !this.allowedRoutes[cleanedRoute].includes(options.verb.toLowerCase())
+    ) {
+      throw new Error(
+        `Invalid Operation: cannot perform ${options.verb} on route ${cleanedRoute}`
+      );
     }
   }
 
   buildRoute(resourceUri: string, routeSegment: string): string {
-    resourceUri = !resourceUri.endsWith('/') ? resourceUri+'/': resourceUri;
+    resourceUri = !resourceUri.endsWith('/') ? resourceUri + '/' : resourceUri;
     return resourceUri + routeSegment;
   }
 
   getApiVersion(route: string): string | null {
     let urlTree = new DefaultUrlSerializer().parse(route);
 
-    return 'api-version' in urlTree.queryParams ? urlTree.queryParams['api-version'] : null;
+    return 'api-version' in urlTree.queryParams
+      ? urlTree.queryParams['api-version']
+      : null;
   }
 
-  ArmApi(resourceUri: string, actionOptions: {route: string, verb: string}): Observable<any> {
+  ArmApi(
+    resourceUri: string,
+    actionOptions: { route: string; verb: string }
+  ): Observable<any> {
     this.validateArmApiOptions(actionOptions);
 
     const verb = actionOptions['verb'].toLowerCase();
@@ -65,7 +82,10 @@ export class GenericSolutionService {
     const apiVersion = this.getApiVersion(route);
     const body = 'body' in actionOptions ? actionOptions['body'] : null;
 
-    this.logService.logEvent('SolutionArmApi', {'fullRoute': route, ...actionOptions});
+    this.logService.logEvent('SolutionArmApi', {
+      fullRoute: route,
+      ...actionOptions
+    });
 
     if (verb === 'get') {
       return this.armService.getResourceFullResponse(route, true, apiVersion);
@@ -75,9 +95,15 @@ export class GenericSolutionService {
     return this.armService[actionMethod](route, body, true, apiVersion);
   }
 
-  OpenTab(resourceUri: string, actionOptions: {tabUrl: string}): Observable<any> {
+  OpenTab(
+    resourceUri: string,
+    actionOptions: { tabUrl: string }
+  ): Observable<any> {
     this.assertPropertyExists(actionOptions, 'tabUrl');
-    this.logService.logEvent('SolutionOpenTab', {'resourceUri': resourceUri, ...actionOptions});
+    this.logService.logEvent('SolutionOpenTab', {
+      resourceUri: resourceUri,
+      ...actionOptions
+    });
 
     const tabUrl = actionOptions.tabUrl.toLowerCase();
     this._router.navigateByUrl(tabUrl);
@@ -91,9 +117,15 @@ export class GenericSolutionService {
     return options as OpenBladeInfo;
   }
 
-  GoToBlade(resourceUri: string, actionOptions: {detailBlade: string}): Observable<any> {
+  GoToBlade(
+    resourceUri: string,
+    actionOptions: { detailBlade: string }
+  ): Observable<any> {
     const bladeInfo = this.getBladeInfo(actionOptions);
-    this.logService.logEvent('SolutionGoToBlade', {'resourceUri': resourceUri, ...actionOptions});
+    this.logService.logEvent('SolutionGoToBlade', {
+      resourceUri: resourceUri,
+      ...actionOptions
+    });
 
     switch (bladeInfo.detailBlade.toLowerCase()) {
       case 'scaleup': {
@@ -128,10 +160,18 @@ export class GenericSolutionService {
     return of(bladeInfo.detailBlade);
   }
 
-  ToggleStdoutSetting(resourceUri: string, actionOptions: {enabled: boolean}): Observable<any> {
-    this.logService.logEvent('SolutionToggleStdoutSetting', {'resourceUri': resourceUri, 'enabled': actionOptions.enabled.toString()});
+  ToggleStdoutSetting(
+    resourceUri: string,
+    actionOptions: { enabled: boolean }
+  ): Observable<any> {
+    this.logService.logEvent('SolutionToggleStdoutSetting', {
+      resourceUri: resourceUri,
+      enabled: actionOptions.enabled.toString()
+    });
 
-    return this._daasService.putStdoutSetting(resourceUri, actionOptions.enabled);
+    return this._daasService.putStdoutSetting(
+      resourceUri,
+      actionOptions.enabled
+    );
   }
-
 }

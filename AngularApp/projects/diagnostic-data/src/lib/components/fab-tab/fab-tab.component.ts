@@ -1,7 +1,12 @@
 import { Component } from '@angular/core';
-import { Icon, IPivotItemProps } from 'office-ui-fabric-react';
+import { IPivotItemProps, Icon } from 'office-ui-fabric-react';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
-import { Rendering, DiagnosticData, DataTableResponseObject, TabRendering } from '../../models/detector';
+import {
+  DataTableResponseObject,
+  DiagnosticData,
+  Rendering,
+  TabRendering
+} from '../../models/detector';
 import { JsonUtilities } from '../../utilities/json-utilities';
 
 @Component({
@@ -10,7 +15,6 @@ import { JsonUtilities } from '../../utilities/json-utilities';
   styleUrls: ['./fab-tab.component.scss']
 })
 export class FabTabComponent extends DataRenderBaseComponent {
-
   renderingProperties: Rendering;
   selectedKey: string;
   mappingKeys: TabRendering[];
@@ -40,12 +44,12 @@ export class FabTabComponent extends DataRenderBaseComponent {
 
     for (let i: number = 0; i < table.rows.length; i++) {
       const row = table.rows[i];
-      const label: string = row[labelColumn] || "";
+      const label: string = row[labelColumn] || '';
 
       const tabInfoBuilder: Partial<TabRendering> = {
         title: label,
         icon: row[iconColumn],
-        needsAttention: row[needsAttentionColumn],
+        needsAttention: row[needsAttentionColumn]
       };
 
       if (row[showItemColumn]) {
@@ -57,7 +61,7 @@ export class FabTabComponent extends DataRenderBaseComponent {
 
       let diagnosticDataList: DiagnosticData[] = JsonUtilities.parseData(data);
       diagnosticDataList = diagnosticDataList ? diagnosticDataList : [];
-      
+
       this.contentMapping.set(label, diagnosticDataList);
       this.mappingKeys.push(tabInfo);
 
@@ -65,7 +69,5 @@ export class FabTabComponent extends DataRenderBaseComponent {
         this.selectedKey = label;
       }
     }
-
   }
-
 }

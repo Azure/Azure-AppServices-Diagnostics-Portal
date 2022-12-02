@@ -1,21 +1,21 @@
 .favorite-card {
-    width: 300px;
-    min-height: 100px;
-    margin: 0px 5px;
+  width: 300px;
+  min-height: 100px;
+  margin: 0px 5px;
 }
 
 .favorite-card:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .favorite-card-header {
-    display: flex;
-    justify-content: space-between;
-    min-height: 40px;
+  display: flex;
+  justify-content: space-between;
+  min-height: 40px;
 }
 
 .notification-panel-container {
-    display: flex;
-    align-items: center; 
-    font-size: 14px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
 }

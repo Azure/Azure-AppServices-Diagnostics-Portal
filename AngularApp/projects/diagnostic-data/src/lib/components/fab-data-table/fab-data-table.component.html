@@ -1,32 +1,62 @@
 <div>
-  <div style="display: flex;align-items: center;margin-bottom: 10px;">
+  <div style="display: flex; align-items: center; margin-bottom: 10px">
     <div *ngIf="allowColumnSearch" class="text-field">
-      <fab-search-box #fabSearchBox (onChange)="updateSearchValue($event)" (onFocus)="focusSearchBox()" [placeholder]="searchPlaceholder"></fab-search-box>
+      <fab-search-box
+        #fabSearchBox
+        (onChange)="updateSearchValue($event)"
+        (onFocus)="focusSearchBox()"
+        [placeholder]="searchPlaceholder"
+      ></fab-search-box>
     </div>
     <!-- Filters -->
-    <div *ngIf="tableFilters.length > 0" style="display: flex;margin-top: 5px;">
-      <div *ngFor="let filter of tableFilters;let i = index" style="margin-left: 16px;">
-        <fab-data-table-filter [tableFilter]="filter" [options]="getOptionsWithColName(filter.name)" (onFilterUpdate)="updateFilter(filter.name,$event)" [index]="i" [tableId]="tableId"></fab-data-table-filter>
+    <div *ngIf="tableFilters.length > 0" style="display: flex; margin-top: 5px">
+      <div
+        *ngFor="let filter of tableFilters; let i = index"
+        style="margin-left: 16px"
+      >
+        <fab-data-table-filter
+          [tableFilter]="filter"
+          [options]="getOptionsWithColName(filter.name)"
+          (onFilterUpdate)="updateFilter(filter.name, $event)"
+          [index]="i"
+          [tableId]="tableId"
+        ></fab-data-table-filter>
       </div>
     </div>
   </div>
 
-  <div *ngIf="description" style="margin:16px 0px;">
+  <div *ngIf="description" style="margin: 16px 0px">
     <markdown-text [markdownData]="description"></markdown-text>
   </div>
 
-  <div [attr.data-is-scrollable]="true" style="overflow: auto;">
+  <div [attr.data-is-scrollable]="true" style="overflow: auto">
     <fab-details-list [items]="rows">
       <columns>
-        <fab-details-list-column #fabDetailListColumn *ngFor="let col of columns;let colIndex=index" [key]="col.key"
-          [name]="col.name" [minWidth]="col.minWidth" [maxWidth]="col.maxWidth" [isSorted]="col.isSorted"
-          [isSortedDescending]="col.isSortedDescending" (onColumnClick)="clickColumn($event)"
-          [isResizable]="col.isResizable" [isMultiline]="col.isMultiline" [ariaLabel]="col.name">
+        <fab-details-list-column
+          #fabDetailListColumn
+          *ngFor="let col of columns; let colIndex = index"
+          [key]="col.key"
+          [name]="col.name"
+          [minWidth]="col.minWidth"
+          [maxWidth]="col.maxWidth"
+          [isSorted]="col.isSorted"
+          [isSortedDescending]="col.isSortedDescending"
+          (onColumnClick)="clickColumn($event)"
+          [isResizable]="col.isResizable"
+          [isMultiline]="col.isMultiline"
+          [ariaLabel]="col.name"
+        >
           <render>
-            <ng-template let-item="item" let-column="column" let-rowIndex="index">
-              <ng-container 
-                [ngTemplateOutlet]="isMarkdown(item[column.name]) ? markdownText : embeddedHTML"
-                [ngTemplateOutletContext]="{data:item[column.name]}"
+            <ng-template
+              let-item="item"
+              let-column="column"
+              let-rowIndex="index"
+            >
+              <ng-container
+                [ngTemplateOutlet]="
+                  isMarkdown(item[column.name]) ? markdownText : embeddedHTML
+                "
+                [ngTemplateOutletContext]="{ data: item[column.name] }"
               >
               </ng-container>
             </ng-template>
@@ -46,10 +76,10 @@
   </div>
 </ng-template>
 
-<ng-template #markdownText let-data='data'>
+<ng-template #markdownText let-data="data">
   <markdown-text [markdownData]="data"></markdown-text>
 </ng-template>
 
-<ng-template #embeddedHTML let-data='data'>
+<ng-template #embeddedHTML let-data="data">
   <div [innerHTML]="data"></div>
 </ng-template>

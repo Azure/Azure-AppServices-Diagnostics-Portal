@@ -8,9 +8,8 @@ describe('ContainerAppFinderComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ContainerAppFinderComponent ]
-    })
-    .compileComponents();
+      declarations: [ContainerAppFinderComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

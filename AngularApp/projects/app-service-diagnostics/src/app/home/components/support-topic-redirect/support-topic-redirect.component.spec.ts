@@ -8,9 +8,8 @@ describe('SupportTopicRedirectComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SupportTopicRedirectComponent ]
-    })
-    .compileComponents();
+      declarations: [SupportTopicRedirectComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -8,9 +8,8 @@ describe('CxpChatLauncherComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CxpChatLauncherComponent ]
-    })
-    .compileComponents();
+      declarations: [CxpChatLauncherComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

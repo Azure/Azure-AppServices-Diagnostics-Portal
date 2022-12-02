@@ -1,33 +1,61 @@
-<ng-template #notEnabled>
-</ng-template>
+<ng-template #notEnabled> </ng-template>
 <ng-template #loadingAppInsight>
   <div>
-    <i class="fa fa-circle-o-notch fa-2x fa-spin spin-icon" aria-hidden="true"></i>
-    <span [@loadingAnimation]="loadingAppInsightsResource ? 'shown' : 'hiden'" class="loading-message">Checking
-      Application Insights</span>
+    <i
+      class="fa fa-circle-o-notch fa-2x fa-spin spin-icon"
+      aria-hidden="true"
+    ></i>
+    <span
+      [@loadingAnimation]="loadingAppInsightsResource ? 'shown' : 'hiden'"
+      class="loading-message"
+      >Checking Application Insights</span
+    >
   </div>
 </ng-template>
 
 <ng-template #loadingAppInsightsData>
   <div>
-    <i class="fa fa-circle-o-notch fa-2x fa-spin spin-icon" aria-hidden="true"></i>
-    <span [@loadingAnimation]="loadingAppInsightsQueryData ? 'shown' : 'hiden'" class="loading-message">Loading
-      Application Insight Analysis</span>
+    <i
+      class="fa fa-circle-o-notch fa-2x fa-spin spin-icon"
+      aria-hidden="true"
+    ></i>
+    <span
+      [@loadingAnimation]="loadingAppInsightsQueryData ? 'shown' : 'hiden'"
+      class="loading-message"
+      >Loading Application Insight Analysis</span
+    >
   </div>
 </ng-template>
 
 <ng-template #loadInternalView>
-  <div *ngFor="let metadata of appInsightQueryMetaDataList;let i = index" class="dynamic-data-container">
-
-    <data-container *ngIf="metadata.dataTable == null" [title]="metadata.title" [description]="metadata.description"
-      [applicationInsightContainerStyle]="0">
+  <div
+    *ngFor="let metadata of appInsightQueryMetaDataList; let i = index"
+    class="dynamic-data-container"
+  >
+    <data-container
+      *ngIf="metadata.dataTable == null"
+      [title]="metadata.title"
+      [description]="metadata.description"
+      [applicationInsightContainerStyle]="0"
+    >
       <markdown [data]="getMetaDataMarkdown(metadata)"></markdown>
     </data-container>
 
     <div *ngIf="metadata.dataTable != null">
-      <div *ngFor="let data of appInsightDataList;let i = index" class="dynamic-data-container">
-        <data-container [title]="data.title" [description]="data.description" [applicationInsightContainerStyle]="0">
-          <dynamic-data [diagnosticData]="data.diagnosticData" [startTime]="startTime" [endTime]="endTime">
+      <div
+        *ngFor="let data of appInsightDataList; let i = index"
+        class="dynamic-data-container"
+      >
+        <data-container
+          [title]="data.title"
+          [description]="data.description"
+          [applicationInsightContainerStyle]="0"
+        >
+          <dynamic-data
+            [diagnosticData]="data.diagnosticData"
+            [startTime]="startTime"
+            [endTime]="endTime"
+          >
           </dynamic-data>
         </data-container>
       </div>
@@ -40,7 +68,8 @@
     <div class="panel-heading" class="app-insights-header">
       <h5 class="panel-title">
         <span class="fa status-icon" [class.fa-info-circle]="true"></span>
-        Application Insights is enabled and we have running the following analysis for you.
+        Application Insights is enabled and we have running the following
+        analysis for you.
       </h5>
     </div>
     <div class="panel-body">
@@ -50,14 +79,21 @@
             <td class="table-value">
               <div class="app-insights-markdown">
                 <div>
-                  Using application insights will help you detect and diagnose issues in your web application code
-                  easily.
+                  Using application insights will help you detect and diagnose
+                  issues in your web application code easily.
                 </div>
 
-                <button type="button" class="btn btn-info app-insights-blade"
-                  aria-label="Open Application Insights Blade" tabindex="0" role="button"
-                  (keyup.enter)="this._appInsightsService.openAppInsightsBlade()"
-                  (click)="this._appInsightsService.openAppInsightsBlade()">
+                <button
+                  type="button"
+                  class="btn btn-info app-insights-blade"
+                  aria-label="Open Application Insights Blade"
+                  tabindex="0"
+                  role="button"
+                  (keyup.enter)="
+                    this._appInsightsService.openAppInsightsBlade()
+                  "
+                  (click)="this._appInsightsService.openAppInsightsBlade()"
+                >
                   Open Application Insights Blade
                   <i class="fa fa-chevron-right"></i>
                 </button>
@@ -71,8 +107,14 @@
 </ng-template>
 <div *ngIf="!isAnalysisView">
   <div *ngIf="isPublic; else loadInternalView">
-    <div *ngIf="!loadingAppInsightsResource; else loadingAppInsight" class="insight-container">
-      <div *ngIf="!isAppInsightsEnabled; else appInsightsEnabled" class="panel panel-default">
+    <div
+      *ngIf="!loadingAppInsightsResource; else loadingAppInsight"
+      class="insight-container"
+    >
+      <div
+        *ngIf="!isAppInsightsEnabled; else appInsightsEnabled"
+        class="panel panel-default"
+      >
         <div class="panel-heading" class="app-insights-header">
           <h5 class="panel-title">
             <span class="fa status-icon" [class.fa-info-circle]="true"></span>
@@ -84,19 +126,28 @@
             <tbody>
               <tr>
                 <td class="table-value">
-                  <div class="app-insights-disabled">No Application Insights Resource Found</div>
+                  <div class="app-insights-disabled">
+                    No Application Insights Resource Found
+                  </div>
                   <div class="app-insights-markdown">
                     <div>
-                      Looks like there is no application insights resource associated with your app
-                      <br />Using application insights will help you detect and diagnose issues in your web application
-                      code very
-                      easily.
+                      Looks like there is no application insights resource
+                      associated with your app
+                      <br />Using application insights will help you detect and
+                      diagnose issues in your web application code very easily.
                     </div>
 
-                    <button type="button" class="btn btn-info app-insights-blade"
-                      aria-label="Enable Application Insights" tabindex="0" role="button"
-                      (keyup.enter)="this._appInsightsService.openAppInsightsBlade()"
-                      (click)="this._appInsightsService.openAppInsightsBlade()">
+                    <button
+                      type="button"
+                      class="btn btn-info app-insights-blade"
+                      aria-label="Enable Application Insights"
+                      tabindex="0"
+                      role="button"
+                      (keyup.enter)="
+                        this._appInsightsService.openAppInsightsBlade()
+                      "
+                      (click)="this._appInsightsService.openAppInsightsBlade()"
+                    >
                       Enable Application Insights
                       <i class="fa fa-chevron-right"></i>
                     </button>
@@ -109,17 +160,41 @@
       </div>
       <div *ngIf="isAppInsightsEnabled">
         <div *ngIf="!loadingAppInsightsQueryData; else loadingAppInsightsData">
-          <div *ngFor="let data of appInsightDataList;let i = index" class="dynamic-data-container">
-            <data-container [title]="data.title" [description]="data.description"
-              [applicationInsightContainerStyle]="0">
-              <dynamic-data [diagnosticData]="data.diagnosticData" [startTime]="startTime" [endTime]="endTime">
+          <div
+            *ngFor="let data of appInsightDataList; let i = index"
+            class="dynamic-data-container"
+          >
+            <data-container
+              [title]="data.title"
+              [description]="data.description"
+              [applicationInsightContainerStyle]="0"
+            >
+              <dynamic-data
+                [diagnosticData]="data.diagnosticData"
+                [startTime]="startTime"
+                [endTime]="endTime"
+              >
               </dynamic-data>
-              <button type="button" class="btn btn-info app-insights-blade"
-                attr.aria-label="Open Application Insights - {{data.poralBladeInfo.description}}" tabindex="0"
+              <button
+                type="button"
+                class="btn btn-info app-insights-blade"
+                attr.aria-label="Open Application Insights - {{
+                  data.poralBladeInfo.description
+                }}"
+                tabindex="0"
                 role="button"
-                (keyup.enter)="this._appInsightsService.openAppInsightsExtensionBlade(data.poralBladeInfo.bladeName)"
-                (click)="_appInsightsService.openAppInsightsExtensionBlade(data.poralBladeInfo.bladeName)">
-                {{data.poralBladeInfo.description}}
+                (keyup.enter)="
+                  this._appInsightsService.openAppInsightsExtensionBlade(
+                    data.poralBladeInfo.bladeName
+                  )
+                "
+                (click)="
+                  _appInsightsService.openAppInsightsExtensionBlade(
+                    data.poralBladeInfo.bladeName
+                  )
+                "
+              >
+                {{ data.poralBladeInfo.description }}
                 <i class="fa fa-chevron-right"></i>
               </button>
             </data-container>

@@ -8,9 +8,8 @@ describe('GeniePanelComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GeniePanelComponent ]
-    })
-    .compileComponents();
+      declarations: [GeniePanelComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

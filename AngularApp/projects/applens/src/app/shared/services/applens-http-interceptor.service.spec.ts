@@ -9,7 +9,10 @@ describe('AppLensInterceptorService', () => {
     });
   });
 
-  it('should be created', inject([AppLensInterceptorService], (service: AppLensInterceptorService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [AppLensInterceptorService],
+    (service: AppLensInterceptorService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

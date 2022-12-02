@@ -1,18 +1,18 @@
-.button-step{
-    padding: 10px 10px 10px 2px;
-    fab-primary-button{
-        margin-left: -1px;
+.button-step {
+  padding: 10px 10px 10px 2px;
+  fab-primary-button {
+    margin-left: -1px;
 
-        .ms-Button{
-            height: 28px;
-            margin-top: -10px;
-            width: fit-content;
-            border-radius: 2px;
-        }
-
-        .ms-Button-flexContainer{
-            font-size: 13px;
-            font-weight: 500;
-        }
+    .ms-Button {
+      height: 28px;
+      margin-top: -10px;
+      width: fit-content;
+      border-radius: 2px;
     }
+
+    .ms-Button-flexContainer {
+      font-size: 13px;
+      font-weight: 500;
+    }
+  }
 }

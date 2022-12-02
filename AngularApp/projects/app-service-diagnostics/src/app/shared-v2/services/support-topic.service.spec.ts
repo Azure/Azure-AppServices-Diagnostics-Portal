@@ -9,7 +9,10 @@ describe('SupportTopicService', () => {
     });
   });
 
-  it('should be created', inject([SupportTopicService], (service: SupportTopicService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [SupportTopicService],
+    (service: SupportTopicService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

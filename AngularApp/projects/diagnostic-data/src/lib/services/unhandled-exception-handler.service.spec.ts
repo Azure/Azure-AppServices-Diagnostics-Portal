@@ -6,7 +6,9 @@ describe('UnhandledExceptionHandlerService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: UnhandledExceptionHandlerService = TestBed.get(UnhandledExceptionHandlerService);
+    const service: UnhandledExceptionHandlerService = TestBed.get(
+      UnhandledExceptionHandlerService
+    );
     expect(service).toBeTruthy();
   });
 });

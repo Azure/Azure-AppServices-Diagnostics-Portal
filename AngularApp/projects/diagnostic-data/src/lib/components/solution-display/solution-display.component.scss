@@ -10,7 +10,7 @@
     margin-top: 10px;
     font-weight: 400;
     font-size: 20px;
-    margin: 0px
+    margin: 0px;
   }
 }
 
@@ -52,7 +52,7 @@
 }
 
 // A hack to force bootstrap columns to be the same height
-.row.match-col-height [class*="col-"] {
+.row.match-col-height [class*='col-'] {
   margin-bottom: -99999px;
   padding-bottom: 99999px;
 }

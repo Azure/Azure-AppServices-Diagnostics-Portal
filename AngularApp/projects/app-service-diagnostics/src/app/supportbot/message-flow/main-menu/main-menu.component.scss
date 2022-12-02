@@ -1,27 +1,26 @@
-.category-box
-{
-    width: 130px;
-    height: 70px;
-    border-radius: 3px;
-    display: inline-block;
-    margin: 10px;
-    vertical-align: top;
-    cursor: pointer;
-    padding: 10px;
+.category-box {
+  width: 130px;
+  height: 70px;
+  border-radius: 3px;
+  display: inline-block;
+  margin: 10px;
+  vertical-align: top;
+  cursor: pointer;
+  padding: 10px;
 }
 
 .area {
-    text-align: center;
-    display:block;
-    margin-left: 15px;
+  text-align: center;
+  display: block;
+  margin-left: 15px;
 }
 
 .content {
-    display:table;
-    vertical-align:middle;
+  display: table;
+  vertical-align: middle;
 }
 
-.change-stack{
-    cursor:pointer;
-    color:#3999c6;
+.change-stack {
+  cursor: pointer;
+  color: #3999c6;
 }

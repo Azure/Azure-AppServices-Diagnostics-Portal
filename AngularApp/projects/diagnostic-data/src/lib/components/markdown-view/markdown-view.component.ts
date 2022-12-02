@@ -1,9 +1,12 @@
 import { Component, Inject } from '@angular/core';
-import { MarkdownRendering, DiagnosticData } from '../../models/detector';
+import { DiagnosticData, MarkdownRendering } from '../../models/detector';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { MarkdownService } from 'ngx-markdown';
 import { ClipboardService } from '../../services/clipboard.service';
-import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
+import {
+  DIAGNOSTIC_DATA_CONFIG,
+  DiagnosticDataConfig
+} from '../../config/diagnostic-data-config';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 
@@ -19,7 +22,6 @@ Content-Type: text/html
 </body>
 </html>`;
 
-
 @Component({
   selector: 'markdown-view',
   templateUrl: './markdown-view.component.html',
@@ -30,7 +32,12 @@ export class MarkdownViewComponent extends DataRenderBaseComponent {
   markdownData: string;
   isPublic: boolean;
 
-  constructor(private _markdownService: MarkdownService, private _clipboard: ClipboardService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, protected telemetryService: TelemetryService) {
+  constructor(
+    private _markdownService: MarkdownService,
+    private _clipboard: ClipboardService,
+    @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig,
+    protected telemetryService: TelemetryService
+  ) {
     super(telemetryService);
     this.isPublic = config && config.isPublic;
   }
@@ -55,8 +62,8 @@ export class MarkdownViewComponent extends DataRenderBaseComponent {
 
     // Send telemetry event for clicking copyMarkdown
     const copytoEmailEventProps: { [name: string]: string } = {
-      'Title': this.renderingProperties.title,
-      'ButtonClicked': 'Copy to Email'
+      Title: this.renderingProperties.title,
+      ButtonClicked: 'Copy to Email'
     };
     this.logEvent(TelemetryEventNames.MarkdownClicked, copytoEmailEventProps);
   }
@@ -71,8 +78,8 @@ export class MarkdownViewComponent extends DataRenderBaseComponent {
 
     // Send telemetry event for clicking openEmail
     const openOutlookEventProps: { [name: string]: string } = {
-      'Title': this.renderingProperties.title,
-      'ButtonClicked': 'Open in Outlook'
+      Title: this.renderingProperties.title,
+      ButtonClicked: 'Open in Outlook'
     };
     this.logEvent(TelemetryEventNames.MarkdownClicked, openOutlookEventProps);
   }

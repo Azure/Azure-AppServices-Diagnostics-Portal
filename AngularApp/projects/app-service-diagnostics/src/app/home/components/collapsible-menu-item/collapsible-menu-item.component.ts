@@ -7,7 +7,6 @@ import { DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
   templateUrl: './collapsible-menu-item.component.html',
   styleUrls: ['./collapsible-menu-item.component.scss']
 })
-
 export class CollapsibleMenuItemComponent implements OnInit {
   @Input() menuItem: CollapsibleMenuItem;
   @Input() level: number = 0;
@@ -18,20 +17,19 @@ export class CollapsibleMenuItemComponent implements OnInit {
   imagePlaceHolder: string = '../../../../assets/img/detectors/default.svg';
   directionalHint = DirectionalHint.bottomRightEdge;
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
     this.children = this.menuItem.subItems;
-    this.hasChildren = this.menuItem.subItems && this.menuItem.subItems.length > 0;
+    this.hasChildren =
+      this.menuItem.subItems && this.menuItem.subItems.length > 0;
   }
 
   handleClick() {
     if (this.menuItem.subItems && this.menuItem.subItems.length > 0) {
       this.menuItem.expanded = !this.menuItem.expanded;
-    }
-    else {
-      if (document.getElementById(this.menuItem.label))
-      {
+    } else {
+      if (document.getElementById(this.menuItem.label)) {
         document.getElementById(this.menuItem.label).focus();
       }
 
@@ -47,11 +45,11 @@ export class CollapsibleMenuItemComponent implements OnInit {
   }
 
   getPadding() {
-    return (25 + this.level * 10) + 'px';
+    return 25 + this.level * 10 + 'px';
   }
 
   getFontSize() {
-    return (14 - this.level) + 'px';
+    return 14 - this.level + 'px';
   }
 }
 
@@ -63,7 +61,14 @@ export class CollapsibleMenuItem {
   isSelected: Function;
   icon: string;
 
-  constructor(label: string, onClick: Function, isSelected: Function, icon: string = null, expanded: boolean = false, subItems: CollapsibleMenuItem[] = []) {
+  constructor(
+    label: string,
+    onClick: Function,
+    isSelected: Function,
+    icon: string = null,
+    expanded: boolean = false,
+    subItems: CollapsibleMenuItem[] = []
+  ) {
     this.label = label;
     this.onClick = onClick;
     this.expanded = expanded;

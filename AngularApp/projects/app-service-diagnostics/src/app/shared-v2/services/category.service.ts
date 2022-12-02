@@ -5,8 +5,9 @@ import { GenericArmConfigService } from '../../shared/services/generic-arm-confi
 import { ArmResourceConfig } from '../../shared/models/arm/armResourceConfig';
 @Injectable()
 export class CategoryService {
-
-  public categories: BehaviorSubject<Category[]> = new BehaviorSubject<Category[]>([]);
+  public categories: BehaviorSubject<Category[]> = new BehaviorSubject<
+    Category[]
+  >([]);
 
   private _categories: Category[] = [];
 
@@ -18,7 +19,8 @@ export class CategoryService {
 
   public initCategoriesForArmResource(resourceUri: string) {
     if (this._genericArmConfigService) {
-      let currConfig: ArmResourceConfig = this._genericArmConfigService.getArmResourceConfig(resourceUri);
+      let currConfig: ArmResourceConfig =
+        this._genericArmConfigService.getArmResourceConfig(resourceUri);
       if (currConfig.categories && currConfig.categories.length > 0) {
         this._addCategories(currConfig.categories);
       }
@@ -26,20 +28,22 @@ export class CategoryService {
   }
 
   protected _addCategories(categories: Category[]) {
-    categories.forEach(newCategory=> {
-      let alreadyEisting = this._categories.find(existingCategory=> existingCategory.id == newCategory.id);
-      if(alreadyEisting == null || alreadyEisting == undefined) {
+    categories.forEach((newCategory) => {
+      let alreadyEisting = this._categories.find(
+        (existingCategory) => existingCategory.id == newCategory.id
+      );
+      if (alreadyEisting == null || alreadyEisting == undefined) {
         this._categories.push(newCategory);
       }
     });
-    if(this._categories.length > 0) {
+    if (this._categories.length > 0) {
       this.categories.next(this._categories);
     }
   }
 
   public filterCategoriesForSub() {
-    this._categories = this._categories.filter( function(category) {
-        return category.id !== 'navigator';
+    this._categories = this._categories.filter(function (category) {
+      return category.id !== 'navigator';
     });
     this.categories.next(this._categories);
   }

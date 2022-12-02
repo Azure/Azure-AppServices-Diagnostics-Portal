@@ -8,9 +8,13 @@ import { WebSitesService } from '../../../../resources/web-sites/services/web-si
   templateUrl: './linux-python-cpu-profiler.component.html',
   styleUrls: ['../styles/daasstyles.scss']
 })
-export class LinuxPythonCpuProfilerComponent extends DaasBaseComponent implements OnInit {
+export class LinuxPythonCpuProfilerComponent
+  extends DaasBaseComponent
+  implements OnInit
+{
   title: string = 'Collect Python profiler trace';
-  description: string = 'If your app is responding slowly, you can collect a python profiler trace to identify the root cause';
+  description: string =
+    'If your app is responding slowly, you can collect a python profiler trace to identify the root cause';
   thingsToKnowBefore: string[] = [
     'The trace file helps in diagnosing performance issues in your python app.',
     'Your web app is not restarted while collecting the trace.'
@@ -18,13 +22,19 @@ export class LinuxPythonCpuProfilerComponent extends DaasBaseComponent implement
   diagnoserNameLookup: string;
   allLinuxInstancesOnAnt98: boolean = true;
 
-  constructor(private _siteServiceLocal: SiteService, private _webSiteServiceLocal: WebSitesService) {
+  constructor(
+    private _siteServiceLocal: SiteService,
+    private _webSiteServiceLocal: WebSitesService
+  ) {
     super(_siteServiceLocal, _webSiteServiceLocal);
   }
 
   ngOnInit(): void {
     this.diagnoserName = 'CpuProfile';
     this.diagnoserNameLookup = this.diagnoserName;
-    this.scmPath = this._siteServiceLocal.currentSiteStatic.enabledHostNames.find(hostname => hostname.indexOf('.scm.') > 0);
+    this.scmPath =
+      this._siteServiceLocal.currentSiteStatic.enabledHostNames.find(
+        (hostname) => hostname.indexOf('.scm.') > 0
+      );
   }
 }

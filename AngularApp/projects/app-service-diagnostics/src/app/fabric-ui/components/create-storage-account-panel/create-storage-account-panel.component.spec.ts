@@ -8,9 +8,8 @@ describe('CreateStorageAccountPanelComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CreateStorageAccountPanelComponent ]
-    })
-    .compileComponents();
+      declarations: [CreateStorageAccountPanelComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

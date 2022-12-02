@@ -1,40 +1,39 @@
 .info-container {
-    font-size: 13px;
+  font-size: 13px;
 }
 
-
 .info-item {
-    margin-top: 6px;
+  margin-top: 6px;
 }
 
 .info-item-key {
-    @extend .info-item;
-    width: 160px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+  @extend .info-item;
+  width: 160px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .info-item-value {
-    @extend .info-item;
-    color: var(--sectionTitle);
-    min-width: 400px;
-    display: inline-flex;
+  @extend .info-item;
+  color: var(--sectionTitle);
+  min-width: 400px;
+  display: inline-flex;
 }
 
 .info-item-splitter {
-    @extend .info-item;
-    padding: 0px 15px;
+  @extend .info-item;
+  padding: 0px 15px;
 }
 
 .info-item-copy {
-    @extend .info-item;
-    padding: 0px 15px;
-    max-width: 300px;
-    min-width: 150px;
-    cursor: pointer;
+  @extend .info-item;
+  padding: 0px 15px;
+  max-width: 300px;
+  min-width: 150px;
+  cursor: pointer;
 }
 
 .observer-link > a:focus {
-    border: 1px solid var(--sectionTitle);
+  border: 1px solid var(--sectionTitle);
 }

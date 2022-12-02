@@ -7,9 +7,8 @@ describe('SolutionViewContainerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SolutionViewContainerComponent ]
-    })
-    .compileComponents();
+      declarations: [SolutionViewContainerComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

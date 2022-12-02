@@ -1,17 +1,27 @@
-<div class="outer-container" [style.width.px]="guageGraphic.width" [style.height.px]="guageGraphic.height">
-	<div class="graphic-container">
-		<div class="circle-background"></div>
-		<div class="circle-center"></div>
-		<div class="circle-fill" [style.transform]="guageGraphic.transformString" [class.bg-critical]="isCritical(guageGraphic.fillColor)"
-		 [class.bg-warning]="isWarning(guageGraphic.fillColor)" [class.bg-success]="isSuccess(guageGraphic.fillColor)"
-		 [class.bg-info]="isInfo(guageGraphic.fillColor) || isNone(guageGraphic.fillColor)">
-		</div>
-		<div class="circle-data">
-			<markdown [data]="guageGraphic.numberDisplay"></markdown>
-		</div>
-		<div class="needle" [style.transform]="guageGraphic.transformString"></div>
-	</div>
-	<div #Label class="guage-label">
-		<markdown [data]="guageGraphic.label"></markdown>
-	</div>
+<div
+  class="outer-container"
+  [style.width.px]="guageGraphic.width"
+  [style.height.px]="guageGraphic.height"
+>
+  <div class="graphic-container">
+    <div class="circle-background"></div>
+    <div class="circle-center"></div>
+    <div
+      class="circle-fill"
+      [style.transform]="guageGraphic.transformString"
+      [class.bg-critical]="isCritical(guageGraphic.fillColor)"
+      [class.bg-warning]="isWarning(guageGraphic.fillColor)"
+      [class.bg-success]="isSuccess(guageGraphic.fillColor)"
+      [class.bg-info]="
+        isInfo(guageGraphic.fillColor) || isNone(guageGraphic.fillColor)
+      "
+    ></div>
+    <div class="circle-data">
+      <markdown [data]="guageGraphic.numberDisplay"></markdown>
+    </div>
+    <div class="needle" [style.transform]="guageGraphic.transformString"></div>
+  </div>
+  <div #Label class="guage-label">
+    <markdown [data]="guageGraphic.label"></markdown>
+  </div>
 </div>

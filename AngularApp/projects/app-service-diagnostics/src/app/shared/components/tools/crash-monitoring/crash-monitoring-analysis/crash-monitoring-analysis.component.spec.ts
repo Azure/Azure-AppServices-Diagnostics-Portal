@@ -8,9 +8,8 @@ describe('CrashMonitoringAnalysisComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CrashMonitoringAnalysisComponent ]
-    })
-    .compileComponents();
+      declarations: [CrashMonitoringAnalysisComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

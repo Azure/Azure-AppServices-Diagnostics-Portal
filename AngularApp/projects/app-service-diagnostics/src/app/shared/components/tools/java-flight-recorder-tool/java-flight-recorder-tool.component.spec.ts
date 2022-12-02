@@ -8,9 +8,8 @@ describe('JavaFlightRecorderToolComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ JavaFlightRecorderToolComponent ]
-    })
-    .compileComponents();
+      declarations: [JavaFlightRecorderToolComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

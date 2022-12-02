@@ -1,11 +1,13 @@
 import { InjectionToken } from '@angular/core';
 
 export interface DiagEnvironment {
-    isProduction: boolean;
+  isProduction: boolean;
 }
 
 export const PROD_ENV: DiagEnvironment = {
-    isProduction: true
+  isProduction: true
 };
 
-export const DIAGNOSTIC_DATA_ENV = new InjectionToken<DiagEnvironment>('DIAG_DATA_ENV');
+export const DIAGNOSTIC_DATA_ENV = new InjectionToken<DiagEnvironment>(
+  'DIAG_DATA_ENV'
+);

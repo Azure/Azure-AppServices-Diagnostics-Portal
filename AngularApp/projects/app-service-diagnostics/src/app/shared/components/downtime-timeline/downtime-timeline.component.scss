@@ -1,86 +1,93 @@
 @keyframes pulse {
-    0% {background-color: #00695c;}
-    50% {background-color: #00b49d;}
-    100% {background-color: #00695c;}
+  0% {
+    background-color: #00695c;
+  }
+  50% {
+    background-color: #00b49d;
+  }
+  100% {
+    background-color: #00695c;
+  }
 }
 
 .timeline-container {
-    height:auto; 
-    padding-right: 50px; 
-    padding-left: 5px
+  height: auto;
+  padding-right: 50px;
+  padding-left: 5px;
 }
 
 .timeline-column {
-    position: relative;
-    float: left;
-    height: 8px;
-    border-bottom: solid 0px;
-    border-top: solid 0px;
-    border-color:#e1e1e1
+  position: relative;
+  float: left;
+  height: 8px;
+  border-bottom: solid 0px;
+  border-top: solid 0px;
+  border-color: #e1e1e1;
 }
 
 .timeline-downtime {
-    /*background-color: #f9bc7e;*/
-    background-color: #ff8000;
-    border-radius: 5% 5% 0% 0%;
-} 
+  /*background-color: #f9bc7e;*/
+  background-color: #ff8000;
+  border-radius: 5% 5% 0% 0%;
+}
 
 .timeline-downtime:hover {
-    background-color: #ff5b00;
-    cursor: pointer;
+  background-color: #ff5b00;
+  cursor: pointer;
 }
 
 .timeline-downtime:focus {
-    background-color: #ff5b00;
-    cursor: pointer;
+  background-color: #ff5b00;
+  cursor: pointer;
 }
 
 .timeline-downtime-selected {
-    background-color: #ff8000;
-    border-bottom: 1px solid #333333;
-    /*animation-name: pulse;
+  background-color: #ff8000;
+  border-bottom: 1px solid #333333;
+  /*animation-name: pulse;
     animation-duration: 2s;
     animation-iteration-count: infinite;*/
 }
 
 .timeline-uptime {
-    margin-top: 3px;
-    /*background-color: #e1e1e1;*/
-    background-color: #ffddba;
-    height: 2px;
+  margin-top: 3px;
+  /*background-color: #e1e1e1;*/
+  background-color: #ffddba;
+  height: 2px;
 }
 
 .selector-holder {
-   /* margin: 28px -15px -20px -15px;*/
-    margin: -22px -15px -20px -15px;
-    text-align: center;
+  /* margin: 28px -15px -20px -15px;*/
+  margin: -22px -15px -20px -15px;
+  text-align: center;
 }
 
-.selector{
-    font-size:20px;
-    color: #333333;
+.selector {
+  font-size: 20px;
+  color: #333333;
 }
 
-td, th {
-    padding:  0px 5px 0px 0px;
-    margin:5px;
+td,
+th {
+  padding: 0px 5px 0px 0px;
+  margin: 5px;
 }
 
 .time-label {
-    padding-right: 10px;
-    padding-left: 10px;
-    background-color: #f3f3f3;
-    border: 1px solid #848484;
-    color: #131313;
+  padding-right: 10px;
+  padding-left: 10px;
+  background-color: #f3f3f3;
+  border: 1px solid #848484;
+  color: #131313;
 }
 
 .time-value {
-    padding-left: 5px;
-    background-color: #ffffff;
-    border: 1px solid #848484;
-    border-left: none;
+  padding-left: 5px;
+  background-color: #ffffff;
+  border: 1px solid #848484;
+  border-left: none;
 }
 
 b {
-    font-weight: 500;
+  font-weight: 500;
 }

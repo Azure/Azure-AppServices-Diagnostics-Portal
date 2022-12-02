@@ -1,21 +1,43 @@
 <div class="search-container">
   <div class="form-container">
-    <form style="width: 100%" class="form-inline" #form="ngForm" (ngSubmit)="onSubmit(form.value)">
-      <input type="text" aria-label="Search Documentation" class="form-control" name="documentSearchInput"
-          id="documentSearchInput" ngModel required autocomplete="off"
-          placeholder="Please enter a topic or problem of interest...">
-      <button class="btn btn-default" type="submit">Search Documentation</button>
+    <form
+      style="width: 100%"
+      class="form-inline"
+      #form="ngForm"
+      (ngSubmit)="onSubmit(form.value)"
+    >
+      <input
+        type="text"
+        aria-label="Search Documentation"
+        class="form-control"
+        name="documentSearchInput"
+        id="documentSearchInput"
+        ngModel
+        required
+        autocomplete="off"
+        placeholder="Please enter a topic or problem of interest..."
+      />
+      <button class="btn btn-default" type="submit">
+        Search Documentation
+      </button>
     </form>
   </div>
 
   <div *ngIf="content">
     <div class="article-container">
-      <div class="article" *ngFor="let article of content" (click)="openArticle(article)" tabindex="0" (keyup.enter)="openArticle(article)">
-        <a>{{article.title}}
+      <div
+        class="article"
+        *ngFor="let article of content"
+        (click)="openArticle(article)"
+        tabindex="0"
+        (keyup.enter)="openArticle(article)"
+      >
+        <a
+          >{{ article.title }}
           <i class="fa fa-external-link"></i>
         </a>
-        <div class="article-link">{{getLink(article.link)}}</div>
-        {{article.description}}
+        <div class="article-link">{{ getLink(article.link) }}</div>
+        {{ article.description }}
       </div>
     </div>
   </div>

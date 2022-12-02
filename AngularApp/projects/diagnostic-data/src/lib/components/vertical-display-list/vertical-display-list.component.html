@@ -1,29 +1,37 @@
 <div>
-  <div *ngIf="showTitle" class="title-container" style="width:100%">
+  <div *ngIf="showTitle" class="title-container" style="width: 100%">
     <h2>Troubleshooting and Next Steps</h2>
   </div>
 
   <nav aria-label="Next Step Navigation" *ngIf="smallMenu">
-    <ul class="pagination" style="margin:0px;">
-      <li *ngFor="let listItem of listItems.toArray() | slice:0:3" (click)="selectItem(listItem)"
-          [ngClass]="{'active': listItem.metaData.isSelected }">
-        <a>{{listItem.metaData.title}}</a>
+    <ul class="pagination" style="margin: 0px">
+      <li
+        *ngFor="let listItem of listItems.toArray() | slice : 0 : 3"
+        (click)="selectItem(listItem)"
+        [ngClass]="{ active: listItem.metaData.isSelected }"
+      >
+        <a>{{ listItem.metaData.title }}</a>
       </li>
     </ul>
   </nav>
 
   <div class="outer-container">
-
     <div class="column-container left-column-container" *ngIf="!smallMenu">
-      <div class="list-item" [ngClass]="{'list-item-selected':listItem.metaData.isSelected}"
-          *ngFor="let listItem of listItems" (click)="selectItem(listItem)">
+      <div
+        class="list-item"
+        [ngClass]="{ 'list-item-selected': listItem.metaData.isSelected }"
+        *ngFor="let listItem of listItems"
+        (click)="selectItem(listItem)"
+      >
         <span class="list-item-text">
-          <b>{{listItem.metaData.title}}</b>
+          <b>{{ listItem.metaData.title }}</b>
         </span>
         <div class="tag-holder">
-          <solution-type-tag *ngFor="let tag of listItem.metaData.tags" [tagType]="tag"></solution-type-tag>
+          <solution-type-tag
+            *ngFor="let tag of listItem.metaData.tags"
+            [tagType]="tag"
+          ></solution-type-tag>
         </div>
-
       </div>
       <div class="list-item list-item-fill"></div>
     </div>

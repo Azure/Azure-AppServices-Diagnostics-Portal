@@ -1,10 +1,18 @@
 <div *ngIf="title" class="row collapsable-list">
-    <button [attr.aria-expanded]="collapsed ?'false':'true'" (click)="collapsed = !collapsed" class="list-header">
-        <i class="collapse-icon fa" [class.fa-plus]="collapsed" [class.fa-minus]="!collapsed"></i>
-        <span class="pl-3">{{title}}</span>
-    </button>
+  <button
+    [attr.aria-expanded]="collapsed ? 'false' : 'true'"
+    (click)="collapsed = !collapsed"
+    class="list-header"
+  >
+    <i
+      class="collapse-icon fa"
+      [class.fa-plus]="collapsed"
+      [class.fa-minus]="!collapsed"
+    ></i>
+    <span class="pl-3">{{ title }}</span>
+  </button>
 
-    <div *ngIf="!collapsed" class="list-items-container">
-        <ng-content></ng-content>
-    </div>
+  <div *ngIf="!collapsed" class="list-items-container">
+    <ng-content></ng-content>
+  </div>
 </div>

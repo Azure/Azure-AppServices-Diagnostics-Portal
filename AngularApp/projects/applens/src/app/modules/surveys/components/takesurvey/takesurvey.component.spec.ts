@@ -8,9 +8,8 @@ describe('TakeSurveyComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TakeSurveyComponent ]
-    })
-    .compileComponents();
+      declarations: [TakeSurveyComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

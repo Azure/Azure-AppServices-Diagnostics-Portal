@@ -1,81 +1,81 @@
-@import "../../../../../../diagnostic-data/src/lib/scss/styles.scss";
+@import '../../../../../../diagnostic-data/src/lib/scss/styles.scss';
 .close-button {
-    padding: 5px;
+  padding: 5px;
 }
 
 .close-button:hover {
-    color: #0272ca;
+  color: #0272ca;
 }
 
-
 .button-container .tooltiptext {
-    visibility: hidden;
-    position: relative;
-    border: 1px solid black;
-    padding: 3px;
-    background: #dddddd1a;
-    font-size: 12px;
-  }
+  visibility: hidden;
+  position: relative;
+  border: 1px solid black;
+  padding: 3px;
+  background: #dddddd1a;
+  font-size: 12px;
+}
 
-  .button-container:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-  }
+.button-container:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
 
+.search-box-container {
+  position: absolute;
+  width: 100%;
+  height: 68px;
+  background: var(--bodyBackground);
+  /* Light Theme / Drop Shadow - Level 1 */
 
-  .search-box-container {
-    position: absolute;
-    width: 100%;
-    height: 68px;
-    background: var(--bodyBackground);
-    /* Light Theme / Drop Shadow - Level 1 */
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  bottom: 0px;
+  left: 0px;
+  right: 37px;
+}
 
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    bottom: 0px; left: 0px; right: 37px
-  }
+.search-box-container textarea::placeholder {
+  color: var(--summaryText);
+}
 
-  .search-box-container textarea::placeholder{
-    color:var(--summaryText);
-  }
+.genie-search-box {
+  height: 31px;
+  border-radius: 15px;
+  margin: 2%;
+  border: 1px solid var(--inputBorder) !important;
+  text-indent: 15px;
+  padding-top: 5px;
+  width: 80%;
+  float: left;
+}
 
-  .genie-search-box {
-    height: 31px;
-    border-radius: 15px;
-    margin: 2%;
-    border: 1px solid var(--inputBorder)!important;
-    text-indent: 15px;
-    padding-top: 5px;
-    width: 80%;
-    float: left;
-  }
-
-  .empty-message-warning {
-    padding-left: 20px;
-    color: red;
-  }
+.empty-message-warning {
+  padding-left: 20px;
+  color: red;
+}
 
 .search-button-container {
-  float:left;
+  float: left;
   margin: 2%;
 }
 
 .search-box-icon {
-  margin-left:-10px;
+  margin-left: -10px;
 }
 
 .search-box-icon:hover {
-  color:#0272ca;
+  color: #0272ca;
 }
 
 .genie-panel-description {
-    color:var(----labelText);
-    position: absolute;
-    left:25px;
-    right: 32px;
-    top:35px;
-    height: 19px;
-    font-family: 'segoe UI';
-    font-size: 10px;
-    line-height: 14px;
-    display: block
+  color: var(----labelText);
+  position: absolute;
+  left: 25px;
+  right: 32px;
+  top: 35px;
+  height: 19px;
+  font-family: 'segoe UI';
+  font-size: 10px;
+  line-height: 14px;
+  display: block;
 }

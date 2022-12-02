@@ -1,22 +1,37 @@
 import { Injectable } from '@angular/core';
-import {ITelemetryProvider} from './telemetry.common';
-
+import { ITelemetryProvider } from './telemetry.common';
 
 @Injectable()
 export class KustoTelemetryService implements ITelemetryProvider {
+  constructor() {}
 
-    constructor() {
-    }
+  logEvent(message?: string, properties?: any, measurements?: any) {}
 
-    logEvent(message?: string, properties?: any, measurements?: any) {}
+  logException(
+    exception: Error,
+    handledAt?: string,
+    properties?: any,
+    severityLevel?: any
+  ) {}
 
-    logException(exception: Error, handledAt?: string, properties?: any, severityLevel?: any) {}
+  logPageView(
+    name: string,
+    url: string,
+    properties?: any,
+    measurements?: any,
+    duration?: number
+  ) {}
 
-    logPageView(name: string, url: string, properties?: any, measurements?: any, duration?: number) {}
+  logTrace(message: string, properties?: any, severityLevel?: any) {}
 
-    logTrace(message: string, properties?: any, severityLevel?: any) {}
+  logMetric(
+    name: string,
+    average: number,
+    sampleCount: number,
+    min: number,
+    max: number,
+    properties?: any
+  ) {}
 
-    logMetric(name: string, average: number, sampleCount: number, min: number, max: number, properties?: any) {}
-
-    flush() {}
+  flush() {}
 }

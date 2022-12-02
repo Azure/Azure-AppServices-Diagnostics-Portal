@@ -1,55 +1,107 @@
 <div>
-    <div *ngIf="!isChildComponent" class="input-group input-group-sm search-input-group" role="search">
-        <input aria-controls="search-results" class="form-control search-result-input" [(ngModel)]="searchTerm" tabindex="0" type="search" placeholder="Describe your problem here" (keyup.enter)="refresh()" maxlength="140">
-        <div class="input-group-btn" id="clear-search">
-            <button aria-label="At least 2 characters" [style.display]="searchTerm?.trim().length>0 && searchTerm?.trim().length<2? '': 'none'" class="btn btn-default" style="padding-top:1px;" tabindex="0" title="At least 2 characters" type="button">
-                <i class="fa fa-exclamation icon-err"></i>
-            </button>
-            <button aria-label="Clear" class="btn btn-default" style="padding-top:1px;" tabindex="0" title="Clear" type="button" (click)="clearSearchTerm()">
-            <i class="fa fa-close"></i>
-            </button>
-        </div>
+  <div
+    *ngIf="!isChildComponent"
+    class="input-group input-group-sm search-input-group"
+    role="search"
+  >
+    <input
+      aria-controls="search-results"
+      class="form-control search-result-input"
+      [(ngModel)]="searchTerm"
+      tabindex="0"
+      type="search"
+      placeholder="Describe your problem here"
+      (keyup.enter)="refresh()"
+      maxlength="140"
+    />
+    <div class="input-group-btn" id="clear-search">
+      <button
+        aria-label="At least 2 characters"
+        [style.display]="
+          searchTerm?.trim().length > 0 && searchTerm?.trim().length < 2
+            ? ''
+            : 'none'
+        "
+        class="btn btn-default"
+        style="padding-top: 1px"
+        tabindex="0"
+        title="At least 2 characters"
+        type="button"
+      >
+        <i class="fa fa-exclamation icon-err"></i>
+      </button>
+      <button
+        aria-label="Clear"
+        class="btn btn-default"
+        style="padding-top: 1px"
+        tabindex="0"
+        title="Clear"
+        type="button"
+        (click)="clearSearchTerm()"
+      >
+        <i class="fa fa-close"></i>
+      </button>
     </div>
-    <span *ngIf="showPreLoadingError" style="margin-top:10px;">{{preLoadingErrorMessage}}</span>
-    <span *ngIf="showPreLoader" style="margin-top:10px;">
-        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-        <span style="margin-left:5px">Fetching results from web...</span>
-    </span>
-    <div *ngIf="!isChildComponent && showSearchTermPractices" class="no-results-section">
-        <span class="no-results-header">Your search "{{searchTermDisplay}}" did not yield any results from the web.</span>
-        <span class="no-results-content">Suggestions:</span>
-        <ul class="no-results-content">
-            <li>Make sure all words are spelled correctly.</li>
-            <li>Try different keywords.</li>
-            <li>Try more general keywords.</li>
-        </ul>
-    </div>
+  </div>
+  <span *ngIf="showPreLoadingError" style="margin-top: 10px">{{
+    preLoadingErrorMessage
+  }}</span>
+  <span *ngIf="showPreLoader" style="margin-top: 10px">
+    <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+    <span style="margin-left: 5px">Fetching results from web...</span>
+  </span>
+  <div
+    *ngIf="!isChildComponent && showSearchTermPractices"
+    class="no-results-section"
+  >
+    <span class="no-results-header"
+      >Your search "{{ searchTermDisplay }}" did not yield any results from the
+      web.</span
+    >
+    <span class="no-results-content">Suggestions:</span>
+    <ul class="no-results-content">
+      <li>Make sure all words are spelled correctly.</li>
+      <li>Try different keywords.</li>
+      <li>Try more general keywords.</li>
+    </ul>
+  </div>
 
-    <div *ngIf="searchResults && searchResults.length>0">
-        <div class="article-container">
-          <div class="article-heading" tabindex="0">Here are some documents from the web that might help you</div>
-          <div *ngFor="let article of searchResults;let i =index" >
-            <!--if deepSearchEnabled = false, hidden = false -->
-            <div  [hidden]="(i < numArticlesExpanded ) ? false : !viewRemainingArticles" 
-                class="article" 
-                (click)="selectResult(article)" 
-                tabindex="0" 
-                (keyup.enter)="selectResult(article)" >
-                <a style="font-weight:600;">{{article.title}}
-                <i class="fa fa-external-link"></i>
-                </a>
-                <div class="article-link">{{getLinkText(article.link)}}</div>
-                {{article.description}}
-            </div>
-          </div>
-
-          <!--Anchor tag should be displayed only if deep search is enabled-->
-          <a  *ngIf="searchResults.length>numArticlesExpanded"
-                (click)="showRemainingArticles()"> 
-                {{viewOrHideAnchorTagText(viewRemainingArticles , searchResults.length , numArticlesExpanded )}}   
+  <div *ngIf="searchResults && searchResults.length > 0">
+    <div class="article-container">
+      <div class="article-heading" tabindex="0">
+        Here are some documents from the web that might help you
+      </div>
+      <div *ngFor="let article of searchResults; let i = index">
+        <!--if deepSearchEnabled = false, hidden = false -->
+        <div
+          [hidden]="i < numArticlesExpanded ? false : !viewRemainingArticles"
+          class="article"
+          (click)="selectResult(article)"
+          tabindex="0"
+          (keyup.enter)="selectResult(article)"
+        >
+          <a style="font-weight: 600"
+            >{{ article.title }}
+            <i class="fa fa-external-link"></i>
           </a>
-    
+          <div class="article-link">{{ getLinkText(article.link) }}</div>
+          {{ article.description }}
         </div>
-          
+      </div>
+
+      <!--Anchor tag should be displayed only if deep search is enabled-->
+      <a
+        *ngIf="searchResults.length > numArticlesExpanded"
+        (click)="showRemainingArticles()"
+      >
+        {{
+          viewOrHideAnchorTagText(
+            viewRemainingArticles,
+            searchResults.length,
+            numArticlesExpanded
+          )
+        }}
+      </a>
     </div>
+  </div>
 </div>

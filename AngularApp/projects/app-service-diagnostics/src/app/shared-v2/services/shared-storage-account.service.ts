@@ -5,7 +5,6 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class SharedStorageAccountService {
-
   // Observable string sources
   private emitChangeSource = new Subject<StorageAccountProperties>();
 

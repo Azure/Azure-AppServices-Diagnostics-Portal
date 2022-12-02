@@ -1,141 +1,140 @@
-.search-term-addition{
-    width:100%;
+.search-term-addition {
+  width: 100%;
 }
 .utterancestab {
-    overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: var(--solutionButtonBackground);
-    cursor: pointer;
-    transition: 0.3s;
-    text-align: center;
-    margin-right: 10px;
-    margin-left: 10px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: var(--solutionButtonBackground);
+  cursor: pointer;
+  transition: 0.3s;
+  text-align: center;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 
 .utterancestab:hover {
-    background-color: var(--proactiveTopMenuButton);
+  background-color: var(--proactiveTopMenuButton);
 }
 
 .utterancessection {
-    width: 50%;
+  width: 50%;
 }
 
 /* Style the tab content */
 .utterancestabcontent {
-    border: 1px solid #ccc;
-    overflow-y: scroll;
-    height: 41vh;
-    margin-right: 10px;
-    margin-left: 10px;
+  border: 1px solid #ccc;
+  overflow-y: scroll;
+  height: 41vh;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 
-.utterances-text{
-    color: var(--bodyText);
-    word-wrap: break-word;
+.utterances-text {
+  color: var(--bodyText);
+  word-wrap: break-word;
 }
 
 .utterancesaddicon {
-    float: left;
-    margin-right: 10px;
-    margin-top: 3px;
-    cursor: pointer;
+  float: left;
+  margin-right: 10px;
+  margin-top: 3px;
+  cursor: pointer;
 }
 
 .utterancesremoveicon {
-    float: right;
-    color: red;
-    margin-right: 10px;
-    margin-top: 3px;
-    cursor: pointer
+  float: right;
+  color: red;
+  margin-right: 10px;
+  margin-top: 3px;
+  cursor: pointer;
 }
 
 .utteranceslist-rec {
-    list-style: none;
-    color: var(--utterancesLink);
-    font-size: 14px;
+  list-style: none;
+  color: var(--utterancesLink);
+  font-size: 14px;
 }
 
 .utteranceslist-all {
-    color: var(--utterancesLink);
-    font-size: 14px;
+  color: var(--utterancesLink);
+  font-size: 14px;
 }
 
-.utterances-list-item{
-    width: 90%;
-    display: inline-table;
+.utterances-list-item {
+  width: 90%;
+  display: inline-table;
 }
 
 .btn-create {
-    background-color: #1ea4fff2;
-    border: none;
-    color: var(--bodyBackground);
-    padding: 3px 8px;
-    font-size: 16px;
-    cursor: pointer;
-    display: inline;
-    float: right;
+  background-color: #1ea4fff2;
+  border: none;
+  color: var(--bodyBackground);
+  padding: 3px 8px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline;
+  float: right;
 }
 
 .btn-add {
-    background-color: green;
-    border: none;
-    color: var(--bodyBackground);
-    padding: 0px 4px;
-    font-size: 11px;
-    cursor: pointer;
-    display: inline;
+  background-color: green;
+  border: none;
+  color: var(--bodyBackground);
+  padding: 0px 4px;
+  font-size: 11px;
+  cursor: pointer;
+  display: inline;
 }
 
 .btn-create:hover {
-    background-color: RoyalBlue;
+  background-color: RoyalBlue;
 }
 
 .icon-err {
-    background-color: transparent;
-    border: none;
-    color: red;
-    padding: 3px 8px;
-    font-size: 16px;
-    cursor: pointer;
-    display: inline;
+  background-color: transparent;
+  border: none;
+  color: red;
+  padding: 3px 8px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline;
 }
 ::-webkit-scrollbar {
-    width: 10px;
+  width: 10px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+  background: #f1f1f1;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #888;
+  background: #888;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+  background: #555;
 }
 
 td {
-    vertical-align: top;
+  vertical-align: top;
 }
 
 .custom-utterance-input {
-    width: 80% !important;
-    display: inline!important;
-    border: 1px solid grey;
-    color: black;
+  width: 80% !important;
+  display: inline !important;
+  border: 1px solid grey;
+  color: black;
 }
 
 .custom-utterance-box {
-    margin-left: 40px;
-    margin-top: 10px;
+  margin-left: 40px;
+  margin-top: 10px;
 }
 
 .recommended-terms-title {
-    margin-left: 40px;
-    display: block;
+  margin-left: 40px;
+  display: block;
 }
-

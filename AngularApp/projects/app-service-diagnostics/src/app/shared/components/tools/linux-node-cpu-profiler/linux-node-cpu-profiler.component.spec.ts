@@ -8,9 +8,8 @@ describe('LinuxNodeCpuProfilerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LinuxNodeCpuProfilerComponent ]
-    })
-    .compileComponents();
+      declarations: [LinuxNodeCpuProfilerComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

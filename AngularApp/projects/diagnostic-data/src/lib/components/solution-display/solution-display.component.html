@@ -6,10 +6,14 @@
   <div class="outer-container">
     <div class="row match-col-height">
       <div class="col-sm-4 col-lg-3 vertical-tabs">
-        <div *ngFor="let item of titles" [ngClass]="{'list-item-selected': item.isSelected}"
-            (click)="select(item)" class="list-item">
+        <div
+          *ngFor="let item of titles"
+          [ngClass]="{ 'list-item-selected': item.isSelected }"
+          (click)="select(item)"
+          class="list-item"
+        >
           <span class="list-item-text">
-            <b>{{item.title}}</b>
+            <b>{{ item.title }}</b>
           </span>
           <div class="tag-holder">
             <solution-type-tag [tagType]="item.tag"></solution-type-tag>

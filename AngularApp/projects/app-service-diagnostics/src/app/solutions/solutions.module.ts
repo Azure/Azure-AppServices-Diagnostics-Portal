@@ -16,28 +16,21 @@ import { RevertDeploymentComponent } from './components/specific-solutions/rever
 import { DiagnosticDataModule } from 'diagnostic-data';
 
 @NgModule({
-    declarations: [
-        DynamicSolutionPlaceHolderDirective,
-        DynamicSolutionComponent,
-        SolutionsWidgetComponent,
-        SiteRestartComponent,
-        ScaleUpSolutionComponent,
-        ScaleOutSolutionComponent,
-        DefaultSolutionTemplateComponent,
-        SolutionOperationComponent,
-        SplitSitesIntoDifferentServerFarmsSolutionComponent,
-        SolutionFeedbackComponent,
-        RevertDeploymentComponent,
-    ],
-    imports: [
-        SharedModule,
-        DiagnosticDataModule
-    ],
-    exports: [
-        SolutionsWidgetComponent,
-    ],
-    providers: [
-    ]
+  declarations: [
+    DynamicSolutionPlaceHolderDirective,
+    DynamicSolutionComponent,
+    SolutionsWidgetComponent,
+    SiteRestartComponent,
+    ScaleUpSolutionComponent,
+    ScaleOutSolutionComponent,
+    DefaultSolutionTemplateComponent,
+    SolutionOperationComponent,
+    SplitSitesIntoDifferentServerFarmsSolutionComponent,
+    SolutionFeedbackComponent,
+    RevertDeploymentComponent
+  ],
+  imports: [SharedModule, DiagnosticDataModule],
+  exports: [SolutionsWidgetComponent],
+  providers: []
 })
-export class SolutionsModule {
-}
+export class SolutionsModule {}

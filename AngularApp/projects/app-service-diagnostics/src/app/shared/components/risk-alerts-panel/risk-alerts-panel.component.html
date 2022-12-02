@@ -1,18 +1,39 @@
-<fab-panel [isOpen]="globals.openRiskAlertsPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-  [styles]="styles" [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'"
-  (onDismiss)="dismissedHandler()" [headerText]="riskPanelTitle">
+<fab-panel
+  [isOpen]="globals.openRiskAlertsPanel"
+  [type]="type"
+  [customWidth]="width"
+  [isHiddenOnDismiss]="true"
+  [styles]="styles"
+  [isLightDismiss]="true"
+  [hasCloseButton]="true"
+  [isBlocking]="false"
+  [closeButtonAriaLabel]="'close'"
+  (onDismiss)="dismissedHandler()"
+  [headerText]="riskPanelTitle"
+>
   <div class="panel-padding">
-    <ng-container *ngIf="!isContentEmpty(riskPanelContents) else loaderView">
+    <ng-container *ngIf="!isContentEmpty(riskPanelContents); else loaderView">
       <div *ngFor="let item of riskPanelContents | keyvalue">
-        <detector-view *ngIf="currentRiskPanelContentId === item.key" [analysisMode]="false" [isKeystoneView]="false"
-          [isAnalysisView]="false" [detectorResponse]="item.value" [error]="error" [startTime]="startTime"
-          [endTime]="endTime" [developmentMode]="false" [detector]="item.key" [hideDetectorHeader]="true"
-          [isRiskAlertDetector]="true" [hideDetectorControl]="true">
+        <detector-view
+          *ngIf="currentRiskPanelContentId === item.key"
+          [analysisMode]="false"
+          [isKeystoneView]="false"
+          [isAnalysisView]="false"
+          [detectorResponse]="item.value"
+          [error]="error"
+          [startTime]="startTime"
+          [endTime]="endTime"
+          [developmentMode]="false"
+          [detector]="item.key"
+          [hideDetectorHeader]="true"
+          [isRiskAlertDetector]="true"
+          [hideDetectorControl]="true"
+        >
         </detector-view>
       </div>
     </ng-container>
     <ng-template #loaderView>
-      <loader-detector-view style="margin-top:300px"></loader-detector-view>
+      <loader-detector-view style="margin-top: 300px"></loader-detector-view>
     </ng-template>
   </div>
 </fab-panel>

@@ -1,39 +1,41 @@
-<div style="text-align: center; padding:20px" *ngIf="loading">
-    <i class="fa fa-circle-o-notch fa-2x fa-spin spin-icon" aria-hidden="true"></i>
+<div style="text-align: center; padding: 20px" *ngIf="loading">
+  <i
+    class="fa fa-circle-o-notch fa-2x fa-spin spin-icon"
+    aria-hidden="true"
+  ></i>
 </div>
 
 <div *ngIf="!loading && exceptions.length > 0">
-    <table class="table table-hover table-responsive no-border">
-        <thead>
-            <tr>
-                <th *ngIf="includeMessage">Message</th>
-                <th>Exception</th>
-                <th>Count</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let item of exceptions" style="font-size:13px">
-                <td *ngIf="includeMessage">{{item.message}}</td>
-                <td>{{item.exception}}</td>
-                <td>{{item.count}}</td>
-            </tr>
-        </tbody>
-
-    </table>
-    <div style="width:100%;text-align:right;font-size:13px;padding:3px">
-        <a (click)="OpenAppInsights()">
-            View More in App Insights
-            <i class="fa fa-arrow-circle-o-right" style="font-size: 15px"></i>
-        </a>
-    </div>
+  <table class="table table-hover table-responsive no-border">
+    <thead>
+      <tr>
+        <th *ngIf="includeMessage">Message</th>
+        <th>Exception</th>
+        <th>Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of exceptions" style="font-size: 13px">
+        <td *ngIf="includeMessage">{{ item.message }}</td>
+        <td>{{ item.exception }}</td>
+        <td>{{ item.count }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="width: 100%; text-align: right; font-size: 13px; padding: 3px">
+    <a (click)="OpenAppInsights()">
+      View More in App Insights
+      <i class="fa fa-arrow-circle-o-right" style="font-size: 15px"></i>
+    </a>
+  </div>
 </div>
 
-
-
-
-<div *ngIf="!loading && exceptions.length === 0" style="font-size:16px;padding:10px">
-    No Exceptions found during this time.
-    <br /> Learn how to log exceptions to application insights
-    <a class="hyperlink" href="https://goo.gl/thnx4Y" target="_blank">here</a>.
-
+<div
+  *ngIf="!loading && exceptions.length === 0"
+  style="font-size: 16px; padding: 10px"
+>
+  No Exceptions found during this time.
+  <br />
+  Learn how to log exceptions to application insights
+  <a class="hyperlink" href="https://goo.gl/thnx4Y" target="_blank">here</a>.
 </div>

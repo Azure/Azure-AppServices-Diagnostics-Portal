@@ -1,107 +1,151 @@
-
 <div class="row table-top" *ngIf="tableItems.length > 0">
   <div class="col-sm-4">
-      <div class="search-container">
-          <div class="input-group">
-              <input type="text" aria-label="search" class="form-control"
-              placeholder="Search table" (keyup)="applyFilter($event.target.value)">
-              <span class="input-group-addon"><i class="fa fa-search"></i></span>
-          </div>
-        </div>
+    <div class="search-container">
+      <div class="input-group">
+        <input
+          type="text"
+          aria-label="search"
+          class="form-control"
+          placeholder="Search table"
+          (keyup)="applyFilter($event.target.value)"
+        />
+        <span class="input-group-addon"><i class="fa fa-search"></i></span>
+      </div>
+    </div>
   </div>
   <div class="col-sm-6">
     <div class="legend-container">
-        <span class="level-icon-spacing" *ngFor="let change of changeLevelIcon">
-            <img [src]="change.imgSrc" class="level-icon"> = {{change.displayValue}}
-          </span>
+      <span class="level-icon-spacing" *ngFor="let change of changeLevelIcon">
+        <img [src]="change.imgSrc" class="level-icon" /> =
+        {{ change.displayValue }}
+      </span>
     </div>
   </div>
 </div>
 
-
-<table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8" *ngIf="tableItems.length > 0">
-
+<table
+  mat-table
+  [dataSource]="dataSource"
+  multiTemplateDataRows
+  class="mat-elevation-z8"
+  *ngIf="tableItems.length > 0"
+>
   <!-- Level Column -->
   <ng-container matColumnDef="level">
-    <th mat-header-cell *matHeaderCellDef> Level </th>
+    <th mat-header-cell *matHeaderCellDef>Level</th>
     <td mat-cell *matCellDef="let element">
-      <span class="level-icon-spacing" *ngIf="element != expandedElement"><i class="fa fa-chevron-right"></i></span>
-      <span class="level-icon-spacing" *ngIf="element == expandedElement"><i class="fa fa-chevron-down"></i></span>
-        <img [src]="element.levelIcon" class="level-icon">
+      <span class="level-icon-spacing" *ngIf="element != expandedElement"
+        ><i class="fa fa-chevron-right"></i
+      ></span>
+      <span class="level-icon-spacing" *ngIf="element == expandedElement"
+        ><i class="fa fa-chevron-down"></i
+      ></span>
+      <img [src]="element.levelIcon" class="level-icon" />
     </td>
   </ng-container>
 
   <!-- Time Column -->
   <ng-container matColumnDef="time">
     <th mat-header-cell *matHeaderCellDef>Time</th>
-    <td mat-call *matCellDef="let element"> {{element.time}}</td>
+    <td mat-call *matCellDef="let element">{{ element.time }}</td>
   </ng-container>
 
   <!-- Display Name Column -->
   <ng-container matColumnDef="displayName">
-    <th mat-header-cell *matHeaderCellDef>  Name </th>
-    <td mat-cell *matCellDef="let element"> {{element.displayName}} </td>
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let element">{{ element.displayName }}</td>
   </ng-container>
 
   <!-- Description Column -->
   <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef> Description </th>
-      <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+    <th mat-header-cell *matHeaderCellDef>Description</th>
+    <td mat-cell *matCellDef="let element">{{ element.description }}</td>
   </ng-container>
 
   <!-- Old Value Column -->
   <ng-container matColumnDef="oldValue">
-    <th mat-header-cell *matHeaderCellDef> Old value </th>
-    <td mat-cell *matCellDef="let element"> {{element.oldValue}} </td>
+    <th mat-header-cell *matHeaderCellDef>Old value</th>
+    <td mat-cell *matCellDef="let element">{{ element.oldValue }}</td>
   </ng-container>
 
   <!-- New Value Column -->
   <ng-container matColumnDef="newValue">
-    <th mat-header-cell *matHeaderCellDef> New value </th>
-    <td mat-cell *matCellDef="let element"> {{element.newValue}} </td>
+    <th mat-header-cell *matHeaderCellDef>New value</th>
+    <td mat-cell *matCellDef="let element">{{ element.newValue }}</td>
   </ng-container>
 
   <!-- Initiated By Column -->
   <ng-container matColumnDef="initiatedBy">
-      <th mat-header-cell *matHeaderCellDef> Initiated By </th>
-      <td mat-cell *matCellDef="let element">
-          <ul *ngIf="element.initiatedByList.length > 1; else singleUser">
-            <li *ngFor="let user of element.initiatedByList"> {{user}}</li>
-          </ul>
-          <ng-template #singleUser>{{element.initiatedByList[0]}}</ng-template>
-      </td>
-    </ng-container>
+    <th mat-header-cell *matHeaderCellDef>Initiated By</th>
+    <td mat-cell *matCellDef="let element">
+      <ul *ngIf="element.initiatedByList.length > 1; else singleUser">
+        <li *ngFor="let user of element.initiatedByList">{{ user }}</li>
+      </ul>
+      <ng-template #singleUser>{{ element.initiatedByList[0] }}</ng-template>
+    </td>
+  </ng-container>
 
   <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
   <ng-container matColumnDef="expandedDetail">
-    <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length" class="detail-cell">
-      <div [@changeRowExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+    <td
+      mat-cell
+      *matCellDef="let element"
+      [attr.colspan]="displayedColumns.length"
+      class="detail-cell"
+    >
+      <div
+        [@changeRowExpand]="
+          element == expandedElement ? 'expanded' : 'collapsed'
+        "
+      >
         <div *ngIf="element == expandedElement">
-          <ngx-monaco-diff-editor class="diff-view" [options]="options" [(originalModel)]="element.originalModel"
-            [(modifiedModel)]="element.modifiedModel"></ngx-monaco-diff-editor>
+          <ngx-monaco-diff-editor
+            class="diff-view"
+            [options]="options"
+            [(originalModel)]="element.originalModel"
+            [(modifiedModel)]="element.modifiedModel"
+          ></ngx-monaco-diff-editor>
           <div class="feedback-view">
-            <div class="feedback-indication">Did this information help you diagnose the problem?</div>
-            <div [ngClass]="getFeedbackButtonClass(element, true)" (click)="sendFeedback(element, true)">Yes</div>
-            <div [ngClass]="getFeedbackButtonClass(element, false)" (click)="sendFeedback(element, false)">No</div>
+            <div class="feedback-indication">
+              Did this information help you diagnose the problem?
+            </div>
+            <div
+              [ngClass]="getFeedbackButtonClass(element, true)"
+              (click)="sendFeedback(element, true)"
+            >
+              Yes
+            </div>
+            <div
+              [ngClass]="getFeedbackButtonClass(element, false)"
+              (click)="sendFeedback(element, false)"
+            >
+              No
+            </div>
           </div>
         </div>
       </div>
     </td>
   </ng-container>
 
-
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let element; columns: displayedColumns;"
-        class="element-row"
-        [class.expanded-row]="expandedElement === element"
-        (click)="selectChange(element)">
-  </tr>
-  <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+  <tr
+    mat-row
+    *matRowDef="let element; columns: displayedColumns"
+    class="element-row"
+    [class.expanded-row]="expandedElement === element"
+    (click)="selectChange(element)"
+  ></tr>
+  <tr
+    mat-row
+    *matRowDef="let row; columns: ['expandedDetail']"
+    class="detail-row"
+  ></tr>
 </table>
 
 <div class="table-top text-center">
-  <em *ngIf="tableItems.length <= 0" >
-      No distinct changes were found.
-  </em>
-  <em>To view other changes, select a change group in the timeline. To zoom in and out, scroll the timeline up and down</em>
+  <em *ngIf="tableItems.length <= 0"> No distinct changes were found. </em>
+  <em
+    >To view other changes, select a change group in the timeline. To zoom in
+    and out, scroll the timeline up and down</em
+  >
 </div>

@@ -1,3 +1,8 @@
-<div class="list-item" [ngClass]="{'disabled': disabled}" (click)="raiseSelectEvent()" [style.margin-top]="marginTop + 'px'">
-    <ng-content></ng-content>
+<div
+  class="list-item"
+  [ngClass]="{ disabled: disabled }"
+  (click)="raiseSelectEvent()"
+  [style.margin-top]="marginTop + 'px'"
+>
+  <ng-content></ng-content>
 </div>

@@ -1,12 +1,21 @@
 <div class="row home-page-container">
-    <div class="bot-container">
-        <support-bot></support-bot>
-    </div>
-    <div id="tools-content" [style.height.px] = "toolsContainerHeight">
-        <app-insights-tile></app-insights-tile>
-        <support-tools *ngIf="showSupportTools"></support-tools>
-        <collapsible-list *ngFor="let list of listCollection" [title]="list.title" [collapsed]="list.collapsed">
-            <collapsible-list-item *ngFor="let item of list.items" (onSelect)="openUrl(item.href, item.title, list.title)" [marginTop]="10"><a>{{item.title}}</a></collapsible-list-item>
-        </collapsible-list>
-    </div>
+  <div class="bot-container">
+    <support-bot></support-bot>
+  </div>
+  <div id="tools-content" [style.height.px]="toolsContainerHeight">
+    <app-insights-tile></app-insights-tile>
+    <support-tools *ngIf="showSupportTools"></support-tools>
+    <collapsible-list
+      *ngFor="let list of listCollection"
+      [title]="list.title"
+      [collapsed]="list.collapsed"
+    >
+      <collapsible-list-item
+        *ngFor="let item of list.items"
+        (onSelect)="openUrl(item.href, item.title, list.title)"
+        [marginTop]="10"
+        ><a>{{ item.title }}</a></collapsible-list-item
+      >
+    </collapsible-list>
+  </div>
 </div>

@@ -1,31 +1,31 @@
 .panel-heading {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .health-icon-container {
-    padding: 0px 10px 0px 0px;
+  padding: 0px 10px 0px 0px;
 }
 
 .panel-body {
-    background-color: var(--bodyBackground);
+  background-color: var(--bodyBackground);
 }
 
 .content-container {
-    padding: 15px;
+  padding: 15px;
 }
 
 h5 {
-    margin-top:0px
+  margin-top: 0px;
 }
 
 .message {
-    padding-left:10px;
+  padding-left: 10px;
 }
 
 .loading-container {
-    height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #cccccc;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cccccc;
 }

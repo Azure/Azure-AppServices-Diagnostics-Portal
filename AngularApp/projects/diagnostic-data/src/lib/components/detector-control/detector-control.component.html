@@ -1,6 +1,5 @@
-<div class="outer-container" [ngClass]="{'withoutPadding': disablePadding}">
+<div class="outer-container" [ngClass]="{ withoutPadding: disablePadding }">
   <div class="control-container">
-
     <!-- <div class="control-group">
       <div class="control">
         <input class="date-input" [(ngModel)]="startTime" (keyup.enter)="setManualDate()"/>
@@ -12,53 +11,123 @@
     </div> -->
 
     <div class="control-group" *ngIf="detectorControlService.duration">
-      <div (keyup.enter) = "detectorControlService.moveBackwardDuration()" (click)="detectorControlService.moveBackwardDuration()" attr.name = "Last {{detectorControlService.duration.displayName}}" attr.value = "Last {{detectorControlService.duration.displayName}}" attr.aria-label = "Move time duration back by {{detectorControlService.duration.ariaLabel}}" tabindex="0" role= "button" class="control">
+      <div
+        (keyup.enter)="detectorControlService.moveBackwardDuration()"
+        (click)="detectorControlService.moveBackwardDuration()"
+        attr.name="Last {{ detectorControlService.duration.displayName }}"
+        attr.value="Last {{ detectorControlService.duration.displayName }}"
+        attr.aria-label="Move time duration back by {{
+          detectorControlService.duration.ariaLabel
+        }}"
+        tabindex="0"
+        role="button"
+        class="control"
+      >
         <i class="fa fa-chevron-left"></i>
-        Last {{detectorControlService.duration.displayName}}
+        Last {{ detectorControlService.duration.displayName }}
       </div>
-      <div (keyup.enter) = "detectorControlService.moveForwardDuration()" (click)="detectorControlService.moveForwardDuration()" attr.name = "Next {{detectorControlService.duration.displayName}}" attr.value = "Next {{detectorControlService.duration.displayName}}" attr.aria-label = "Move time duration forward by {{detectorControlService.duration.ariaLabel}}" tabindex="0" role= "button" class="control">
-        Next {{detectorControlService.duration.displayName}}
+      <div
+        (keyup.enter)="detectorControlService.moveForwardDuration()"
+        (click)="detectorControlService.moveForwardDuration()"
+        attr.name="Next {{ detectorControlService.duration.displayName }}"
+        attr.value="Next {{ detectorControlService.duration.displayName }}"
+        attr.aria-label="Move time duration forward by {{
+          detectorControlService.duration.ariaLabel
+        }}"
+        tabindex="0"
+        role="button"
+        class="control"
+      >
+        Next {{ detectorControlService.duration.displayName }}
         <i class="fa fa-chevron-right"></i>
       </div>
     </div>
 
     <div class="control-group">
-      <div *ngFor="let duration of detectorControlService.durationSelections | internal:isInternal" attr.name = "{{duration.displayName}}" attr.value = "{{duration.displayName}}" attr.aria-label = "Set time duration to last {{duration.ariaLabel}}" tabindex="0" role = "button" class="control"
-        (keyup.enter) = "detectorControlService.selectDuration(duration)"
+      <div
+        *ngFor="
+          let duration of detectorControlService.durationSelections
+            | internal : isInternal
+        "
+        attr.name="{{ duration.displayName }}"
+        attr.value="{{ duration.displayName }}"
+        attr.aria-label="Set time duration to last {{ duration.ariaLabel }}"
+        tabindex="0"
+        role="button"
+        class="control"
+        (keyup.enter)="detectorControlService.selectDuration(duration)"
         (click)="detectorControlService.selectDuration(duration)"
-        [class.control-selected]="detectorControlService.duration === duration">{{duration.displayName}}</div>
+        [class.control-selected]="detectorControlService.duration === duration"
+      >
+        {{ duration.displayName }}
+      </div>
     </div>
 
     <div class="control-group">
       <div class="control date-control">
-        <input class="date-input" tabindex="0" aria-label="Start Time" [(ngModel)]="startTime" (keyup.enter)="setManualDate()" />
+        <input
+          class="date-input"
+          tabindex="0"
+          aria-label="Start Time"
+          [(ngModel)]="startTime"
+          (keyup.enter)="setManualDate()"
+        />
       </div>
 
       <div class="control date-control">
-        <input class="date-input" tabindex="0" aria-label="End Time" [(ngModel)]="endTime" (keyup.enter)="setManualDate()" />
+        <input
+          class="date-input"
+          tabindex="0"
+          aria-label="End Time"
+          [(ngModel)]="endTime"
+          (keyup.enter)="setManualDate()"
+        />
       </div>
-      <div class="control control-static" tabindex="0" role="text" attr.aria-label="All date times are treated as UTC">
+      <div
+        class="control control-static"
+        tabindex="0"
+        role="text"
+        attr.aria-label="All date times are treated as UTC"
+      >
         UTC
       </div>
     </div>
 
     <div class="control-group" *ngIf="isInternal">
-      <div class="control" (click)="detectorControlService.toggleInternalExternal()">
+      <div
+        class="control"
+        (click)="detectorControlService.toggleInternalExternal()"
+      >
         <span *ngIf="detectorControlService.isInternalView">Internal</span>
         <span *ngIf="!detectorControlService.isInternalView">External</span>
       </div>
     </div>
 
     <div class="control-group">
-      <div class="control"  (keyup.enter) = "refreshPage()" (click)="refreshPage()" name = "Refresh" value = "Refresh" aria-label = "Refresh" tabindex="0" role = "button">
+      <div
+        class="control"
+        (keyup.enter)="refreshPage()"
+        (click)="refreshPage()"
+        name="Refresh"
+        value="Refresh"
+        aria-label="Refresh"
+        tabindex="0"
+        role="button"
+      >
         <i class="fa fa-refresh"></i>
       </div>
     </div>
   </div>
 </div>
 
-<div class="outer-container" *ngIf="timeDiffError !==''">
-  <div class=" errorMessage" attr.aria-label = "Error : {{timeDiffError}}" tabindex="0" role="text">
-      <strong>Error :</strong> {{timeDiffError}}<span style='vertical-align:super'>*</span>
+<div class="outer-container" *ngIf="timeDiffError !== ''">
+  <div
+    class="errorMessage"
+    attr.aria-label="Error : {{ timeDiffError }}"
+    tabindex="0"
+    role="text"
+  >
+    <strong>Error :</strong> {{ timeDiffError
+    }}<span style="vertical-align: super">*</span>
   </div>
 </div>

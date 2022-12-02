@@ -8,9 +8,8 @@ describe('GanttChartTaskbarColorsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GanttChartTaskbarColorsComponent ]
-    })
-    .compileComponents();
+      declarations: [GanttChartTaskbarColorsComponent]
+    }).compileComponents();
   });
 
   beforeEach(() => {

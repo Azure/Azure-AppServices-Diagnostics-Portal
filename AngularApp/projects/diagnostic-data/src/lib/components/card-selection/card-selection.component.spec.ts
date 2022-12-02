@@ -8,9 +8,8 @@ describe('CardSelectionComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CardSelectionComponent ]
-    })
-    .compileComponents();
+      declarations: [CardSelectionComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

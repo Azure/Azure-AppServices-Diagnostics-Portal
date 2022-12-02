@@ -1,17 +1,20 @@
-
-import {of as observableOf,  Observable } from 'rxjs';
-import { Injectable, Inject, Optional } from '@angular/core';
-import { ArmResource, ResourceInfo, ResourceServiceInputs, RESOURCE_SERVICE_INPUTS } from '../models/resources';
+import { Observable, of as observableOf } from 'rxjs';
+import { Inject, Injectable, Optional } from '@angular/core';
+import {
+  ArmResource,
+  RESOURCE_SERVICE_INPUTS,
+  ResourceInfo,
+  ResourceServiceInputs
+} from '../models/resources';
 
 @Injectable()
 export class ResourceService {
-
   public imgSrc: string;
   public versionPrefix: string;
   public templateFileName: string;
   public azureCommImpactedServicesList: string;
   public pesId: string;
-  public sapProductId:string;
+  public sapProductId: string;
   public staticSelfHelpContent: string;
   public altIcons: { [path: string]: string };
   public displayName: string;
@@ -35,12 +38,21 @@ export class ResourceService {
     this.altIcons = inputs.altIcons;
     this.displayName = inputs.displayName;
     this.searchSuffix = inputs.searchSuffix;
-    this.emergingIssuesICMLookupEnabled = (inputs.emergingIssuesICMLookupEnabled !== undefined && inputs.emergingIssuesICMLookupEnabled);
+    this.emergingIssuesICMLookupEnabled =
+      inputs.emergingIssuesICMLookupEnabled !== undefined &&
+      inputs.emergingIssuesICMLookupEnabled;
     this.overviewPageMetricsId = inputs.overviewPageMetricsId;
   }
 
   public startInitializationObservable() {
-    this._initialized = observableOf(new ResourceInfo(this.getResourceName(),this.imgSrc,this.displayName,this.getCurrentResourceId()));
+    this._initialized = observableOf(
+      new ResourceInfo(
+        this.getResourceName(),
+        this.imgSrc,
+        this.displayName,
+        this.getCurrentResourceId()
+      )
+    );
   }
 
   public waitForInitialization(): Observable<ResourceInfo> {
@@ -51,15 +63,15 @@ export class ResourceService {
     return this._armResource;
   }
 
-  public getPesId(): Observable<string>{
-    if (this.pesId){
+  public getPesId(): Observable<string> {
+    if (this.pesId) {
       return Observable.of(this.pesId);
     }
     return Observable.of(null);
   }
 
-  public getSapProductId(): Observable<string>{
-    if (this.sapProductId){
+  public getSapProductId(): Observable<string> {
+    if (this.sapProductId) {
       return Observable.of(this.sapProductId);
     }
     return Observable.of(null);
@@ -77,7 +89,7 @@ export class ResourceService {
     return observableOf(this._armResource);
   }
 
-  public getAdditionalResourceInfo(resourceProps): Observable<any>{
+  public getAdditionalResourceInfo(resourceProps): Observable<any> {
     return observableOf({});
   }
 

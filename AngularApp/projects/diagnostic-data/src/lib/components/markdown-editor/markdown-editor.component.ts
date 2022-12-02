@@ -1,6 +1,6 @@
 import { ClipboardService } from './../../services/clipboard.service';
 import { MarkdownService } from 'ngx-markdown';
-import { Component, Input, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 
 @Component({
@@ -9,11 +9,7 @@ import { TelemetryService } from '../../services/telemetry/telemetry.service';
   styleUrls: ['./markdown-editor.component.scss']
 })
 export class MarkdownEditorComponent implements OnInit {
-
-  tabs: string[] = [
-    'Edit',
-    'Preview'
-  ];
+  tabs: string[] = ['Edit', 'Preview'];
 
   selectedTab: string = this.tabs[this.tabs.length - 1];
 
@@ -25,7 +21,8 @@ export class MarkdownEditorComponent implements OnInit {
 
   @Input() copy: boolean = false;
   @Input() rawMarkdown: string;
-  @Output() rawMarkdownChange: EventEmitter<string> = new EventEmitter<string>();
+  @Output() rawMarkdownChange: EventEmitter<string> =
+    new EventEmitter<string>();
 
   ngOnInit() {
     if (this.copy) {
@@ -33,7 +30,11 @@ export class MarkdownEditorComponent implements OnInit {
     }
   }
 
-  constructor(private _markdownService: MarkdownService, private _clipboard: ClipboardService, private _logger: TelemetryService) { }
+  constructor(
+    private _markdownService: MarkdownService,
+    private _clipboard: ClipboardService,
+    private _logger: TelemetryService
+  ) {}
 
   emitMarkdown() {
     this.rawMarkdownChange.emit(this.rawMarkdown);
@@ -41,7 +42,10 @@ export class MarkdownEditorComponent implements OnInit {
   }
 
   copyText(source: string = 'internal') {
-    this._logger.logEvent('markdown-copy', { edited: String(this.edited), copySource: source });
+    this._logger.logEvent('markdown-copy', {
+      edited: String(this.edited),
+      copySource: source
+    });
     const markdownHtml = this._markdownService.compile(this.rawMarkdown);
     this._clipboard.copyAsHtml(markdownHtml);
 
@@ -57,5 +61,4 @@ export class MarkdownEditorComponent implements OnInit {
       }
     }, 2000);
   }
-
 }

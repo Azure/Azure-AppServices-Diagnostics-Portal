@@ -1,15 +1,35 @@
-<div *ngIf="title" class="row pb-3" [ngClass]="{'collapsable-list-less-margin': lessMargin, 'collapsable-list': !lessMargin}">
-  <button class="btn-outer" [attr.aria-expanded]="collapsed ?'false':'true'" (click)="clickHandler()"
-    class="list-header" [attr.aria-label]="title">
+<div
+  *ngIf="title"
+  class="row pb-3"
+  [ngClass]="{
+    'collapsable-list-less-margin': lessMargin,
+    'collapsable-list': !lessMargin
+  }"
+>
+  <button
+    class="btn-outer"
+    [attr.aria-expanded]="collapsed ? 'false' : 'true'"
+    (click)="clickHandler()"
+    class="list-header"
+    [attr.aria-label]="title"
+  >
     <span class="btn-inner">
-      <div style="float:left" class="custom-caret" [class.custom-caret-down]="collapsed">
+      <div
+        style="float: left"
+        class="custom-caret"
+        [class.custom-caret-down]="collapsed"
+      >
         <fab-icon iconName="ChevronUp" ariaLabel="ChevronUp"></fab-icon>
       </div>
-      <div style="float:left" *ngIf="iconProps">
-        <fab-icon [iconName]="iconProps.iconName" ariaLabel="Section icon" [styles]="iconProps.styles"></fab-icon>
+      <div style="float: left" *ngIf="iconProps">
+        <fab-icon
+          [iconName]="iconProps.iconName"
+          ariaLabel="Section icon"
+          [styles]="iconProps.styles"
+        ></fab-icon>
       </div>
-      <div style="float:left">
-        <span class="pl-3 collapsible-list-title">{{title}}</span>
+      <div style="float: left">
+        <span class="pl-3 collapsible-list-title">{{ title }}</span>
       </div>
     </span>
   </button>

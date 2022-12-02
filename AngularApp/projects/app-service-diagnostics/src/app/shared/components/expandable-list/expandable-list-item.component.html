@@ -1,14 +1,16 @@
 <div class="expandable-list-item-container">
-    <div class="row" (click)="toggleView()"> 
-        <div class="title-row-container" style="width:20px">
-        <i class="fa expand-icon" [ngClass]="{'fa-angle-down': selected, 'fa-angle-right': !selected}"></i>
-        </div>
-        <div class="title-row-container">
-            <span class="title" [ngStyle]="{'color':titleColor}">{{title}}</span>
-        </div>
+  <div class="row" (click)="toggleView()">
+    <div class="title-row-container" style="width: 20px">
+      <i
+        class="fa expand-icon"
+        [ngClass]="{ 'fa-angle-down': selected, 'fa-angle-right': !selected }"
+      ></i>
     </div>
-    <div class="row content" *ngIf="selected">
-        <ng-content></ng-content>
+    <div class="title-row-container">
+      <span class="title" [ngStyle]="{ color: titleColor }">{{ title }}</span>
     </div>
-   
+  </div>
+  <div class="row content" *ngIf="selected">
+    <ng-content></ng-content>
+  </div>
 </div>

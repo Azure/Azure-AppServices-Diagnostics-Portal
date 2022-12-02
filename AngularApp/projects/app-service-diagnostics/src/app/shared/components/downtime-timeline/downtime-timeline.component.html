@@ -1,54 +1,83 @@
-<div style="height:50px" *ngIf="!appAnalysisResponse">
-    <div style="text-align: center; padding:5px">
-        <i class="fa fa-circle-o-notch fa-2x fa-spin spin-icon" aria-hidden="true"></i>
-    </div>
+<div style="height: 50px" *ngIf="!appAnalysisResponse">
+  <div style="text-align: center; padding: 5px">
+    <i
+      class="fa fa-circle-o-notch fa-2x fa-spin spin-icon"
+      aria-hidden="true"
+    ></i>
+  </div>
 </div>
 
-
-<div class="row" *ngIf="appAnalysisResponse" style="height:30px">
-    <div class="row" style="width:100%;padding-left:55px;margin-top:20px">
-        <div class="row timeline-container" *ngIf="appAnalysisResponse">
-            <div class="timeline-column" *ngFor="let period of downtimeDisplayInfo; let i = index" [ngStyle]="{'width':period.percent + '%'}"
-                [ngClass]="{'timeline-downtime': period.isDowntime, 'timeline-downtime-selected': period.isDowntime && period.index === selectedDowntimeIndex, 'timeline-uptime': !period.isDowntime}"
-                (click)="selectDowntime(period.index)">
-                <div class="selector-holder">
-                    <i *ngIf="period.isDowntime && period.index === selectedDowntimeIndex" class="fa fa-map-marker warning-icon-color selector"></i>
-                </div>
-            </div>
+<div class="row" *ngIf="appAnalysisResponse" style="height: 30px">
+  <div class="row" style="width: 100%; padding-left: 55px; margin-top: 20px">
+    <div class="row timeline-container" *ngIf="appAnalysisResponse">
+      <div
+        class="timeline-column"
+        *ngFor="let period of downtimeDisplayInfo; let i = index"
+        [ngStyle]="{ width: period.percent + '%' }"
+        [ngClass]="{
+          'timeline-downtime': period.isDowntime,
+          'timeline-downtime-selected':
+            period.isDowntime && period.index === selectedDowntimeIndex,
+          'timeline-uptime': !period.isDowntime
+        }"
+        (click)="selectDowntime(period.index)"
+      >
+        <div class="selector-holder">
+          <i
+            *ngIf="period.isDowntime && period.index === selectedDowntimeIndex"
+            class="fa fa-map-marker warning-icon-color selector"
+          ></i>
         </div>
-        <div class="row" style="height:auto;" [ngStyle]="{'padding-right':rightPadding}" *ngIf="!appAnalysisResponse">
-            <div class="timeline-column timeline-uptime" style="width:100%;"></div>
-        </div>
+      </div>
     </div>
+    <div
+      class="row"
+      style="height: auto"
+      [ngStyle]="{ 'padding-right': rightPadding }"
+      *ngIf="!appAnalysisResponse"
+    >
+      <div class="timeline-column timeline-uptime" style="width: 100%"></div>
+    </div>
+  </div>
 </div>
-<div *ngIf="appAnalysisResponse && appAnalysisResponse.abnormalTimePeriods.length > 0" style="height:30px;padding:10px 35px 0px 35px">
-    <div class="row" style="padding: 0px;">
-        <div class="col col-lg-6 visible-lg">
-            <div>
-                <b>Select from the {{appAnalysisResponse.abnormalTimePeriods.length}} period{{ appAnalysisResponse.abnormalTimePeriods.length > 1 ? 's' : '' }} of {{problemDescription}} to see more
-                    information</b>
-            </div>
-        </div>
-        <div class="col col-md-12 col-lg-6">
-            <div style="float:right">
-                <table style="border: none;">
-                    <tbody>
-                        <tr>
-                            <td class="visible-lg">
-                                <b>Selected Time Period</b>
-                            </td>
-                            <td class="time-label">
-                                <b>Start Time</b>
-                            </td>
-                            <td class="time-value">{{startTimeString}}</td>
-                            <td class="time-label">
-                                <b>End Time</b>
-                            </td>
-                            <td class="time-value">{{endTimeString}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<div
+  *ngIf="
+    appAnalysisResponse && appAnalysisResponse.abnormalTimePeriods.length > 0
+  "
+  style="height: 30px; padding: 10px 35px 0px 35px"
+>
+  <div class="row" style="padding: 0px">
+    <div class="col col-lg-6 visible-lg">
+      <div>
+        <b
+          >Select from the
+          {{ appAnalysisResponse.abnormalTimePeriods.length }} period{{
+            appAnalysisResponse.abnormalTimePeriods.length > 1 ? 's' : ''
+          }}
+          of {{ problemDescription }} to see more information</b
+        >
+      </div>
     </div>
+    <div class="col col-md-12 col-lg-6">
+      <div style="float: right">
+        <table style="border: none">
+          <tbody>
+            <tr>
+              <td class="visible-lg">
+                <b>Selected Time Period</b>
+              </td>
+              <td class="time-label">
+                <b>Start Time</b>
+              </td>
+              <td class="time-value">{{ startTimeString }}</td>
+              <td class="time-label">
+                <b>End Time</b>
+              </td>
+              <td class="time-value">{{ endTimeString }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>

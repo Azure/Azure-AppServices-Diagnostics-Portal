@@ -1,17 +1,20 @@
 <div class="solution-container">
-    <div class="title-container">
-
-        <div class="header1">{{title}}</div>
-
-        <div>
-            <solution-type-tag *ngFor="let tag of tags" [tagType]="tag" textSize="14px"></solution-type-tag>
-        </div>
-    </div>
+  <div class="title-container">
+    <div class="header1">{{ title }}</div>
 
     <div>
-        <p>{{description}}</p>
+      <solution-type-tag
+        *ngFor="let tag of tags"
+        [tagType]="tag"
+        textSize="14px"
+      ></solution-type-tag>
     </div>
-    <ng-content></ng-content>
+  </div>
 
-    <solution-feedback [solutionName]="title"></solution-feedback>
+  <div>
+    <p>{{ description }}</p>
+  </div>
+  <ng-content></ng-content>
+
+  <solution-feedback [solutionName]="title"></solution-feedback>
 </div>

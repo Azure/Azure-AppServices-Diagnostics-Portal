@@ -1,35 +1,63 @@
 <collapsible-list-fabric [collapsed]="false" [title]="'Pinned Detectors'">
-    <collapsible-list-item body>
-        <div *ngIf="favoriteDetectorsForDisplay.length>0;else noFavoriteDetector" style="display: flex;">
-            <div *ngFor="let detector of favoriteDetectorsForDisplay" class="favorite-card">
-                <fab-card [isExpandable]="false" [expanded]="true" tabindex="0" (click)="navigate(detector)"
-                    (keyup.enter)="navigate(detector)">
-                    <div header class="favorite-card-header">
-                        <div>{{detector.category | uppercase}}</div>
-                        <div tabindex="0" (keyup.enter)="removeDetector(detector)"
-                            (click)="removeDetector($event,detector)">
-                            <fab-icon iconName="Unpin" ariaLabel="Pin Favorite Detector" [styles]="unPinnedIconStyles">
-                            </fab-icon>
-                        </div>
-                    </div>
-                    <div body style="height: 60px;">
-                        <h4 style="color: rgb(0,120,212);font-weight: 600;">{{detector.name}}</h4>
-                    </div>
-                </fab-card>
+  <collapsible-list-item body>
+    <div
+      *ngIf="favoriteDetectorsForDisplay.length > 0; else noFavoriteDetector"
+      style="display: flex"
+    >
+      <div
+        *ngFor="let detector of favoriteDetectorsForDisplay"
+        class="favorite-card"
+      >
+        <fab-card
+          [isExpandable]="false"
+          [expanded]="true"
+          tabindex="0"
+          (click)="navigate(detector)"
+          (keyup.enter)="navigate(detector)"
+        >
+          <div header class="favorite-card-header">
+            <div>{{ detector.category | uppercase }}</div>
+            <div
+              tabindex="0"
+              (keyup.enter)="removeDetector(detector)"
+              (click)="removeDetector($event, detector)"
+            >
+              <fab-icon
+                iconName="Unpin"
+                ariaLabel="Pin Favorite Detector"
+                [styles]="unPinnedIconStyles"
+              >
+              </fab-icon>
             </div>
-        </div>
-    </collapsible-list-item>
-</collapsible-list-fabric>
-<fab-panel [isOpen]="showPanel" [type]="PanelType.smallFixedFar" [hasCloseButton]="false" [styles]="panelStyles"
-    [isBlocking]="false">
-    <div style="padding: 10px;">
-        <div class="notification-panel-container">
-            <status-icon [status]="panelHealthStatus" class="mr-3"></status-icon>
-            <strong>{{panelMessage}}</strong>
-        </div>
+          </div>
+          <div body style="height: 60px">
+            <h4 style="color: rgb(0, 120, 212); font-weight: 600">
+              {{ detector.name }}
+            </h4>
+          </div>
+        </fab-card>
+      </div>
     </div>
+  </collapsible-list-item>
+</collapsible-list-fabric>
+<fab-panel
+  [isOpen]="showPanel"
+  [type]="PanelType.smallFixedFar"
+  [hasCloseButton]="false"
+  [styles]="panelStyles"
+  [isBlocking]="false"
+>
+  <div style="padding: 10px">
+    <div class="notification-panel-container">
+      <status-icon [status]="panelHealthStatus" class="mr-3"></status-icon>
+      <strong>{{ panelMessage }}</strong>
+    </div>
+  </div>
 </fab-panel>
 
 <ng-template #noFavoriteDetector>
-    <div>Pin your favorite and frequent detectors or analysis here to get quick access to troubleshoot.</div>
+  <div>
+    Pin your favorite and frequent detectors or analysis here to get quick
+    access to troubleshoot.
+  </div>
 </ng-template>

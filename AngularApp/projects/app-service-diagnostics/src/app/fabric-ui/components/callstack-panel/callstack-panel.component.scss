@@ -1,21 +1,21 @@
-@import "../../../../../../diagnostic-data/src/lib/scss/styles.scss";
+@import '../../../../../../diagnostic-data/src/lib/scss/styles.scss';
 .exception {
-    font-weight: 500;
-    margin-bottom: 10px;
+  font-weight: 500;
+  margin-bottom: 10px;
 }
 
 .stack {
-    max-height: 500px;
-    overflow-y: auto;
-    display: inline-block;
-    border-radius: 0px;
-    width: 98%;
+  max-height: 500px;
+  overflow-y: auto;
+  display: inline-block;
+  border-radius: 0px;
+  width: 98%;
 }
 
 .footer {
-    position: absolute;
-    bottom: 40px;
-    width: 100%;
-    height: 60px;
-    left: -1px;
+  position: absolute;
+  bottom: 40px;
+  width: 100%;
+  height: 60px;
+  left: -1px;
 }

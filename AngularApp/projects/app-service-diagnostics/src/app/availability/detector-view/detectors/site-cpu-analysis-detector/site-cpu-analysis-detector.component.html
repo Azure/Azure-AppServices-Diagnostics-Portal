@@ -1,37 +1,49 @@
 <div>
-    <detector-view-problem 
-        [detectorResponse]="detectorResponse" 
-        [detectorFriendlyName]="'High CPU'" 
-        [isHealthyNow]="isHealthyNow"
-        [highlightedDowntime]="highlightedAbnormalTimePeriod">
-    </detector-view-problem>
+  <detector-view-problem
+    [detectorResponse]="detectorResponse"
+    [detectorFriendlyName]="'High CPU'"
+    [isHealthyNow]="isHealthyNow"
+    [highlightedDowntime]="highlightedAbnormalTimePeriod"
+  >
+  </detector-view-problem>
 
-    <feedback-form [source]='getDetectorName()' *ngIf="bladeOpenedFromSupportTicketFlow"></feedback-form>
+  <feedback-form
+    [source]="getDetectorName()"
+    *ngIf="bladeOpenedFromSupportTicketFlow"
+  ></feedback-form>
 
-    <div class="divider" style="margin-bottom: 25px;margin-top: 25px"></div>
+  <div class="divider" style="margin-bottom: 25px; margin-top: 25px"></div>
 </div>
 
-<div style="padding:10px" *ngIf="instanceSelectedDescription">
-    <i><i class="fa fa-line-chart" style="padding:5px;color:rgb(84, 143, 255)"></i>{{instanceSelectedDescription}}</i>
+<div style="padding: 10px" *ngIf="instanceSelectedDescription">
+  <i
+    ><i
+      class="fa fa-line-chart"
+      style="padding: 5px; color: rgb(84, 143, 255)"
+    ></i
+    >{{ instanceSelectedDescription }}</i
+  >
 </div>
 
-<metric-graph 
-    [metricSets]="detectorMetrics" 
-    [title]="detectorMetricsTitle" 
-    [chartType]="metricsChartType" 
-    [description]="detectorMetricsDescription" 
-    [yAxisLabel]="detectorMetricsYAxisLabel"
-    [instancesToSelect]="instancesToSelect">
+<metric-graph
+  [metricSets]="detectorMetrics"
+  [title]="detectorMetricsTitle"
+  [chartType]="metricsChartType"
+  [description]="detectorMetricsDescription"
+  [yAxisLabel]="detectorMetricsYAxisLabel"
+  [instancesToSelect]="instancesToSelect"
+>
 </metric-graph>
 
-<instance-view-graph 
-    [metricSets]="instanceDetailMetrics" 
-    [title]="instanceDetailTitle" 
-    [chartType]="instanceDetailChartType" 
-    [yAxisLabel]="instanceDetailYAxisLabel" 
-    [description]="instanceDetailDescription"
-    [selectedInstance]="instanceToSelect"
-    (updateInstance)="logInstanceSelected($event)">
+<instance-view-graph
+  [metricSets]="instanceDetailMetrics"
+  [title]="instanceDetailTitle"
+  [chartType]="instanceDetailChartType"
+  [yAxisLabel]="instanceDetailYAxisLabel"
+  [description]="instanceDetailDescription"
+  [selectedInstance]="instanceToSelect"
+  (updateInstance)="logInstanceSelected($event)"
+>
 </instance-view-graph>
 
-<feedback-form [source]='getDetectorName()'></feedback-form>
+<feedback-form [source]="getDetectorName()"></feedback-form>

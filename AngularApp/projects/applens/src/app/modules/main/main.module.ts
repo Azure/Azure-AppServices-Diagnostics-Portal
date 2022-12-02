@@ -1,4 +1,4 @@
-import { NgModule, ModuleWithProviders } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MainComponent } from './main/main.component';
@@ -15,12 +15,13 @@ import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown
 import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
 import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
 
-export const MainModuleRoutes : ModuleWithProviders<MainModule> = RouterModule.forChild([
-  {
-    path: '',
-    component: MainComponent
-  }
-])
+export const MainModuleRoutes: ModuleWithProviders<MainModule> =
+  RouterModule.forChild([
+    {
+      path: '',
+      component: MainComponent
+    }
+  ]);
 
 @NgModule({
   imports: [
@@ -43,4 +44,4 @@ export const MainModuleRoutes : ModuleWithProviders<MainModule> = RouterModule.f
   providers: [],
   declarations: [MainComponent]
 })
-export class MainModule { }
+export class MainModule {}

@@ -8,9 +8,8 @@ describe('FabricFeedbackComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ FabricFeedbackComponent ]
-    })
-    .compileComponents();
+      declarations: [FabricFeedbackComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

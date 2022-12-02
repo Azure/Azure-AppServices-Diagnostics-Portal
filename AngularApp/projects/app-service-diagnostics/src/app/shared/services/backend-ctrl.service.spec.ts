@@ -9,7 +9,10 @@ describe('BackendCtrlService', () => {
     });
   });
 
-  it('should be created', inject([BackendCtrlService], (service: BackendCtrlService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [BackendCtrlService],
+    (service: BackendCtrlService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

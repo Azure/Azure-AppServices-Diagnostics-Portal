@@ -1,52 +1,52 @@
 textarea {
-    width: 400px;
+  width: 400px;
 }
 
 .search-container {
-    border: 1px solid rgba(0, 0, 0, 0.14);
-    padding: 5px 15px;
-    width: 80%;
-    height: 350px;
-    overflow-y: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  padding: 5px 15px;
+  width: 80%;
+  height: 350px;
+  overflow-y: hidden;
 }
 
 .blank-output {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 70%;
-    color: #656565;
-    font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70%;
+  color: #656565;
+  font-size: 16px;
 }
 
 #documentSearchInput {
-    width: calc(100% - 200px);
+  width: calc(100% - 200px);
 }
 
 .article-container {
-    display: flex;
-    overflow-y: scroll;
-    height: 270px;
+  display: flex;
+  overflow-y: scroll;
+  height: 270px;
 }
 
 .article {
-    width: 600px;
-    border: 1px solid #dddddd;
-    cursor: pointer;
-    padding:10px;
-    margin-right: 10px;
-    font-size: 13px;
+  width: 600px;
+  border: 1px solid #dddddd;
+  cursor: pointer;
+  padding: 10px;
+  margin-right: 10px;
+  font-size: 13px;
 }
 
 .article > h5 {
-    color: blue;
+  color: blue;
 }
 
 .form-container {
-    padding: 10px 0px;
-    display: flex;
+  padding: 10px 0px;
+  display: flex;
 }
 
 .article-link {
-    color: #646464
+  color: #646464;
 }

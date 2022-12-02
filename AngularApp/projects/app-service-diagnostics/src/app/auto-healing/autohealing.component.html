@@ -1,74 +1,123 @@
 <div class="container" style="margin-bottom: 15px">
   <div class="header1">Auto-Heal</div>
-  <div style="font-size:13px">
-
+  <div style="font-size: 13px">
     <div *ngIf="isWindowsApp; else linuxApp">
-      Auto-Heal provides you with an easy way to take an action when your app is having an
-      unexpected behavior. The triggers
-      and actions allow you to define various conditions based on request count, slow requests, memory
-      limit on which you can take specific actions like restarting the process, logging an event,
-      or starting another executable. Please note that these mitigations should only be considered
-      a temporary workaround until you find the real cause for the issue
-      causing the unexpected behavior.
+      Auto-Heal provides you with an easy way to take an action when your app is
+      having an unexpected behavior. The triggers and actions allow you to
+      define various conditions based on request count, slow requests, memory
+      limit on which you can take specific actions like restarting the process,
+      logging an event, or starting another executable. Please note that these
+      mitigations should only be considered a temporary workaround until you
+      find the real cause for the issue causing the unexpected behavior.
     </div>
     <ng-template #linuxApp>
-      Auto-Heal provides you with an easy way to take an action when your app is having an
-      unexpected behavior. The triggers allow you to define various conditions based on request count,
-      slow requests on which you can restart the app container. Please note that these mitigations
-      should only be considered a temporary workaround until you find the real cause for the issue
-      causing the unexpected behavior.
+      Auto-Heal provides you with an easy way to take an action when your app is
+      having an unexpected behavior. The triggers allow you to define various
+      conditions based on request count, slow requests on which you can restart
+      the app container. Please note that these mitigations should only be
+      considered a temporary workaround until you find the real cause for the
+      issue causing the unexpected behavior.
     </ng-template>
   </div>
 
-  <div style="margin-top:15px" role="tablist" aria-label="AutoHealing options">
-    <button role="tab" type="button" class="btn btn-sm topmenu-button"
-      [ngClass]="{'btn-primary':selectedTab === 'autoHealing'}" (keyup.enter)="selectedTab = 'autoHealing'"
-      (keyup.space)="selectedTab = 'autoHealing'" (click)="selectedTab = 'autoHealing'"
-      [attr.aria-selected]="selectedTab === 'autoHealing'" aria-controls="autoHealingTabControls">
+  <div style="margin-top: 15px" role="tablist" aria-label="AutoHealing options">
+    <button
+      role="tab"
+      type="button"
+      class="btn btn-sm topmenu-button"
+      [ngClass]="{ 'btn-primary': selectedTab === 'autoHealing' }"
+      (keyup.enter)="selectedTab = 'autoHealing'"
+      (keyup.space)="selectedTab = 'autoHealing'"
+      (click)="selectedTab = 'autoHealing'"
+      [attr.aria-selected]="selectedTab === 'autoHealing'"
+      aria-controls="autoHealingTabControls"
+    >
       Custom Auto-Heal Rules
     </button>
-    <button *ngIf="isWindowsApp" type="button" class="btn btn-sm topmenu-button" role="tab"
-      [ngClass]="{'btn-primary':selectedTab === 'proactiveAutoHealing'}" (click)="selectedTab = 'proactiveAutoHealing'"
-      (keyup.space)="selectedTab = 'proactiveAutoHealing'" (keyup.enter)="selectedTab = 'proactiveAutoHealing'"
-      [attr.aria-selected]="selectedTab === 'proactiveAutoHealing'" aria-controls="proactiveAutoHealingTabControls">
+    <button
+      *ngIf="isWindowsApp"
+      type="button"
+      class="btn btn-sm topmenu-button"
+      role="tab"
+      [ngClass]="{ 'btn-primary': selectedTab === 'proactiveAutoHealing' }"
+      (click)="selectedTab = 'proactiveAutoHealing'"
+      (keyup.space)="selectedTab = 'proactiveAutoHealing'"
+      (keyup.enter)="selectedTab = 'proactiveAutoHealing'"
+      [attr.aria-selected]="selectedTab === 'proactiveAutoHealing'"
+      aria-controls="proactiveAutoHealingTabControls"
+    >
       Proactive Auto-Heal
     </button>
-    <button type="button" class="btn btn-sm topmenu-button" role="tab"
-      [ngClass]="{'btn-primary':selectedTab === 'autoHealingHistory'}" (click)="selectedTab = 'autoHealingHistory'"
-      (keyup.space)="selectedTab = 'autoHealingHistory'" (keyup.enter)="selectedTab = 'autoHealingHistory'"
-      [attr.aria-selected]="selectedTab === 'autoHealingHistory'" aria-controls="autoHealingHistoryTabControls">
+    <button
+      type="button"
+      class="btn btn-sm topmenu-button"
+      role="tab"
+      [ngClass]="{ 'btn-primary': selectedTab === 'autoHealingHistory' }"
+      (click)="selectedTab = 'autoHealingHistory'"
+      (keyup.space)="selectedTab = 'autoHealingHistory'"
+      (keyup.enter)="selectedTab = 'autoHealingHistory'"
+      [attr.aria-selected]="selectedTab === 'autoHealingHistory'"
+      aria-controls="autoHealingHistoryTabControls"
+    >
       History
     </button>
   </div>
 
-  <div id="autoHealingTabControls" [attr.aria-expanded]="selectedTab === 'autoHealing'"
-    *ngIf="selectedTab === 'autoHealing'" style="border: 1px solid #adb0b7">
-
-    <div style="margin-left:30px;width:80%">
-      <div class="col" *ngIf="retrievingAutohealSettings" style="margin-top: 15px;margin-bottom: 15px">
-        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+  <div
+    id="autoHealingTabControls"
+    [attr.aria-expanded]="selectedTab === 'autoHealing'"
+    *ngIf="selectedTab === 'autoHealing'"
+    style="border: 1px solid #adb0b7"
+  >
+    <div style="margin-left: 30px; width: 80%">
+      <div
+        class="col"
+        *ngIf="retrievingAutohealSettings"
+        style="margin-top: 15px; margin-bottom: 15px"
+      >
+        <i
+          class="fa fa-circle-o-notch fa-spin spin-icon"
+          aria-hidden="true"
+        ></i>
         Retrieving autoHealing settings...
       </div>
 
-      <div *ngIf="errorMessage" class="alert alert-danger" role="alert" style="margin-top:5px">
+      <div
+        *ngIf="errorMessage"
+        class="alert alert-danger"
+        role="alert"
+        style="margin-top: 5px"
+      >
         {{ errorMessage }}
       </div>
 
       <div *ngIf="!retrievingAutohealSettings && !errorMessage">
-        <div style="margin-top: 15px;">
-          <toggle-button ToggleText="Custom Auto-Heal Rules Enabled" [selected]="autohealingSettings.autoHealEnabled"
-            (selectedChange)="autohealingSettings.autoHealEnabled = $event; checkForChanges()"></toggle-button>
+        <div style="margin-top: 15px">
+          <toggle-button
+            ToggleText="Custom Auto-Heal Rules Enabled"
+            [selected]="autohealingSettings.autoHealEnabled"
+            (selectedChange)="
+              autohealingSettings.autoHealEnabled = $event; checkForChanges()
+            "
+          ></toggle-button>
         </div>
 
         <div *ngIf="autohealingSettings.autoHealEnabled">
           <div class="header2">1. Define Conditions</div>
           <div class="autohealtile-content">
-            <ng-container *ngFor="let trigger of triggers; let i = index;">
+            <ng-container *ngFor="let trigger of triggers; let i = index">
               <ng-container *ngIf="triggers[i].IsEnabled">
-                <div class="autohealtile" tabindex="0" (click)="updateTriggerStatus(i)" role="button"
-                  (keyup.space)="updateTriggerStatus(i)" (keyup.enter)="updateTriggerStatus(i)"
-                  [class.active]="triggerSelected ===  i" [class.activeAction]="triggers[i].IsConfigured"
-                  [attr.aria-pressed]="triggerSelected ===  i">
+                <div
+                  class="autohealtile"
+                  tabindex="0"
+                  (click)="updateTriggerStatus(i)"
+                  role="button"
+                  (keyup.space)="updateTriggerStatus(i)"
+                  (keyup.enter)="updateTriggerStatus(i)"
+                  [class.active]="triggerSelected === i"
+                  [class.activeAction]="triggers[i].IsConfigured"
+                  [attr.aria-pressed]="triggerSelected === i"
+                >
                   <div class="autohealtile-icon">
                     <div class="icon-template">
                       <i [class]="trigger.Icon"></i>
@@ -80,30 +129,50 @@
             </ng-container>
 
             <div class="forminput" *ngIf="triggerSelected >= 0">
-              <autohealing-slowrequests-rule *ngIf="triggerSelected === 0" [rule]="slowRequestRules"
-                (ruleChange)="triggerRuleUpdated($event, triggerSelected)"></autohealing-slowrequests-rule>
-              <autohealing-memory-rule *ngIf="triggerSelected === 1"
-                [rule]="autohealingSettings.autoHealRules.triggers.privateBytesInKB"
-                (ruleChange)="triggerRuleUpdated($event, triggerSelected)"></autohealing-memory-rule>
-              <autohealing-requests-rule *ngIf="triggerSelected === 2"
+              <autohealing-slowrequests-rule
+                *ngIf="triggerSelected === 0"
+                [rule]="slowRequestRules"
+                (ruleChange)="triggerRuleUpdated($event, triggerSelected)"
+              ></autohealing-slowrequests-rule>
+              <autohealing-memory-rule
+                *ngIf="triggerSelected === 1"
+                [rule]="
+                  autohealingSettings.autoHealRules.triggers.privateBytesInKB
+                "
+                (ruleChange)="triggerRuleUpdated($event, triggerSelected)"
+              ></autohealing-memory-rule>
+              <autohealing-requests-rule
+                *ngIf="triggerSelected === 2"
                 [rule]="autohealingSettings.autoHealRules.triggers.requests"
-                (ruleChange)="triggerRuleUpdated($event, triggerSelected)"></autohealing-requests-rule>
-              <autohealing-statuscodes-rule *ngIf="triggerSelected === 3" [rule]="statusCodeRules"
-                (ruleChange)="triggerRuleUpdated($event, triggerSelected)"></autohealing-statuscodes-rule>
+                (ruleChange)="triggerRuleUpdated($event, triggerSelected)"
+              ></autohealing-requests-rule>
+              <autohealing-statuscodes-rule
+                *ngIf="triggerSelected === 3"
+                [rule]="statusCodeRules"
+                (ruleChange)="triggerRuleUpdated($event, triggerSelected)"
+              ></autohealing-statuscodes-rule>
             </div>
           </div>
 
           <div class="header2">2. Configure Actions</div>
           <div class="autohealtile-content">
-            <ng-container *ngFor="let action of actions; let i = index;">
-              <div *ngIf="action.Enabled" class="autohealtile" tabindex="0" [class.activeAction]="actionSelected === i" role="radio"
-                [attr.aria-checked]="actionSelected === i" (click)="updateActionStatus(i)"
-                (keyup.space)="updateActionStatus(i)" (keyup.enter)="updateActionStatus(i)">
+            <ng-container *ngFor="let action of actions; let i = index">
+              <div
+                *ngIf="action.Enabled"
+                class="autohealtile"
+                tabindex="0"
+                [class.activeAction]="actionSelected === i"
+                role="radio"
+                [attr.aria-checked]="actionSelected === i"
+                (click)="updateActionStatus(i)"
+                (keyup.space)="updateActionStatus(i)"
+                (keyup.enter)="updateActionStatus(i)"
+              >
                 <div class="autohealtile-icon">
                   <div class="icon-template">
                     <i [class]="action.Icon" aria-hidden="true"></i>
                   </div>
-                  <div>{{ action.Name }} </div>
+                  <div>{{ action.Name }}</div>
                 </div>
               </div>
             </ng-container>
@@ -111,13 +180,19 @@
             <div [hidden]="actionCollapsed">
               <div [hidden]="actionSelected != 2">
                 <div *ngIf="isWindowsApp">
-                  <autohealing-custom-action [siteToBeDiagnosed]="siteToBeDiagnosed" [customAction]="customAction"
-                    (customActionChanged)="updateCustomAction($event)">
+                  <autohealing-custom-action
+                    [siteToBeDiagnosed]="siteToBeDiagnosed"
+                    [customAction]="customAction"
+                    (customActionChanged)="updateCustomAction($event)"
+                  >
                   </autohealing-custom-action>
                 </div>
                 <div *ngIf="isLinuxDotNetApp">
-                  <autohealing-custom-action-linux [siteToBeDiagnosed]="siteToBeDiagnosed" [customAction]="customAction"
-                    (customActionChanged)="updateCustomAction($event)">
+                  <autohealing-custom-action-linux
+                    [siteToBeDiagnosed]="siteToBeDiagnosed"
+                    [customAction]="customAction"
+                    (customActionChanged)="updateCustomAction($event)"
+                  >
                   </autohealing-custom-action-linux>
                 </div>
               </div>
@@ -126,23 +201,44 @@
 
           <div class="header2">3. Override when Action executes (Optional)</div>
           <div class="autohealtile-content">
-            <div class="autohealtile" tabindex="0" [class.activeAction]="minProcessExecutionTime > 0" role="button"
+            <div
+              class="autohealtile"
+              tabindex="0"
+              [class.activeAction]="minProcessExecutionTime > 0"
+              role="button"
               [attr.aria-pressed]="minProcessExecutionTimeExpanded"
-              (click)="minProcessExecutionTimeExpanded = !minProcessExecutionTimeExpanded"
-              (keyup.space)="minProcessExecutionTimeExpanded = !minProcessExecutionTimeExpanded"
-              (keyup.enter)="minProcessExecutionTimeExpanded = !minProcessExecutionTimeExpanded">
+              (click)="
+                minProcessExecutionTimeExpanded =
+                  !minProcessExecutionTimeExpanded
+              "
+              (keyup.space)="
+                minProcessExecutionTimeExpanded =
+                  !minProcessExecutionTimeExpanded
+              "
+              (keyup.enter)="
+                minProcessExecutionTimeExpanded =
+                  !minProcessExecutionTimeExpanded
+              "
+            >
               <div class="autohealtile-icon">
                 <div class="icon-template">
                   <i class="fa fa-clock-o" aria-hidden="true"></i>
                 </div>
-                <div>Startup Time </div>
+                <div>Startup Time</div>
               </div>
             </div>
           </div>
-          <div class="autohealtile-content" *ngIf="minProcessExecutionTimeExpanded">
+          <div
+            class="autohealtile-content"
+            *ngIf="minProcessExecutionTimeExpanded"
+          >
             <div class="forminput">
-              <autohealing-startup-time [minProcessExecutionTime]="minProcessExecutionTime"
-                (minProcessExecutionTimeChange)="saveMinProcessTimeChanged($event)">
+              <autohealing-startup-time
+                [minProcessExecutionTime]="minProcessExecutionTime"
+                (minProcessExecutionTimeChange)="
+                  saveMinProcessTimeChanged($event)
+                "
+              >
               </autohealing-startup-time>
             </div>
           </div>
@@ -154,7 +250,11 @@
               <autohealing-config-summary [autohealSettings]="originalSettings">
               </autohealing-config-summary>
             </div>
-            <div class="summary" *ngIf="currentSettings && saveEnabled" style="margin-top:25px">
+            <div
+              class="summary"
+              *ngIf="currentSettings && saveEnabled"
+              style="margin-top: 25px"
+            >
               <strong>New Settings</strong>
               <autohealing-config-summary [autohealSettings]="currentSettings">
               </autohealing-config-summary>
@@ -162,13 +262,23 @@
           </div>
         </div>
       </div>
-      <div *ngIf="!retrievingAutohealSettings  && !errorMessage && saveEnabled && validationWarning.length > 0">
-        <table class="ml-4 mt-4 table table-bordered" style="width:90%">
+      <div
+        *ngIf="
+          !retrievingAutohealSettings &&
+          !errorMessage &&
+          saveEnabled &&
+          validationWarning.length > 0
+        "
+      >
+        <table class="ml-4 mt-4 table table-bordered" style="width: 90%">
           <thead>
             <tr>
               <th>
                 <div style="padding: 10px">
-                  <i class="fa health-icon fa-exclamation-triangle warning-icon-color"></i> Warning
+                  <i
+                    class="fa health-icon fa-exclamation-triangle warning-icon-color"
+                  ></i>
+                  Warning
                 </div>
               </th>
             </tr>
@@ -180,41 +290,86 @@
           </tbody>
         </table>
       </div>
-      <div *ngIf="!retrievingAutohealSettings  && !errorMessage" class="saveSection autohealtile-content">
-        <div *ngIf="!saveEnabled && generateSasRecommendation()" class="error-details">
-          <i class="fa health-icon fa-times-circle unhealthy-icon-color" aria-hidden="true"></i>
-          Please reconfigure the storage account by clicking on the Custom Action section above. This
-          ensures that SAS URI gets stored as an environment variable which is more secure than passing
-          the SAS URI as a parameter to the DaaSConsole executable.
+      <div
+        *ngIf="!retrievingAutohealSettings && !errorMessage"
+        class="saveSection autohealtile-content"
+      >
+        <div
+          *ngIf="!saveEnabled && generateSasRecommendation()"
+          class="error-details"
+        >
+          <i
+            class="fa health-icon fa-times-circle unhealthy-icon-color"
+            aria-hidden="true"
+          ></i>
+          Please reconfigure the storage account by clicking on the Custom
+          Action section above. This ensures that SAS URI gets stored as an
+          environment variable which is more secure than passing the SAS URI as
+          a parameter to the DaaSConsole executable.
         </div>
 
-        <button type="button" class="btn btn-sm btn-primary" [disabled]="!saveEnabled"
-          (click)="saveChanges()">Save</button>
-        <button type="button" class="btn btn-sm btn-primary" [disabled]="!saveEnabled" (click)="reset()">Cancel</button>
-        <button *ngIf="isWindowsApp || isLinuxDotNetApp" type="button" class="btn btn-sm btn-primary" (click)="toggleSessionPanel()">View
-          All Sessions</button>
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          [disabled]="!saveEnabled"
+          (click)="saveChanges()"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          [disabled]="!saveEnabled"
+          (click)="reset()"
+        >
+          Cancel
+        </button>
+        <button
+          *ngIf="isWindowsApp || isLinuxDotNetApp"
+          type="button"
+          class="btn btn-sm btn-primary"
+          (click)="toggleSessionPanel()"
+        >
+          View All Sessions
+        </button>
         <div *ngIf="savingAutohealSettings" class="inline ml-3">
-          <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+          <i
+            class="fa fa-circle-o-notch fa-spin spin-icon"
+            aria-hidden="true"
+          ></i>
           Saving AutoHeal settings...
         </div>
-        <div *ngIf="errorMessageSaving" class="alert alert-danger" role="alert" style="margin-top:5px">
+        <div
+          *ngIf="errorMessageSaving"
+          class="alert alert-danger"
+          role="alert"
+          style="margin-top: 5px"
+        >
           {{ errorMessageSaving }}
         </div>
-        <div *ngIf="changesSaved" class="inline" style="color:#0058ad">
+        <div *ngIf="changesSaved" class="inline" style="color: #0058ad">
           Changes Saved!
         </div>
       </div>
     </div>
   </div>
 
-  <div id="proactiveAutoHealingTabControls" *ngIf="selectedTab === 'proactiveAutoHealing' && isWindowsApp"
-    [attr.aria-expanded]="selectedTab === 'proactiveAutoHealing'" style="border: 1px solid #adb0b7">
-    <div style="margin-left:30px;width:80%">
+  <div
+    id="proactiveAutoHealingTabControls"
+    *ngIf="selectedTab === 'proactiveAutoHealing' && isWindowsApp"
+    [attr.aria-expanded]="selectedTab === 'proactiveAutoHealing'"
+    style="border: 1px solid #adb0b7"
+  >
+    <div style="margin-left: 30px; width: 80%">
       <proactive-autohealing></proactive-autohealing>
     </div>
   </div>
-  <div id="autoHealingHistoryTabControls" *ngIf="selectedTab === 'autoHealingHistory'"
-    [attr.aria-expanded]="selectedTab === 'autoHealingHistory'" style="border: 1px solid #adb0b7;min-height: 300px;padding: 5px 10px;">
+  <div
+    id="autoHealingHistoryTabControls"
+    *ngIf="selectedTab === 'autoHealingHistory'"
+    [attr.aria-expanded]="selectedTab === 'autoHealingHistory'"
+    style="border: 1px solid #adb0b7; min-height: 300px; padding: 5px 10px"
+  >
     <detector-container detector="AutoHeal" [hideDetectorControl]="false">
     </detector-container>
   </div>

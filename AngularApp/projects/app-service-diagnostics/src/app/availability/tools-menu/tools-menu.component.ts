@@ -11,129 +11,159 @@ import { RBACService } from '../../shared/services/rbac.service';
 import { LoggingService } from '../../shared/services/logging/logging.service';
 
 @Component({
-    selector: 'tools-menu',
-    templateUrl: 'tools-menu.component.html',
-    styleUrls: ['tools-menu.component.scss']
+  selector: 'tools-menu',
+  templateUrl: 'tools-menu.component.html',
+  styleUrls: ['tools-menu.component.scss']
 })
-export class ToolsMenuComponent  {
+export class ToolsMenuComponent {
+  public supportTools: any[];
 
-    public supportTools: any[];
+  public mitigateLink: string;
 
-    public mitigateLink: string;
+  currentSite: Site;
+  hasReadAccessToServerFarm: boolean;
+  initialized: boolean = false;
 
-    currentSite: Site;
-    hasReadAccessToServerFarm: boolean;
-    initialized: boolean = false;
+  @Input() displayTools: boolean;
 
-    @Input() displayTools: boolean;
+  constructor(
+    private _portalActionService: PortalActionService,
+    private _armService: ArmService,
+    private _authService: AuthService,
+    private _rbacService: RBACService,
+    private _logger: LoggingService
+  ) {
+    this.supportTools = [];
 
-    constructor(private _portalActionService: PortalActionService, private _armService: ArmService, private _authService: AuthService, private _rbacService: RBACService, private _logger: LoggingService) {
-        this.supportTools = [];
+    this._authService
+      .getStartupInfo()
+      .pipe(
+        mergeMap((startUpInfo: StartupInfo) => {
+          return this._armService.getResource<Site>(startUpInfo.resourceId);
+        }),
+        mergeMap((site: ResponseMessageEnvelope<Site>) => {
+          this.currentSite = site.properties;
+          return this._rbacService.hasPermission(
+            this.currentSite.serverFarmId,
+            [this._rbacService.readScope]
+          );
+        })
+      )
+      .subscribe((hasPermission: boolean) => {
+        this.hasReadAccessToServerFarm = hasPermission;
+        this.initialize();
+      });
+  }
 
-        this._authService.getStartupInfo().pipe(
-            mergeMap((startUpInfo: StartupInfo) => {
-                return this._armService.getResource<Site>(startUpInfo.resourceId);
-            }),
-            mergeMap((site: ResponseMessageEnvelope<Site>) => {
-                this.currentSite = site.properties;
-                return this._rbacService.hasPermission(this.currentSite.serverFarmId, [this._rbacService.readScope]);
-            }))
-            .subscribe((hasPermission: boolean) => {
-                this.hasReadAccessToServerFarm = hasPermission;
-                this.initialize();
-            })
-    }
+  initialize() {
+    this.mitigateLink =
+      'https://mawssupport.trafficmanager.net/?sitename=' +
+      this.currentSite.name +
+      '&tab=mitigate&source=ibiza';
 
-    initialize() {
-        this.mitigateLink =  "https://mawssupport.trafficmanager.net/?sitename=" + this.currentSite.name + "&tab=mitigate&source=ibiza";
+    this.supportTools.push({
+      title: 'Metrics per Instance (Apps)',
+      description:
+        'View Performance Counters as well as Metrics for your application',
+      enabled: true,
+      action: () => {
+        this.logToolUse(SupportBladeDefinitions.MetricPerInstance.Identifier);
+        this._portalActionService.openMdmMetricsV3Blade();
+      }
+    });
 
-        this.supportTools.push({
-            title: "Metrics per Instance (Apps)",
-            description: "View Performance Counters as well as Metrics for your application",
-            enabled: true,
-            action: () => { 
-                this.logToolUse(SupportBladeDefinitions.MetricPerInstance.Identifier);
-                this._portalActionService.openMdmMetricsV3Blade();
-            }
-        });
+    this.supportTools.push({
+      title: 'Metrics per Instance (App Service Plan)',
+      description: this.hasReadAccessToServerFarm
+        ? 'View Metrics for applications on your App Service Plan'
+        : 'You do not have access to the the app service plan to which this site belongs',
+      enabled: this.hasReadAccessToServerFarm,
+      action: () => {
+        this.logToolUse(
+          SupportBladeDefinitions.AppServicePlanMetrics.Identifier
+        );
+        this._portalActionService.openMdmMetricsV3Blade(
+          this._portalActionService.currentSite.properties.serverFarmId
+        );
+      }
+    });
 
-        this.supportTools.push({
-            title: "Metrics per Instance (App Service Plan)",
-            description: this.hasReadAccessToServerFarm ? "View Metrics for applications on your App Service Plan" :
-                "You do not have access to the the app service plan to which this site belongs",
-            enabled: this.hasReadAccessToServerFarm,
-            action: () => { 
-                this.logToolUse(SupportBladeDefinitions.AppServicePlanMetrics.Identifier);
-                this._portalActionService.openMdmMetricsV3Blade(this._portalActionService.currentSite.properties.serverFarmId);
-            }
-        });
+    this.supportTools.push({
+      title: 'Live HTTP Traffic',
+      description: 'View Live Requests and Failures to your application',
+      enabled: true,
+      action: () => {
+        this.logToolUse(SupportBladeDefinitions.Pulse.Identifier);
+        this._portalActionService.openSupportIFrame(
+          SupportBladeDefinitions.Pulse
+        );
+      }
+    });
 
-        this.supportTools.push({
-            title: "Live HTTP Traffic",
-            description: "View Live Requests and Failures to your application",
-            enabled: true,
-            action: () => { 
-                this.logToolUse(SupportBladeDefinitions.Pulse.Identifier);
-                this._portalActionService.openSupportIFrame(SupportBladeDefinitions.Pulse)
-            }
-        });
+    this.supportTools.push({
+      title: 'Application Event Logs',
+      description:
+        'View event logs(containing exceptions, errors etc) generated by your application.',
+      enabled: true,
+      action: () => {
+        this.logToolUse(SupportBladeDefinitions.EventViewer.Identifier);
+        this._portalActionService.openSupportIFrame(
+          SupportBladeDefinitions.EventViewer
+        );
+      }
+    });
 
-         this.supportTools.push({
-            title: "Application Event Logs",
-            description: "View event logs(containing exceptions, errors etc) generated by your application.",
-            enabled: true,
-            action: () => { 
-                this.logToolUse(SupportBladeDefinitions.EventViewer.Identifier);
-                this._portalActionService.openSupportIFrame(SupportBladeDefinitions.EventViewer)
-            }
-        });
+    this.supportTools.push({
+      title: 'Failed Request Tracing Logs',
+      description:
+        'View detailed logs for failed requests. This requires you to enable Failed Request Tracing',
+      enabled: true,
+      action: () => {
+        this.logToolUse(SupportBladeDefinitions.FREBLogs.Identifier);
+        this._portalActionService.openSupportIFrame(
+          SupportBladeDefinitions.FREBLogs
+        );
+      }
+    });
 
-        this.supportTools.push({
-            title: "Failed Request Tracing Logs",
-            description: "View detailed logs for failed requests. This requires you to enable Failed Request Tracing",
-            enabled: true,
-            action: () => { 
-                this.logToolUse(SupportBladeDefinitions.FREBLogs.Identifier);
-                this._portalActionService.openSupportIFrame(SupportBladeDefinitions.FREBLogs)
-            }
-        });
+    this.supportTools.push({
+      title: 'Diagnostics as a Service',
+      description:
+        'Run a Diagnostics as a Service session for a deep analysis of your application',
+      enabled: true,
+      action: () => {
+        this.logToolUse(SupportBladeDefinitions.DaaS.Identifier);
+        this._portalActionService.openSupportIFrame(
+          SupportBladeDefinitions.DaaS
+        );
+      }
+    });
 
-        this.supportTools.push({
-            title: "Diagnostics as a Service",
-            description: "Run a Diagnostics as a Service session for a deep analysis of your application",
-            enabled: true,
-            action: () => { 
-                this.logToolUse(SupportBladeDefinitions.DaaS.Identifier);
-                this._portalActionService.openSupportIFrame(SupportBladeDefinitions.DaaS)
-            }
-        });
+    this.supportTools.push({
+      title: 'Mitigate',
+      description:
+        'Set rules for recycling or taking other actions based on memory usage or request patterns',
+      enabled: true,
+      action: () => {
+        this.logToolUse('Mitigate');
+        this._portalActionService.openAutoHealSite();
+      }
+    });
 
-        this.supportTools.push({
-            title: "Mitigate",
-            description: "Set rules for recycling or taking other actions based on memory usage or request patterns",
-            enabled: true,
-            action: () => { 
-                this.logToolUse("Mitigate");
-                this._portalActionService.openAutoHealSite();
-            }
-        });
+    this.supportTools.push({
+      title: 'Advanced Application Restart',
+      description: 'Restart your app on a specific instance',
+      enabled: true,
+      action: () => {
+        this.logToolUse('AdvancedAppRestart');
+        this._portalActionService.openBladeAdvancedAppRestartBladeForCurrentSite();
+      }
+    });
 
-        this.supportTools.push({
-            title: "Advanced Application Restart",
-            description: "Restart your app on a specific instance",
-            enabled: true,
-            action: () => { 
-                this.logToolUse("AdvancedAppRestart");
-                this._portalActionService.openBladeAdvancedAppRestartBladeForCurrentSite();
-            }
-        });
+    this.initialized = true;
+  }
 
-        this.initialized = true;
-    }
-
-    logToolUse(tool: string): void{
-        this._logger.LogClickEvent(tool, "Tools");
-    }
-
-    
+  logToolUse(tool: string): void {
+    this._logger.LogClickEvent(tool, 'Tools');
+  }
 }

@@ -1,7 +1,14 @@
 <div *ngIf="showComponent">
-  <span tabindex="0" [attr.aria-label]="buttonListTitle">{{buttonListTitle}}</span>
-  <button *ngFor="let item of buttonList; let i = index" type="button" class="feedback-button" style="margin-right:20px;min-width:150px" (click)="onClick(item)">
-      {{item.title}}
+  <span tabindex="0" [attr.aria-label]="buttonListTitle">{{
+    buttonListTitle
+  }}</span>
+  <button
+    *ngFor="let item of buttonList; let i = index"
+    type="button"
+    class="feedback-button"
+    style="margin-right: 20px; min-width: 150px"
+    (click)="onClick(item)"
+  >
+    {{ item.title }}
   </button>
 </div>
-

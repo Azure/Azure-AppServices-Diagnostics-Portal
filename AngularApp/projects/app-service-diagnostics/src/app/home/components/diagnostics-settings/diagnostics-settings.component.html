@@ -1,21 +1,30 @@
 <div class="col-6 col-sm-8 mt-5">
   <div class="row form-group" *ngIf="showGeneralError">
     <div class="alert alert-danger" role="alert">
-      <p>{{generalErrorMsg}} </p>
+      <p>{{ generalErrorMsg }}</p>
     </div>
   </div>
   <loader-view *ngIf="updatingTag" message="Saving settings..."></loader-view>
   <div class="row form-group" *ngIf="showResourceProviderRegStatus">
     <span class="fa fa-circle-o-notch fa-spin spin-icon"></span>
-    Change Analysis Resource Provider is {{resourceProviderRegState}}. This will take a few mins. Please check again
-    later.
+    Change Analysis Resource Provider is {{ resourceProviderRegState }}. This
+    will take a few mins. Please check again later.
   </div>
 </div>
 
-<loader-view *ngIf="loadingTable" message = "Loading settings..."></loader-view>
+<loader-view *ngIf="loadingTable" message="Loading settings..."></loader-view>
 <div class="row">
   <div class="col-6 col-sm-8 mt-5">
-    <table class="table" *ngIf= "servicePlan !== null && servicePlan !== undefined && servicePlan.properties !== null && !loadingTable && !updatingTag">
+    <table
+      class="table"
+      *ngIf="
+        servicePlan !== null &&
+        servicePlan !== undefined &&
+        servicePlan.properties !== null &&
+        !loadingTable &&
+        !updatingTag
+      "
+    >
       <thead>
         <tr>
           <th scope="col">NAME</th>
@@ -27,25 +36,38 @@
       <tbody>
         <tr>
           <th scope="row">
-            <span class="fa insight-expand-icon" [class.fa-angle-right]="hasContent() && !isExpanded"
-              [class.fa-angle-down]="hasContent() && isExpanded" (click)="isExpanded = !isExpanded"></span>
-              <i class="asp-icon"></i>
-            {{servicePlan && servicePlan.name ? servicePlan.name : ''}}
+            <span
+              class="fa insight-expand-icon"
+              [class.fa-angle-right]="hasContent() && !isExpanded"
+              [class.fa-angle-down]="hasContent() && isExpanded"
+              (click)="isExpanded = !isExpanded"
+            ></span>
+            <i class="asp-icon"></i>
+            {{ servicePlan && servicePlan.name ? servicePlan.name : '' }}
           </th>
           <td>App Service Plan</td>
-          <td>{{servicePlan.properties.resourceGroup}}</td>
+          <td>{{ servicePlan.properties.resourceGroup }}</td>
           <td>
-          <toggle-button [selected]="isEnabled" (selectedChange)="togglePlanHandler($event)"></toggle-button>
+            <toggle-button
+              [selected]="isEnabled"
+              (selectedChange)="togglePlanHandler($event)"
+            ></toggle-button>
           </td>
         </tr>
         <ng-container *ngIf="hasContent() && isExpanded">
-          <tr *ngFor="let webApp of webApps;let i = index">
-            <th scope="row"> <span class="fa insight-expand-icon webapp-icon-row"></span> <i class="webapp-icon"></i>{{webApp.name}}</th>
+          <tr *ngFor="let webApp of webApps; let i = index">
+            <th scope="row">
+              <span class="fa insight-expand-icon webapp-icon-row"></span>
+              <i class="webapp-icon"></i>{{ webApp.name }}
+            </th>
             <td>Web App</td>
-            <td>{{webApp.properties.resourceGroup}}</td>
+            <td>{{ webApp.properties.resourceGroup }}</td>
             <td>
-            <toggle-button [selected]="enableButtonSelectedArray[i]" (selectedChange)="toggleHandler($event,i)">
-            </toggle-button>
+              <toggle-button
+                [selected]="enableButtonSelectedArray[i]"
+                (selectedChange)="toggleHandler($event, i)"
+              >
+              </toggle-button>
             </td>
           </tr>
         </ng-container>
@@ -54,8 +76,10 @@
   </div>
 </div>
 
-<button class="btn btn-primary" (click)="saveSettings()" [disabled]="!isSaveBtnEnable">Save</button>
-
-
-
-
+<button
+  class="btn btn-primary"
+  (click)="saveSettings()"
+  [disabled]="!isSaveBtnEnable"
+>
+  Save
+</button>

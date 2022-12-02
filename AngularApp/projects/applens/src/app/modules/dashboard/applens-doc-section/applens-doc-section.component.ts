@@ -1,10 +1,23 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { inputControlHeight } from '@uifabric/azure-themes/lib/azure/Constants';
-import { IButtonStyles, ICommandBarItemProps, ICommandBarProps, IPivotProps } from 'office-ui-fabric-react';
+import {
+  IButtonStyles,
+  ICommandBarItemProps,
+  ICommandBarProps,
+  IPivotProps
+} from 'office-ui-fabric-react';
 import { CompilationProperties } from 'projects/diagnostic-data/src/lib/models/compilation-properties';
-import { CompilationTraceOutputDetails, LocationSpan, Position, QueryResponse } from 'projects/diagnostic-data/src/lib/models/compiler-response';
-import { DetectorResponse, HealthStatus } from 'projects/diagnostic-data/src/lib/models/detector';
+import {
+  CompilationTraceOutputDetails,
+  LocationSpan,
+  Position,
+  QueryResponse
+} from 'projects/diagnostic-data/src/lib/models/compiler-response';
+import {
+  DetectorResponse,
+  HealthStatus
+} from 'projects/diagnostic-data/src/lib/models/detector';
 import { DetectorControlService } from 'projects/diagnostic-data/src/lib/services/detector-control.service';
 import { BehaviorSubject } from 'rxjs';
 import { getConfigFileParsingDiagnostics } from 'typescript';
@@ -20,11 +33,11 @@ const moment = momentNs;
   styleUrls: ['./applens-doc-section.component.scss']
 })
 export class ApplensDocSectionComponent implements OnInit {
-  codeObservable: BehaviorSubject<string> = new BehaviorSubject("");
+  codeObservable: BehaviorSubject<string> = new BehaviorSubject('');
 
   @Input() files = [];
   @Input() fileNames = [];
-  @Input() image = "";
+  @Input() image = '';
 
   lightOptions = {
     theme: 'vs',
@@ -52,7 +65,7 @@ export class ApplensDocSectionComponent implements OnInit {
 
   darkMode = false;
 
-  editorOptions = this.lightOptions
+  editorOptions = this.lightOptions;
 
   isMultipleSamples: boolean = false;
 
@@ -72,7 +85,7 @@ export class ApplensDocSectionComponent implements OnInit {
       color: '#e6e6e6',
       height: '29px'
     }
-  }
+  };
 
   commandBarButtonStyle: IButtonStyles = {
     root: {
@@ -83,33 +96,34 @@ export class ApplensDocSectionComponent implements OnInit {
       backgroundColor: '#e6e6e6',
       paddingRight: '8px'
     }
-  }
+  };
 
   pivotStyle: IPivotProps['styles'] = {
     linkIsSelected: {
       selectors: {
         '::before': {
-        bottom: '39px',
-        height: '5px',
-        left: '0px',
-        right: '0px'
+          bottom: '39px',
+          height: '5px',
+          left: '0px',
+          right: '0px'
         }
       },
       backgroundColor: '#e6e6e6'
     }
-  }
+  };
 
-  codeWindowStyle = "background-color: #e9e9e9; padding-left: 15px; padding-right: 15px; padding-top: 4px; padding-bottom: 10px;"
+  codeWindowStyle =
+    'background-color: #e9e9e9; padding-left: 15px; padding-right: 15px; padding-top: 4px; padding-bottom: 10px;';
 
-  displayCodeButtonText = "Show Code";
+  displayCodeButtonText = 'Show Code';
   codeHidden = true;
 
   runButtonDisabled: boolean = false;
   buildOutput: string[];
   detailedCompilationTraces: CompilationTraceOutputDetails[];
   reference: object = {};
-  runButtonText = "Run";
-  compilationPackage: CompilationProperties  = new CompilationProperties();
+  runButtonText = 'Run';
+  compilationPackage: CompilationProperties = new CompilationProperties();
   queryResponse: QueryResponse<DetectorResponse>;
   public showDetailedCompilationTraces: boolean = true;
   runButtonStyle: IButtonStyles = {
@@ -119,96 +133,104 @@ export class ApplensDocSectionComponent implements OnInit {
     },
     rootDisabled: {
       pointerEvents: 'auto',
-      cursor: "not-allowed",
-      color: "grey",
+      cursor: 'not-allowed',
+      color: 'grey',
       backgroundColor: '#e6e6e6 !important'
     }
   };
   runIcon: any = { iconName: 'Play' };
   private _monacoEditor: monaco.editor.ICodeEditor = null;
   errorState: any;
-  startTime: momentNs.Moment = moment.utc().subtract(1, 'days')
+  startTime: momentNs.Moment = moment.utc().subtract(1, 'days');
   endTime: momentNs.Moment = moment.utc();
-  
-  
 
-  constructor(private diagnosticApiService: ApplensDiagnosticService, private _activatedRoute: ActivatedRoute, private _detectorControlService: DetectorControlService, private _themeService: GenericThemeService) { }
+  constructor(
+    private diagnosticApiService: ApplensDiagnosticService,
+    private _activatedRoute: ActivatedRoute,
+    private _detectorControlService: DetectorControlService,
+    private _themeService: GenericThemeService
+  ) {}
 
   ngOnInit() {
     this._themeService.currentThemeSub.subscribe((theme) => {
-      let themeColor = this._themeService.getPropertyValue("--docsCodeWindowCommandbar");
-      this.editorOptions = theme == "dark" ? this.darkOptions : this.lightOptions;
-      
-        this.commandbarStyle = {
-          root: {
-            backgroundColor: `${themeColor} !important`,
-            color: themeColor,
-            height: '29px'
-          },
-          primarySet: {
-            backgroundColor: `${themeColor} !important`,
-            color: themeColor,
-            height: '29px'
-          },
-          secondarySet: {
-            backgroundColor: `${themeColor} !important`,
-            color: themeColor,
-            height: '29px'
-          }
-        };
+      let themeColor = this._themeService.getPropertyValue(
+        '--docsCodeWindowCommandbar'
+      );
+      this.editorOptions =
+        theme == 'dark' ? this.darkOptions : this.lightOptions;
 
-        this.commandBarButtonStyle = {
-          root: {
-            backgroundColor: themeColor,
-            padding: '0px'
-          },
-          flexContainer: {
-            backgroundColor: themeColor,
-            paddingRight: '8px'
-          }
-        };
+      this.commandbarStyle = {
+        root: {
+          backgroundColor: `${themeColor} !important`,
+          color: themeColor,
+          height: '29px'
+        },
+        primarySet: {
+          backgroundColor: `${themeColor} !important`,
+          color: themeColor,
+          height: '29px'
+        },
+        secondarySet: {
+          backgroundColor: `${themeColor} !important`,
+          color: themeColor,
+          height: '29px'
+        }
+      };
 
-        this.pivotStyle = {
-          linkIsSelected: {
-            selectors: {
-              '::before': {
+      this.commandBarButtonStyle = {
+        root: {
+          backgroundColor: themeColor,
+          padding: '0px'
+        },
+        flexContainer: {
+          backgroundColor: themeColor,
+          paddingRight: '8px'
+        }
+      };
+
+      this.pivotStyle = {
+        linkIsSelected: {
+          selectors: {
+            '::before': {
               bottom: '39px',
               height: '5px',
               left: '0px',
               right: '0px'
-              }
-            },
-            backgroundColor: themeColor
-          }
-        };
-
-        this.runButtonStyle = {
-          root: {
-            cursor: 'default',
-            backgroundColor: `${themeColor} !important`
+            }
           },
-          rootDisabled: {
-            pointerEvents: 'auto',
-            cursor: "not-allowed",
-            color: "grey",
-            backgroundColor: `${themeColor} !important`
-          }
-        };
+          backgroundColor: themeColor
+        }
+      };
+
+      this.runButtonStyle = {
+        root: {
+          cursor: 'default',
+          backgroundColor: `${themeColor} !important`
+        },
+        rootDisabled: {
+          pointerEvents: 'auto',
+          cursor: 'not-allowed',
+          color: 'grey',
+          backgroundColor: `${themeColor} !important`
+        }
+      };
     });
   }
 
-  ngOnChanges(){
-  }
-  
-  copyCode(code){
+  ngOnChanges() {}
+
+  copyCode(code) {
     navigator.clipboard.writeText(code);
   }
 
-  toggleDisplayCode(){
+  toggleDisplayCode() {
     this.codeHidden = !this.codeHidden;
-    this.displayCodeButtonText = this.displayCodeButtonText === "Show Code" ? "Hide Code" : "Show Code";
-    if(this.image != "")
-      document.getElementById(this.image).style.display = this.codeHidden ? 'unset' : 'none';
+    this.displayCodeButtonText =
+      this.displayCodeButtonText === 'Show Code' ? 'Hide Code' : 'Show Code';
+    if (this.image != '')
+      document.getElementById(this.image).style.display = this.codeHidden
+        ? 'unset'
+        : 'none';
   }
 
   runCompilation(code: string) {
@@ -217,7 +239,7 @@ export class ApplensDocSectionComponent implements OnInit {
       return;
     }
     this.buildOutput = [];
-    this.buildOutput.push("------ Build started ------");
+    this.buildOutput.push('------ Build started ------');
     this.detailedCompilationTraces = [];
     this.detailedCompilationTraces.push({
       severity: HealthStatus.None,
@@ -242,7 +264,7 @@ export class ApplensDocSectionComponent implements OnInit {
     };
 
     this.disableRunButton();
-    this.runButtonText = "Running";
+    this.runButtonText = 'Running';
 
     let isSystemInvoker: boolean = false;
 
@@ -252,60 +274,181 @@ export class ApplensDocSectionComponent implements OnInit {
       queryParams.endTime = undefined;
       let serializedParams = this.serializeQueryParams(queryParams);
       if (serializedParams && serializedParams.length > 0) {
-        serializedParams = "&" + serializedParams;
-      };
-      this.diagnosticApiService.getCompilerResponse(body, isSystemInvoker, "__documentation_sample__", this._detectorControlService.startTimeString,
-        this._detectorControlService.endTimeString, '', '', {
-        scriptETag: this.compilationPackage.scriptETag,
-        assemblyName: this.compilationPackage.assemblyName,
-        formQueryParams: serializedParams,
-        getFullResponse: true
-      }, "__documentation_sample__", true)
-        .subscribe((response: any) => {
-          this.queryResponse = response.body;
-          
-          this.enableRunButton();
-          this.runButtonText = "Run";
-          if (this.queryResponse.compilationOutput.compilationTraces) {
-            this.queryResponse.compilationOutput.compilationTraces.forEach(element => {
-              this.buildOutput.push(element);
-            });
-          }
-          if (this.queryResponse.compilationOutput.detailedCompilationTraces) {
-            this.showDetailedCompilationTraces = true;
-            this.queryResponse.compilationOutput.detailedCompilationTraces.forEach(traceElement => {
-              this.detailedCompilationTraces.push(traceElement);
-            });
-          }
-          else {
-            this.showDetailedCompilationTraces = false;
-          }
-          // If the script etag returned by the server does not match the previous script-etag, update the values in memory
-          if (response.headers.get('diag-script-etag') != undefined && this.compilationPackage.scriptETag !== response.headers.get('diag-script-etag')) {
-            this.compilationPackage.scriptETag = response.headers.get('diag-script-etag');
-            this.compilationPackage.assemblyName = this.queryResponse.compilationOutput.assemblyName;
-            this.compilationPackage.assemblyBytes = this.queryResponse.compilationOutput.assemblyBytes;
-            this.compilationPackage.pdbBytes = this.queryResponse.compilationOutput.pdbBytes;
-          }
+        serializedParams = '&' + serializedParams;
+      }
+      this.diagnosticApiService
+        .getCompilerResponse(
+          body,
+          isSystemInvoker,
+          '__documentation_sample__',
+          this._detectorControlService.startTimeString,
+          this._detectorControlService.endTimeString,
+          '',
+          '',
+          {
+            scriptETag: this.compilationPackage.scriptETag,
+            assemblyName: this.compilationPackage.assemblyName,
+            formQueryParams: serializedParams,
+            getFullResponse: true
+          },
+          '__documentation_sample__',
+          true
+        )
+        .subscribe(
+          (response: any) => {
+            this.queryResponse = response.body;
 
-          if (this.queryResponse.compilationOutput.compilationSucceeded === true) {
-            this.buildOutput.push("========== Build: 1 succeeded, 0 failed ==========");
+            this.enableRunButton();
+            this.runButtonText = 'Run';
+            if (this.queryResponse.compilationOutput.compilationTraces) {
+              this.queryResponse.compilationOutput.compilationTraces.forEach(
+                (element) => {
+                  this.buildOutput.push(element);
+                }
+              );
+            }
+            if (
+              this.queryResponse.compilationOutput.detailedCompilationTraces
+            ) {
+              this.showDetailedCompilationTraces = true;
+              this.queryResponse.compilationOutput.detailedCompilationTraces.forEach(
+                (traceElement) => {
+                  this.detailedCompilationTraces.push(traceElement);
+                }
+              );
+            } else {
+              this.showDetailedCompilationTraces = false;
+            }
+            // If the script etag returned by the server does not match the previous script-etag, update the values in memory
+            if (
+              response.headers.get('diag-script-etag') != undefined &&
+              this.compilationPackage.scriptETag !==
+                response.headers.get('diag-script-etag')
+            ) {
+              this.compilationPackage.scriptETag =
+                response.headers.get('diag-script-etag');
+              this.compilationPackage.assemblyName =
+                this.queryResponse.compilationOutput.assemblyName;
+              this.compilationPackage.assemblyBytes =
+                this.queryResponse.compilationOutput.assemblyBytes;
+              this.compilationPackage.pdbBytes =
+                this.queryResponse.compilationOutput.pdbBytes;
+            }
+
+            if (
+              this.queryResponse.compilationOutput.compilationSucceeded === true
+            ) {
+              this.buildOutput.push(
+                '========== Build: 1 succeeded, 0 failed =========='
+              );
+              this.detailedCompilationTraces.push({
+                severity: HealthStatus.None,
+                message: '========== Build: 1 succeeded, 0 failed ==========',
+                location: {
+                  start: {
+                    linePos: 0,
+                    colPos: 0
+                  } as Position,
+                  end: {
+                    linePos: 0,
+                    colPos: 0
+                  } as Position
+                } as LocationSpan
+              } as CompilationTraceOutputDetails);
+            } else {
+              this.buildOutput.push(
+                '========== Build: 0 succeeded, 1 failed =========='
+              );
+              this.detailedCompilationTraces.push({
+                severity: HealthStatus.None,
+                message: '========== Build: 0 succeeded, 1 failed ==========',
+                location: {
+                  start: {
+                    linePos: 0,
+                    colPos: 0
+                  } as Position,
+                  end: {
+                    linePos: 0,
+                    colPos: 0
+                  } as Position
+                } as LocationSpan
+              } as CompilationTraceOutputDetails);
+            }
+
+            if (this.queryResponse.runtimeLogOutput) {
+              this.queryResponse.runtimeLogOutput.forEach((element) => {
+                if (element.exception) {
+                  this.buildOutput.push(
+                    element.timeStamp +
+                      ': ' +
+                      element.message +
+                      ': ' +
+                      element.exception.ClassName +
+                      ': ' +
+                      element.exception.Message +
+                      '\r\n' +
+                      element.exception.StackTraceString
+                  );
+
+                  this.detailedCompilationTraces.push({
+                    severity: HealthStatus.Critical,
+                    message: `${element.timeStamp}: ${element.message}: ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`,
+                    location: {
+                      start: {
+                        linePos: 0,
+                        colPos: 0
+                      },
+                      end: {
+                        linePos: 0,
+                        colPos: 0
+                      }
+                    }
+                  });
+                } else {
+                  this.buildOutput.push(
+                    element.timeStamp + ': ' + element.message
+                  );
+                  this.detailedCompilationTraces.push({
+                    severity: HealthStatus.Info,
+                    message: `${element.timeStamp}: ${element.message}`,
+                    location: {
+                      start: {
+                        linePos: 0,
+                        colPos: 0
+                      },
+                      end: {
+                        linePos: 0,
+                        colPos: 0
+                      }
+                    }
+                  });
+                }
+              });
+            }
+          },
+          (error: any) => {
+            this.enableRunButton();
+            this.runButtonText = 'Run';
+            this.buildOutput.push(
+              'Something went wrong during detector invocation.'
+            );
+            this.buildOutput.push(
+              '========== Build: 0 succeeded, 1 failed =========='
+            );
             this.detailedCompilationTraces.push({
-              severity: HealthStatus.None,
-              message: '========== Build: 1 succeeded, 0 failed ==========',
+              severity: HealthStatus.Critical,
+              message: 'Something went wrong during detector invocation.',
               location: {
                 start: {
                   linePos: 0,
                   colPos: 0
-                } as Position,
+                },
                 end: {
                   linePos: 0,
                   colPos: 0
-                } as Position
-              } as LocationSpan
-            } as CompilationTraceOutputDetails);
-          } else {
-            this.buildOutput.push("========== Build: 0 succeeded, 1 failed ==========");
+                }
+              }
+            });
             this.detailedCompilationTraces.push({
               severity: HealthStatus.None,
               message: '========== Build: 0 succeeded, 1 failed ==========',
@@ -313,93 +456,15 @@ export class ApplensDocSectionComponent implements OnInit {
                 start: {
                   linePos: 0,
                   colPos: 0
-                } as Position,
+                },
                 end: {
                   linePos: 0,
                   colPos: 0
-                } as Position
-              } as LocationSpan
-            } as CompilationTraceOutputDetails);
-          }
-
-          if (this.queryResponse.runtimeLogOutput) {
-            this.queryResponse.runtimeLogOutput.forEach(element => {
-              if (element.exception) {
-                this.buildOutput.push(element.timeStamp + ": " +
-                  element.message + ": " +
-                  element.exception.ClassName + ": " +
-                  element.exception.Message + "\r\n" +
-                  element.exception.StackTraceString);
-
-                this.detailedCompilationTraces.push({
-                  severity: HealthStatus.Critical,
-                  message: `${element.timeStamp}: ${element.message}: ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`,
-                  location: {
-                    start: {
-                      linePos: 0,
-                      colPos: 0
-                    },
-                    end: {
-                      linePos: 0,
-                      colPos: 0
-                    }
-                  }
-                });
-              }
-              else {
-                this.buildOutput.push(element.timeStamp + ": " + element.message);
-                this.detailedCompilationTraces.push({
-                  severity: HealthStatus.Info,
-                  message: `${element.timeStamp}: ${element.message}`,
-                  location: {
-                    start: {
-                      linePos: 0,
-                      colPos: 0
-                    },
-                    end: {
-                      linePos: 0,
-                      colPos: 0
-                    }
-                  }
-                });
+                }
               }
             });
           }
-
-        }, ((error: any) => {
-          this.enableRunButton();
-          this.runButtonText = "Run";
-          this.buildOutput.push("Something went wrong during detector invocation.");
-          this.buildOutput.push("========== Build: 0 succeeded, 1 failed ==========");
-          this.detailedCompilationTraces.push({
-            severity: HealthStatus.Critical,
-            message: 'Something went wrong during detector invocation.',
-            location: {
-              start: {
-                linePos: 0,
-                colPos: 0
-              },
-              end: {
-                linePos: 0,
-                colPos: 0
-              }
-            }
-          });
-          this.detailedCompilationTraces.push({
-            severity: HealthStatus.None,
-            message: '========== Build: 0 succeeded, 1 failed ==========',
-            location: {
-              start: {
-                linePos: 0,
-                colPos: 0
-              },
-              end: {
-                linePos: 0,
-                colPos: 0
-              }
-            }
-          });
-        }));
+        );
     });
   }
 
@@ -424,8 +489,8 @@ export class ApplensDocSectionComponent implements OnInit {
     var str = [];
     for (var p in obj)
       if (obj.hasOwnProperty(p) && obj[p] !== undefined) {
-        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
       }
-    return str.join("&");
+    return str.join('&');
   }
 }

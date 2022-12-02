@@ -19,7 +19,7 @@ import { CommittedMemoryUsageComponent } from './detector-view/detectors/committ
 import { PageFileOperationsComponent } from './detector-view/detectors/page-operations-detector/page-operations-detector.component';
 import { ToolsMenuComponent } from './tools-menu/tools-menu.component';
 import { AvailabilityAndPerformanceCategoryRouteConfig } from './availability.routeconfig';
-import { AspNetCoreComponent } from "./detector-view/detectors/aspnetcore-detector/aspnetcore-detector.component";
+import { AspNetCoreComponent } from './detector-view/detectors/aspnetcore-detector/aspnetcore-detector.component';
 import { AppInsightsTileComponent } from './app-insights/app-insights-tile.component';
 import { AppInsightsExceptionsComponent } from './app-insights/exceptions/app-insights-exceptions.component';
 import { AppInsightsDependenciesComponent } from './app-insights/dependencies/app-insights-dependencies.component';
@@ -28,44 +28,43 @@ import { AutohealingDetectorComponent } from './detector-view/detectors/autoheal
 import { RerouteResolver } from './reroute/reroute.resolver';
 
 @NgModule({
-    declarations: [
-        AvailabilityComponent,
-        DetectorViewBaseComponent,
-        AppCurrentHealthComponent,
-        SolutionListComponent,
-        ToolsMenuComponent,
-        DetectorViewInstanceDetailComponent,
-        DetectorViewProblemComponent,
-        SiteCpuAnalysisDetectorComponent,
-        SiteMemoryAnalysisDetectorComponent,
-        ThreadDetectorComponent,
-        FrebAnalysisDetectorComponent,
-        PhpLogAnalyzerComponent,
-        DockerContainerIntializationComponent,
-        CommittedMemoryUsageComponent,
-        PageFileOperationsComponent,
-        AspNetCoreComponent,
-        AppInsightsTileComponent,
-        AppInsightsExceptionsComponent,
-        AppInsightsDependenciesComponent,
-        DetectorLoaderComponent,
-        AutohealingDetectorComponent,
-    ],
-    imports: [
-        RouterModule.forChild(AvailabilityAndPerformanceCategoryRouteConfig),
-        SharedModule,
-        SolutionsModule,
-        DiagnosticDataModule
-    ],
-    exports: [
-        DetectorViewProblemComponent,
-        AppInsightsTileComponent,
-        AutohealingDetectorComponent,
-        DetectorLoaderComponent
-    ],
-    providers:[RerouteResolver]
+  declarations: [
+    AvailabilityComponent,
+    DetectorViewBaseComponent,
+    AppCurrentHealthComponent,
+    SolutionListComponent,
+    ToolsMenuComponent,
+    DetectorViewInstanceDetailComponent,
+    DetectorViewProblemComponent,
+    SiteCpuAnalysisDetectorComponent,
+    SiteMemoryAnalysisDetectorComponent,
+    ThreadDetectorComponent,
+    FrebAnalysisDetectorComponent,
+    PhpLogAnalyzerComponent,
+    DockerContainerIntializationComponent,
+    CommittedMemoryUsageComponent,
+    PageFileOperationsComponent,
+    AspNetCoreComponent,
+    AppInsightsTileComponent,
+    AppInsightsExceptionsComponent,
+    AppInsightsDependenciesComponent,
+    DetectorLoaderComponent,
+    AutohealingDetectorComponent
+  ],
+  imports: [
+    RouterModule.forChild(AvailabilityAndPerformanceCategoryRouteConfig),
+    SharedModule,
+    SolutionsModule,
+    DiagnosticDataModule
+  ],
+  exports: [
+    DetectorViewProblemComponent,
+    AppInsightsTileComponent,
+    AutohealingDetectorComponent,
+    DetectorLoaderComponent
+  ],
+  providers: [RerouteResolver]
 })
 export class AvailabilityModule {
-    constructor(
-    ) { }
+  constructor() {}
 }

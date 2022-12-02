@@ -1,130 +1,130 @@
 .main-container {
-   // background-color: #f2f2f2;
-   background-color: var(--bodyBackground);
+  // background-color: #f2f2f2;
+  background-color: var(--bodyBackground);
 }
 
 .main-row {
-    padding-top: 30px;
+  padding-top: 30px;
 }
 
 .go-form {
-    padding: 1em;
-    text-align: right;
+  padding: 1em;
+  text-align: right;
 }
 
 .go-button {
-    width: 50px;
-    margin-top: 10px;
+  width: 50px;
+  margin-top: 10px;
 }
 
 .main-content {
-    display: flex;
-    flex-direction: column;
-    margin: 0px auto;
-    width: 600px;
-    background: var(--bodyBackground);
-    padding: 28px 48px;
+  display: flex;
+  flex-direction: column;
+  margin: 0px auto;
+  width: 600px;
+  background: var(--bodyBackground);
+  padding: 28px 48px;
 }
 
 .main-content-header {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .main-content-header > h3 {
-    font-size: 16px;
-    font-weight: 600;
-    margin: 10px 0px;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 10px 0px;
 }
 
 .main-content-header > img {
-    width: 22px;
-    height: 22px;
+  width: 22px;
+  height: 22px;
 }
 
 .dropdown-menu > .disabled {
-    cursor: not-allowed;
-    color: #dddddd;
+  cursor: not-allowed;
+  color: #dddddd;
 }
 
 .section {
-    margin-top: 26px ;
+  margin-top: 26px;
 }
 
 ::ng-deep .section label {
-    font-weight: 400;
-    color: var(--labelText);
-    font-size: 14px;
+  font-weight: 400;
+  color: var(--labelText);
+  font-size: 14px;
 }
 
 .time-picker {
-    border: 1px solid rgb(166,166,166);
-    min-width: 300px;
-    display: flex;
-    justify-content: space-between;
-    padding: 0px 12px;
-    height: 32px;
-    align-items: center;
+  border: 1px solid rgb(166, 166, 166);
+  min-width: 300px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 12px;
+  height: 32px;
+  align-items: center;
 }
 
 .time-picker :hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .error-message-container {
-    display: flex;
+  display: flex;
 }
 
 .error-message {
-    font-size: 12px;
-    line-height: 15px;
-    color: #A4262C;
-    word-break: break-word;
+  font-size: 12px;
+  line-height: 15px;
+  color: #a4262c;
+  word-break: break-word;
 }
 
 .required {
-    color: #a4262c;
+  color: #a4262c;
 }
 
-.welcome-word{
-    margin: 20px 0px;
-    width: 600px;
-    font-weight: 600;
-    font-size: 16px;
+.welcome-word {
+  margin: 20px 0px;
+  width: 600px;
+  font-weight: 600;
+  font-size: 16px;
 }
 
 .main-card {
-    border: 1px solid #EAEAEA;
-    box-shadow: 0px 0.3px 0.9px rgba(0, 0, 0, 0.1), 0px 1.6px 3.6px rgba(0, 0, 0, 0.13);
-    background: var(--bodyBackground);
-    padding: 20px;
+  border: 1px solid #eaeaea;
+  box-shadow: 0px 0.3px 0.9px rgba(0, 0, 0, 0.1),
+    0px 1.6px 3.6px rgba(0, 0, 0, 0.13);
+  background: var(--bodyBackground);
+  padding: 20px;
 }
 
 .recent-resource:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .recent-resource:focus-visible {
-    border: solid 1px var(--bodyText);
+  border: solid 1px var(--bodyText);
 }
 
 .applens-documentation:focus-visible {
-    border: solid 1px var(--bodyText);
+  border: solid 1px var(--bodyText);
 }
 
-
 .view-resource-link {
-    margin-left: 300px;
-    margin-top: 5px;
+  margin-left: 300px;
+  margin-top: 5px;
 }
 
 .time-picker-str {
   //  color: #605E5C
-  color: var(--timePickerStr)
+  color: var(--timePickerStr);
 }
 
 .resource-content {
-    margin:10px;
+  margin: 10px;
 }
 
 .resource-content-container {
@@ -133,7 +133,7 @@
 }
 
 .btn-continuebtn:focus-visible {
-    border: solid 2px black;
-    background-color: #0367AC;
-    margin-top: -2px; 
+  border: solid 2px black;
+  background-color: #0367ac;
+  margin-top: -2px;
 }

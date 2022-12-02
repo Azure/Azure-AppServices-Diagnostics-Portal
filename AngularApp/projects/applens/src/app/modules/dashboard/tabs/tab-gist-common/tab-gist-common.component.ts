@@ -3,7 +3,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { DiagnosticApiService } from 'projects/applens/src/app/shared/services/diagnostic-api.service';
 import { ResourceService } from 'projects/applens/src/app/shared/services/resource.service';
 import { filter } from 'rxjs/operators';
-import { TabKey, Tab } from '../tab-key';
+import { Tab, TabKey } from '../tab-key';
 
 @Component({
   selector: 'tab-gist-common',
@@ -15,31 +15,45 @@ export class TabGistCommonComponent implements OnInit {
   commitHistoryEnabled: boolean = false;
   tabs: Tab[] = [
     {
-      headerText: "Develop",
+      headerText: 'Develop',
       itemKey: TabKey.Develop
     },
     {
-      headerText: "Commit History",
+      headerText: 'Commit History',
       itemKey: TabKey.CommitHistory
     }
   ];
   selectedTabKey: string;
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _diagnosticApiService: DiagnosticApiService, private resourceService: ResourceService) { }
+  constructor(
+    private _router: Router,
+    private _activatedRoute: ActivatedRoute,
+    private _diagnosticApiService: DiagnosticApiService,
+    private resourceService: ResourceService
+  ) {}
 
   ngOnInit() {
     //hide commit history
-    this._diagnosticApiService.getEnableDetectorDevelopment().subscribe(enabledDetectorDevelopment => {
-      this.showTabs = enabledDetectorDevelopment;
-      if (this.showTabs){
-        this._diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(config => {
-          if (config.graduationEnabled) this.showTabs = false;
-        });
-      }
-    });
-    this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(e => {
-      const key: string = this._activatedRoute.firstChild.snapshot.data["tabKey"];
-      this.selectedTabKey = key ? key : this.tabs[0].itemKey;
-    });
+    this._diagnosticApiService
+      .getEnableDetectorDevelopment()
+      .subscribe((enabledDetectorDevelopment) => {
+        this.showTabs = enabledDetectorDevelopment;
+        if (this.showTabs) {
+          this._diagnosticApiService
+            .getDevopsConfig(
+              `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`
+            )
+            .subscribe((config) => {
+              if (config.graduationEnabled) this.showTabs = false;
+            });
+        }
+      });
+    this._router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((e) => {
+        const key: string =
+          this._activatedRoute.firstChild.snapshot.data['tabKey'];
+        this.selectedTabKey = key ? key : this.tabs[0].itemKey;
+      });
   }
 
   navigateToData(ev: any) {
@@ -47,12 +61,12 @@ export class TabGistCommonComponent implements OnInit {
 
     switch (key) {
       case TabKey.Develop:
-        this._router.navigate(["./"], {
+        this._router.navigate(['./'], {
           relativeTo: this._activatedRoute
         });
         break;
       case TabKey.CommitHistory:
-        this._router.navigate(["changelist"], {
+        this._router.navigate(['changelist'], {
           relativeTo: this._activatedRoute
         });
         break;

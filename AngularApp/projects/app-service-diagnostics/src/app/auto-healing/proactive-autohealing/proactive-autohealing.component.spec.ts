@@ -8,9 +8,8 @@ describe('ProactiveAutohealingComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ProactiveAutohealingComponent ]
-    })
-    .compileComponents();
+      declarations: [ProactiveAutohealingComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

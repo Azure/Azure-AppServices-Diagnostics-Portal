@@ -1,26 +1,62 @@
-<a *ngFor="let item of starList; let i=index">
-  <i class="fa" [ngClass]="{'fa-star-o':item, 'fa-star':!item}" style="color: rgb(255, 166, 0);"></i>
+<a *ngFor="let item of starList; let i = index">
+  <i
+    class="fa"
+    [ngClass]="{ 'fa-star-o': item, 'fa-star': !item }"
+    style="color: rgb(255, 166, 0)"
+  ></i>
 </a>
 
-<span>
-
-</span>
-<a data-toggle="modal" data-target="#myModal" (click)="setLinkVisited()" [class.visited]="isRated">
+<span> </span>
+<a
+  data-toggle="modal"
+  data-target="#myModal"
+  (click)="setLinkVisited()"
+  [class.visited]="isRated"
+>
   Rate This
 </a>
 
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="myModalLabel"
-  aria-hidden="false">
+<div
+  class="modal fade"
+  id="myModal"
+  tabindex="-1"
+  role="dialog"
+  data-backdrop="static"
+  data-keyboard="false"
+  aria-labelledby="myModalLabel"
+  aria-hidden="false"
+>
   <div class="modal-dialog" *ngIf="!isSubmitted; else confirmModal">
     <div class="modal-content">
-      <div class="modal-header" style="background-color: rgb(60, 141, 188); padding: 10px 15px 10px 15px">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="color:black!important">&times;</button>
-        <h4 class="modal-title" id="myModalLabel" style="color:white">How helpful was this?</h4>
+      <div
+        class="modal-header"
+        style="
+          background-color: rgb(60, 141, 188);
+          padding: 10px 15px 10px 15px;
+        "
+      >
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-hidden="true"
+          style="color: black !important"
+        >
+          &times;
+        </button>
+        <h4 class="modal-title" id="myModalLabel" style="color: white">
+          How helpful was this?
+        </h4>
       </div>
 
-      <div class="modal-body" style="padding:0px;">
-        <star-rating [isModal]="true" [ratingEventProperties]="ratingEventProperties" (submit)='submitFeedback($event)' *ngIf="!isSubmitted"></star-rating>
+      <div class="modal-body" style="padding: 0px">
+        <star-rating
+          [isModal]="true"
+          [ratingEventProperties]="ratingEventProperties"
+          (submit)="submitFeedback($event)"
+          *ngIf="!isSubmitted"
+        ></star-rating>
       </div>
     </div>
     <!-- /.modal-content -->
@@ -32,10 +68,22 @@
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
         <div class="modal-body">
-          <h4 class="modal-title" *ngIf="isSubmitted" id="myModalLabel"> Your rating has been submitted.</h4>
+          <h4 class="modal-title" *ngIf="isSubmitted" id="myModalLabel">
+            Your rating has been submitted.
+          </h4>
         </div>
-        <div class="modal-footer" style="text-align: center; max-height: 50px; padding: 5px">
-          <button type="button" class="btn btn-primary" data-dismiss="modal" style="max-height: 35px">Close</button>
+        <div
+          class="modal-footer"
+          style="text-align: center; max-height: 50px; padding: 5px"
+        >
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-dismiss="modal"
+            style="max-height: 35px"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>

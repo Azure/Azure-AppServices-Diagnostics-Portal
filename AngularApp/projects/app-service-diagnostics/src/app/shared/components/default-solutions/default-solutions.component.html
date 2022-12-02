@@ -1,76 +1,227 @@
-
-<div style="margin-bottom:-30px;margin-top: 30px;margin-left:30px;" *ngIf="!showSolutions">
-    <a (click)="showSolutions = true"  >Show Solutions To Common Problems <i aria-hidden="true" class="fa fa-chevron-right" style="font-size:10px"></i></a>
+<div
+  style="margin-bottom: -30px; margin-top: 30px; margin-left: 30px"
+  *ngIf="!showSolutions"
+>
+  <a (click)="showSolutions = true"
+    >Show Solutions To Common Problems
+    <i
+      aria-hidden="true"
+      class="fa fa-chevron-right"
+      style="font-size: 10px"
+    ></i
+  ></a>
 </div>
 <div class="divider-large-margin"></div>
 
-<div style="min-height: 500px;margin-bottom:50px" *ngIf="showSolutions">
-<div class="focus-box" style="border-color: white">
+<div style="min-height: 500px; margin-bottom: 50px" *ngIf="showSolutions">
+  <div class="focus-box" style="border-color: white">
     <div class="row">
-        <div class="col-sm-9">
-            <expandable-list>
-                <h4 class="not-bold">Solutions To Common Problems <span style="font-size: 14px">(<a (click)="showSolutions=false">Hide</a>)</span></h4>
-                <expandable-list-item [title]="'My app is returning HTTP 5xx errors'" [selected]="false">
-                    <div class="sub-header">
-                        <b >Recommended Actions</b>
-                    </div>
-                    <div>
-                        <ul style="padding-left:20px">
-                            <li>Assess the HTTP errors impact using <a (click)="openBlade('pulse')">Live HTTP traffic</a> chart</li>
-                            <li>Identify instance(s) exhibiting poor <a (click)="openBlade('sitemetrics')">application performance</a> </li>
-                            <li>Attempt to resolve the issue by using <a (click)="openBlade('advancedAppRestartBlade')">Advanced Application restart</a></li>
-                            <li>Identify highest <a (click)="openBlade('appserviceplanmetrics')">CPU/Memory</a> consuming Web app(s) within your App Service Plan</li>
-                            <li>Check out the <a (click)="openBlade('eventviewer')">application event logs</a> to understand the potential root cause</li>
-                            <li>Identify root causes in <a (click)="openBlade('freblogs')">failed requests traces</a></li>
-                        </ul>
-                    </div>
-                    <div class="sub-header">
-                        <b >Recommended Documents</b>
-                    </div>
-                    <div>
-                        <ul style="list-style-type: none; padding-left: 0px">
-                            <li><a (click)="logLinkClick('https://azure.microsoft.com/en-us/blog/remote-profiling-support-in-azure-app-service/')" href="https://goo.gl/5DN9jc" target="_blank">Remotely profile your .NET application running on App Service <i class="fa fa-external-link" aria-hidden="true"></i></a></li>
-                            <li><a (click)="logLinkClick('https://docs.microsoft.com/en-us/azure/app-service-web/app-service-web-troubleshoot-http-502-http-503')" href="https://goo.gl/QZrtaK" target="_blank">Troubleshoot HTTP 5xx errors for your App <i class="fa fa-external-link" aria-hidden="true"></i></a></li>
-                            <li><a (click)="logLinkClick('https://azure.github.io/AppService/2016/09/14/PHP-troubleshooting-guide-for-common-errors.html')" href="https://azure.github.io/AppService/2016/09/14/PHP-troubleshooting-guide-for-common-errors.html" target="_blank">PHP troubleshooting guide for common errors <i class="fa fa-external-link" aria-hidden="true"></i></a></li>
-                        </ul>
-                    </div>
-                </expandable-list-item>
-                <expandable-list-item [title]="'My app is performing slowly'" [selected]="false">
-                    <div class="sub-header">
-                        <b >Recommended Actions</b>
-                    </div>
-                    <div>
-                        <ul style="padding-left:20px">
-                            <li>Identify instance(s) exhibiting poor <a (click)="openBlade('sitemetrics')">application performance</a> </li>
-                            <li>Attempt to resolve the issue by using <a (click)="openBlade('advancedAppRestartBlade')">Advanced Application restart</a></li>
-                            <li>Identify highest <a (click)="openBlade('appserviceplanmetrics')">CPU/Memory</a> consuming Web app(s) within your App Service Plan</li>
-                            <li>Certain Performance issues can be mitigated by <a (click)="openBlade('scaleUp')">scaling up</a> your app service plan</li>
-                            <li>High load issues can be mitigated by <a (click)="openBlade('scaleOut')">scaling out</a> your app service plan</li>
-                            <li>Use <a (click)="openBlade('diagnostics')">Data collection and Analysis tools</a> to debug and analyze your application issue</li>
-                        </ul>
-                    </div>
-                    <div class="sub-header">
-                        <b >Recommended Documents</b>
-                    </div>
-                    <div>
-                        <ul style="list-style-type: none; padding-left: 0px">
-                            <li><a (click)="logLinkClick('https://docs.microsoft.com/en-us/azure/app-service-web/app-service-web-troubleshoot-performance-degradation')" href="https://goo.gl/W3eKHm" target="_blank">Monitor, diagnose and troubleshoot slow performance issue with Azure Apps <i class="fa fa-external-link" aria-hidden="true"></i></a></li>
-                            <li><a (click)="logLinkClick('https://blogs.msdn.microsoft.com/appserviceteam/2016/09/14/php-troubleshooting-guide-for-common-errors/')" href="https://goo.gl/R4gPdJ" target="_blank">PHP troubleshooting guide for common errors <i class="fa fa-external-link" aria-hidden="true"></i></a></li>
-                        </ul>
-                    </div>
-                </expandable-list-item>
-                <expandable-list-item [title]="'How do I set up an SSL Certificate'" [selected]="false">
-                    <div class="sub-header">
-                        <b >Recommended Documents</b>
-                    </div>
-                    <div>
-                        <ul style="list-style-type: none; padding-left: 0px">
-                            <li><a (click)="logLinkClick('https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-configure-ssl-certificate')" href="https://goo.gl/XuPIiN" target="_blank">How to configure SSL certificate for your Web app <i class="fa fa-external-link" aria-hidden="true"></i></a></li>
-                        </ul>
-                    </div>
-                </expandable-list-item>
-            </expandable-list>
-        </div>
+      <div class="col-sm-9">
+        <expandable-list>
+          <h4 class="not-bold">
+            Solutions To Common Problems
+            <span style="font-size: 14px"
+              >(<a (click)="showSolutions = false">Hide</a>)</span
+            >
+          </h4>
+          <expandable-list-item
+            [title]="'My app is returning HTTP 5xx errors'"
+            [selected]="false"
+          >
+            <div class="sub-header">
+              <b>Recommended Actions</b>
+            </div>
+            <div>
+              <ul style="padding-left: 20px">
+                <li>
+                  Assess the HTTP errors impact using
+                  <a (click)="openBlade('pulse')">Live HTTP traffic</a> chart
+                </li>
+                <li>
+                  Identify instance(s) exhibiting poor
+                  <a (click)="openBlade('sitemetrics')"
+                    >application performance</a
+                  >
+                </li>
+                <li>
+                  Attempt to resolve the issue by using
+                  <a (click)="openBlade('advancedAppRestartBlade')"
+                    >Advanced Application restart</a
+                  >
+                </li>
+                <li>
+                  Identify highest
+                  <a (click)="openBlade('appserviceplanmetrics')">CPU/Memory</a>
+                  consuming Web app(s) within your App Service Plan
+                </li>
+                <li>
+                  Check out the
+                  <a (click)="openBlade('eventviewer')"
+                    >application event logs</a
+                  >
+                  to understand the potential root cause
+                </li>
+                <li>
+                  Identify root causes in
+                  <a (click)="openBlade('freblogs')">failed requests traces</a>
+                </li>
+              </ul>
+            </div>
+            <div class="sub-header">
+              <b>Recommended Documents</b>
+            </div>
+            <div>
+              <ul style="list-style-type: none; padding-left: 0px">
+                <li>
+                  <a
+                    (click)="
+                      logLinkClick(
+                        'https://azure.microsoft.com/en-us/blog/remote-profiling-support-in-azure-app-service/'
+                      )
+                    "
+                    href="https://goo.gl/5DN9jc"
+                    target="_blank"
+                    >Remotely profile your .NET application running on App
+                    Service
+                    <i class="fa fa-external-link" aria-hidden="true"></i
+                  ></a>
+                </li>
+                <li>
+                  <a
+                    (click)="
+                      logLinkClick(
+                        'https://docs.microsoft.com/en-us/azure/app-service-web/app-service-web-troubleshoot-http-502-http-503'
+                      )
+                    "
+                    href="https://goo.gl/QZrtaK"
+                    target="_blank"
+                    >Troubleshoot HTTP 5xx errors for your App
+                    <i class="fa fa-external-link" aria-hidden="true"></i
+                  ></a>
+                </li>
+                <li>
+                  <a
+                    (click)="
+                      logLinkClick(
+                        'https://azure.github.io/AppService/2016/09/14/PHP-troubleshooting-guide-for-common-errors.html'
+                      )
+                    "
+                    href="https://azure.github.io/AppService/2016/09/14/PHP-troubleshooting-guide-for-common-errors.html"
+                    target="_blank"
+                    >PHP troubleshooting guide for common errors
+                    <i class="fa fa-external-link" aria-hidden="true"></i
+                  ></a>
+                </li>
+              </ul>
+            </div>
+          </expandable-list-item>
+          <expandable-list-item
+            [title]="'My app is performing slowly'"
+            [selected]="false"
+          >
+            <div class="sub-header">
+              <b>Recommended Actions</b>
+            </div>
+            <div>
+              <ul style="padding-left: 20px">
+                <li>
+                  Identify instance(s) exhibiting poor
+                  <a (click)="openBlade('sitemetrics')"
+                    >application performance</a
+                  >
+                </li>
+                <li>
+                  Attempt to resolve the issue by using
+                  <a (click)="openBlade('advancedAppRestartBlade')"
+                    >Advanced Application restart</a
+                  >
+                </li>
+                <li>
+                  Identify highest
+                  <a (click)="openBlade('appserviceplanmetrics')">CPU/Memory</a>
+                  consuming Web app(s) within your App Service Plan
+                </li>
+                <li>
+                  Certain Performance issues can be mitigated by
+                  <a (click)="openBlade('scaleUp')">scaling up</a> your app
+                  service plan
+                </li>
+                <li>
+                  High load issues can be mitigated by
+                  <a (click)="openBlade('scaleOut')">scaling out</a> your app
+                  service plan
+                </li>
+                <li>
+                  Use
+                  <a (click)="openBlade('diagnostics')"
+                    >Data collection and Analysis tools</a
+                  >
+                  to debug and analyze your application issue
+                </li>
+              </ul>
+            </div>
+            <div class="sub-header">
+              <b>Recommended Documents</b>
+            </div>
+            <div>
+              <ul style="list-style-type: none; padding-left: 0px">
+                <li>
+                  <a
+                    (click)="
+                      logLinkClick(
+                        'https://docs.microsoft.com/en-us/azure/app-service-web/app-service-web-troubleshoot-performance-degradation'
+                      )
+                    "
+                    href="https://goo.gl/W3eKHm"
+                    target="_blank"
+                    >Monitor, diagnose and troubleshoot slow performance issue
+                    with Azure Apps
+                    <i class="fa fa-external-link" aria-hidden="true"></i
+                  ></a>
+                </li>
+                <li>
+                  <a
+                    (click)="
+                      logLinkClick(
+                        'https://blogs.msdn.microsoft.com/appserviceteam/2016/09/14/php-troubleshooting-guide-for-common-errors/'
+                      )
+                    "
+                    href="https://goo.gl/R4gPdJ"
+                    target="_blank"
+                    >PHP troubleshooting guide for common errors
+                    <i class="fa fa-external-link" aria-hidden="true"></i
+                  ></a>
+                </li>
+              </ul>
+            </div>
+          </expandable-list-item>
+          <expandable-list-item
+            [title]="'How do I set up an SSL Certificate'"
+            [selected]="false"
+          >
+            <div class="sub-header">
+              <b>Recommended Documents</b>
+            </div>
+            <div>
+              <ul style="list-style-type: none; padding-left: 0px">
+                <li>
+                  <a
+                    (click)="
+                      logLinkClick(
+                        'https://docs.microsoft.com/en-us/azure/app-service-web/web-sites-configure-ssl-certificate'
+                      )
+                    "
+                    href="https://goo.gl/XuPIiN"
+                    target="_blank"
+                    >How to configure SSL certificate for your Web app
+                    <i class="fa fa-external-link" aria-hidden="true"></i
+                  ></a>
+                </li>
+              </ul>
+            </div>
+          </expandable-list-item>
+        </expandable-list>
+      </div>
     </div>
-</div>
+  </div>
 </div>

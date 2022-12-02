@@ -11,30 +11,39 @@ import { ResourceType } from '../../../shared/models/portal';
 @Injectable()
 @RegisterMessageFlowWithFactory()
 export class MainMenuMessageFlow extends IMessageFlowProvider {
+  constructor(private _authService: AuthService) {
+    super();
+  }
 
-    constructor(private _authService: AuthService) {
-        super();
-    }
+  GetMessageFlowList(): MessageGroup[] {
+    const messageGroupList: MessageGroup[] = [];
 
-    GetMessageFlowList(): MessageGroup[] {
+    const mainMenuGroup: MessageGroup = new MessageGroup(
+      'main-menu',
+      [],
+      () => {
+        return this._authService.resourceType === ResourceType.Site
+          ? 'health-check'
+          : 'feedbackprompt';
+      }
+    );
+    mainMenuGroup.messages.push(
+      new TextMessage(
+        'If you know what’s wrong with your app, please select a problem category',
+        MessageSender.System,
+        2000
+      )
+    );
+    mainMenuGroup.messages.push(new MainMenuMessage());
 
-        const messageGroupList: MessageGroup[] = [];
+    messageGroupList.push(mainMenuGroup);
 
-        const mainMenuGroup: MessageGroup = new MessageGroup('main-menu', [], () => {
-            return this._authService.resourceType === ResourceType.Site ? 'health-check' : 'feedbackprompt';
-        });
-        mainMenuGroup.messages.push(new TextMessage('If you know what’s wrong with your app, please select a problem category', MessageSender.System, 2000));
-        mainMenuGroup.messages.push(new MainMenuMessage());
-
-        messageGroupList.push(mainMenuGroup);
-
-        return messageGroupList;
-    }
+    return messageGroupList;
+  }
 }
 
 export class MainMenuMessage extends Message {
-    constructor(messageDelayInMs: number = 1000) {
-
-        super(MainMenuComponent, {}, messageDelayInMs);
-    }
+  constructor(messageDelayInMs: number = 1000) {
+    super(MainMenuComponent, {}, messageDelayInMs);
+  }
 }

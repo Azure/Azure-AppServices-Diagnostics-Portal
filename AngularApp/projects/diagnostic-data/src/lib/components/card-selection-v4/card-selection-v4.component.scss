@@ -1,4 +1,4 @@
-@import "../../../../../app-service-diagnostics/src/app/fabric-ui/components/category-tile-v4/category-tile-v4.component.scss";
+@import '../../../../../app-service-diagnostics/src/app/fabric-ui/components/category-tile-v4/category-tile-v4.component.scss';
 
 //Style is align with category tiles in home page
 
@@ -9,30 +9,28 @@
   margin-top: -15px;
 }
 
-
 .card-tile-container {
-    @extend .category-tile-container
+  @extend .category-tile-container;
 }
 
 .card-tile {
-    margin-top: 7px;
-    margin-bottom: 7px;
-    margin-right: 15px;
+  margin-top: 7px;
+  margin-bottom: 7px;
+  margin-right: 15px;
 }
 
 .card-tile :hover {
-    background-color: var(--tileHomepageHoverBackground);
+  background-color: var(--tileHomepageHoverBackground);
 }
 
 .card-tile-image {
-    @extend .tile-image
+  @extend .tile-image;
 }
 
-
 .card-tile-title {
-    @extend .tile-title
+  @extend .tile-title;
 }
 
 .card-tile-description {
-    @extend .tile-description
+  @extend .tile-description;
 }

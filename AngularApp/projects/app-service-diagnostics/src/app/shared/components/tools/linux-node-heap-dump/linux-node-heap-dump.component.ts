@@ -9,9 +9,13 @@ import { WebSitesService } from '../../../../resources/web-sites/services/web-si
   templateUrl: './linux-node-heap-dump.component.html',
   styleUrls: ['../styles/daasstyles.scss']
 })
-export class LinuxNodeHeapDumpComponent extends DaasBaseComponent implements OnInit {
+export class LinuxNodeHeapDumpComponent
+  extends DaasBaseComponent
+  implements OnInit
+{
   title: string = 'Collect Node Heap Dump';
-  description: string = 'If your app is consuming memory or running slow, you can collect a heap dump to identify the root cause';
+  description: string =
+    'If your app is consuming memory or running slow, you can collect a heap dump to identify the root cause';
   thingsToKnowBefore: string[] = [
     'Node heap dump helps you diagnosing memory issues in your Node app',
     'The heap dump is collected using Node V8 inspector.'
@@ -19,14 +23,20 @@ export class LinuxNodeHeapDumpComponent extends DaasBaseComponent implements OnI
   diagnoserNameLookup: string;
   allLinuxInstancesOnAnt98: boolean = true;
 
-  constructor(private _siteServiceLocal: SiteService, private _webSiteServiceLocal: WebSitesService,
-    private _activatedRoute: ActivatedRoute) {
+  constructor(
+    private _siteServiceLocal: SiteService,
+    private _webSiteServiceLocal: WebSitesService,
+    private _activatedRoute: ActivatedRoute
+  ) {
     super(_siteServiceLocal, _webSiteServiceLocal);
   }
 
   ngOnInit(): void {
     this.diagnoserName = 'HeapDump';
     this.diagnoserNameLookup = this.diagnoserName;
-    this.scmPath = this._siteServiceLocal.currentSiteStatic.enabledHostNames.find(hostname => hostname.indexOf('.scm.') > 0);
+    this.scmPath =
+      this._siteServiceLocal.currentSiteStatic.enabledHostNames.find(
+        (hostname) => hostname.indexOf('.scm.') > 0
+      );
   }
 }

@@ -3,10 +3,18 @@
     <div class="vertical-container">
       <div class="guage-iterator" *ngFor="let currGuage of guage.guages">
         <div class="guage-container">
-          <div *ngIf="currGuage.guageGraphicElement" class="guage-graphic-container">
-            <guage-graphic [guageGraphic]="currGuage.guageGraphicElement"></guage-graphic>
+          <div
+            *ngIf="currGuage.guageGraphicElement"
+            class="guage-graphic-container"
+          >
+            <guage-graphic
+              [guageGraphic]="currGuage.guageGraphicElement"
+            ></guage-graphic>
           </div>
-          <div *ngIf="currGuage.guageDescription.trim().length > 0" class="guage-description">
+          <div
+            *ngIf="currGuage.guageDescription.trim().length > 0"
+            class="guage-description"
+          >
             <markdown [data]="currGuage.guageDescription"></markdown>
           </div>
         </div>
@@ -16,11 +24,19 @@
   <div *ngIf="isHorizontal(guage.renderDirection)">
     <div class="horizontal-container">
       <div class="guage-iterator" *ngFor="let currGuage of guage.guages">
-        <div class="guage-container" style="flex-direction:column;">
-          <div *ngIf="currGuage.guageGraphicElement" class="guage-graphic-container">
-            <guage-graphic [guageGraphic]="currGuage.guageGraphicElement"></guage-graphic>
+        <div class="guage-container" style="flex-direction: column">
+          <div
+            *ngIf="currGuage.guageGraphicElement"
+            class="guage-graphic-container"
+          >
+            <guage-graphic
+              [guageGraphic]="currGuage.guageGraphicElement"
+            ></guage-graphic>
           </div>
-          <div *ngIf="currGuage.guageDescription.trim().length > 0" class="guage-description">
+          <div
+            *ngIf="currGuage.guageDescription.trim().length > 0"
+            class="guage-description"
+          >
             <markdown [data]="currGuage.guageDescription"></markdown>
           </div>
         </div>

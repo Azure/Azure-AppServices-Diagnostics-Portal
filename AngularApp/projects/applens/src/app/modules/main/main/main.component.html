@@ -1,106 +1,213 @@
 <applens-header></applens-header>
 <div class="main-container content-under-header">
   <applens-preview-banner></applens-preview-banner>
-  <div class="main-row" style="margin: 0px auto; width: 100%;margin-bottom: 15px;" *ngIf="displayLoader">
+  <div
+    class="main-row"
+    style="margin: 0px auto; width: 100%; margin-bottom: 15px"
+    *ngIf="displayLoader"
+  >
     <fab-spinner [size]="loaderSize" [label]="'Loading...'"></fab-spinner>
   </div>
-  <div class="main-row"
-    style="margin: 0 auto; width: 50%; text-align: center; margin-bottom: 15px; font-size: 18px; color: red;"
-    *ngIf="displayUserAccessError">
-    {{userAccessErrorMessage}}
+  <div
+    class="main-row"
+    style="
+      margin: 0 auto;
+      width: 50%;
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 18px;
+      color: red;
+    "
+    *ngIf="displayUserAccessError"
+  >
+    {{ userAccessErrorMessage }}
   </div>
-  <div class="main-row" style="margin: 0px auto;width: 1240px;" *ngIf="!displayLoader">
-    <div *ngIf="userGivenName" class="welcome-word"><h1>Welcome to AppLens, {{userGivenName}}!</h1></div>
-    <div class="main-content main-card" style="width: 100%;margin-bottom: 15px;">
+  <div
+    class="main-row"
+    style="margin: 0px auto; width: 1240px"
+    *ngIf="!displayLoader"
+  >
+    <div *ngIf="userGivenName" class="welcome-word">
+      <h1>Welcome to AppLens, {{ userGivenName }}!</h1>
+    </div>
+    <div
+      class="main-content main-card"
+      style="width: 100%; margin-bottom: 15px"
+    >
       <div class="main-content-header">
-        <img src="assets/img/applens-skeleton/main/troubleshoot.svg" alt="troubleshoot" class="mr-3">
+        <img
+          src="assets/img/applens-skeleton/main/troubleshoot.svg"
+          alt="troubleshoot"
+          class="mr-3"
+        />
         <h3>Select a resource to begin troubleshooting:</h3>
       </div>
-      <div style="width: 50%;">
-        <div class="section"
-          *ngIf="caseNumberNeededForUser && (selectedResourceType && selectedResourceType.userAuthorizationEnabled)">
-          <fab-text-field [ariaLabel]="'Customer case number'" [defaultValue]="caseNumber" (onChange)="updateCaseNumber($event)"
-            [placeholder]="caseNumberPlaceholder" [label]="'Case Number'" [required]="true"
-            [styles]="fabTextFieldStyles">
+      <div style="width: 50%">
+        <div
+          class="section"
+          *ngIf="
+            caseNumberNeededForUser &&
+            selectedResourceType &&
+              selectedResourceType.userAuthorizationEnabled
+          "
+        >
+          <fab-text-field
+            [ariaLabel]="'Customer case number'"
+            [defaultValue]="caseNumber"
+            (onChange)="updateCaseNumber($event)"
+            [placeholder]="caseNumberPlaceholder"
+            [label]="'Case Number'"
+            [required]="true"
+            [styles]="fabTextFieldStyles"
+          >
           </fab-text-field>
-          <div *ngIf="caseNumberValidationError && caseNumberValidationError!== ''"
-            class="mt-3 error-message-container">
-            <status-icon [status]="status"></status-icon><span
-              class="ml-3 error-message">{{caseNumberValidationError}}</span>
+          <div
+            *ngIf="
+              caseNumberValidationError && caseNumberValidationError !== ''
+            "
+            class="mt-3 error-message-container"
+          >
+            <status-icon [status]="status"></status-icon
+            ><span class="ml-3 error-message">{{
+              caseNumberValidationError
+            }}</span>
           </div>
         </div>
         <div class="section">
-          <fab-dropdown [options]="fabDropdownOptions" [selectedKey]="selectedResourceType.id"
-            (onChange)="selectDropdownKey($event)" [styles]="fabDropdownStyles" [ariaLabel]="'Service Type'"
-            [required]="true" [label]="'Service type'">
+          <fab-dropdown
+            [options]="fabDropdownOptions"
+            [selectedKey]="selectedResourceType.id"
+            (onChange)="selectDropdownKey($event)"
+            [styles]="fabDropdownStyles"
+            [ariaLabel]="'Service Type'"
+            [required]="true"
+            [label]="'Service type'"
+          >
           </fab-dropdown>
         </div>
-        <div class="view-resource-link"><a tabindex="0" (click)="openResourcePanel()">View all supported resource
-            types</a></div>
-        <div class="section" style="margin-top: 15px;">
-          <fab-text-field [ariaLabel]="selectedResourceType.resourceTypeLabel" [defaultValue]="resourceName" (onChange)="updateResourceName($event)"
-           [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel"
-            (keyup.enter)="onSubmit()" [required]="true" [label]="selectedResourceType.resourceTypeLabel"
-            [styles]="fabTextFieldStyles">
+        <div class="view-resource-link">
+          <a tabindex="0" (click)="openResourcePanel()"
+            >View all supported resource types</a
+          >
+        </div>
+        <div class="section" style="margin-top: 15px">
+          <fab-text-field
+            [ariaLabel]="selectedResourceType.resourceTypeLabel"
+            [defaultValue]="resourceName"
+            (onChange)="updateResourceName($event)"
+            [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel"
+            (keyup.enter)="onSubmit()"
+            [required]="true"
+            [label]="selectedResourceType.resourceTypeLabel"
+            [styles]="fabTextFieldStyles"
+          >
           </fab-text-field>
-          <div *ngIf="errorMessage!== ''" class="mt-3 error-message-container">
-            <status-icon [status]="status"></status-icon><span class="ml-3 error-message">{{errorMessage}}</span>
+          <div *ngIf="errorMessage !== ''" class="mt-3 error-message-container">
+            <status-icon [status]="status"></status-icon
+            ><span class="ml-3 error-message">{{ errorMessage }}</span>
           </div>
         </div>
-        <div class="section" style="display: flex;justify-content: space-between;">
+        <div
+          class="section"
+          style="display: flex; justify-content: space-between"
+        >
           <label for="landing-page-time-picker">Time range (UTC)</label>
-          <div id="landing-page-time-picker" (click)="openTimePicker()" class="time-picker"
-            (keydown.enter)="openTimePicker()" tabindex="0" aria-label="Choose time range">
-            <span class="time-picker-str">{{timePickerStr}}</span>
+          <div
+            id="landing-page-time-picker"
+            (click)="openTimePicker()"
+            class="time-picker"
+            (keydown.enter)="openTimePicker()"
+            tabindex="0"
+            aria-label="Choose time range"
+          >
+            <span class="time-picker-str">{{ timePickerStr }}</span>
             <fab-icon iconName="ChevronDown" ariaLabel="ChevronDown"></fab-icon>
           </div>
         </div>
 
         <div class="section">
-          <button type="button" class="btn btn-sm btn-primary btn-continuebtn" [disabled]="disableSubmitButton"
-            (click)="onSubmit()">Continue</button>
-          <div *ngIf="accessErrorMessage && accessErrorMessage!== ''" class="mt-3 error-message-container">
-            <status-icon [status]="status"></status-icon><span class="ml-3 error-message">{{accessErrorMessage}}</span>
+          <button
+            type="button"
+            class="btn btn-sm btn-primary btn-continuebtn"
+            [disabled]="disableSubmitButton"
+            (click)="onSubmit()"
+          >
+            Continue
+          </button>
+          <div
+            *ngIf="accessErrorMessage && accessErrorMessage !== ''"
+            class="mt-3 error-message-container"
+          >
+            <status-icon [status]="status"></status-icon
+            ><span class="ml-3 error-message">{{ accessErrorMessage }}</span>
           </div>
         </div>
       </div>
     </div>
 
-    <div style="display: flex;min-height: 300px;justify-content: space-between;">
-      <div class="main-card" style="width: 860px;">
+    <div
+      style="display: flex; min-height: 300px; justify-content: space-between"
+    >
+      <div class="main-card" style="width: 860px">
         <div class="main-content-header">
-          <img src="assets/img/applens-skeleton/main/recent_resources.svg" alt="recent resources" class="mr-3">
+          <img
+            src="assets/img/applens-skeleton/main/recent_resources.svg"
+            alt="recent resources"
+            class="mr-3"
+          />
           <h3>Recent Resources</h3>
         </div>
-        <table style="width: 100%;margin-top: 10px;">
+        <table style="width: 100%; margin-top: 10px">
           <thead>
-            <tr style="border-bottom: 1px solid #EDEBE9;">
+            <tr style="border-bottom: 1px solid #edebe9">
               <th>Name</th>
               <th>Service Type</th>
             </tr>
           </thead>
           <tbody>
-            <ng-container *ngIf="table&&table.length > 0;else noRecentResource">
-              <tr *ngFor="let item of table" style="border-bottom: 1px solid #EDEBE9;">
-                <th style="padding: 7px 0px;font-weight: 400;">
-                  <img [src]="item.imgSrc" style="height: 15px;width: 15px;" [alt]="item.type" class="mr-3" />
-                  <a tabindex="0" class="recent-resource"
-                    (click)="clickRecentResourceHandler($event,item)">{{item.name}}</a>
+            <ng-container
+              *ngIf="table && table.length > 0; else noRecentResource"
+            >
+              <tr
+                *ngFor="let item of table"
+                style="border-bottom: 1px solid #edebe9"
+              >
+                <th style="padding: 7px 0px; font-weight: 400">
+                  <img
+                    [src]="item.imgSrc"
+                    style="height: 15px; width: 15px"
+                    [alt]="item.type"
+                    class="mr-3"
+                  />
+                  <a
+                    tabindex="0"
+                    class="recent-resource"
+                    (click)="clickRecentResourceHandler($event, item)"
+                    >{{ item.name }}</a
+                  >
                 </th>
-                <th style="padding: 7px 0px;font-weight: 400;">{{item.type}}</th>
+                <th style="padding: 7px 0px; font-weight: 400">
+                  {{ item.type }}
+                </th>
               </tr>
             </ng-container>
           </tbody>
         </table>
       </div>
-      <div style="width: 360px;" class="main-card">
+      <div style="width: 360px" class="main-card">
         <div class="main-content-header">
-          <img src="assets/img/applens-skeleton/main/documents.svg" alt="documentations" class="mr-3">
+          <img
+            src="assets/img/applens-skeleton/main/documents.svg"
+            alt="documentations"
+            class="mr-3"
+          />
           <h3>Documentation</h3>
         </div>
         <div class="mb-3" *ngFor="let doc of applensDocs">
-          <a class="applens-documentation" [href]="doc.link" target="_blank">{{doc.name}}<i class="hyper-link-icon ml-1"
-              aria-hidden="true"></i></a>
+          <a class="applens-documentation" [href]="doc.link" target="_blank"
+            >{{ doc.name
+            }}<i class="hyper-link-icon ml-1" aria-hidden="true"></i
+          ></a>
         </div>
       </div>
     </div>
@@ -108,29 +215,49 @@
     <div class="col-md-6" *ngIf="showCaseCleansingOption">
       <a (click)="caseCleansingNavigate()">Review case tagging</a>
     </div>
-
   </div>
 </div>
 
-<detector-time-picker [target]="'#landing-page-time-picker'" [openTimePickerCalloutObservable]="openTimePickerSubject"
-  [disableUpdateQueryParams]="true">
+<detector-time-picker
+  [target]="'#landing-page-time-picker'"
+  [openTimePickerCalloutObservable]="openTimePickerSubject"
+  [disableUpdateQueryParams]="true"
+>
 </detector-time-picker>
 
 <ng-template #noRecentResource>
-  <tr>No Recent Resource</tr>
+  <tr>
+    No Recent Resource
+  </tr>
 </ng-template>
 
-
-<fab-panel [isOpen]="openResourceTypePanel == true" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-  [styles]="panelStyles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
-  (onDismiss)="dismissedHandler()" [headerText]="'Supported Resource Types'">
+<fab-panel
+  [isOpen]="openResourceTypePanel == true"
+  [type]="type"
+  [customWidth]="width"
+  [isHiddenOnDismiss]="true"
+  [styles]="panelStyles"
+  [isLightDismiss]="true"
+  [hasCloseButton]="true"
+  [closeButtonAriaLabel]="'close'"
+  (onDismiss)="dismissedHandler()"
+  [headerText]="'Supported Resource Types'"
+>
   <div>
     <div class="resource-content-container">
       <div>
-        <div class="resource-content" style="margin-left:20px;font-size:16px">
+        <div
+          class="resource-content"
+          style="margin-left: 20px; font-size: 16px"
+        >
           <div *ngFor="let item of resourceTypeList">
-            <img [src]="item.imgSrc" style="height: 15px;width: 15px;" [alt]="item.type" class="mr-3" />
-            {{item.name}}&nbsp;
+            <img
+              [src]="item.imgSrc"
+              style="height: 15px; width: 15px"
+              [alt]="item.type"
+              class="mr-3"
+            />
+            {{ item.name }}&nbsp;
           </div>
         </div>
       </div>

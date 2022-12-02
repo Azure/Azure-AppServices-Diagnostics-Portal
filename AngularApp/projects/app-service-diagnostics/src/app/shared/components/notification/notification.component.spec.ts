@@ -8,9 +8,8 @@ describe('NotificationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ NotificationComponent ]
-    })
-    .compileComponents();
+      declarations: [NotificationComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,9 +1,13 @@
 <!-- If is not from markdown-view component, then markdownData can pass directly, no need to check-->
-<div *ngIf="isMarkdownView else processMarkdown">
+<div *ngIf="isMarkdownView; else processMarkdown">
   <markdown #markdownDiv [data]="markdownData"></markdown>
 </div>
 
 <ng-template #processMarkdown>
   <div [hidden]="isMarkdown(markdownData)" [innerHtml]="markdownData"></div>
-  <markdown #markdownDiv [data]="getMarkdown(markdownData)" [hidden]="!isMarkdown(markdownData)"></markdown>
+  <markdown
+    #markdownDiv
+    [data]="getMarkdown(markdownData)"
+    [hidden]="!isMarkdown(markdownData)"
+  ></markdown>
 </ng-template>

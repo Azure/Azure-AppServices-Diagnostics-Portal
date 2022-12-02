@@ -8,9 +8,8 @@ describe('DiagnosticToolsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DiagnosticToolsComponent ]
-    })
-    .compileComponents();
+      declarations: [DiagnosticToolsComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

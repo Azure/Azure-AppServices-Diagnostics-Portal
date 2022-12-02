@@ -4,27 +4,40 @@ import { CacheService } from '../cache.service';
 
 @Injectable()
 export class AppInsightsQueryService {
+  constructor(
+    private appinsightsService: AppInsightsService,
+    private cache: CacheService
+  ) {}
 
-    constructor(private appinsightsService: AppInsightsService, private cache: CacheService) {
-    }
-
-    GetTopExceptions(startTimeUTC: string, endTimeUTC: string, recordsLimit: number = 5, invalidateCache: boolean = false) {
-
-        const query: string = `
+  GetTopExceptions(
+    startTimeUTC: string,
+    endTimeUTC: string,
+    recordsLimit: number = 5,
+    invalidateCache: boolean = false
+  ) {
+    const query: string = `
         exceptions
         | where timestamp >= datetime(${startTimeUTC}) and timestamp <= datetime(${endTimeUTC})
         | where client_Type == "PC"
         | summarize count() by outerMessage, problemId, type
         | top ${recordsLimit} by count_ desc`;
 
-        const requests = this.appinsightsService.ExecuteQuery(query);
+    const requests = this.appinsightsService.ExecuteQuery(query);
 
-        return this.cache.get(`AppInsightExceptions-${startTimeUTC}--${endTimeUTC}`, requests, invalidateCache);
-    }
+    return this.cache.get(
+      `AppInsightExceptions-${startTimeUTC}--${endTimeUTC}`,
+      requests,
+      invalidateCache
+    );
+  }
 
-    GetTopSlowestDependencies(startTimeUTC: string, endTimeUTC: string, recordsLimit: number = 5, invalidateCache: boolean = false) {
-
-        const query: string = `
+  GetTopSlowestDependencies(
+    startTimeUTC: string,
+    endTimeUTC: string,
+    recordsLimit: number = 5,
+    invalidateCache: boolean = false
+  ) {
+    const query: string = `
         dependencies
         | where timestamp >= datetime(${startTimeUTC}) and timestamp <= datetime(${endTimeUTC})
         | where type != "Ajax"
@@ -32,11 +45,15 @@ export class AppInsightsQueryService {
         | where percentile_duration_95 > 100
         | top ${recordsLimit} by avg_duration desc`;
 
-        const requests = this.appinsightsService.ExecuteQuery(query);
-        return this.cache.get(`AppInsightDependencies-${startTimeUTC}--${endTimeUTC}`, requests, invalidateCache);
-    }
+    const requests = this.appinsightsService.ExecuteQuery(query);
+    return this.cache.get(
+      `AppInsightDependencies-${startTimeUTC}--${endTimeUTC}`,
+      requests,
+      invalidateCache
+    );
+  }
 
-    private isNotNullOrEmpty(item: any): boolean {
-        return (item && item != '');
-    }
+  private isNotNullOrEmpty(item: any): boolean {
+    return item && item != '';
+  }
 }

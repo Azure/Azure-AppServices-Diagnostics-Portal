@@ -2,7 +2,10 @@
   <h2 tabindex="0">{{ title }}</h2>
 
   <p tabindex="0">{{ description }}</p>
-  <div style="margin-top:10px;margin-bottom: 5px">
-    <cpu-monitoring [siteToBeDiagnosed]="siteToBeDiagnosed" [scmPath]="scmPath"></cpu-monitoring>
+  <div style="margin-top: 10px; margin-bottom: 5px">
+    <cpu-monitoring
+      [siteToBeDiagnosed]="siteToBeDiagnosed"
+      [scmPath]="scmPath"
+    ></cpu-monitoring>
   </div>
 </div>

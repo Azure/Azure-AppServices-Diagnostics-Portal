@@ -11,9 +11,12 @@ import {
   Input,
   Output,
   Renderer2,
-  ViewChild,
+  ViewChild
 } from '@angular/core';
-import { ITeachingBubbleProps, ITeachingBubbleStyles  } from 'office-ui-fabric-react/lib/TeachingBubble';
+import {
+  ITeachingBubbleProps,
+  ITeachingBubbleStyles
+} from 'office-ui-fabric-react/lib/TeachingBubble';
 
 @AngularReact()
 @Component({
@@ -55,9 +58,9 @@ export class FabTeachingBubbleComponent extends ReactWrapperComponent<ITeachingB
   @Input() componentRef?: ITeachingBubbleProps['componentRef'];
   @Input() footerContent?: ITeachingBubbleProps['footerContent'];
   @Input() closeButtonAriaLabel?: ITeachingBubbleProps['closeButtonAriaLabel'];
-  @Input() hasCloseButton?: ITeachingBubbleStyles ['closeButton'];
-  @Input() hasCloseIcon?: ITeachingBubbleProps ['hasCloseIcon'];
-  @Input() hasCondensedHeadline?: ITeachingBubbleProps ['hasCondensedHeadline'];
+  @Input() hasCloseButton?: ITeachingBubbleStyles['closeButton'];
+  @Input() hasCloseIcon?: ITeachingBubbleProps['hasCloseIcon'];
+  @Input() hasCondensedHeadline?: ITeachingBubbleProps['hasCondensedHeadline'];
   @Input() headline?: ITeachingBubbleProps['headline'];
   @Input() primaryButtonProps?: ITeachingBubbleProps['primaryButtonProps'];
   @Input() secondaryButtonProps?: ITeachingBubbleProps['secondaryButtonProps'];
@@ -66,8 +69,11 @@ export class FabTeachingBubbleComponent extends ReactWrapperComponent<ITeachingB
 
   @Output() readonly onDismiss = new EventEmitter<{ ev?: any }>();
 
-
-  constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, renderer: Renderer2) {
+  constructor(
+    elementRef: ElementRef,
+    changeDetectorRef: ChangeDetectorRef,
+    renderer: Renderer2
+  ) {
     super(elementRef, changeDetectorRef, renderer);
   }
 }

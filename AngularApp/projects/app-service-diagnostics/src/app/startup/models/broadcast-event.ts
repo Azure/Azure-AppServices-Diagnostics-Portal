@@ -1,5 +1,5 @@
 export enum BroadcastEvent {
-    IntegrateChanged,
-    Error,
-    Notification
+  IntegrateChanged,
+  Error,
+  Notification
 }

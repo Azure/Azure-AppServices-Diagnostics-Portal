@@ -8,9 +8,8 @@ describe('StatusIconComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ StatusIconComponent ]
-    })
-    .compileComponents();
+      declarations: [StatusIconComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

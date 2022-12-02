@@ -1,50 +1,105 @@
 <div class="panel panel-default">
   <div class="panel-heading" (click)="toggleExpanded()">
-    <span *ngIf="!summaryModel || summaryModel.loading || refreshing" class="health-icon-container">
-          <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+    <span
+      *ngIf="!summaryModel || summaryModel.loading || refreshing"
+      class="health-icon-container"
+    >
+      <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
     </span>
-    <span *ngIf="summaryModel && !summaryModel.loading && !refreshing" style="padding: 0px 10px 0px 0px">
-          <i class="fa health-icon fa-exclamation-circle unhealthy-icon-color" *ngIf="summaryModel.health === healthStatus.Error" aria-hidden="true"></i>
-          <i class="fa health-icon fa-exclamation-triangle warning-icon-color" *ngIf="summaryModel.health === healthStatus.Warning" aria-hidden="true"></i>
-          <i class="fa health-icon fa-check-circle healthy-icon-color" *ngIf="summaryModel.health === healthStatus.Healthy" aria-hidden="true"></i>
+    <span
+      *ngIf="summaryModel && !summaryModel.loading && !refreshing"
+      style="padding: 0px 10px 0px 0px"
+    >
+      <i
+        class="fa health-icon fa-exclamation-circle unhealthy-icon-color"
+        *ngIf="summaryModel.health === healthStatus.Error"
+        aria-hidden="true"
+      ></i>
+      <i
+        class="fa health-icon fa-exclamation-triangle warning-icon-color"
+        *ngIf="summaryModel.health === healthStatus.Warning"
+        aria-hidden="true"
+      ></i>
+      <i
+        class="fa health-icon fa-check-circle healthy-icon-color"
+        *ngIf="summaryModel.health === healthStatus.Healthy"
+        aria-hidden="true"
+      ></i>
     </span>
-    <b>{{title}}</b>
+    <b>{{ title }}</b>
     <span class="pull-right">
-        <i class="fa fa-plus" *ngIf="!expanded" aria-hidden="true"></i>
-        <i class="fa fa-minus" *ngIf="expanded" aria-hidden="true"></i>
-      </span>
+      <i class="fa fa-plus" *ngIf="!expanded" aria-hidden="true"></i>
+      <i class="fa fa-minus" *ngIf="expanded" aria-hidden="true"></i>
+    </span>
   </div>
   <div class="panel-body" *ngIf="expanded">
     <div *ngIf="summaryModel && !refreshing">
-
       <div class="content-container">
         <h5>Summary</h5>
         <div class="message" *ngIf="summaryModel.detectorAbnormalTimePeriod">
           <span *ngIf="markupString" [innerHtml]="markupString | markup">
           </span>
-          <span *ngIf="!markupString && !summaryModel.renderAbnormalTimePeriodAsHtml">
-             {{summaryModel.detectorAbnormalTimePeriod.message}}
+          <span
+            *ngIf="
+              !markupString && !summaryModel.renderAbnormalTimePeriodAsHtml
+            "
+          >
+            {{ summaryModel.detectorAbnormalTimePeriod.message }}
           </span>
-          <span *ngIf="!markupString && summaryModel.renderAbnormalTimePeriodAsHtml" [innerHtml]="summaryModel.detectorAbnormalTimePeriod.message | markup">            
-         </span>
+          <span
+            *ngIf="!markupString && summaryModel.renderAbnormalTimePeriodAsHtml"
+            [innerHtml]="
+              summaryModel.detectorAbnormalTimePeriod.message | markup
+            "
+          >
+          </span>
         </div>
-        <div class="message" *ngIf="!summaryModel.detectorAbnormalTimePeriod && !summaryModel.emptyDataResponse">
+        <div
+          class="message"
+          *ngIf="
+            !summaryModel.detectorAbnormalTimePeriod &&
+            !summaryModel.emptyDataResponse
+          "
+        >
           No issues detected
         </div>
-        <div class="message" *ngIf="!summaryModel.detectorAbnormalTimePeriod && (summaryModel.emptyDataResponse && summaryModel.emptyDataResponse.length > 0)">
-        {{ summaryModel.emptyDataResponse }}
-        </div>               
+        <div
+          class="message"
+          *ngIf="
+            !summaryModel.detectorAbnormalTimePeriod &&
+            summaryModel.emptyDataResponse &&
+              summaryModel.emptyDataResponse.length > 0
+          "
+        >
+          {{ summaryModel.emptyDataResponse }}
+        </div>
       </div>
-    
+
       <div *ngIf="metricsContainData">
-        <metric-graph [metricSets]="mainMetricSets" [title]="summaryModel.mainMetricGraphTitle" [chartType]="lineChart" [description]="summaryModel.mainMetricGraphDescription"></metric-graph>
-        <instance-view-graph *ngIf="summaryModel.perInstanceGraphTitle && summaryModel.perInstanceGraphTitle !== ''" [metricSets]="detailMetricSets"
-          [title]="summaryModel.perInstanceGraphTitle" [chartType]="lineChart" [description]="summaryModel.perInstanceGraphDescription"></instance-view-graph>
+        <metric-graph
+          [metricSets]="mainMetricSets"
+          [title]="summaryModel.mainMetricGraphTitle"
+          [chartType]="lineChart"
+          [description]="summaryModel.mainMetricGraphDescription"
+        ></metric-graph>
+        <instance-view-graph
+          *ngIf="
+            summaryModel.perInstanceGraphTitle &&
+            summaryModel.perInstanceGraphTitle !== ''
+          "
+          [metricSets]="detailMetricSets"
+          [title]="summaryModel.perInstanceGraphTitle"
+          [chartType]="lineChart"
+          [description]="summaryModel.perInstanceGraphDescription"
+        ></instance-view-graph>
       </div>
     </div>
-    <div *ngIf="!summaryModel || refreshing" >
+    <div *ngIf="!summaryModel || refreshing">
       <div class="loading-container">
-          <status-icon [size]="30" [loading]="LoadingStatus.Loading"></status-icon>
+        <status-icon
+          [size]="30"
+          [loading]="LoadingStatus.Loading"
+        ></status-icon>
       </div>
     </div>
   </div>

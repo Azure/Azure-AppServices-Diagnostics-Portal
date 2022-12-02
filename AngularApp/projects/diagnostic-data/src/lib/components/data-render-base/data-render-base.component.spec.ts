@@ -8,9 +8,8 @@ describe('DataRenderBaseComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DataRenderBaseComponent ]
-    })
-    .compileComponents();
+      declarations: [DataRenderBaseComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,12 +1,17 @@
 <div *ngIf="!editMode">
   <label for="modifyStartupTime">
-    Override the minimum time the process must execute before executing the auto-healing action. This is useful in
-    scenarios where
-    the app has high startup time and you don't want the mitigation action to kick in during app startup.
+    Override the minimum time the process must execute before executing the
+    auto-healing action. This is useful in scenarios where the app has high
+    startup time and you don't want the mitigation action to kick in during app
+    startup.
   </label>
   <div class="rule-button">
-    <button id="modifyStartupTime" type="button" class="btn btn-primary btn-sm"
-      (click)="configureMinProcessExecutionTime()">
+    <button
+      id="modifyStartupTime"
+      type="button"
+      class="btn btn-primary btn-sm"
+      (click)="configureMinProcessExecutionTime()"
+    >
       Modify Startup time
     </button>
   </div>
@@ -15,14 +20,30 @@
 <div class="form-group" *ngIf="editMode">
   <div class="row">
     <div class="col-sm-6">
-      <label for="minProcessExecutionTime">Specify the time (in seconds) after process startup after which auto-heal
-        should kick in ?</label>
+      <label for="minProcessExecutionTime"
+        >Specify the time (in seconds) after process startup after which
+        auto-heal should kick in ?</label
+      >
     </div>
     <div class="col-sm-4">
-      <input aria-required="true" type="number" [(ngModel)]="localMinProcessExecutionTime" id="minProcessExecutionTime"
-        placeholder="e.g. 600" min="1" max="7200">
-      <div style="margin-top:5px" *ngIf="localMinProcessExecutionTime < 0 || localMinProcessExecutionTime > 7200"
-        class="alert alert-danger" role="alert">
+      <input
+        aria-required="true"
+        type="number"
+        [(ngModel)]="localMinProcessExecutionTime"
+        id="minProcessExecutionTime"
+        placeholder="e.g. 600"
+        min="1"
+        max="7200"
+      />
+      <div
+        style="margin-top: 5px"
+        *ngIf="
+          localMinProcessExecutionTime < 0 ||
+          localMinProcessExecutionTime > 7200
+        "
+        class="alert alert-danger"
+        role="alert"
+      >
         Duration should be >= 0 seconds and below 2 hours
       </div>
     </div>
@@ -30,7 +51,14 @@
 
   <div class="row">
     <div class="col-sm-4">
-      <button type="button" class="btn btn-primary btn-sm" [disabled]="!isValid()" (click)="saveConfig()">Ok</button>
+      <button
+        type="button"
+        class="btn btn-primary btn-sm"
+        [disabled]="!isValid()"
+        (click)="saveConfig()"
+      >
+        Ok
+      </button>
     </div>
   </div>
 </div>

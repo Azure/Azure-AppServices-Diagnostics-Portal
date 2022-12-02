@@ -1,47 +1,118 @@
-
-<ngx-smart-modal customClass="cc-modal" #infoModal identifier="infoModal" >
-    <div>
-      <div class="modal-header">
-        <h4 class="modal-title">Incident:  <a target="_blank" rel="noopener noreferrer" href='https://servicedesk.microsoft.com/#/customer/case/{{selectedCase ? selectedCase.incidentId.trim() : ""}}'>{{selectedCase ? selectedCase.incidentId.trim() : ""}}</a> - {{activeIncident.title}}</h4>
-      </div>
-      <form [formGroup]="caseCleansingForm" (ngSubmit)="onSubmit()">
-        <div class="modal-body">
-  
-          <div class = "row">
-            <div class='col-'><h4>Recommendation:</h4></div> 
-            <ol>
-              <li  *ngFor="let recommendation of activeIncident.recommendations" ><b>{{recommendation.ruleName}}</b><div style="white-space: pre;">{{recommendation.recommendedClosedAgainst}}</div></li>
-            </ol>
-          </div>
-          <a target="_blank" rel="noopener noreferrer" href='https://servicedesk.microsoft.com/#/customer/case/{{selectedCase ? selectedCase.incidentId.trim() : ""}}'>Open in Service Desk</a><br/>
-          <a target="_blank" rel="noopener noreferrer" href='https://azuresupportcenter.msftcloudes.com/caseoverview?srId={{selectedCase ? selectedCase.incidentId.trim() : ""}}'>Open in Azure Support Center</a><br/><br/>
-  
-          <button type="button" class="btn btn-secondary btn-sm" *ngIf="!showProgress" (click)="toggleDebugInformation()">Debug
-            Information</button><br />
-          <div class="progress" *ngIf="showProgress">
-            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0"
-              aria-valuemax="100" style="width: 100%"></div>
-          </div>
-          <pre *ngIf="contentJSON"><code>{{contentJSON}}</code></pre><br />
-          <div class="form-group">
-            <label for="exampleFormControlSelect1">Enter Option</label>
-            <select class="form-control" id="exampleFormControlSelect1" required formControlName="select" (change)="onSelectChange($event)">
-              <option value="" selected="selected">---Please Select---</option>
-              <option value="Good Recommendation">Changed as per recommendation</option>
-              <option value="Bad Recommendation">Bad recommendation (Not Changed)</option>
-              <option value="other">Other</option>
-            </select>
-            <textarea id="ccTextAreaOther" placeholder="Please Specify what you did" *ngIf="caseCleansingForm.value.select == 'other'" formControlName="other"></textarea>
-            <div class="alert alert-warning" role="alert" *ngIf="!caseCleansingForm.valid">
-                    All fields are required to finish this case!
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" [disabled]="!caseCleansingForm.valid">Corrected in MSSOLVE</button>
-          <button type="button" class="btn btn-secondary" (click)="infoModal.close()">Cancel</button>
-        </div>
-      </form>
+<ngx-smart-modal customClass="cc-modal" #infoModal identifier="infoModal">
+  <div>
+    <div class="modal-header">
+      <h4 class="modal-title">
+        Incident:
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://servicedesk.microsoft.com/#/customer/case/{{
+            selectedCase ? selectedCase.incidentId.trim() : ''
+          }}"
+          >{{ selectedCase ? selectedCase.incidentId.trim() : '' }}</a
+        >
+        - {{ activeIncident.title }}
+      </h4>
     </div>
-  </ngx-smart-modal>
-  
+    <form [formGroup]="caseCleansingForm" (ngSubmit)="onSubmit()">
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-"><h4>Recommendation:</h4></div>
+          <ol>
+            <li *ngFor="let recommendation of activeIncident.recommendations">
+              <b>{{ recommendation.ruleName }}</b>
+              <div style="white-space: pre">
+                {{ recommendation.recommendedClosedAgainst }}
+              </div>
+            </li>
+          </ol>
+        </div>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://servicedesk.microsoft.com/#/customer/case/{{
+            selectedCase ? selectedCase.incidentId.trim() : ''
+          }}"
+          >Open in Service Desk</a
+        ><br />
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://azuresupportcenter.msftcloudes.com/caseoverview?srId={{
+            selectedCase ? selectedCase.incidentId.trim() : ''
+          }}"
+          >Open in Azure Support Center</a
+        ><br /><br />
+
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          *ngIf="!showProgress"
+          (click)="toggleDebugInformation()"
+        >
+          Debug Information</button
+        ><br />
+        <div class="progress" *ngIf="showProgress">
+          <div
+            class="progress-bar progress-bar-striped active"
+            role="progressbar"
+            aria-valuenow="100"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            style="width: 100%"
+          ></div>
+        </div>
+        <pre *ngIf="contentJSON"><code>{{contentJSON}}</code></pre>
+        <br />
+        <div class="form-group">
+          <label for="exampleFormControlSelect1">Enter Option</label>
+          <select
+            class="form-control"
+            id="exampleFormControlSelect1"
+            required
+            formControlName="select"
+            (change)="onSelectChange($event)"
+          >
+            <option value="" selected="selected">---Please Select---</option>
+            <option value="Good Recommendation">
+              Changed as per recommendation
+            </option>
+            <option value="Bad Recommendation">
+              Bad recommendation (Not Changed)
+            </option>
+            <option value="other">Other</option>
+          </select>
+          <textarea
+            id="ccTextAreaOther"
+            placeholder="Please Specify what you did"
+            *ngIf="caseCleansingForm.value.select === 'other'"
+            formControlName="other"
+          ></textarea>
+          <div
+            class="alert alert-warning"
+            role="alert"
+            *ngIf="!caseCleansingForm.valid"
+          >
+            All fields are required to finish this case!
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="!caseCleansingForm.valid"
+        >
+          Corrected in MSSOLVE
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="infoModal.close()"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</ngx-smart-modal>

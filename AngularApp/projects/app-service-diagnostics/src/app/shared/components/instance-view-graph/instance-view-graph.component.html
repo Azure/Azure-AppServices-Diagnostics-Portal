@@ -1,26 +1,59 @@
-<div style="padding:5px">
-    <div style="border-bottom: 1px #bbbbbb solid;margin-right: 45px;height:20px" *ngIf="title">
-        <div style="float:left;font-weight: 500;font-size: 13px" *ngIf="title">{{title}} for instance</div>
-        <div style="float:left;padding-left:5px;margin-top:-3px" *ngIf="title">
-            <div class="dropdown">
-                <button (click)="showToolsDropdown = !showToolsDropdown" class="btn btn-default btn-sm dropdown-toggle instance-selector" style="height: inherit" type="button" id="dropdownMenu1"
-                    data-toggle="dropdown" aria-haspopup="true">
-                    {{selectedInstance}}
-                <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" style="cursor: pointer" aria-labelledby="dropdownMenu1" [ngClass]="{'show': showToolsDropdown === true, 'hide': showToolsDropdown === false}">
-                    <li *ngFor="let instance of allInstances" (click)="selectInstance(instance);showToolsDropdown = false;"><a>{{instance}}</a></li>
-                </ul>
-            </div>
-        </div>
-        <div *ngIf="description" class="tool-tip pull-right"><i class="fa fa-info-circle" style="color:rgb(84, 143, 255)"></i>
-            <span class="tool-tip-text">{{description}}</span>
-        </div>
+<div style="padding: 5px">
+  <div
+    style="border-bottom: 1px #bbbbbb solid; margin-right: 45px; height: 20px"
+    *ngIf="title"
+  >
+    <div style="float: left; font-weight: 500; font-size: 13px" *ngIf="title">
+      {{ title }} for instance
     </div>
-    <div class="row" style="padding-right: 10px; height: 300px">
-        <div class="row" style="text-align: center; padding-top:85px" *ngIf="!chartData">
-            <i class="fa fa-circle-o-notch fa-2x fa-spin spin-icon" aria-hidden="true"></i>
-        </div>
-        <!-- <app-nvD3-chart [options]="chartOptions" [data]="chartData" *ngIf="chartData"></app-nvD3-chart> -->
+    <div style="float: left; padding-left: 5px; margin-top: -3px" *ngIf="title">
+      <div class="dropdown">
+        <button
+          (click)="showToolsDropdown = !showToolsDropdown"
+          class="btn btn-default btn-sm dropdown-toggle instance-selector"
+          style="height: inherit"
+          type="button"
+          id="dropdownMenu1"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+        >
+          {{ selectedInstance }}
+          <span class="caret"></span>
+        </button>
+        <ul
+          class="dropdown-menu"
+          style="cursor: pointer"
+          aria-labelledby="dropdownMenu1"
+          [ngClass]="{
+            show: showToolsDropdown === true,
+            hide: showToolsDropdown === false
+          }"
+        >
+          <li
+            *ngFor="let instance of allInstances"
+            (click)="selectInstance(instance); showToolsDropdown = false"
+          >
+            <a>{{ instance }}</a>
+          </li>
+        </ul>
+      </div>
     </div>
+    <div *ngIf="description" class="tool-tip pull-right">
+      <i class="fa fa-info-circle" style="color: rgb(84, 143, 255)"></i>
+      <span class="tool-tip-text">{{ description }}</span>
+    </div>
+  </div>
+  <div class="row" style="padding-right: 10px; height: 300px">
+    <div
+      class="row"
+      style="text-align: center; padding-top: 85px"
+      *ngIf="!chartData"
+    >
+      <i
+        class="fa fa-circle-o-notch fa-2x fa-spin spin-icon"
+        aria-hidden="true"
+      ></i>
+    </div>
+    <!-- <app-nvD3-chart [options]="chartOptions" [data]="chartData" *ngIf="chartData"></app-nvD3-chart> -->
+  </div>
 </div>

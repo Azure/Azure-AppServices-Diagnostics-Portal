@@ -1,10 +1,10 @@
 export class AseInfoMetaData {
-    resourceUri: string;
-    subscriptionId: string;
-    resourceGroupName: string;
-    name: string;
+  resourceUri: string;
+  subscriptionId: string;
+  resourceGroupName: string;
+  name: string;
 }
 
 export class HostingEnvironment {
-    name: string;
+  name: string;
 }

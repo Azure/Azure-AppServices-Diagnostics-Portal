@@ -1,6 +1,12 @@
-
-<div style="text-align:center;height:25px;padding:10px" *ngIf="operationStatus !== actionStatus.NotStarted">
-    <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true" *ngIf="operationStatus === actionStatus.Running"></i>
-    <p *ngIf="operationStatus === actionStatus.Passed">{{successMessage}}</p>
-    <p *ngIf="operationStatus === actionStatus.Failed">{{failureMessage}}</p>
+<div
+  style="text-align: center; height: 25px; padding: 10px"
+  *ngIf="operationStatus !== actionStatus.NotStarted"
+>
+  <i
+    class="fa fa-circle-o-notch fa-spin spin-icon"
+    aria-hidden="true"
+    *ngIf="operationStatus === actionStatus.Running"
+  ></i>
+  <p *ngIf="operationStatus === actionStatus.Passed">{{ successMessage }}</p>
+  <p *ngIf="operationStatus === actionStatus.Failed">{{ failureMessage }}</p>
 </div>

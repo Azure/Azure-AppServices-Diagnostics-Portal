@@ -9,7 +9,10 @@ describe('CategoryChatStateService', () => {
     });
   });
 
-  it('should be created', inject([CategoryChatStateService], (service: CategoryChatStateService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [CategoryChatStateService],
+    (service: CategoryChatStateService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

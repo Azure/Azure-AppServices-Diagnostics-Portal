@@ -8,9 +8,8 @@ describe('DetectorLoaderComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DetectorLoaderComponent ]
-    })
-    .compileComponents();
+      declarations: [DetectorLoaderComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -8,9 +8,8 @@ describe('StarRatingComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ StarRatingComponent ]
-    })
-    .compileComponents();
+      declarations: [StarRatingComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

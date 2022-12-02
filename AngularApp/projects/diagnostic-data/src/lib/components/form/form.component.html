@@ -1,95 +1,169 @@
 <ng-template ngFor let-element [ngForOf]="detectorForms">
   <div class="form-container">
-
-    <h3 class="form-title">{{element.formTitle}}</h3>
+    <h3 class="form-title">{{ element.formTitle }}</h3>
     <!-- Display form inputs-->
     <ng-template ngFor let-formInput [ngForOf]="element.formInputs">
-      <div class="form-group row" *ngIf="isText(formInput.inputType) && formInput.isVisible">
+      <div
+        class="form-group row"
+        *ngIf="isText(formInput.inputType) && formInput.isVisible"
+      >
         <div class="col-sm-8">
-          <label class="col-sm-4 col-md-2 col-form-label" [for]="formInput.internalId"> {{formInput.inputLabel}}
-            <fab-tooltip-host  *ngIf="formInput.tooltip != ''" [content]="formInput.tooltip" [directionalHint]="directionalHint">
-              <span class="fa form-tooltip" [ngClass]="formInput.tooltipIcon"></span>
+          <label
+            class="col-sm-4 col-md-2 col-form-label"
+            [for]="formInput.internalId"
+          >
+            {{ formInput.inputLabel }}
+            <fab-tooltip-host
+              *ngIf="formInput.tooltip !== ''"
+              [content]="formInput.tooltip"
+              [directionalHint]="directionalHint"
+            >
+              <span
+                class="fa form-tooltip"
+                [ngClass]="formInput.tooltipIcon"
+              ></span>
             </fab-tooltip-host>
           </label>
           <div class="col-sm-8 col-md-6">
-            <input type="text" class="form-control" [id]=formInput.internalId [(ngModel)]="formInput.inputValue"
-              (keyup)="inputChanged(formInput)" maxlength="150">
+            <input
+              type="text"
+              class="form-control"
+              [id]="formInput.internalId"
+              [(ngModel)]="formInput.inputValue"
+              (keyup)="inputChanged(formInput)"
+              maxlength="150"
+            />
 
-            <div class="text-danger" *ngIf="formInput.displayValidation">Please provide a value.</div>
+            <div class="text-danger" *ngIf="formInput.displayValidation">
+              Please provide a value.
+            </div>
           </div>
-
         </div>
       </div>
-      <div class="form-group row" *ngIf="isRadioButtonList(formInput.inputType) && formInput.isVisible">
+      <div
+        class="form-group row"
+        *ngIf="isRadioButtonList(formInput.inputType) && formInput.isVisible"
+      >
         <div class="col-sm-8">
-          <label class="col-sm-4 col-md-2 col-form-label" [class.col-md-4]="formInput.tooltip != ''" [class.col-md-2]="formInput.tooltip == ''"> {{formInput.inputLabel}}
-            <fab-tooltip-host  *ngIf="formInput.tooltip != ''" [content]="formInput.tooltip" [directionalHint]="directionalHint">
-              <span class="fa form-tooltip" [ngClass]="formInput.tooltipIcon" style="display: inline;"></span>
+          <label
+            class="col-sm-4 col-md-2 col-form-label"
+            [class.col-md-4]="formInput.tooltip !== ''"
+            [class.col-md-2]="formInput.tooltip === ''"
+          >
+            {{ formInput.inputLabel }}
+            <fab-tooltip-host
+              *ngIf="formInput.tooltip !== ''"
+              [content]="formInput.tooltip"
+              [directionalHint]="directionalHint"
+            >
+              <span
+                class="fa form-tooltip"
+                [ngClass]="formInput.tooltipIcon"
+                style="display: inline"
+              ></span>
             </fab-tooltip-host>
           </label>
           <div class="col-sm-8 col-md-6">
             <ng-container *ngFor="let entry of formInput.items">
               <div class="radio">
-                <label><input type="radio" [name]=formInput.internalId [(ngModel)]="formInput.inputValue"
-                    [value]="entry.value">{{ entry.text }}
-                    <fab-tooltip-host *ngIf="entry.tooltip != ''" [content]="entry.tooltip" [directionalHint]="directionalHint">
-                      <span class="fa form-tooltip" [ngClass]="entry.tooltipIcon" >
-                      </span>
-                    </fab-tooltip-host>
-                    </label>
+                <label
+                  ><input
+                    type="radio"
+                    [name]="formInput.internalId"
+                    [(ngModel)]="formInput.inputValue"
+                    [value]="entry.value"
+                  />{{ entry.text }}
+                  <fab-tooltip-host
+                    *ngIf="entry.tooltip !== ''"
+                    [content]="entry.tooltip"
+                    [directionalHint]="directionalHint"
+                  >
+                    <span class="fa form-tooltip" [ngClass]="entry.tooltipIcon">
+                    </span>
+                  </fab-tooltip-host>
+                </label>
               </div>
             </ng-container>
           </div>
         </div>
       </div>
 
-      <div class="form-group row" *ngIf="isDropdown(formInput.inputType) && formInput.isVisible">
+      <div
+        class="form-group row"
+        *ngIf="isDropdown(formInput.inputType) && formInput.isVisible"
+      >
         <div class="col-sm-8">
-          <label class="col-sm-4 col-md-2 col-form-label" [class.col-md-4]="formInput.tooltip != ''" [class.col-md-2]="formInput.tooltip == ''"> {{formInput.inputLabel}}
-            <fab-tooltip-host  *ngIf="formInput.tooltip != ''" [content]="formInput.tooltip" [directionalHint]="directionalHint">
-              <span class="fa form-tooltip" [ngClass]="formInput.tooltipIcon" style="display: inline;"></span>
+          <label
+            class="col-sm-4 col-md-2 col-form-label"
+            [class.col-md-4]="formInput.tooltip !== ''"
+            [class.col-md-2]="formInput.tooltip === ''"
+          >
+            {{ formInput.inputLabel }}
+            <fab-tooltip-host
+              *ngIf="formInput.tooltip !== ''"
+              [content]="formInput.tooltip"
+              [directionalHint]="directionalHint"
+            >
+              <span
+                class="fa form-tooltip"
+                [ngClass]="formInput.tooltipIcon"
+                style="display: inline"
+              ></span>
             </fab-tooltip-host>
           </label>
           <div class="col-sm-8 col-md-6">
-            <fab-dropdown [id]="formInput.internalId" role="combobox" [options]="formInput.dropdownOptions"
-              [multiSelect]="formInput.isMultiSelect" [defaultSelectedKey]="formInput.defaultSelectedKey"
-              (onChange)=setDropdownSelection($event) [defaultSelectedKeys]="formInput.defaultSelectedKeys"
-               #formDropdown [componentRef]="formdropDownRef">
+            <fab-dropdown
+              [id]="formInput.internalId"
+              role="combobox"
+              [options]="formInput.dropdownOptions"
+              [multiSelect]="formInput.isMultiSelect"
+              [defaultSelectedKey]="formInput.defaultSelectedKey"
+              (onChange)="setDropdownSelection($event)"
+              [defaultSelectedKeys]="formInput.defaultSelectedKeys"
+              #formDropdown
+              [componentRef]="formdropDownRef"
+            >
             </fab-dropdown>
           </div>
         </div>
       </div>
-
     </ng-template>
     <!-- Display form buttons -->
     <div class="btn-toolbar">
       <ng-template ngFor let-formButton [ngForOf]="element.formButtons">
-        <button [ngClass]="getButtonClass(formButton.buttonStyle)" type="button" [id]=formButton.internalId
-          (click)="OnSubmitFormAction(element.formId, formButton.inputId)">
-          {{formButton.inputLabel}}
+        <button
+          [ngClass]="getButtonClass(formButton.buttonStyle)"
+          type="button"
+          [id]="formButton.internalId"
+          (click)="OnSubmitFormAction(element.formId, formButton.inputId)"
+        >
+          {{ formButton.inputLabel }}
         </button>
       </ng-template>
     </div>
 
-
-
     <div class="form-response-margin">
       <!-- show loader when loading form response-->
-      <loader-view *ngIf="element.loadingFormResponse" message="Loading Data...">
+      <loader-view
+        *ngIf="element.loadingFormResponse"
+        message="Loading Data..."
+      >
       </loader-view>
       <!-- show error message if request failed-->
-      <div class="text-danger" *ngIf="element.errorMessage != ''">
-        {{element.errorMessage}}
+      <div class="text-danger" *ngIf="element.errorMessage !== ''">
+        {{ element.errorMessage }}
       </div>
       <!-- Display form response -->
       <div *ngIf="element.formResponse != undefined">
         <div *ngFor="let data of element.formResponse.dataset">
-          <dynamic-data [diagnosticData]="data" [startTime]="startTime" [endTime]="endTime"
-            [detectorEventProperties]="detectorEventProperties"></dynamic-data>
+          <dynamic-data
+            [diagnosticData]="data"
+            [startTime]="startTime"
+            [endTime]="endTime"
+            [detectorEventProperties]="detectorEventProperties"
+          ></dynamic-data>
         </div>
       </div>
     </div>
-
-
   </div>
 </ng-template>

@@ -1,8 +1,22 @@
 <div class="search-box-container" *ngIf="_searchService.searchIsEnabled">
   <div class="search-box">
     <i class="fa fa-search search-icon"></i>
-    <input placeholder="Describe your problem and hit enter" class="search-input" [(ngModel)]="_searchService.searchTerm" (keyup.enter)="triggerSearch()">
-    <span class="icon-err" [style.display]="_searchService.searchTerm?.trim().length>0 && _searchService.searchTerm?.trim().length<4? '': 'none'" title="At least 4 characters">
+    <input
+      placeholder="Describe your problem and hit enter"
+      class="search-input"
+      [(ngModel)]="_searchService.searchTerm"
+      (keyup.enter)="triggerSearch()"
+    />
+    <span
+      class="icon-err"
+      [style.display]="
+        _searchService.searchTerm?.trim().length > 0 &&
+        _searchService.searchTerm?.trim().length < 4
+          ? ''
+          : 'none'
+      "
+      title="At least 4 characters"
+    >
       <i class="fa fa-exclamation"></i>
     </span>
   </div>
@@ -13,67 +27,136 @@
     <comm-alert></comm-alert>
   </div>
   <div class="btn-group" role="group" aria-label="Button Group">
-    <button type="button" class="btn btn-first-child" (click)="selectView('category')" [class.is-selected]="viewType === 'category'">By Category</button>
-    <button type="button" class="btn btn-last-child" (click)="selectView('supportTopic')" [class.is-selected]="viewType === 'supportTopic'">By Support Topic</button>
+    <button
+      type="button"
+      class="btn btn-first-child"
+      (click)="selectView('category')"
+      [class.is-selected]="viewType === 'category'"
+    >
+      By Category
+    </button>
+    <button
+      type="button"
+      class="btn btn-last-child"
+      (click)="selectView('supportTopic')"
+      [class.is-selected]="viewType === 'supportTopic'"
+    >
+      By Support Topic
+    </button>
   </div>
-  <div *ngIf="viewType === 'category' && categoryLoaded" class="category-container">
-    <div class="flexed card " *ngFor="let category of categories;let i = index" [ngClass]="{'active':category.activeState === 2, 'inactive': category.activeState === 1}"
-      (click)="navigateToCategory(category)">
+  <div
+    *ngIf="viewType === 'category' && categoryLoaded"
+    class="category-container"
+  >
+    <div
+      class="flexed card"
+      *ngFor="let category of categories; let i = index"
+      [ngClass]="{
+        active: category.activeState === 2,
+        inactive: category.activeState === 1
+      }"
+      (click)="navigateToCategory(category)"
+    >
       <div class="bottom row">
-        <div *ngIf="category.icon != undefined && category.icon != ''" class="col-md-3 category-icon-container">
-          <img class="category-icon" src={{category.icon}} />
+        <div
+          *ngIf="category.icon != undefined && category.icon !== ''"
+          class="col-md-3 category-icon-container"
+        >
+          <img class="category-icon" src="{{ category.icon }}" />
         </div>
-        <div *ngIf="category.icon == undefined || category.icon == ''" class="col-md-3 category-avatar-container">
-          <ngx-avatar [name]="category.label" [round]="false" initialsSize="2" size="80"></ngx-avatar>
+        <div
+          *ngIf="category.icon == undefined || category.icon === ''"
+          class="col-md-3 category-avatar-container"
+        >
+          <ngx-avatar
+            [name]="category.label"
+            [round]="false"
+            initialsSize="2"
+            size="80"
+          ></ngx-avatar>
         </div>
         <div class="col-md-9 category-label">
-          <div class="category-title">{{category.label}}</div>
+          <div class="category-title">{{ category.label }}</div>
           <div class="category-description">
-            <span>Total Detectors: {{category.subItems.length}}</span>
+            <span>Total Detectors: {{ category.subItems.length }}</span>
           </div>
         </div>
       </div>
       <div class="keywords">
         <div *ngFor="let subCategory of category.subItems; let i = index">
-          <div *ngIf="i<2" class="keyword">
-            <span>{{subCategory.label}}</span>
+          <div *ngIf="i < 2" class="keyword">
+            <span>{{ subCategory.label }}</span>
           </div>
         </div>
-        <span *ngIf="category.subItems.length > 2" class="detectors-hint">+{{category.subItems.length-2}} detectors</span>
+        <span *ngIf="category.subItems.length > 2" class="detectors-hint"
+          >+{{ category.subItems.length - 2 }} detectors</span
+        >
       </div>
     </div>
   </div>
-  <div *ngIf="viewType === 'category' && !categoryLoaded" class="loading-home-page">
+  <div
+    *ngIf="viewType === 'category' && !categoryLoaded"
+    class="loading-home-page"
+  >
     <i class="fa fa-spinner fa-spin fa-4x fa-fw"></i>
   </div>
 
-  <div *ngIf="viewType === 'supportTopic' && supportTopicsLoaded" class="category-container">
-    <div class="flexed card" *ngFor="let supportTopic of supportTopics;let i = index" (click)="navigateToSupportTopic(supportTopic)">
+  <div
+    *ngIf="viewType === 'supportTopic' && supportTopicsLoaded"
+    class="category-container"
+  >
+    <div
+      class="flexed card"
+      *ngFor="let supportTopic of supportTopics; let i = index"
+      (click)="navigateToSupportTopic(supportTopic)"
+    >
       <div class="bottom row">
-        <div *ngIf="supportTopic.icon != undefined && supportTopic.icon != ''" class="col-md-3 category-icon-container">
-          <img class="category-icon" src={{supportTopic.icon}} />
+        <div
+          *ngIf="supportTopic.icon != undefined && supportTopic.icon !== ''"
+          class="col-md-3 category-icon-container"
+        >
+          <img class="category-icon" src="{{ supportTopic.icon }}" />
         </div>
-        <div *ngIf="supportTopic.icon == undefined || supportTopic.icon == ''" class="col-md-3 category-avatar-container">
-          <ngx-avatar [name]="supportTopic.supportTopicL2Name" [round]="false" initialsSize="2" size="80"></ngx-avatar>
+        <div
+          *ngIf="supportTopic.icon == undefined || supportTopic.icon === ''"
+          class="col-md-3 category-avatar-container"
+        >
+          <ngx-avatar
+            [name]="supportTopic.supportTopicL2Name"
+            [round]="false"
+            initialsSize="2"
+            size="80"
+          ></ngx-avatar>
         </div>
         <div class="col-md-9 category-label">
-          <div class="category-title">{{supportTopic.supportTopicL2Name}}</div>
+          <div class="category-title">
+            {{ supportTopic.supportTopicL2Name }}
+          </div>
           <div class="category-description">
-            <span>Total Support Topics: {{supportTopic.subItems.length}}</span>
+            <span
+              >Total Support Topics: {{ supportTopic.subItems.length }}</span
+            >
           </div>
         </div>
       </div>
       <div class="keywords">
-        <div *ngFor="let subSupportTopic of supportTopic.subItems;let j=index">
-          <div *ngIf="j<2" class="keyword">
-            <span>{{subSupportTopic.supportTopicL3Name}}</span>
+        <div
+          *ngFor="let subSupportTopic of supportTopic.subItems; let j = index"
+        >
+          <div *ngIf="j < 2" class="keyword">
+            <span>{{ subSupportTopic.supportTopicL3Name }}</span>
           </div>
         </div>
-        <span *ngIf="supportTopic.subItems.length > 2" class="detectors-hint">+{{supportTopic.subItems.length-2}} support topics</span>
+        <span *ngIf="supportTopic.subItems.length > 2" class="detectors-hint"
+          >+{{ supportTopic.subItems.length - 2 }} support topics</span
+        >
       </div>
     </div>
   </div>
-  <div *ngIf="viewType === 'supportTopic' && !supportTopicsLoaded" class=" loading-home-page">
+  <div
+    *ngIf="viewType === 'supportTopic' && !supportTopicsLoaded"
+    class="loading-home-page"
+  >
     <i class="fa fa-spinner fa-spin fa-4x fa-fw"></i>
   </div>
 </div>

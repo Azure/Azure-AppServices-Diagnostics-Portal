@@ -1,38 +1,38 @@
-@import "../../../../../../styles/global.scss";
+@import '../../../../../../styles/global.scss';
 .insight-container {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .insight-panel {
-    border-left-width: 4px;
-    background-color: #fff8f0;
+  border-left-width: 4px;
+  background-color: #fff8f0;
 }
 
 .top-margin {
-    border-top: 1px solid #ccc;
-    margin-left: 32px;
+  border-top: 1px solid #ccc;
+  margin-left: 32px;
 }
 
-.disable-agent{
-    margin-top: 6px;
-    float: left;
-    margin-left: 10px;
+.disable-agent {
+  margin-top: 6px;
+  float: left;
+  margin-left: 10px;
 }
 
 .display-table {
-    display: table;
+  display: table;
 }
 .display-table > div {
-    display: table-row;
+  display: table-row;
 }
 .display-table > div > div {
-    display: table-cell;
-    padding: 8px;
+  display: table-cell;
+  padding: 8px;
 }
 
 .data-collection-loading {
-    display: flex;
-    margin-top: 20px;
+  display: flex;
+  margin-top: 20px;
 }
 
 .table-borderless > tbody > tr > td,
@@ -41,15 +41,15 @@
 .table-borderless > tfoot > tr > th,
 .table-borderless > thead > tr > td,
 .table-borderless > thead > tr > th {
-    border: none;
+  border: none;
 }
 
 .error-details {
-    background-color: rgb(254, 240, 240);
-    padding: 5px;
+  background-color: rgb(254, 240, 240);
+  padding: 5px;
 }
 
 .dot-flashing {
-    @include dot-flashing(7);
-    margin: 0px 15px 0px 20px;
+  @include dot-flashing(7);
+  margin: 0px 15px 0px 20px;
 }

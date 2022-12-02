@@ -1,13 +1,15 @@
 <div *ngIf="!displayTools && initialized">
-    <a (click)="displayTools = true">Show Tools <i class="fa fa-caret-down" aria-hidden="true"></i></a>
+  <a (click)="displayTools = true"
+    >Show Tools <i class="fa fa-caret-down" aria-hidden="true"></i
+  ></a>
 </div>
 <div *ngIf="initialized && displayTools">
-    <h5>Tools</h5>
-    <ul style="list-style-type: none; padding: 0px;" >
-        <li *ngFor="let tool of supportTools">
-            <a *ngIf="tool.enabled" (click)="tool.action()">{{tool.title}}</a>
-            <a class="disabled" *ngIf="!tool.enabled">{{tool.title}}</a>
-            <!--<a *ngIf="tool.title === 'Mitigate'" href="{{mitigateLink}}" target="_blank">{{tool.title}}</a>-->
-        </li>
-    </ul>
+  <h5>Tools</h5>
+  <ul style="list-style-type: none; padding: 0px">
+    <li *ngFor="let tool of supportTools">
+      <a *ngIf="tool.enabled" (click)="tool.action()">{{ tool.title }}</a>
+      <a class="disabled" *ngIf="!tool.enabled">{{ tool.title }}</a>
+      <!--<a *ngIf="tool.title === 'Mitigate'" href="{{mitigateLink}}" target="_blank">{{tool.title}}</a>-->
+    </li>
+  </ul>
 </div>

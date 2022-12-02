@@ -1,6 +1,11 @@
 <applens-header></applens-header>
 <div class="container-fluid main-container content-under-header">
   <div class="big-text" *ngIf="loading">Searching for stamp ...</div>
-  <div class="big-text" *ngIf="!loading && error">{{error}}</div>
-  <div class="big-text" *ngIf="!loading && !error && matchingStamps.length == 1">Redirecting to {{stampName}}</div>
+  <div class="big-text" *ngIf="!loading && error">{{ error }}</div>
+  <div
+    class="big-text"
+    *ngIf="!loading && !error && matchingStamps.length == 1"
+  >
+    Redirecting to {{ stampName }}
+  </div>
 </div>

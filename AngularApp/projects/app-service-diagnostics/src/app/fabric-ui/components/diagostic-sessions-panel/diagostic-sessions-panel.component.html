@@ -1,15 +1,28 @@
-<fab-panel [isOpen]="globals.openSessionPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'"
-  (onDismiss)="dismissedHandler()" [headerText]="'Diagnostic sessions'">
+<fab-panel
+  [isOpen]="globals.openSessionPanel"
+  [type]="type"
+  [customWidth]="width"
+  [isHiddenOnDismiss]="true"
+  [isLightDismiss]="true"
+  [hasCloseButton]="true"
+  [isBlocking]="false"
+  [closeButtonAriaLabel]="'close'"
+  (onDismiss)="dismissedHandler()"
+  [headerText]="'Diagnostic sessions'"
+>
   <div class="row panel-padding">
     <div style="margin-bottom: 10px">
       <p>
-        Below is the list of all the diagnostic sessions collected in the past for this web app. To save disk space,
-        older
-        diagnostic sessions and their data collected will be deleted automatically.
+        Below is the list of all the diagnostic sessions collected in the past
+        for this web app. To save disk space, older diagnostic sessions and
+        their data collected will be deleted automatically.
       </p>
       <div class="sessions">
-        <daas-sessions [diagnoserNameLookup]="" [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed">
+        <daas-sessions
+          [diagnoserNameLookup]=""
+          [scmPath]="scmPath"
+          [siteToBeDiagnosed]="siteToBeDiagnosed"
+        >
         </daas-sessions>
       </div>
     </div>

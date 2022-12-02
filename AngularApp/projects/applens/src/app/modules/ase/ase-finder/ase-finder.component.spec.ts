@@ -8,9 +8,8 @@ describe('AseFinderComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AseFinderComponent ]
-    })
-    .compileComponents();
+      declarations: [AseFinderComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

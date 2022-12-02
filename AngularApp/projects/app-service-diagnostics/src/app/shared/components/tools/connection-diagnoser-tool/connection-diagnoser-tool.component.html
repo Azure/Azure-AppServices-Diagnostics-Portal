@@ -1,119 +1,190 @@
 <div class="container">
-    <h2 tabindex="0">Check Connection Strings</h2>
-    <p tabindex="0">This tool validates all the connection strings configured for your App (either as app-settings,
-        environment variables
-        or inside the configuration files) and helps you to identify successful vs. failing connections from the App
-        Service
-        instance.
-    </p>
+  <h2 tabindex="0">Check Connection Strings</h2>
+  <p tabindex="0">
+    This tool validates all the connection strings configured for your App
+    (either as app-settings, environment variables or inside the configuration
+    files) and helps you to identify successful vs. failing connections from the
+    App Service instance.
+  </p>
 
-    <div tabindex="0" *ngIf="retrievingInfo" style="margin-top:30px; margin-left:30px">
-        <i class="fa fa-circle-o-notch fa-2x fa-spin spin-icon" aria-hidden="true"></i>
-        <span class="loading-message">Checking connection settings for the Web App</span>
+  <div
+    tabindex="0"
+    *ngIf="retrievingInfo"
+    style="margin-top: 30px; margin-left: 30px"
+  >
+    <i
+      class="fa fa-circle-o-notch fa-2x fa-spin spin-icon"
+      aria-hidden="true"
+    ></i>
+    <span class="loading-message"
+      >Checking connection settings for the Web App</span
+    >
+  </div>
+  <div style="margin-top: 10px">
+    <div tabindex="0" *ngIf="!retrievingInfo && total === 0 && !error">
+      No connection settings found for this Web App.
     </div>
-    <div style="margin-top:10px">
-        <div tabindex="0" *ngIf="!retrievingInfo && total === 0 && !error">
-            No connection settings found for this Web App.
-        </div>
 
-        <div tabindex="0" style="margin-left:5px;margin-bottom:10px;" *ngIf="!retrievingInfo && total > 0">
-            <strong>{{ succeeded }} of {{ total }} connections succeeded</strong>
-        </div>
-
-        <div *ngFor="let connection of dbTestResult; let i = index">
-            <div class="panel panel-default">
-                <div tabindex="0" class="panel-heading" (click)="toggleExpanded(i)" (keyup.enter)="toggleExpanded(i)"
-                    (keyup.space)="toggleExpanded(i)">
-                    <span style="padding: 0px 10px 0px 0px">
-                        <i class="fa health-icon fa-exclamation-circle unhealthy-icon-color"
-                            *ngIf="!connection.Succeeded && isDatabaseTypeSupported(connection)" aria-hidden="true"></i>
-                        <i class="fa health-icon fa-info-circle warning-icon-color"
-                            *ngIf="!connection.Succeeded && !isDatabaseTypeSupported(connection)"
-                            aria-hidden="true"></i>
-                        <i class="fa health-icon fa-check-circle healthy-icon-color" *ngIf="connection.Succeeded"
-                            aria-hidden="true"></i>
-                    </span>
-                    <b>{{ connection.Name }}</b>
-                    <span>({{ getDatabaseTypeName(connection) }})</span>
-                    <span class="pull-right">
-                        <i class="fa fa-plus" *ngIf="!connection.Expanded" tabindex="0" aria-label="Expand connections"></i>
-                        <i class="fa fa-minus" *ngIf="connection.Expanded"  tabindex="0" aria-label="Collapse connections"></i>
-                    </span>
-                </div>
-                <div class="panel-body" *ngIf="connection.Expanded">
-                    <table tabindex="0" class="table table-bordered fixed-table">
-                        <tbody>
-                            <tr>
-                                <th tabindex="0" scope="row" style="min-width:150px;max-width:150px;width:150px">
-                                    Provider
-                                </th>
-                                <td tabindex="0">{{ connection.ProviderName }}</td>
-                            </tr>
-                            <tr>
-                                <th tabindex="0" scope="row">
-                                    Connection String
-                                </th>
-                                <td tabindex="0" class="connstr-text" (keyup.enter)="toggleConnectionString(i)"
-                                    (keyup.space)="toggleConnectionString(i)" (click)="toggleConnectionString(i)">
-                                    <span *ngIf="!connection.DisplayClearText">Hidden value. Click to show</span>
-                                    <span *ngIf="connection.DisplayClearText"> {{ connection.ConnectionString }}</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th tabindex="0" scope="row">
-                                    Source
-                                </th>
-                                <td tabindex="0">
-                                    <div *ngIf="connection.IsEnvironmentVariable">
-                                        Environment Variable
-                                    </div>
-                                    <div *ngIf="!connection.IsEnvironmentVariable && connection.FilePath !== null">
-                                        {{ connection.FilePath }}
-                                        <span *ngIf="connection.LineNumber > 0"> @ line
-                                            {{ connection.LineNumber }}</span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row" tabindex="0">
-                                    Status
-                                </th>
-                                <td tabindex="0">
-                                    <div *ngIf="connection.Succeeded" style="color:#137c39">
-                                        <strong>We could connect successfully to this connection.</strong>
-                                    </div>
-                                    <div *ngIf="!connection.Succeeded && connection.ExceptionDetails">
-                                        <div style="color:rgb(160, 12, 12)">
-                                            <strong>{{ connection.ExceptionDetails.ClassName }}</strong>:
-                                            {{ connection.ExceptionDetails.Message}}
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- connection.DatabaseType 3 is 'Custom' -->
-                            <tr *ngIf="!connection.DummyValueExistsInWebConfig && connection.IsEnvironmentVariable && connection.DatabaseType === 3">
-                                <th scope="row" tabindex="0">
-                                    Warning
-                                </th>
-                                <td tabindex="0">
-                                    We found that the connection string is defined only as an environment variable and
-                                    no
-                                    dummy value exists in the web.config.
-                                    Any C# code attempting to retrieve this connnecting string might fail. For more information, click
-                                    <a target="_blank"
-                                        href='https://azure.microsoft.com/en-us/blog/windows-azure-web-sites-how-application-strings-and-connection-strings-work/'>here</a>.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="focus-box focus-box-warning" style="margin-top:20px" *ngIf="error">
-            <div tabindex="0">
-                <strong>Error</strong> - {{ error.message ? error.message : error }}
-            </div>
-        </div>
+    <div
+      tabindex="0"
+      style="margin-left: 5px; margin-bottom: 10px"
+      *ngIf="!retrievingInfo && total > 0"
+    >
+      <strong>{{ succeeded }} of {{ total }} connections succeeded</strong>
     </div>
-    <feedback-form tabindex="0" [source]="'connectiondiagnoser'"></feedback-form>
+
+    <div *ngFor="let connection of dbTestResult; let i = index">
+      <div class="panel panel-default">
+        <div
+          tabindex="0"
+          class="panel-heading"
+          (click)="toggleExpanded(i)"
+          (keyup.enter)="toggleExpanded(i)"
+          (keyup.space)="toggleExpanded(i)"
+        >
+          <span style="padding: 0px 10px 0px 0px">
+            <i
+              class="fa health-icon fa-exclamation-circle unhealthy-icon-color"
+              *ngIf="
+                !connection.Succeeded && isDatabaseTypeSupported(connection)
+              "
+              aria-hidden="true"
+            ></i>
+            <i
+              class="fa health-icon fa-info-circle warning-icon-color"
+              *ngIf="
+                !connection.Succeeded && !isDatabaseTypeSupported(connection)
+              "
+              aria-hidden="true"
+            ></i>
+            <i
+              class="fa health-icon fa-check-circle healthy-icon-color"
+              *ngIf="connection.Succeeded"
+              aria-hidden="true"
+            ></i>
+          </span>
+          <b>{{ connection.Name }}</b>
+          <span>({{ getDatabaseTypeName(connection) }})</span>
+          <span class="pull-right">
+            <i
+              class="fa fa-plus"
+              *ngIf="!connection.Expanded"
+              tabindex="0"
+              aria-label="Expand connections"
+            ></i>
+            <i
+              class="fa fa-minus"
+              *ngIf="connection.Expanded"
+              tabindex="0"
+              aria-label="Collapse connections"
+            ></i>
+          </span>
+        </div>
+        <div class="panel-body" *ngIf="connection.Expanded">
+          <table tabindex="0" class="table table-bordered fixed-table">
+            <tbody>
+              <tr>
+                <th
+                  tabindex="0"
+                  scope="row"
+                  style="min-width: 150px; max-width: 150px; width: 150px"
+                >
+                  Provider
+                </th>
+                <td tabindex="0">{{ connection.ProviderName }}</td>
+              </tr>
+              <tr>
+                <th tabindex="0" scope="row">Connection String</th>
+                <td
+                  tabindex="0"
+                  class="connstr-text"
+                  (keyup.enter)="toggleConnectionString(i)"
+                  (keyup.space)="toggleConnectionString(i)"
+                  (click)="toggleConnectionString(i)"
+                >
+                  <span *ngIf="!connection.DisplayClearText"
+                    >Hidden value. Click to show</span
+                  >
+                  <span *ngIf="connection.DisplayClearText">
+                    {{ connection.ConnectionString }}</span
+                  >
+                </td>
+              </tr>
+              <tr>
+                <th tabindex="0" scope="row">Source</th>
+                <td tabindex="0">
+                  <div *ngIf="connection.IsEnvironmentVariable">
+                    Environment Variable
+                  </div>
+                  <div
+                    *ngIf="
+                      !connection.IsEnvironmentVariable &&
+                      connection.FilePath !== null
+                    "
+                  >
+                    {{ connection.FilePath }}
+                    <span *ngIf="connection.LineNumber > 0">
+                      @ line {{ connection.LineNumber }}</span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row" tabindex="0">Status</th>
+                <td tabindex="0">
+                  <div *ngIf="connection.Succeeded" style="color: #137c39">
+                    <strong
+                      >We could connect successfully to this connection.</strong
+                    >
+                  </div>
+                  <div
+                    *ngIf="!connection.Succeeded && connection.ExceptionDetails"
+                  >
+                    <div style="color: rgb(160, 12, 12)">
+                      <strong>{{
+                        connection.ExceptionDetails.ClassName
+                      }}</strong
+                      >:
+                      {{ connection.ExceptionDetails.Message }}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <!-- connection.DatabaseType 3 is 'Custom' -->
+              <tr
+                *ngIf="
+                  !connection.DummyValueExistsInWebConfig &&
+                  connection.IsEnvironmentVariable &&
+                  connection.DatabaseType === 3
+                "
+              >
+                <th scope="row" tabindex="0">Warning</th>
+                <td tabindex="0">
+                  We found that the connection string is defined only as an
+                  environment variable and no dummy value exists in the
+                  web.config. Any C# code attempting to retrieve this
+                  connnecting string might fail. For more information, click
+                  <a
+                    target="_blank"
+                    href="https://azure.microsoft.com/en-us/blog/windows-azure-web-sites-how-application-strings-and-connection-strings-work/"
+                    >here</a
+                  >.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div
+      class="focus-box focus-box-warning"
+      style="margin-top: 20px"
+      *ngIf="error"
+    >
+      <div tabindex="0">
+        <strong>Error</strong> - {{ error.message ? error.message : error }}
+      </div>
+    </div>
+  </div>
+  <feedback-form tabindex="0" [source]="'connectiondiagnoser'"></feedback-form>
 </div>

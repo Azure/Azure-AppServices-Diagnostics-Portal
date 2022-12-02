@@ -3,7 +3,7 @@
 
 import { registerElement } from '@angular-react/core';
 import { CommonModule } from '@angular/common';
-import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, NgModule } from '@angular/core';
 import { TeachingBubble } from 'office-ui-fabric-react';
 import { FabTeachingBubbleComponent } from './teachingbubble.component';
 
@@ -13,11 +13,11 @@ const components = [FabTeachingBubbleComponent];
   imports: [CommonModule],
   declarations: components,
   exports: components,
-  schemas: [NO_ERRORS_SCHEMA],
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class FabTeachingBubbleModule {
   constructor() {
     // Add any React elements to the registry (used by the renderer).
-    registerElement('TeachingBubble', () => TeachingBubble);    
+    registerElement('TeachingBubble', () => TeachingBubble);
   }
 }

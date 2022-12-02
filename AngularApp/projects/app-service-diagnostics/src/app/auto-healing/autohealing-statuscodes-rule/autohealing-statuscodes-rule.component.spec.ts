@@ -8,9 +8,8 @@ describe('AutohealingStatuscodesRuleComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AutohealingStatuscodesRuleComponent ]
-    })
-    .compileComponents();
+      declarations: [AutohealingStatuscodesRuleComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

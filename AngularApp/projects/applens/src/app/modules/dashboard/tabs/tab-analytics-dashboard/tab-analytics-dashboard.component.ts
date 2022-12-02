@@ -7,12 +7,9 @@ import { StatisticsType } from '../tab-monitoring/tab-monitoring.component';
   styleUrls: ['./tab-analytics-dashboard.component.scss']
 })
 export class TabAnalyticsDashboardComponent implements OnInit {
-
-  systemInvokerId: string = "__analytics";
+  systemInvokerId: string = '__analytics';
   statisticsType: StatisticsType = StatisticsType.Analytics;
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

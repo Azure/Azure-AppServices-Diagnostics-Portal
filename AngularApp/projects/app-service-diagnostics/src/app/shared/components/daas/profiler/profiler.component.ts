@@ -15,8 +15,10 @@ import { OperatingSystem } from '../../../models/site';
   templateUrl: './profiler.component.html',
   styleUrls: ['./profiler.component.scss', '../daas/daas.component.scss']
 })
-export class ProfilerComponent extends DaasComponent implements OnInit, OnDestroy {
-
+export class ProfilerComponent
+  extends DaasComponent
+  implements OnInit, OnDestroy
+{
   instancesStatus: Map<string, number>;
   selectedInstance: string;
   WizardSteps: StepWizardSingleStep[] = [];
@@ -27,36 +29,62 @@ export class ProfilerComponent extends DaasComponent implements OnInit, OnDestro
   isAspNetCoreLowerVersion: boolean = false;
   isAspNetCore: boolean = false;
   aspNetCoreWarningExpanded: boolean = true;
-  netCoreVersion: string = "";
+  netCoreVersion: string = '';
   linuxProfileDuration: number = 60;
 
-  constructor(private _serverFarmServiceLocal: ServerFarmDataService, private _siteServiceLocal: SiteService,
-    private _daasServiceLocal: DaasService, private _windowServiceLocal: WindowService,
-    private _loggerLocal: AvailabilityLoggingService, private _webSiteServiceLocal: WebSitesService) {
-    super(_serverFarmServiceLocal, _siteServiceLocal, _daasServiceLocal, _windowServiceLocal, _loggerLocal, _webSiteServiceLocal);
+  constructor(
+    private _serverFarmServiceLocal: ServerFarmDataService,
+    private _siteServiceLocal: SiteService,
+    private _daasServiceLocal: DaasService,
+    private _windowServiceLocal: WindowService,
+    private _loggerLocal: AvailabilityLoggingService,
+    private _webSiteServiceLocal: WebSitesService
+  ) {
+    super(
+      _serverFarmServiceLocal,
+      _siteServiceLocal,
+      _daasServiceLocal,
+      _windowServiceLocal,
+      _loggerLocal,
+      _webSiteServiceLocal
+    );
 
     if (this.diagnoserName === '') {
       this.diagnoserName = 'Profiler';
       this.diagnoserNameLookup = 'Profiler';
     }
     this.collectStackTraces = this.isWindowsApp;
-    this.diagnoserName = this.collectStackTraces ? 'Profiler with Thread Stacks' : 'Profiler';
+    this.diagnoserName = this.collectStackTraces
+      ? 'Profiler with Thread Stacks'
+      : 'Profiler';
   }
 
   ngOnInit(): void {
     if (this.isWindowsApp) {
       this.checkingAppInfo = true;
-      this._daasServiceLocal.getAppInfo(this.siteToBeDiagnosed).subscribe(resp => {
-        this.appInfo = resp;
-        this.checkingAppInfo = false;
-        if (this.appInfo.Framework === "DotNetCore" || this.appInfo.AspNetCoreVersion != null) {
-          this.isAspNetCore = true;
-          this.netCoreVersion = this.appInfo.FrameworkVersion != null ? this.appInfo.FrameworkVersion : this.appInfo.AspNetCoreVersion;
-          this.isAspNetCoreLowerVersion = !(this.netCoreVersion && this.cmpVersions(this.netCoreVersion, "2.2.3") >= 0);
+      this._daasServiceLocal.getAppInfo(this.siteToBeDiagnosed).subscribe(
+        (resp) => {
+          this.appInfo = resp;
+          this.checkingAppInfo = false;
+          if (
+            this.appInfo.Framework === 'DotNetCore' ||
+            this.appInfo.AspNetCoreVersion != null
+          ) {
+            this.isAspNetCore = true;
+            this.netCoreVersion =
+              this.appInfo.FrameworkVersion != null
+                ? this.appInfo.FrameworkVersion
+                : this.appInfo.AspNetCoreVersion;
+            this.isAspNetCoreLowerVersion = !(
+              this.netCoreVersion &&
+              this.cmpVersions(this.netCoreVersion, '2.2.3') >= 0
+            );
+          }
+        },
+        (error) => {
+          this.checkingAppInfo = false;
         }
-      }, error => {
-        this.checkingAppInfo = false;
-      });
+      );
     }
   }
 
@@ -78,7 +106,9 @@ export class ProfilerComponent extends DaasComponent implements OnInit, OnDestro
     this.WizardSteps.push({
       Caption: 'Step 2: Reproduce the issue now',
       IconType: 'fa-user',
-      AdditionalText: this.isWindowsApp ? 'Profiler trace will stop automatically after 60 seconds unless overridden explicitly' : `Profiler trace will stop automatically after the configured duration`,
+      AdditionalText: this.isWindowsApp
+        ? 'Profiler trace will stop automatically after 60 seconds unless overridden explicitly'
+        : `Profiler trace will stop automatically after the configured duration`,
       CaptionCompleted: 'Step 2: Events captured'
     });
 
@@ -100,25 +130,25 @@ export class ProfilerComponent extends DaasComponent implements OnInit, OnDestro
   }
 
   populateSessionInformation(session: Session) {
-
-    if (session.Status === "Active") {
+    if (session.Status === 'Active') {
       this.sessionStatus = 1;
     }
     if (!session.ActiveInstances) {
       return;
     }
 
-    let activeInstance = session.ActiveInstances.find(x => x.Name === this.selectedInstance);
+    let activeInstance = session.ActiveInstances.find(
+      (x) => x.Name === this.selectedInstance
+    );
     if (!activeInstance) {
       return;
     }
 
     this.activeInstance = activeInstance;
     if (this.isWindowsApp) {
-      if (activeInstance.Status == "Started") {
-        this.WizardStepStatus = "";
-        activeInstance.CollectorStatusMessages.forEach(msg => {
-
+      if (activeInstance.Status == 'Started') {
+        this.WizardStepStatus = '';
+        activeInstance.CollectorStatusMessages.forEach((msg) => {
           //
           // The order of this IF check should not be changed
           //
@@ -129,8 +159,10 @@ export class ProfilerComponent extends DaasComponent implements OnInit, OnDestro
             this.sessionStatus = 2;
           }
         });
-      } else if (activeInstance.Status == "Analyzing" || activeInstance.Status == "Complete") {
-
+      } else if (
+        activeInstance.Status == 'Analyzing' ||
+        activeInstance.Status == 'Complete'
+      ) {
         //
         // once we are at the analyzer, lets just set all instances's status to
         // analyzing as we will reach here once all the collectors have finished
@@ -139,19 +171,23 @@ export class ProfilerComponent extends DaasComponent implements OnInit, OnDestro
         this.activeInstance = activeInstance;
         let messageCount = activeInstance.AnalyzerStatusMessages.length;
         if (messageCount > 0) {
-          this.WizardStepStatus = activeInstance.AnalyzerStatusMessages[messageCount - 1];
+          this.WizardStepStatus =
+            activeInstance.AnalyzerStatusMessages[messageCount - 1];
         } else {
-          this.WizardStepStatus = "";
+          this.WizardStepStatus = '';
         }
       }
     } else {
-      if (activeInstance.Status == "Started" || activeInstance.Status == "Active") {
+      if (
+        activeInstance.Status == 'Started' ||
+        activeInstance.Status == 'Active'
+      ) {
         this.sessionStatus = 2;
       }
     }
 
     let logFiles: LogFile[] = [];
-    session.ActiveInstances.forEach(activeInstance => {
+    session.ActiveInstances.forEach((activeInstance) => {
       if (activeInstance.Logs && activeInstance.Logs.length > 0) {
         logFiles = logFiles.concat(activeInstance.Logs);
       }
@@ -162,7 +198,8 @@ export class ProfilerComponent extends DaasComponent implements OnInit, OnDestro
 
   // https://stackoverflow.com/questions/6832596/how-to-compare-software-version-number-using-js-only-number
   cmpVersions(a: string, b: string) {
-    var i = 0, diff = 0;
+    var i = 0,
+      diff = 0;
     var regExStrip0 = /(\.0+)+$/;
     var segmentsA = a.replace(regExStrip0, '').split('.');
     var segmentsB = b.replace(regExStrip0, '').split('.');
@@ -180,5 +217,4 @@ export class ProfilerComponent extends DaasComponent implements OnInit, OnDestro
   toggleExpanded(): void {
     this.aspNetCoreWarningExpanded = !this.aspNetCoreWarningExpanded;
   }
-
 }

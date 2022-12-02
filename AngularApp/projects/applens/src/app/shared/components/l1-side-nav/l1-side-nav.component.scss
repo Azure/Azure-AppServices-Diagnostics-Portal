@@ -1,50 +1,49 @@
 .side-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 60px;
-    flex-direction: row;
-    justify-content: flex-start;
-    padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 60px;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding-left: 20px;
 }
 
-.side-sub-item
-{
-    padding-left: 60px!important;
+.side-sub-item {
+  padding-left: 60px !important;
 }
 
 .side-item :hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .side-item > img {
-    width: 24px;
-    height: 24px;
+  width: 24px;
+  height: 24px;
 }
 
 .side-item > p {
-    font-size: 11px;
+  font-size: 11px;
 }
 
 .highlight-side-item {
-    background: #cccccc;
-    border-left: 4px solid #0078D4;
+  background: #cccccc;
+  border-left: 4px solid #0078d4;
 }
 
 .l1-side-nav {
-    position: fixed;
-    left:0px;
-    background: #EAEAEA;
-    box-shadow: inset -1px 0px 0px rgba(0, 0, 0, 0.12);
-    height: 100%;
-    top: 50px
+  position: fixed;
+  left: 0px;
+  background: #eaeaea;
+  box-shadow: inset -1px 0px 0px rgba(0, 0, 0, 0.12);
+  height: 100%;
+  top: 50px;
 }
 
 .diag-footer {
-    display: flex;
-    margin-left: 28px;
+  display: flex;
+  margin-left: 28px;
 }
 
 .selected-section {
-    background: #dcdcdc;
+  background: #dcdcdc;
 }

@@ -1,22 +1,24 @@
-.report-table td, th{
-    text-align:center;
-    vertical-align:middle;
-  }
+.report-table td,
+th {
+  text-align: center;
+  vertical-align: middle;
+}
 
-.fa-plus, .fa-minus {
+.fa-plus,
+.fa-minus {
   cursor: pointer;
 }
 
-.table-hover>tbody>tr:hover {
-    background-color: var(--buttonTextCheckedHovered);
+.table-hover > tbody > tr:hover {
+  background-color: var(--buttonTextCheckedHovered);
 }
 
 .panel-heading {
-    cursor: pointer;
-    background-color: var(--bodyBackground);
-    color: var(--bodyText);
+  cursor: pointer;
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
 }
 
 .panel-body {
-    background-color: var(--bodyBackground);
+  background-color: var(--bodyBackground);
 }

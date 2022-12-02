@@ -1,59 +1,58 @@
 .dynamic-data-container {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
 }
 .label-container {
-    display: inline-block;
-    margin-right: 10px;
+  display: inline-block;
+  margin-right: 10px;
 }
 .label-container > label {
-    color:var(--dropdownLabel);
-    font-weight: 500;
-    font-size: 13px;
+  color: var(--dropdownLabel);
+  font-weight: 500;
+  font-size: 13px;
 }
 .dropdown-container {
-    display: inline-block;
+  display: inline-block;
 }
-.dropdown-button{
-    min-width: 100px;
+.dropdown-button {
+  min-width: 100px;
 }
 .caret {
-    margin-left:10px;
+  margin-left: 10px;
 }
 .line-break {
-    margin: 10px 5px 25px 0px;
+  margin: 10px 5px 25px 0px;
 }
 
 hr {
-    border-top: 1px solid #eee;
+  border-top: 1px solid #eee;
 }
 
 .body-container {
-    padding-left:10px;
-    padding-right: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 .dropdown-menu {
-    box-shadow:  1px 1px 18px #afafaf;
+  box-shadow: 1px 1px 18px #afafaf;
 }
 
-
-.fabric-dropdown-header{
-    padding: 15px 0px;
-    // position: relative;
-    font-size: 15px;
-    line-height: 20px;
-    font-family: Segoe UI;
-    color: var(--bodyText);
+.fabric-dropdown-header {
+  padding: 15px 0px;
+  // position: relative;
+  font-size: 15px;
+  line-height: 20px;
+  font-family: Segoe UI;
+  color: var(--bodyText);
 }
 
-.fabric-dropdown-container{
-    margin: -20px 0px 25px 0px;
+.fabric-dropdown-container {
+  margin: -20px 0px 25px 0px;
 }
 
-.fabric-dropdown-title{
-    font-weight: 600;
-    margin-right: 15px;
+.fabric-dropdown-title {
+  font-weight: 600;
+  margin-right: 15px;
 }
 
 .fabric-body-container {
-    padding-top: 15px;
+  padding-top: 15px;
 }

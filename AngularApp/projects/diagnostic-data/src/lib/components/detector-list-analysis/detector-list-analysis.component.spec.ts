@@ -8,9 +8,8 @@ describe('DetectorListAnalysisComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DetectorListAnalysisComponent ]
-    })
-    .compileComponents();
+      declarations: [DetectorListAnalysisComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

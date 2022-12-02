@@ -1,67 +1,79 @@
 <div *ngIf="!checkingSupportedTier && checkingSkuSucceeded && !supportedTier">
   <div class="focus-box focus-box-warning mt-2 ml-2 mr-3">
     <div>
-      <strong>Error</strong> - This tool is supported only on <b>Standard, Premium </b> and <b>Isolated</b> SKU's only
-      with <strong>AlwaysOn</strong> setting enabled to TRUE
+      <strong>Error</strong> - This tool is supported only on
+      <b>Standard, Premium </b> and <b>Isolated</b> SKU's only with
+      <strong>AlwaysOn</strong> setting enabled to TRUE
     </div>
   </div>
-  <div style="margin-left:10px">
+  <div style="margin-left: 10px">
     <daas-scaleup></daas-scaleup>
   </div>
 </div>
 
-<div *ngIf="error !=='' && !checkingSupportedTier">
+<div *ngIf="error !== '' && !checkingSupportedTier">
   <div class="focus-box focus-box-warning mt-2 ml-2 mr-3">
-    <div>
-      <strong>Error</strong> - {{ error }}
-    </div>
+    <div><strong>Error</strong> - {{ error }}</div>
   </div>
 </div>
 
 <div *ngIf="!checkingSupportedTier && (supportedTier || !checkingSkuSucceeded)">
-
   <div *ngIf="!alwaysOnEnabled">
     <div class="focus-box focus-box-warning">
-      <strong>Error</strong> - We determined that the web app does not have Always-On enabled and due to these the
-      diagnostic
-      tools will not work reliably with AutoHeal. Please turn on the Always-On setting by going to the Application
-      Settings
-      for the web app and then run these tools.
-    </div>
-
-  </div>
-  <div *ngIf="daasAppSettingsCheck != null && daasAppSettingsCheck.DaasDisabled">
-    <div class="focus-box focus-box-warning">
-      <strong>Error</strong> - We determined that Diagnostics As a Service is disabled for this app. Please remove the
-      app setting <code>WEBSITE_DAAS_DISABLED</code> and run this tool again.
+      <strong>Error</strong> - We determined that the web app does not have
+      Always-On enabled and due to these the diagnostic tools will not work
+      reliably with AutoHeal. Please turn on the Always-On setting by going to
+      the Application Settings for the web app and then run these tools.
     </div>
   </div>
-  <div *ngIf="daasAppSettingsCheck != null && daasAppSettingsCheck.LocalCacheEnabled">
+  <div
+    *ngIf="daasAppSettingsCheck != null && daasAppSettingsCheck.DaasDisabled"
+  >
     <div class="focus-box focus-box-warning">
-      <strong>Error</strong> - We determined that the app has Local Cache feature enabled and due to that the
-      diagnostic
-      tools will not work. Please disable Local Cache by removing the app setting
+      <strong>Error</strong> - We determined that Diagnostics As a Service is
+      disabled for this app. Please remove the app setting
+      <code>WEBSITE_DAAS_DISABLED</code> and run this tool again.
+    </div>
+  </div>
+  <div
+    *ngIf="
+      daasAppSettingsCheck != null && daasAppSettingsCheck.LocalCacheEnabled
+    "
+  >
+    <div class="focus-box focus-box-warning">
+      <strong>Error</strong> - We determined that the app has Local Cache
+      feature enabled and due to that the diagnostic tools will not work. Please
+      disable Local Cache by removing the app setting
       <code>WEBSITE_LOCAL_CACHE_OPTION</code> and then run these tools.
     </div>
   </div>
-  <div *ngIf="daasAppSettingsCheck != null && daasAppSettingsCheck.WebjobsStopped">
+  <div
+    *ngIf="daasAppSettingsCheck != null && daasAppSettingsCheck.WebjobsStopped"
+  >
     <div class="focus-box focus-box-warning">
-      <strong>Error</strong> - We determined that the app has the app setting <code>WEBJOBS_STOPPED </code> exists on
-      the app so the DaaS webjob cannot run. Please remove this app setting and run this tool again.
+      <strong>Error</strong> - We determined that the app has the app setting
+      <code>WEBJOBS_STOPPED </code> exists on the app so the DaaS webjob cannot
+      run. Please remove this app setting and run this tool again.
     </div>
   </div>
 </div>
 
-<div *ngIf="!daasRunnerJobRunning" class="focus-box focus-box-warning" style="margin-top:20px">
-  <strong>Error</strong> - We found that the DAAS Web job is in a stopped state. Please go to WebJobs under this Web
-  App and start
-  the DAAS Web job manually and re-run this tool. If this is the first time you are running these tools, try hitting
-  the refresh button
-  after a few minutes
+<div
+  *ngIf="!daasRunnerJobRunning"
+  class="focus-box focus-box-warning"
+  style="margin-top: 20px"
+>
+  <strong>Error</strong> - We found that the DAAS Web job is in a stopped state.
+  Please go to WebJobs under this Web App and start the DAAS Web job manually
+  and re-run this tool. If this is the first time you are running these tools,
+  try hitting the refresh button after a few minutes
 </div>
 
-
-<div class="focus-box focus-box-warning" style="margin-top:20px" *ngIf="foundDiagnoserWarnings">
+<div
+  class="focus-box focus-box-warning"
+  style="margin-top: 20px"
+  *ngIf="foundDiagnoserWarnings"
+>
   <strong>Warning</strong> - {{ diagnoserWarning }}
 </div>
 
@@ -75,14 +87,24 @@
   Checking supported tier and retrieving daas settings
 </div>
 
-<div style="margin-top:15px"
-  *ngIf="(!supportedTier || !daasRunnerJobRunning || foundDiagnoserWarnings) && (!checkingDaasWebJobStatus && !checkingSupportedTier)">
-  <button class="btn btn-link pull-right" (click)="validateDaasSettings()"><i class="fa fa-refresh refresh-icon"></i>
-    Refresh</button>
+<div
+  style="margin-top: 15px"
+  *ngIf="
+    (!supportedTier || !daasRunnerJobRunning || foundDiagnoserWarnings) &&
+    !checkingDaasWebJobStatus && !checkingSupportedTier
+  "
+>
+  <button class="btn btn-link pull-right" (click)="validateDaasSettings()">
+    <i class="fa fa-refresh refresh-icon"></i> Refresh
+  </button>
 </div>
 
 <div class="col" *ngIf="storageAccountNeeded">
-  <configure-storage-account [siteToBeDiagnosed]="siteToBeDiagnosed" [sessionInProgress]="sessionInProgress"
-    [useDiagServerForLinux]="useDiagServerForLinux && !isWindowsApp" (StorageAccountValidated)="onStorageAccountValidated($event)">
+  <configure-storage-account
+    [siteToBeDiagnosed]="siteToBeDiagnosed"
+    [sessionInProgress]="sessionInProgress"
+    [useDiagServerForLinux]="useDiagServerForLinux && !isWindowsApp"
+    (StorageAccountValidated)="onStorageAccountValidated($event)"
+  >
   </configure-storage-account>
 </div>

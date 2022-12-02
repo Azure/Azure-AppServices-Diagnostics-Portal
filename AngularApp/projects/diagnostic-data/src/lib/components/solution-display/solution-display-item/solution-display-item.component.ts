@@ -1,8 +1,12 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { SolutionTypeTag } from '../../../models/solution-type-tag';
 
 export class TabMetadata {
-  constructor(public title: string, public tag: SolutionTypeTag, public isSelected: boolean) {}
+  constructor(
+    public title: string,
+    public tag: SolutionTypeTag,
+    public isSelected: boolean
+  ) {}
 }
 
 @Component({
@@ -11,7 +15,6 @@ export class TabMetadata {
   styleUrls: ['./solution-display-item.component.scss']
 })
 export class SolutionDisplayItemComponent implements OnInit {
-
   @Input() title: string;
   @Input() titleTag: SolutionTypeTag;
   @Input() index: number;
@@ -24,5 +27,4 @@ export class SolutionDisplayItemComponent implements OnInit {
   ngOnInit() {
     this.tabData = new TabMetadata(this.title, this.titleTag, this.index === 0);
   }
-
 }

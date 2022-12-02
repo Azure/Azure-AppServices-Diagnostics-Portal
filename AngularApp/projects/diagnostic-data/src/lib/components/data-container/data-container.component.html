@@ -1,6 +1,6 @@
 <!-- This is the default template for the header, but you can pass in a custom header as well -->
 <ng-template #defaultHeader>
-  <span attr.aria-label="{{title}}">{{title}}</span>
+  <span attr.aria-label="{{ title }}">{{ title }}</span>
 </ng-template>
 
 <ng-template #content>
@@ -23,28 +23,49 @@
     </div>
 </div> -->
 
-<fab-card *ngIf="title || headerTemplate || !hideIfNoTitle else nobox" [isExpandable]="false" [hideBorder]="applicationInsightContainerStyle !== 0">
+<fab-card
+  *ngIf="title || headerTemplate || !hideIfNoTitle; else nobox"
+  [isExpandable]="false"
+  [hideBorder]="applicationInsightContainerStyle !== 0"
+>
   <div header>
-    <div *ngIf="title || headerTemplate" [class.data-container-header]="applicationInsightContainerStyle === 0"
-      [class.data-container-header-appinsight]="applicationInsightContainerStyle === 1"
-      [class.data-container-header-appinsight-analysis]="applicationInsightContainerStyle === 2">
-      <ng-container *ngTemplateOutlet="headerTemplate ? headerTemplate : defaultHeader">
+    <div
+      *ngIf="title || headerTemplate"
+      [class.data-container-header]="applicationInsightContainerStyle === 0"
+      [class.data-container-header-appinsight]="
+        applicationInsightContainerStyle === 1
+      "
+      [class.data-container-header-appinsight-analysis]="
+        applicationInsightContainerStyle === 2
+      "
+    >
+      <ng-container
+        *ngTemplateOutlet="headerTemplate ? headerTemplate : defaultHeader"
+      >
       </ng-container>
     </div>
   </div>
   <div body>
-    <div *ngIf="description" class="text-muted card-description" [class.with-top-border]="!title">
+    <div
+      *ngIf="description"
+      class="text-muted card-description"
+      [class.with-top-border]="!title"
+    >
       <markdown-text [markdownData]="description"></markdown-text>
     </div>
-    <div class="panel-body" [class.data-container-body]="applicationInsightContainerStyle === 0"
-      [class.data-container-body-appinsight]="applicationInsightContainerStyle === 1" [class.no-padding]="noBodyPadding"
-      [class.with-top-border]="!title && !description">
+    <div
+      class="panel-body"
+      [class.data-container-body]="applicationInsightContainerStyle === 0"
+      [class.data-container-body-appinsight]="
+        applicationInsightContainerStyle === 1
+      "
+      [class.no-padding]="noBodyPadding"
+      [class.with-top-border]="!title && !description"
+    >
       <ng-container *ngTemplateOutlet="content"></ng-container>
     </div>
   </div>
 </fab-card>
-
-
 
 <ng-template #nobox>
   <ng-container *ngTemplateOutlet="content"></ng-container>

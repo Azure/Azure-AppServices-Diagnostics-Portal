@@ -1,47 +1,64 @@
 <ngx-smart-modal #saveModal identifier="saveModal">
- <div>
+  <div>
     <h4>Confirm?</h4>
-    <hr style="margin-top: 10px;margin-bottom: 10px;">
-    <span>This configuration will be used to map Kusto clusters across different clouds.</span>
+    <hr style="margin-top: 10px; margin-bottom: 10px" />
+    <span
+      >This configuration will be used to map Kusto clusters across different
+      clouds.</span
+    >
 
-    <div style="margin-top:10px;position: relative;">
-      <button type="button" class="btn btn-primary" (click)="saveConfig()"
-           style="margin-right:6px">
+    <div style="margin-top: 10px; position: relative">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="saveConfig()"
+        style="margin-right: 6px"
+      >
         Save
       </button>
-      <button type="button" class="btn btn-danger" (click)="saveModal.close()">Cancel</button>
+      <button type="button" class="btn btn-danger" (click)="saveModal.close()">
+        Cancel
+      </button>
     </div>
   </div>
 </ngx-smart-modal>
 
-<div *ngIf="showAlert" class="alert alert-container" [ngClass]="alertClass" role="alert">
-  {{alertMessage}}
+<div
+  *ngIf="showAlert"
+  class="alert alert-container"
+  [ngClass]="alertClass"
+  role="alert"
+>
+  {{ alertMessage }}
 </div>
 
-<loader-view *ngIf="!codeLoaded" message="Loading Kusto Mapping.."></loader-view>
+<loader-view
+  *ngIf="!codeLoaded"
+  message="Loading Kusto Mapping.."
+></loader-view>
 <div class="flow-container" *ngIf="codeLoaded">
   <div class="onboarding-container">
     <split direction="vertical" gutterSize="8">
-    <split-area size="85">
-      <div class="code-container-header">
-        <div class="file-tab active">
-          kusto-mapping.json
+      <split-area size="85">
+        <div class="code-container-header">
+          <div class="file-tab active">kusto-mapping.json</div>
+          <div
+            (click)="confirmSave()"
+            class="action-button publish-button"
+            [class.disabled]="publishButtonDisabled"
+          >
+            <i class="fa fa-cloud-upload"></i>
+            Save
+          </div>
         </div>
-        <div (click)="confirmSave()" class="action-button publish-button"
-                  [class.disabled]="publishButtonDisabled">
-                  <i class="fa fa-cloud-upload"></i>
-                  Save
-                </div>
-      </div>
-      <ngx-monaco-editor style="height:calc(100% - 100px)" [options]="editorOptions" [(ngModel)]="code">
-      </ngx-monaco-editor>
-    </split-area>
-  <split-area size="15">
-
-  </split-area>
+        <ngx-monaco-editor
+          style="height: calc(100% - 100px)"
+          [options]="editorOptions"
+          [(ngModel)]="code"
+        >
+        </ngx-monaco-editor>
+      </split-area>
+      <split-area size="15"> </split-area>
     </split>
-
-
   </div>
-
 </div>

@@ -4,12 +4,13 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class PortalActionGenericService {
+  constructor() {}
 
-  constructor() { }
+  public openChangeAnalysisBlade(
+    startTime?: string,
+    endTime?: string,
+    resourceUri?: string
+  ) {}
 
-  public openChangeAnalysisBlade(startTime?: string, endTime?: string, resourceUri?: string) {
-
-  }
-
-  public openFeedbackPanel(){}
+  public openFeedbackPanel() {}
 }

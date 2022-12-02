@@ -1,5 +1,5 @@
-import { StartupService } from "../services/startup.service";
+import { StartupService } from '../services/startup.service';
 
 export let ResourceServiceFactory = (startupService: StartupService) => {
-    return startupService.getInputs();
+  return startupService.getInputs();
 };

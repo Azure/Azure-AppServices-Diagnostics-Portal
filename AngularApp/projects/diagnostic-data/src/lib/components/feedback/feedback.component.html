@@ -1,50 +1,148 @@
 <div class="feedback-form">
-    <div class="review-header">
-        <h1>
-            From 1 to 5 stars, how helpful was this?</h1>
+  <div class="review-header">
+    <h1>From 1 to 5 stars, how helpful was this?</h1>
+  </div>
+  <div class="review-container">
+    <div class="row rating-div">
+      <div *ngIf="showFeedbackForm">
+        <fieldset class="rating rating-row">
+          <input type="radio" id="star5" name="rating" />
+          <label
+            class="full"
+            [ngStyle]="{ color: rating < 5 ? '#ddd' : '#FFD700' }"
+            for="star5"
+            (click)="setStar(5, 'It was very helpful!')"
+          ></label>
+          <input
+            type="radio"
+            id="star4half"
+            name="rating"
+            (click)="setStar(4.5, 'It was very helpful!')"
+          />
+          <label
+            class="half"
+            [ngStyle]="{ color: rating < 4.5 ? '#ddd' : '#FFD700' }"
+            for="star4half"
+          ></label>
+          <input
+            type="radio"
+            id="star4"
+            name="rating"
+            (click)="setStar(4, 'It was helpful!')"
+          />
+          <label
+            class="full"
+            [ngStyle]="{ color: rating < 4 ? '#ddd' : '#FFD700' }"
+            for="star4"
+          ></label>
+          <input
+            type="radio"
+            id="star3half"
+            name="rating"
+            (click)="setStar(3.5, 'It was helpful!')"
+          />
+          <label
+            class="half"
+            [ngStyle]="{ color: rating < 3.5 ? '#ddd' : '#FFD700' }"
+            for="star3half"
+          ></label>
+          <input
+            type="radio"
+            id="star3"
+            name="rating"
+            (click)="setStar(3, 'It was okay.')"
+          />
+          <label
+            class="full"
+            [ngStyle]="{ color: rating < 3 ? '#ddd' : '#FFD700' }"
+            for="star3"
+          ></label>
+          <input
+            type="radio"
+            id="star2half"
+            name="rating"
+            (click)="setStar(2.5, 'It was okay.')"
+          />
+          <label
+            class="half"
+            [ngStyle]="{ color: rating < 2.5 ? '#ddd' : '#FFD700' }"
+            for="star2half"
+          ></label>
+          <input
+            type="radio"
+            id="star2"
+            name="rating"
+            (click)="setStar(2, 'It could be better.')"
+          />
+          <label
+            class="full"
+            [ngStyle]="{ color: rating < 2 ? '#ddd' : '#FFD700' }"
+            for="star2"
+          ></label>
+          <input
+            type="radio"
+            id="star1half"
+            name="rating"
+            (click)="setStar(1.5, 'It could be better.')"
+          />
+          <label
+            class="half"
+            [ngStyle]="{ color: rating < 1.5 ? '#ddd' : '#FFD700' }"
+            for="star1half"
+          ></label>
+          <input
+            type="radio"
+            id="star1"
+            name="rating"
+            (click)="setStar(1, 'Not so helpful.')"
+          />
+          <label
+            class="full"
+            [ngStyle]="{ color: rating < 1 ? '#ddd' : '#FFD700' }"
+            for="star1"
+          ></label>
+          <input
+            type="radio"
+            id="starhalf"
+            name="rating"
+            (click)="setStar(0.5, 'Not so helpful.')"
+          />
+          <label
+            class="half"
+            [ngStyle]="{ color: rating < 0.5 ? '#ddd' : '#FFD700' }"
+            for="starhalf"
+          ></label>
+        </fieldset>
+      </div>
+      <div class="rating-hint">
+        <span> {{ comments }} </span>
+      </div>
     </div>
-    <div class="review-container">
-        <div class="row rating-div">
-            <div *ngIf="showFeedbackForm">
-                <fieldset class="rating rating-row">
-                    <input type="radio" id="star5" name="rating" />
-                    <label class="full" [ngStyle]="{'color':rating<5 ? '#ddd': '#FFD700'}" for="star5" (click)="setStar(5, 'It was very helpful!')"></label>
-                    <input type="radio" id="star4half" name="rating" (click)="setStar(4.5, 'It was very helpful!')">
-                    <label class="half" [ngStyle]="{'color':rating<4.5 ? '#ddd': '#FFD700'}" for="star4half"></label>
-                    <input type="radio" id="star4" name="rating" (click)="setStar(4, 'It was helpful!')" />
-                    <label class="full" [ngStyle]="{'color':rating<4 ? '#ddd': '#FFD700'}" for="star4"></label>
-                    <input type="radio" id="star3half" name="rating" (click)="setStar(3.5, 'It was helpful!')" />
-                    <label class="half" [ngStyle]="{'color':rating<3.5 ? '#ddd': '#FFD700'}" for="star3half"></label>
-                    <input type="radio" id="star3" name="rating" (click)="setStar(3, 'It was okay.')" />
-                    <label class="full" [ngStyle]="{'color':rating<3 ? '#ddd': '#FFD700'}" for="star3"></label>
-                    <input type="radio" id="star2half" name="rating" (click)="setStar(2.5, 'It was okay.')" />
-                    <label class="half" [ngStyle]="{'color':rating<2.5 ? '#ddd': '#FFD700'}" for="star2half"></label>
-                    <input type="radio" id="star2" name="rating" (click)="setStar(2, 'It could be better.')" />
-                    <label class="full" [ngStyle]="{'color':rating<2 ? '#ddd': '#FFD700'}" for="star2"></label>
-                    <input type="radio" id="star1half" name="rating" (click)="setStar(1.5, 'It could be better.')" />
-                    <label class="half" [ngStyle]="{'color':rating<1.5 ? '#ddd': '#FFD700'}" for="star1half"></label>
-                    <input type="radio" id="star1" name="rating" (click)="setStar(1, 'Not so helpful.')" />
-                    <label class="full" [ngStyle]="{'color':rating<1 ? '#ddd': '#FFD700'}" for="star1"></label>
-                    <input type="radio" id="starhalf" name="rating" (click)="setStar(0.5, 'Not so helpful.')" />
-                    <label class="half" [ngStyle]="{'color':rating<0.5 ? '#ddd': '#FFD700'}" for="starhalf"></label>
-                </fieldset>
-            </div>
-            <div class="rating-hint">
-                <span> {{comments}} </span>
-            </div>
-        </div>
-        <textarea class="rating-comments" ref-textarea [(ngModel)]="feedbackText" placeholder="Click here to write your review">
+    <textarea
+      class="rating-comments"
+      ref-textarea
+      [(ngModel)]="feedbackText"
+      placeholder="Click here to write your review"
+    >
     </textarea>
-    </div>
-    <div class="rating-button">
-        <button type="button" class="custom-button custom-button-align-left" (click)="feedbackMessageSubmitted()">
-            Submit
-        </button>
-        <button type="button" class="custom-button-invert" (click)="cancelButtonClicked()">
-            Cancel
-        </button>
-    </div>
+  </div>
+  <div class="rating-button">
+    <button
+      type="button"
+      class="custom-button custom-button-align-left"
+      (click)="feedbackMessageSubmitted()"
+    >
+      Submit
+    </button>
+    <button
+      type="button"
+      class="custom-button-invert"
+      (click)="cancelButtonClicked()"
+    >
+      Cancel
+    </button>
+  </div>
 </div>
 <div class="thanks-message" *ngIf="showThanksMessage && !showFeedbackForm">
-    <span>Thanks for your feedback!</span>
+  <span>Thanks for your feedback!</span>
 </div>

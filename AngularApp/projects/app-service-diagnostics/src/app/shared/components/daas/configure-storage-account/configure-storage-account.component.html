@@ -3,57 +3,109 @@
   Checking for configured blob storage...
 </div>
 
-<div class="outline-box" *ngIf="!checkingBlobSasUriConfigured && !error && !validateStorageConfigurationResponse">
+<div
+  class="outline-box"
+  *ngIf="
+    !checkingBlobSasUriConfigured &&
+    !error &&
+    !validateStorageConfigurationResponse
+  "
+>
   <div *ngIf="chosenStorageAccount">
     <div tabindex="0">
-      Storage account: <span class="highlight-blue">{{ chosenStorageAccount }}</span>
-      (<a tabindex="0" role="button" aria-label="Change storage account" style="cursor: pointer"
-        [class.disabled]="sessionInProgress" (keyup.space)="toggleStorageAccountPanel()"
-        (keyup.enter)="toggleStorageAccountPanel()" (click)="toggleStorageAccountPanel()">change</a>)
+      Storage account:
+      <span class="highlight-blue">{{ chosenStorageAccount }}</span> (<a
+        tabindex="0"
+        role="button"
+        aria-label="Change storage account"
+        style="cursor: pointer"
+        [class.disabled]="sessionInProgress"
+        (keyup.space)="toggleStorageAccountPanel()"
+        (keyup.enter)="toggleStorageAccountPanel()"
+        (click)="toggleStorageAccountPanel()"
+        >change</a
+      >)
     </div>
-    <div style="font-size: smaller">Diagnostic data captured via this tool will be stored in this storage account</div>
+    <div style="font-size: smaller">
+      Diagnostic data captured via this tool will be stored in this storage
+      account
+    </div>
   </div>
   <div class="mt-3" *ngIf="!chosenStorageAccount">
     <strong class="mt-3">Storage</strong>
     <div class="mt-1 mb-2">
-      Before you can collect a memory dump, you must specify a storage account to store the dump files. This
-      is required so that the dump files do not impact disk space of your app.
+      Before you can collect a memory dump, you must specify a storage account
+      to store the dump files. This is required so that the dump files do not
+      impact disk space of your app.
     </div>
     <div>
-      <button tabindex="0" type="button" class="btn btn-primary btn-sm mt-3 mb-2" [disabled]="sessionInProgress"
-        (click)="toggleStorageAccountPanel()">Select</button>
+      <button
+        tabindex="0"
+        type="button"
+        class="btn btn-primary btn-sm mt-3 mb-2"
+        [disabled]="sessionInProgress"
+        (click)="toggleStorageAccountPanel()"
+      >
+        Select
+      </button>
     </div>
   </div>
 </div>
 
-<div class="focus-box focus-box-warning" style="margin-top:20px;word-wrap: break-word" *ngIf="error">
+<div
+  class="focus-box focus-box-warning"
+  style="margin-top: 20px; word-wrap: break-word"
+  *ngIf="error"
+>
   <strong>Error</strong> - {{ error }}
 </div>
 
-<div class="focus-box focus-box-warning" style="margin-top:20px;word-wrap: break-word" *ngIf="validateStorageConfigurationResponse">
+<div
+  class="focus-box focus-box-warning"
+  style="margin-top: 20px; word-wrap: break-word"
+  *ngIf="validateStorageConfigurationResponse"
+>
   <div class="mt-1 mb-3">
-    The Storage account configuration for this app is in an invalid state. This can happen if the SAS URI has expired or
-    the Storage account is deleted. The below information can help in identifying the problem with the configured
+    The Storage account configuration for this app is in an invalid state. This
+    can happen if the SAS URI has expired or the Storage account is deleted. The
+    below information can help in identifying the problem with the configured
     storage account
   </div>
   <div>
     <ul *ngIf="getException(validateStorageConfigurationResponse)">
       <li *ngIf="validateStorageConfigurationResponse.StorageAccount">
-        Account: <strong>{{ validateStorageConfigurationResponse.StorageAccount }}</strong>
+        Account:
+        <strong>{{
+          validateStorageConfigurationResponse.StorageAccount
+        }}</strong>
       </li>
       <li>
         Exception:{{ getException(validateStorageConfigurationResponse) }}
       </li>
       <ng-container *ngIf="validateStorageConfigurationResponse.ExtendedError">
-        <ng-container *ngFor="let item of validateStorageConfigurationResponse.ExtendedError | keyvalue">
+        <ng-container
+          *ngFor="
+            let item of validateStorageConfigurationResponse.ExtendedError
+              | keyvalue
+          "
+        >
           <li *ngIf="item.value">
-            {{item.key}}:{{ isString(item.value) ? item.value : JSON.stringify(item.value) }}
+            {{ item.key }}:{{
+              isString(item.value) ? item.value : JSON.stringify(item.value)
+            }}
           </li>
         </ng-container>
       </ng-container>
     </ul>
   </div>
 
-  <button tabindex="0" type="button" class="btn btn-primary btn-sm mt-3 mb-2" [disabled]="sessionInProgress"
-    (click)="toggleStorageAccountPanel()">Reconfigure Storage Account</button>
+  <button
+    tabindex="0"
+    type="button"
+    class="btn btn-primary btn-sm mt-3 mb-2"
+    [disabled]="sessionInProgress"
+    (click)="toggleStorageAccountPanel()"
+  >
+    Reconfigure Storage Account
+  </button>
 </div>

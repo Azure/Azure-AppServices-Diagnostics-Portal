@@ -1,101 +1,98 @@
-@import "../../../../../app-service-diagnostics/src/styles/main.scss";
+@import '../../../../../app-service-diagnostics/src/styles/main.scss';
 
 .detector-container {
-    width: 100%;
-    margin-bottom: 15px;
+  width: 100%;
+  margin-bottom: 15px;
 }
 
 .detector-header {
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: baseline;
-    border-bottom: 1px solid #b5b5b5;
-    min-height: 40px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: baseline;
+  border-bottom: 1px solid #b5b5b5;
+  min-height: 40px;
 }
 
 .detector-body {
-    padding: 15px;
+  padding: 15px;
 }
 
 .expand-icon {
-    padding: 0px 30px;
+  padding: 0px 30px;
 }
 
 .detector-title {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
 }
 
 .status-icon {
-    width: fit-content;
-    display: flex;
-    align-items: center;
-    padding-left: 10px;
-    width: 70px;
-    height:100%;
-
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  width: 70px;
+  height: 100%;
 }
 
 .fa-circle-o-notch {
-    color: #828282;
-    font-size: 16px;
+  color: #828282;
+  font-size: 16px;
 }
 
 .list-wrapper {
-    position: relative;
-    // margin-left: 30px;
+  position: relative;
+  // margin-left: 30px;
 }
 
-
 .red-line {
-    background: #dbe2eb;
-    width: 3px;
-    height: 100%;
-    position: absolute;
-    left: 15px;
-    z-index: 0;
+  background: #dbe2eb;
+  width: 3px;
+  height: 100%;
+  position: absolute;
+  left: 15px;
+  z-index: 0;
 }
 
 .list-item-wrapper {
-    margin-top: 10px;
-    position: relative;
-    margin-left: 20px;
-    display: flex;
+  margin-top: 10px;
+  position: relative;
+  margin-left: 20px;
+  display: flex;
 }
 
 .list-item {
-    vertical-align: middle;
-    margin-left: 20px;
-    width: 100%;
+  vertical-align: middle;
+  margin-left: 20px;
+  width: 100%;
 }
 
 .resource-icon {
-    height: 30px;
-    width: 30px;
-    margin-left: -20px;
+  height: 30px;
+  width: 30px;
+  margin-left: -20px;
 }
 
 .error-msg {
-    text-align: center;
-    font-size: 18px;
-    color: red;
-    margin-left: 20px;
+  text-align: center;
+  font-size: 18px;
+  color: red;
+  margin-left: 20px;
 }
 
 .resource-text {
-    font-size: 14px;
-    margin-bottom: 15px;
+  font-size: 14px;
+  margin-bottom: 15px;
 }
 
-
 .dot-flashing {
-    @include dot-flashing(14);
+  @include dot-flashing(14);
 }
 
 .list-view-title {
-    color: var(--cardViewTitle);
-    font-weight:600;
+  color: var(--cardViewTitle);
+  font-weight: 600;
 }

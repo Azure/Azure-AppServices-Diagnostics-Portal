@@ -26,7 +26,8 @@ import { DiagnosticDataModule } from 'diagnostic-data';
 const ResourceRoutes = RouterModule.forChild([
   {
     path: '',
-    loadChildren: () => import('../../home/home.module').then(m => m.HomeModule),
+    loadChildren: () =>
+      import('../../home/home.module').then((m) => m.HomeModule),
     resolve: { data: ResourceResolver }
   },
   {
@@ -39,11 +40,17 @@ const ResourceRoutes = RouterModule.forChild([
   },
   {
     path: 'legacy',
-    loadChildren: () => import('../../availability/availability.module').then(m => m.AvailabilityModule)
+    loadChildren: () =>
+      import('../../availability/availability.module').then(
+        (m) => m.AvailabilityModule
+      )
   },
   {
     path: 'tools',
-    loadChildren: () => import('../../diagnostic-tools/diagnostic-tools.module').then(m => m.DiagnosticToolsModule)
+    loadChildren: () =>
+      import('../../diagnostic-tools/diagnostic-tools.module').then(
+        (m) => m.DiagnosticToolsModule
+      )
   }
 ]);
 
@@ -55,10 +62,7 @@ const ResourceRoutes = RouterModule.forChild([
     ResourceRoutes,
     DiagnosticDataModule
   ],
-  declarations: [
-    DiagnosticToolsComponent,
-    WebSiteFilter
-  ],
+  declarations: [DiagnosticToolsComponent, WebSiteFilter],
   providers: [
     ContentService,
     SiteFeatureService,
@@ -74,4 +78,4 @@ const ResourceRoutes = RouterModule.forChild([
     { provide: RiskAlertService, useExisting: SiteRiskAlertService }
   ]
 })
-export class WebSitesModule { }
+export class WebSitesModule {}

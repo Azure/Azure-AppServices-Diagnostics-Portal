@@ -1,14 +1,14 @@
 <div class="back-button-container">
-    <button class="btn back-button" (click)="navigateBack()">&lt; Back</button>
+  <button class="btn back-button" (click)="navigateBack()">&lt; Back</button>
 </div>
 <div class="panel panel-default data-container-card">
-    <div class="panel-heading data-container-header">
-        Support Topic Id: {{supportTopicId}}
+  <div class="panel-heading data-container-header">
+    Support Topic Id: {{ supportTopicId }}
+  </div>
+  <div class="panel-body data-container-body">
+    <markdown ngPreserveWhitespaces [data]="selfHelpContent"></markdown>
+    <div *ngIf="selfHelpContent == undefined" class="loading-page">
+      <i class="fa fa-spinner fa-spin fa-4x fa-fw"></i>
     </div>
-    <div class="panel-body data-container-body">
-        <markdown ngPreserveWhitespaces [data]="selfHelpContent"></markdown>
-        <div *ngIf="selfHelpContent == undefined" class="loading-page">
-            <i class="fa fa-spinner fa-spin fa-4x fa-fw"></i>
-        </div>
-    </div>
+  </div>
 </div>

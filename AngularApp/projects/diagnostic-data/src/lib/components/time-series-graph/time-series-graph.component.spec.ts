@@ -8,9 +8,8 @@ describe('TimeSeriesGraphComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TimeSeriesGraphComponent ]
-    })
-    .compileComponents();
+      declarations: [TimeSeriesGraphComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

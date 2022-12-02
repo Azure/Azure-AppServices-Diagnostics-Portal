@@ -8,9 +8,8 @@ describe('GuageControlComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GuageControlComponent ]
-    })
-    .compileComponents();
+      declarations: [GuageControlComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

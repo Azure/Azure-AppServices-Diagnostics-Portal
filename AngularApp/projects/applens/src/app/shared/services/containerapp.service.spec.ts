@@ -9,7 +9,10 @@ describe('ContainerAppService', () => {
     });
   });
 
-  it('should be created', inject([ContainerAppService], (service: ContainerAppService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [ContainerAppService],
+    (service: ContainerAppService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

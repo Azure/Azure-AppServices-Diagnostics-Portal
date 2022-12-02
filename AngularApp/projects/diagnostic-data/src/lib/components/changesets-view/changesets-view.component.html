@@ -1,38 +1,65 @@
 <div class="insight-container">
-    <div class="panel panel-default insight-panel">
-      <div class="panel-heading">
-        <h5 class="panel-title" >
-          <span class="fa status-icon fa-info-circle"></span>{{changeSetText}}</h5>
+  <div class="panel panel-default insight-panel">
+    <div class="panel-heading">
+      <h5 class="panel-title">
+        <span class="fa status-icon fa-info-circle"></span>{{ changeSetText }}
+      </h5>
+    </div>
+    <div class="panel-body">
+      <div class="row scan-container">
+        <div class="scan-row" *ngIf="scanDate !== ''">
+          {{ scanDate }}
+          <div class="pull-right" *ngIf="isPublic">
+            <a (click)="navigateToSettings()">Go to Change Analysis Settings</a>
+          </div>
+        </div>
+        <div class="scan-row" *ngIf="isPublic && scanStatusMessage !== ''">
+          <span class="fa" [ngClass]="getScanStatusClass()"></span>
+          {{ scanStatusMessage }}
+        </div>
+        <div class="scan-row" *ngIf="isPublic && allowScanAction">
+          <button
+            class="btn btn-primary"
+            *ngIf="!showViewChanges"
+            (click)="scanNow()"
+          >
+            Scan changes now
+          </button>
+          <button
+            class="btn btn-info"
+            *ngIf="showViewChanges"
+            (click)="refreshTimeline()"
+          >
+            View changes now
+          </button>
+        </div>
       </div>
-      <div class="panel-body">
-        <div class="row scan-container">
-          <div class="scan-row" *ngIf="scanDate != ''">
-              {{scanDate}}
-           <div class="pull-right" *ngIf ="isPublic">
-             <a (click)="navigateToSettings()">Go to Change Analysis Settings</a>
-           </div>
-          </div>
-          <div class="scan-row"  *ngIf ="isPublic && scanStatusMessage != ''">
-            <span class="fa" [ngClass]="getScanStatusClass()"></span>
-            {{scanStatusMessage}}
-          </div>
-          <div class="scan-row"  *ngIf ="isPublic && allowScanAction">
-            <button class="btn btn-primary" *ngIf="!showViewChanges"  (click)="scanNow()"> Scan changes now </button>
-            <button class="btn btn-info" *ngIf="showViewChanges" (click)="refreshTimeline()"> View changes now</button>
-          </div>
+      <div id="timeline"></div>
+      <div *ngIf="!developmentMode">
+        <input
+          type="hidden"
+          id="changeSetId"
+          (change)="refreshChangesTable()"
+        />
+        <loader-view
+          *ngIf="loadingChangesTable"
+          message="Loading changes..."
+        ></loader-view>
+        <div class="text-danger" *ngIf="changesTableError !== ''">
+          {{ changesTableError }}
         </div>
-        <div id="timeline"></div>
-        <div *ngIf="!developmentMode">
-            <input type="hidden" id="changeSetId" (change)="refreshChangesTable()">
-            <loader-view *ngIf="loadingChangesTable" message="Loading changes..."></loader-view>
-            <div class="text-danger" *ngIf="changesTableError != ''">
-              {{changesTableError}}
-            </div>
-            <div style="margin:10px" *ngIf="changesDataSet && !loadingChangesTable">
-                <changes-view  [changesDataSet]="changesDataSet" [initiatedByList]="initiatedBy"  [detectorEventProperties]="detectorEventProperties" [changesetId]="selectedChangeSetId" ></changes-view>
-            </div>
+        <div
+          style="margin: 10px"
+          *ngIf="changesDataSet && !loadingChangesTable"
+        >
+          <changes-view
+            [changesDataSet]="changesDataSet"
+            [initiatedByList]="initiatedBy"
+            [detectorEventProperties]="detectorEventProperties"
+            [changesetId]="selectedChangeSetId"
+          ></changes-view>
         </div>
-
       </div>
     </div>
   </div>
+</div>

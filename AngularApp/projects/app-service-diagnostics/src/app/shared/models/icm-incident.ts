@@ -3,74 +3,111 @@ import { IDetectorAbnormalTimePeriod } from './detectorresponse';
 import { DatePipe } from '@angular/common';
 
 export class IncidentNotification {
-    message: string;
-    showNotification: boolean;
-    status: IncidentStatus;
-    startTime: Date;
-    endTime: Date;
-    html: string;
-    type: IncidentType;
-    title: string;
+  message: string;
+  showNotification: boolean;
+  status: IncidentStatus;
+  startTime: Date;
+  endTime: Date;
+  html: string;
+  type: IncidentType;
+  title: string;
 
-    public static fromAbnormalTimePeriod(abnormalTimePeriod: IDetectorAbnormalTimePeriod): IncidentNotification {
-        const incident = new IncidentNotification();
+  public static fromAbnormalTimePeriod(
+    abnormalTimePeriod: IDetectorAbnormalTimePeriod
+  ): IncidentNotification {
+    const incident = new IncidentNotification();
 
-        incident.startTime = this.getUtcDate(abnormalTimePeriod.startTime);
-        incident.endTime = this.getUtcDate(abnormalTimePeriod.endTime);
+    incident.startTime = this.getUtcDate(abnormalTimePeriod.startTime);
+    incident.endTime = this.getUtcDate(abnormalTimePeriod.endTime);
 
-        incident.message = abnormalTimePeriod.message;
-        incident.showNotification = MetaDataHelper.getMetaDataValue(abnormalTimePeriod.metaData, 'ShowNotification').toLowerCase() === 'true';
-        incident.status = IncidentStatus[MetaDataHelper.getMetaDataValue(abnormalTimePeriod.metaData, 'Status')];
+    incident.message = abnormalTimePeriod.message;
+    incident.showNotification =
+      MetaDataHelper.getMetaDataValue(
+        abnormalTimePeriod.metaData,
+        'ShowNotification'
+      ).toLowerCase() === 'true';
+    incident.status =
+      IncidentStatus[
+        MetaDataHelper.getMetaDataValue(abnormalTimePeriod.metaData, 'Status')
+      ];
 
-        if (incident.status === IncidentStatus.Mitigated) {
-            incident.status = IncidentStatus.Resolved;
-        }
-
-        incident.type = abnormalTimePeriod.source === 'servicehealth' ? IncidentType.LSI : IncidentType.CRI;
-
-        incident.title = this.getTitle(incident);
-        incident.html = this.getHtml(incident);
-
-        return incident;
+    if (incident.status === IncidentStatus.Mitigated) {
+      incident.status = IncidentStatus.Resolved;
     }
 
-    private static getUtcDate(dateString: string) {
-        const date = new Date(dateString);
-        return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),  date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+    incident.type =
+      abnormalTimePeriod.source === 'servicehealth'
+        ? IncidentType.LSI
+        : IncidentType.CRI;
+
+    incident.title = this.getTitle(incident);
+    incident.html = this.getHtml(incident);
+
+    return incident;
+  }
+
+  private static getUtcDate(dateString: string) {
+    const date = new Date(dateString);
+    return new Date(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+      date.getUTCHours(),
+      date.getUTCMinutes(),
+      date.getUTCSeconds()
+    );
+  }
+
+  private static getTitle(incident: IncidentNotification): string {
+    if (incident.type === IncidentType.LSI) {
+      return 'App Service Runtime Incident';
+    } else {
+      return 'App Service Incident';
     }
+  }
 
-    private static getTitle(incident: IncidentNotification): string {
-        if (incident.type === IncidentType.LSI) {
-            return 'App Service Runtime Incident';
-        } else {
-            return 'App Service Incident';
-        }
-    }
+  private static getHtml(incident: IncidentNotification): string {
+    const template =
+      incident.type == IncidentType.LSI
+        ? incident.status === IncidentStatus.Active
+          ? ActiveLSINotificationTemplate
+          : MitigatedLSINotificationTemplate
+        : incident.status === IncidentStatus.Active
+        ? ActiveCRINotificationTemplate
+        : MitigatedCRINotificationTemplate;
 
-    private static getHtml(incident: IncidentNotification): string {
-        const template = incident.type == IncidentType.LSI ?
-            ( incident.status === IncidentStatus.Active ? ActiveLSINotificationTemplate : MitigatedLSINotificationTemplate ) :
-            ( incident.status === IncidentStatus.Active ? ActiveCRINotificationTemplate : MitigatedCRINotificationTemplate );
+    const datePipe: DatePipe = new DatePipe('en-US');
 
-        const datePipe: DatePipe = new DatePipe('en-US');
-
-        return template.replace(/{startTime}/g, `${datePipe.transform(incident.startTime, 'HH:mm')} UTC`)
-            .replace(/{startDate}/g, datePipe.transform(incident.startTime, 'dd MMM yyyy'))
-            .replace(/{endTime}/g, `${datePipe.transform(incident.endTime, 'HH:mm')} UTC`)
-            .replace(/{endDate}/g, datePipe.transform(incident.endTime, 'dd MMM yyyy'))
-            .replace(/{details}/g, incident.message);
-    }
+    return template
+      .replace(
+        /{startTime}/g,
+        `${datePipe.transform(incident.startTime, 'HH:mm')} UTC`
+      )
+      .replace(
+        /{startDate}/g,
+        datePipe.transform(incident.startTime, 'dd MMM yyyy')
+      )
+      .replace(
+        /{endTime}/g,
+        `${datePipe.transform(incident.endTime, 'HH:mm')} UTC`
+      )
+      .replace(
+        /{endDate}/g,
+        datePipe.transform(incident.endTime, 'dd MMM yyyy')
+      )
+      .replace(/{details}/g, incident.message);
+  }
 }
 
 export enum IncidentStatus {
-    Active,
-    Mitigated,
-    Resolved
+  Active,
+  Mitigated,
+  Resolved
 }
 
 export enum IncidentType {
-    LSI,
-    CRI
+  LSI,
+  CRI
 }
 
 const ActiveLSINotificationTemplate: string = `
@@ -106,4 +143,3 @@ const MitigatedCRINotificationTemplate: string = `
     <p><b>Summary of impact:</b> Starting {startTime} on {startDate} to {endTime} on {endDate}, your app may have been impacted due to an App Service outage.
         An alert/technical escalation has already been filed and our Microsoft engineers have been notified.</p>
     <p><b>Details:</b> {details}</p>`;
-

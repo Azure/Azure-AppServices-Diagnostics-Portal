@@ -1,42 +1,41 @@
-.col + .col{
-    margin-top: 10px;
+.col + .col {
+  margin-top: 10px;
 }
-
 
 /*Vertical Steps*/
-.list-group.vertical-steps{
-  padding-left:40px;
+.list-group.vertical-steps {
+  padding-left: 40px;
 }
-.list-group.vertical-steps .list-group-item{
-  border:none;
-  border-left:3px solid #ece5dd;
-  box-sizing:border-box;
-  border-radius:0;
+.list-group.vertical-steps .list-group-item {
+  border: none;
+  border-left: 3px solid #ece5dd;
+  box-sizing: border-box;
+  border-radius: 0;
   counter-increment: step-counter;
-  padding-left:20px;
-  padding-right:0px;
-  padding-bottom:20px;  
-  padding-top:0px;
+  padding-left: 20px;
+  padding-right: 0px;
+  padding-bottom: 20px;
+  padding-top: 0px;
 }
-.list-group.vertical-steps .list-group-item.active{
-  background-color:transparent;
-  color:inherit;
+.list-group.vertical-steps .list-group-item.active {
+  background-color: transparent;
+  color: inherit;
 }
-.list-group.vertical-steps .list-group-item:last-child{
-  border-left:3px solid transparent;
-  padding-bottom:0;
+.list-group.vertical-steps .list-group-item:last-child {
+  border-left: 3px solid transparent;
+  padding-bottom: 0;
 }
 .list-group.vertical-steps .list-group-item::before {
   border-radius: 50%;
-  background-color:#ece5dd;
-  color:#555;
+  background-color: #ece5dd;
+  color: #555;
   content: counter(step-counter);
-  display:inline-block;
-  height:25px;
-  line-height:25px;
-  margin-left:-35px;
-  text-align:center;  
-  width:25px;  
+  display: inline-block;
+  height: 25px;
+  line-height: 25px;
+  margin-left: -35px;
+  text-align: center;
+  width: 25px;
 }
 /*.list-group.vertical-steps .list-group-item span,
 .list-group.vertical-steps .list-group-item a{
@@ -45,19 +44,19 @@
   padding-top:2px;
 }*/
 /*Active/ Completed States*/
-.list-group.vertical-steps .list-group-item.active::before{
-  background-color:#87bfff;
-  color:#fff;
+.list-group.vertical-steps .list-group-item.active::before {
+  background-color: #87bfff;
+  color: #fff;
 }
-.list-group.vertical-steps .list-group-item.completed{
-  border-left:3px solid #87bfff;
+.list-group.vertical-steps .list-group-item.completed {
+  border-left: 3px solid #87bfff;
 }
-.list-group.vertical-steps .list-group-item.completed::before{
-  background-color:#87bfff;
-  color:#fff;
+.list-group.vertical-steps .list-group-item.completed::before {
+  background-color: #87bfff;
+  color: #fff;
 }
-.list-group.vertical-steps .list-group-item.completed:last-child{
-  border-left:3px solid transparent;
+.list-group.vertical-steps .list-group-item.completed:last-child {
+  border-left: 3px solid transparent;
 }
 
 button {
@@ -65,7 +64,7 @@ button {
 }
 
 .check-health-box {
-  border:1px solid #adadad;
+  border: 1px solid #adadad;
   background-color: #eaeaea;
   padding: 5px;
 }

@@ -5,7 +5,6 @@ import { Component, Input } from '@angular/core';
   templateUrl: './star-rating-feedback.component.html',
   styleUrls: ['./star-rating-feedback.component.scss']
 })
-
 export class StarRatingFeedbackComponent {
   @Input() ratingEventProperties: any;
   starList: boolean[] = [false, false, false, false, false];

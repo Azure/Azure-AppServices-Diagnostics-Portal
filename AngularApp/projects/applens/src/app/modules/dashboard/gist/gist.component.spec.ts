@@ -8,9 +8,8 @@ describe('GistComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GistComponent ]
-    })
-    .compileComponents();
+      declarations: [GistComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

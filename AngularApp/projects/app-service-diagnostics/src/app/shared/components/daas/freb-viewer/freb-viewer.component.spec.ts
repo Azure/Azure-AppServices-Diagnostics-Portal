@@ -8,9 +8,8 @@ describe('FrebViewerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ FrebViewerComponent ]
-    })
-    .compileComponents();
+      declarations: [FrebViewerComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

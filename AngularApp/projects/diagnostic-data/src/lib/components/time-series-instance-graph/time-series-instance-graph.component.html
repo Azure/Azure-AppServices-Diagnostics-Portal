@@ -1,6 +1,15 @@
-<data-container [title]="renderingProperties.title" [description]="renderingProperties.description">
-    <highcharts-graph [HighchartData]="selectedHighChartSeries" [chartType]="renderingProperties.graphType" [chartOptions]="graphOptions" [xAxisPlotBands]="xAxisPlotBands"
-    [zoomBehavior] = "zoomBehavior" (XAxisSelection)="onXAxisSelection($event)">
-    </highcharts-graph>
-    <div *ngIf="!selectedSeries">Loading Data...</div>
+<data-container
+  [title]="renderingProperties.title"
+  [description]="renderingProperties.description"
+>
+  <highcharts-graph
+    [HighchartData]="selectedHighChartSeries"
+    [chartType]="renderingProperties.graphType"
+    [chartOptions]="graphOptions"
+    [xAxisPlotBands]="xAxisPlotBands"
+    [zoomBehavior]="zoomBehavior"
+    (XAxisSelection)="onXAxisSelection($event)"
+  >
+  </highcharts-graph>
+  <div *ngIf="!selectedSeries">Loading Data...</div>
 </data-container>

@@ -1,32 +1,32 @@
 .feedback-button {
-    border:none;
-    color: #015cda;
-    border-radius: 10px;
-    margin-right: 3px;
+  border: none;
+  color: #015cda;
+  border-radius: 10px;
+  margin-right: 3px;
 }
 
 .article-container {
-    max-width: 80%;
-    //margin-bottom: 100px;
+  max-width: 80%;
+  //margin-bottom: 100px;
 }
 
 .article {
-    border: 1px solid #dddddd;
-    cursor: pointer;
-    padding:10px;
-    margin-right: 10px;
+  border: 1px solid #dddddd;
+  cursor: pointer;
+  padding: 10px;
+  margin-right: 10px;
 }
 
 .article > h5 {
-    color: blue;
+  color: blue;
 }
 
 .article-link {
-    color:  var(--summaryText);
+  color: var(--summaryText);
 }
 
 .article-heading {
-    color:black;
-    font-weight: bold;
-    margin:5px;
+  color: black;
+  font-weight: bold;
+  margin: 5px;
 }

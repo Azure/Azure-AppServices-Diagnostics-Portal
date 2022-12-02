@@ -8,9 +8,8 @@ describe('CommAlertComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CommAlertComponent ]
-    })
-    .compileComponents();
+      declarations: [CommAlertComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

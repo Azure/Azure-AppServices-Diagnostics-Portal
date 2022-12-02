@@ -1,51 +1,51 @@
 .fxs-progress-image {
-    text-align: center;
+  text-align: center;
 }
 
-.loader-container{
-    height: 100%;
-    width: 100%;
-    position: relative;
-    padding-top: 200px;
+.loader-container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  padding-top: 200px;
 }
-.loader-message{
-    background: transparent !important;
-    color: grey;
+.loader-message {
+  background: transparent !important;
+  color: grey;
 }
 @-webkit-keyframes fxs-progress-animatedEllipses {
-    0% {
-        opacity: 1;
-    }
+  0% {
+    opacity: 1;
+  }
 
-    30% {
-        opacity: .6;
-    }
+  30% {
+    opacity: 0.6;
+  }
 
-    60% {
-        opacity: .3;
-    }
+  60% {
+    opacity: 0.3;
+  }
 }
 
 @keyframes fxs-progress-animatedEllipses {
-    0% {
-        opacity: 1;
-    }
+  0% {
+    opacity: 1;
+  }
 
-    30% {
-        opacity: .6;
-    }
+  30% {
+    opacity: 0.6;
+  }
 
-    60% {
-        opacity: .3;
-    }
+  60% {
+    opacity: 0.3;
+  }
 }
 
 .fxs-progress {
-    position: absolute;
-    top: calc(30%);
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--bodyBackground);
-    z-index: 196;
+  position: absolute;
+  top: calc(30%);
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--bodyBackground);
+  z-index: 196;
 }

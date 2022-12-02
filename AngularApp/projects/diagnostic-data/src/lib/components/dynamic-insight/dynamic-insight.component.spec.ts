@@ -8,9 +8,8 @@ describe('DynamicInsightComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DynamicInsightComponent ]
-    })
-    .compileComponents();
+      declarations: [DynamicInsightComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

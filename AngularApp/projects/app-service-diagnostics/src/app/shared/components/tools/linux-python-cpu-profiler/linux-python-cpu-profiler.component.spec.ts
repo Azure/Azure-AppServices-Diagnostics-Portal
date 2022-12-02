@@ -8,9 +8,8 @@ describe('LinuxPythonCpuProfilerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LinuxPythonCpuProfilerComponent ]
-    })
-    .compileComponents();
+      declarations: [LinuxPythonCpuProfilerComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,21 +1,42 @@
 <div class="category-tile">
-  <div (click)="openBladeDiagnoseCategoryBlade()" (keyup.enter)="openBladeDiagnoseCategoryBlade()"
-    (keyup.space)="openBladeDiagnoseCategoryBlade()" tabindex="0" role="button" class="category-tile-container">
+  <div
+    (click)="openBladeDiagnoseCategoryBlade()"
+    (keyup.enter)="openBladeDiagnoseCategoryBlade()"
+    (keyup.space)="openBladeDiagnoseCategoryBlade()"
+    tabindex="0"
+    role="button"
+    class="category-tile-container"
+  >
     <div>
-      <img class="tile-image" [src]="categoryImgPath" alt="" >
+      <img class="tile-image" [src]="categoryImgPath" alt="" />
     </div>
     <div class="tile-content">
-      <h3 class="tile-title">{{category.name}}</h3>
-      <p class="tile-description">{{category.description}}</p>
-      <div *ngIf="(!!category && !!category.categoryQuickLinks && category.categoryQuickLinks.length > 0); else keywordsTemplate ">
-        <div class="quick-link" *ngFor="let quickLink of category.categoryQuickLinks">
-          <a tabindex="0" (click)="clickCategoryQuickLink($event, quickLink)" (keyup.enter)="clickCategoryQuickLink($event, quickLink)">{{quickLink.displayText}}</a>
+      <h3 class="tile-title">{{ category.name }}</h3>
+      <p class="tile-description">{{ category.description }}</p>
+      <div
+        *ngIf="
+          !!category &&
+            !!category.categoryQuickLinks &&
+            category.categoryQuickLinks.length > 0;
+          else keywordsTemplate
+        "
+      >
+        <div
+          class="quick-link"
+          *ngFor="let quickLink of category.categoryQuickLinks"
+        >
+          <a
+            tabindex="0"
+            (click)="clickCategoryQuickLink($event, quickLink)"
+            (keyup.enter)="clickCategoryQuickLink($event, quickLink)"
+            >{{ quickLink.displayText }}</a
+          >
         </div>
       </div>
       <ng-template #keywordsTemplate>
-        <p class="tile-keywords">Ex: {{keywords}}</p>
+        <p class="tile-keywords">Ex: {{ keywords }}</p>
         <a>Troubleshoot</a>
-      </ng-template>      
+      </ng-template>
     </div>
   </div>
 </div>

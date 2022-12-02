@@ -1,28 +1,66 @@
-<detector-container *ngIf="displayDetectorContainer" [detector]="analysisDetector"
-  [hideDetectorControl]='isCaseSubmissionSolutionIFrame' [isAnalysisView]="true" [downtimeZoomBehavior]="downtimeZoomBehavior"
-  (downTimeChanged)="onDowntimeChanged($event)"></detector-container>
+<detector-container
+  *ngIf="displayDetectorContainer"
+  [detector]="analysisDetector"
+  [hideDetectorControl]="isCaseSubmissionSolutionIFrame"
+  [isAnalysisView]="true"
+  [downtimeZoomBehavior]="downtimeZoomBehavior"
+  (downTimeChanged)="onDowntimeChanged($event)"
+></detector-container>
 <div *ngIf="showSearchBar" class="search-box">
   <span>Diagnostics based on </span>
   <div class="search-input-box">
-    <input id="caseSubmissionFlowSearchBar" placeholder="Describe your problem and hit enter" (click)="focusSearch()"
-      class="search-input" [(ngModel)]="searchTerm" (keyup.enter)="triggerSearch()"
-      [style.backgroundColor]="searchBarFocus? 'transparent': ''" maxlength="140">
+    <input
+      id="caseSubmissionFlowSearchBar"
+      placeholder="Describe your problem and hit enter"
+      (click)="focusSearch()"
+      class="search-input"
+      [(ngModel)]="searchTerm"
+      (keyup.enter)="triggerSearch()"
+      [style.backgroundColor]="searchBarFocus ? 'transparent' : ''"
+      maxlength="140"
+    />
     <i class="fa fa-search search-icon" (click)="focusSearch()"></i>
-    <i class="fa fa-exclamation icon-err"
-      [style.display]="searchTerm?.trim().length>0 && searchTerm?.trim().length<2? '': 'none'"
-      title="At least 2 characters"></i>
+    <i
+      class="fa fa-exclamation icon-err"
+      [style.display]="
+        searchTerm?.trim().length > 0 && searchTerm?.trim().length < 2
+          ? ''
+          : 'none'
+      "
+      title="At least 2 characters"
+    ></i>
   </div>
 </div>
 
-<detector-list-analysis #detectorListAnalysis detectorParmName="detectorName" [resourceId]="resourceId"
-  [targetedScore]="targetedScore" [analysisId]="analysisId" [searchTerm]="searchTerm" [searchMode]="searchMode"
-  (onComplete)="updateLoadingStatus($event)" (updateDowntimeZoomBehavior) = "onUpdateDowntimeZoomBehavior($event)"></detector-list-analysis>
+<detector-list-analysis
+  #detectorListAnalysis
+  detectorParmName="detectorName"
+  [resourceId]="resourceId"
+  [targetedScore]="targetedScore"
+  [analysisId]="analysisId"
+  [searchTerm]="searchTerm"
+  [searchMode]="searchMode"
+  (onComplete)="updateLoadingStatus($event)"
+  (updateDowntimeZoomBehavior)="onUpdateDowntimeZoomBehavior($event)"
+></detector-list-analysis>
 
-<div *ngIf="searchMode !== SearchAnalysisMode.Genie && detectorListAnalysis.inDrillDownMode">
+<div
+  *ngIf="
+    searchMode !== SearchAnalysisMode.Genie &&
+    detectorListAnalysis.inDrillDownMode
+  "
+>
   <router-outlet></router-outlet>
 </div>
 
-<div *ngIf="searchMode !== SearchAnalysisMode.Genie" class="cxp-chat-launcher-container align-width">
-  <cxp-chat-launcher *ngIf="showChatButton()" [trackingId]="cxpChatTrackingId" [chatUrl]="cxpChatUrl"
-    [supportTopicId]="supportTopicId"></cxp-chat-launcher>
+<div
+  *ngIf="searchMode !== SearchAnalysisMode.Genie"
+  class="cxp-chat-launcher-container align-width"
+>
+  <cxp-chat-launcher
+    *ngIf="showChatButton()"
+    [trackingId]="cxpChatTrackingId"
+    [chatUrl]="cxpChatUrl"
+    [supportTopicId]="supportTopicId"
+  ></cxp-chat-launcher>
 </div>

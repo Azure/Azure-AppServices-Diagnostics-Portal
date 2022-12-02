@@ -1,5 +1,11 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ExtraOptions, NavigationEnd, Router, RouterModule } from '@angular/router';
+import {
+  ActivatedRoute,
+  ExtraOptions,
+  NavigationEnd,
+  Router,
+  RouterModule
+} from '@angular/router';
 import { numberFormat } from 'highcharts';
 import { resetControlledWarnings } from 'office-ui-fabric-react';
 import { forkJoin } from 'rxjs';
@@ -21,80 +27,98 @@ export enum ComponentType {
   templateUrl: './applens-docs.component.html',
   styleUrls: ['./applens-docs.component.scss']
 })
-
 export class ApplensDocsComponent implements OnInit {
   applensDocs = applensDocs;
-  constructor(private _applensGlobal:ApplensGlobal, private diagnosticApiService: ApplensDiagnosticService, private ref: ChangeDetectorRef,
-    private _activatedRoute: ActivatedRoute, private _diagnosticApi: DiagnosticApiService, private _router: Router, private _documentationService: ApplensDocumentationService) {
-   }
+  constructor(
+    private _applensGlobal: ApplensGlobal,
+    private diagnosticApiService: ApplensDiagnosticService,
+    private ref: ChangeDetectorRef,
+    private _activatedRoute: ActivatedRoute,
+    private _diagnosticApi: DiagnosticApiService,
+    private _router: Router,
+    private _documentationService: ApplensDocumentationService
+  ) {}
 
   ComponentType = ComponentType;
-  
+
   markdownCode = [];
   folders = [];
   images = [];
   inPageLinks = [];
 
-  codeRegEx = new RegExp("<applens-code.*?\/>","g");
-  folderRegEx = new RegExp("(?<=folder=\").*?(?=\")", "g");
-  imageRegEx = new RegExp("(?<=image=\").*?(?=\")", "g");
+  codeRegEx = new RegExp('<applens-code.*?/>', 'g');
+  folderRegEx = new RegExp('(?<=folder=").*?(?=")', 'g');
+  imageRegEx = new RegExp('(?<=image=").*?(?=")', 'g');
 
-  inPageLinkRegEx = new RegExp ("<inPageLink.*?\/>","g");
-  inPageTargetRegEx = new RegExp ("(?<=target=\").*?(?=\")","g");
-  inPageTextRegEx = new RegExp ("(?<=text=\").*?(?=\")","g");
+  inPageLinkRegEx = new RegExp('<inPageLink.*?/>', 'g');
+  inPageTargetRegEx = new RegExp('(?<=target=").*?(?=")', 'g');
+  inPageTextRegEx = new RegExp('(?<=text=").*?(?=")', 'g');
 
-  customTagRegEx = new RegExp("<applens-code.*?\/>|<inPageLink.*?\/>","g")
+  customTagRegEx = new RegExp('<applens-code.*?/>|<inPageLink.*?/>', 'g');
 
   fileNames: string[][] = [];
 
   category: string;
   doc: string;
 
-  files:any[][] = [];
+  files: any[][] = [];
 
-  componentsList: {Type: Number, Component: Number}[] = [];
+  componentsList: { Type: Number; Component: Number }[] = [];
 
   documentationRepoSettings: DocumentationRepoSettings;
   docsBranch = null;
-  
+
   ngOnInit() {
-    this._applensGlobal.updateHeader("");
-    this._activatedRoute.paramMap.subscribe(params => {
+    this._applensGlobal.updateHeader('');
+    this._activatedRoute.paramMap.subscribe((params) => {
       this.reset();
       this.category = params.get('category');
       this.doc = params.get('doc');
 
-      this._documentationService.getDocsRepoSettings().subscribe(settings => {
+      this._documentationService.getDocsRepoSettings().subscribe((settings) => {
         this.documentationRepoSettings = settings;
 
-        if (this.documentationRepoSettings.isStaging) { this.docsBranch = this.documentationRepoSettings.stagingBranch; }
-        this.diagnosticApiService.getDetectorCode(`${this.documentationRepoSettings.root}/${this.category}/${this.doc}/${'index'}`, this.docsBranch, this.documentationRepoSettings.resourceId).subscribe(x => {
-          this.populateComponentsList(x);
-          this.markdownCode = x.split(this.customTagRegEx);
-          this.folders = this.getCodeFolders(x);
-          this.folders.forEach(f => {
-            this.getFiles(f);
+        if (this.documentationRepoSettings.isStaging) {
+          this.docsBranch = this.documentationRepoSettings.stagingBranch;
+        }
+        this.diagnosticApiService
+          .getDetectorCode(
+            `${this.documentationRepoSettings.root}/${this.category}/${
+              this.doc
+            }/${'index'}`,
+            this.docsBranch,
+            this.documentationRepoSettings.resourceId
+          )
+          .subscribe((x) => {
+            this.populateComponentsList(x);
+            this.markdownCode = x.split(this.customTagRegEx);
+            this.folders = this.getCodeFolders(x);
+            this.folders.forEach((f) => {
+              this.getFiles(f);
+            });
+            this.inPageLinks = this.getInPageLinks(x);
           });
-          this.inPageLinks = this.getInPageLinks(x);
-        });
       });
     });
   }
-  reset(){
+  reset() {
     this.componentsList = [];
     this.files = [];
     this.fileNames = [];
     this.markdownCode = [];
     this.images = [];
   }
-  getInPageLinks(source: string){
+  getInPageLinks(source: string) {
     let linkList = [];
-    source.match(this.inPageLinkRegEx).forEach(link => {
-      linkList.push({Text: link.match(this.inPageTextRegEx), Target: link.match(this.inPageTargetRegEx)});
+    source.match(this.inPageLinkRegEx).forEach((link) => {
+      linkList.push({
+        Text: link.match(this.inPageTextRegEx),
+        Target: link.match(this.inPageTargetRegEx)
+      });
     });
     return linkList;
   }
-  populateComponentsList(source: string){
+  populateComponentsList(source: string) {
     let markdownList = source.split(this.customTagRegEx);
     let customTags = source.match(this.customTagRegEx);
 
@@ -105,52 +129,76 @@ export class ApplensDocsComponent implements OnInit {
     let codeWindows = 0;
     let inPageLinks = 0;
 
-    while(sourceIndex < source.length){
-      if (!!customTags && !!customTags[ctIndex] && source.indexOf(customTags[ctIndex]) == sourceIndex){
+    while (sourceIndex < source.length) {
+      if (
+        !!customTags &&
+        !!customTags[ctIndex] &&
+        source.indexOf(customTags[ctIndex]) == sourceIndex
+      ) {
         if (customTags[ctIndex].match(this.codeRegEx) != null)
-          this.componentsList.push({Type: ComponentType.CodeWindow, Component: codeWindows++})// add code window
+          this.componentsList.push({
+            Type: ComponentType.CodeWindow,
+            Component: codeWindows++
+          });
+        // add code window
         else if (customTags[ctIndex].match(this.inPageLinkRegEx) != null)
-          this.componentsList.push({Type: ComponentType.InPageLink, Component: inPageLinks++})// add inpage link
+          this.componentsList.push({
+            Type: ComponentType.InPageLink,
+            Component: inPageLinks++
+          }); // add inpage link
         sourceIndex += customTags[ctIndex].length;
         ctIndex += 1;
-      }
-      else if (!!markdownList && !!markdownList[mdIndex]) {
-        this.componentsList.push({Type: ComponentType.Markdown, Component: mdIndex});
+      } else if (!!markdownList && !!markdownList[mdIndex]) {
+        this.componentsList.push({
+          Type: ComponentType.Markdown,
+          Component: mdIndex
+        });
         sourceIndex += markdownList[mdIndex].length;
         mdIndex += 1;
       }
     }
   }
-  getCodeFolders(markdown: string){
-    
+  getCodeFolders(markdown: string) {
     var folders = [];
 
-    markdown.match(this.codeRegEx).forEach(x => {
+    markdown.match(this.codeRegEx).forEach((x) => {
       folders.push(x.match(this.folderRegEx)[0]);
       var imageList = x.match(this.imageRegEx);
-      this.images.push(!!imageList ? imageList[0] : "");
+      this.images.push(imageList ? imageList[0] : '');
     });
 
     return folders;
   }
-  getFiles(folderName: string){
+  getFiles(folderName: string) {
     let fileIndex = this.files.length;
     this.files.push([]);
     this.fileNames.push([]);
-    this.diagnosticApiService.getDevOpsTree(`${this.documentationRepoSettings.root}/${this.category}/${this.doc}/${folderName}`, this.docsBranch, this.documentationRepoSettings.resourceId).subscribe(names => {
-      names.files.forEach(element => {
-        this.fileNames[fileIndex].push(element.split('/').at(-1));
+    this.diagnosticApiService
+      .getDevOpsTree(
+        `${this.documentationRepoSettings.root}/${this.category}/${this.doc}/${folderName}`,
+        this.docsBranch,
+        this.documentationRepoSettings.resourceId
+      )
+      .subscribe((names) => {
+        names.files.forEach((element) => {
+          this.fileNames[fileIndex].push(element.split('/').at(-1));
+        });
+        let getFileObservables = [];
+        this.fileNames[fileIndex].forEach((f) => {
+          getFileObservables.push(
+            this.diagnosticApiService.getDetectorCode(
+              `${this.documentationRepoSettings.root}/${this.category}/${this.doc}/${folderName}/${f}`,
+              this.docsBranch,
+              this.documentationRepoSettings.resourceId
+            )
+          );
+        });
+        forkJoin(getFileObservables).subscribe((fileContent) => {
+          this.files[fileIndex] = fileContent;
+        });
       });
-      let getFileObservables = [];
-      this.fileNames[fileIndex].forEach(f => {
-        getFileObservables.push(this.diagnosticApiService.getDetectorCode(`${this.documentationRepoSettings.root}/${this.category}/${this.doc}/${folderName}/${f}`, this.docsBranch, this.documentationRepoSettings.resourceId)); 
-      });
-      forkJoin(getFileObservables).subscribe(fileContent => {
-        this.files[fileIndex] = fileContent;
-      });
-    });
   }
-  scrollToSection(section: string){
+  scrollToSection(section: string) {
     document.getElementById(section).scrollIntoView();
   }
 }

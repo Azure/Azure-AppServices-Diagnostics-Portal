@@ -1,43 +1,83 @@
 <div role="search" class="search-result-container" #fabSearchResult>
   <div class="search-box">
-    <div role="search" class="vanilla-search-box" [style.border]="searchBoxInFocus? '1px solid rgb(0, 120, 212)': ''">
-      <div class="vanilla-search-icon-container" [style.width]="hideSearchIcon? '0px': ''">
-        <fab-icon *ngIf="!hideSearchIcon" [iconName]="'Search'" aria-hidden="true"></fab-icon>
+    <div
+      role="search"
+      class="vanilla-search-box"
+      [style.border]="searchBoxInFocus ? '1px solid rgb(0, 120, 212)' : ''"
+    >
+      <div
+        class="vanilla-search-icon-container"
+        [style.width]="hideSearchIcon ? '0px' : ''"
+      >
+        <fab-icon
+          *ngIf="!hideSearchIcon"
+          [iconName]="'Search'"
+          aria-hidden="true"
+        ></fab-icon>
       </div>
-      <input class="vanilla-search-box-input" id="fabSearchBox" type="search" [placeholder]="searchPlaceHolder" [ngModel]="searchValue"
-        [attr.aria-label]="inputAriaLabel" (ngModelChange)="updateSearchValue($event)" (focus)="onSearchBoxFocus()"
-        (blur)="onBlurHandler()" (keydown.escape)="clearSearchWithKey($event)"/>
+      <input
+        class="vanilla-search-box-input"
+        id="fabSearchBox"
+        type="search"
+        [placeholder]="searchPlaceHolder"
+        [ngModel]="searchValue"
+        [attr.aria-label]="inputAriaLabel"
+        (ngModelChange)="updateSearchValue($event)"
+        (focus)="onSearchBoxFocus()"
+        (blur)="onBlurHandler()"
+        (keydown.escape)="clearSearchWithKey($event)"
+      />
     </div>
   </div>
   <div class="result-container" *ngIf="showSearchResults">
     <div class="result-group" (keyup.escape)="escapeHandler()">
-
       <!-- for search result in category page -->
-      <div *ngIf="isInCategory else searchResults">
-        <a tabindex="0" class="result-item detail-list-style" *ngFor="let feature of features;let i = index" style="display:flex;"
-          (mousedown)="navigateToFeature(feature)" (keyup.enter)="navigateToFeature(feature)"
-          [attr.aria-label]="getResultAriaLabel(i)">
-          <div style="display: flex;flex-direction: row;align-items: center;justify-content: start;">
+      <div *ngIf="isInCategory; else searchResults">
+        <a
+          tabindex="0"
+          class="result-item detail-list-style"
+          *ngFor="let feature of features; let i = index"
+          style="display: flex"
+          (mousedown)="navigateToFeature(feature)"
+          (keyup.enter)="navigateToFeature(feature)"
+          [attr.aria-label]="getResultAriaLabel(i)"
+        >
+          <div
+            style="
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              justify-content: start;
+            "
+          >
             <div class="feature-icon">
               <div>
-                <img style="height: 20px;width: 20px;" [src]="getIconImagePath(feature.id)" alt="">
+                <img
+                  style="height: 20px; width: 20px"
+                  [src]="getIconImagePath(feature.id)"
+                  alt=""
+                />
               </div>
             </div>
-            <div class="feature-title">{{feature.name}}</div>
+            <div class="feature-title">{{ feature.name }}</div>
           </div>
           <div class="feature-category">
-            {{feature.category}}
+            {{ feature.category }}
           </div>
         </a>
       </div>
-
     </div>
-    <div *ngIf="inputAriaLabel != ''">
-      <hr>
-      <div class="result-count" style="padding-bottom: 8px;">
-        {{inputAriaLabel}}
-        <a *ngIf="features.length === 0 && disableGenie == false" tabindex="0" (mousedown)="openGeniePanel()"
-          (keyup.enter)="openGeniePanel()">Ask chatbot Genie</a>
+    <div *ngIf="inputAriaLabel !== ''">
+      <hr />
+      <div class="result-count" style="padding-bottom: 8px">
+        {{ inputAriaLabel }}
+        <a
+          *ngIf="features.length === 0 && disableGenie == false"
+          tabindex="0"
+          (mousedown)="openGeniePanel()"
+          (keyup.enter)="openGeniePanel()"
+          >Ask chatbot Genie</a
+        >
       </div>
     </div>
   </div>
@@ -45,21 +85,35 @@
 
 <ng-template #searchResults>
   <!-- for search results in home page -->
-  <fab-details-list [items]="features" [isHeaderVisible]="false"
-    [selectionMode]="selectionMode" (onItemInvoked)="invokeHandler($event)"
-    [ariaLabel]="'Search Results, use arrow up and down key to go through each result'">
+  <fab-details-list
+    [items]="features"
+    [isHeaderVisible]="false"
+    [selectionMode]="selectionMode"
+    (onItemInvoked)="invokeHandler($event)"
+    [ariaLabel]="
+      'Search Results, use arrow up and down key to go through each result'
+    "
+  >
     <columns>
       <fab-details-list-column>
         <render>
           <ng-template let-feature="item" let-index="index">
-            <div class="result-item remove-results-padding" tabindex="0" (mousedown)="navigateToFeature(feature)"
-              [attr.aria-label]="getResultAriaLabel(index)">
-              <div class="item-word-wrap" style="width: 65%;">
-                <img style="height: 20px;width: 20px;margin-right: 5px;" [src]="getIconImagePath(feature.id)" [attr.alt]="feature.name">
-                <span class="feature-title">{{feature.name}}</span>
+            <div
+              class="result-item remove-results-padding"
+              tabindex="0"
+              (mousedown)="navigateToFeature(feature)"
+              [attr.aria-label]="getResultAriaLabel(index)"
+            >
+              <div class="item-word-wrap" style="width: 65%">
+                <img
+                  style="height: 20px; width: 20px; margin-right: 5px"
+                  [src]="getIconImagePath(feature.id)"
+                  [attr.alt]="feature.name"
+                />
+                <span class="feature-title">{{ feature.name }}</span>
               </div>
-              <div class="item-word-wrap" style="width: 30%;">
-                <span class="feature-category">{{feature.category}}</span>
+              <div class="item-word-wrap" style="width: 30%">
+                <span class="feature-category">{{ feature.category }}</span>
               </div>
             </div>
           </ng-template>

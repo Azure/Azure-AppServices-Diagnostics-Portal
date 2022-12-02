@@ -1,10 +1,16 @@
-<fab-command-bar [attr.id]="'fab-command-bar'"  [contentStyle]="'solid gray;font-weight:12px'" [contentClass]="'fab-command-bar-class'" >
+<fab-command-bar
+  [attr.id]="'fab-command-bar'"
+  [contentStyle]="'solid gray;font-weight:12px'"
+  [contentClass]="'fab-command-bar-class'"
+>
   <items>
     <fab-command-bar-item key="custom1" text="custom text">
       <render>
         <ng-template let-item="item">
-          <div style="padding-top:1px!important;">
-            <fabric-search-results (disableGenie)="disableGenie"></fabric-search-results>
+          <div style="padding-top: 1px !important">
+            <fabric-search-results
+              (disableGenie)="(disableGenie)"
+            ></fabric-search-results>
           </div>
         </ng-template>
       </render>
@@ -14,44 +20,67 @@
         </ng-template>
       </render-icon>
     </fab-command-bar-item>
-    <fab-command-bar-item *ngIf="disableGenie==false" key="askGenie" text="Ask Genie"
-      [iconProps]="{ iconName: 'ChatInviteFriend' }" (click)="toggleOpenState()" data-track-type="run">
+    <fab-command-bar-item
+      *ngIf="disableGenie == false"
+      key="askGenie"
+      text="Ask Genie"
+      [iconProps]="{ iconName: 'ChatInviteFriend' }"
+      (click)="toggleOpenState()"
+      data-track-type="run"
+    >
     </fab-command-bar-item>
-    <fab-command-bar-item key="refresh1" text="Refresh" [iconProps]="{ iconName: 'Refresh' }" (click)="refreshPage()">
+    <fab-command-bar-item
+      key="refresh1"
+      text="Refresh"
+      [iconProps]="{ iconName: 'Refresh' }"
+      (click)="refreshPage()"
+    >
     </fab-command-bar-item>
-    <fab-command-bar-item key="sendFeedback" text="Feedback" [iconProps]="{ iconName: 'Emoji2' }"
-      (click)="sendFeedback()"></fab-command-bar-item>
-    <fab-command-bar-item *ngIf="displayRPDFButton" [id]="'generateResiliencyPDF'" key="generateResiliencyPDF" [text]="gRPDFButtonText"
-      [iconProps]="gRPDFButtonIcon" (click)="generateResiliencyPDF()" [disabled]="gRPDFButtonDisabled" >
+    <fab-command-bar-item
+      key="sendFeedback"
+      text="Feedback"
+      [iconProps]="{ iconName: 'Emoji2' }"
+      (click)="sendFeedback()"
+    ></fab-command-bar-item>
+    <fab-command-bar-item
+      *ngIf="displayRPDFButton"
+      [id]="'generateResiliencyPDF'"
+      key="generateResiliencyPDF"
+      [text]="gRPDFButtonText"
+      [iconProps]="gRPDFButtonIcon"
+      (click)="generateResiliencyPDF()"
+      [disabled]="gRPDFButtonDisabled"
+    >
     </fab-command-bar-item>
   </items>
 </fab-command-bar>
 
-<fab-coachmark 
-   *ngIf="showCoachmark==true"
-  [attr.id]="'fab-coachmark'" 
-  [target]="gRPDFButtonId" 
+<fab-coachmark
+  *ngIf="showCoachmark == true"
+  [attr.id]="'fab-coachmark'"
+  [target]="gRPDFButtonId"
   (onAnimationOpenEnd)="showingTeachingBubble()"
   [positioningContainerProps]="coachmarkPositioningContainerProps"
   delayBeforeCoachmarkAnimation="4000"
   ariaAlertText="A coachmark has appeared"
-  ariaDescribedBy="coachmark-desc1" 
+  ariaDescribedBy="coachmark-desc1"
   ariaLabelledBy="coachmark-label1"
   ariaDescribedByText="Press enter or alt + C to open the coachmark notification"
-  ariaLabelledByText="Coachmark notification">
-  <fab-teachingbubble 
-    *ngIf="showTeachingBubble==true"
-    headline="New Resiliency Score report!" 
-    (onDismiss)="coachMarkViewed()" 
-    [target]="gRPDFButtonId"    
-    [hasCloseIcon]="true" 
+  ariaLabelledByText="Coachmark notification"
+>
+  <fab-teachingbubble
+    *ngIf="showTeachingBubble == true"
+    headline="New Resiliency Score report!"
+    (onDismiss)="coachMarkViewed()"
+    [target]="gRPDFButtonId"
+    [hasCloseIcon]="true"
     [calloutProps]="teachingBubbleCalloutProps"
     closeButtonAriaLabel="Close"
     hasCondensedHeadline="true"
-    ariaDescribedBy="resiiencyreport-description1" 
-    ariaLabelledBy="resiiencyreport-label1">
-    Download a report to check how well your Web App scores against our recommended resiliency best practices.
+    ariaDescribedBy="resiiencyreport-description1"
+    ariaLabelledBy="resiiencyreport-label1"
+  >
+    Download a report to check how well your Web App scores against our
+    recommended resiliency best practices.
   </fab-teachingbubble>
 </fab-coachmark>
-
-

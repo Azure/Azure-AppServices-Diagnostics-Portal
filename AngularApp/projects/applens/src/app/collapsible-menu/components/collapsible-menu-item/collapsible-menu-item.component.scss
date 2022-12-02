@@ -1,58 +1,58 @@
 .menu-item-children {
-    overflow-y: hidden;
+  overflow-y: hidden;
 }
 
 .menu-item {
-    cursor: pointer;
-    display: flex;
-    font-size: 13px;
-    font-weight: 400;
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  font-weight: 400;
 }
 
 .expand-icon {
-    /* float: right; */
-    min-width: 10px;
-    font-size: 12px;
+  /* float: right; */
+  min-width: 10px;
+  font-size: 12px;
 }
 
 .menu-label {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    width: 260px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 260px;
 }
 
 .menu-item {
-    color:var(--bodyText);
-    padding: 5px 5px 5px 30px;
-    font-size: 14px;
+  color: var(--bodyText);
+  padding: 5px 5px 5px 30px;
+  font-size: 14px;
 }
 
 .menu-item:hover {
-    background-color: var(--sideMenuItemBackgroundSelected)
+  background-color: var(--sideMenuItemBackgroundSelected);
 }
 
 .menu-item.selected {
-    background-color: var(--sideMenuItemBackgroundSelected)!important;
+  background-color: var(--sideMenuItemBackgroundSelected) !important;
 }
 
 .menu-label > b {
-    color: #ffb353;
+  color: #ffb353;
 }
 
 .menu-item-container {
-    padding-left: 15px;
-    padding-top: 5px
+  padding-left: 15px;
+  padding-top: 5px;
 }
 
 .menu-item-container.selected {
-    color:var(--bodyText);
-    background-color: var(--sideMenuItemBackgroundSelected);
+  color: var(--bodyText);
+  background-color: var(--sideMenuItemBackgroundSelected);
 }
 
 .break-all {
-    word-break: break-all;
+  word-break: break-all;
 }
 
 .bold {
-    font-weight: 600;
+  font-weight: 600;
 }

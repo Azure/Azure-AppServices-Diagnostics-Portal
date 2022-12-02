@@ -8,9 +8,8 @@ describe('CallstackPanelComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CallstackPanelComponent ]
-    })
-    .compileComponents();
+      declarations: [CallstackPanelComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

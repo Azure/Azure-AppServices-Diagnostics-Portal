@@ -1,38 +1,81 @@
 import { AdalService } from 'adal-angular4';
 import {
-  CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities
+  CompilationProperties,
+  CompilationTraceOutputDetails,
+  DetectorControlService,
+  DetectorResponse,
+  GenericThemeService,
+  HealthStatus,
+  LocationSpan,
+  Position,
+  QueryResponse,
+  StringUtilities
 } from 'diagnostic-data';
 import * as momentNs from 'moment';
 import { NgxSmartModalService } from 'ngx-smart-modal';
+import { Observable, concat, forkJoin, of } from 'rxjs';
+import { flatMap, last, map } from 'rxjs/operators';
 import {
-  concat,
-  forkJoin
-  , Observable, of
-} from 'rxjs';
-import { flatMap, last, map } from 'rxjs/operators'
-import { ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Injectable, Input, OnChanges, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+  ChangeDetectorRef,
+  Component,
+  ComponentFactoryResolver,
+  ComponentRef,
+  Injectable,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  ViewContainerRef
+} from '@angular/core';
 import { Package } from '../../../shared/models/package';
 import { GithubApiService } from '../../../shared/services/github-api.service';
 import { DetectorGistApiService } from '../../../shared/services/detectorgist-template-api.service';
 import { ResourceService } from '../../../shared/services/resource.service';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
-import { RecommendedUtterance, RenderingType } from '../../../../../../diagnostic-data/src/public_api';
+import {
+  RecommendedUtterance,
+  RenderingType
+} from '../../../../../../diagnostic-data/src/public_api';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
-import { ActivatedRoute, ActivatedRouteSnapshot, CanDeactivate, Params, Router, RouterStateSnapshot } from "@angular/router";
-import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
-import { listen, MessageConnection } from 'vscode-ws-jsonrpc';
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  CanDeactivate,
+  Params,
+  Router,
+  RouterStateSnapshot
+} from '@angular/router';
+import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
+import { MessageConnection, listen } from 'vscode-ws-jsonrpc';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { MonacoLanguageClient, CloseAction, ErrorAction, MonacoServices, createConnection } from 'monaco-languageclient';
+import {
+  CloseAction,
+  ErrorAction,
+  MonacoLanguageClient,
+  MonacoServices,
+  createConnection
+} from 'monaco-languageclient';
 import { v4 as uuid } from 'uuid';
-import { IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IPanelProps, IPivotProps, MessageBarType, PanelType, TagItemSuggestion } from 'office-ui-fabric-react';
+import {
+  IButtonStyles,
+  IChoiceGroupOption,
+  IDialogContentProps,
+  IDialogProps,
+  IDropdownOption,
+  IDropdownProps,
+  IPanelProps,
+  IPivotProps,
+  MessageBarType,
+  PanelType,
+  TagItemSuggestion
+} from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
 import { Commit } from '../../../shared/models/commit';
 import { ApplensCommandBarService } from '../services/applens-command-bar.service';
 import { DevopsConfig } from '../../../shared/models/devopsConfig';
 import { ApplensGlobal } from '../../../applens-global';
 import { IDeactivateComponent } from '../develop-navigation-guard.service';
-
 
 const codePrefix = `// *****PLEASE DO NOT MODIFY THIS PART*****
 using Diagnostics.DataProviders;
@@ -46,7 +89,7 @@ using Kusto.Data;
 `;
 
 const moment = momentNs;
-const newDetectorId: string = "NEW_DETECTOR";
+const newDetectorId: string = 'NEW_DETECTOR';
 
 // const commandbaritems: ICommandBarItemProps[] = [
 //   {
@@ -147,31 +190,32 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   temporarySelection: object = {};
   allUtterances: any[] = [];
   recommendedUtterances: RecommendedUtterance[] = [];
-  utteranceInput: string = "";
-  dialogTitle: string = "Send for review";
-  dialogSubText: string = "Changes will be reviewed by team before getting merged. Once published, you will have a link to the PR.";
-  branchName: string = "Branch Name";
-  branchPlaceholder: string = "Enter Branch name";
-  PRName: string = "Pull Request Name";
-  PRPlaceholder: string = "Enter PR Name";
-  PRDescription: string = "Pull Request description";
-  PRDescriptionPlaceholder: string = "Enter description about the changes";
-  cancelButtonText: string = "Cancel";
+  utteranceInput: string = '';
+  dialogTitle: string = 'Send for review';
+  dialogSubText: string =
+    'Changes will be reviewed by team before getting merged. Once published, you will have a link to the PR.';
+  branchName: string = 'Branch Name';
+  branchPlaceholder: string = 'Enter Branch name';
+  PRName: string = 'Pull Request Name';
+  PRPlaceholder: string = 'Enter PR Name';
+  PRDescription: string = 'Pull Request description';
+  PRDescriptionPlaceholder: string = 'Enter description about the changes';
+  cancelButtonText: string = 'Cancel';
   publishDialogHidden: boolean = true;
-  PRTitle: string = "";
-  PRDesc: string = "";
-  Branch: string = "";
-  tempBranch: string = "";
-  showBranches: IChoiceGroupOption[] = [{key: "", text: ""}];
-  displayBranch: string = "";
+  PRTitle: string = '';
+  PRDesc: string = '';
+  Branch: string = '';
+  tempBranch: string = '';
+  showBranches: IChoiceGroupOption[] = [{ key: '', text: '' }];
+  displayBranch: string = '';
   optionsForSingleChoice: IChoiceGroupOption[] = [];
   openTimePickerCallout: boolean = false;
-  timePickerButtonStr: string = "";
+  timePickerButtonStr: string = '';
   showCalendar: boolean = false;
   showTimePicker: boolean = false;
   gistDialogHidden: boolean = true;
   gistVersion: string;
-  latestGistVersion: string = "";
+  latestGistVersion: string = '';
   gistName: string;
   pastGistEvent: any;
   pastGistVersionEvent: any;
@@ -182,12 +226,12 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   refreshGistListButtonIcon: any = { iconName: 'Refresh' };
   gistsDropdownOptions: IDropdownOption[] = [];
   gistVersionOptions: IDropdownOption[] = [];
-  gistUpdateTitle
-  internalExternalText: string = "";
-  internalViewText: string = "Internal view";
-  externalViewText: string = "Customer view";
+  gistUpdateTitle;
+  internalExternalText: string = '';
+  internalViewText: string = 'Internal view';
+  externalViewText: string = 'Customer view';
   defaultSelectedKey: string;
-  currentTime: string = "";
+  currentTime: string = '';
   publishSuccess: boolean = false;
   publishFailed: boolean = false;
   saveSuccess: boolean = false;
@@ -195,31 +239,31 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   deleteSuccess: boolean = false;
   deleteFailed: boolean = false;
   saveIdFailure: boolean = false;
-  saveButtonText: string = "Save";
-  detectorName: string = "";
+  saveButtonText: string = 'Save';
+  detectorName: string = '';
   submittedPanelTimer: any = null;
-  deleteButtonText: string = "Delete";
-  deleteDialogTitle: string = "Delete Detector";
+  deleteButtonText: string = 'Delete';
+  deleteDialogTitle: string = 'Delete Detector';
   deleteDialogHidden: boolean = true;
   deleteAvailable: boolean = false;
   deletingDetector: boolean = false;
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  failureMessage: string = "";
+  failureMessage: string = '';
   PPERedirectTimer: number = 10;
   DevopsConfig: DevopsConfig;
   useAutoMergeText: boolean = false;
   runButtonStyle: any = {
-    root: { cursor: "default" }
+    root: { cursor: 'default' }
   };
   publishButtonStyle: any = {
     root: {
-      cursor: "not-allowed",
-      color: "grey"
+      cursor: 'not-allowed',
+      color: 'grey'
     }
   };
   saveButtonVisibilityStyle: any = {};
   saveButtonDisabled: boolean = false;
-  PRLink: string = "";
+  PRLink: string = '';
 
   detectorGraduation: boolean = false;
   disableDelete: boolean = false;
@@ -227,73 +271,72 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   buttonStyle: IButtonStyles = {
     root: {
       //  color: "#323130",
-      borderRadius: "12px",
-      marginTop: "8px",
-      background: "rgba(0, 120, 212, 0.1)",
-      fontSize: "13",
-      fontWeight: "600",
-      height: "80%"
+      borderRadius: '12px',
+      marginTop: '8px',
+      background: 'rgba(0, 120, 212, 0.1)',
+      fontSize: '13',
+      fontWeight: '600',
+      height: '80%'
     }
-  }
+  };
   branchButtonDisabled = false;
   branchButtonStyle: IButtonStyles = {
     root: {
       //   color: "#323130",
-      borderRadius: "12px",
-      marginTop: "8px",
-      background: "rgba(0, 120, 212, 0.1)",
-      fontSize: "10",
-      fontWeight: "600",
-      height: "80%"
+      borderRadius: '12px',
+      marginTop: '8px',
+      background: 'rgba(0, 120, 212, 0.1)',
+      fontSize: '10',
+      fontWeight: '600',
+      height: '80%'
     }
-  }
+  };
   pivotStyle: IPivotProps['styles'] = {
-    root: {
-    }
-  }
+    root: {}
+  };
 
   runIcon: any = { iconName: 'Play' };
 
   publishIcon: any = {
     iconName: 'Upload',
     styles: {
-      root: { color: "grey" }
+      root: { color: 'grey' }
     }
   };
 
-  submittedPanelStyles: IPanelProps["styles"] = {
+  submittedPanelStyles: IPanelProps['styles'] = {
     root: {
-      height: "100px",
+      height: '100px'
     },
     content: {
-      padding: "0px"
+      padding: '0px'
     },
     navigation: {
-      height: "18px"
+      height: '18px'
     }
-  }
+  };
 
   publishDialogStyles: IDialogContentProps['styles'] = {
     inner: {
-      paddingLeft: "24px"
+      paddingLeft: '24px'
     },
     innerContent: {
-      padding: "0px"
+      padding: '0px'
     }
-  }
+  };
 
   dataSources: IDropdownOption[] = [
     {
-      key: "1",
-      text: "Applens"
+      key: '1',
+      text: 'Applens'
     },
     {
-      key: "2",
-      text: "Portal"
+      key: '2',
+      text: 'Portal'
     },
     {
-      key: "0",
-      text: "All"
+      key: '0',
+      text: 'All'
     }
   ];
 
@@ -327,22 +370,34 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   notificationStatusType: MessageBarType = MessageBarType.success;
   branchMessageStyle: any = {
     root: {
-        height: '20px',
-        backgroundColor: '#c9dded',
+      height: '20px',
+      backgroundColor: '#c9dded'
     }
-  }
-  showBranchInfo:boolean = false;
+  };
+  showBranchInfo: boolean = false;
   owners: string[] = [];
   //to direct system invoker detectors to the correct repo
   SYSTEM_INVOKER_RESOURCE_ID: string = '';
   SYSTEM_INVOKER_MAIN_BRANCH: string = '';
 
   codeOnDefaultBranch: boolean = false;
-  constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService, private detectorGistApiService: DetectorGistApiService,
-    private diagnosticApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService, private resourceService: ResourceService,
-    private _detectorControlService: DetectorControlService, private _adalService: AdalService,
-    public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute,
-    private _applensCommandBarService: ApplensCommandBarService, private _router: Router, private _themeService: GenericThemeService, private _applensGlobal: ApplensGlobal) {
+  constructor(
+    private cdRef: ChangeDetectorRef,
+    private githubService: GithubApiService,
+    private detectorGistApiService: DetectorGistApiService,
+    private diagnosticApiService: ApplensDiagnosticService,
+    private _diagnosticApi: DiagnosticApiService,
+    private resourceService: ResourceService,
+    private _detectorControlService: DetectorControlService,
+    private _adalService: AdalService,
+    public ngxSmartModalService: NgxSmartModalService,
+    private _telemetryService: TelemetryService,
+    private _activatedRoute: ActivatedRoute,
+    private _applensCommandBarService: ApplensCommandBarService,
+    private _router: Router,
+    private _themeService: GenericThemeService,
+    private _applensGlobal: ApplensGlobal
+  ) {
     this.lightOptions = {
       theme: 'vs',
       language: 'csharp',
@@ -373,35 +428,40 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.localDevButtonDisabled = false;
     this.runButtonDisabled = false;
     this.publishButtonDisabled = true;
-    this.localDevText = "Download Local Detector Package";
-    this.localDevUrl = "";
-    this.localDevIcon = "fa fa-download";
-    this.devOptionsIcon = "fa fa-download";
-    this.runButtonText = "Run";
-    this.runButtonIcon = "fa fa-play";
-    this.publishButtonText = "Create";
-    this.modalPublishingButtonText = this.detectorGraduation ? "Create PR" : "Publish";
+    this.localDevText = 'Download Local Detector Package';
+    this.localDevUrl = '';
+    this.localDevIcon = 'fa fa-download';
+    this.devOptionsIcon = 'fa fa-download';
+    this.runButtonText = 'Run';
+    this.runButtonIcon = 'fa fa-play';
+    this.publishButtonText = 'Create';
+    this.modalPublishingButtonText = this.detectorGraduation
+      ? 'Create PR'
+      : 'Publish';
     this.modalPublishingButtonDisabled = false;
     this.showAlert = false;
 
-    this.userName = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
+    this.userName =
+      Object.keys(this._adalService.userInfo.profile).length > 0
+        ? this._adalService.userInfo.profile.upn
+        : '';
     this.emailRecipients = this.userName.replace('@microsoft.com', '');
     this.publishAccessControlResponse = {};
   }
 
-  canExit() : boolean {
-    if (this.detectorDeleted)
-      return true;
-    else if (!!this.lastSavedVersion && this.code != this.lastSavedVersion)
-      {
-        if (confirm("Are you sure you want to leave? You have some unsaved changes.")){
-          return true;
-        }
-        else {
-          return false;
-        }
+  canExit(): boolean {
+    if (this.detectorDeleted) return true;
+    else if (!!this.lastSavedVersion && this.code != this.lastSavedVersion) {
+      if (
+        confirm(
+          'Are you sure you want to leave? You have some unsaved changes.'
+        )
+      ) {
+        return true;
+      } else {
+        return false;
       }
-    else {
+    } else {
       return true;
     }
   }
@@ -423,32 +483,48 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.tempBranch = event.option.key;
   }
 
-  systemInvokerUpdateBranch(){
+  systemInvokerUpdateBranch() {
     this.Branch = this.tempBranch;
     this.displayBranch = this.Branch;
-    let sysId = this.mode === DevelopMode.EditMonitoring ? '__monitoring' : `__analytics`;
-    this.diagnosticApiService.getDetectorCode(`${sysId.toLowerCase()}/${sysId.toLowerCase()}.csx`, this.Branch, this.SYSTEM_INVOKER_RESOURCE_ID).subscribe(x => {
-      this.code = x;
-      this.lastSavedVersion = this.code;
-    });
+    let sysId =
+      this.mode === DevelopMode.EditMonitoring ? '__monitoring' : `__analytics`;
+    this.diagnosticApiService
+      .getDetectorCode(
+        `${sysId.toLowerCase()}/${sysId.toLowerCase()}.csx`,
+        this.Branch,
+        this.SYSTEM_INVOKER_RESOURCE_ID
+      )
+      .subscribe((x) => {
+        this.code = x;
+        this.lastSavedVersion = this.code;
+      });
   }
 
   updateBranch() {
-    if (this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics)
+    if (
+      this.mode === DevelopMode.EditMonitoring ||
+      this.mode === DevelopMode.EditAnalytics
+    )
       this.systemInvokerUpdateBranch();
     else {
       this.Branch = this.tempBranch;
       this.displayBranch = this.Branch;
-      this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`, this.Branch, this.resourceId).subscribe(x => {
-        this.code = x;
-        this.lastSavedVersion = this.code
-      });
+      this.diagnosticApiService
+        .getDetectorCode(
+          `${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`,
+          this.Branch,
+          this.resourceId
+        )
+        .subscribe((x) => {
+          this.code = x;
+          this.lastSavedVersion = this.code;
+        });
     }
     this.closeCallout();
   }
 
   noBranchesAvailable() {
-    this.displayBranch = "NA (not published)";
+    this.displayBranch = 'NA (not published)';
     this.disableBranchButton();
   }
 
@@ -456,14 +532,14 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.branchButtonDisabled = true;
     this.branchButtonStyle = {
       root: {
-        cursor: "not-allowed",
-        color: "#323130",
-        borderRadius: "12px",
-        marginTop: "8px",
-        background: "#eaeaea",
-        fontSize: "13",
-        fontWeight: "600",
-        height: "80%"
+        cursor: 'not-allowed',
+        color: '#323130',
+        borderRadius: '12px',
+        marginTop: '8px',
+        background: '#eaeaea',
+        fontSize: '13',
+        fontWeight: '600',
+        height: '80%'
       }
     };
   }
@@ -474,8 +550,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   publishButtonOnClick() {
     if (this.detectorGraduation) {
       this.showPublishDialog();
-    }
-    else {
+    } else {
       this.ngxSmartModalService.getModal('publishModal').open();
     }
   }
@@ -483,7 +558,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   ableToDelete: boolean = false;
   deleteVisibilityStyle = {};
   commitHistoryVisibilityStyle = {};
-  commitHistoryLink: string = "";
+  commitHistoryLink: string = '';
 
   isProd: boolean = false;
   PPELink: string;
@@ -497,206 +572,282 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     });
   }
 
-  startUp(){
+  startUp() {
     this.detectorGraduation = true;
-    let isSystemInvoker: boolean = this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics;
+    let isSystemInvoker: boolean =
+      this.mode === DevelopMode.EditMonitoring ||
+      this.mode === DevelopMode.EditAnalytics;
     this.branchInput = this._activatedRoute.snapshot.queryParams['branchInput'];
-    if(isSystemInvoker){
-      this._diagnosticApi.getAppSetting("SystemInvokers:ResourceIDString").subscribe(resource => {
-        this.SYSTEM_INVOKER_RESOURCE_ID = resource;
-      });
-      this._diagnosticApi.getAppSetting("SystemInvokers:DiagnosticsMainBranch").subscribe(bn => {
-        this.SYSTEM_INVOKER_MAIN_BRANCH = bn;
-      });
+    if (isSystemInvoker) {
+      this._diagnosticApi
+        .getAppSetting('SystemInvokers:ResourceIDString')
+        .subscribe((resource) => {
+          this.SYSTEM_INVOKER_RESOURCE_ID = resource;
+        });
+      this._diagnosticApi
+        .getAppSetting('SystemInvokers:DiagnosticsMainBranch')
+        .subscribe((bn) => {
+          this.SYSTEM_INVOKER_MAIN_BRANCH = bn;
+        });
     }
-    
-    this.diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(devopsConfig => {
-      this.detectorGraduation = devopsConfig.graduationEnabled;
-      this.DevopsConfig = new DevopsConfig(devopsConfig);
 
-      this.commitHistoryLink = (devopsConfig.folderPath === "/") ? `https://dev.azure.com/${devopsConfig.organization}/${devopsConfig.project}/_git/${devopsConfig.repository}?path=${devopsConfig.folderPath}${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&_a=history` : `https://dev.azure.com/${devopsConfig.organization}/${devopsConfig.project}/_git/${devopsConfig.repository}?path=${devopsConfig.folderPath}/${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&_a=history`;
+    this.diagnosticApiService
+      .getDevopsConfig(
+        `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`
+      )
+      .subscribe((devopsConfig) => {
+        this.detectorGraduation = devopsConfig.graduationEnabled;
+        this.DevopsConfig = new DevopsConfig(devopsConfig);
 
-      this.deleteVisibilityStyle = !(this.detectorGraduation === true && this.mode === DevelopMode.Edit) ? { display: "none" } : {};
-      this.saveButtonVisibilityStyle = !(this.detectorGraduation === true ) ? { display: "none" } : {};
-      this.commitHistoryVisibilityStyle = !(this.detectorGraduation === true && this.mode !== DevelopMode.Create) ? { display: "none" } : {};
+        this.commitHistoryLink =
+          devopsConfig.folderPath === '/'
+            ? `https://dev.azure.com/${devopsConfig.organization}/${
+                devopsConfig.project
+              }/_git/${devopsConfig.repository}?path=${
+                devopsConfig.folderPath
+              }${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&_a=history`
+            : `https://dev.azure.com/${devopsConfig.organization}/${
+                devopsConfig.project
+              }/_git/${devopsConfig.repository}?path=${
+                devopsConfig.folderPath
+              }/${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&_a=history`;
 
-      this.modalPublishingButtonText = this.detectorGraduation && !devopsConfig.autoMerge ? "Create PR" : "Publish";
+        this.deleteVisibilityStyle = !(
+          this.detectorGraduation === true && this.mode === DevelopMode.Edit
+        )
+          ? { display: 'none' }
+          : {};
+        this.saveButtonVisibilityStyle = !(this.detectorGraduation === true)
+          ? { display: 'none' }
+          : {};
+        this.commitHistoryVisibilityStyle = !(
+          this.detectorGraduation === true && this.mode !== DevelopMode.Create
+        )
+          ? { display: 'none' }
+          : {};
 
-      this._themeService.currentThemeSub.subscribe((theme) => {
-        this.editorOptions = theme == "dark" ? this.darkOptions : this.lightOptions;
-        this.submittedPanelStyles = {
-          root: {
-            height: "100px",
-            color: this._themeService.getPropertyValue("--bodyText"),
-          },
-          content: {
-            padding: "0px"
-          },
-          navigation: {
-            height: "18px"
-          }
+        this.modalPublishingButtonText =
+          this.detectorGraduation && !devopsConfig.autoMerge
+            ? 'Create PR'
+            : 'Publish';
+
+        this._themeService.currentThemeSub.subscribe((theme) => {
+          this.editorOptions =
+            theme == 'dark' ? this.darkOptions : this.lightOptions;
+          this.submittedPanelStyles = {
+            root: {
+              height: '100px',
+              color: this._themeService.getPropertyValue('--bodyText')
+            },
+            content: {
+              padding: '0px'
+            },
+            navigation: {
+              height: '18px'
+            }
+          };
+        });
+
+        if (isSystemInvoker) this.getSystemInvokerBranchList();
+        else if (this.detectorGraduation) this.getBranchList();
+
+        if (!this.initialized && !this.detectorGraduation) {
+          this.initialize();
+          this.initialized = true;
+          this._telemetryService.logPageView(
+            TelemetryEventNames.OnboardingFlowLoaded,
+            {}
+          );
+        }
+
+        this.diagnosticApiService.getPPEHostname().subscribe((host) => {
+          this.PPEHostname = host;
+          this.diagnosticApiService
+            .getDetectorDevelopmentEnv()
+            .subscribe((env) => {
+              this.PPELink = `${this.PPEHostname}${this._router.url}`;
+              this.isProd = env === 'Prod';
+            });
+        });
+
+        this._detectorControlService.timePickerStrSub.subscribe((s) => {
+          this.timePickerButtonStr = s;
+        });
+
+        if (this._detectorControlService.isInternalView) {
+          this.internalExternalText = this.internalViewText;
+        } else {
+          this.internalExternalText = this.externalViewText;
         }
       });
-
-      if (isSystemInvoker)
-        this.getSystemInvokerBranchList();
-      else if (this.detectorGraduation)
-        this.getBranchList();
-
-      if (!this.initialized && !this.detectorGraduation) {
-        this.initialize();
-        this.initialized = true;
-        this._telemetryService.logPageView(TelemetryEventNames.OnboardingFlowLoaded, {});
-      }
-
-      this.diagnosticApiService.getPPEHostname().subscribe(host => {
-        this.PPEHostname = host;
-        this.diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
-          this.PPELink = `${this.PPEHostname}${this._router.url}`
-          this.isProd = env === "Prod";
-        });
-      });
-
-      this._detectorControlService.timePickerStrSub.subscribe(s => {
-        this.timePickerButtonStr = s;
-      });
-
-      if (this._detectorControlService.isInternalView) {
-        this.internalExternalText = this.internalViewText;
-      }
-      else {
-        this.internalExternalText = this.externalViewText;
-      }
-    });
   }
 
-  getSystemInvokerBranchList(){
+  getSystemInvokerBranchList() {
     this.optionsForSingleChoice = [];
     //callout stops working if showBranches ever becomes empty
-    this.showBranches = [{key: "", text: ""}];
-    let sysId = this.mode === DevelopMode.EditMonitoring ? '__monitoring' : `__analytics`;
+    this.showBranches = [{ key: '', text: '' }];
+    let sysId =
+      this.mode === DevelopMode.EditMonitoring ? '__monitoring' : `__analytics`;
 
-    this.diagnosticApiService.getBranches(this.SYSTEM_INVOKER_RESOURCE_ID).subscribe(branches => {
-      var branchRegEx = new RegExp(`^dev\/.*\/detector\/${sysId}$`, "i");
-      branches.forEach(option => {
-        this.optionsForSingleChoice.push({
-          key: String(option["branchName"]),
-          text: String(option["branchName"])
+    this.diagnosticApiService
+      .getBranches(this.SYSTEM_INVOKER_RESOURCE_ID)
+      .subscribe((branches) => {
+        var branchRegEx = new RegExp(`^dev\/.*\/detector\/${sysId}$`, 'i');
+        branches.forEach((option) => {
+          this.optionsForSingleChoice.push({
+            key: String(option['branchName']),
+            text: String(option['branchName'])
+          });
+
+          if (option['isMainBranch'].toLowerCase() === 'true') {
+            this.defaultBranch = String(option['branchName']);
+          }
+          if (option['isMainBranch'].toLowerCase() === 'true') {
+            this.showBranches.push({
+              key: String(option['branchName']),
+              text: String(option['branchName'])
+            });
+          }
         });
 
-        if (option["isMainBranch"].toLowerCase() === "true") {
-          this.defaultBranch = String(option["branchName"]);
-        }
-        if ((option["isMainBranch"].toLowerCase() === "true")) {
-          this.showBranches.push({
-            key: String(option["branchName"]),
-            text: String(option["branchName"])
-          });
-        }
-      });
+        this.optionsForSingleChoice.forEach((branch) => {
+          if (branchRegEx.test(branch.text) && sysId.toLowerCase() != '') {
+            this.showBranches.push({
+              key: String(branch.key),
+              text: String(
+                `${branch.text.split('/')[1]} : ${branch.text.split('/')[3]}`
+              )
+            });
+          }
+        });
 
-      this.optionsForSingleChoice.forEach(branch => {
-        if (branchRegEx.test(branch.text) && sysId.toLowerCase() != "") {
-          this.showBranches.push({
-            key: String(branch.key),
-            text: String(`${branch.text.split("/")[1]} : ${branch.text.split("/")[3]}`)
-          });
-        }
-      });
+        // remove temp value from showBranches
+        this.showBranches = this.showBranches.filter((branchName) => {
+          return branchName.key != '';
+        });
 
-      // remove temp value from showBranches
-      this.showBranches = this.showBranches.filter(branchName => {
-        return branchName.key != '';
-      });
+        if (this.showBranches.length < 1) {
+          this.noBranchesAvailable();
+        } else {
+          var targetBranch = this.gistMode
+            ? `dev/${this.userName.split('@')[0]}/gist/${sysId.toLowerCase()}`
+            : `dev/${
+                this.userName.split('@')[0]
+              }/detector/${sysId.toLowerCase()}`;
 
-      if (this.showBranches.length < 1) {
-        this.noBranchesAvailable();
-      }
-      else {
-        var targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${sysId.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${sysId.toLowerCase()}`;
-        
-          this.Branch = this.targetInShowBranches(targetBranch) ? targetBranch : this.showBranches[0].key;
+          this.Branch = this.targetInShowBranches(targetBranch)
+            ? targetBranch
+            : this.showBranches[0].key;
           this.displayBranch = this.Branch;
           this.tempBranch = this.Branch;
-        this.updateBranch();
-        this.showBranchInfo = true;
-      }
+          this.updateBranch();
+          this.showBranchInfo = true;
+        }
 
-      if (!this.initialized) {
-        this.initialize();
-        this.initialized = true;
-        this._telemetryService.logPageView(TelemetryEventNames.OnboardingFlowLoaded, {});
-      }
-    });
-    
+        if (!this.initialized) {
+          this.initialize();
+          this.initialized = true;
+          this._telemetryService.logPageView(
+            TelemetryEventNames.OnboardingFlowLoaded,
+            {}
+          );
+        }
+      });
   }
-  
+
   getBranchList() {
     this.optionsForSingleChoice = [];
     //callout stops working if showBranches ever becomes empty
-    this.showBranches = [{key: "", text: ""}];
-    this.resourceId = this.resourceId == undefined || this.resourceId == '' ? this.resourceService.getCurrentResourceId() : this.resourceId;
-    this.diagnosticApiService.getBranches(this.resourceId).subscribe(branches => {
-      var branchRegEx = this.gistMode ? new RegExp(`^dev\/.*\/gist\/${this.id}$`, "i") : new RegExp(`^dev\/.*\/detector\/${this.id}$`, "i");
-      branches.forEach(option => {
-        this.optionsForSingleChoice.push({
-          key: String(option["branchName"]),
-          text: String(option["branchName"])
+    this.showBranches = [{ key: '', text: '' }];
+    this.resourceId =
+      this.resourceId == undefined || this.resourceId == ''
+        ? this.resourceService.getCurrentResourceId()
+        : this.resourceId;
+    this.diagnosticApiService
+      .getBranches(this.resourceId)
+      .subscribe((branches) => {
+        var branchRegEx = this.gistMode
+          ? new RegExp(`^dev\/.*\/gist\/${this.id}$`, 'i')
+          : new RegExp(`^dev\/.*\/detector\/${this.id}$`, 'i');
+        branches.forEach((option) => {
+          this.optionsForSingleChoice.push({
+            key: String(option['branchName']),
+            text: String(option['branchName'])
+          });
+          if (option['isMainBranch'].toLowerCase() === 'true') {
+            this.defaultBranch = String(option['branchName']);
+          }
+          if (
+            option['isMainBranch'].toLowerCase() === 'true' &&
+            !(this.mode == DevelopMode.Create)
+          ) {
+            // if main branch and in edit mode
+            this.showBranches.push({
+              key: String(option['branchName']),
+              text: String(option['branchName'])
+            });
+          }
         });
-        if (option["isMainBranch"].toLowerCase() === "true") {
-          this.defaultBranch = String(option["branchName"]);
-        }
-        if ((option["isMainBranch"].toLowerCase() === "true") && !(this.mode == DevelopMode.Create)) {// if main branch and in edit mode
-          this.showBranches.push({
-            key: String(option["branchName"]),
-            text: String(option["branchName"])
-          });
-        }
-      })
-      this.optionsForSingleChoice.forEach(branch => {
-        if (branchRegEx.test(branch.text) && this.id.toLowerCase() != "") {
-          this.showBranches.push({
-            key: String(branch.key),
-            text: String(`${branch.text.split("/")[1]} : ${branch.text.split("/")[3]}`)
-          });
-        }
-      });
-      // remove temp value from showBranches
-      this.showBranches = this.showBranches.filter(branchName => {
-        return branchName.key != '';
-      });
-      if (this.showBranches.length < 1 || this.mode == DevelopMode.EditMonitoring || this.mode == DevelopMode.EditAnalytics) {
-        this.noBranchesAvailable();
-      }
-      else {
-        var targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${this.id.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`;
-        // if a branch is present via query params, default to that branch.
-        if (this.branchInput != undefined && this.branchInput != '' && this.mode == DevelopMode.Edit) {
-          this.Branch = this.branchInput;
-          this.displayBranch = this.Branch;
-          this.tempBranch = this.Branch;
+        this.optionsForSingleChoice.forEach((branch) => {
+          if (branchRegEx.test(branch.text) && this.id.toLowerCase() != '') {
+            this.showBranches.push({
+              key: String(branch.key),
+              text: String(
+                `${branch.text.split('/')[1]} : ${branch.text.split('/')[3]}`
+              )
+            });
+          }
+        });
+        // remove temp value from showBranches
+        this.showBranches = this.showBranches.filter((branchName) => {
+          return branchName.key != '';
+        });
+        if (
+          this.showBranches.length < 1 ||
+          this.mode == DevelopMode.EditMonitoring ||
+          this.mode == DevelopMode.EditAnalytics
+        ) {
+          this.noBranchesAvailable();
         } else {
-          this.Branch = this.targetInShowBranches(targetBranch) ? targetBranch : this.showBranches[0].key;
-          this.displayBranch = this.Branch;
-          this.tempBranch = this.Branch;
+          var targetBranch = this.gistMode
+            ? `dev/${this.userName.split('@')[0]}/gist/${this.id.toLowerCase()}`
+            : `dev/${
+                this.userName.split('@')[0]
+              }/detector/${this.id.toLowerCase()}`;
+          // if a branch is present via query params, default to that branch.
+          if (
+            this.branchInput != undefined &&
+            this.branchInput != '' &&
+            this.mode == DevelopMode.Edit
+          ) {
+            this.Branch = this.branchInput;
+            this.displayBranch = this.Branch;
+            this.tempBranch = this.Branch;
+          } else {
+            this.Branch = this.targetInShowBranches(targetBranch)
+              ? targetBranch
+              : this.showBranches[0].key;
+            this.displayBranch = this.Branch;
+            this.tempBranch = this.Branch;
+          }
+          this.updateBranch();
+          this.showBranchInfo = true;
         }
-        this.updateBranch();
-        this.showBranchInfo = true;
-      }
-      if (!this.initialized) {
-        this.initialize();
-        this.initialized = true;
-        this._telemetryService.logPageView(TelemetryEventNames.OnboardingFlowLoaded, {});
-      }
-    });
-
+        if (!this.initialized) {
+          this.initialize();
+          this.initialized = true;
+          this._telemetryService.logPageView(
+            TelemetryEventNames.OnboardingFlowLoaded,
+            {}
+          );
+        }
+      });
   }
 
   internalExternalToggle() {
     if (this.internalExternalText === this.externalViewText) {
       this.internalExternalText = this.internalViewText;
-    }
-    else {
+    } else {
       this.internalExternalText = this.externalViewText;
     }
 
@@ -706,50 +857,70 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   addCodePrefix(codeString) {
     if (this.codeCompletionEnabled) {
       try {
-        var isLoadIndex = codeString.indexOf("#load");
+        var isLoadIndex = codeString.indexOf('#load');
         // If gist is being loaded in the code
         if (isLoadIndex >= 0) {
-          codeString = StringUtilities.ReplaceAll(codeString, codePrefix, "");
-          var splitted = codeString.split("\n");
-          var lastIndex = splitted.slice().reverse().findIndex(x => x.startsWith("#load"));
-          lastIndex = lastIndex > 0 ? splitted.length - 1 - lastIndex : lastIndex;
+          codeString = StringUtilities.ReplaceAll(codeString, codePrefix, '');
+          var splitted = codeString.split('\n');
+          var lastIndex = splitted
+            .slice()
+            .reverse()
+            .findIndex((x) => x.startsWith('#load'));
+          lastIndex =
+            lastIndex > 0 ? splitted.length - 1 - lastIndex : lastIndex;
           if (lastIndex >= 0) {
-            var finalJoin = [...splitted.slice(0, lastIndex + 1), codePrefix, ...splitted.slice(lastIndex + 1,)].join("\n");
+            var finalJoin = [
+              ...splitted.slice(0, lastIndex + 1),
+              codePrefix,
+              ...splitted.slice(lastIndex + 1)
+            ].join('\n');
             return finalJoin;
           }
         }
         // No gist scenario
         else {
-          codeString = StringUtilities.ReplaceAll(codeString, codePrefix, "");
+          codeString = StringUtilities.ReplaceAll(codeString, codePrefix, '');
         }
         return codePrefix + codeString;
-      }
-      catch (err) {}
+      } catch (err) {}
     }
     return codeString;
   }
 
   onInit(editor: any) {
     this._monacoEditor = editor;
-    let getEnabled = this._diagnosticApi.get('api/appsettings/CodeCompletion:Enabled');
-    let getServerUrl = this._diagnosticApi.get('api/appsettings/CodeCompletion:LangServerUrl');
-    forkJoin([getEnabled, getServerUrl]).subscribe(resList => {
-      this.codeCompletionEnabled = resList[0] == true || resList[0].toString().toLowerCase() == "true";
+    let getEnabled = this._diagnosticApi.get(
+      'api/appsettings/CodeCompletion:Enabled'
+    );
+    let getServerUrl = this._diagnosticApi.get(
+      'api/appsettings/CodeCompletion:LangServerUrl'
+    );
+    forkJoin([getEnabled, getServerUrl]).subscribe((resList) => {
+      this.codeCompletionEnabled =
+        resList[0] == true || resList[0].toString().toLowerCase() == 'true';
       this.languageServerUrl = resList[1];
-      if (this.codeCompletionEnabled && this.languageServerUrl && this.languageServerUrl.length > 0) {
+      if (
+        this.codeCompletionEnabled &&
+        this.languageServerUrl &&
+        this.languageServerUrl.length > 0
+      ) {
         if (this.code.indexOf(codePrefix) < 0) {
           this.code = this.addCodePrefix(this.code);
-          this.lastSavedVersion = this.code
+          this.lastSavedVersion = this.code;
         }
         let fileName = uuid();
-        let editorModel = monaco.editor.createModel(this.code, 'csharp', monaco.Uri.parse(`file:///workspace/${fileName}.cs`));
+        let editorModel = monaco.editor.createModel(
+          this.code,
+          'csharp',
+          monaco.Uri.parse(`file:///workspace/${fileName}.cs`)
+        );
         editor.setModel(editorModel);
-        MonacoServices.install(editor, { rootUri: "file:///workspace" });
+        MonacoServices.install(editor, { rootUri: 'file:///workspace' });
         const webSocket = this.createWebSocket(this.languageServerUrl);
 
         listen({
           webSocket,
-          onConnection: connection => {
+          onConnection: (connection) => {
             // create and start the language client
             const languageClient = this.createLanguageClient(connection);
             const disposable = languageClient.start();
@@ -762,7 +933,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
   createLanguageClient(connection: MessageConnection): MonacoLanguageClient {
     return new MonacoLanguageClient({
-      name: "AppLens Language Client",
+      name: 'AppLens Language Client',
       clientOptions: {
         // use a language id as a document selector
         documentSelector: ['csharp'],
@@ -775,7 +946,9 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       // create a language client connection from the JSON RPC connection on demand
       connectionProvider: {
         get: (errorHandler, closeHandler) => {
-          return Promise.resolve(createConnection(connection, errorHandler, closeHandler))
+          return Promise.resolve(
+            createConnection(connection, errorHandler, closeHandler)
+          );
         }
       }
     });
@@ -807,12 +980,20 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     var newGist;
     this.updateGistVersionOptions(this.pastGistEvent);
     // updating the gistVersionOptions to tag with [in use] the new gist version being used and untag the previous one
-    this.gistVersionOptions.forEach(element => {
-      element.key === this.selectedKey ? element.text = `${element.text} [in use]` : element.key === this.configuration['dependencies'][this.gistName] ? element.text = element.text.split(' [', 1)[0] : element.text = element.text;
+    this.gistVersionOptions.forEach((element) => {
+      element.key === this.selectedKey
+        ? (element.text = `${element.text} [in use]`)
+        : element.key === this.configuration['dependencies'][this.gistName]
+        ? (element.text = element.text.split(' [', 1)[0])
+        : (element.text = element.text);
     });
-    Object.keys(this.temporarySelection).forEach(id => {
-      if (this.temporarySelection[id]['version'] !== this.configuration['dependencies'][id]) {
-        this.configuration['dependencies'][id] = this.temporarySelection[id]['version'];
+    Object.keys(this.temporarySelection).forEach((id) => {
+      if (
+        this.temporarySelection[id]['version'] !==
+        this.configuration['dependencies'][id]
+      ) {
+        this.configuration['dependencies'][id] =
+          this.temporarySelection[id]['version'];
         this.reference[id] = this.temporarySelection[id]['code'];
         this.showGistCode = false;
       }
@@ -828,50 +1009,76 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   updateGistVersionOptions(event: string) {
     this.loadingGistVersions = true;
     this.pastGistEvent = event;
-    this.gistName = event["option"].text;
-    this.selectedKey = this.gistVersionChanged === false ? this.configuration['dependencies'][this.gistName] : this.pastGistVersionEvent["option"]["key"];
+    this.gistName = event['option'].text;
+    this.selectedKey =
+      this.gistVersionChanged === false
+        ? this.configuration['dependencies'][this.gistName]
+        : this.pastGistVersionEvent['option']['key'];
     this.gistVersionOptions = [];
-    this.latestGistVersion = "";
+    this.latestGistVersion = '';
     var tempList: IDropdownProps['options'] = [];
     if (!this.detectorGraduation) {
-      this.githubService.getChangelist(this.gistName)
+      this.githubService
+        .getChangelist(this.gistName)
         .subscribe((version: Commit[]) => {
-          version.forEach((v, index) => tempList.push({
-            key: String(`${v["sha"]}`),
-            text: String(`${v["author"]}: ${v["dateTime"]} ${v["sha"] === this.configuration['dependencies'][this.gistName] ? "[in use]" : ""}`),
-            title: String(`${this.gistName}`),
-            selected: index === 1
-          }));
+          version.forEach((v, index) =>
+            tempList.push({
+              key: String(`${v['sha']}`),
+              text: String(
+                `${v['author']}: ${v['dateTime']} ${
+                  v['sha'] === this.configuration['dependencies'][this.gistName]
+                    ? '[in use]'
+                    : ''
+                }`
+              ),
+              title: String(`${this.gistName}`),
+              selected: index === 1
+            })
+          );
           this.gistVersionOptions = tempList.reverse();
           this.refreshGistButtonDisabled = false;
           this.displayGistSourceCode(this.gistName, this.selectedKey);
           this.loadingGistVersions = false;
         });
-    }
-    else {
-      this.diagnosticApiService.getDevopsChangeList(`${this.DevopsConfig.folderPath}/${this.gistName}/${this.gistName}.csx`, this.resourceId).subscribe((data:any[]) => {
-        data.forEach(version => {
-          let commitDate = version["author"]["date"];
-          let commitDateFormatted = moment(commitDate).format('MM/DD/YYYY HH:mm:ss');  
-          let authorAlias = version["author"]['email'].split("@")[0];
-          let displayText = String(`${authorAlias}: ${commitDateFormatted} ${version["commitId"] === this.configuration['dependencies'][this.gistName] ? "[in use]" : ""}`);
-          tempList.push({
-            key: String(`${version["commitId"]}`),
-            text: displayText,
-            title: String(`${this.gistName}`)
-          })
+    } else {
+      this.diagnosticApiService
+        .getDevopsChangeList(
+          `${this.DevopsConfig.folderPath}/${this.gistName}/${this.gistName}.csx`,
+          this.resourceId
+        )
+        .subscribe((data: any[]) => {
+          data.forEach((version) => {
+            let commitDate = version['author']['date'];
+            let commitDateFormatted = moment(commitDate).format(
+              'MM/DD/YYYY HH:mm:ss'
+            );
+            let authorAlias = version['author']['email'].split('@')[0];
+            let displayText = String(
+              `${authorAlias}: ${commitDateFormatted} ${
+                version['commitId'] ===
+                this.configuration['dependencies'][this.gistName]
+                  ? '[in use]'
+                  : ''
+              }`
+            );
+            tempList.push({
+              key: String(`${version['commitId']}`),
+              text: displayText,
+              title: String(`${this.gistName}`)
+            });
+          });
         });
-      }); 
       this.loadingGistVersions = false;
       this.refreshGistButtonDisabled = false;
       this.gistVersionOptions = tempList.reverse();
-      if (this.gistVersionOptions.length > 10) { this.gistVersionOptions = this.gistVersionOptions.slice(0, 10);       
+      if (this.gistVersionOptions.length > 10) {
+        this.gistVersionOptions = this.gistVersionOptions.slice(0, 10);
+      }
     }
   }
-}
 
   showGistCode: boolean = false;
-  displayGistCode = "";
+  displayGistCode = '';
 
   gistDropdownWidth: IDropdownProps['styles'] = {
     root: {
@@ -879,41 +1086,52 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     },
     dropdownItemsWrapper: {
       maxHeight: '40vh'
-    },
-    
+    }
   };
 
   gistVersionOnChange(event: string) {
     this.gistVersionChanged = true;
-    this.applyGistButtonDisabled = this.selectedKey !== event["option"]["key"] ? false : true;
+    this.applyGistButtonDisabled =
+      this.selectedKey !== event['option']['key'] ? false : true;
     this.pastGistVersionEvent = event;
-    this.temporarySelection[event["option"]["title"]]['version'] = event["option"]["key"];
+    this.temporarySelection[event['option']['title']]['version'] =
+      event['option']['key'];
     if (this.detectorGraduation) {
-      this.diagnosticApiService.getDevopsCommitContent(`${this.DevopsConfig.folderPath}/${event["option"]["title"]}/${event["option"]["title"]}.csx`, this.temporarySelection[event["option"]["title"]]['version'], this.resourceId).subscribe( x => {
-        this.temporarySelection[event["option"]["title"]]['code'] = x;
-        this.showGistCode = true;
-        this.displayGistCode = x;
-      })
+      this.diagnosticApiService
+        .getDevopsCommitContent(
+          `${this.DevopsConfig.folderPath}/${event['option']['title']}/${event['option']['title']}.csx`,
+          this.temporarySelection[event['option']['title']]['version'],
+          this.resourceId
+        )
+        .subscribe((x) => {
+          this.temporarySelection[event['option']['title']]['code'] = x;
+          this.showGistCode = true;
+          this.displayGistCode = x;
+        });
     } else {
-      this.displayGistSourceCode(event["option"]["title"], this.temporarySelection[event["option"]["title"]]['version']);
+      this.displayGistSourceCode(
+        event['option']['title'],
+        this.temporarySelection[event['option']['title']]['version']
+      );
     }
-    
   }
 
   displayGistSourceCode(gistName: string, gistVersion: string) {
-    this.githubService.getCommitContent(gistName, gistVersion).subscribe(x => {
-      this.temporarySelection[gistName]['code'] = x;
-      this.showGistCode = true;
-      this.displayGistCode = x;
-    });
+    this.githubService
+      .getCommitContent(gistName, gistVersion)
+      .subscribe((x) => {
+        this.temporarySelection[gistName]['code'] = x;
+        this.showGistCode = true;
+        this.displayGistCode = x;
+      });
   }
-    
+
   disableRunButton() {
     this.runButtonDisabled = true;
     this.runButtonStyle = {
       root: {
-        cursor: "not-allowed",
-        color: "grey"
+        cursor: 'not-allowed',
+        color: 'grey'
       }
     };
     this.runIcon = {
@@ -930,14 +1148,14 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.publishButtonDisabled = true;
     this.publishButtonStyle = {
       root: {
-        cursor: "not-allowed",
-        color: "grey"
+        cursor: 'not-allowed',
+        color: 'grey'
       }
     };
     this.publishIcon = {
       iconName: 'Upload',
       styles: {
-        root: { color: "grey" }
+        root: { color: 'grey' }
       }
     };
   }
@@ -945,7 +1163,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   enableRunButton() {
     this.runButtonDisabled = false;
     this.runButtonStyle = {
-      root: { cursor: "default" }
+      root: { cursor: 'default' }
     };
     this.runIcon = { iconName: 'Play' };
   }
@@ -953,7 +1171,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   enablePublishButton() {
     this.publishButtonDisabled = false;
     this.publishButtonStyle = {
-      root: { cursor: "default" }
+      root: { cursor: 'default' }
     };
     this.publishIcon = { iconName: 'Upload' };
   }
@@ -961,63 +1179,91 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   showGistDialog() {
     this.gistsDropdownOptions = [];
     this.gists = Object.keys(this.configuration['dependencies']);
-    this.gists.forEach(g => {
+    this.gists.forEach((g) => {
       this.gistsDropdownOptions.push({
         key: String(g),
         text: String(g)
       });
     });
     if (this.gists.length == 0) {
-      this.gistUpdateTitle = "No gists available";
-    }
-    else {
-      this.gistUpdateTitle = "Update Gist version"
+      this.gistUpdateTitle = 'No gists available';
+    } else {
+      this.gistUpdateTitle = 'Update Gist version';
     }
     this.gistDialogHidden = false;
-    this.gists.forEach(g => this.temporarySelection[g] = { version: this.configuration['dependencies'][g], code: '' });
+    this.gists.forEach(
+      (g) =>
+        (this.temporarySelection[g] = {
+          version: this.configuration['dependencies'][g],
+          code: ''
+        })
+    );
   }
   dismissGistDialog() {
     this.gistDialogHidden = true;
   }
 
   isCompilationTraceClickable(item: CompilationTraceOutputDetails): boolean {
-    return (!!item.location &&
-      item.location.start.linePos > -1 && item.location.start.colPos > -1 && item.location.end.linePos > -1 && item.location.end.colPos > -1 &&
-      (item.location.start.linePos > 0 || item.location.start.colPos > 0 || item.location.end.linePos > 0 || item.location.end.colPos > 0)
-    )
+    return (
+      !!item.location &&
+      item.location.start.linePos > -1 &&
+      item.location.start.colPos > -1 &&
+      item.location.end.linePos > -1 &&
+      item.location.end.colPos > -1 &&
+      (item.location.start.linePos > 0 ||
+        item.location.start.colPos > 0 ||
+        item.location.end.linePos > 0 ||
+        item.location.end.colPos > 0)
+    );
   }
 
   markCodeLinesInEditor(compilerTraces: CompilationTraceOutputDetails[]) {
-    if (!!this._monacoEditor) {
+    if (this._monacoEditor) {
       if (compilerTraces == null) {
         //Clear off all code decorations/underlines
-        this._oldCodeDecorations = this._monacoEditor.deltaDecorations(this._oldCodeDecorations, []);
-      }
-      else {
+        this._oldCodeDecorations = this._monacoEditor.deltaDecorations(
+          this._oldCodeDecorations,
+          []
+        );
+      } else {
         let newDecorations = [];
-        compilerTraces.forEach(traceEntry => {
+        compilerTraces.forEach((traceEntry) => {
           if (this.isCompilationTraceClickable(traceEntry)) {
             let underLineColor = '';
-            if (traceEntry.severity == HealthStatus.Critical) underLineColor = 'codeUnderlineError';
-            if (traceEntry.severity == HealthStatus.Warning) underLineColor = 'codeUnderlineWarning';
-            if (traceEntry.severity == HealthStatus.Info) underLineColor = 'codeUnderlineInfo';
-            if (traceEntry.severity == HealthStatus.Success) underLineColor = 'codeUnderlineSuccess';
+            if (traceEntry.severity == HealthStatus.Critical)
+              underLineColor = 'codeUnderlineError';
+            if (traceEntry.severity == HealthStatus.Warning)
+              underLineColor = 'codeUnderlineWarning';
+            if (traceEntry.severity == HealthStatus.Info)
+              underLineColor = 'codeUnderlineInfo';
+            if (traceEntry.severity == HealthStatus.Success)
+              underLineColor = 'codeUnderlineSuccess';
 
             newDecorations.push({
-              range: new monaco.Range(traceEntry.location.start.linePos + 1, traceEntry.location.start.colPos + 1, traceEntry.location.end.linePos + 1, traceEntry.location.end.colPos + 1),
+              range: new monaco.Range(
+                traceEntry.location.start.linePos + 1,
+                traceEntry.location.start.colPos + 1,
+                traceEntry.location.end.linePos + 1,
+                traceEntry.location.end.colPos + 1
+              ),
               options: {
                 isWholeLine: false,
                 inlineClassName: `codeUnderline ${underLineColor}`,
-                hoverMessage: [{
-                  value: traceEntry.message,
-                  isTrusted: true,
-                } as monaco.IMarkdownString]
+                hoverMessage: [
+                  {
+                    value: traceEntry.message,
+                    isTrusted: true
+                  } as monaco.IMarkdownString
+                ]
               }
             } as monaco.editor.IModelDeltaDecoration);
           }
         });
         if (newDecorations.length > 0) {
-          this._oldCodeDecorations = this._monacoEditor.deltaDecorations(this._oldCodeDecorations, newDecorations);
+          this._oldCodeDecorations = this._monacoEditor.deltaDecorations(
+            this._oldCodeDecorations,
+            newDecorations
+          );
         }
       }
     }
@@ -1025,12 +1271,15 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
   navigateToEditorIfApplicable(item: CompilationTraceOutputDetails) {
     if (this.isCompilationTraceClickable(item) && !!this._monacoEditor) {
-      this._monacoEditor.revealRangeInCenterIfOutsideViewport({
-        startLineNumber: item.location.start.linePos + 1,
-        startColumn: item.location.start.colPos + 1,
-        endLineNumber: item.location.end.linePos + 1,
-        endColumn: item.location.end.colPos + 1
-      }, 1);
+      this._monacoEditor.revealRangeInCenterIfOutsideViewport(
+        {
+          startLineNumber: item.location.start.linePos + 1,
+          startColumn: item.location.start.colPos + 1,
+          endLineNumber: item.location.end.linePos + 1,
+          endColumn: item.location.end.colPos + 1
+        },
+        1
+      );
 
       this._monacoEditor.setPosition({
         lineNumber: item.location.start.linePos + 1,
@@ -1041,17 +1290,24 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   }
 
   getfaIconClass(item: CompilationTraceOutputDetails): string {
-    if (item.severity == HealthStatus.Critical) return 'fa-exclamation-circle critical-color';
-    if (item.severity == HealthStatus.Warning) return 'fa-exclamation-triangle warning-color';
+    if (item.severity == HealthStatus.Critical)
+      return 'fa-exclamation-circle critical-color';
+    if (item.severity == HealthStatus.Warning)
+      return 'fa-exclamation-triangle warning-color';
     if (item.severity == HealthStatus.Info) return 'fa-info-circle info-color';
-    if (item.severity == HealthStatus.Success) return 'fa-check-circle success-color';
+    if (item.severity == HealthStatus.Success)
+      return 'fa-check-circle success-color';
     return '';
   }
 
   confirmGistChanges() {
-    Object.keys(this.temporarySelection).forEach(id => {
-      if (this.temporarySelection[id]['version'] !== this.configuration['dependencies'][id]) {
-        this.configuration['dependencies'][id] = this.temporarySelection[id]['version'];
+    Object.keys(this.temporarySelection).forEach((id) => {
+      if (
+        this.temporarySelection[id]['version'] !==
+        this.configuration['dependencies'][id]
+      ) {
+        this.configuration['dependencies'][id] =
+          this.temporarySelection[id]['version'];
         this.reference[id] = this.temporarySelection[id]['code'];
       }
     });
@@ -1070,7 +1326,13 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.selectedGist = '';
     this.temporarySelection = {};
 
-    this.gists.forEach(g => this.temporarySelection[g] = { version: this.configuration['dependencies'][g], code: '' });
+    this.gists.forEach(
+      (g) =>
+        (this.temporarySelection[g] = {
+          version: this.configuration['dependencies'][g],
+          code: ''
+        })
+    );
 
     this.ngxSmartModalService.getModal('packageModal').open();
   }
@@ -1087,10 +1349,12 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   }
 
   retrieveProgress() {
-    let savedCode: string = localStorage.getItem(`${this.id.toLowerCase()}_code`)
+    let savedCode: string = localStorage.getItem(
+      `${this.id.toLowerCase()}_code`
+    );
     if (savedCode) {
       this.code = savedCode;
-      this.lastSavedVersion = this.code
+      this.lastSavedVersion = this.code;
     }
   }
 
@@ -1098,8 +1362,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     localStorage.removeItem(`${this.id.toLowerCase()}_code`);
   }
 
-  ngAfterViewInit() {
-  }
+  ngAfterViewInit() {}
 
   ngAfterViewChecked() {
     this.cdRef.detectChanges();
@@ -1111,14 +1374,17 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
   dismissDevModal() {
     // Set the default popped up behaviour of local development modal as a key value pair in localStorage
-    localStorage.setItem("localdevmodal.hidden", this.hideModal === true ? "true" : "false");
+    localStorage.setItem(
+      'localdevmodal.hidden',
+      this.hideModal === true ? 'true' : 'false'
+    );
     this.ngxSmartModalService.getModal('devModeModal').close();
   }
 
   downloadLocalDevTools() {
     this.localDevButtonDisabled = true;
-    this.localDevText = "Preparing Local Tools";
-    this.localDevIcon = "fa fa-circle-o-notch fa-spin";
+    this.localDevText = 'Preparing Local Tools';
+    this.localDevIcon = 'fa fa-circle-o-notch fa-spin';
 
     var body = {
       script: this.code,
@@ -1127,41 +1393,54 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       baseUrl: window.location.origin
     };
 
-    localStorage.setItem("localdevmodal.hidden", this.hideModal === true ? "true" : "false");
+    localStorage.setItem(
+      'localdevmodal.hidden',
+      this.hideModal === true ? 'true' : 'false'
+    );
 
-    this.diagnosticApiService.prepareLocalDevelopment(body, this.id.toLowerCase(), this._detectorControlService.startTimeString,
-      this._detectorControlService.endTimeString, this.dataSource, this.timeRange)
-      .subscribe((response: string) => {
-        this.localDevButtonDisabled = false;
-        this.localDevUrl = response;
-        this.localDevText = "Download Local Development Package";
-        this.localDevIcon = "fa fa-download";
+    this.diagnosticApiService
+      .prepareLocalDevelopment(
+        body,
+        this.id.toLowerCase(),
+        this._detectorControlService.startTimeString,
+        this._detectorControlService.endTimeString,
+        this.dataSource,
+        this.timeRange
+      )
+      .subscribe(
+        (response: string) => {
+          this.localDevButtonDisabled = false;
+          this.localDevUrl = response;
+          this.localDevText = 'Download Local Development Package';
+          this.localDevIcon = 'fa fa-download';
 
-        var element = document.createElement('a');
-        element.setAttribute('href', response);
-        element.setAttribute('download', "Local Development Package");
+          var element = document.createElement('a');
+          element.setAttribute('href', response);
+          element.setAttribute('download', 'Local Development Package');
 
-        element.style.display = 'none';
-        document.body.appendChild(element);
+          element.style.display = 'none';
+          document.body.appendChild(element);
 
-        element.click();
+          element.click();
 
-        document.body.removeChild(element);
-      }, ((error: any) => {
-        this.localDevButtonDisabled = false;
-        this.publishingPackage = null;
-        this.localDevText = "Something went wrong";
-        this.localDevIcon = "fa fa-download";
-      }));
+          document.body.removeChild(element);
+        },
+        (error: any) => {
+          this.localDevButtonDisabled = false;
+          this.publishingPackage = null;
+          this.localDevText = 'Something went wrong';
+          this.localDevIcon = 'fa fa-download';
+        }
+      );
   }
 
   serializeQueryParams(obj) {
     var str = [];
     for (var p in obj)
       if (obj.hasOwnProperty(p) && obj[p] !== undefined) {
-        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
       }
-    return str.join("&");
+    return str.join('&');
   }
 
   runCompilation() {
@@ -1169,7 +1448,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       return;
     }
     this.buildOutput = [];
-    this.buildOutput.push("------ Build started ------");
+    this.buildOutput.push('------ Build started ------');
     this.detailedCompilationTraces = [];
     this.detailedCompilationTraces.push({
       severity: HealthStatus.None,
@@ -1192,16 +1471,18 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       script: this.code,
       references: this.reference,
       entityType: this.gistMode ? 'gist' : 'signal',
-      detectorUtterances: JSON.stringify(this.allUtterances.map(x => x.text))
+      detectorUtterances: JSON.stringify(this.allUtterances.map((x) => x.text))
     };
 
     this.disableRunButton();
     this.disablePublishButton();
     this.localDevButtonDisabled = true;
-    this.runButtonText = "Running";
-    this.runButtonIcon = "fa fa-circle-o-notch fa-spin";
+    this.runButtonText = 'Running';
+    this.runButtonIcon = 'fa fa-circle-o-notch fa-spin';
 
-    let isSystemInvoker: boolean = this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics;
+    let isSystemInvoker: boolean =
+      this.mode === DevelopMode.EditMonitoring ||
+      this.mode === DevelopMode.EditAnalytics;
 
     this._activatedRoute.queryParams.subscribe((params: Params) => {
       let queryParams = JSON.parse(JSON.stringify(params));
@@ -1209,76 +1490,253 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       queryParams.endTime = undefined;
       let serializedParams = this.serializeQueryParams(queryParams);
       if (serializedParams && serializedParams.length > 0) {
-        serializedParams = "&" + serializedParams;
-      };
-      this.diagnosticApiService.getCompilerResponse(body, isSystemInvoker, this.id.toLowerCase(), this._detectorControlService.startTimeString,
-        this._detectorControlService.endTimeString, this.dataSource, this.timeRange, {
-        scriptETag: this.compilationPackage.scriptETag,
-        assemblyName: this.compilationPackage.assemblyName,
-        formQueryParams: serializedParams,
-        getFullResponse: true
-      }, this.getDetectorId())
-        .subscribe((response: any) => {
-          this.queryResponse = response.body;
-          if (this.queryResponse.invocationOutput && this.queryResponse.invocationOutput.metadata && this.queryResponse.invocationOutput.metadata.id && !isSystemInvoker) {
-            this.id = this.queryResponse.invocationOutput.metadata.id;
-            let dataset = this.queryResponse.invocationOutput.dataset;
-            this.isShieldEmbedded = dataset && dataset.findIndex(x => x.renderingProperties && (x.renderingProperties.type == RenderingType.SearchComponent)) >= 0 ? true: false; 
-          }
-          if (this.queryResponse.invocationOutput.suggestedUtterances && this.queryResponse.invocationOutput.suggestedUtterances.results) {
-            this.recommendedUtterances = this.queryResponse.invocationOutput.suggestedUtterances.results;
-            this._telemetryService.logEvent("SuggestedUtterances", { detectorId: this.queryResponse.invocationOutput.metadata.id, detectorDescription: this.queryResponse.invocationOutput.metadata.description, numUtterances: this.allUtterances.length.toString(), numSuggestedUtterances: this.recommendedUtterances.length.toString(), ts: Math.floor((new Date()).getTime() / 1000).toString() });
-          }
-          else {
-            this._telemetryService.logEvent("SuggestedUtterancesNull", { detectorId: this.queryResponse.invocationOutput.metadata.id, detectorDescription: this.queryResponse.invocationOutput.metadata.description, numUtterances: this.allUtterances.length.toString(), ts: Math.floor((new Date()).getTime() / 1000).toString() });
-          }
-          this.enableRunButton();
-          this.runButtonText = "Run";
-          this.runButtonIcon = "fa fa-play";
-          if (this.queryResponse.compilationOutput.compilationTraces) {
-            this.queryResponse.compilationOutput.compilationTraces.forEach(element => {
-              this.buildOutput.push(element);
-            });
-          }
-          if (this.queryResponse.compilationOutput.detailedCompilationTraces) {
-            this.showDetailedCompilationTraces = true;
-            this.queryResponse.compilationOutput.detailedCompilationTraces.forEach(traceElement => {
-              this.detailedCompilationTraces.push(traceElement);
-            });
-          }
-          else {
-            this.showDetailedCompilationTraces = false;
-          }
-          // If the script etag returned by the server does not match the previous script-etag, update the values in memory
-          if (response.headers.get('diag-script-etag') != undefined && this.compilationPackage.scriptETag !== response.headers.get('diag-script-etag')) {
-            this.compilationPackage.scriptETag = response.headers.get('diag-script-etag');
-            this.compilationPackage.assemblyName = this.queryResponse.compilationOutput.assemblyName;
-            this.compilationPackage.assemblyBytes = this.queryResponse.compilationOutput.assemblyBytes;
-            this.compilationPackage.pdbBytes = this.queryResponse.compilationOutput.pdbBytes;
-          }
+        serializedParams = '&' + serializedParams;
+      }
+      this.diagnosticApiService
+        .getCompilerResponse(
+          body,
+          isSystemInvoker,
+          this.id.toLowerCase(),
+          this._detectorControlService.startTimeString,
+          this._detectorControlService.endTimeString,
+          this.dataSource,
+          this.timeRange,
+          {
+            scriptETag: this.compilationPackage.scriptETag,
+            assemblyName: this.compilationPackage.assemblyName,
+            formQueryParams: serializedParams,
+            getFullResponse: true
+          },
+          this.getDetectorId()
+        )
+        .subscribe(
+          (response: any) => {
+            this.queryResponse = response.body;
+            if (
+              this.queryResponse.invocationOutput &&
+              this.queryResponse.invocationOutput.metadata &&
+              this.queryResponse.invocationOutput.metadata.id &&
+              !isSystemInvoker
+            ) {
+              this.id = this.queryResponse.invocationOutput.metadata.id;
+              let dataset = this.queryResponse.invocationOutput.dataset;
+              this.isShieldEmbedded =
+                dataset &&
+                dataset.findIndex(
+                  (x) =>
+                    x.renderingProperties &&
+                    x.renderingProperties.type == RenderingType.SearchComponent
+                ) >= 0
+                  ? true
+                  : false;
+            }
+            if (
+              this.queryResponse.invocationOutput.suggestedUtterances &&
+              this.queryResponse.invocationOutput.suggestedUtterances.results
+            ) {
+              this.recommendedUtterances =
+                this.queryResponse.invocationOutput.suggestedUtterances.results;
+              this._telemetryService.logEvent('SuggestedUtterances', {
+                detectorId: this.queryResponse.invocationOutput.metadata.id,
+                detectorDescription:
+                  this.queryResponse.invocationOutput.metadata.description,
+                numUtterances: this.allUtterances.length.toString(),
+                numSuggestedUtterances:
+                  this.recommendedUtterances.length.toString(),
+                ts: Math.floor(new Date().getTime() / 1000).toString()
+              });
+            } else {
+              this._telemetryService.logEvent('SuggestedUtterancesNull', {
+                detectorId: this.queryResponse.invocationOutput.metadata.id,
+                detectorDescription:
+                  this.queryResponse.invocationOutput.metadata.description,
+                numUtterances: this.allUtterances.length.toString(),
+                ts: Math.floor(new Date().getTime() / 1000).toString()
+              });
+            }
+            this.enableRunButton();
+            this.runButtonText = 'Run';
+            this.runButtonIcon = 'fa fa-play';
+            if (this.queryResponse.compilationOutput.compilationTraces) {
+              this.queryResponse.compilationOutput.compilationTraces.forEach(
+                (element) => {
+                  this.buildOutput.push(element);
+                }
+              );
+            }
+            if (
+              this.queryResponse.compilationOutput.detailedCompilationTraces
+            ) {
+              this.showDetailedCompilationTraces = true;
+              this.queryResponse.compilationOutput.detailedCompilationTraces.forEach(
+                (traceElement) => {
+                  this.detailedCompilationTraces.push(traceElement);
+                }
+              );
+            } else {
+              this.showDetailedCompilationTraces = false;
+            }
+            // If the script etag returned by the server does not match the previous script-etag, update the values in memory
+            if (
+              response.headers.get('diag-script-etag') != undefined &&
+              this.compilationPackage.scriptETag !==
+                response.headers.get('diag-script-etag')
+            ) {
+              this.compilationPackage.scriptETag =
+                response.headers.get('diag-script-etag');
+              this.compilationPackage.assemblyName =
+                this.queryResponse.compilationOutput.assemblyName;
+              this.compilationPackage.assemblyBytes =
+                this.queryResponse.compilationOutput.assemblyBytes;
+              this.compilationPackage.pdbBytes =
+                this.queryResponse.compilationOutput.pdbBytes;
+            }
 
-          if (this.queryResponse.compilationOutput.compilationSucceeded === true) {
-            this.publishButtonDisabled = false;
-            this.preparePublishingPackage(this.queryResponse, currentCode);
-            this.buildOutput.push("========== Build: 1 succeeded, 0 failed ==========");
+            if (
+              this.queryResponse.compilationOutput.compilationSucceeded === true
+            ) {
+              this.publishButtonDisabled = false;
+              this.preparePublishingPackage(this.queryResponse, currentCode);
+              this.buildOutput.push(
+                '========== Build: 1 succeeded, 0 failed =========='
+              );
+              this.detailedCompilationTraces.push({
+                severity: HealthStatus.None,
+                message: '========== Build: 1 succeeded, 0 failed ==========',
+                location: {
+                  start: {
+                    linePos: 0,
+                    colPos: 0
+                  } as Position,
+                  end: {
+                    linePos: 0,
+                    colPos: 0
+                  } as Position
+                } as LocationSpan
+              } as CompilationTraceOutputDetails);
+            } else {
+              this.publishButtonDisabled = true;
+              this.publishingPackage = null;
+              this.buildOutput.push(
+                '========== Build: 0 succeeded, 1 failed =========='
+              );
+              this.detailedCompilationTraces.push({
+                severity: HealthStatus.None,
+                message: '========== Build: 0 succeeded, 1 failed ==========',
+                location: {
+                  start: {
+                    linePos: 0,
+                    colPos: 0
+                  } as Position,
+                  end: {
+                    linePos: 0,
+                    colPos: 0
+                  } as Position
+                } as LocationSpan
+              } as CompilationTraceOutputDetails);
+            }
+
+            if (this.queryResponse.runtimeLogOutput) {
+              this.queryResponse.runtimeLogOutput.forEach((element) => {
+                if (element.exception) {
+                  this.buildOutput.push(
+                    element.timeStamp +
+                      ': ' +
+                      element.message +
+                      ': ' +
+                      element.exception.ClassName +
+                      ': ' +
+                      element.exception.Message +
+                      '\r\n' +
+                      element.exception.StackTraceString
+                  );
+
+                  this.detailedCompilationTraces.push({
+                    severity: HealthStatus.Critical,
+                    message: `${element.timeStamp}: ${element.message}: ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`,
+                    location: {
+                      start: {
+                        linePos: 0,
+                        colPos: 0
+                      },
+                      end: {
+                        linePos: 0,
+                        colPos: 0
+                      }
+                    }
+                  });
+                } else {
+                  this.buildOutput.push(
+                    element.timeStamp + ': ' + element.message
+                  );
+                  this.detailedCompilationTraces.push({
+                    severity: HealthStatus.Info,
+                    message: `${element.timeStamp}: ${element.message}`,
+                    location: {
+                      start: {
+                        linePos: 0,
+                        colPos: 0
+                      },
+                      end: {
+                        linePos: 0,
+                        colPos: 0
+                      }
+                    }
+                  });
+                }
+              });
+            }
+
+            if (
+              (!this.gistMode &&
+                this.queryResponse.runtimeSucceeded != null &&
+                !this.queryResponse.runtimeSucceeded) ||
+              (this.gistMode &&
+                this.queryResponse.compilationOutput != null &&
+                !this.queryResponse.compilationOutput.compilationSucceeded)
+            ) {
+              this.disablePublishButton();
+            } else {
+              this.useAutoMergeText =
+                this.DevopsConfig.autoMerge ||
+                (this.DevopsConfig.internalPassthrough &&
+                  !this.IsDetectorMarkedPublic(this.code) &&
+                  !this.IsDetectorMarkedPublic(this.originalCode));
+              this.modalPublishingButtonText = !this.useAutoMergeText
+                ? 'Create PR'
+                : 'Publish';
+              this.enablePublishButton();
+            }
+
+            this.localDevButtonDisabled = false;
+            this.markCodeLinesInEditor(this.detailedCompilationTraces);
+          },
+          (error: any) => {
+            this.enableRunButton();
+            this.publishingPackage = null;
+            this.localDevButtonDisabled = false;
+            this.runButtonText = 'Run';
+            this.runButtonIcon = 'fa fa-play';
+            this.buildOutput.push(
+              'Something went wrong during detector invocation.'
+            );
+            this.buildOutput.push(
+              '========== Build: 0 succeeded, 1 failed =========='
+            );
             this.detailedCompilationTraces.push({
-              severity: HealthStatus.None,
-              message: '========== Build: 1 succeeded, 0 failed ==========',
+              severity: HealthStatus.Critical,
+              message: 'Something went wrong during detector invocation.',
               location: {
                 start: {
                   linePos: 0,
                   colPos: 0
-                } as Position,
+                },
                 end: {
                   linePos: 0,
                   colPos: 0
-                } as Position
-              } as LocationSpan
-            } as CompilationTraceOutputDetails);
-          } else {
-            this.publishButtonDisabled = true;
-            this.publishingPackage = null;
-            this.buildOutput.push("========== Build: 0 succeeded, 1 failed ==========");
+                }
+              }
+            });
             this.detailedCompilationTraces.push({
               severity: HealthStatus.None,
               message: '========== Build: 0 succeeded, 1 failed ==========',
@@ -1286,113 +1744,16 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
                 start: {
                   linePos: 0,
                   colPos: 0
-                } as Position,
+                },
                 end: {
                   linePos: 0,
                   colPos: 0
-                } as Position
-              } as LocationSpan
-            } as CompilationTraceOutputDetails);
-          }
-
-          if (this.queryResponse.runtimeLogOutput) {
-            this.queryResponse.runtimeLogOutput.forEach(element => {
-              if (element.exception) {
-                this.buildOutput.push(element.timeStamp + ": " +
-                  element.message + ": " +
-                  element.exception.ClassName + ": " +
-                  element.exception.Message + "\r\n" +
-                  element.exception.StackTraceString);
-
-                this.detailedCompilationTraces.push({
-                  severity: HealthStatus.Critical,
-                  message: `${element.timeStamp}: ${element.message}: ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`,
-                  location: {
-                    start: {
-                      linePos: 0,
-                      colPos: 0
-                    },
-                    end: {
-                      linePos: 0,
-                      colPos: 0
-                    }
-                  }
-                });
-              }
-              else {
-                this.buildOutput.push(element.timeStamp + ": " + element.message);
-                this.detailedCompilationTraces.push({
-                  severity: HealthStatus.Info,
-                  message: `${element.timeStamp}: ${element.message}`,
-                  location: {
-                    start: {
-                      linePos: 0,
-                      colPos: 0
-                    },
-                    end: {
-                      linePos: 0,
-                      colPos: 0
-                    }
-                  }
-                });
+                }
               }
             });
+            this.markCodeLinesInEditor(this.detailedCompilationTraces);
           }
-
-          if ((
-            !this.gistMode && this.queryResponse.runtimeSucceeded != null && !this.queryResponse.runtimeSucceeded
-          ) || (
-              this.gistMode && this.queryResponse.compilationOutput != null &&
-              !this.queryResponse.compilationOutput.compilationSucceeded
-            )) {
-            this.disablePublishButton();
-          }
-          else {
-            this.useAutoMergeText = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.code) && !this.IsDetectorMarkedPublic(this.originalCode));
-            this.modalPublishingButtonText = !this.useAutoMergeText ? "Create PR" : "Publish";
-            this.enablePublishButton();
-          }
-
-          this.localDevButtonDisabled = false;
-          this.markCodeLinesInEditor(this.detailedCompilationTraces);
-        }, ((error: any) => {
-          this.enableRunButton();
-          this.publishingPackage = null;
-          this.localDevButtonDisabled = false;
-          this.runButtonText = "Run";
-          this.runButtonIcon = "fa fa-play";
-          this.buildOutput.push("Something went wrong during detector invocation.");
-          this.buildOutput.push("========== Build: 0 succeeded, 1 failed ==========");
-          this.detailedCompilationTraces.push({
-            severity: HealthStatus.Critical,
-            message: 'Something went wrong during detector invocation.',
-            location: {
-              start: {
-                linePos: 0,
-                colPos: 0
-              },
-              end: {
-                linePos: 0,
-                colPos: 0
-              }
-            }
-          });
-          this.detailedCompilationTraces.push({
-            severity: HealthStatus.None,
-            message: '========== Build: 0 succeeded, 1 failed ==========',
-            location: {
-              start: {
-                linePos: 0,
-                colPos: 0
-              },
-              end: {
-                linePos: 0,
-                colPos: 0
-              }
-            }
-          });
-          this.markCodeLinesInEditor(this.detailedCompilationTraces);
-        }));
+        );
     });
   }
 
@@ -1405,28 +1766,42 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   }
 
   checkAccessAndConfirmPublish() {
-
-    var isOriginalCodeMarkedPublic: boolean = this.IsDetectorMarkedPublic(this.originalCode);
-    this.diagnosticApiService.verfifyPublishingDetectorAccess(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`, this.publishingPackage.codeString, isOriginalCodeMarkedPublic).subscribe(data => {
-
-      this.publishAccessControlResponse = data;
-      if (data.hasAccess === false) {
-        this.ngxSmartModalService.getModal('publishAccessDeniedModal').open();
-      }
-      else {
-        if (!this.publishButtonDisabled) {
+    var isOriginalCodeMarkedPublic: boolean = this.IsDetectorMarkedPublic(
+      this.originalCode
+    );
+    this.diagnosticApiService
+      .verfifyPublishingDetectorAccess(
+        `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`,
+        this.publishingPackage.codeString,
+        isOriginalCodeMarkedPublic
+      )
+      .subscribe(
+        (data) => {
+          this.publishAccessControlResponse = data;
+          if (data.hasAccess === false) {
+            this.ngxSmartModalService
+              .getModal('publishAccessDeniedModal')
+              .open();
+          } else {
+            if (!this.publishButtonDisabled) {
+              this.ngxSmartModalService.getModal('publishModal').open();
+            }
+          }
+        },
+        (err) => {
+          this._telemetryService.logEvent('ErrorValidatingPublishingAccess', {
+            error: JSON.stringify(err)
+          });
           this.ngxSmartModalService.getModal('publishModal').open();
         }
-      }
-
-    }, err => {
-      this._telemetryService.logEvent("ErrorValidatingPublishingAccess", { error: JSON.stringify(err) });
-      this.ngxSmartModalService.getModal('publishModal').open();
-    });
+      );
   }
 
   prepareMetadata() {
-    this.publishingPackage.metadata = JSON.stringify({ "utterances": this.allUtterances, "shieldEmbedded": this.isShieldEmbedded });
+    this.publishingPackage.metadata = JSON.stringify({
+      utterances: this.allUtterances,
+      shieldEmbedded: this.isShieldEmbedded
+    });
   }
 
   setBranch() {
@@ -1435,7 +1810,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
   targetInShowBranches(target) {
     var match;
-    this.showBranches.forEach(x => {
+    this.showBranches.forEach((x) => {
       if (x.key === target) {
         match = true;
       }
@@ -1444,17 +1819,29 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   }
 
   setTargetBranch(tempId = null) {
+    var targetBranch = '';
 
-    var targetBranch = ""; 
-    
-    if (tempId === null) targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${this.id.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`;
-    else targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${tempId.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${tempId.toLowerCase()}`;
+    if (tempId === null)
+      targetBranch = this.gistMode
+        ? `dev/${this.userName.split('@')[0]}/gist/${this.id.toLowerCase()}`
+        : `dev/${
+            this.userName.split('@')[0]
+          }/detector/${this.id.toLowerCase()}`;
+    else
+      targetBranch = this.gistMode
+        ? `dev/${this.userName.split('@')[0]}/gist/${tempId.toLowerCase()}`
+        : `dev/${this.userName.split('@')[0]}/detector/${tempId.toLowerCase()}`;
 
-    if (this.Branch === this.defaultBranch && this.targetInShowBranches(targetBranch)) {
+    if (
+      this.Branch === this.defaultBranch &&
+      this.targetInShowBranches(targetBranch)
+    ) {
       this.Branch = targetBranch;
       this.displayBranch = `${targetBranch}`;
-    }
-    else if (!(this.showBranches.length > 1) || this.Branch === this.defaultBranch) {
+    } else if (
+      !(this.showBranches.length > 1) ||
+      this.Branch === this.defaultBranch
+    ) {
       this.displayBranch = `${targetBranch} (not published)`;
       this.Branch = targetBranch;
     }
@@ -1469,8 +1856,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
     if (this.mode == DevelopMode.Create && !this.isSaved) {
       this.PRTitle = `Creating ${this.id}`;
-    }
-    else {
+    } else {
       this.PRTitle = `Changes to ${this.id}`;
     }
     this.publishDialogHidden = false;
@@ -1480,16 +1866,12 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.publishDialogHidden = true;
   }
 
-  toggleOpenState() {
+  toggleOpenState() {}
 
-  }
-
-  dismissDialog() {
-
-  }
+  dismissDialog() {}
 
   onOpenPublishSuccessPanel() {
-    this.currentTime = moment(Date.now()).format("hh:mm A");
+    this.currentTime = moment(Date.now()).format('hh:mm A');
     this.submittedPanelTimer = setTimeout(() => {
       this.dismissPublishSuccessHandler();
     }, 10000);
@@ -1505,17 +1887,17 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.deleteFailed = false;
   }
 
-
-
   publish() {
     if (this.publishButtonDisabled) {
       return;
     }
 
-    if (!this.publishingPackage ||
+    if (
+      !this.publishingPackage ||
       this.publishingPackage.codeString === '' ||
       this.publishingPackage.id === '' ||
-      this.publishingPackage.dllBytes === '') {
+      this.publishingPackage.dllBytes === ''
+    ) {
       return;
     }
 
@@ -1523,76 +1905,118 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.disableRunButton();
     this.disablePublishButton();
     this.modalPublishingButtonDisabled = true;
-    this.modalPublishingButtonText = this.detectorGraduation ? "Sending PR" : "Publishing";
-    var isOriginalCodeMarkedPublic: boolean = this.IsDetectorMarkedPublic(this.originalCode);
+    this.modalPublishingButtonText = this.detectorGraduation
+      ? 'Sending PR'
+      : 'Publishing';
+    var isOriginalCodeMarkedPublic: boolean = this.IsDetectorMarkedPublic(
+      this.originalCode
+    );
 
     if (this.detectorGraduation) {
       this.gradPublish();
-    }
-    else {
-      this.diagnosticApiService.publishDetector(this.emailRecipients, this.publishingPackage, `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`, isOriginalCodeMarkedPublic).subscribe(data => {
-        this.originalCode = this.publishingPackage.codeString;
-        this.deleteProgress();
-        this.utteranceInput = "";
-        this.enableRunButton();
-        this.localDevButtonDisabled = false;
-        this.enablePublishButton();
-        this.modalPublishingButtonText = this.detectorGraduation ? "Create PR" : "Publish";
-        this.ngxSmartModalService.getModal('publishModal').close();
-        this.detectorName = this.publishingPackage.id;
-        this.publishSuccess = true;
-        this._telemetryService.logEvent("SearchTermPublish", { detectorId: this.id.toLowerCase(), numUtterances: this.allUtterances.length.toString(), ts: Math.floor((new Date()).getTime() / 1000).toString() });
-      }, err => {
-        this.enableRunButton();
-        this.localDevButtonDisabled = false;
-        this.enablePublishButton();
-        this.modalPublishingButtonText = this.detectorGraduation ? "Create PR" : "Publish";
-        this.ngxSmartModalService.getModal('publishModal').close();
-        this.showAlertBox('alert-danger', 'Publishing failed. Please try again after some time.');
-        this.publishFailed = true;
-      });
+    } else {
+      this.diagnosticApiService
+        .publishDetector(
+          this.emailRecipients,
+          this.publishingPackage,
+          `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`,
+          isOriginalCodeMarkedPublic
+        )
+        .subscribe(
+          (data) => {
+            this.originalCode = this.publishingPackage.codeString;
+            this.deleteProgress();
+            this.utteranceInput = '';
+            this.enableRunButton();
+            this.localDevButtonDisabled = false;
+            this.enablePublishButton();
+            this.modalPublishingButtonText = this.detectorGraduation
+              ? 'Create PR'
+              : 'Publish';
+            this.ngxSmartModalService.getModal('publishModal').close();
+            this.detectorName = this.publishingPackage.id;
+            this.publishSuccess = true;
+            this._telemetryService.logEvent('SearchTermPublish', {
+              detectorId: this.id.toLowerCase(),
+              numUtterances: this.allUtterances.length.toString(),
+              ts: Math.floor(new Date().getTime() / 1000).toString()
+            });
+          },
+          (err) => {
+            this.enableRunButton();
+            this.localDevButtonDisabled = false;
+            this.enablePublishButton();
+            this.modalPublishingButtonText = this.detectorGraduation
+              ? 'Create PR'
+              : 'Publish';
+            this.ngxSmartModalService.getModal('publishModal').close();
+            this.showAlertBox(
+              'alert-danger',
+              'Publishing failed. Please try again after some time.'
+            );
+            this.publishFailed = true;
+          }
+        );
     }
   }
 
-  addReviewers(){
-    let reviewers = "";
-    if (!!this.queryResponse){
-      if (!!this.queryResponse.invocationOutput['appFilter']){
-        if (!!this.queryResponse.invocationOutput['appFilter']['AppType']){
-          this.queryResponse.invocationOutput['appFilter']['AppType'].split(',').forEach(apt => {
-          if(Object.keys(this.DevopsConfig.appTypeReviewers).includes(apt)){
-            this.DevopsConfig.appTypeReviewers[apt].forEach(rev => {
-              if (!this.owners.includes(rev)) this.owners.push(rev);
+  addReviewers() {
+    let reviewers = '';
+    if (this.queryResponse) {
+      if (this.queryResponse.invocationOutput['appFilter']) {
+        if (this.queryResponse.invocationOutput['appFilter']['AppType']) {
+          this.queryResponse.invocationOutput['appFilter']['AppType']
+            .split(',')
+            .forEach((apt) => {
+              if (
+                Object.keys(this.DevopsConfig.appTypeReviewers).includes(apt)
+              ) {
+                this.DevopsConfig.appTypeReviewers[apt].forEach((rev) => {
+                  if (!this.owners.includes(rev)) this.owners.push(rev);
+                });
+              }
             });
-          }
-        });
-      }
-        if (!!this.queryResponse.invocationOutput['appFilter']['PlatformType']){
-          this.queryResponse.invocationOutput['appFilter']['PlatformType'].split(',').forEach(plt => {
-          if(Object.keys(this.DevopsConfig.platformReviewers).includes(plt)){
-            this.DevopsConfig.platformReviewers[plt].forEach(rev => {
-              if (!this.owners.includes(rev)) this.owners.push(rev);
+        }
+        if (this.queryResponse.invocationOutput['appFilter']['PlatformType']) {
+          this.queryResponse.invocationOutput['appFilter']['PlatformType']
+            .split(',')
+            .forEach((plt) => {
+              if (
+                Object.keys(this.DevopsConfig.platformReviewers).includes(plt)
+              ) {
+                this.DevopsConfig.platformReviewers[plt].forEach((rev) => {
+                  if (!this.owners.includes(rev)) this.owners.push(rev);
+                });
+              }
             });
-          }
-        });
+        }
       }
-    }
-      this.owners.forEach(o => {
-        if(o.match(/^\s*$/) == null) reviewers = reviewers.concat(o, '\n');
+      this.owners.forEach((o) => {
+        if (o.match(/^\s*$/) == null) reviewers = reviewers.concat(o, '\n');
       });
     }
-      return reviewers;
+    return reviewers;
   }
-  
+
   gradPublish() {
     this.publishDialogHidden = true;
 
     //var pushToMain = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && this.queryResponse.invocationOutput['appFilter']['InternalOnly'] === 'True' && !this.IsDetectorMarkedPublic(this.originalCode));
 
-    let isSystemInvoker: boolean = this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics;
-    
-    const commitType = (this.mode == DevelopMode.Create && !this.isSaved || (this.useAutoMergeText && !this.codeOnDefaultBranch) && !isSystemInvoker) ? "add" : "edit";
-    const commitMessageStart = (this.mode == DevelopMode.Create && !this.isSaved || (this.useAutoMergeText && !this.codeOnDefaultBranch) && !isSystemInvoker) ? "Adding" : "Editing";
+    let isSystemInvoker: boolean =
+      this.mode === DevelopMode.EditMonitoring ||
+      this.mode === DevelopMode.EditAnalytics;
+
+    const commitType =
+      (this.mode == DevelopMode.Create && !this.isSaved) ||
+      (this.useAutoMergeText && !this.codeOnDefaultBranch && !isSystemInvoker)
+        ? 'add'
+        : 'edit';
+    const commitMessageStart =
+      (this.mode == DevelopMode.Create && !this.isSaved) ||
+      (this.useAutoMergeText && !this.codeOnDefaultBranch && !isSystemInvoker)
+        ? 'Adding'
+        : 'Editing';
 
     let gradPublishFiles: string[] = [
       this.publishingPackage.codeString,
@@ -1600,74 +2024,137 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       this.publishingPackage.packageConfig
     ];
 
-
     let gradPublishFileTitles: string[] = [
       `/${this.publishingPackage.id.toLowerCase()}/${this.publishingPackage.id.toLowerCase()}.csx`,
       `/${this.publishingPackage.id.toLowerCase()}/metadata.json`,
       `/${this.publishingPackage.id.toLowerCase()}/package.json`
     ];
 
-    let reviewers = "";
+    let reviewers = '';
 
-    if(Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0){
+    if (
+      Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 ||
+      Object.keys(this.DevopsConfig.platformReviewers).length > 0
+    ) {
       reviewers = this.addReviewers();
-      gradPublishFileTitles.push(`/${this.publishingPackage.id.toLowerCase()}/owners.txt`);
+      gradPublishFileTitles.push(
+        `/${this.publishingPackage.id.toLowerCase()}/owners.txt`
+      );
       gradPublishFiles.push(reviewers);
     }
 
-    var requestBranch = isSystemInvoker ? `dev/${this.userName.split("@")[0]}/detector/${this.publishingPackage.id.toLowerCase()}` : this.Branch;
+    var requestBranch = isSystemInvoker
+      ? `dev/${
+          this.userName.split('@')[0]
+        }/detector/${this.publishingPackage.id.toLowerCase()}`
+      : this.Branch;
     if (this.useAutoMergeText && !isSystemInvoker) {
       requestBranch = this.defaultBranch;
       this.useAutoMergeText = true;
     }
-    
-    let link = this.gistMode ? `${this.PPEHostname}/${this.resourceId}/gists/${this.publishingPackage.id}?branchInput=${this.Branch}` : `${this.PPEHostname}/${this.resourceId}/detectors/${this.publishingPackage.id}/edit?branchInput=${this.Branch}`;
-    let description = `This Pull Request was created via AppLens. To make edits, go to ${link}`;
-    const DetectorObservable = isSystemInvoker ? this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`, commitType, this.SYSTEM_INVOKER_RESOURCE_ID) : this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`, commitType, this.resourceId);
-    const makePullRequestObservable = isSystemInvoker ? this.diagnosticApiService.makePullRequest(requestBranch, this.SYSTEM_INVOKER_MAIN_BRANCH, this.PRTitle, this.SYSTEM_INVOKER_RESOURCE_ID, this.owners, description) : this.diagnosticApiService.makePullRequest(requestBranch, this.defaultBranch, this.PRTitle, this.resourceId, this.owners, description);
 
-    DetectorObservable.subscribe(_ => {
-      if (!this.useAutoMergeText || isSystemInvoker) {
-        makePullRequestObservable.subscribe(_ => {
-          this.PRLink = `${_["webUrl"]}/pullrequest/${_["prId"]}`
+    let link = this.gistMode
+      ? `${this.PPEHostname}/${this.resourceId}/gists/${this.publishingPackage.id}?branchInput=${this.Branch}`
+      : `${this.PPEHostname}/${this.resourceId}/detectors/${this.publishingPackage.id}/edit?branchInput=${this.Branch}`;
+    let description = `This Pull Request was created via AppLens. To make edits, go to ${link}`;
+    const DetectorObservable = isSystemInvoker
+      ? this.diagnosticApiService.pushDetectorChanges(
+          requestBranch,
+          gradPublishFiles,
+          gradPublishFileTitles,
+          `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`,
+          commitType,
+          this.SYSTEM_INVOKER_RESOURCE_ID
+        )
+      : this.diagnosticApiService.pushDetectorChanges(
+          requestBranch,
+          gradPublishFiles,
+          gradPublishFileTitles,
+          `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`,
+          commitType,
+          this.resourceId
+        );
+    const makePullRequestObservable = isSystemInvoker
+      ? this.diagnosticApiService.makePullRequest(
+          requestBranch,
+          this.SYSTEM_INVOKER_MAIN_BRANCH,
+          this.PRTitle,
+          this.SYSTEM_INVOKER_RESOURCE_ID,
+          this.owners,
+          description
+        )
+      : this.diagnosticApiService.makePullRequest(
+          requestBranch,
+          this.defaultBranch,
+          this.PRTitle,
+          this.resourceId,
+          this.owners,
+          description
+        );
+
+    DetectorObservable.subscribe(
+      (_) => {
+        if (!this.useAutoMergeText || isSystemInvoker) {
+          makePullRequestObservable.subscribe(
+            (_) => {
+              this.PRLink = `${_['webUrl']}/pullrequest/${_['prId']}`;
+              this.publishSuccess = true;
+              this.lastSavedVersion = this.publishingPackage.codeString;
+              this.postPublish();
+              this._applensCommandBarService.refreshPage();
+            },
+            (err) => {
+              this.publishFailed = true;
+              this.postPublish();
+            }
+          );
+        } else {
+          this.PRLink =
+            this.DevopsConfig.folderPath === '/'
+              ? `https://dev.azure.com/${this.DevopsConfig.organization}/${
+                  this.DevopsConfig.project
+                }/_git/${this.DevopsConfig.repository}?path=${
+                  this.DevopsConfig.folderPath
+                }${this.publishingPackage.id.toLowerCase()}/${this.publishingPackage.id.toLowerCase()}.csx&version=GB${
+                  this.Branch
+                }`
+              : `https://dev.azure.com/${this.DevopsConfig.organization}/${
+                  this.DevopsConfig.project
+                }/_git/${this.DevopsConfig.repository}?path=${
+                  this.DevopsConfig.folderPath
+                }/${this.publishingPackage.id.toLowerCase()}/${this.publishingPackage.id.toLowerCase()}.csx&version=GB${
+                  this.defaultBranch
+                }`;
           this.publishSuccess = true;
           this.lastSavedVersion = this.publishingPackage.codeString;
           this.postPublish();
+          this.codeOnDefaultBranch = true;
+          this.deleteBranch(this.Branch, this.resourceId);
           this._applensCommandBarService.refreshPage();
-        }, err => {
-          this.publishFailed = true;
-          this.postPublish();
-        });
-      }
-      else {
-        this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${this.publishingPackage.id.toLowerCase()}/${this.publishingPackage.id.toLowerCase()}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${this.publishingPackage.id.toLowerCase()}/${this.publishingPackage.id.toLowerCase()}.csx&version=GB${this.defaultBranch}`;
-        this.publishSuccess = true;
-        this.lastSavedVersion = this.publishingPackage.codeString;
+        }
+      },
+      (err) => {
+        this.publishFailed = true;
         this.postPublish();
-        this.codeOnDefaultBranch = true;
-        this.deleteBranch(this.Branch, this.resourceId);
-        this._applensCommandBarService.refreshPage();
       }
-    }, err => {
-      this.publishFailed = true;
-      this.postPublish();
-    });
-
-
+    );
   }
 
   deleteDetector() {
     this.detectorDeleted = true;
     this.deletingDetector = true;
 
-    this.useAutoMergeText = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.code) && !this.IsDetectorMarkedPublic(this.originalCode));
+    this.useAutoMergeText =
+      this.DevopsConfig.autoMerge ||
+      (this.DevopsConfig.internalPassthrough &&
+        !this.IsDetectorMarkedPublic(this.code) &&
+        !this.IsDetectorMarkedPublic(this.originalCode));
 
     let gradPublishFiles: string[] = [
-      "delete code",
-      "delete metadata",
-      "delete package"
+      'delete code',
+      'delete metadata',
+      'delete package'
     ];
-
 
     let gradPublishFileTitles: string[] = [
       `/${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`,
@@ -1675,8 +2162,11 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       `/${this.id.toLowerCase()}/package.json`
     ];
 
-    if(Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0){
-      gradPublishFiles.push("delete owners.txt");
+    if (
+      Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 ||
+      Object.keys(this.DevopsConfig.platformReviewers).length > 0
+    ) {
+      gradPublishFiles.push('delete owners.txt');
       gradPublishFileTitles.push(`/${this.id.toLowerCase()}/owners.txt`);
     }
 
@@ -1685,61 +2175,102 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       requestBranch = this.defaultBranch;
     }
 
-    const deleteDetectorFiles = this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `deleting detector: ${this.id} Author : ${this.userName}`, "delete", this.resourceId);
-    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(requestBranch, this.defaultBranch, `Deleting ${this.id}`, this.resourceId, this.owners);
-    deleteDetectorFiles.subscribe(_ => {
-      if (!this.useAutoMergeText) {
-        makePullRequestObservable.subscribe(_ => {
-          this.PRLink = `${_["webUrl"]}/pullrequest/${_["prId"]}`
+    const deleteDetectorFiles = this.diagnosticApiService.pushDetectorChanges(
+      requestBranch,
+      gradPublishFiles,
+      gradPublishFileTitles,
+      `deleting detector: ${this.id} Author : ${this.userName}`,
+      'delete',
+      this.resourceId
+    );
+    const makePullRequestObservable = this.diagnosticApiService.makePullRequest(
+      requestBranch,
+      this.defaultBranch,
+      `Deleting ${this.id}`,
+      this.resourceId,
+      this.owners
+    );
+    deleteDetectorFiles.subscribe(
+      (_) => {
+        if (!this.useAutoMergeText) {
+          makePullRequestObservable.subscribe(
+            (_) => {
+              this.PRLink = `${_['webUrl']}/pullrequest/${_['prId']}`;
+              this.deleteSuccess = true;
+              this.postPublish();
+            },
+            (err) => {
+              this.deleteFailed = true;
+              this.postPublish();
+            }
+          );
+        } else {
+          this.PRLink =
+            this.DevopsConfig.folderPath === '/'
+              ? `https://dev.azure.com/${this.DevopsConfig.organization}/${
+                  this.DevopsConfig.project
+                }/_git/${this.DevopsConfig.repository}?path=${
+                  this.DevopsConfig.folderPath
+                }${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&version=GB${
+                  this.Branch
+                }`
+              : `https://dev.azure.com/${this.DevopsConfig.organization}/${
+                  this.DevopsConfig.project
+                }/_git/${this.DevopsConfig.repository}?path=${
+                  this.DevopsConfig.folderPath
+                }/${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&version=GB${
+                  this.defaultBranch
+                }`;
           this.deleteSuccess = true;
           this.postPublish();
-        }, err => {
-          this.deleteFailed = true;
-          this.postPublish();
-        });
-      }
-      else {
-        this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&version=GB${this.defaultBranch}`;
-        this.deleteSuccess = true;
+          this.deleteBranch(this.Branch, this.resourceId);
+        }
+      },
+      (err) => {
+        this.deleteFailed = true;
         this.postPublish();
-        this.deleteBranch(this.Branch, this.resourceId);
       }
-    }, err => {
-      this.deleteFailed = true;
-      this.postPublish();
-    });
+    );
 
     this.dismissDeleteDialog();
-    this.deletingDetector = false
+    this.deletingDetector = false;
   }
 
-  deleteBranch(branch: string, resourceId: string){
+  deleteBranch(branch: string, resourceId: string) {
     this.diagnosticApiService.deleteBranches(branch, resourceId).subscribe();
   }
 
-  saveTempId: string = "";
+  saveTempId: string = '';
 
   saveDetectorCode() {
     this.saveTempId = this.getIdFromCodeString();
     this.setTargetBranch(this.saveTempId);
     this.publishDialogHidden = true;
 
-    let isSystemInvoker: boolean = this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics;
+    let isSystemInvoker: boolean =
+      this.mode === DevelopMode.EditMonitoring ||
+      this.mode === DevelopMode.EditAnalytics;
 
-    const commitType = this.mode == DevelopMode.Create && !this.isSaved ? "add" : "edit";
-    const commitMessageStart = this.mode == DevelopMode.Create && !this.isSaved ? "Adding" : "Editing";
+    const commitType =
+      this.mode == DevelopMode.Create && !this.isSaved ? 'add' : 'edit';
+    const commitMessageStart =
+      this.mode == DevelopMode.Create && !this.isSaved ? 'Adding' : 'Editing';
 
-    let gradPublishFiles: string[] = !!this.publishingPackage ? [
-      this.publishingPackage.codeString,
-      this.publishingPackage.metadata,
-      this.publishingPackage.packageConfig
-    ] : [
-      this.code,
-      JSON.stringify({ "utterances": this.allUtterances }),
-      JSON.stringify(this.configuration)
-    ];
+    let gradPublishFiles: string[] = this.publishingPackage
+      ? [
+          this.publishingPackage.codeString,
+          this.publishingPackage.metadata,
+          this.publishingPackage.packageConfig
+        ]
+      : [
+          this.code,
+          JSON.stringify({ utterances: this.allUtterances }),
+          JSON.stringify(this.configuration)
+        ];
 
-    let idForSave = !!this.publishingPackage ? this.publishingPackage.id.toLowerCase() : this.saveTempId;
+    let idForSave = this.publishingPackage
+      ? this.publishingPackage.id.toLowerCase()
+      : this.saveTempId;
     if (this.mode == DevelopMode.Edit) idForSave = this.id;
 
     let gradPublishFileTitles: string[] = [
@@ -1748,76 +2279,133 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       `/${idForSave.toLowerCase()}/package.json`
     ];
 
-    let reviewers = "";
+    let reviewers = '';
 
-    if(Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0){
+    if (
+      Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 ||
+      Object.keys(this.DevopsConfig.platformReviewers).length > 0
+    ) {
       reviewers = this.addReviewers();
       gradPublishFileTitles.push(`/${idForSave.toLowerCase()}/owners.txt`);
       gradPublishFiles.push(reviewers);
     }
 
     let invokerbranch = '';
-    if(isSystemInvoker){
-      invokerbranch = this.mode === DevelopMode.EditMonitoring ? `dev/${this.userName.split("@")[0]}/detector/__monitoring` : `dev/${this.userName.split("@")[0]}/detector/__analytics`
+    if (isSystemInvoker) {
+      invokerbranch =
+        this.mode === DevelopMode.EditMonitoring
+          ? `dev/${this.userName.split('@')[0]}/detector/__monitoring`
+          : `dev/${this.userName.split('@')[0]}/detector/__analytics`;
     }
 
-    const DetectorObservable = isSystemInvoker ? this.diagnosticApiService.pushDetectorChanges(invokerbranch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${idForSave} Author : ${this.userName}`, commitType, this.SYSTEM_INVOKER_RESOURCE_ID) : this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${idForSave} Author : ${this.userName}`, commitType, this.resourceId);
-    
-    this.saveButtonText = "Saving";
+    const DetectorObservable = isSystemInvoker
+      ? this.diagnosticApiService.pushDetectorChanges(
+          invokerbranch,
+          gradPublishFiles,
+          gradPublishFileTitles,
+          `${commitMessageStart} ${idForSave} Author : ${this.userName}`,
+          commitType,
+          this.SYSTEM_INVOKER_RESOURCE_ID
+        )
+      : this.diagnosticApiService.pushDetectorChanges(
+          this.Branch,
+          gradPublishFiles,
+          gradPublishFileTitles,
+          `${commitMessageStart} ${idForSave} Author : ${this.userName}`,
+          commitType,
+          this.resourceId
+        );
+
+    this.saveButtonText = 'Saving';
     this.publishDialogHidden = true;
     this.disableSaveButton();
 
     // successfully ran or edit mode
-    if (!!this.publishingPackage || this.mode != DevelopMode.Create){
-      DetectorObservable.subscribe(_ => {
-        this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${idForSave}/${idForSave}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${this.Branch}`;
-        this.saveSuccess = true;
-        this.lastSavedVersion = gradPublishFiles[0]
-        this.postSave();
-        this.isSaved = true;
-        this._applensCommandBarService.refreshPage();
-      }, err => {
-        if (err.error.includes('Detector with this ID already exists. Please use a new ID')) this.saveIdFailure = true;
-        this.saveFailed = true;
-        this.postSave();
-      });
-    }
-    else {
-      this._diagnosticApi.idExists(this.saveTempId).subscribe(idExists =>{
-        if (!idExists){
-          DetectorObservable.subscribe(_ => {
-            this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${this.Branch}`;
-            this.saveSuccess = true;
-            this.postSave();
-            this.isSaved = true;
-            this._applensCommandBarService.refreshPage();
-          }, err => {
-            this.saveFailed = true;
-            this.postSave();
-          });
+    if (!!this.publishingPackage || this.mode != DevelopMode.Create) {
+      DetectorObservable.subscribe(
+        (_) => {
+          this.PRLink =
+            this.DevopsConfig.folderPath === '/'
+              ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${idForSave}/${idForSave}.csx&version=GB${this.Branch}`
+              : `https://dev.azure.com/${this.DevopsConfig.organization}/${
+                  this.DevopsConfig.project
+                }/_git/${this.DevopsConfig.repository}?path=${
+                  this.DevopsConfig.folderPath
+                }/${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${
+                  this.Branch
+                }`;
+          this.saveSuccess = true;
+          this.lastSavedVersion = gradPublishFiles[0];
+          this.postSave();
+          this.isSaved = true;
+          this._applensCommandBarService.refreshPage();
+        },
+        (err) => {
+          if (
+            err.error.includes(
+              'Detector with this ID already exists. Please use a new ID'
+            )
+          )
+            this.saveIdFailure = true;
+          this.saveFailed = true;
+          this.postSave();
         }
-        else {
+      );
+    } else {
+      this._diagnosticApi.idExists(this.saveTempId).subscribe((idExists) => {
+        if (!idExists) {
+          DetectorObservable.subscribe(
+            (_) => {
+              this.PRLink =
+                this.DevopsConfig.folderPath === '/'
+                  ? `https://dev.azure.com/${this.DevopsConfig.organization}/${
+                      this.DevopsConfig.project
+                    }/_git/${this.DevopsConfig.repository}?path=${
+                      this.DevopsConfig.folderPath
+                    }${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${
+                      this.Branch
+                    }`
+                  : `https://dev.azure.com/${this.DevopsConfig.organization}/${
+                      this.DevopsConfig.project
+                    }/_git/${this.DevopsConfig.repository}?path=${
+                      this.DevopsConfig.folderPath
+                    }/${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${
+                      this.Branch
+                    }`;
+              this.saveSuccess = true;
+              this.postSave();
+              this.isSaved = true;
+              this._applensCommandBarService.refreshPage();
+            },
+            (err) => {
+              this.saveFailed = true;
+              this.postSave();
+            }
+          );
+        } else {
           this.saveIdFailure = true;
           this.saveFailed = true;
           this.postSave();
         }
-      })
+      });
     }
   }
 
   postPublish() {
-    this.modalPublishingButtonText = this.detectorGraduation ? "Create PR" : "Publish";
+    this.modalPublishingButtonText = this.detectorGraduation
+      ? 'Create PR'
+      : 'Publish';
     this.getBranchList();
     this.enablePublishButton();
     this.enableRunButton();
   }
 
-  idInSystem(detectorId: string): Observable<boolean>{
+  idInSystem(detectorId: string): Observable<boolean> {
     return this._diagnosticApi.idExists(detectorId);
   }
 
   postSave() {
-    this.saveButtonText = "Save";
+    this.saveButtonText = 'Save';
     this.enableSaveButton();
   }
 
@@ -1828,7 +2416,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.saveIcon = {
       iconName: 'Save',
       styles: {
-        root: { color: "grey" }
+        root: { color: 'grey' }
       }
     };
   }
@@ -1837,7 +2425,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.saveButtonDisabled = false;
     this.saveIcon = { iconName: 'Save' };
   }
-
 
   isCallOutVisible: boolean = false;
 
@@ -1863,10 +2450,9 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.openTimePickerCallout = false;
   }
 
-
-
   publishingAccessDeniedEmailOwners() {
-    var toList: string = this.publishAccessControlResponse.resourceOwners.join("; ");
+    var toList: string =
+      this.publishAccessControlResponse.resourceOwners.join('; ');
     var subject: string = `[Applens Detector Publish Request] - id: ${this.queryResponse.invocationOutput.metadata.id}, Name: ${this.queryResponse.invocationOutput.metadata.name}`;
     var body: string = `${this._adalService.userInfo.profile.given_name} - Please attach the detector code file and remove this line. %0D%0A%0D%0AHi,%0D%0AI'd like to update the attached detector at following location:%0D%0A%0D%0A Applens Detector url: ${window.location}`;
 
@@ -1876,9 +2462,11 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   private UpdateConfiguration(queryResponse: QueryResponse<DetectorResponse>) {
     let temp = {};
     let newPackage = [];
-    let ids = !!this.configuration['dependencies'] ? new Set(Object.keys(this.configuration['dependencies'])) : null;
+    let ids = this.configuration['dependencies']
+      ? new Set(Object.keys(this.configuration['dependencies']))
+      : null;
     if (queryResponse.compilationOutput.references != null && ids != null) {
-      queryResponse.compilationOutput.references.forEach(r => {
+      queryResponse.compilationOutput.references.forEach((r) => {
         if (ids.has(r)) {
           temp[r] = this.configuration['dependencies'][r];
         } else {
@@ -1890,46 +2478,87 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.configuration['dependencies'] = temp;
     this.configuration['id'] = queryResponse.invocationOutput.metadata.id;
     this.configuration['name'] = queryResponse.invocationOutput.metadata.name;
-    this.configuration['author'] = queryResponse.invocationOutput.metadata.author;
-    this.configuration['description'] = queryResponse.invocationOutput.metadata.description;
-    this.configuration['category'] = queryResponse.invocationOutput.metadata.category;
+    this.configuration['author'] =
+      queryResponse.invocationOutput.metadata.author;
+    this.configuration['description'] =
+      queryResponse.invocationOutput.metadata.description;
+    this.configuration['category'] =
+      queryResponse.invocationOutput.metadata.category;
     this.configuration['type'] = this.gistMode ? 'Gist' : 'Detector';
 
     return newPackage;
   }
 
-  private preparePublishingPackage(queryResponse: QueryResponse<DetectorResponse>, code: string) {
-    if (queryResponse.invocationOutput.metadata.author !== null && queryResponse.invocationOutput.metadata.author !== "" && this.emailRecipients.indexOf(queryResponse.invocationOutput.metadata.author) < 0) {
-      this.emailRecipients += ';' + queryResponse.invocationOutput.metadata.author;
+  private preparePublishingPackage(
+    queryResponse: QueryResponse<DetectorResponse>,
+    code: string
+  ) {
+    if (
+      queryResponse.invocationOutput.metadata.author !== null &&
+      queryResponse.invocationOutput.metadata.author !== '' &&
+      this.emailRecipients.indexOf(
+        queryResponse.invocationOutput.metadata.author
+      ) < 0
+    ) {
+      this.emailRecipients +=
+        ';' + queryResponse.invocationOutput.metadata.author;
     }
 
     let newPackage = this.UpdateConfiguration(queryResponse);
     let update = of(null);
 
-    if (this.detectorGraduation && newPackage.length > 0 ) {
-    // Get the commit id of each reference and the gist content.
-      update = forkJoin(newPackage.map(r => this.diagnosticApiService.getDevopsChangeList(r, this.resourceId).pipe(
-        map(c => this.configuration['dependencies'][r] = c[0].commitId),
-        flatMap(v => this.diagnosticApiService.getDevopsCommitContent(`${this.DevopsConfig.folderPath}/${r}/${r}.csx`, v, this.resourceId).pipe(map(s => this.reference[r] = s ))))))
-    
+    if (this.detectorGraduation && newPackage.length > 0) {
+      // Get the commit id of each reference and the gist content.
+      update = forkJoin(
+        newPackage.map((r) =>
+          this.diagnosticApiService
+            .getDevopsChangeList(r, this.resourceId)
+            .pipe(
+              map(
+                (c) => (this.configuration['dependencies'][r] = c[0].commitId)
+              ),
+              flatMap((v) =>
+                this.diagnosticApiService
+                  .getDevopsCommitContent(
+                    `${this.DevopsConfig.folderPath}/${r}/${r}.csx`,
+                    v,
+                    this.resourceId
+                  )
+                  .pipe(map((s) => (this.reference[r] = s)))
+              )
+            )
+        )
+      );
     } else {
       if (newPackage.length > 0) {
-        update = forkJoin(newPackage.map(r => this.githubService.getChangelist(r).pipe(
-          map(c => this.configuration['dependencies'][r] = c[c.length - 1].sha),
-          flatMap(v => this.githubService.getCommitContent(r, v).pipe(map(s => this.reference[r] = s))))))
+        update = forkJoin(
+          newPackage.map((r) =>
+            this.githubService.getChangelist(r).pipe(
+              map(
+                (c) =>
+                  (this.configuration['dependencies'][r] = c[c.length - 1].sha)
+              ),
+              flatMap((v) =>
+                this.githubService
+                  .getCommitContent(r, v)
+                  .pipe(map((s) => (this.reference[r] = s)))
+              )
+            )
+          )
+        );
       }
     }
 
-    // update changes here 
-    update.subscribe(_ => {
+    // update changes here
+    update.subscribe((_) => {
       this.publishingPackage = {
         id: queryResponse.invocationOutput.metadata.id,
-        codeString: StringUtilities.ReplaceAll(code, codePrefix, ""),
+        codeString: StringUtilities.ReplaceAll(code, codePrefix, ''),
         committedByAlias: this.userName,
         dllBytes: this.compilationPackage.assemblyBytes,
         pdbBytes: this.compilationPackage.pdbBytes,
         packageConfig: JSON.stringify(this.configuration),
-        metadata: JSON.stringify({ "utterances": this.allUtterances })
+        metadata: JSON.stringify({ utterances: this.allUtterances })
       };
     });
   }
@@ -1942,47 +2571,75 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
   private initialize() {
     this.resourceId = this.resourceService.getCurrentResourceId();
-    this.hideModal = localStorage.getItem("localdevmodal.hidden") === "true";
+    this.hideModal = localStorage.getItem('localdevmodal.hidden') === 'true';
     let detectorFile: Observable<string>;
     let isGradEdit: boolean = false;
     this.recommendedUtterances = [];
-    this.utteranceInput = "";
-    
-    if (this.detectorGraduation && this.mode == DevelopMode.Edit && this.branchInput != undefined && this.branchInput != '') {
+    this.utteranceInput = '';
+
+    if (
+      this.detectorGraduation &&
+      this.mode == DevelopMode.Edit &&
+      this.branchInput != undefined &&
+      this.branchInput != ''
+    ) {
       this.Branch = this.branchInput;
     }
     if (this.detectorGraduation && this.mode != DevelopMode.Create) {
-      this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/metadata.json`, this.Branch, this.resourceId).subscribe(res => {
-        this.allUtterances = JSON.parse(res).utterances;
-      },
-        (err) => {
-          this.allUtterances = [];
-        });
+      this.diagnosticApiService
+        .getDetectorCode(
+          `${this.id.toLowerCase()}/metadata.json`,
+          this.Branch,
+          this.resourceId
+        )
+        .subscribe(
+          (res) => {
+            this.allUtterances = JSON.parse(res).utterances;
+          },
+          (err) => {
+            this.allUtterances = [];
+          }
+        );
       // Fetch owners.txt when needed. Otherwise leads to noisy errors in API.
-      if (Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0) {      
-        this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/owners.txt`, this.defaultBranch, this.resourceId).subscribe(o => {
-          this.owners = o.split('\n');
-        });
+      if (
+        Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 ||
+        Object.keys(this.DevopsConfig.platformReviewers).length > 0
+      ) {
+        this.diagnosticApiService
+          .getDetectorCode(
+            `${this.id.toLowerCase()}/owners.txt`,
+            this.defaultBranch,
+            this.resourceId
+          )
+          .subscribe((o) => {
+            this.owners = o.split('\n');
+          });
       }
-    }
-    else {
-      this.githubService.getMetadataFile(this.id.toLowerCase()).subscribe(res => {
-        this.allUtterances = JSON.parse(res).utterances;
-      },
+    } else {
+      this.githubService.getMetadataFile(this.id.toLowerCase()).subscribe(
+        (res) => {
+          this.allUtterances = JSON.parse(res).utterances;
+        },
         (err) => {
           this.allUtterances = [];
-        });
+        }
+      );
     }
     this.compilationPackage = new CompilationProperties();
 
     switch (this.mode) {
       case DevelopMode.Create: {
-        let templateFileName = (this.gistMode ? "Gist_" : "Detector_") + this.resourceService.templateFileName;
-        detectorFile = this.detectorGistApiService.getTemplate(templateFileName);
-        this.fileName = "new.csx";
+        let templateFileName =
+          (this.gistMode ? 'Gist_' : 'Detector_') +
+          this.resourceService.templateFileName;
+        detectorFile =
+          this.detectorGistApiService.getTemplate(templateFileName);
+        this.fileName = 'new.csx';
         this.startTime = this._detectorControlService.startTime;
         this.endTime = this._detectorControlService.endTime;
-        this._applensGlobal.updateHeader(this.gistMode ? "Create Gist" : "Create Detector");
+        this._applensGlobal.updateHeader(
+          this.gistMode ? 'Create Gist' : 'Create Detector'
+        );
         break;
       }
       case DevelopMode.Edit: {
@@ -1990,39 +2647,64 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
           isGradEdit = true;
           this.fileName = `${this.id.toLowerCase()}.csx`;
           this.deleteAvailable = true;
-          detectorFile = this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`, this.Branch, this.resourceId)
-          this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`, this.defaultBranch, this.resourceId).subscribe(x => {
-            this.codeOnDefaultBranch = true;
-          }, err => {
-            this.codeOnDefaultBranch = false;
-          });
-        }
-        else {
+          detectorFile = this.diagnosticApiService.getDetectorCode(
+            `${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`,
+            this.Branch,
+            this.resourceId
+          );
+          this.diagnosticApiService
+            .getDetectorCode(
+              `${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`,
+              this.defaultBranch,
+              this.resourceId
+            )
+            .subscribe(
+              (x) => {
+                this.codeOnDefaultBranch = true;
+              },
+              (err) => {
+                this.codeOnDefaultBranch = false;
+              }
+            );
+        } else {
           this.fileName = `${this.id.toLowerCase()}.csx`;
-          detectorFile = this.githubService.getSourceFile(this.id.toLowerCase());
+          detectorFile = this.githubService.getSourceFile(
+            this.id.toLowerCase()
+          );
         }
         this.startTime = this._detectorControlService.startTime;
         this.endTime = this._detectorControlService.endTime;
         if (this.gistMode) {
-          this.diagnosticApiService.getGistMetaData(this.id).subscribe(metaData => {
-            if (metaData) this._applensGlobal.updateHeader(metaData.name);
-          });
+          this.diagnosticApiService
+            .getGistMetaData(this.id)
+            .subscribe((metaData) => {
+              if (metaData) this._applensGlobal.updateHeader(metaData.name);
+            });
         } else {
-          this.diagnosticApiService.getDetectorMetaData(this.id).subscribe(metaData => {
-            if (metaData) this._applensGlobal.updateHeader(metaData.name);
-
-          });
+          this.diagnosticApiService
+            .getDetectorMetaData(this.id)
+            .subscribe((metaData) => {
+              if (metaData) this._applensGlobal.updateHeader(metaData.name);
+            });
         }
         break;
       }
       case DevelopMode.EditMonitoring: {
         this.fileName = '__monitoring.csx';
-        detectorFile = this.diagnosticApiService.getDetectorCode('__monitoring/__monitoring.csx', this.Branch, this.SYSTEM_INVOKER_RESOURCE_ID);
+        detectorFile = this.diagnosticApiService.getDetectorCode(
+          '__monitoring/__monitoring.csx',
+          this.Branch,
+          this.SYSTEM_INVOKER_RESOURCE_ID
+        );
         break;
       }
       case DevelopMode.EditAnalytics: {
         this.fileName = '__analytics.csx';
-        detectorFile = this.diagnosticApiService.getDetectorCode('__analytics/__analytics.csx', this.Branch, this.SYSTEM_INVOKER_RESOURCE_ID);
+        detectorFile = this.diagnosticApiService.getDetectorCode(
+          '__analytics/__analytics.csx',
+          this.Branch,
+          this.SYSTEM_INVOKER_RESOURCE_ID
+        );
         break;
       }
     }
@@ -2031,115 +2713,155 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.codeLoaded = false;
     if (this.id.toLowerCase() !== '') {
       if (!this.detectorGraduation) {
-        configuration = this.githubService.getConfiguration(this.id.toLowerCase()).pipe(
-          map(config => {
-            if (!('dependencies' in config)) {
-              config['dependencies'] = {};
-            }
+        configuration = this.githubService
+          .getConfiguration(this.id.toLowerCase())
+          .pipe(
+            map((config) => {
+              if (!('dependencies' in config)) {
+                config['dependencies'] = {};
+              }
 
-            this.configuration = config;
-            return this.configuration['dependencies'];
-          }),
-          flatMap(dep => {
-            let keys = Object.keys(dep);
-            if (keys.length === 0) return of([]);
-            return forkJoin(Object.keys(dep).map(key => this.githubService.getSourceReference(key, dep[key])));
-          }));
+              this.configuration = config;
+              return this.configuration['dependencies'];
+            }),
+            flatMap((dep) => {
+              let keys = Object.keys(dep);
+              if (keys.length === 0) return of([]);
+              return forkJoin(
+                Object.keys(dep).map((key) =>
+                  this.githubService.getSourceReference(key, dep[key])
+                )
+              );
+            })
+          );
+      } else {
+        configuration = this.diagnosticApiService
+          .getDetectorCode(
+            `${this.id.toLowerCase()}/package.json`,
+            this.Branch,
+            this.resourceId
+          )
+          .pipe(
+            map((config) => {
+              let c: object = JSON.parse(config);
+              c['dependencies'] = c['dependencies'] || {};
+              this.configuration = c;
+              return this.configuration['dependencies'];
+            }),
+            flatMap((dep) => {
+              let keys = Object.keys(dep);
+              if (keys.length === 0) return of([]);
+              return forkJoin(
+                Object.keys(dep).map((key) =>
+                  this.getGistCommitContent(key, dep[key])
+                )
+              );
+            })
+          );
       }
-      else {
-        configuration = this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/package.json`, this.Branch, this.resourceId).pipe(
-          map(config => {
-          let c: object = JSON.parse(config)
-          c['dependencies'] = c['dependencies'] || {};
-          this.configuration = c;
-          return this.configuration['dependencies'];
-        }),
-         flatMap(dep => {
-          let keys = Object.keys(dep);
-          if (keys.length === 0) return of([]);
-          return forkJoin(Object.keys(dep).map(key => this.getGistCommitContent(key, dep[key])));
-        }));
-      }
-    }
-    else {
+    } else {
       if (!('dependencies' in this.configuration)) {
         this.configuration['dependencies'] = {};
       }
     }
-    
-    detectorFile.subscribe(res => {
-      // if (!this.code)
-      this.code = this.addCodePrefix(res);
-      this.lastSavedVersion = this.code
-      this.originalCode = this.code;
-      this.codeLoaded = true;
-    }, err => {
-      if (isGradEdit && this.Branch === this.defaultBranch && this.showBranches.length > 1){
-        this.Branch = this.showBranches.filter(branch => { return branch.key != this.defaultBranch })[0].key;
-        this.displayBranch = this.Branch;
-        this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`, this.Branch, this.resourceId).subscribe(c => {
-          // if (!this.code)
-          this.code = this.addCodePrefix(c);
-          this.lastSavedVersion = this.code
-          this.originalCode = this.code;
-          this.codeLoaded = true;
-        });
+
+    detectorFile.subscribe(
+      (res) => {
+        // if (!this.code)
+        this.code = this.addCodePrefix(res);
+        this.lastSavedVersion = this.code;
+        this.originalCode = this.code;
+        this.codeLoaded = true;
+      },
+      (err) => {
+        if (
+          isGradEdit &&
+          this.Branch === this.defaultBranch &&
+          this.showBranches.length > 1
+        ) {
+          this.Branch = this.showBranches.filter((branch) => {
+            return branch.key != this.defaultBranch;
+          })[0].key;
+          this.displayBranch = this.Branch;
+          this.diagnosticApiService
+            .getDetectorCode(
+              `${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`,
+              this.Branch,
+              this.resourceId
+            )
+            .subscribe((c) => {
+              // if (!this.code)
+              this.code = this.addCodePrefix(c);
+              this.lastSavedVersion = this.code;
+              this.originalCode = this.code;
+              this.codeLoaded = true;
+            });
+        }
       }
-    });
+    );
 
     // For each gist listed in package.json, the commit content is set in the references map.
-    forkJoin(configuration, this.diagnosticApiService.getGists()).subscribe(res => {
-      if (res[0] !== null) {
-        this.gists = Object.keys(this.configuration['dependencies']);
-        this.gists.forEach((name, index) => {
-          this.reference[name] = res[0][index];
-        });
-      }
+    forkJoin(configuration, this.diagnosticApiService.getGists()).subscribe(
+      (res) => {
+        if (res[0] !== null) {
+          this.gists = Object.keys(this.configuration['dependencies']);
+          this.gists.forEach((name, index) => {
+            this.reference[name] = res[0][index];
+          });
+        }
 
-      if (res[1] !== null) {
-        res[1].forEach(m => {
-          this.allGists.push(m.id);
-        });
-      }
+        if (res[1] !== null) {
+          res[1].forEach((m) => {
+            this.allGists.push(m.id);
+          });
+        }
 
-      // if (!this.hideModal && !this.gistMode) {
-      //   this.ngxSmartModalService.getModal('devModeModal').open();
-      // }
-    });
+        // if (!this.hideModal && !this.gistMode) {
+        //   this.ngxSmartModalService.getModal('devModeModal').open();
+        // }
+      }
+    );
   }
 
   // Loose way to identify if the detector code is marked public or not
   // Unfortunately, we dont return this flag in the API response.
   private IsDetectorMarkedPublic(codeString: string): boolean {
     if (codeString) {
-      var trimmedCode = codeString.toLowerCase().replace(/\s/g, "");
-      return trimmedCode.includes('internalonly=false)') || trimmedCode.includes('internalonly:false)');
+      var trimmedCode = codeString.toLowerCase().replace(/\s/g, '');
+      return (
+        trimmedCode.includes('internalonly=false)') ||
+        trimmedCode.includes('internalonly:false)')
+      );
     }
 
     return false;
   }
 
   getIdFromCodeString(): string {
-    var trimmedCode = this.code.toLowerCase().replace(/\s/g, "");
-    let id = trimmedCode.match(/(?<=\[definition\(id=").*?(?=",)/gmi);
+    var trimmedCode = this.code.toLowerCase().replace(/\s/g, '');
+    let id = trimmedCode.match(/(?<=\[definition\(id=").*?(?=",)/gim);
     return id == null ? null : id[0];
   }
 
-   getGistCommitContent = (gistId, gistCommitVersion) => {
-     return this.diagnosticApiService.getDevopsCommitContent(`${this.DevopsConfig.folderPath}/${gistId}/${gistId}.csx`, gistCommitVersion, this.resourceId);   
+  getGistCommitContent = (gistId, gistCommitVersion) => {
+    return this.diagnosticApiService.getDevopsCommitContent(
+      `${this.DevopsConfig.folderPath}/${gistId}/${gistId}.csx`,
+      gistCommitVersion,
+      this.resourceId
+    );
   };
 
   ngOnDestroy() {
     clearInterval(this.redirectTimer);
     this._router.navigate([], {
       queryParams: {
-        'branchInput': null,
+        branchInput: null
       },
       queryParamsHandling: 'merge'
-    })
+    });
   }
 
-  updatePRTitle(e: { event: Event, newValue?: string }) {
+  updatePRTitle(e: { event: Event; newValue?: string }) {
     this.PRTitle = e.newValue.toString();
   }
 }

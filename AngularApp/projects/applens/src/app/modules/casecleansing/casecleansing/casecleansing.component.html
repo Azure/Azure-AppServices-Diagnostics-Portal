@@ -1,11 +1,30 @@
 <div *ngIf="cases" class="caseTable">
   <div class="row">
     <div class="">
-      <h3>Wrongly Coded Cases</h3> <div class="btn-group">
-          <button class="btn" [class.table-primary]="filterDaysButton ===  7" (click)="filterTime( 7)"> 7d</button>
-          <button class="btn" [class.table-primary]="filterDaysButton === 30" (click)="filterTime(30)">30d</button>
-          <button class="btn" [class.table-primary]="filterDaysButton === 60" (click)="filterTime(60)">60d</button>
-        </div>
+      <h3>Wrongly Coded Cases</h3>
+      <div class="btn-group">
+        <button
+          class="btn"
+          [class.table-primary]="filterDaysButton === 7"
+          (click)="filterTime(7)"
+        >
+          7d
+        </button>
+        <button
+          class="btn"
+          [class.table-primary]="filterDaysButton === 30"
+          (click)="filterTime(30)"
+        >
+          30d
+        </button>
+        <button
+          class="btn"
+          [class.table-primary]="filterDaysButton === 60"
+          (click)="filterTime(60)"
+        >
+          60d
+        </button>
+      </div>
       <form [formGroup]="filterForm">
         <table class="table table-hover">
           <thead>
@@ -13,19 +32,60 @@
               <th>Title</th>
               <th>IncidentId</th>
               <th>Reviewed Recommendation Status</th>
-              <th title="Person responsible for correcting the case coding">Assigned To</th>
+              <th title="Person responsible for correcting the case coding">
+                Assigned To
+              </th>
               <th>Recommendation Count</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><input type="text" (input)="filterTitleChanged()" formControlName="filterTitle" placeholder="Filter Title"/></td>
-              <td><input type="text" (input)="filterIncidentIDChanged()" formControlName="filterIncidentID" placeholder="Filter Incident ID"/></td>
-              <td><input type="text" (input)="filterStatusChanged()" formControlName="filterStatus" placeholder="Filter Status"/></td>
-              <td><input type="text" (input)="filterAssignedToChanged()" formControlName="filterAssignedTo" placeholder="Filter Assigned To"/></td>
-              <td><input type="text" (input)="filterRecommendationChanged()" formControlName="filterRecommendation" placeholder="Filter Recommendation"/></td>
+              <td>
+                <input
+                  type="text"
+                  (input)="filterTitleChanged()"
+                  formControlName="filterTitle"
+                  placeholder="Filter Title"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  (input)="filterIncidentIDChanged()"
+                  formControlName="filterIncidentID"
+                  placeholder="Filter Incident ID"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  (input)="filterStatusChanged()"
+                  formControlName="filterStatus"
+                  placeholder="Filter Status"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  (input)="filterAssignedToChanged()"
+                  formControlName="filterAssignedTo"
+                  placeholder="Filter Assigned To"
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  (input)="filterRecommendationChanged()"
+                  formControlName="filterRecommendation"
+                  placeholder="Filter Recommendation"
+                />
+              </td>
             </tr>
-            <tr *ngFor="let case of filteredCases" [class.table-primary]="case === selectedCase" (click)="onSelect(case)">
+            <tr
+              *ngFor="let case of filteredCases"
+              [class.table-primary]="case === selectedCase"
+              (click)="onSelect(case)"
+            >
               <td>{{ case.title }}</td>
               <td>{{ case.incidentId }}</td>
               <td>{{ case.status }}</td>

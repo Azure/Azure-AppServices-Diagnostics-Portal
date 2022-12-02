@@ -1,8 +1,19 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges
+} from '@angular/core';
 import { Options } from 'ng5-slider';
 import { DaasService } from '../../../../services/daas.service';
 import { SiteDaasInfo } from '../../../../models/solution-metadata';
-import { MonitoringSession, RuleType, CpuMonitoringMode } from '../../../../models/daas';
+import {
+  MonitoringSession,
+  RuleType,
+  CpuMonitoringMode
+} from '../../../../models/daas';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/components/ChoiceGroup';
 
 @Component({
@@ -11,12 +22,13 @@ import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/components/Choice
   styleUrls: ['./cpu-monitoring-configuration.component.scss']
 })
 export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
-
   @Input() siteToBeDiagnosed: SiteDaasInfo;
   @Input() activeSession: MonitoringSession;
-  @Input() blobSasUri:string;
-  @Output() monitoringConfigurationChange: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() savingMonitoringConfiguration: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Input() blobSasUri: string;
+  @Output() monitoringConfigurationChange: EventEmitter<boolean> =
+    new EventEmitter<boolean>();
+  @Output() savingMonitoringConfiguration: EventEmitter<boolean> =
+    new EventEmitter<boolean>();
 
   editMode: boolean = false;
   savingSettings: boolean = false;
@@ -26,50 +38,85 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
 
   operationInProgress: boolean = false;
   mode: CpuMonitoringMode;
-  ruleSummary: string = "";
+  ruleSummary: string = '';
   error: any;
-  sessionModeTypes: string[] = ["Kill", "Collect", "CollectAndKill", "CollectKillAndAnalyze"];
+  sessionModeTypes: string[] = [
+    'Kill',
+    'Collect',
+    'CollectAndKill',
+    'CollectKillAndAnalyze'
+  ];
 
-  descStart: string = "If site's process (or child process) consume CPU greater than <b>CPU threshold</b> for more than <b>Threshold Seconds</b>";
-  descMemoryDump: string = "a memory dump is collected";
-  descKillMessage: string = "<b>Kill</b> is not graceful termination of the process.";
+  descStart: string =
+    "If site's process (or child process) consume CPU greater than <b>CPU threshold</b> for more than <b>Threshold Seconds</b>";
+  descMemoryDump: string = 'a memory dump is collected';
+  descKillMessage: string =
+    '<b>Kill</b> is not graceful termination of the process.';
 
-  modeDescriptions = [{ Mode: CpuMonitoringMode.Collect, Description: `${this.descStart}, ${this.descMemoryDump}.` },
-  { Mode: CpuMonitoringMode.CollectAndKill, Description: `${this.descStart}, ${this.descMemoryDump} and the process consuming high CPU is killed. ${this.descKillMessage}` },
-  { Mode: CpuMonitoringMode.CollectKillAndAnalyze, Description: `${this.descStart},  ${this.descMemoryDump} and the process consuming high CPU is killed. ${this.descKillMessage} Post collection, dumps are also analyzed and an analysis report is generated.` },
-  { Mode: CpuMonitoringMode.Kill, Description: `${this.descStart}, the process is killed. ${this.descKillMessage}` }];
+  modeDescriptions = [
+    {
+      Mode: CpuMonitoringMode.Collect,
+      Description: `${this.descStart}, ${this.descMemoryDump}.`
+    },
+    {
+      Mode: CpuMonitoringMode.CollectAndKill,
+      Description: `${this.descStart}, ${this.descMemoryDump} and the process consuming high CPU is killed. ${this.descKillMessage}`
+    },
+    {
+      Mode: CpuMonitoringMode.CollectKillAndAnalyze,
+      Description: `${this.descStart},  ${this.descMemoryDump} and the process consuming high CPU is killed. ${this.descKillMessage} Post collection, dumps are also analyzed and an analysis report is generated.`
+    },
+    {
+      Mode: CpuMonitoringMode.Kill,
+      Description: `${this.descStart}, the process is killed. ${this.descKillMessage}`
+    }
+  ];
 
-  modeDescription: string = "";
-
+  modeDescription: string = '';
 
   sliderOptionsCpuThreshold: Options = {
-    floor: 50, ceil: 95, step: 5, showTicks: true,
+    floor: 50,
+    ceil: 95,
+    step: 5,
+    showTicks: true,
     translate: (value: number): string => {
-      return value + "%";
+      return value + '%';
     }
   };
 
   sliderOptionsMonitorDuration: Options = {
-    floor: 15, ceil: 60, step: 15, showTicks: true,
+    floor: 15,
+    ceil: 60,
+    step: 15,
+    showTicks: true,
     translate: (value: number): string => {
-      return value + " sec";
+      return value + ' sec';
     }
   };
   sliderOptionsThresholdSeconds: Options = {
-    floor: 30, ceil: 180, step: 30, showTicks: true,
+    floor: 30,
+    ceil: 180,
+    step: 30,
+    showTicks: true,
     translate: (value: number): string => {
-      return value + " sec";
+      return value + ' sec';
     }
   };
 
   sliderOptionsMaxActions: Options = {
-    floor: 1, ceil: 5, showTicks: true
+    floor: 1,
+    ceil: 5,
+    showTicks: true
   };
 
   sliderOptionsMaxDuration: Options = {
-    floor: 1, ceil: 2160, showTicks: true, step: 1, logScale: true,
+    floor: 1,
+    ceil: 2160,
+    showTicks: true,
+    step: 1,
+    logScale: true,
     translate: (value: number): string => {
-      let label = (value === 1) ? ' hour' : ' hours';
+      let label = value === 1 ? ' hour' : ' hours';
       let displayValue = value.toString();
       if (value > 48) {
         label = ' days';
@@ -79,21 +126,20 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
     }
   };
 
-
   getValueRounded(value: number): string {
     let displayValue = value.toPrecision(2);
-    displayValue = (displayValue.endsWith(".0")) ? displayValue.substring(0, displayValue.length - 2) : displayValue;
+    displayValue = displayValue.endsWith('.0')
+      ? displayValue.substring(0, displayValue.length - 2)
+      : displayValue;
     return displayValue;
   }
 
-  constructor(private _daasService: DaasService) {
-  }
+  constructor(private _daasService: DaasService) {}
 
   ngOnInit() {
     if (this.activeSession == null) {
       this.monitoringSession = this.getDefaultMonitoringSettings();
-    }
-    else {
+    } else {
       this.monitoringSession = this.activeSession;
       this.mode = this.monitoringSession.Mode;
       this.originalMonitoringSession = this.activeSession;
@@ -109,8 +155,7 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
       this.originalMonitoringSession = this.activeSession;
       this.monitoringEnabled = true;
     } else {
-
-      // So this is the case, when the parent component changes the 
+      // So this is the case, when the parent component changes the
       // state of the monitoring session
       this.monitoringEnabled = false;
       this.originalMonitoringSession = null;
@@ -119,7 +164,6 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
   }
 
   getDefaultMonitoringSettings(): MonitoringSession {
-
     let monitoringSession = new MonitoringSession();
     monitoringSession.CpuThreshold = 75;
     monitoringSession.MonitorDuration = 15;
@@ -128,7 +172,9 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
     monitoringSession.ThresholdSeconds = 30;
     monitoringSession.MaximumNumberOfHours = 24 * 14;
     this.mode = monitoringSession.Mode;
-    this.modeDescription = this.modeDescriptions.find(x => x.Mode == this.mode).Description;
+    this.modeDescription = this.modeDescriptions.find(
+      (x) => x.Mode == this.mode
+    ).Description;
     this.selectMode(this.mode);
     return monitoringSession;
   }
@@ -137,37 +183,48 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
     this.mode = CpuMonitoringMode[md];
     if (this.monitoringSession != null) {
       this.monitoringSession.Mode = this.mode;
-      this.modeDescription = this.modeDescriptions.find(x => x.Mode == this.mode).Description;
+      this.modeDescription = this.modeDescriptions.find(
+        (x) => x.Mode == this.mode
+      ).Description;
       this.updateRuleSummary();
     }
   }
 
   updateRuleSummary() {
-    let actionToTake = "";
+    let actionToTake = '';
     switch (this.monitoringSession.Mode) {
       case CpuMonitoringMode.Collect:
-        actionToTake = "collect a memory dump";
+        actionToTake = 'collect a memory dump';
         break;
       case CpuMonitoringMode.CollectAndKill:
-        actionToTake = "collect a memory dump and kill the process";
+        actionToTake = 'collect a memory dump and kill the process';
         break;
       case CpuMonitoringMode.CollectKillAndAnalyze:
-        actionToTake = "collect a memory dump and analyze when all the dumps have been collected";
+        actionToTake =
+          'collect a memory dump and analyze when all the dumps have been collected';
         break;
       case CpuMonitoringMode.Kill:
-        actionToTake = "kill the process";
+        actionToTake = 'kill the process';
         break;
-
     }
     this.ruleSummary = `When the site's process or any child processes of the site's process takes <b>${this.monitoringSession.CpuThreshold}%</b> of CPU for more than <b>${this.monitoringSession.ThresholdSeconds}</b> seconds, <b>${actionToTake}</b>. Evaluate CPU usage every <b>${this.monitoringSession.MonitorDuration} seconds</b>.`;
     if (this.monitoringSession.Mode != CpuMonitoringMode.Kill) {
-      this.ruleSummary = this.ruleSummary + ` Collect a maximum of <b>${this.monitoringSession.MaxActions} memory dumps</b>.`;
+      this.ruleSummary =
+        this.ruleSummary +
+        ` Collect a maximum of <b>${this.monitoringSession.MaxActions} memory dumps</b>.`;
     }
 
-    this.ruleSummary += ` Monitoring will stop automatically after <b>${this.monitoringSession.MaximumNumberOfHours > 24 ? (this.getValueRounded(this.monitoringSession.MaximumNumberOfHours / 24)) + " days" : this.monitoringSession.MaximumNumberOfHours + " hours"}</b>.`;
+    this.ruleSummary += ` Monitoring will stop automatically after <b>${
+      this.monitoringSession.MaximumNumberOfHours > 24
+        ? this.getValueRounded(
+            this.monitoringSession.MaximumNumberOfHours / 24
+          ) + ' days'
+        : this.monitoringSession.MaximumNumberOfHours + ' hours'
+    }</b>.`;
 
-    if (this.monitoringSession.MonitorScmProcesses){
-      this.ruleSummary += " The worker process for the kudu site and the webjobs under this app will also be monitored."
+    if (this.monitoringSession.MonitorScmProcesses) {
+      this.ruleSummary +=
+        ' The worker process for the kudu site and the webjobs under this app will also be monitored.';
     }
   }
 
@@ -181,46 +238,54 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
       newSession.MonitorDuration = this.monitoringSession.MonitorDuration;
       newSession.ThresholdSeconds = this.monitoringSession.ThresholdSeconds;
       newSession.CpuThreshold = this.monitoringSession.CpuThreshold;
-      newSession.MaximumNumberOfHours = this.monitoringSession.MaximumNumberOfHours;
-      newSession.MonitorScmProcesses = this.monitoringSession.MonitorScmProcesses;
+      newSession.MaximumNumberOfHours =
+        this.monitoringSession.MaximumNumberOfHours;
+      newSession.MonitorScmProcesses =
+        this.monitoringSession.MonitorScmProcesses;
       newSession.BlobSasUri = this.blobSasUri;
 
-      this._daasService.submitMonitoringSession(this.siteToBeDiagnosed, newSession).subscribe(
-        result => {
-          this.savingSettings = false;
-          this.editMode = false;
-          this.originalMonitoringSession = newSession;
-          this.monitoringConfigurationChange.emit(true);
-        }, error => {
-          this.monitoringEnabled = !this.monitoringEnabled;
-          this.savingSettings = false;
-          this.error = JSON.stringify(error);
-          this.monitoringConfigurationChange.emit(true);
-        });
-
-    }
-    else {
+      this._daasService
+        .submitMonitoringSession(this.siteToBeDiagnosed, newSession)
+        .subscribe(
+          (result) => {
+            this.savingSettings = false;
+            this.editMode = false;
+            this.originalMonitoringSession = newSession;
+            this.monitoringConfigurationChange.emit(true);
+          },
+          (error) => {
+            this.monitoringEnabled = !this.monitoringEnabled;
+            this.savingSettings = false;
+            this.error = JSON.stringify(error);
+            this.monitoringConfigurationChange.emit(true);
+          }
+        );
+    } else {
       this._daasService.stopMonitoringSession(this.siteToBeDiagnosed).subscribe(
-        resp => {
+        (resp) => {
           this.savingSettings = false;
           this.editMode = false;
           this.originalMonitoringSession = null;
           this.monitoringConfigurationChange.emit(true);
-        }, error => {
+        },
+        (error) => {
           this.savingSettings = false;
           this.monitoringEnabled = !this.monitoringEnabled;
           this.error = JSON.stringify(error);
           this.monitoringConfigurationChange.emit(true);
-        });
-
+        }
+      );
     }
   }
 
   checkForChanges() {
-    if ((this.originalMonitoringSession == null && this.monitoringEnabled) || (this.originalMonitoringSession != null && this.monitoringEnabled === false)) {
+    if (
+      (this.originalMonitoringSession == null && this.monitoringEnabled) ||
+      (this.originalMonitoringSession != null &&
+        this.monitoringEnabled === false)
+    ) {
       this.editMode = true;
-    }
-    else {
+    } else {
       this.editMode = false;
     }
   }
@@ -232,5 +297,4 @@ export class CpuMonitoringConfigurationComponent implements OnInit, OnChanges {
     }
     this.checkForChanges();
   }
-
 }

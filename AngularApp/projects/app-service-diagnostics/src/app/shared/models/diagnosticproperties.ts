@@ -1,6 +1,6 @@
 export interface IDiagnosticProperties {
-    siteName: string;
-    appStack: string;
-    kind: string;
-    isLinux: boolean;
+  siteName: string;
+  appStack: string;
+  kind: string;
+  isLinux: boolean;
 }

@@ -1,87 +1,87 @@
-@import "../../../../../app-service-diagnostics/src/styles.scss";
+@import '../../../../../app-service-diagnostics/src/styles.scss';
 
-.needle{
-    z-index: 5;
-    position: absolute;
-    background-color: darkred;
-    width: 50%;/*60% of GuageContainer width*/
-    height: 4px;/*A fixed 4 px height*/
-    top:100%; /*GuageContainer height (if value is 0, then top = GuageContainer height - this height)*/
-    border-radius: 50%;
-    transform-origin: right top;
-    transition: all 1.3s ease-in-out;
-    transform:rotate(.11turn);/*0.005 = 1 %*/
-  }
+.needle {
+  z-index: 5;
+  position: absolute;
+  background-color: darkred;
+  width: 50%; /*60% of GuageContainer width*/
+  height: 4px; /*A fixed 4 px height*/
+  top: 100%; /*GuageContainer height (if value is 0, then top = GuageContainer height - this height)*/
+  border-radius: 50%;
+  transform-origin: right top;
+  transition: all 1.3s ease-in-out;
+  transform: rotate(0.11turn); /*0.005 = 1 %*/
+}
 
-  .circle-data{
-    z-index: 4;
-    color:black;
-    position: absolute;
-    font-size: 1.2em;
-    line-height: 100%;/*60% of GuageContainer height*/
-    width: 60%;/*60% of GuageContainer width*/
-    height: 60%;/*60% of GuageContainer height*/
-    top: 65%; /*GuageContainer height-this height*/ /*Do not divide by 2 as this is upper half of semi circle*/
-    margin-left: 20%; /*(GuageContainer width-this width)/2*/
-    margin-right: auto;
-    overflow:hidden;
-  }
+.circle-data {
+  z-index: 4;
+  color: black;
+  position: absolute;
+  font-size: 1.2em;
+  line-height: 100%; /*60% of GuageContainer height*/
+  width: 60%; /*60% of GuageContainer width*/
+  height: 60%; /*60% of GuageContainer height*/
+  top: 65%; /*GuageContainer height-this height*/ /*Do not divide by 2 as this is upper half of semi circle*/
+  margin-left: 20%; /*(GuageContainer width-this width)/2*/
+  margin-right: auto;
+  overflow: hidden;
+}
 
-  .circle-center{
-    z-index: 3;
-    position: absolute;
-    background-color: var(--bodyBackground);
-    width: 60%;/*60% of GuageContainer width*/
-    height: 60%;/*60% of GuageContainer height*/
-    top: 42%;/*GuageContainer height-this height + 2*/ /*Do not divide by 2 as this is upper half of semi circle*/
-    margin-left: 20%;/*(GuageContainer width-this width)/2*/
-    margin-right: auto;
-    border-radius: 1500px 1500px 0px 0px; /*height height 0 0*/ /*For now, have a very large number. Since this height as per the current settings will never be 1500 px*/
-  }
+.circle-center {
+  z-index: 3;
+  position: absolute;
+  background-color: var(--bodyBackground);
+  width: 60%; /*60% of GuageContainer width*/
+  height: 60%; /*60% of GuageContainer height*/
+  top: 42%; /*GuageContainer height-this height + 2*/ /*Do not divide by 2 as this is upper half of semi circle*/
+  margin-left: 20%; /*(GuageContainer width-this width)/2*/
+  margin-right: auto;
+  border-radius: 1500px 1500px 0px 0px; /*height height 0 0*/ /*For now, have a very large number. Since this height as per the current settings will never be 1500 px*/
+}
 
-  .circle-fill{
-    z-index: 2;
-    position: absolute;
-    width: 100%;/*same as GuageContainer*/
-    height: 100%;/*same as GuageContainer*/
-    top: 100%; /*same as height of GuageContainer so that div goes below the GuageContainer*/
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 0px 0px 1500px 1500px; /*This makes the semi circle below*/  /*0 0 height height*/ /*For now, have a very large number. Since this height as per the current settings will never be 1500 px*/
-    transform-origin: center top;
-    transition: all 1.3s ease-in-out;
-    transform:rotate(.11turn);/*0.005 = 1 %*/
-  }
+.circle-fill {
+  z-index: 2;
+  position: absolute;
+  width: 100%; /*same as GuageContainer*/
+  height: 100%; /*same as GuageContainer*/
+  top: 100%; /*same as height of GuageContainer so that div goes below the GuageContainer*/
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0px 0px 1500px 1500px; /*This makes the semi circle below*/ /*0 0 height height*/ /*For now, have a very large number. Since this height as per the current settings will never be 1500 px*/
+  transform-origin: center top;
+  transition: all 1.3s ease-in-out;
+  transform: rotate(0.11turn); /*0.005 = 1 %*/
+}
 
-  .circle-background{
-    z-index: 1;
-    position: absolute;
-    background-color:lightgrey;
-    width: 100%;/*Same as GuageContainer*/
-    height: 100%;/*Same as GuageContainer*/
-    top: 0%;
-    border-radius: 1500px 1500px 0px 0px;  /*height height 0 0*/  /*For now, have a very large number. Since this height as per the current settings will never be 1500 px*/
-  }
+.circle-background {
+  z-index: 1;
+  position: absolute;
+  background-color: lightgrey;
+  width: 100%; /*Same as GuageContainer*/
+  height: 100%; /*Same as GuageContainer*/
+  top: 0%;
+  border-radius: 1500px 1500px 0px 0px; /*height height 0 0*/ /*For now, have a very large number. Since this height as per the current settings will never be 1500 px*/
+}
 
-  .graphic-container{
-    width: 100%;
-    height: 80%;
-    position: absolute;
-    overflow: hidden;
-    text-align: center;
-  }
+.graphic-container {
+  width: 100%;
+  height: 80%;
+  position: absolute;
+  overflow: hidden;
+  text-align: center;
+}
 
-  .outer-container{
-    width: 200px;
-    height: 125px; /*Height is 62.5 % of the width*/
-    position: relative;
-  }
+.outer-container {
+  width: 200px;
+  height: 125px; /*Height is 62.5 % of the width*/
+  position: relative;
+}
 
-  .guage-label{
-    text-align: center;
-    width:100%;
-    top:85%;
-    position: absolute;
-    font-size: 1.1em;
-    line-height: 10px;
-  }
+.guage-label {
+  text-align: center;
+  width: 100%;
+  top: 85%;
+  position: absolute;
+  font-size: 1.1em;
+  line-height: 10px;
+}

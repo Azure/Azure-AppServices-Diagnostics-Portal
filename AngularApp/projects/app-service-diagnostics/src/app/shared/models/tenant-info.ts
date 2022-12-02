@@ -1,6 +1,6 @@
 export interface TenantInfo {
-    DisplayName: string;
-    DomainName: string;
-    TenantId: string;
-    Current: boolean;
+  DisplayName: string;
+  DomainName: string;
+  TenantId: string;
+  Current: boolean;
 }

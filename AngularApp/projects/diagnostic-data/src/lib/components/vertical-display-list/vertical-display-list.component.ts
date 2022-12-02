@@ -1,30 +1,30 @@
-import { Component, Input, ContentChildren, QueryList } from '@angular/core';
+import { Component, ContentChildren, Input, QueryList } from '@angular/core';
 import { VerticalDisplayListItemComponent } from './vertical-display-list-item/vertical-display-list-item.component';
 import { SolutionTypeTag } from '../../models/solution-type-tag';
 
-
 @Component({
-    selector: 'vertical-display-list',
-    templateUrl: 'vertical-display-list.component.html',
-    styleUrls: ['vertical-display-list.component.scss']
+  selector: 'vertical-display-list',
+  templateUrl: 'vertical-display-list.component.html',
+  styleUrls: ['vertical-display-list.component.scss']
 })
 export class VerticalDisplayListComponent {
-    @ContentChildren(VerticalDisplayListItemComponent) listItems: QueryList<VerticalDisplayListItemComponent>;
+  @ContentChildren(VerticalDisplayListItemComponent)
+  listItems: QueryList<VerticalDisplayListItemComponent>;
 
-    titles: VerticalDisplayListMetaData[];
+  titles: VerticalDisplayListMetaData[];
 
-    @Input() showTitle: boolean = true;
+  @Input() showTitle: boolean = true;
 
-    @Input() smallMenu: boolean = false;
+  @Input() smallMenu: boolean = false;
 
-    selectItem(item: VerticalDisplayListItemComponent) {
-        this.listItems.forEach(item => item.metaData.isSelected = false);
-        item.metaData.isSelected = true;
-    }
+  selectItem(item: VerticalDisplayListItemComponent) {
+    this.listItems.forEach((item) => (item.metaData.isSelected = false));
+    item.metaData.isSelected = true;
+  }
 }
 
 export class VerticalDisplayListMetaData {
-    title: string;
-    isSelected: boolean;
-    tags: SolutionTypeTag[];
+  title: string;
+  isSelected: boolean;
+  tags: SolutionTypeTag[];
 }

@@ -3,7 +3,10 @@
     <div class="banner-child">
       <div class="ml-3">
         <div *ngIf="loadingSettings">
-          <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+          <i
+            class="fa fa-circle-o-notch fa-spin spin-icon"
+            aria-hidden="true"
+          ></i>
           Checking AppInsights...
         </div>
         <div *ngIf="!loadingSettings">
@@ -11,46 +14,70 @@
             <div *ngIf="isAppInsightsEnabled">
               <div *ngIf="!isAppInsightsConnected">
                 <div *ngIf="hasWriteAccess">
-                  <table *ngIf="hasWriteAccess && !isAppInsightsConnected && canCreateApiKeys">
+                  <table
+                    *ngIf="
+                      hasWriteAccess &&
+                      !isAppInsightsConnected &&
+                      canCreateApiKeys
+                    "
+                  >
                     <tbody>
                       <tr>
-                        <td><i class="fa fa-exclamation-triangle warning-icon-color mr-2"></i>
-                        </td>
-                        <td>Connect Application Insights with App Service Diagnostics to allow App Service Diagnostics
-                          to
-                          access App Insights information.
+                        <td>
+                          <i
+                            class="fa fa-exclamation-triangle warning-icon-color mr-2"
+                          ></i>
                         </td>
                         <td>
-                          <fab-primary-button [contentClass]="'ml-2'" (click)="connect()">
+                          Connect Application Insights with App Service
+                          Diagnostics to allow App Service Diagnostics to access
+                          App Insights information.
+                        </td>
+                        <td>
+                          <fab-primary-button
+                            [contentClass]="'ml-2'"
+                            (click)="connect()"
+                          >
                             Connect
                           </fab-primary-button>
                         </td>
                         <td>
                           <div class="ml-2">
-                            <a href="https://azure.github.io/AppService/2020/04/21/Announcing-Application-Insights-Integration-with-App-Service-Diagnostics.html"
+                            <a
+                              href="https://azure.github.io/AppService/2020/04/21/Announcing-Application-Insights-Integration-with-App-Service-Diagnostics.html"
                               aria-label="Click to know more about the App Services Diagnostics integration with Application Insights"
-                              target="_blank">Learn more</a>
+                              target="_blank"
+                              >Learn more</a
+                            >
                           </div>
                         </td>
                       </tr>
                     </tbody>
                   </table>
                   <div *ngIf="!canCreateApiKeys">
-                    <i class="fa fa-exclamation-triangle warning-icon-color mr-2 "></i>
-                    Application Insights is enabled for this app but there are already 10 API Keys generated for this
-                    App Insights resource and you cannot generate more API keys for the same AppInsights resource. For
-                    more information refer to <a
-                      href='https://dev.applicationinsights.io/documentation/Authorization/Rate-limits'
-                      target="_blank">Limits when using API key authentication</a>. You
-                    can remove the ApiKeys you no longer need by going to connected App Insights resource and choosing
-                    API Keys in the Azure Portal.
+                    <i
+                      class="fa fa-exclamation-triangle warning-icon-color mr-2"
+                    ></i>
+                    Application Insights is enabled for this app but there are
+                    already 10 API Keys generated for this App Insights resource
+                    and you cannot generate more API keys for the same
+                    AppInsights resource. For more information refer to
+                    <a
+                      href="https://dev.applicationinsights.io/documentation/Authorization/Rate-limits"
+                      target="_blank"
+                      >Limits when using API key authentication</a
+                    >. You can remove the ApiKeys you no longer need by going to
+                    connected App Insights resource and choosing API Keys in the
+                    Azure Portal.
                   </div>
                 </div>
                 <div *ngIf="!hasWriteAccess">
-                  <i class="fa fa-exclamation-triangle warning-icon-color mr-2 "></i>
-                  Application Insights is enabled for this app but you do not have Write Permissions to create an API
-                  key
-                  for the connected Application Insights resource.
+                  <i
+                    class="fa fa-exclamation-triangle warning-icon-color mr-2"
+                  ></i>
+                  Application Insights is enabled for this app but you do not
+                  have Write Permissions to create an API key for the connected
+                  Application Insights resource.
                 </div>
               </div>
               <div *ngIf="isAppInsightsConnected">
@@ -59,58 +86,88 @@
                     <tbody>
                       <tr *ngIf="appInsightsValiationError.length === 0">
                         <td>
-                          <i class="fa fa-exclamation-triangle warning-icon-color mr-2"></i>
+                          <i
+                            class="fa fa-exclamation-triangle warning-icon-color mr-2"
+                          ></i>
                         </td>
-                        <td>Application Insights was connected with App Service Diagnostics but the saved configuration
-                          is no more
-                          valid. Please connect again.</td>
                         <td>
-                          <fab-primary-button [contentClass]="'ml-2'" (click)="connect()">
+                          Application Insights was connected with App Service
+                          Diagnostics but the saved configuration is no more
+                          valid. Please connect again.
+                        </td>
+                        <td>
+                          <fab-primary-button
+                            [contentClass]="'ml-2'"
+                            (click)="connect()"
+                          >
                             Connect
                           </fab-primary-button>
                         </td>
                         <td>
-                          <a target="_blank"
-                            href="https://azure.github.io/AppService/2020/04/21/Announcing-Application-Insights-Integration-with-App-Service-Diagnostics.html">
-                            <i style="color: gray;" class="fa fa-info-circle info-icon-color fa-lg ml-2"></i>
+                          <a
+                            target="_blank"
+                            href="https://azure.github.io/AppService/2020/04/21/Announcing-Application-Insights-Integration-with-App-Service-Diagnostics.html"
+                          >
+                            <i
+                              style="color: gray"
+                              class="fa fa-info-circle info-icon-color fa-lg ml-2"
+                            ></i>
                           </a>
                         </td>
                       </tr>
                       <tr *ngIf="appInsightsValiationError.length > 0">
                         <td>
-                          <i class="fa fa-exclamation-triangle warning-icon-color mr-2"></i>
+                          <i
+                            class="fa fa-exclamation-triangle warning-icon-color mr-2"
+                          ></i>
                         </td>
-                        <td colspan="3">We failed to validate the saved AppInsights configuration. This might be a
-                          temporary error. Please retry after some time. Additional Details: {{ appInsightsValiationError }}</td>
+                        <td colspan="3">
+                          We failed to validate the saved AppInsights
+                          configuration. This might be a temporary error. Please
+                          retry after some time. Additional Details:
+                          {{ appInsightsValiationError }}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
                 </ng-container>
                 <ng-container *ngIf="appInsightsValidated">
                   <i class="fa fa-check-circle healthy-icon-color"></i>
-                  <span class="ml-3">App Insights is enabled
-                    and connected with App Service Diagnostics</span>
+                  <span class="ml-3"
+                    >App Insights is enabled and connected with App Service
+                    Diagnostics</span
+                  >
                 </ng-container>
               </div>
             </div>
             <div *ngIf="!isAppInsightsEnabled">
               <div *ngIf="appSettingsHaveInstrumentationKey">
                 <i class="fa fa-exclamation-triangle warning-icon-color"></i>
-                Either we failed to look up the App Settings for the App or we failed to look up the associated
-                Application Insights resource information for this app. This can happen if you do not have permissions
-                to read the app settings or you do not have read access on the Azure subscription that is hosting the
-                connected Application Insights resource.
+                Either we failed to look up the App Settings for the App or we
+                failed to look up the associated Application Insights resource
+                information for this app. This can happen if you do not have
+                permissions to read the app settings or you do not have read
+                access on the Azure subscription that is hosting the connected
+                Application Insights resource.
               </div>
               <div *ngIf="!appSettingsHaveInstrumentationKey">
                 <table>
                   <tbody>
                     <tr>
-                      <td><i class="fa fa-exclamation-triangle warning-icon-color mr-2"></i>
-                      </td>
-                      <td> Enable Application insights for your app to collect application level monitoring data
+                      <td>
+                        <i
+                          class="fa fa-exclamation-triangle warning-icon-color mr-2"
+                        ></i>
                       </td>
                       <td>
-                        <fab-primary-button [contentClass]="'ml-2'" (click)="enable()">
+                        Enable Application insights for your app to collect
+                        application level monitoring data
+                      </td>
+                      <td>
+                        <fab-primary-button
+                          [contentClass]="'ml-2'"
+                          (click)="enable()"
+                        >
                           Enable
                         </fab-primary-button>
                       </td>
@@ -121,12 +178,16 @@
             </div>
           </div>
           <div *ngIf="connecting">
-            <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+            <i
+              class="fa fa-circle-o-notch fa-spin spin-icon"
+              aria-hidden="true"
+            ></i>
             Connecting AppInsights with App Service Diagnostics...
           </div>
           <div *ngIf="error">
             <i class="fa fa-exclamation-triangle warning-icon-color mr-2"></i>
-            Failed while connecting App Insights with App Service Diagnostics. {{ error }}
+            Failed while connecting App Insights with App Service Diagnostics.
+            {{ error }}
           </div>
         </div>
       </div>

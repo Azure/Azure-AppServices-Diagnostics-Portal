@@ -1,66 +1,66 @@
 .menu-item-children {
-    overflow-y: hidden;
+  overflow-y: hidden;
 }
 
 .menu-item {
-    cursor: pointer;
-    font-family: az_ea_font,"Segoe UI",wf_segoe-ui_normal,"Segoe WP",Tahoma,Arial,sans-serif;
-    position: relative;
+  cursor: pointer;
+  font-family: az_ea_font, 'Segoe UI', wf_segoe-ui_normal, 'Segoe WP', Tahoma,
+    Arial, sans-serif;
+  position: relative;
 }
 
 .menu-item:hover {
-    background-color: var(--listItemBackgroundHovered)
+  background-color: var(--listItemBackgroundHovered);
 }
 
 .menu-item.selected {
-    background-color: var(--listItemBackgroundSelected)!important;
+  background-color: var(--listItemBackgroundSelected) !important;
 }
 
 .expand-icon {
-    min-width: 10px;
-    font-size: 12px;
+  min-width: 10px;
+  font-size: 12px;
 }
 
 .menu-item {
-    color:var(--menuItemText);
-    font-size: 12px;
-    padding: 10px 5px 9px 35px;
+  color: var(--menuItemText);
+  font-size: 12px;
+  padding: 10px 5px 9px 35px;
 }
 
 .menu-label > b {
-    color: #ffb353;
+  color: #ffb353;
 }
 
 .menu-label {
-    display: inline-block;
-    width: 180px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  display: inline-block;
+  width: 180px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .category-icon {
-    width:30px!important;
-    padding-right:10px;
-    margin-top: -10px;
+  width: 30px !important;
+  padding-right: 10px;
+  margin-top: -10px;
 }
 
 .menu-item .tooltiptext {
-    display: none;
-    background: white;
+  display: none;
+  background: white;
 }
 
 .menu-item:hover .tooltiptext {
-    display: block;
-    opacity: 1;
-    background:  var(--bodyBackground)!important;
-    width: 85%;
-    z-index: 999;
-    margin-top: 6px;
-    position: absolute;
-    border: 1px solid var(--inputBorder);
-    padding: 3px;
-    font-size: 12px;
-    bottom: -60%;
+  display: block;
+  opacity: 1;
+  background: var(--bodyBackground) !important;
+  width: 85%;
+  z-index: 999;
+  margin-top: 6px;
+  position: absolute;
+  border: 1px solid var(--inputBorder);
+  padding: 3px;
+  font-size: 12px;
+  bottom: -60%;
 }
-

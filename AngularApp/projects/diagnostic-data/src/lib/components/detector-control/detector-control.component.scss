@@ -1,58 +1,58 @@
-@import "../../../../../app-service-diagnostics/src/styles/main.scss";
+@import '../../../../../app-service-diagnostics/src/styles/main.scss';
 
 .control-container {
-    display: flex;
+  display: flex;
 }
 
 .control-group {
-    margin: 0px 5px;
-    display: flex;
+  margin: 0px 5px;
+  display: flex;
 }
 
 .control-group > .control:last-child {
-    border-right: 1px solid #2e6fa8;
+  border-right: 1px solid #2e6fa8;
 }
 
 .control {
-    padding: 4px 6px;
-    background-color: white;
-    border: 1px solid #2e6fa8;
-    border-right: none;
-    color: #015cda;
-    cursor: pointer;
+  padding: 4px 6px;
+  background-color: white;
+  border: 1px solid #2e6fa8;
+  border-right: none;
+  color: #015cda;
+  cursor: pointer;
 }
 
 .control-selected {
-    background-color: #015cda;
-    color: white;
+  background-color: #015cda;
+  color: white;
 }
 
 .control-static {
-    cursor: default;
-    background-color: #f5f5f5;
-    color: #345877;
+  cursor: default;
+  background-color: #f5f5f5;
+  color: #345877;
 }
 
 .outer-container {
-    display: flex;
-    justify-content: flex-end;
-    padding: 5px 20px;
+  display: flex;
+  justify-content: flex-end;
+  padding: 5px 20px;
 }
 
 .withoutPadding {
-    padding: 0px 20px;
+  padding: 0px 20px;
 }
 
 .date-input {
-    border: none;
+  border: none;
 }
 
 .date-control {
-    width: 125px;
-    overflow: hidden;
-    cursor: inherit;
+  width: 125px;
+  overflow: hidden;
+  cursor: inherit;
 }
 
 .errorMessage {
-    color: $error-color;
+  color: $error-color;
 }

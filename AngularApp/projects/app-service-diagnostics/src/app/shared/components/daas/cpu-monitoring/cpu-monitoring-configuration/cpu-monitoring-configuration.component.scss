@@ -1,107 +1,107 @@
 .label-header {
-    font-size: initial;
-    color: #0058ad;
+  font-size: initial;
+  color: #0058ad;
 }
 
 .input-row {
-    min-height: 120px;
+  min-height: 120px;
 }
 
 .tile-icon {
-    font-size: xx-large;
-    color: #0058ad;
-    min-width: 30px;
+  font-size: xx-large;
+  color: #0058ad;
+  min-width: 30px;
 }
 
 .summary-box {
-    padding: 10px;
-    margin-left: 15px;
-    background-color: rgba(44, 163, 216, 0.1);
-    border: 1px Solid #0058ad;
+  padding: 10px;
+  margin-left: 15px;
+  background-color: rgba(44, 163, 216, 0.1);
+  border: 1px Solid #0058ad;
 }
 
 .summary-title {
-    margin-left: 15px;
-    background: #0058ad;
-    width: 125px;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-    padding: 2px;
-    padding-left: 5px;
-    color: whitesmoke;
+  margin-left: 15px;
+  background: #0058ad;
+  width: 125px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  padding: 2px;
+  padding-left: 5px;
+  color: whitesmoke;
 }
 
 .media-body {
-    padding-left: 13px;
+  padding-left: 13px;
 }
 
 .readonly-mode {
-    font-size: large;
-    color: #0058ad;
-    margin-top: 10px;
+  font-size: large;
+  color: #0058ad;
+  margin-top: 10px;
 }
 
 ::ng-deep {
-    .custom-slider .ng5-slider {
-        .ng5-slider-pointer:after {
-            width: 4px;
-            height: 4px;
-            top: 7px;
-            left: 7px;
-            border-radius: 4px;
-        }
-
-        .ng5-slider-pointer {
-            width: 19px;
-            height: 19px;
-            top: -8px;
-            border-radius: 14px;
-            margin-left: 4px;
-            background-color: #0058ad;
-        }
-
-        .ng5-slider-tick {
-            background: #0058ad;
-        }
-
-        .ng5-slider-bar {
-            background: #0058ad;
-        }
+  .custom-slider .ng5-slider {
+    .ng5-slider-pointer:after {
+      width: 4px;
+      height: 4px;
+      top: 7px;
+      left: 7px;
+      border-radius: 4px;
     }
+
+    .ng5-slider-pointer {
+      width: 19px;
+      height: 19px;
+      top: -8px;
+      border-radius: 14px;
+      margin-left: 4px;
+      background-color: #0058ad;
+    }
+
+    .ng5-slider-tick {
+      background: #0058ad;
+    }
+
+    .ng5-slider-bar {
+      background: #0058ad;
+    }
+  }
 }
 
 @media screen and (-ms-high-contrast: black-on-white) {
-    ::ng-deep {
-        .custom-slider .ng5-slider {
-            .ng5-slider-pointer {
-                border: 1px solid #000;
-            }
+  ::ng-deep {
+    .custom-slider .ng5-slider {
+      .ng5-slider-pointer {
+        border: 1px solid #000;
+      }
 
-            .ng5-slider-tick {
-                border: 1px solid #000;
-            }
+      .ng5-slider-tick {
+        border: 1px solid #000;
+      }
 
-            .ng5-slider-bar {
-                border: 1px solid #000;
-            }
-        }
+      .ng5-slider-bar {
+        border: 1px solid #000;
+      }
     }
+  }
 }
 
 @media screen and (-ms-high-contrast: white-on-black) {
-    ::ng-deep {
-        .custom-slider .ng5-slider {
-            .ng5-slider-pointer {
-                border: 1px solid #fff;
-            }
+  ::ng-deep {
+    .custom-slider .ng5-slider {
+      .ng5-slider-pointer {
+        border: 1px solid #fff;
+      }
 
-            .ng5-slider-tick {
-                border: 1px solid #fff;
-            }
+      .ng5-slider-tick {
+        border: 1px solid #fff;
+      }
 
-            .ng5-slider-bar {
-                border: 1px solid #fff;
-            }
-        }
+      .ng5-slider-bar {
+        border: 1px solid #fff;
+      }
     }
+  }
 }

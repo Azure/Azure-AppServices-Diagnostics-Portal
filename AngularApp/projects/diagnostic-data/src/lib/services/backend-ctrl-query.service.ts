@@ -6,14 +6,21 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BackendCtrlQueryService {
+  constructor() {}
 
-  constructor() { }
-
-  public get<T>(path: string, headers: HttpHeaders = null, invalidateCache: boolean = false): Observable<T> {
+  public get<T>(
+    path: string,
+    headers: HttpHeaders = null,
+    invalidateCache: boolean = false
+  ): Observable<T> {
     return null;
   }
 
-  public put<T, S>(path: string, body?: S, headers: HttpHeaders = null): Observable<T> {
+  public put<T, S>(
+    path: string,
+    body?: S,
+    headers: HttpHeaders = null
+  ): Observable<T> {
     return null;
   }
 }

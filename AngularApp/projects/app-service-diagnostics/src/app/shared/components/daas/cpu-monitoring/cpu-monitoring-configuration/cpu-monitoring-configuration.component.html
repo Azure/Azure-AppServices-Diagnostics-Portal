@@ -2,8 +2,11 @@
   <div style="margin-top: 10px">
     <div class="row">
       <div class="col-sm-12">
-        <toggle-button ToggleText="Monitoring Enabled" [selected]="monitoringEnabled"
-          (selectedChange)="monitoringEnabled = $event;checkForChanges()">
+        <toggle-button
+          ToggleText="Monitoring Enabled"
+          [selected]="monitoringEnabled"
+          (selectedChange)="monitoringEnabled = $event; checkForChanges()"
+        >
         </toggle-button>
       </div>
     </div>
@@ -22,11 +25,16 @@
         </div>
         <div class="col-sm-5">
           <div *ngIf="editMode" class="custom-slider">
-            <ng5-slider [(value)]="monitoringSession.CpuThreshold" [options]="sliderOptionsCpuThreshold"
-              (userChange)="updateRuleSummary()">
+            <ng5-slider
+              [(value)]="monitoringSession.CpuThreshold"
+              [options]="sliderOptionsCpuThreshold"
+              (userChange)="updateRuleSummary()"
+            >
             </ng5-slider>
           </div>
-          <div *ngIf="!editMode" class="readonly-mode">{{ monitoringSession.CpuThreshold }}%</div>
+          <div *ngIf="!editMode" class="readonly-mode">
+            {{ monitoringSession.CpuThreshold }}%
+          </div>
         </div>
       </div>
       <div class="row input-row">
@@ -37,17 +45,23 @@
             </div>
             <div class="media-body">
               <div class="media-heading label-header">Threshold Seconds</div>
-              For the rule to trigger, CPU should exceed {{monitoringSession.CpuThreshold}}% for this many seconds
+              For the rule to trigger, CPU should exceed
+              {{ monitoringSession.CpuThreshold }}% for this many seconds
             </div>
           </div>
         </div>
         <div class="col-sm-5">
           <div *ngIf="editMode" class="custom-slider">
-            <ng5-slider [(value)]="monitoringSession.ThresholdSeconds" [options]="sliderOptionsThresholdSeconds"
-              (userChange)="updateRuleSummary()">
+            <ng5-slider
+              [(value)]="monitoringSession.ThresholdSeconds"
+              [options]="sliderOptionsThresholdSeconds"
+              (userChange)="updateRuleSummary()"
+            >
             </ng5-slider>
           </div>
-          <div *ngIf="!editMode" class="readonly-mode">{{ monitoringSession.ThresholdSeconds }} seconds</div>
+          <div *ngIf="!editMode" class="readonly-mode">
+            {{ monitoringSession.ThresholdSeconds }} seconds
+          </div>
         </div>
       </div>
 
@@ -65,11 +79,16 @@
         </div>
         <div class="col-sm-5">
           <div *ngIf="editMode" class="custom-slider">
-            <ng5-slider [(value)]="monitoringSession.MonitorDuration" [options]="sliderOptionsMonitorDuration"
-              (userChange)="updateRuleSummary()">
+            <ng5-slider
+              [(value)]="monitoringSession.MonitorDuration"
+              [options]="sliderOptionsMonitorDuration"
+              (userChange)="updateRuleSummary()"
+            >
             </ng5-slider>
           </div>
-          <div *ngIf="!editMode" class="readonly-mode">{{ monitoringSession.MonitorDuration }} seconds</div>
+          <div *ngIf="!editMode" class="readonly-mode">
+            {{ monitoringSession.MonitorDuration }} seconds
+          </div>
         </div>
       </div>
 
@@ -86,17 +105,28 @@
           </div>
         </div>
         <div class="col-sm-5">
-          <div *ngIf="editMode" style="margin-top:10px;">
+          <div *ngIf="editMode" style="margin-top: 10px">
             <div class="form-group">
-              <select class="form-control" id="mode" (change)="selectMode($event.target.value)">
-                <option *ngFor="let md of sessionModeTypes" [selected]="md === mode">{{md}}</option>
+              <select
+                class="form-control"
+                id="mode"
+                (change)="selectMode($event.target.value)"
+              >
+                <option
+                  *ngFor="let md of sessionModeTypes"
+                  [selected]="md === mode"
+                >
+                  {{ md }}
+                </option>
               </select>
-              <div style="font-size: smaller;padding:5px" [innerHTML]="modeDescription">
-              </div>
+              <div
+                style="font-size: smaller; padding: 5px"
+                [innerHTML]="modeDescription"
+              ></div>
             </div>
           </div>
 
-          <div *ngIf="!editMode" class="readonly-mode">{{mode}}</div>
+          <div *ngIf="!editMode" class="readonly-mode">{{ mode }}</div>
         </div>
       </div>
 
@@ -114,28 +144,27 @@
         </div>
         <div class="col-sm-5">
           <div *ngIf="editMode" class="custom-slider">
-            <ng5-slider *ngIf="mode !=='Kill'" [(value)]="monitoringSession.MaxActions"
-              [options]="sliderOptionsMaxActions" (userChange)="updateRuleSummary()">
+            <ng5-slider
+              *ngIf="mode !== 'Kill'"
+              [(value)]="monitoringSession.MaxActions"
+              [options]="sliderOptionsMaxActions"
+              (userChange)="updateRuleSummary()"
+            >
             </ng5-slider>
-            <div *ngIf="mode ==='Kill'">
-              <div class="readonly-mode">
-                Not Applicable
-              </div>
-              <div style="font-size: smaller;margin-top:8px">
-                * When action is set to Kill, the <strong>Maximum Actions</strong> setting is not applicable and the rule
-                will
-                stop after <strong>Maximum Duration</strong>.
+            <div *ngIf="mode === 'Kill'">
+              <div class="readonly-mode">Not Applicable</div>
+              <div style="font-size: smaller; margin-top: 8px">
+                * When action is set to Kill, the
+                <strong>Maximum Actions</strong> setting is not applicable and
+                the rule will stop after <strong>Maximum Duration</strong>.
               </div>
             </div>
-
           </div>
           <div *ngIf="!editMode" class="readonly-mode">
-            <div *ngIf="mode !=='Kill'">
+            <div *ngIf="mode !== 'Kill'">
               {{ monitoringSession.MaxActions }} dumps
             </div>
-            <div *ngIf="mode ==='Kill'">
-              Not Applicable
-            </div>
+            <div *ngIf="mode === 'Kill'">Not Applicable</div>
           </div>
         </div>
       </div>
@@ -148,17 +177,23 @@
             </div>
             <div class="media-body">
               <div class="media-heading label-header">Maximum Duration</div>
-              Rule will be deactivated after this duration even if no data is collected
+              Rule will be deactivated after this duration even if no data is
+              collected
             </div>
           </div>
         </div>
         <div class="col-sm-5">
           <div *ngIf="editMode" class="custom-slider">
-            <ng5-slider [(value)]="monitoringSession.MaximumNumberOfHours" [options]="sliderOptionsMaxDuration"
-              (userChange)="updateRuleSummary()">
+            <ng5-slider
+              [(value)]="monitoringSession.MaximumNumberOfHours"
+              [options]="sliderOptionsMaxDuration"
+              (userChange)="updateRuleSummary()"
+            >
             </ng5-slider>
           </div>
-          <div *ngIf="!editMode" class="readonly-mode">{{ monitoringSession.MaximumNumberOfHours }} hours</div>
+          <div *ngIf="!editMode" class="readonly-mode">
+            {{ monitoringSession.MaximumNumberOfHours }} hours
+          </div>
         </div>
       </div>
 
@@ -169,38 +204,59 @@
               <i class="media-object fa fa-cogs tile-icon"></i>
             </div>
             <div class="media-body">
-              <div class="media-heading label-header">Monitor Web job processes</div>
+              <div class="media-heading label-header">
+                Monitor Web job processes
+              </div>
               Enable this to monitor the process for Kudu site and webjobs
             </div>
           </div>
         </div>
         <div class="col-sm-5">
           <div *ngIf="editMode" class="custom-slider">
-            <toggle-button ToggleText="" [(selected)]="monitoringSession.MonitorScmProcesses" (selectedChange)="updateRuleSummary()"></toggle-button>
+            <toggle-button
+              ToggleText=""
+              [(selected)]="monitoringSession.MonitorScmProcesses"
+              (selectedChange)="updateRuleSummary()"
+            ></toggle-button>
           </div>
-          <div *ngIf="!editMode" class="readonly-mode">{{ monitoringSession.MonitorScmProcesses }}</div>
+          <div *ngIf="!editMode" class="readonly-mode">
+            {{ monitoringSession.MonitorScmProcesses }}
+          </div>
         </div>
       </div>
 
       <div class="row">
         <div class="summary-title">Rule Configuration</div>
-        <div class="col-sm-9 summary-box" [innerHTML]="ruleSummary">
-        </div>
+        <div class="col-sm-9 summary-box" [innerHTML]="ruleSummary"></div>
       </div>
     </div>
 
     <div class="row" style="margin-top: 10px">
       <div class="col-sm-6">
-        <button [disabled]="savingSettings || !editMode " class="btn btn-primary btn-sm"
-          (click)="saveCpuMonitoring()">Save</button>
-        <button [disabled]="savingSettings" *ngIf="editMode  && monitoringEnabled" class="btn btn-primary btn-sm"
-          (click)="cancelChanges()">Cancel</button>
+        <button
+          [disabled]="savingSettings || !editMode"
+          class="btn btn-primary btn-sm"
+          (click)="saveCpuMonitoring()"
+        >
+          Save
+        </button>
+        <button
+          [disabled]="savingSettings"
+          *ngIf="editMode && monitoringEnabled"
+          class="btn btn-primary btn-sm"
+          (click)="cancelChanges()"
+        >
+          Cancel
+        </button>
       </div>
     </div>
 
     <div class="row" style="margin-top: 10px" *ngIf="savingSettings">
       <div class="col-sm-6">
-        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+        <i
+          class="fa fa-circle-o-notch fa-spin spin-icon"
+          aria-hidden="true"
+        ></i>
         Saving monitoring settings...
       </div>
     </div>
@@ -212,6 +268,5 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>

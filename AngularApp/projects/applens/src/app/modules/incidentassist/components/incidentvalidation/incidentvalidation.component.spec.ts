@@ -8,9 +8,8 @@ describe('IncidentValidationComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ IncidentValidationComponent ]
-    })
-    .compileComponents();
+      declarations: [IncidentValidationComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,6 +1,9 @@
 <div>
-  <div *ngIf='isCollectingData()' style="margin-top:10px">
-    <i class="fa fa-circle-o-notch fa-spin spinning-icon" aria-hidden="true"></i>
-    <span style="margin-left:5px">{{loadingMessage}}</span>
+  <div *ngIf="isCollectingData()" style="margin-top: 10px">
+    <i
+      class="fa fa-circle-o-notch fa-spin spinning-icon"
+      aria-hidden="true"
+    ></i>
+    <span style="margin-left: 5px">{{ loadingMessage }}</span>
   </div>
 </div>

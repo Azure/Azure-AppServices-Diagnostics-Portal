@@ -1,10 +1,17 @@
 <div>
-  If your app is failing with HTTP Server errors, you can configure a rule to mitigate the issue or collect diagnostic
-  data
-  to identify the root cause of the problem. You can configure rules on more than one HTTP Status code condition.
+  If your app is failing with HTTP Server errors, you can configure a rule to
+  mitigate the issue or collect diagnostic data to identify the root cause of
+  the problem. You can configure rules on more than one HTTP Status code
+  condition.
 
   <div class="rule-button">
-    <button tabindex="0" type="button" #addRuleButton class="btn btn-primary btn-sm" (click)="addNewRule()">
+    <button
+      tabindex="0"
+      type="button"
+      #addRuleButton
+      class="btn btn-primary btn-sm"
+      (click)="addNewRule()"
+    >
       Add Status Codes rule
     </button>
   </div>
@@ -16,26 +23,22 @@
 </div>
 
 <div *ngIf="rule">
-  <table class="table table-bordered"
-    *ngIf="rule != null && ((rule.statusCodes != null && rule.statusCodes.length > 0) || (rule.statusCodesRange != null && rule.statusCodesRange.length > 0))"
-    style="margin-top:20px">
+  <table
+    class="table table-bordered"
+    *ngIf="
+      rule != null &&
+      ((rule.statusCodes != null && rule.statusCodes.length > 0) ||
+        (rule.statusCodesRange != null && rule.statusCodesRange.length > 0))
+    "
+    style="margin-top: 20px"
+  >
     <thead>
       <tr>
-        <th tabindex="0">
-          Count
-        </th>
-        <th tabindex="0">
-          Status Code(s)
-        </th>
-        <th tabindex="0">
-          Interval
-        </th>
-        <th tabindex="0">
-          Path
-        </th>
-        <th tabindex="0">
-          Action
-        </th>
+        <th tabindex="0">Count</th>
+        <th tabindex="0">Status Code(s)</th>
+        <th tabindex="0">Interval</th>
+        <th tabindex="0">Path</th>
+        <th tabindex="0">Action</th>
       </tr>
     </thead>
     <tbody>
@@ -47,11 +50,22 @@
         <td tabindex="0">{{ singleRule.timeInterval }}</td>
         <td tabindex="0">{{ singleRule.path }}</td>
         <td tabindex="0">
-          <button class="image-btn" *ngIf="!editMode" (click)="editStatusCodeRule(i)" title="Edit rule" name="editRule">
+          <button
+            class="image-btn"
+            *ngIf="!editMode"
+            (click)="editStatusCodeRule(i)"
+            title="Edit rule"
+            name="editRule"
+          >
             <i class="fa fa-edit"></i>
           </button>
-          <button class="image-btn" *ngIf="!editMode" (click)="deleteStatusCodeRule(i);addRuleButton.focus()"
-            title="Delete rule" name="deleteStatusCodeRule">
+          <button
+            class="image-btn"
+            *ngIf="!editMode"
+            (click)="deleteStatusCodeRule(i); addRuleButton.focus()"
+            title="Delete rule"
+            name="deleteStatusCodeRule"
+          >
             <i class="fa fa-trash"></i>
           </button>
         </td>
@@ -64,11 +78,22 @@
         <td tabindex="0">{{ singleRule.timeInterval }}</td>
         <td tabindex="0">{{ singleRule.path }}</td>
         <td tabindex="0">
-          <button class="image-btn" *ngIf="!editMode" (click)="editRangeRule(i)" title="Edit rule" name="editRangeRule">
+          <button
+            class="image-btn"
+            *ngIf="!editMode"
+            (click)="editRangeRule(i)"
+            title="Edit rule"
+            name="editRangeRule"
+          >
             <i class="fa fa-edit"></i>
           </button>
-          <button class="image-btn" *ngIf="!editMode" (click)="deleteRangeRule(i);addRuleButton.focus()"
-            title="Delete rule" name="deleteRangeRule">
+          <button
+            class="image-btn"
+            *ngIf="!editMode"
+            (click)="deleteRangeRule(i); addRuleButton.focus()"
+            title="Delete rule"
+            name="deleteRangeRule"
+          >
             <i class="fa fa-trash"></i>
           </button>
         </td>
@@ -76,91 +101,171 @@
     </tbody>
   </table>
 
-  <div *ngIf="editMode" style="margin-top:20px" class="form-group">
-
+  <div *ngIf="editMode" style="margin-top: 20px" class="form-group">
     <div class="row" *ngIf="showRuleOptions">
       <div class="col-sm-6">
-        <label for="ruleOptions">Do you want to set this rule for a specific status code or a range of status
-          codes?</label>
+        <label for="ruleOptions"
+          >Do you want to set this rule for a specific status code or a range of
+          status codes?</label
+        >
       </div>
       <div class="col-sm-6">
-        <fab-choice-group id="ruleOptions" [options]="choiceGroupOptions" defaultSelectedKey="singleStatusRule">
+        <fab-choice-group
+          id="ruleOptions"
+          [options]="choiceGroupOptions"
+          defaultSelectedKey="singleStatusRule"
+        >
         </fab-choice-group>
       </div>
     </div>
 
-    <div *ngIf="!rangeRule ; else rangeRuleTemplate">
+    <div *ngIf="!rangeRule; else rangeRuleTemplate">
       <div class="row">
         <div class="col-sm-6">
-          <label for="requestCount">After how many requests you want this condition to kick in?</label>
+          <label for="requestCount"
+            >After how many requests you want this condition to kick in?</label
+          >
         </div>
         <div class="col-sm-4">
-          <input aria-required="true" type="number" id="requestCount" placeholder="Enter request count"
-            [(ngModel)]="currentStatusCodeRule.count" min="1" max="4294967295" class="autoheal-rule-input">
-          <span style="color:red">*</span>
-          <div *ngIf="currentStatusCodeRule.count <=0" class="alert alert-danger mt-2" role="alert">
+          <input
+            aria-required="true"
+            type="number"
+            id="requestCount"
+            placeholder="Enter request count"
+            [(ngModel)]="currentStatusCodeRule.count"
+            min="1"
+            max="4294967295"
+            class="autoheal-rule-input"
+          />
+          <span style="color: red">*</span>
+          <div
+            *ngIf="currentStatusCodeRule.count <= 0"
+            class="alert alert-danger mt-2"
+            role="alert"
+          >
             Request count should be more than zero
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-6">
-          <label for="statusCode">What should be the status code for these requests?</label>
+          <label for="statusCode"
+            >What should be the status code for these requests?</label
+          >
         </div>
         <div class="col-sm-4">
-          <input aria-required="true" type="number" id="statusCode" placeholder="e.g. 500" min="100" max="500"
-            [(ngModel)]="currentStatusCodeRule.status" class="autoheal-rule-input">
-          <span style="color:red">*</span>
-          <div *ngIf="currentStatusCodeRule.status < 100 || currentStatusCodeRule.status > 530"
-            class="alert alert-danger mt-2" role="alert">
+          <input
+            aria-required="true"
+            type="number"
+            id="statusCode"
+            placeholder="e.g. 500"
+            min="100"
+            max="500"
+            [(ngModel)]="currentStatusCodeRule.status"
+            class="autoheal-rule-input"
+          />
+          <span style="color: red">*</span>
+          <div
+            *ngIf="
+              currentStatusCodeRule.status < 100 ||
+              currentStatusCodeRule.status > 530
+            "
+            class="alert alert-danger mt-2"
+            role="alert"
+          >
             Valid HTTP Status codes range from HTTP 100 to HTTP 530 only.
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-6">
-          <label for="subStatusCode">What should be the sub-status code for these requests?</label>
+          <label for="subStatusCode"
+            >What should be the sub-status code for these requests?</label
+          >
         </div>
 
         <div class="col-sm-4">
-          <input aria-required="false" type="number" min="0" max="500" id="subStatusCode" placeholder="e.g. 0"
-            [(ngModel)]="currentStatusCodeRule.subStatus" class="autoheal-rule-input">
-          <div *ngIf="currentStatusCodeRule.status === 500 && currentStatusCodeRule.subStatus === 121"
-            class="alert alert-danger mt-2" role="alert">
-            Auto-Heal module cannot detect 500.121 error. Configure a <strong>Request Duration</strong> rule instead
-            with a time taken more than 180 seconds.
+          <input
+            aria-required="false"
+            type="number"
+            min="0"
+            max="500"
+            id="subStatusCode"
+            placeholder="e.g. 0"
+            [(ngModel)]="currentStatusCodeRule.subStatus"
+            class="autoheal-rule-input"
+          />
+          <div
+            *ngIf="
+              currentStatusCodeRule.status === 500 &&
+              currentStatusCodeRule.subStatus === 121
+            "
+            class="alert alert-danger mt-2"
+            role="alert"
+          >
+            Auto-Heal module cannot detect 500.121 error. Configure a
+            <strong>Request Duration</strong> rule instead with a time taken
+            more than 180 seconds.
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-6">
-          <label for="win32StatusCode">What should be the win32-status code for these requests?</label>
+          <label for="win32StatusCode"
+            >What should be the win32-status code for these requests?</label
+          >
         </div>
         <div class="col-sm-4">
-          <input aria-required="false" type="number" min="0" max="4294967295" id="win32StatusCode" placeholder="e.g. 0"
-            [(ngModel)]="currentStatusCodeRule.win32Status" class="autoheal-rule-input">
+          <input
+            aria-required="false"
+            type="number"
+            min="0"
+            max="4294967295"
+            id="win32StatusCode"
+            placeholder="e.g. 0"
+            [(ngModel)]="currentStatusCodeRule.win32Status"
+            class="autoheal-rule-input"
+          />
         </div>
       </div>
       <div class="row">
         <div class="col-sm-6">
-          <label for="durationStatusCode">What is the time interval (in seconds) in which the above condition should be
-            met?</label>
+          <label for="durationStatusCode"
+            >What is the time interval (in seconds) in which the above condition
+            should be met?</label
+          >
         </div>
         <div class="col-sm-4">
-          <timespan ControlId="durationStatusCode" [(timeSpan)]="currentStatusCodeRule.timeInterval"
-            placeholder="e.g. 60">
+          <timespan
+            ControlId="durationStatusCode"
+            [(timeSpan)]="currentStatusCodeRule.timeInterval"
+            placeholder="e.g. 60"
+          >
           </timespan>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-6">
-          <label for="requestPath">What is the request path (leave blank for all requests)?</label>
+          <label for="requestPath"
+            >What is the request path (leave blank for all requests)?</label
+          >
         </div>
         <div class="col-sm-4">
-          <input type="text" aria-required="false" id="requestPath" placeholder="e.g. /default*.aspx"
-            [(ngModel)]="currentStatusCodeRule.path" class="autoheal-rule-input">
-          <div *ngIf="!isValidUrlPattern(currentStatusCodeRule.path)" role="alert" class="alert alert-danger mt-2">
-            Path can contain letters, alphabets, *, -, period, _ and forward slashes only
+          <input
+            type="text"
+            aria-required="false"
+            id="requestPath"
+            placeholder="e.g. /default*.aspx"
+            [(ngModel)]="currentStatusCodeRule.path"
+            class="autoheal-rule-input"
+          />
+          <div
+            *ngIf="!isValidUrlPattern(currentStatusCodeRule.path)"
+            role="alert"
+            class="alert alert-danger mt-2"
+          >
+            Path can contain letters, alphabets, *, -, period, _ and forward
+            slashes only
           </div>
         </div>
       </div>
@@ -169,49 +274,93 @@
     <ng-template #rangeRuleTemplate>
       <div class="row">
         <div class="col-sm-6">
-          <label for="requestCount">After how many requests you want this condition to kick in?</label>
+          <label for="requestCount"
+            >After how many requests you want this condition to kick in?</label
+          >
         </div>
         <div class="col-sm-4">
-          <input aria-required="true" type="number" id="requestCount" placeholder="Enter request count"
-            [(ngModel)]="currentRangeRule.count" min="1" max="4294967295" class="autoheal-rule-input">
-          <span style="color:red">*</span>
-          <div *ngIf="currentRangeRule.count <=0" class="alert alert-danger mt-2" role="alert">
+          <input
+            aria-required="true"
+            type="number"
+            id="requestCount"
+            placeholder="Enter request count"
+            [(ngModel)]="currentRangeRule.count"
+            min="1"
+            max="4294967295"
+            class="autoheal-rule-input"
+          />
+          <span style="color: red">*</span>
+          <div
+            *ngIf="currentRangeRule.count <= 0"
+            class="alert alert-danger mt-2"
+            role="alert"
+          >
             Request count should be more than zero
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-6">
-          <label for="statusCodesRange">What is the range of status codes for this rule?</label>
+          <label for="statusCodesRange"
+            >What is the range of status codes for this rule?</label
+          >
         </div>
         <div class="col-sm-4">
-          <input type="text" aria-required="true" id="statusCodesRange" placeholder="e.g. 400-500"
-            [(ngModel)]="currentRangeRule.statusCodes" class="autoheal-rule-input">
-          <span style="color:red">*</span>
-          <div *ngIf="statusCodeRangeError.length > 0" class="alert alert-danger mt-2" role="alert">
-            {{statusCodeRangeError}}
+          <input
+            type="text"
+            aria-required="true"
+            id="statusCodesRange"
+            placeholder="e.g. 400-500"
+            [(ngModel)]="currentRangeRule.statusCodes"
+            class="autoheal-rule-input"
+          />
+          <span style="color: red">*</span>
+          <div
+            *ngIf="statusCodeRangeError.length > 0"
+            class="alert alert-danger mt-2"
+            role="alert"
+          >
+            {{ statusCodeRangeError }}
           </div>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-6">
-          <label for="durationStatusCode">What is the time interval (in seconds) in which the above condition should be
-            met?</label>
+          <label for="durationStatusCode"
+            >What is the time interval (in seconds) in which the above condition
+            should be met?</label
+          >
         </div>
         <div class="col-sm-4">
-          <timespan ControlId="durationStatusCode" [(timeSpan)]="currentRangeRule.timeInterval" placeholder="e.g. 60">
+          <timespan
+            ControlId="durationStatusCode"
+            [(timeSpan)]="currentRangeRule.timeInterval"
+            placeholder="e.g. 60"
+          >
           </timespan>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-6">
-          <label for="requestPath">What is the request path (leave blank for all requests)?</label>
+          <label for="requestPath"
+            >What is the request path (leave blank for all requests)?</label
+          >
         </div>
         <div class="col-sm-4">
-          <input type="text" aria-required="false" id="requestPath" placeholder="e.g. /default*.aspx"
-            [(ngModel)]="currentRangeRule.path">
-          <div *ngIf="!isValidUrlPattern(currentRangeRule.path)" class="alert alert-danger mt-2" role="alert">
-            Path can contain letters, alphabets, asterisk, dashes, period, underscore and forward slashes only
+          <input
+            type="text"
+            aria-required="false"
+            id="requestPath"
+            placeholder="e.g. /default*.aspx"
+            [(ngModel)]="currentRangeRule.path"
+          />
+          <div
+            *ngIf="!isValidUrlPattern(currentRangeRule.path)"
+            class="alert alert-danger mt-2"
+            role="alert"
+          >
+            Path can contain letters, alphabets, asterisk, dashes, period,
+            underscore and forward slashes only
           </div>
         </div>
       </div>
@@ -219,8 +368,14 @@
 
     <div class="row">
       <div class="col-sm-4">
-        <button type="button" class="btn btn-primary btn-sm" [disabled]="!isValid()"
-          (click)="saveRule();addRuleButton.focus()">Ok</button>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          [disabled]="!isValid()"
+          (click)="saveRule(); addRuleButton.focus()"
+        >
+          Ok
+        </button>
       </div>
     </div>
   </div>

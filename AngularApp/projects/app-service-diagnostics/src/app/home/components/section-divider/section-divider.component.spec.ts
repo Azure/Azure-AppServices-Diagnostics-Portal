@@ -8,9 +8,8 @@ describe('SectionDividerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SectionDividerComponent ]
-    })
-    .compileComponents();
+      declarations: [SectionDividerComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

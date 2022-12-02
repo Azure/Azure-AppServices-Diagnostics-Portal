@@ -1,38 +1,80 @@
-<div class="appinsights-tile" *ngIf="appInsightsService.appInsightsSettings.validForStack">
-    <div class="header">
-        <img src="https://azure.microsoft.com/svghandler/application-insights/?width=25&height=25"> Application Insights
-        <div class="tool-tip pull-right">
-            <i class="fa fa-info-circle" style="color:#676767;float:right;padding-top:10px"></i>
-            <span class="tool-tip-text" style="font-variant:normal; width:200px">Application Insights helps you detect and diagnose issues in your web application code.</span>
-        </div>
+<div
+  class="appinsights-tile"
+  *ngIf="appInsightsService.appInsightsSettings.validForStack"
+>
+  <div class="header">
+    <img
+      src="https://azure.microsoft.com/svghandler/application-insights/?width=25&height=25"
+    />
+    Application Insights
+    <div class="tool-tip pull-right">
+      <i
+        class="fa fa-info-circle"
+        style="color: #676767; float: right; padding-top: 10px"
+      ></i>
+      <span class="tool-tip-text" style="font-variant: normal; width: 200px"
+        >Application Insights helps you detect and diagnose issues in your web
+        application code.</span
+      >
     </div>
-    <div>
-        <div style="padding:10px">
-            <div>
-                <div style="display:inline-block">
-                    <div *ngIf="appInsightsService.appInsightsSettings.enabledForWebApp === undefined">
-                        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-                        Checking App Insights
-                    </div>
-                    
-                    <div *ngIf="appInsightsService.appInsightsSettings.enabledForWebApp">
-                        <i class="fa health-icon fa-check-circle healthy-icon-color" aria-hidden="true"></i>
-                        Enabled
-                    </div>
+  </div>
+  <div>
+    <div style="padding: 10px">
+      <div>
+        <div style="display: inline-block">
+          <div
+            *ngIf="
+              appInsightsService.appInsightsSettings.enabledForWebApp ===
+              undefined
+            "
+          >
+            <i
+              class="fa fa-circle-o-notch fa-spin spin-icon"
+              aria-hidden="true"
+            ></i>
+            Checking App Insights
+          </div>
 
-                    <div *ngIf="appInsightsService.appInsightsSettings.enabledForWebApp === false">
-                        <i class="fa health-icon fa-times-circle unhealthy-icon-color" aria-hidden="true"></i>
-                        Not Enabled
-                    </div>
-                </div>
-                <div style="display:inline-block" class="pull-right hyperlink">
-                    <div *ngIf="appInsightsService.appInsightsSettings.enabledForWebApp" (click)="OpenAppInsights()">open</div>
-                    <div *ngIf="appInsightsService.appInsightsSettings.enabledForWebApp === false" (click)="OpenAppInsights()">create</div>
-                </div>
-            </div>
+          <div *ngIf="appInsightsService.appInsightsSettings.enabledForWebApp">
+            <i
+              class="fa health-icon fa-check-circle healthy-icon-color"
+              aria-hidden="true"
+            ></i>
+            Enabled
+          </div>
 
-            <!-- Connection with Support Center. Will be enabled later. -->
-            <!--<div style="margin-top:10px">
+          <div
+            *ngIf="
+              appInsightsService.appInsightsSettings.enabledForWebApp === false
+            "
+          >
+            <i
+              class="fa health-icon fa-times-circle unhealthy-icon-color"
+              aria-hidden="true"
+            ></i>
+            Not Enabled
+          </div>
+        </div>
+        <div style="display: inline-block" class="pull-right hyperlink">
+          <div
+            *ngIf="appInsightsService.appInsightsSettings.enabledForWebApp"
+            (click)="OpenAppInsights()"
+          >
+            open
+          </div>
+          <div
+            *ngIf="
+              appInsightsService.appInsightsSettings.enabledForWebApp === false
+            "
+            (click)="OpenAppInsights()"
+          >
+            create
+          </div>
+        </div>
+      </div>
+
+      <!-- Connection with Support Center. Will be enabled later. -->
+      <!--<div style="margin-top:10px">
                 <div style="display:inline">
                     
                     <div style="display:inline-block;height:40px;vertical-align: text-bottom">
@@ -65,7 +107,6 @@
                         edit
                 </div>
             </div>-->
-
-        </div>
     </div>
+  </div>
 </div>

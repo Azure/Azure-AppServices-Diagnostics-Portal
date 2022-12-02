@@ -8,9 +8,8 @@ describe('GenericCommsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GenericCommsComponent ]
-    })
-    .compileComponents();
+      declarations: [GenericCommsComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

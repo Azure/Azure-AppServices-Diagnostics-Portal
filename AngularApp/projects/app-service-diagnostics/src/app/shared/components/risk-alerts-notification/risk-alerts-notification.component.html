@@ -1,13 +1,44 @@
 <ng-container *ngIf="showNotification">
-  <fab-message-bar [messageBarType]="notificationStatusType" isMultiline="false" dismissButtonAriaLabel="Close" [truncated]="true"
-    [styles]="styles" overflowButtonAriaLabel="See more" >{{notificationMessageBarText}} <a
-      (click)="openRiskAlertsPanel(_riskAlertService.notificationMessageBar.id)" tabindex="0" aria-label="notificationMessageBarText" (keyup.enter)="openRiskAlertsPanel(_riskAlertService.caseSubmissionRiskNotificationId)">{{notificationMessageBarLinkText}}</a>.
+  <fab-message-bar
+    [messageBarType]="notificationStatusType"
+    isMultiline="false"
+    dismissButtonAriaLabel="Close"
+    [truncated]="true"
+    [styles]="styles"
+    overflowButtonAriaLabel="See more"
+    >{{ notificationMessageBarText }}
+    <a
+      (click)="openRiskAlertsPanel(_riskAlertService.notificationMessageBar.id)"
+      tabindex="0"
+      aria-label="notificationMessageBarText"
+      (keyup.enter)="
+        openRiskAlertsPanel(_riskAlertService.caseSubmissionRiskNotificationId)
+      "
+      >{{ notificationMessageBarLinkText }}</a
+    >.
   </fab-message-bar>
 </ng-container>
 
 <ng-container *ngIf="showRiskAlertsNotification">
-  <fab-message-bar [messageBarType]="riskAlertNotificationStatusType" isMultiline="false" dismissButtonAriaLabel="Close" [truncated]="true"
-    [styles]="styles" overflowButtonAriaLabel="See more" >{{riskAlertMessage}} <a
-      (click)="openRiskAlertsPanel(_riskAlertService.caseSubmissionRiskNotificationId)" tabindex="0" aria-label="riskAlertMessage" (keyup.enter)="openRiskAlertsPanel(_riskAlertService.caseSubmissionRiskNotificationId)">here</a> to view more details.
+  <fab-message-bar
+    [messageBarType]="riskAlertNotificationStatusType"
+    isMultiline="false"
+    dismissButtonAriaLabel="Close"
+    [truncated]="true"
+    [styles]="styles"
+    overflowButtonAriaLabel="See more"
+    >{{ riskAlertMessage }}
+    <a
+      (click)="
+        openRiskAlertsPanel(_riskAlertService.caseSubmissionRiskNotificationId)
+      "
+      tabindex="0"
+      aria-label="riskAlertMessage"
+      (keyup.enter)="
+        openRiskAlertsPanel(_riskAlertService.caseSubmissionRiskNotificationId)
+      "
+      >here</a
+    >
+    to view more details.
   </fab-message-bar>
 </ng-container>

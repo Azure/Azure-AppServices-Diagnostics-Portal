@@ -1,13 +1,28 @@
-<div class="row" [ngClass]="{'animated fadeOut': showComponent === false}" style="padding-right:10px;margin: 10px -5px;">
-    <div class="row" style="width:50%">
-        <div class="col col-sm-12">
-            <textarea aria-label="Enter feedback here" [(ngModel)]="feedbackMessage" class="form-control" rows="3" placeholder="Enter feedback here..."></textarea>
-        </div>
+<div
+  class="row"
+  [ngClass]="{ 'animated fadeOut': showComponent === false }"
+  style="padding-right: 10px; margin: 10px -5px"
+>
+  <div class="row" style="width: 50%">
+    <div class="col col-sm-12">
+      <textarea
+        aria-label="Enter feedback here"
+        [(ngModel)]="feedbackMessage"
+        class="form-control"
+        rows="3"
+        placeholder="Enter feedback here..."
+      ></textarea>
     </div>
+  </div>
 </div>
-<div [ngClass]="{'animated bounceOutLeft': showComponent === false}">
-    <button *ngFor="let item of buttonList; let i = index" type="button" class="custom-button bot-button" style="margin-right:20px;min-width:150px"
-        (click)="onClick(item)">
-        {{item.title}}
-    </button>
+<div [ngClass]="{ 'animated bounceOutLeft': showComponent === false }">
+  <button
+    *ngFor="let item of buttonList; let i = index"
+    type="button"
+    class="custom-button bot-button"
+    style="margin-right: 20px; min-width: 150px"
+    (click)="onClick(item)"
+  >
+    {{ item.title }}
+  </button>
 </div>

@@ -1,38 +1,59 @@
 <div class="row" style="margin-top: 15px">
-    <div class="col-s-6 col-xs-7">
-        
-        <div class="row">
-            
-            <div class="col" *ngIf="loadingAppHealthStatus">
-                <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-                Checking App health ...
-            </div>
-            
-            <div class="col" *ngIf="!loadingAppHealthStatus">
-                <i class="fa health-icon" [ngClass]="{'fa-exclamation-circle unhealthy-icon-color': isAppCurrentlyHealthy === false, 'fa-check-circle healthy-icon-color': isAppCurrentlyHealthy}" aria-hidden="true"></i>
-                {{appCurrentStatusString}}
-            </div>
-        </div>
-        <div class="row">
+  <div class="col-s-6 col-xs-7">
+    <div class="row">
+      <div class="col" *ngIf="loadingAppHealthStatus">
+        <i
+          class="fa fa-circle-o-notch fa-spin spin-icon"
+          aria-hidden="true"
+        ></i>
+        Checking App health ...
+      </div>
 
-             <div class="col" *ngIf="loadingServiceHealthStatus">
-                <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-                Checking Service health ...
-            </div>
-
-            <div class="col" *ngIf="!loadingServiceHealthStatus">
-                <i class="fa health-icon" [ngClass]="{'fa-exclamation-circle unhealthy-icon-color': isServiceCurrentlyHealthy === false, 'fa-check-circle healthy-icon-color': isServiceCurrentlyHealthy}" aria-hidden="true"></i>
-                {{serviceCurrentStatusString}}
-            </div>
-
-        </div>
+      <div class="col" *ngIf="!loadingAppHealthStatus">
+        <i
+          class="fa health-icon"
+          [ngClass]="{
+            'fa-exclamation-circle unhealthy-icon-color':
+              isAppCurrentlyHealthy === false,
+            'fa-check-circle healthy-icon-color': isAppCurrentlyHealthy
+          }"
+          aria-hidden="true"
+        ></i>
+        {{ appCurrentStatusString }}
+      </div>
     </div>
+    <div class="row">
+      <div class="col" *ngIf="loadingServiceHealthStatus">
+        <i
+          class="fa fa-circle-o-notch fa-spin spin-icon"
+          aria-hidden="true"
+        ></i>
+        Checking Service health ...
+      </div>
 
-    <div class="col-s-6 col-xs-5">
-        <div class="row" *ngIf="!bladeOpenedFromSupportTicketFlow">
-            <span *ngIf="lastUpdatedTime" class="pull-right sub-text">Last updated:  {{lastUpdatedTime}}</span>
-        </div>
-        <button class="btn btn-link pull-right" (click)="refresh()"><i class="fa fa-refresh refresh-icon"></i> Refresh</button> 
+      <div class="col" *ngIf="!loadingServiceHealthStatus">
+        <i
+          class="fa health-icon"
+          [ngClass]="{
+            'fa-exclamation-circle unhealthy-icon-color':
+              isServiceCurrentlyHealthy === false,
+            'fa-check-circle healthy-icon-color': isServiceCurrentlyHealthy
+          }"
+          aria-hidden="true"
+        ></i>
+        {{ serviceCurrentStatusString }}
+      </div>
     </div>
+  </div>
 
+  <div class="col-s-6 col-xs-5">
+    <div class="row" *ngIf="!bladeOpenedFromSupportTicketFlow">
+      <span *ngIf="lastUpdatedTime" class="pull-right sub-text"
+        >Last updated: {{ lastUpdatedTime }}</span
+      >
+    </div>
+    <button class="btn btn-link pull-right" (click)="refresh()">
+      <i class="fa fa-refresh refresh-icon"></i> Refresh
+    </button>
+  </div>
 </div>

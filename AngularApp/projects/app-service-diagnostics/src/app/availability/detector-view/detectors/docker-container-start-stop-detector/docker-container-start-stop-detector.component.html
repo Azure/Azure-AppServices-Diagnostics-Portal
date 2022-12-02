@@ -1,25 +1,33 @@
-<metric-graph 
-[metricSets]="detectorMetrics" 
-[title]="detectorMetricsTitle" 
-[chartType]="metricsChartType" 
-[yAxisLabel]="detectorMetricsYAxisLabel"
-[chartOptions]="chartOptions"></metric-graph>
+<metric-graph
+  [metricSets]="detectorMetrics"
+  [title]="detectorMetricsTitle"
+  [chartType]="metricsChartType"
+  [yAxisLabel]="detectorMetricsYAxisLabel"
+  [chartOptions]="chartOptions"
+></metric-graph>
 <span *ngIf="showMetadata">Docker Container Logs during this time</span>
-<table *ngIf="showMetadata" class="table table-bordered" style="margin-top:8px;margin-bottom:5px;">
-    <thead>
-        <tr>
-            <th style="width:160px;">Time (UTC)</th>
-            <th>Message</th>
-                
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let row of detectorResponse.data">
-            <td><p style="white-space: pre;">{{formatDate(row[0].value) }}</p></td>
-            <td><p style="white-space: pre;">{{row[1].value}}</p></td>
-        </tr>
-    </tbody>
+<table
+  *ngIf="showMetadata"
+  class="table table-bordered"
+  style="margin-top: 8px; margin-bottom: 5px"
+>
+  <thead>
+    <tr>
+      <th style="width: 160px">Time (UTC)</th>
+      <th>Message</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of detectorResponse.data">
+      <td>
+        <p style="white-space: pre">{{ formatDate(row[0].value) }}</p>
+      </td>
+      <td>
+        <p style="white-space: pre">{{ row[1].value }}</p>
+      </td>
+    </tr>
+  </tbody>
 </table>
 
-<br/>
-<feedback-form [source]='getDetectorName()'></feedback-form>
+<br />
+<feedback-form [source]="getDetectorName()"></feedback-form>

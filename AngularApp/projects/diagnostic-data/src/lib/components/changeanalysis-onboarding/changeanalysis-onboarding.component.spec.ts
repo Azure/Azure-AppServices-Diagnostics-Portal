@@ -8,9 +8,8 @@ describe('ChangeanalysisOnboardingComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChangeanalysisOnboardingComponent ]
-    })
-    .compileComponents();
+      declarations: [ChangeanalysisOnboardingComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { PIIUtilities } from '../../utilities/pii-utilities';
@@ -9,11 +9,11 @@ import { PIIUtilities } from '../../utilities/pii-utilities';
   styleUrls: ['./feedback.component.scss']
 })
 export class FeedbackComponent implements OnInit {
-
   @Input() ratingEventProperties: any;
   @Input() showThanksMessage: boolean = false;
   @Input() showFeedbackForm: boolean = true;
-  @Output() showFeedbackFormChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() showFeedbackFormChange: EventEmitter<boolean> =
+    new EventEmitter<boolean>();
 
   @Output() submit: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -27,11 +27,9 @@ export class FeedbackComponent implements OnInit {
   yesSelected: boolean;
   noSelected: boolean;
 
-  constructor(protected telemetryService: TelemetryService) {
-  }
+  constructor(protected telemetryService: TelemetryService) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   @Input() source: string;
 
@@ -58,7 +56,7 @@ export class FeedbackComponent implements OnInit {
     this.submit.emit(this.showThanksMessage);
     this.rating = 0;
     this.comments = this.defaultComments;
-    this.feedbackText = "";
+    this.feedbackText = '';
     this.showFeedbackFormChange.emit(this.showFeedbackForm);
 
     setTimeout(() => {
@@ -66,7 +64,11 @@ export class FeedbackComponent implements OnInit {
     }, 2000);
   }
 
-  protected logEvent(eventMessage: string, eventProperties?: any, measurements?: any) {
+  protected logEvent(
+    eventMessage: string,
+    eventProperties?: any,
+    measurements?: any
+  ) {
     for (const id of Object.keys(this.ratingEventProperties)) {
       if (this.ratingEventProperties.hasOwnProperty(id)) {
         eventProperties[id] = String(this.ratingEventProperties[id]);
@@ -74,5 +76,4 @@ export class FeedbackComponent implements OnInit {
     }
     this.telemetryService.logEvent(eventMessage, eventProperties, measurements);
   }
-
 }

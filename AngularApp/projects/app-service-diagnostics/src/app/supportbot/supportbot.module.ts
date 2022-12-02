@@ -34,47 +34,46 @@ import { AvailabilityPerformanceFlow } from './message-flow/v2-flows/availabilit
 import { LinuxAvailabilityPerformanceFlow } from './message-flow/v2-flows/linux-availability-performance.flow';
 
 @NgModule({
-    declarations: [
-        HomepageComponent,
-        SupportBotComponent,
-        DynamicComponent,
-        TextMessageComponent,
-        LoadingMessageComponent,
-        MainMenuComponent,
-        ButtonMessageComponent,
-        TalkToAgentMessageComponent,
-        FeedbackComponent,
-        SolutionsMessageComponent,
-        GraphMessageComponent,
-        ProblemStatementMessageComponent,
-        CategoryMenuComponent,
-        DetectorSummaryComponent,
-        DocumentSearchComponent,
-        DocumentSearchResultsComponent
-    ],
-    imports: [
-        SharedModule,
-        AvailabilityModule,
-        SolutionsModule,
-        SharedV2Module,
-        DiagnosticDataModule
-    ],
-    exports: [
-        HomepageComponent,
-        SupportBotComponent,
-        CategoryMenuComponent,
-        DetectorSummaryComponent
-    ],
-    providers: [
-        StartupMessages,
-        MainMenuMessageFlow,
-        FeedbackMessageFlow,
-        CpuAnalysisChatFlow,
-        MessageProcessor,
-        AvailabilityPerformanceFlow,
-        LinuxAvailabilityPerformanceFlow,
-        GenericCategoryFlow
-    ]
+  declarations: [
+    HomepageComponent,
+    SupportBotComponent,
+    DynamicComponent,
+    TextMessageComponent,
+    LoadingMessageComponent,
+    MainMenuComponent,
+    ButtonMessageComponent,
+    TalkToAgentMessageComponent,
+    FeedbackComponent,
+    SolutionsMessageComponent,
+    GraphMessageComponent,
+    ProblemStatementMessageComponent,
+    CategoryMenuComponent,
+    DetectorSummaryComponent,
+    DocumentSearchComponent,
+    DocumentSearchResultsComponent
+  ],
+  imports: [
+    SharedModule,
+    AvailabilityModule,
+    SolutionsModule,
+    SharedV2Module,
+    DiagnosticDataModule
+  ],
+  exports: [
+    HomepageComponent,
+    SupportBotComponent,
+    CategoryMenuComponent,
+    DetectorSummaryComponent
+  ],
+  providers: [
+    StartupMessages,
+    MainMenuMessageFlow,
+    FeedbackMessageFlow,
+    CpuAnalysisChatFlow,
+    MessageProcessor,
+    AvailabilityPerformanceFlow,
+    LinuxAvailabilityPerformanceFlow,
+    GenericCategoryFlow
+  ]
 })
-export class SupportBotModule {
-}
+export class SupportBotModule {}

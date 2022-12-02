@@ -1,8 +1,12 @@
-<default-solution-template [title]="title" [description]="description" [tags]="data.tags">    
-    <p style="padding: 10px 0px 0px 0px">{{suggestion}}</p>
+<default-solution-template
+  [title]="title"
+  [description]="description"
+  [tags]="data.tags"
+>
+  <p style="padding: 10px 0px 0px 0px">{{ suggestion }}</p>
 
-    <div class="header2">What you should know about deployment</div>
-    <ul>
-        <li *ngFor="let statement of educationInformation">{{statement}}</li>
-    </ul>
+  <div class="header2">What you should know about deployment</div>
+  <ul>
+    <li *ngFor="let statement of educationInformation">{{ statement }}</li>
+  </ul>
 </default-solution-template>

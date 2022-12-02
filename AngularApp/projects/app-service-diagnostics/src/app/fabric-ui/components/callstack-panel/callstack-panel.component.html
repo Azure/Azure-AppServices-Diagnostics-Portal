@@ -1,15 +1,27 @@
-<fab-panel [isOpen]="globals.openCallStackPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'" (onDismiss)="dismissedHandler()"
-  [headerText]="'Call Stack'">
+<fab-panel
+  [isOpen]="globals.openCallStackPanel"
+  [type]="type"
+  [customWidth]="width"
+  [isHiddenOnDismiss]="true"
+  [isLightDismiss]="true"
+  [hasCloseButton]="true"
+  [isBlocking]="false"
+  [closeButtonAriaLabel]="'close'"
+  (onDismiss)="dismissedHandler()"
+  [headerText]="'Call Stack'"
+>
   <div class="panel-padding">
     <div class="exception" *ngIf="globals.callStackDetails.managedException">
       {{ globals.callStackDetails.managedException }}
     </div>
-    <pre class="stack">{{ globals.callStackDetails.callStack}}</pre>
+    <pre class="stack">{{ globals.callStackDetails.callStack }}</pre>
 
     <div class="footer">
-      <hr style="margin-bottom: 20px;">
-      <fab-primary-button [contentStyle]="'margin-left:20px'" (click)="dismissedHandler()">
+      <hr style="margin-bottom: 20px" />
+      <fab-primary-button
+        [contentStyle]="'margin-left:20px'"
+        (click)="dismissedHandler()"
+      >
         Close
       </fab-primary-button>
     </div>

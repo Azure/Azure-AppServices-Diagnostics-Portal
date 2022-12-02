@@ -10,12 +10,16 @@ import { AdalService } from 'adal-angular4';
   providedIn: 'root'
 })
 export class DiagnosticApiAppSettingsService {
-  public readonly localDiagnosticApi = "http://localhost:5000/";
+  public readonly localDiagnosticApi = 'http://localhost:5000/';
   public GeomasterServiceAddress: string = null;
   public GeomasterName: string = null;
   public Location: string = null;
-  public effectiveLocale: string = "";
-  constructor(private _httpClient: HttpClient, private _cacheService: CacheService, private _adalService: AdalService) { }
+  public effectiveLocale: string = '';
+  constructor(
+    private _httpClient: HttpClient,
+    private _cacheService: CacheService,
+    private _adalService: AdalService
+  ) {}
 
   public get diagnosticApi(): string {
     return environment.production ? '' : this.localDiagnosticApi;
@@ -30,7 +34,13 @@ export class DiagnosticApiAppSettingsService {
     return this._cacheService.get(path, request, invalidateCache);
   }
 
-  private _getHeaders(path?: string, method?: HttpMethod, internalClient: boolean = true, internalView: boolean = true, additionalHeaders?: Map<string, string>): HttpHeaders {
+  private _getHeaders(
+    path?: string,
+    method?: HttpMethod,
+    internalClient: boolean = true,
+    internalView: boolean = true,
+    additionalHeaders?: Map<string, string>
+  ): HttpHeaders {
     let headers = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/json');
     headers = headers.set('Accept', 'application/json');
@@ -38,14 +48,20 @@ export class DiagnosticApiAppSettingsService {
     headers = headers.set('x-ms-internal-view', String(internalView));
 
     if (environment.adal.enabled) {
-      headers = headers.set('Authorization', `Bearer ${this._adalService.userInfo.token}`)
+      headers = headers.set(
+        'Authorization',
+        `Bearer ${this._adalService.userInfo.token}`
+      );
     }
 
     if (this.GeomasterServiceAddress)
-      headers = headers.set("x-ms-geomaster-hostname", this.GeomasterServiceAddress);
+      headers = headers.set(
+        'x-ms-geomaster-hostname',
+        this.GeomasterServiceAddress
+      );
 
     if (this.GeomasterName)
-      headers = headers.set("x-ms-geomaster-name", this.GeomasterName);
+      headers = headers.set('x-ms-geomaster-name', this.GeomasterName);
 
     if (path) {
       headers = headers.set('x-ms-path-query', encodeURI(path));
@@ -60,7 +76,10 @@ export class DiagnosticApiAppSettingsService {
     }
 
     if (this.isLocalizationApplicable(this.effectiveLocale)) {
-      headers = headers.set('x-ms-localization-language', encodeURI(this.effectiveLocale.toLowerCase()));
+      headers = headers.set(
+        'x-ms-localization-language',
+        encodeURI(this.effectiveLocale.toLowerCase())
+      );
     }
 
     if (additionalHeaders) {
@@ -75,6 +94,11 @@ export class DiagnosticApiAppSettingsService {
   }
 
   private isLocalizationApplicable(locale: string): boolean {
-    return locale != null && locale != "" && locale != "en" && !locale.startsWith("en");
+    return (
+      locale != null &&
+      locale != '' &&
+      locale != 'en' &&
+      !locale.startsWith('en')
+    );
   }
 }

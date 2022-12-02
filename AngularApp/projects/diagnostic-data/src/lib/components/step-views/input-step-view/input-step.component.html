@@ -1,32 +1,49 @@
 <div class="input-step step">
-    <p class="input-step-title">{{inputStepView.title}}</p>
-    <div *ngIf="!inputStepView.collapsed; else collapseSection" class="input-section">
-        <div class="input-entry">
-            {{inputStepView.entry}}
-            <a class="input-tooltip" *ngIf="inputStepView.tooltip">
-                <fab-tooltip-host [content]="inputStepView.tooltip">
-                    <i class="ib-info"></i>
-                </fab-tooltip-host>
-            </a>
-        </div>
-        <input class="input-box" placeholder="{{inputStepView.placeholder}}" title="{{inputStepView.tooltip}}" [(ngModel)]="inputStepView.text">
-        <div class="input-error"><i class="ib-redx input-error-icon" *ngIf="inputStepView.error!=null"></i><div>{{inputStepView.error}}&nbsp;</div></div>
-        <fab-primary-button [contentClass]="'input-check-button'" (click)="inputStepView.callback(inputStepView.text)">
-            {{inputStepView.buttonText}}
-        </fab-primary-button>
+  <p class="input-step-title">{{ inputStepView.title }}</p>
+  <div
+    *ngIf="!inputStepView.collapsed; else collapseSection"
+    class="input-section"
+  >
+    <div class="input-entry">
+      {{ inputStepView.entry }}
+      <a class="input-tooltip" *ngIf="inputStepView.tooltip">
+        <fab-tooltip-host [content]="inputStepView.tooltip">
+          <i class="ib-info"></i>
+        </fab-tooltip-host>
+      </a>
     </div>
-    <ng-template #collapseSection>
-        <div class="input-entry">
-            {{inputStepView.entry}}
-            <a class="input-tooltip" *ngIf="inputStepView.tooltip">
-                <fab-tooltip-host [content]="inputStepView.tooltip">
-                    <i class="ib-info"></i>
-                </fab-tooltip-host>
-            </a>
-        </div> 
-        <div class="input-content">{{inputStepView.text}}</div>
-        <a class="input-expand" (click)="expand()">
-            <i class="ib-pencil"></i>
-        </a>
-    </ng-template>
+    <input
+      class="input-box"
+      placeholder="{{ inputStepView.placeholder }}"
+      title="{{ inputStepView.tooltip }}"
+      [(ngModel)]="inputStepView.text"
+    />
+    <div class="input-error">
+      <i
+        class="ib-redx input-error-icon"
+        *ngIf="inputStepView.error != null"
+      ></i>
+      <div>{{ inputStepView.error }}&nbsp;</div>
+    </div>
+    <fab-primary-button
+      [contentClass]="'input-check-button'"
+      (click)="inputStepView.callback(inputStepView.text)"
+    >
+      {{ inputStepView.buttonText }}
+    </fab-primary-button>
+  </div>
+  <ng-template #collapseSection>
+    <div class="input-entry">
+      {{ inputStepView.entry }}
+      <a class="input-tooltip" *ngIf="inputStepView.tooltip">
+        <fab-tooltip-host [content]="inputStepView.tooltip">
+          <i class="ib-info"></i>
+        </fab-tooltip-host>
+      </a>
+    </div>
+    <div class="input-content">{{ inputStepView.text }}</div>
+    <a class="input-expand" (click)="expand()">
+      <i class="ib-pencil"></i>
+    </a>
+  </ng-template>
 </div>

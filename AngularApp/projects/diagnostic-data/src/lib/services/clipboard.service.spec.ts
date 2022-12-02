@@ -9,7 +9,10 @@ describe('ClipboardService', () => {
     });
   });
 
-  it('should be created', inject([ClipboardService], (service: ClipboardService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [ClipboardService],
+    (service: ClipboardService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

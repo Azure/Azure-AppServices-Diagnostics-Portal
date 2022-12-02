@@ -8,9 +8,8 @@ describe('OnboardingFlowComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OnboardingFlowComponent ]
-    })
-    .compileComponents();
+      declarations: [OnboardingFlowComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

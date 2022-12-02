@@ -14,21 +14,27 @@ export class DiagosticSessionsPanelComponent implements OnInit {
   siteToBeDiagnosed: SiteDaasInfo;
   scmPath: string;
   type: PanelType = PanelType.custom;
-  width: string = "850px";
+  width: string = '850px';
 
-  constructor(public webSiteService: WebSitesService, private _siteService: SiteService, public globals: Globals) {
-    this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(site => {
+  constructor(
+    public webSiteService: WebSitesService,
+    private _siteService: SiteService,
+    public globals: Globals
+  ) {
+    this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe((site) => {
       this.siteToBeDiagnosed = site;
     });
 
-    this.scmPath = this.webSiteService.resource ? this.webSiteService.resource.properties.enabledHostNames.find(hostname => hostname.indexOf('.scm.') > 0) : "";
+    this.scmPath = this.webSiteService.resource
+      ? this.webSiteService.resource.properties.enabledHostNames.find(
+          (hostname) => hostname.indexOf('.scm.') > 0
+        )
+      : '';
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   dismissedHandler() {
     this.globals.openSessionPanel = false;
   }
-
 }

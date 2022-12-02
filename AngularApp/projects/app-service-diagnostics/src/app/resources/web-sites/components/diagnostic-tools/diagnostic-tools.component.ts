@@ -6,12 +6,14 @@ import { WebSitesService } from '../../services/web-sites.service';
 import { SiteService } from '../../../../shared/services/site.service';
 import { SiteDaasInfo } from '../../../../shared/models/solution-metadata';
 import { AppType } from '../../../../shared/models/portal';
-import { OperatingSystem, HostingEnvironmentKind } from '../../../../shared/models/site';
+import {
+  OperatingSystem,
+  HostingEnvironmentKind
+} from '../../../../shared/models/site';
 import { Sku } from '../../../../shared/models/server-farm';
 import { ResourceService } from '../../../../shared-v2/services/resource.service';
 import { AuthService } from '../../../../startup/services/auth.service';
 import { TelemetryService } from 'diagnostic-data';
-
 
 @Component({
   selector: 'diagnostic-tools',
@@ -19,7 +21,6 @@ import { TelemetryService } from 'diagnostic-data';
   styleUrls: ['./diagnostic-tools.component.scss']
 })
 export class DiagnosticToolsComponent {
-
   toolCategories: SiteFilteredItem<any>[] = [];
 
   stackFound: boolean = false;
@@ -29,25 +30,28 @@ export class DiagnosticToolsComponent {
   siteToBeDiagnosed: SiteDaasInfo;
   scmPath: string;
 
-  possibleStacks: string[] = [
-    'ASP.NET',
-    'ASP.NET Core',
-    'Java',
-    'PHP',
-    'All'
-  ];
+  possibleStacks: string[] = ['ASP.NET', 'ASP.NET Core', 'Java', 'PHP', 'All'];
 
-  constructor(private _sitesFeatureService: SiteFeatureService, public webSiteService: WebSitesService, private _siteService: SiteService, private _resourceService: ResourceService, private _authServiceInstance: AuthService, private _telemetryService: TelemetryService) {
-
+  constructor(
+    private _sitesFeatureService: SiteFeatureService,
+    public webSiteService: WebSitesService,
+    private _siteService: SiteService,
+    private _resourceService: ResourceService,
+    private _authServiceInstance: AuthService,
+    private _telemetryService: TelemetryService
+  ) {
     if (this.webSiteService.platform !== OperatingSystem.windows) {
       this.isWindowsApp = false;
     } else {
-      this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(site => {
+      this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe((site) => {
         this.siteToBeDiagnosed = site;
       });
     }
 
-    this.scmPath = this.webSiteService.resource.properties.enabledHostNames.find(hostname => hostname.indexOf('.scm.') > 0);
+    this.scmPath =
+      this.webSiteService.resource.properties.enabledHostNames.find(
+        (hostname) => hostname.indexOf('.scm.') > 0
+      );
 
     this.toolCategories.push(<SiteFilteredItem<any>>{
       appType: AppType.WebApp | AppType.FunctionApp,
@@ -57,7 +61,7 @@ export class DiagnosticToolsComponent {
       stack: '',
       item: {
         title: 'Proactive Tools',
-        tools: this._sitesFeatureService.proactiveTools.map(tool => {
+        tools: this._sitesFeatureService.proactiveTools.map((tool) => {
           return <SiteFilteredItem<Tile>>{
             appType: tool.appType,
             platform: tool.platform,
@@ -81,7 +85,7 @@ export class DiagnosticToolsComponent {
       stack: '',
       item: {
         title: 'Diagnostic Tools',
-        tools: this._sitesFeatureService.diagnosticTools.map(tool => {
+        tools: this._sitesFeatureService.diagnosticTools.map((tool) => {
           return <SiteFilteredItem<Tile>>{
             appType: tool.appType,
             platform: tool.platform,
@@ -105,7 +109,7 @@ export class DiagnosticToolsComponent {
       stack: '',
       item: {
         title: 'Support Tools',
-        tools: this._sitesFeatureService.supportTools.map(tool => {
+        tools: this._sitesFeatureService.supportTools.map((tool) => {
           return <SiteFilteredItem<Tile>>{
             appType: tool.appType,
             platform: tool.platform,
@@ -125,21 +129,27 @@ export class DiagnosticToolsComponent {
       this.selectStack(this.webSiteService.appStack);
     }
 
-    this._authServiceInstance.getStartupInfo().subscribe(startUpInfo => {
+    this._authServiceInstance.getStartupInfo().subscribe((startUpInfo) => {
       if (startUpInfo) {
         const resourceId = startUpInfo.resourceId ? startUpInfo.resourceId : '';
-        const ticketBladeWorkflowId = startUpInfo.workflowId ? startUpInfo.workflowId : '';
-        const supportTopicId = startUpInfo.supportTopicId ? startUpInfo.supportTopicId : '';
-        const sapSupportTopicId = startUpInfo.sapSupportTopicId ? startUpInfo.sapSupportTopicId : '';
+        const ticketBladeWorkflowId = startUpInfo.workflowId
+          ? startUpInfo.workflowId
+          : '';
+        const supportTopicId = startUpInfo.supportTopicId
+          ? startUpInfo.supportTopicId
+          : '';
+        const sapSupportTopicId = startUpInfo.sapSupportTopicId
+          ? startUpInfo.sapSupportTopicId
+          : '';
         const sessionId = startUpInfo.sessionId ? startUpInfo.sessionId : '';
 
         const eventProperties: { [name: string]: string } = {
-          'ResourceId': resourceId,
-          'TicketBladeWorkflowId': ticketBladeWorkflowId,
-          'SupportTopicId': supportTopicId,
-          'SapSupportTopicId': sapSupportTopicId,
-          'PortalSessionId': sessionId,
-          'AzureServiceName': this._resourceService.azureServiceName,
+          ResourceId: resourceId,
+          TicketBladeWorkflowId: ticketBladeWorkflowId,
+          SupportTopicId: supportTopicId,
+          SapSupportTopicId: sapSupportTopicId,
+          PortalSessionId: sessionId,
+          AzureServiceName: this._resourceService.azureServiceName
         };
         this._telemetryService.eventPropertiesSubject.next(eventProperties);
       }
@@ -147,7 +157,9 @@ export class DiagnosticToolsComponent {
   }
 
   selectStack(stack: string) {
-    this.stack = this.possibleStacks.find(st => st.toLowerCase() === stack.toLowerCase());
+    this.stack = this.possibleStacks.find(
+      (st) => st.toLowerCase() === stack.toLowerCase()
+    );
 
     if (!stack) {
       this.stackFound = false;

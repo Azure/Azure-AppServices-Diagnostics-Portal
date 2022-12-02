@@ -8,9 +8,8 @@ describe('CopyInsightDetailsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CopyInsightDetailsComponent ]
-    })
-    .compileComponents();
+      declarations: [CopyInsightDetailsComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

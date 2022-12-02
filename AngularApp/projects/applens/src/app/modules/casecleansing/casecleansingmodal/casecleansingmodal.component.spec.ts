@@ -8,9 +8,8 @@ describe('CasecleansingmodalComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CasecleansingmodalComponent ]
-    })
-    .compileComponents();
+      declarations: [CasecleansingmodalComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

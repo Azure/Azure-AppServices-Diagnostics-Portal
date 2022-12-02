@@ -8,9 +8,8 @@ describe('ResourceMenuItemComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ResourceMenuItemComponent ]
-    })
-    .compileComponents();
+      declarations: [ResourceMenuItemComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

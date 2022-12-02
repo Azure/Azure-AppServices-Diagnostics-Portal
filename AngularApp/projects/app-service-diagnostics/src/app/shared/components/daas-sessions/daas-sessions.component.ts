@@ -1,5 +1,23 @@
-import { Component, Input, OnInit, SimpleChanges, OnChanges, Pipe, PipeTransform, OnDestroy } from '@angular/core';
-import { SessionStatus, Session, LogFile, DiagnosisStatus, CpuMonitoringMode, SessionMaster, SessionFile, SessionMode } from '../../models/daas';
+import {
+  Component,
+  Input,
+  OnInit,
+  SimpleChanges,
+  OnChanges,
+  Pipe,
+  PipeTransform,
+  OnDestroy
+} from '@angular/core';
+import {
+  SessionStatus,
+  Session,
+  LogFile,
+  DiagnosisStatus,
+  CpuMonitoringMode,
+  SessionMaster,
+  SessionFile,
+  SessionMode
+} from '../../models/daas';
 import { WindowService } from '../../../startup/services/window.service';
 import { ServerFarmDataService } from '../../services/server-farm-data.service';
 import { DaasService } from '../../services/daas.service';
@@ -20,9 +38,7 @@ import { ITooltipOptions } from '@angular-react/fabric/lib/components/tooltip';
   templateUrl: 'daas-sessions.component.html',
   styleUrls: ['daas-sessions.component.scss']
 })
-
 export class DaasSessionsComponent implements OnChanges, OnDestroy {
-
   checkingExistingSessions: boolean;
   sessions: SessionMaster[] = [];
 
@@ -43,7 +59,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
 
   // For tooltip display
   directionalHint = DirectionalHint.rightTopEdge;
-  toolTipStyles = { 'backgroundColor': 'black', 'color': 'white', 'border': '0px' };
+  toolTipStyles = { backgroundColor: 'black', color: 'white', border: '0px' };
 
   toolTipOptionsValue: ITooltipOptions = {
     calloutProps: {
@@ -58,24 +74,41 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
       root: this.toolTipStyles,
       subText: this.toolTipStyles
     }
-  }
+  };
 
   isWindowsApp: boolean = true;
 
-  constructor(private _windowService: WindowService, private _serverFarmService: ServerFarmDataService,
-    private _daasService: DaasService, protected _route: ActivatedRoute, public globals: Globals,
-    public telemetryService: TelemetryService, private _webSiteService: WebSitesService) {
-    this._serverFarmService.siteServerFarm.subscribe(serverFarm => {
-      if (serverFarm) {
-        if (serverFarm.sku.tier === 'Standard' || serverFarm.sku.tier === 'Basic' || serverFarm.sku.tier.indexOf('Isolated') > -1 || serverFarm.sku.tier.indexOf('Premium') > -1) {
-          this.supportedTier = true;
+  constructor(
+    private _windowService: WindowService,
+    private _serverFarmService: ServerFarmDataService,
+    private _daasService: DaasService,
+    protected _route: ActivatedRoute,
+    public globals: Globals,
+    public telemetryService: TelemetryService,
+    private _webSiteService: WebSitesService
+  ) {
+    this._serverFarmService.siteServerFarm.subscribe(
+      (serverFarm) => {
+        if (serverFarm) {
+          if (
+            serverFarm.sku.tier === 'Standard' ||
+            serverFarm.sku.tier === 'Basic' ||
+            serverFarm.sku.tier.indexOf('Isolated') > -1 ||
+            serverFarm.sku.tier.indexOf('Premium') > -1
+          ) {
+            this.supportedTier = true;
+          }
         }
+      },
+      (error) => {
+        //TODO: handle error
       }
-    }, error => {
-      //TODO: handle error
-    });
-    this.enableSessionsPanel = this._route.snapshot.params['category'] != null || this._route.parent.snapshot.params['category'] != null;
-    this.isWindowsApp = this._webSiteService.platform === OperatingSystem.windows;
+    );
+    this.enableSessionsPanel =
+      this._route.snapshot.params['category'] != null ||
+      this._route.parent.snapshot.params['category'] != null;
+    this.isWindowsApp =
+      this._webSiteService.platform === OperatingSystem.windows;
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -91,17 +124,19 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     this.initHeading();
     if (this.showDetailedView) {
       this.checkSessions();
-      this.subscription = interval(60000).subscribe(res => {
+      this.subscription = interval(60000).subscribe((res) => {
         this.checkSessions();
       });
-
     }
   }
 
   initHeading() {
     if (this.diagnoserNameLookup.indexOf('Profiler') > -1) {
       this.DiagnoserHeading = 'profiling sessions';
-    } else if (this.diagnoserNameLookup.indexOf('Memory Dump') > -1 || this.diagnoserNameLookup.indexOf('MemoryDump') > -1) {
+    } else if (
+      this.diagnoserNameLookup.indexOf('Memory Dump') > -1 ||
+      this.diagnoserNameLookup.indexOf('MemoryDump') > -1
+    ) {
       this.DiagnoserHeading = 'dumps collected';
     } else {
       this.DiagnoserHeading = 'diagnostic sessions';
@@ -109,11 +144,19 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
   }
 
   reducedSession(obj: SessionMaster) {
-    return { sessionId: obj.sessionId, tool: obj.tool, status: obj.status, collectorStatus: obj.collectorStatus, analyzerStatus: obj.analyzerStatus };
+    return {
+      sessionId: obj.sessionId,
+      tool: obj.tool,
+      status: obj.status,
+      collectorStatus: obj.collectorStatus,
+      analyzerStatus: obj.analyzerStatus
+    };
   }
 
   getDaasSessionsV2(): Observable<Session[]> {
-    return this._daasService.getSessions(this.siteToBeDiagnosed, false).pipe(retry(2))
+    return this._daasService
+      .getSessions(this.siteToBeDiagnosed, false)
+      .pipe(retry(2));
   }
 
   getLinuxDiagnosticServerSessions(): Observable<Session[]> {
@@ -122,26 +165,32 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
       return of(emptyArray);
     }
 
-    return this._daasService.isDiagServerEnabledForLinux(this.siteToBeDiagnosed).pipe(
-      map((isEnabled) => {
-        return isEnabled;
-      }),
-      mergeMap((isEnabled) => {
-        if (!isEnabled) {
-          return of(isEnabled);
-        } else {
-          return this._daasService.isStorageAccountConfiguredForDiagServer(this.siteToBeDiagnosed);
-        }
-      }),
-      mergeMap(isEnabled => {
-        if (!isEnabled) {
-          return of(emptyArray);
-        } else {
-          return this._daasService.getSessions(this.siteToBeDiagnosed, true).pipe(retry(2));
-        }
-      }));
+    return this._daasService
+      .isDiagServerEnabledForLinux(this.siteToBeDiagnosed)
+      .pipe(
+        map((isEnabled) => {
+          return isEnabled;
+        }),
+        mergeMap((isEnabled) => {
+          if (!isEnabled) {
+            return of(isEnabled);
+          } else {
+            return this._daasService.isStorageAccountConfiguredForDiagServer(
+              this.siteToBeDiagnosed
+            );
+          }
+        }),
+        mergeMap((isEnabled) => {
+          if (!isEnabled) {
+            return of(emptyArray);
+          } else {
+            return this._daasService
+              .getSessions(this.siteToBeDiagnosed, true)
+              .pipe(retry(2));
+          }
+        })
+      );
   }
-
 
   checkSessions() {
     if (!this.initializedOnce) {
@@ -150,41 +199,46 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     }
 
     Observable.combineLatest(
-      this.getDaasSessionsV2().pipe(catchError(err => {
-        return of(err);
-      })),
-      this.getLinuxDiagnosticServerSessions().pipe(catchError(err => {
-        return of(err);
-      })))
-      .subscribe(results => {
-        let sessions: SessionMaster[] = [];
+      this.getDaasSessionsV2().pipe(
+        catchError((err) => {
+          return of(err);
+        })
+      ),
+      this.getLinuxDiagnosticServerSessions().pipe(
+        catchError((err) => {
+          return of(err);
+        })
+      )
+    ).subscribe((results) => {
+      let sessions: SessionMaster[] = [];
 
-        if (this.isArrayWithItems(results[0])) {
-          let sessionsV2: Session[] = results[0];
-          sessionsV2.forEach(session => {
-            sessions.push(this.getSessionMasterFromV2(session));
-          });
-        }
+      if (this.isArrayWithItems(results[0])) {
+        let sessionsV2: Session[] = results[0];
+        sessionsV2.forEach((session) => {
+          sessions.push(this.getSessionMasterFromV2(session));
+        });
+      }
 
-        if (this.isArrayWithItems(results[1])) {
-          let sessionsV2: Session[] = results[1];
-          sessionsV2.forEach(session => {
-            sessions.push(this.getSessionMasterFromV2(session, true));
-          });
-        }
+      if (this.isArrayWithItems(results[1])) {
+        let sessionsV2: Session[] = results[1];
+        sessionsV2.forEach((session) => {
+          sessions.push(this.getSessionMasterFromV2(session, true));
+        });
+      }
 
-        this.mergeSessions(sessions);
-        this.sessions = this.sessions
-          .sort((a, b) => { return new Date(a.startDate) < new Date(b.startDate) ? 1 : -1; });
+      this.mergeSessions(sessions);
+      this.sessions = this.sessions.sort((a, b) => {
+        return new Date(a.startDate) < new Date(b.startDate) ? 1 : -1;
+      });
 
-        if (!this.showDetailedView) {
-          this.sessions = this.takeTopFiveDiagnoserSessions(sessions);
-        }
+      if (!this.showDetailedView) {
+        this.sessions = this.takeTopFiveDiagnoserSessions(sessions);
+      }
 
-        if (this.checkingExistingSessions) {
-          this.checkingExistingSessions = false;
-        }
-      })
+      if (this.checkingExistingSessions) {
+        this.checkingExistingSessions = false;
+      }
+    });
   }
 
   isArrayWithItems(obj: any): boolean {
@@ -194,7 +248,10 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     return false;
   }
 
-  getSessionMasterFromV2(session: Session, isDiagServerSession: boolean = false): SessionMaster {
+  getSessionMasterFromV2(
+    session: Session,
+    isDiagServerSession: boolean = false
+  ): SessionMaster {
     let sessionMaster: SessionMaster = new SessionMaster();
     sessionMaster.isV2 = true;
     sessionMaster.isDiagServerSession = isDiagServerSession;
@@ -212,22 +269,21 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
       sessionMaster.analyzerStatus = DiagnosisStatus.NotRequested;
     }
 
-    if (session.Status === "Active") {
+    if (session.Status === 'Active') {
       sessionMaster.status = SessionStatus.Active;
-    } else if (session.Status === "Completed") {
+    } else if (session.Status === 'Completed') {
       sessionMaster.status = SessionStatus.Complete;
     }
 
     let logFiles: LogFile[] = [];
     let collectedInstances: string[] = [];
     if (this.isArrayWithItems(session.ActiveInstances)) {
-      session.ActiveInstances.forEach(activeInstance => {
-
-        if (activeInstance.Status === "Analyzing") {
+      session.ActiveInstances.forEach((activeInstance) => {
+        if (activeInstance.Status === 'Analyzing') {
           sessionMaster.analyzerStatus = DiagnosisStatus.InProgress;
         }
 
-        if (activeInstance.Status != "Started") {
+        if (activeInstance.Status != 'Started') {
           collectedInstances.push(activeInstance.Name);
         }
 
@@ -236,11 +292,15 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
         }
 
         if (this.isArrayWithItems(activeInstance.CollectorErrors)) {
-          sessionMaster.collectorErrors = sessionMaster.collectorErrors.concat(activeInstance.CollectorErrors);
+          sessionMaster.collectorErrors = sessionMaster.collectorErrors.concat(
+            activeInstance.CollectorErrors
+          );
           sessionMaster.status = SessionStatus.Error;
         }
         if (this.isArrayWithItems(activeInstance.AnalyzerErrors)) {
-          sessionMaster.analyzerErrors = sessionMaster.analyzerErrors.concat(activeInstance.AnalyzerErrors);
+          sessionMaster.analyzerErrors = sessionMaster.analyzerErrors.concat(
+            activeInstance.AnalyzerErrors
+          );
           sessionMaster.status = SessionStatus.Error;
         }
       });
@@ -253,7 +313,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     }
 
     let size = 0;
-    logFiles.forEach(logFile => {
+    logFiles.forEach((logFile) => {
       let file: SessionFile = new SessionFile();
       file.name = logFile.Name;
       file.relativePath = logFile.RelativePath;
@@ -263,8 +323,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
       }
 
       if (this.isArrayWithItems(logFile.Reports)) {
-
-        logFile.Reports.forEach(report => {
+        logFile.Reports.forEach((report) => {
           let file: SessionFile = new SessionFile();
           file.name = report.Name;
           file.relativePath = report.RelativePath;
@@ -290,7 +349,14 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     if (sessions != null && Array.isArray(sessions)) {
       const newSessions = sessions.map(this.reducedSession);
       const existingSessions = this.sessions.map(this.reducedSession);
-      let anySessionUpdated = newSessions.filter(newSession => existingSessions.findIndex(session => JSON.stringify(session) === JSON.stringify(newSession)) === -1).length > 0;
+      let anySessionUpdated =
+        newSessions.filter(
+          (newSession) =>
+            existingSessions.findIndex(
+              (session) =>
+                JSON.stringify(session) === JSON.stringify(newSession)
+            ) === -1
+        ).length > 0;
       if (newSessions.length !== existingSessions.length || anySessionUpdated) {
         this.sessions = this.setExpanded(sessions);
       }
@@ -299,7 +365,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
 
   takeTopFiveDiagnoserSessions(sessions: SessionMaster[]): SessionMaster[] {
     let arrayToReturn = new Array<SessionMaster>();
-    sessions.forEach(session => {
+    sessions.forEach((session) => {
       if (this.isMatchingDiagnoser(session)) {
         arrayToReturn.push(session);
       }
@@ -312,20 +378,28 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
   }
 
   isMatchingDiagnoser(session: SessionMaster): boolean {
-    if (this.diagnoserNameLookup.indexOf("MemoryDump") > -1 || this.diagnoserNameLookup.indexOf("Memory Dump") > -1) {
-      if (session.tool.indexOf("MemoryDump") > -1 || session.tool.indexOf("Memory Dump") > -1) {
+    if (
+      this.diagnoserNameLookup.indexOf('MemoryDump') > -1 ||
+      this.diagnoserNameLookup.indexOf('Memory Dump') > -1
+    ) {
+      if (
+        session.tool.indexOf('MemoryDump') > -1 ||
+        session.tool.indexOf('Memory Dump') > -1
+      ) {
         return true;
       }
     } else {
-      return session.tool.indexOf(this.diagnoserNameLookup) > -1
+      return session.tool.indexOf(this.diagnoserNameLookup) > -1;
     }
     return false;
   }
 
   getInstanceNameFromReport(reportName: string, toolName: string): string {
-    if (toolName.indexOf('Profiler') > -1
-      || toolName.indexOf('MemoryDump') > -1
-      || toolName.indexOf('Memory Dump') > -1) {
+    if (
+      toolName.indexOf('Profiler') > -1 ||
+      toolName.indexOf('MemoryDump') > -1 ||
+      toolName.indexOf('Memory Dump') > -1
+    ) {
       const reportNameArray = reportName.split('_');
       if (reportNameArray.length > 0) {
         return reportNameArray[0];
@@ -344,7 +418,13 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
   }
 
   hasDifferentBlobStorage(log: SessionFile, session: SessionMaster): boolean {
-    return session.blobStorageHostName && log.relativePath && log.relativePath.toLowerCase().indexOf('https://' + session.blobStorageHostName.toLowerCase()) === -1;
+    return (
+      session.blobStorageHostName &&
+      log.relativePath &&
+      log.relativePath
+        .toLowerCase()
+        .indexOf('https://' + session.blobStorageHostName.toLowerCase()) === -1
+    );
   }
 
   isCollectingData(session: SessionMaster): boolean {
@@ -356,7 +436,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
   }
 
   setExpanded(sessions: SessionMaster[]): SessionMaster[] {
-    const maxValue = (sessions.length > 3 ? 3 : sessions.length);
+    const maxValue = sessions.length > 3 ? 3 : sessions.length;
     let counter = 0;
     while (counter < maxValue) {
       sessions[counter].expanded = true;
@@ -375,15 +455,27 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     }
   }
 
-  deleteDiagnosticSession(sessionToDelete: SessionMaster, sessionIndex: number) {
-    this._daasService.deleteDaasSession(this.siteToBeDiagnosed, sessionToDelete.sessionId, sessionToDelete.isDiagServerSession)
-      .subscribe(resp => {
-        sessionToDelete.deleting = false;
-        this.sessions.splice(sessionIndex, 1);
-      }, err => {
-        sessionToDelete.deleting = false;
-        sessionToDelete.deletingFailure = 'Failed while deleting the session with an error : ' + err;
-      });
+  deleteDiagnosticSession(
+    sessionToDelete: SessionMaster,
+    sessionIndex: number
+  ) {
+    this._daasService
+      .deleteDaasSession(
+        this.siteToBeDiagnosed,
+        sessionToDelete.sessionId,
+        sessionToDelete.isDiagServerSession
+      )
+      .subscribe(
+        (resp) => {
+          sessionToDelete.deleting = false;
+          this.sessions.splice(sessionIndex, 1);
+        },
+        (err) => {
+          sessionToDelete.deleting = false;
+          sessionToDelete.deletingFailure =
+            'Failed while deleting the session with an error : ' + err;
+        }
+      );
   }
 
   isSessionInProgress(session: SessionMaster): boolean {
@@ -392,9 +484,9 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
 
   getAnalyzerStatus(session: SessionMaster): string {
     if (session.analyzerStatus === DiagnosisStatus.InProgress) {
-      return "In Progress...";
+      return 'In Progress...';
     } else if (session.analyzerStatus === DiagnosisStatus.WaitingForInputs) {
-      return "Waiting...";
+      return 'Waiting...';
     }
   }
 
@@ -405,13 +497,15 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
   }
 
   convertUtcIfNeeded(dateString: string): string {
-    return dateString.toUpperCase().endsWith('Z') ? dateString : dateString += 'Z';;
+    return dateString.toUpperCase().endsWith('Z')
+      ? dateString
+      : (dateString += 'Z');
   }
 
   toggleSessionPanel() {
     this.globals.openSessionPanel = !this.globals.openSessionPanel;
-    this.telemetryService.logEvent("OpenSesssionsPanel");
-    this.telemetryService.logPageView("SessionsPanelView");
+    this.telemetryService.logEvent('OpenSesssionsPanel');
+    this.telemetryService.logPageView('SessionsPanelView');
   }
 
   openUrl(url: string) {
@@ -419,7 +513,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
   }
 
   getSessionSize(session: SessionMaster) {
-    return " (" + FormatHelper.formatBytes(session.size, 2) + ")";
+    return ' (' + FormatHelper.formatBytes(session.size, 2) + ')';
   }
 }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { GuageGraphic, GuageSize } from '../../models/guage';
 import { HealthStatus } from '../../models/detector';
 
@@ -7,7 +7,6 @@ import { HealthStatus } from '../../models/detector';
   templateUrl: './guage-graphic.component.html',
   styleUrls: ['./guage-graphic.component.scss']
 })
-
 export class GuageGraphicComponent implements OnInit {
   public isCritical(colorClass: HealthStatus): boolean {
     return colorClass === HealthStatus.Critical;
@@ -31,9 +30,7 @@ export class GuageGraphicComponent implements OnInit {
 
   @Input() guageGraphic: GuageGraphic;
 
-  constructor() {
-  }
+  constructor() {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 }

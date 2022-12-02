@@ -9,7 +9,10 @@ describe('DiagnosticApiService', () => {
     });
   });
 
-  it('should be created', inject([DiagnosticApiService], (service: DiagnosticApiService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [DiagnosticApiService],
+    (service: DiagnosticApiService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

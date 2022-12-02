@@ -4,19 +4,16 @@ import { RouterModule } from '@angular/router';
 import { ContainerAppFinderComponent } from './containerapp-finder/containerapp-finder.component';
 import { SharedModule } from '../../shared/shared.module';
 
-export const ContainerAppModuleRoutes : ModuleWithProviders<ContainerAppModule> = RouterModule.forChild([
-  {
-    path: '',
-    component: ContainerAppFinderComponent
-  }
-]);
+export const ContainerAppModuleRoutes: ModuleWithProviders<ContainerAppModule> =
+  RouterModule.forChild([
+    {
+      path: '',
+      component: ContainerAppFinderComponent
+    }
+  ]);
 
 @NgModule({
-  imports: [
-    CommonModule,
-    ContainerAppModuleRoutes,
-    SharedModule
-  ],
+  imports: [CommonModule, ContainerAppModuleRoutes, SharedModule],
   declarations: [ContainerAppFinderComponent]
 })
-export class ContainerAppModule { }
+export class ContainerAppModule {}

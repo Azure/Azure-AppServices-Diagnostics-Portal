@@ -4,13 +4,11 @@ import { Communication } from '../models/communication';
 
 @Injectable()
 export class CommsService {
-
-  constructor() { }
+  constructor() {}
 
   public getServiceHealthCommunications(): Observable<Communication[]> {
     return null;
   }
 
-  public openMoreDetails() {
-  }
+  public openMoreDetails() {}
 }

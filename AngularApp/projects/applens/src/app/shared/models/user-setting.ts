@@ -1,32 +1,31 @@
-import { DetectorType } from "diagnostic-data";
+import { DetectorType } from 'diagnostic-data';
 
 export interface UserSetting extends LandingInfo, UserPanelSetting {
-    favoriteDetectors: FavoriteDetectors;
-    id: string;
+  favoriteDetectors: FavoriteDetectors;
+  id: string;
 }
 
 export interface LandingInfo {
-    resources: RecentResource[];
-    defaultServiceType: string;
+  resources: RecentResource[];
+  defaultServiceType: string;
 }
 
 export interface UserPanelSetting {
-    theme: string;
-    viewMode: string;
-    expandAnalysisCheckCard: boolean;
+  theme: string;
+  viewMode: string;
+  expandAnalysisCheckCard: boolean;
 }
 
 export interface RecentResource {
-    kind: string;
-    resourceUri: string;
-    queryParams: { [key: string]: string }
+  kind: string;
+  resourceUri: string;
+  queryParams: { [key: string]: string };
 }
 
-
 export interface FavoriteDetectorProp {
-    type: DetectorType;
+  type: DetectorType;
 }
 
 export interface FavoriteDetectors {
-    [key: string]: FavoriteDetectorProp
+  [key: string]: FavoriteDetectorProp;
 }

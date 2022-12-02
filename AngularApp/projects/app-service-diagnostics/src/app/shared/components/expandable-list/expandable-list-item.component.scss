@@ -1,27 +1,27 @@
 .expandable-list-item-container {
-    border-top: 1px solid rgb(224, 224, 224);
-    padding: 5px 0px 5px 10px;
-    width: 100%;
-    max-width: 800px;
+  border-top: 1px solid rgb(224, 224, 224);
+  padding: 5px 0px 5px 10px;
+  width: 100%;
+  max-width: 800px;
 }
 
 .title-row-container {
-    display: table-cell;
-    cursor: pointer;
+  display: table-cell;
+  cursor: pointer;
 }
 
 .expand-icon {
-    font-size: 16px;
+  font-size: 16px;
 }
 
-.title{
-    font-size: 14px;
+.title {
+  font-size: 14px;
 }
 
 .title-blue {
-    color: #00b5ea;
+  color: #00b5ea;
 }
 
 .content {
-    padding: 10px 15px 10px 20px;
+  padding: 10px 15px 10px 20px;
 }

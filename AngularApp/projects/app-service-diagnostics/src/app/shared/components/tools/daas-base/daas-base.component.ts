@@ -5,24 +5,28 @@ import { WebSitesService } from '../../../../resources/web-sites/services/web-si
 import { VersioningHelper } from '../../../utilities/versioningHelper';
 
 export abstract class DaasBaseComponent {
+  diagnoserName: string;
+  siteToBeDiagnosed: SiteDaasInfo;
+  scmPath: string;
+  refreshSessions: boolean = false;
+  isWindowsApp: boolean = true;
+  isBetaSubscription: boolean = false;
 
-    diagnoserName: string;
-    siteToBeDiagnosed: SiteDaasInfo;
-    scmPath: string;
-    refreshSessions: boolean = false;
-    isWindowsApp: boolean = true;
-    isBetaSubscription: boolean = false;
+  constructor(
+    private _siteService: SiteService,
+    private _webSiteService: WebSitesService
+  ) {
+    this.isBetaSubscription = VersioningHelper.isV2Subscription(
+      this._webSiteService.subscriptionId
+    );
+    this.isWindowsApp =
+      this._webSiteService.platform === OperatingSystem.windows;
+    this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe((site) => {
+      this.siteToBeDiagnosed = site;
+    });
+  }
 
-    constructor(private _siteService: SiteService,
-        private _webSiteService: WebSitesService) {
-        this.isBetaSubscription = VersioningHelper.isV2Subscription(this._webSiteService.subscriptionId);
-        this.isWindowsApp = this._webSiteService.platform === OperatingSystem.windows;
-        this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(site => {
-            this.siteToBeDiagnosed = site;
-        });
-    }
-
-    updateSessions(event) {
-        this.refreshSessions = event;
-    }
+  updateSessions(event) {
+    this.refreshSessions = event;
+  }
 }

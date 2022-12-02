@@ -1,32 +1,51 @@
 <div class="container">
-  <div class="row" style="margin-top: 15px" *ngIf="activeMonitoringSession != null">
+  <div
+    class="row"
+    style="margin-top: 15px"
+    *ngIf="activeMonitoringSession != null"
+  >
     <div class="col-sm-10">
       <div
-        *ngIf="activeMonitoringSession.MonitoringLogs == null || activeMonitoringSession.MonitoringLogs.length === 0">
-        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-        Monitoring session in progress, logs from all instances will populate shortly...
+        *ngIf="
+          activeMonitoringSession.MonitoringLogs == null ||
+          activeMonitoringSession.MonitoringLogs.length === 0
+        "
+      >
+        <i
+          class="fa fa-circle-o-notch fa-spin spin-icon"
+          aria-hidden="true"
+        ></i>
+        Monitoring session in progress, logs from all instances will populate
+        shortly...
       </div>
 
-      <div *ngIf="activeMonitoringSession.MonitoringLogs !=null && activeMonitoringSession.MonitoringLogs.length > 0"
-        class="monitoring-logs">
-        <div style="margin-bottom: 15px;">
-          When the monitoring rule is enabled, detailed monitoring logs for all the instances serving the app are generated.
-          It may take up to 2 minutes for logs from all instances to show up.
-          The below snippet shows you the last few lines of these logs and this information is refreshed every 30
-          seconds. These logs contain information about each process that is being monitored and the CPU
-          consumption for
-          that process. If any action (like Kill, or a memory dump) is invoked then details about those are also
-          captured in these logs.
-          You can view the full logs by going to the <a href='https://{{scmPath}}' target="_blank">Kudu Console</a> for your
-          app and then navigating to the 
+      <div
+        *ngIf="
+          activeMonitoringSession.MonitoringLogs != null &&
+          activeMonitoringSession.MonitoringLogs.length > 0
+        "
+        class="monitoring-logs"
+      >
+        <div style="margin-bottom: 15px">
+          When the monitoring rule is enabled, detailed monitoring logs for all
+          the instances serving the app are generated. It may take up to 2
+          minutes for logs from all instances to show up. The below snippet
+          shows you the last few lines of these logs and this information is
+          refreshed every 30 seconds. These logs contain information about each
+          process that is being monitored and the CPU consumption for that
+          process. If any action (like Kill, or a memory dump) is invoked then
+          details about those are also captured in these logs. You can view the
+          full logs by going to the
+          <a href="https://{{ scmPath }}" target="_blank">Kudu Console</a> for
+          your app and then navigating to the
           <strong>D:\home\data\DaaS\Monitoring\Logs</strong> folder.
         </div>
-        <ul style="list-style-type: none;padding:0">
+        <ul style="list-style-type: none; padding: 0">
           <li *ngFor="let instance of activeMonitoringSession.MonitoringLogs">
             <strong class="highlight-blue">
               {{ instance.Instance }}
             </strong>
-            <div style="margin-top: 5px;">
+            <div style="margin-top: 5px">
               <pre [innerHTML]="formatInstanceLogs(instance.Logs)"></pre>
             </div>
           </li>
@@ -37,8 +56,8 @@
   <div *ngIf="activeMonitoringSession == null" class="row">
     <div class="col-sm-10">
       <div tabindex="0" class="message">
-        No CPU Monitoring rule active currently! When CPU monitoring is enabled, detailed monitoring activity will
-        be displayed here.
+        No CPU Monitoring rule active currently! When CPU monitoring is enabled,
+        detailed monitoring activity will be displayed here.
       </div>
     </div>
   </div>

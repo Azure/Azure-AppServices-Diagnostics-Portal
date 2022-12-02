@@ -1,23 +1,37 @@
 <applens-header></applens-header>
 <div class="container-fluid main-container content-under-header">
   <div class="big-text" *ngIf="loading">Searching for site ...</div>
-  <div class="big-text" *ngIf="!loading && error">{{error}}</div>
-  <div class="big-text" *ngIf="!loading && !error && matchingSites.length == 1">Redirecting to {{site}}</div>
+  <div class="big-text" *ngIf="!loading && error">{{ error }}</div>
+  <div class="big-text" *ngIf="!loading && !error && matchingSites.length == 1">
+    Redirecting to {{ site }}
+  </div>
   <div *ngIf="!loading && !error && matchingSites.length > 0">
     <div class="multiple-sites">
       <div>
-        <h3>Multiple sites with the name '{{matchingSites[0].SiteName}}' found. Pick the correct one:</h3>
+        <h3>
+          Multiple sites with the name '{{ matchingSites[0].SiteName }}' found.
+          Pick the correct one:
+        </h3>
       </div>
       <div class="matching-site" *ngFor="let site of matchingSites">
         <div class="panel main-panel">
           <div class="panel-body">
-            <h5 class="panel-title">{{site.SiteName}}
-              <span *ngIf="site.SlotName && site.SlotName.length > 0">({{site.SlotName}})</span>
+            <h5 class="panel-title">
+              {{ site.SiteName }}
+              <span *ngIf="site.SlotName && site.SlotName.length > 0"
+                >({{ site.SlotName }})</span
+              >
             </h5>
-            <p class="panel-text">{{site.Subscription}}</p>
-            <p class="panel-text">{{site.ResourceGroupName}}</p>
-            <p class="panel-text">{{site.StampName}}</p>
-            <a tabindex="0" (keyup.enter)="navigateToSite(site)" (click)="navigateToSite(site)" class="btn btn-primary">Select</a>
+            <p class="panel-text">{{ site.Subscription }}</p>
+            <p class="panel-text">{{ site.ResourceGroupName }}</p>
+            <p class="panel-text">{{ site.StampName }}</p>
+            <a
+              tabindex="0"
+              (keyup.enter)="navigateToSite(site)"
+              (click)="navigateToSite(site)"
+              class="btn btn-primary"
+              >Select</a
+            >
           </div>
         </div>
       </div>

@@ -9,7 +9,10 @@ describe('ApplensCommsService', () => {
     });
   });
 
-  it('should be created', inject([ApplensCommsService], (service: ApplensCommsService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [ApplensCommsService],
+    (service: ApplensCommsService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

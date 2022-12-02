@@ -1,52 +1,53 @@
 .solution-view-container {
-    padding: 13px;
-    border: 1px solid #C8C6C4;
-    box-sizing: border-box;
-    margin-top: 18px;
-    box-shadow: 0px 1.6px 3.6px rgba(0, 0, 0, 0.132), 0px 0.3px 0.9px rgba(0, 0, 0, 0.108);
+  padding: 13px;
+  border: 1px solid #c8c6c4;
+  box-sizing: border-box;
+  margin-top: 18px;
+  box-shadow: 0px 1.6px 3.6px rgba(0, 0, 0, 0.132),
+    0px 0.3px 0.9px rgba(0, 0, 0, 0.108);
 }
 
 .solution-container-title {
-    font-family: Segoe UI;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 20px;
-    /* or 143% */
-    display: flex;
-    align-items: center;
+  font-family: Segoe UI;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  /* or 143% */
+  display: flex;
+  align-items: center;
 
-    color: #000000;
+  color: #000000;
 }
 
 .solution-title-label {
-    font-family: Segoe UI;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 12px;
-    line-height: 33px;
-    /* or 279% */
+  font-family: Segoe UI;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 33px;
+  /* or 279% */
 
-    margin-left: 10px;
-    padding-left: 5px;
-    padding-right: 5px;
-    color: #000000;
-    background: #F0F6FF;
+  margin-left: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #000000;
+  background: #f0f6ff;
 }
 
 .solution-title {
-    padding-left:5px;
+  padding-left: 5px;
 }
 
 .solution-feedback-message {
-    text-align: right;
+  text-align: right;
 }
 
 .solution-feedback-label {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .solution-feedback-button {
-    margin-right: 5px;
-    text-decoration: none;
+  margin-right: 5px;
+  text-decoration: none;
 }

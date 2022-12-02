@@ -1,8 +1,19 @@
-<div id="chat-scrollbar" #scrollMe [style.height.px] = "chatContainerHeight">
-    <div class="row animated fadeIn chat-message-container" *ngFor="let item of messages">
-        <dynamic-component [componentData]="item" (onViewUpdate)="scrollToBottom()" (onComplete)="getMessage($event)"></dynamic-component>
-    </div>
-    <div class="row animated fadeIn chat-message-container" [hidden]="!showTypingMessage" style="margin-top:10px">
-        <loading-message></loading-message>
-    </div>
+<div id="chat-scrollbar" #scrollMe [style.height.px]="chatContainerHeight">
+  <div
+    class="row animated fadeIn chat-message-container"
+    *ngFor="let item of messages"
+  >
+    <dynamic-component
+      [componentData]="item"
+      (onViewUpdate)="scrollToBottom()"
+      (onComplete)="getMessage($event)"
+    ></dynamic-component>
+  </div>
+  <div
+    class="row animated fadeIn chat-message-container"
+    [hidden]="!showTypingMessage"
+    style="margin-top: 10px"
+  >
+    <loading-message></loading-message>
+  </div>
 </div>

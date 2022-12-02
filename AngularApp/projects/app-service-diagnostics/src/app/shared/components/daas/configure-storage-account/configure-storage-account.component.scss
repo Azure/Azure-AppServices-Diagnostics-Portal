@@ -11,13 +11,13 @@
   width: 180px;
 }
 
-span input[type="radio"] {
+span input[type='radio'] {
   vertical-align: text-bottom;
 }
 
 a.disabled {
-    color: gray;
-    cursor: not-allowed;
-    text-decoration: underline;
-    pointer-events: none; 
+  color: gray;
+  cursor: not-allowed;
+  text-decoration: underline;
+  pointer-events: none;
 }

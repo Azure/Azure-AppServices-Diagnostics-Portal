@@ -8,9 +8,8 @@ describe('TabGistCommonComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TabGistCommonComponent ]
-    })
-    .compileComponents();
+      declarations: [TabGistCommonComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

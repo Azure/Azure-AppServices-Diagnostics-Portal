@@ -1,10 +1,16 @@
 <div>
-  If the performance of your application starts degrading and several pages start taking longer time to render, you can
-  configure
-  a rule to mitigate the issue or collect diagnostic data to identify the root cause of the problem.
+  If the performance of your application starts degrading and several pages
+  start taking longer time to render, you can configure a rule to mitigate the
+  issue or collect diagnostic data to identify the root cause of the problem.
 
   <div class="rule-button">
-    <button tabindex="0" type="button" #addRuleButton class="btn btn-primary btn-sm" (click)="addNewRule()">
+    <button
+      tabindex="0"
+      type="button"
+      #addRuleButton
+      class="btn btn-primary btn-sm"
+      (click)="addNewRule()"
+    >
       Add Slow Request rule
     </button>
   </div>
@@ -15,9 +21,18 @@
   </div>
 </div>
 
-<div style="margin-top:20px">
-  <table class="table table-bordered"
-    *ngIf="rule != null && ((rule.slowRequests != null && rule.slowRequests.count != null && rule.slowRequests.count > 0) || (rule.slowRequestsWithPath !=null && rule.slowRequestsWithPath.length > 0))">
+<div style="margin-top: 20px">
+  <table
+    class="table table-bordered"
+    *ngIf="
+      rule != null &&
+      ((rule.slowRequests != null &&
+        rule.slowRequests.count != null &&
+        rule.slowRequests.count > 0) ||
+        (rule.slowRequestsWithPath != null &&
+          rule.slowRequestsWithPath.length > 0))
+    "
+  >
     <thead>
       <tr>
         <th tabindex="0">Request Count</th>
@@ -34,12 +49,24 @@
         <td tabindex="0">{{ rule.slowRequests.timeInterval }}</td>
         <td tabindex="0">{{ rule.slowRequests.path }}</td>
         <td tabindex="0">
-          <button role="button" class="image-btn" *ngIf="!editMode" (click)="editSingleRule()" title="Edit rule"
-            name="editRuleSlowRequest">
+          <button
+            role="button"
+            class="image-btn"
+            *ngIf="!editMode"
+            (click)="editSingleRule()"
+            title="Edit rule"
+            name="editRuleSlowRequest"
+          >
             <i class="fa fa-edit"></i>
           </button>
-          <button role="button" class="image-btn" *ngIf="!editMode" (click)="deleteSingleRule();addRuleButton.focus()"
-            title="Delete rule" name="deleteRuleSlowRequest">
+          <button
+            role="button"
+            class="image-btn"
+            *ngIf="!editMode"
+            (click)="deleteSingleRule(); addRuleButton.focus()"
+            title="Delete rule"
+            name="deleteRuleSlowRequest"
+          >
             <i class="fa fa-trash"></i>
           </button>
         </td>
@@ -50,12 +77,24 @@
         <td tabindex="0">{{ singleRule.timeInterval }}</td>
         <td tabindex="0">{{ singleRule.path }}</td>
         <td tabindex="0">
-          <button role="button" class="image-btn" *ngIf="!editMode" (click)="editSlowRequestRule(i)" title="Edit rule"
-            name="editRuleSlowRequestRange">
+          <button
+            role="button"
+            class="image-btn"
+            *ngIf="!editMode"
+            (click)="editSlowRequestRule(i)"
+            title="Edit rule"
+            name="editRuleSlowRequestRange"
+          >
             <i class="fa fa-edit"></i>
           </button>
-          <button role="button" class="image-btn" *ngIf="!editMode"
-            (click)="deleteSlowRequestRule(i);addRuleButton.focus()" title="Delete rule" name="deleteRuleSlowRequest">
+          <button
+            role="button"
+            class="image-btn"
+            *ngIf="!editMode"
+            (click)="deleteSlowRequestRule(i); addRuleButton.focus()"
+            title="Delete rule"
+            name="deleteRuleSlowRequest"
+          >
             <i class="fa fa-trash"></i>
           </button>
         </td>
@@ -63,16 +102,32 @@
     </tbody>
   </table>
 
-  <div *ngIf="editMode && currentRule!=null" class="form-group">
+  <div *ngIf="editMode && currentRule != null" class="form-group">
     <div class="row">
       <div class="col-sm-6">
-        <label for="requestsCountSlow">After how many slow requests you want this condition to kick in?</label>
+        <label for="requestsCountSlow"
+          >After how many slow requests you want this condition to kick
+          in?</label
+        >
       </div>
       <div class="col-sm-4">
-        <input aria-required="true" type="number" id="requestsCountSlow" placeholder="Enter count"
-          [(ngModel)]="currentRule.count" min="1" max="4294967295">
-        <span style="color:red">*</span>
-        <div *ngIf="currentRule.count <=0" class="alert alert-danger" role="alert" style="margin-top:5px" role="alert">
+        <input
+          aria-required="true"
+          type="number"
+          id="requestsCountSlow"
+          placeholder="Enter count"
+          [(ngModel)]="currentRule.count"
+          min="1"
+          max="4294967295"
+        />
+        <span style="color: red">*</span>
+        <div
+          *ngIf="currentRule.count <= 0"
+          class="alert alert-danger"
+          role="alert"
+          style="margin-top: 5px"
+          role="alert"
+        >
           Request count should be more than zero
         </div>
       </div>
@@ -80,44 +135,81 @@
 
     <div class="row">
       <div class="col-sm-6">
-        <label for="timeTakenSlow">What should be minimum duration (in seconds) for these slow requests?</label>
+        <label for="timeTakenSlow"
+          >What should be minimum duration (in seconds) for these slow
+          requests?</label
+        >
       </div>
       <div class="col-sm-4">
-        <timespan ControlId="timeTakenSlow" [(timeSpan)]="currentRule.timeTaken" placeholder="e.g. 60"></timespan>
+        <timespan
+          ControlId="timeTakenSlow"
+          [(timeSpan)]="currentRule.timeTaken"
+          placeholder="e.g. 60"
+        ></timespan>
       </div>
     </div>
 
     <div class="row">
       <div class="col-sm-6">
-        <label for="durationSlow">What is the time interval (in seconds) in which the above condition should be
-          met?</label>
+        <label for="durationSlow"
+          >What is the time interval (in seconds) in which the above condition
+          should be met?</label
+        >
       </div>
       <div class="col-sm-4">
-        <timespan ControlId="durationSlow" [(timeSpan)]="currentRule.timeInterval" placeholder="e.g. 300"></timespan>
+        <timespan
+          ControlId="durationSlow"
+          [(timeSpan)]="currentRule.timeInterval"
+          placeholder="e.g. 300"
+        ></timespan>
       </div>
     </div>
     <div class="row">
       <div class="col-sm-6">
-        <label for="requestPath">What is the request path (leave blank for all requests)?</label>
+        <label for="requestPath"
+          >What is the request path (leave blank for all requests)?</label
+        >
       </div>
       <div class="col-sm-4">
-        <input type="text" aria-required="false" id="requestPath" placeholder="e.g. /default*.aspx"
-          [(ngModel)]="currentRule.path">
-        <div *ngIf="!isValidUrlPattern(currentRule.path)" class="alert alert-danger" role="alert" style="margin-top:5px"
-          role="alert">
-          Path can contain letters, alphabets, asterisk, dashes, period, underscore and forward slashes only
+        <input
+          type="text"
+          aria-required="false"
+          id="requestPath"
+          placeholder="e.g. /default*.aspx"
+          [(ngModel)]="currentRule.path"
+        />
+        <div
+          *ngIf="!isValidUrlPattern(currentRule.path)"
+          class="alert alert-danger"
+          role="alert"
+          style="margin-top: 5px"
+          role="alert"
+        >
+          Path can contain letters, alphabets, asterisk, dashes, period,
+          underscore and forward slashes only
         </div>
       </div>
     </div>
 
     <div class="row">
       <div class="col-sm-6">
-        <div *ngIf="showIntervalRecommendation" class="alert alert-danger" role="alert" style="margin-top:5px"
-          role="alert">
+        <div
+          *ngIf="showIntervalRecommendation"
+          class="alert alert-danger"
+          role="alert"
+          style="margin-top: 5px"
+          role="alert"
+        >
           Time interval should be higher than the minimum duration setting.
         </div>
-        <button type="button" class="btn btn-primary btn-sm" [disabled]="!isValid()"
-          (click)="saveRule();addRuleButton.focus()">Ok</button>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          [disabled]="!isValid()"
+          (click)="saveRule(); addRuleButton.focus()"
+        >
+          Ok
+        </button>
       </div>
     </div>
   </div>

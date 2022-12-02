@@ -8,9 +8,8 @@ describe('TokenInvalidComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TokenInvalidComponent ]
-    })
-    .compileComponents();
+      declarations: [TokenInvalidComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

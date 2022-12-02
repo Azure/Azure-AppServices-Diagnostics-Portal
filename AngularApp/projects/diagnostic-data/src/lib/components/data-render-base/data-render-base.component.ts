@@ -1,10 +1,14 @@
 import * as momentNs from 'moment';
 import { ReplaySubject } from 'rxjs';
-import { Component, Input, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DiagnosticData, RenderingType } from '../../models/detector';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { CompilationProperties } from '../../models/compilation-properties';
-import { xAxisPlotBand, zoomBehaviors, XAxisSelection } from '../../models/time-series';
+import {
+  XAxisSelection,
+  xAxisPlotBand,
+  zoomBehaviors
+} from '../../models/time-series';
 export interface DataRenderer {
   diagnosticDataInput: DiagnosticData;
 }
@@ -13,10 +17,10 @@ export interface DataRenderer {
   templateUrl: './data-render-base.component.html'
 })
 export class DataRenderBaseComponent implements OnInit, DataRenderer {
-
   diagnosticData: DiagnosticData;
   protected DataRenderingType: RenderingType;
-  private _diagnosticDataSubject: ReplaySubject<DiagnosticData> = new ReplaySubject<DiagnosticData>(1);
+  private _diagnosticDataSubject: ReplaySubject<DiagnosticData> =
+    new ReplaySubject<DiagnosticData>(1);
 
   @Input() set diagnosticDataInput(detector: DiagnosticData) {
     this._diagnosticDataSubject.next(detector);
@@ -28,9 +32,9 @@ export class DataRenderBaseComponent implements OnInit, DataRenderer {
   @Input() executionScript: string;
   @Input() detector: string = '';
   @Input() compilationPackage: CompilationProperties;
-  @Input() isAnalysisView:boolean = false;
+  @Input() isAnalysisView: boolean = false;
   private _xAxisPlotBands: xAxisPlotBand[] = null;
-  @Input() public set xAxisPlotBands(value:xAxisPlotBand[]) {
+  @Input() public set xAxisPlotBands(value: xAxisPlotBand[]) {
     this._xAxisPlotBands = [];
     this._xAxisPlotBands = value;
   }
@@ -38,20 +42,20 @@ export class DataRenderBaseComponent implements OnInit, DataRenderer {
     return this._xAxisPlotBands;
   }
   private _zoomBehavior: zoomBehaviors = zoomBehaviors.Zoom;
-  @Input() public set zoomBehavior(value:zoomBehaviors) {
-      this._zoomBehavior = value;
-      
+  @Input() public set zoomBehavior(value: zoomBehaviors) {
+    this._zoomBehavior = value;
   }
   public get zoomBehavior() {
-      return this._zoomBehavior;
+    return this._zoomBehavior;
   }
 
-  @Output() XAxisSelection:EventEmitter<XAxisSelection> = new EventEmitter<XAxisSelection>();
-  public onXAxisSelection(event:XAxisSelection) {
-		this.XAxisSelection.emit(event);
-	}
+  @Output() XAxisSelection: EventEmitter<XAxisSelection> =
+    new EventEmitter<XAxisSelection>();
+  public onXAxisSelection(event: XAxisSelection) {
+    this.XAxisSelection.emit(event);
+  }
 
-  constructor(protected telemetryService: TelemetryService) { }
+  constructor(protected telemetryService: TelemetryService) {}
 
   ngOnInit() {
     this._diagnosticDataSubject.subscribe((data: DiagnosticData) => {
@@ -65,7 +69,11 @@ export class DataRenderBaseComponent implements OnInit, DataRenderer {
     }
   }
 
-  protected logEvent(eventMessage: string, eventProperties?: any, measurements?: any) {
+  protected logEvent(
+    eventMessage: string,
+    eventProperties?: any,
+    measurements?: any
+  ) {
     if (this.detectorEventProperties) {
       for (const id of Object.keys(this.detectorEventProperties)) {
         if (this.detectorEventProperties.hasOwnProperty(id)) {

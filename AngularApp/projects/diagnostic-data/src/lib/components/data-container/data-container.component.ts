@@ -6,7 +6,6 @@ import { Component, Input, TemplateRef } from '@angular/core';
   styleUrls: ['./data-container.component.scss']
 })
 export class DataContainerComponent {
-
   @Input() headerTemplate: TemplateRef<any>;
 
   @Input() title: string;

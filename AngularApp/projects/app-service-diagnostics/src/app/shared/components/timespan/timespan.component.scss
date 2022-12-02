@@ -1,22 +1,22 @@
-input[type="number"] {
-    border: 1px solid #d8e1e6;
-    position: relative;
-    vertical-align: middle;
-    height: 23px;
-    padding: 0 5px;
-    background-color: var(--bodyBackground);
-    color: inherit;
-    font-size:12px;
-    width: 80%;
+input[type='number'] {
+  border: 1px solid #d8e1e6;
+  position: relative;
+  vertical-align: middle;
+  height: 23px;
+  padding: 0 5px;
+  background-color: var(--bodyBackground);
+  color: inherit;
+  font-size: 12px;
+  width: 80%;
 }
 
-input[type=text]:focus,input[type=number]:focus
-{
-    border:1px solid #0058ad;
-    outline:0
+input[type='text']:focus,
+input[type='number']:focus {
+  border: 1px solid #0058ad;
+  outline: 0;
 }
 
-.alert{
-    font-size: 12px;
-    padding:5px;
+.alert {
+  font-size: 12px;
+  padding: 5px;
 }

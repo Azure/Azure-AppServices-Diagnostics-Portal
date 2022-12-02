@@ -1,4 +1,13 @@
-import { Component, OnInit, ViewContainerRef, ViewChild, ComponentFactory, ComponentFactoryResolver, OnDestroy, ComponentRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewContainerRef,
+  ViewChild,
+  ComponentFactory,
+  ComponentFactoryResolver,
+  OnDestroy,
+  ComponentRef
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DetectorViewBaseComponent } from '../detector-view-base/detector-view-base.component';
 import { DetectorControlService, LoadingStatus } from 'diagnostic-data';
@@ -17,12 +26,11 @@ import { Subscription } from 'rxjs';
 import { AutohealingDetectorComponent } from '../detectors/autohealing-detector/autohealing-detector.component';
 
 @Component({
-    selector: 'detector-loader',
-    templateUrl: './detector-loader.component.html',
-    styleUrls: ['./detector-loader.component.scss']
+  selector: 'detector-loader',
+  templateUrl: './detector-loader.component.html',
+  styleUrls: ['./detector-loader.component.scss']
 })
 export class DetectorLoaderComponent implements OnInit, OnDestroy {
-
   LoadingStatus = LoadingStatus;
 
   subscriptionId: string;
@@ -43,30 +51,47 @@ export class DetectorLoaderComponent implements OnInit, OnDestroy {
   componentFactory: ComponentFactory<{}>;
   componentRef: ComponentRef<{}>;
 
-  @ViewChild('dynamicDataContainer', { read: ViewContainerRef, static: true}) dynamicDetectorContainer: ViewContainerRef;
+  @ViewChild('dynamicDataContainer', { read: ViewContainerRef, static: true })
+  dynamicDetectorContainer: ViewContainerRef;
 
-  constructor(private _activatedRoute: ActivatedRoute, private componentFactoryResolver: ComponentFactoryResolver, private _detectorControlService: DetectorControlService,
-    private _appAnalysisService: AppAnalysisService) { }
+  constructor(
+    private _activatedRoute: ActivatedRoute,
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private _detectorControlService: DetectorControlService,
+    private _appAnalysisService: AppAnalysisService
+  ) {}
 
   ngOnInit() {
-
     if (this._activatedRoute.parent.snapshot.params['subscriptionid'] != null) {
-      this.subscriptionId = this._activatedRoute.parent.snapshot.params['subscriptionid'];
-      this.resourceGroup = this._activatedRoute.parent.snapshot.params['resourcegroup'];
-      this.siteName = this._activatedRoute.parent.snapshot.params['resourcename'];
-      this.slotName = this._activatedRoute.parent.snapshot.params['slot'] ? this._activatedRoute.parent.snapshot.params['slot'] : '';
-    }
-    else if (this._activatedRoute.snapshot.params['subscriptionid'] != null) {
-      this.subscriptionId = this._activatedRoute.snapshot.params['subscriptionid'];
-      this.resourceGroup = this._activatedRoute.snapshot.params['resourcegroup'];
+      this.subscriptionId =
+        this._activatedRoute.parent.snapshot.params['subscriptionid'];
+      this.resourceGroup =
+        this._activatedRoute.parent.snapshot.params['resourcegroup'];
+      this.siteName =
+        this._activatedRoute.parent.snapshot.params['resourcename'];
+      this.slotName = this._activatedRoute.parent.snapshot.params['slot']
+        ? this._activatedRoute.parent.snapshot.params['slot']
+        : '';
+    } else if (this._activatedRoute.snapshot.params['subscriptionid'] != null) {
+      this.subscriptionId =
+        this._activatedRoute.snapshot.params['subscriptionid'];
+      this.resourceGroup =
+        this._activatedRoute.snapshot.params['resourcegroup'];
       this.siteName = this._activatedRoute.snapshot.params['resourcename'];
-      this.slotName = this._activatedRoute.snapshot.params['slot'] ? this._activatedRoute.snapshot.params['slot'] : '';
+      this.slotName = this._activatedRoute.snapshot.params['slot']
+        ? this._activatedRoute.snapshot.params['slot']
+        : '';
     }
 
     let component = this._activatedRoute.snapshot.data['detectorComponent'];
-    this.componentFactory = this.componentFactoryResolver.resolveComponentFactory(component);
-    this.componentRef = this.dynamicDetectorContainer.createComponent(this.componentFactory);
-    this.dynamicDetectorInstance = <DetectorViewBaseComponent>(this.componentRef.instance);
+    this.componentFactory =
+      this.componentFactoryResolver.resolveComponentFactory(component);
+    this.componentRef = this.dynamicDetectorContainer.createComponent(
+      this.componentFactory
+    );
+    this.dynamicDetectorInstance = <DetectorViewBaseComponent>(
+      this.componentRef.instance
+    );
 
     this.detectorName = component.getDetectorName();
 
@@ -74,11 +99,13 @@ export class DetectorLoaderComponent implements OnInit, OnDestroy {
       this.detectorName = this._activatedRoute.snapshot.params['detectorName'];
     }
 
-    this.updateSubscription = this._detectorControlService.update.subscribe(isValidUpdate => {
-      if (isValidUpdate) {
-        this._refresh();
+    this.updateSubscription = this._detectorControlService.update.subscribe(
+      (isValidUpdate) => {
+        if (isValidUpdate) {
+          this._refresh();
+        }
       }
-    });
+    );
   }
 
   ngOnDestroy() {
@@ -98,8 +125,19 @@ export class DetectorLoaderComponent implements OnInit, OnDestroy {
   }
 
   private _getData(invalidateCache: boolean = false) {
-    this.detectorSubscription = this._appAnalysisService.getDetectorResource(this.subscriptionId, this.resourceGroup, this.siteName, this.slotName, this.category, this.detectorName, invalidateCache, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString)
-      .subscribe(response => {
+    this.detectorSubscription = this._appAnalysisService
+      .getDetectorResource(
+        this.subscriptionId,
+        this.resourceGroup,
+        this.siteName,
+        this.slotName,
+        this.category,
+        this.detectorName,
+        invalidateCache,
+        this._detectorControlService.startTimeString,
+        this._detectorControlService.endTimeString
+      )
+      .subscribe((response) => {
         this.dynamicDetectorInstance.detectorResponseObject = response;
         this.loading = false;
       });

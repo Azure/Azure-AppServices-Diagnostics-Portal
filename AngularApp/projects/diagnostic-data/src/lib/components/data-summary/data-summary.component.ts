@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
-import { DiagnosticData, Rendering, RenderingType } from '../../models/detector';
+import {
+  DiagnosticData,
+  Rendering,
+  RenderingType
+} from '../../models/detector';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 
 @Component({
@@ -8,7 +12,6 @@ import { DataRenderBaseComponent } from '../data-render-base/data-render-base.co
   styleUrls: ['./data-summary.component.scss']
 })
 export class DataSummaryComponent extends DataRenderBaseComponent {
-
   DataRenderingType = RenderingType.DataSummary;
 
   renderingProperties: Rendering;
@@ -30,8 +33,12 @@ export class DataSummaryComponent extends DataRenderBaseComponent {
       const valueColumn = 1;
       const colorColumn = 2;
 
-      rows.forEach(row => {
-        this.summaryViewModels.push(<DataSummaryViewModel>{ name: row[labelColumn], value: row[valueColumn], color: row[colorColumn] });
+      rows.forEach((row) => {
+        this.summaryViewModels.push(<DataSummaryViewModel>{
+          name: row[labelColumn],
+          value: row[valueColumn],
+          color: row[colorColumn]
+        });
       });
     }
   }

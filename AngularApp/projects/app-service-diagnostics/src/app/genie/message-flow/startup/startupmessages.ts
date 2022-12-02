@@ -7,17 +7,17 @@ import { RegisterMessageFlowWithFactory } from '../message-flow.factory';
 @Injectable()
 @RegisterMessageFlowWithFactory()
 export class StartupMessages extends IMessageFlowProvider {
+  public GetMessageFlowList(): MessageGroup[] {
+    const messageGroupList: MessageGroup[] = [];
 
-    public GetMessageFlowList(): MessageGroup[] {
+    const welcomeMessageGroup: MessageGroup = new MessageGroup(
+      'startup',
+      [],
+      () => ''
+    );
 
-        const messageGroupList: MessageGroup[] = [];
+    messageGroupList.push(welcomeMessageGroup);
 
-        const welcomeMessageGroup: MessageGroup = new MessageGroup('startup', [], () => '');
-     
-        messageGroupList.push(welcomeMessageGroup);
-
-        return messageGroupList;
-    }
-
-
+    return messageGroupList;
+  }
 }

@@ -33,8 +33,6 @@ import { FabChoiceGroupModule } from '@angular-react/fabric/lib/components/choic
     DiagnosticDataModule,
     FabChoiceGroupModule
   ],
-  exports: [
-    AutohealingComponent
-  ],
+  exports: [AutohealingComponent]
 })
-export class AutoHealingModule { }
+export class AutoHealingModule {}

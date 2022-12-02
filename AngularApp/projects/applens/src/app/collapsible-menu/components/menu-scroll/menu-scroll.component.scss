@@ -1,23 +1,23 @@
 #scroll-container {
-    height: inherit;
-    overflow-y: scroll;
+  height: inherit;
+  overflow-y: scroll;
 }
 
 :host-context(.dark-theme) ::-webkit-scrollbar {
-    width: 5px;
+  width: 5px;
 }
 
 /* Track */
 :host-context(.dark-theme) ::-webkit-scrollbar-track {
-    background: #222d32;
+  background: #222d32;
 }
 
 /* Handle */
 :host-context(.dark-theme) ::-webkit-scrollbar-thumb {
-    background: #838383;
+  background: #838383;
 }
 
 /* Handle on hover */
 :host-context(.dark-theme) ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+  background: #555;
 }

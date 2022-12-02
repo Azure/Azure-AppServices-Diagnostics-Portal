@@ -3,19 +3,22 @@
   <table>
     <tr *ngFor="let incident of incidentService.incidents">
       <td class="date-holder">
-          {{incident.startTime | date:'MMM dd'}}
+        {{ incident.startTime | date : 'MMM dd' }}
       </td>
       <td>
-          <div class="incident-title">
-              
-              <span class="label" [class.label-success]="incident.status !== IncidentStatus.Active" 
-              [class.label-danger]="incident.status === IncidentStatus.Active" style="margin-right:15px">
-                {{IncidentStatus[incident.status]}}
-              </span>
-              {{incident.title}} 
-          </div>
-          <div class="incident-details" [innerHtml]="incident.html"></div>
+        <div class="incident-title">
+          <span
+            class="label"
+            [class.label-success]="incident.status !== IncidentStatus.Active"
+            [class.label-danger]="incident.status === IncidentStatus.Active"
+            style="margin-right: 15px"
+          >
+            {{ IncidentStatus[incident.status] }}
+          </span>
+          {{ incident.title }}
+        </div>
+        <div class="incident-details" [innerHtml]="incident.html"></div>
       </td>
     </tr>
-  </table>  
+  </table>
 </div>

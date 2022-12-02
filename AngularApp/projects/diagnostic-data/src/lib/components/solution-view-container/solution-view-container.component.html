@@ -1,29 +1,63 @@
 <div class="solution-view-container">
   <div class="solution-container-title">
-    <img [src]="solutionTitleImageSrc">
-    <span class="solution-title">{{solutionTitle}}</span>
-    <span *ngIf="isRecommended" class="solution-title-label">Recommended</span></div>
+    <img [src]="solutionTitleImageSrc" />
+    <span class="solution-title">{{ solutionTitle }}</span>
+    <span *ngIf="isRecommended" class="solution-title-label">Recommended</span>
+  </div>
   <ng-content></ng-content>
-  <div *ngIf="showFeedbackQuestion && !showThanksMessage" class="solution-feedback-message">
-    <label for="feedbackbutton" class="solution-feedback-label"> Was this helpful?</label>
-    <a name="feedbackbutton" type="button" class="solution-feedback-button" [ngClass]="{'btn-primary':yesSelected}" (click)="feedbackButtonClicked(true)">
-        Yes
+  <div
+    *ngIf="showFeedbackQuestion && !showThanksMessage"
+    class="solution-feedback-message"
+  >
+    <label for="feedbackbutton" class="solution-feedback-label">
+      Was this helpful?</label
+    >
+    <a
+      name="feedbackbutton"
+      type="button"
+      class="solution-feedback-button"
+      [ngClass]="{ 'btn-primary': yesSelected }"
+      (click)="feedbackButtonClicked(true)"
+    >
+      Yes
     </a>
-    <a name="feedbackbutton" type="button" class="solution-feedback-button" id="solutionNotHelpfulButton" [ngClass]="{'btn-primary':noSelected}" (click)="feedbackButtonClicked(false)">
-        No
+    <a
+      name="feedbackbutton"
+      type="button"
+      class="solution-feedback-button"
+      id="solutionNotHelpfulButton"
+      [ngClass]="{ 'btn-primary': noSelected }"
+      (click)="feedbackButtonClicked(false)"
+    >
+      No
     </a>
-    <fab-callout [target]="'#solutionNotHelpfulButton'" [hidden]="!showReasonsCallout" (onDismiss)="closeReasonsCallout()">
-      <div style="padding: 18px;">
-        <fab-choice-group [selectedKey]="selectedCalloutOption && selectedCalloutOption.key" [options]="calloutOptions" (onChange)="setCalloutSelection($event)" [label]="'Please let us know why!'" [required]="true"></fab-choice-group>
-        <div style="text-align: right;">
-          <fab-primary-button [contentStyle]="'margin-top: 20px;'"
-                    type="Submit" text='Submit' (click)="onCalloutSubmit()" [disabled]="calloutSubmitDisabled">
+    <fab-callout
+      [target]="'#solutionNotHelpfulButton'"
+      [hidden]="!showReasonsCallout"
+      (onDismiss)="closeReasonsCallout()"
+    >
+      <div style="padding: 18px">
+        <fab-choice-group
+          [selectedKey]="selectedCalloutOption && selectedCalloutOption.key"
+          [options]="calloutOptions"
+          (onChange)="setCalloutSelection($event)"
+          [label]="'Please let us know why!'"
+          [required]="true"
+        ></fab-choice-group>
+        <div style="text-align: right">
+          <fab-primary-button
+            [contentStyle]="'margin-top: 20px;'"
+            type="Submit"
+            text="Submit"
+            (click)="onCalloutSubmit()"
+            [disabled]="calloutSubmitDisabled"
+          >
           </fab-primary-button>
         </div>
       </div>
     </fab-callout>
-</div>
-<div *ngIf="showThanksMessage" class="solution-feedback-message">
-  Thanks for the feedback!
-</div>
+  </div>
+  <div *ngIf="showThanksMessage" class="solution-feedback-message">
+    Thanks for the feedback!
+  </div>
 </div>

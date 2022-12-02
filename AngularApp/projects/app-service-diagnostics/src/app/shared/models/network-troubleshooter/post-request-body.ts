@@ -1,34 +1,34 @@
 export class WrappedManagementApiBody {
-    properties: any
+  properties: any;
 }
 
 export class NetworkTroubleshooterPostAPIBody {
-    ProviderType: string;
-    Credentials: Credentials;
-    ResourceMetadata: ResourceMetadata;
+  ProviderType: string;
+  Credentials: Credentials;
+  ResourceMetadata: ResourceMetadata;
 }
 
 export class NetworkTroubleshooterPostTcpPingBody {
-    Host: string;
-    Port: number;
+  Host: string;
+  Port: number;
 }
 
 export class NetworkTroubleshooterTcpPingResponse {
-    connectionStatus: string;
-    connectionStatusDetails: string;
+  connectionStatus: string;
+  connectionStatusDetails: string;
 }
 
 export class Credentials {
-    CredentialType: string;
-    CredentialReference: CredentialReference;
-    ResourceMetadata: ResourceMetadata;
+  CredentialType: string;
+  CredentialReference: CredentialReference;
+  ResourceMetadata: ResourceMetadata;
 }
 
 export class CredentialReference {
-    ReferenceType: string;
-    ReferenceName: string;
+  ReferenceType: string;
+  ReferenceName: string;
 }
 
 export class ResourceMetadata {
-    EntityName: string;
+  EntityName: string;
 }

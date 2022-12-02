@@ -1,8 +1,7 @@
 export const environment = {
-    production: false,
-    adal: {
-      clientId: "",
-      enabled: false
-    }
-  };
-  
+  production: false,
+  adal: {
+    clientId: '',
+    enabled: false
+  }
+};

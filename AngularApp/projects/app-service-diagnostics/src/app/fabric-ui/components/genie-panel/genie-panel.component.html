@@ -1,36 +1,97 @@
-<fab-panel [isOpen]="globals.openGeniePanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'"
-  (onDismiss)="genieDismissedHandler()" [headerText]="'Ask Genie'">
+<fab-panel
+  [isOpen]="globals.openGeniePanel"
+  [type]="type"
+  [customWidth]="width"
+  [isHiddenOnDismiss]="true"
+  [isLightDismiss]="true"
+  [hasCloseButton]="true"
+  [isBlocking]="false"
+  [closeButtonAriaLabel]="'close'"
+  (onDismiss)="genieDismissedHandler()"
+  [headerText]="'Ask Genie'"
+>
   <div class="row panel-padding">
     <div>
       <div style="margin-bottom: 10px">
-        <div style="position: absolute; top:10px; right: 10px; align-items: flex-end; cursor: pointer; "
-          class="button-container" (keydown.enter)="closeGeniePanel()" (click)="closeGeniePanel()">
-          <div tabindex="0" aria-label="Collapse">
-          </div>
-          <div class="button-container" style="margin-top:25px">
-            <span class="tooltiptext" style="margin-left: -30px;">Collapse Genie</span>
+        <div
+          style="
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            align-items: flex-end;
+            cursor: pointer;
+          "
+          class="button-container"
+          (keydown.enter)="closeGeniePanel()"
+          (click)="closeGeniePanel()"
+        >
+          <div tabindex="0" aria-label="Collapse"></div>
+          <div class="button-container" style="margin-top: 25px">
+            <span class="tooltiptext" style="margin-left: -30px"
+              >Collapse Genie</span
+            >
           </div>
         </div>
       </div>
-      <div class="panel-content" style="margin-top: 10px;" #scrollMe>
+      <div class="panel-content" style="margin-top: 10px" #scrollMe>
         <!-- Remove style afterF A/B Test,except margin-left -->
-        <div [style.height.px]="chatContainerHeight" style="overflow-y: auto; display: inline-block; height: 78vh; max-width: 100%;margin: 0px 20px;"
-          class="ms-Panel-scrollableContent scroll-bottom">
-          <div class="animated fadeIn chat-message-container" *ngFor="let item of messages" style="margin-left:0px;margin-top: 10px;margin-right: 10px;
-          content: ' ';clear: both;">
-            <dynamic-component-genie aria-live="assertive" [componentData]="item" (onViewUpdate)="updateView($event)"
-              (onComplete)="updateStatus($event)"></dynamic-component-genie>
+        <div
+          [style.height.px]="chatContainerHeight"
+          style="
+            overflow-y: auto;
+            display: inline-block;
+            height: 78vh;
+            max-width: 100%;
+            margin: 0px 20px;
+          "
+          class="ms-Panel-scrollableContent scroll-bottom"
+        >
+          <div
+            class="animated fadeIn chat-message-container"
+            *ngFor="let item of messages"
+            style="
+              margin-left: 0px;
+              margin-top: 10px;
+              margin-right: 10px;
+              content: ' ';
+              clear: both;
+            "
+          >
+            <dynamic-component-genie
+              aria-live="assertive"
+              [componentData]="item"
+              (onViewUpdate)="updateView($event)"
+              (onComplete)="updateStatus($event)"
+            ></dynamic-component-genie>
           </div>
         </div>
       </div>
       <div class="search-box-container">
-        <textarea id="genieChatBox" class="genie-search-box" (keydown.enter)="onSearchEnter($event)" role="textbox"
-          placeholder="Type your question" aria-label="Type your question"></textarea>
+        <textarea
+          id="genieChatBox"
+          class="genie-search-box"
+          (keydown.enter)="onSearchEnter($event)"
+          role="textbox"
+          placeholder="Type your question"
+          aria-label="Type your question"
+        ></textarea>
         <div class="search-button-container">
-            <span id="searchButton" (click)="onSearchEnter($event)" (keydown.enter)="onSearchEnter($event)" tabindex="0"
-              aria-label="Send Message" role="button"><i class="fa fa-paper-plane search-box-icon"></i></span>
-            <span *ngIf="isMessageEmpty" tabindex="0" aria-label="Message is empty" class="empty-message-warning">Message is empty</span>
+          <span
+            id="searchButton"
+            (click)="onSearchEnter($event)"
+            (keydown.enter)="onSearchEnter($event)"
+            tabindex="0"
+            aria-label="Send Message"
+            role="button"
+            ><i class="fa fa-paper-plane search-box-icon"></i
+          ></span>
+          <span
+            *ngIf="isMessageEmpty"
+            tabindex="0"
+            aria-label="Message is empty"
+            class="empty-message-warning"
+            >Message is empty</span
+          >
         </div>
       </div>
     </div>

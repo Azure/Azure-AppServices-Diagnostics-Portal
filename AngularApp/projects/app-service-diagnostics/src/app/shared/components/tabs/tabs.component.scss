@@ -1,45 +1,45 @@
 @import '../../../../styles/main.scss';
 
 .panel {
-    background-color: var(--bodyBackground);
-    color: var(--bodyText);
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
 }
 
-a, .link{
-    cursor: pointer;
-    color: var(--link);
+a,
+.link {
+  cursor: pointer;
+  color: var(--link);
 
-    &:hover{
-        color: var(--linkHovered);
-    }
+  &:hover {
+    color: var(--linkHovered);
+  }
 }
 
 .body {
-    color: var(--bodyText);
+  color: var(--bodyText);
 }
 
-
 .app-nav-bar {
-    background-color: var(--bodyBackground);
-    padding: 5px 5px 0;
+  background-color: var(--bodyBackground);
+  padding: 5px 5px 0;
 }
 
 .nav.nav-tabs {
-    border: 0;
+  border: 0;
 }
 
 .panel-body-withtab {
-    height: calc(100vh - 56px);
+  height: calc(100vh - 56px);
 }
 
 .panel-body-notab {
-    height: calc(100vh - 10px);
+  height: calc(100vh - 10px);
 }
 
 .panel-body-nopadding {
-    padding: 0px;
+  padding: 0px;
 }
 
 .panel-body-padding {
-    padding: 15px auto;
+  padding: 15px auto;
 }

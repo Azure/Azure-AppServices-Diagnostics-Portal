@@ -10,22 +10,27 @@ import { AvailabilityLoggingService } from '../../../services/logging/availabili
   templateUrl: './daas-scaleup.component.html',
   styleUrls: ['./daas-scaleup.component.scss']
 })
-export class DaasScaleupComponent  {
+export class DaasScaleupComponent {
+  currentServerFarm: ServerFarm;
+  constructor(
+    private _serverFarmService: ServerFarmDataService,
+    private _portalActionService: PortalActionService,
+    private _logger: AvailabilityLoggingService
+  ) {
+    this._serverFarmService.siteServerFarm.subscribe(
+      (serverFarm) => {
+        if (serverFarm) {
+          this.currentServerFarm = serverFarm;
+        }
+      },
+      (error) => {
+        //TODO: handle error
+      }
+    );
+  }
 
-    currentServerFarm: ServerFarm;
-    constructor(private _serverFarmService: ServerFarmDataService, private _portalActionService: PortalActionService, private _logger: AvailabilityLoggingService) {
-        this._serverFarmService.siteServerFarm.subscribe(serverFarm => {
-            if (serverFarm) {
-                this.currentServerFarm = serverFarm;
-            }
-        }, error => {
-            //TODO: handle error
-        });
-    }
-
-    openBlade() {
-        this._logger.LogClickEvent('ScaleUp', 'DaaS');
-        this._portalActionService.openBladeScaleUpBlade();
-
-    }
+  openBlade() {
+    this._logger.LogClickEvent('ScaleUp', 'DaaS');
+    this._portalActionService.openBladeScaleUpBlade();
+  }
 }

@@ -1,14 +1,41 @@
-<collapsible-list *ngIf="initialized" [title]="'Support Tools'" [collapsed]="collapsed">
-    <div style="border: 1px solid #dddddd; padding: 5px; color: #000000; cursor: text; margin-top:5px;border-left: 10px solid #ea8302;">
-        Live Http Traffic feature has been deprecated. Find request data under the <i>Performance Counters</i> link below.
-    </div>
-    <collapsible-list-item *ngFor="let item of supportTools" [disabled]="!item.enabled" (onSelect)="item.action()" [marginTop]="10">
-        <a>{{item.title}}</a>
-    </collapsible-list-item>
-    <collapsible-list-item [disabled]="false" [routerLink]="diagnosticsLink" [marginTop]="10">
-        <a>Diagnostics as a Service</a>
-    </collapsible-list-item>
-    <collapsible-list-item [disabled]="false" [routerLink]="mitigateLink" [marginTop]="10">
-        <a>Mitigate</a>
-    </collapsible-list-item>
+<collapsible-list
+  *ngIf="initialized"
+  [title]="'Support Tools'"
+  [collapsed]="collapsed"
+>
+  <div
+    style="
+      border: 1px solid #dddddd;
+      padding: 5px;
+      color: #000000;
+      cursor: text;
+      margin-top: 5px;
+      border-left: 10px solid #ea8302;
+    "
+  >
+    Live Http Traffic feature has been deprecated. Find request data under the
+    <i>Performance Counters</i> link below.
+  </div>
+  <collapsible-list-item
+    *ngFor="let item of supportTools"
+    [disabled]="!item.enabled"
+    (onSelect)="item.action()"
+    [marginTop]="10"
+  >
+    <a>{{ item.title }}</a>
+  </collapsible-list-item>
+  <collapsible-list-item
+    [disabled]="false"
+    [routerLink]="diagnosticsLink"
+    [marginTop]="10"
+  >
+    <a>Diagnostics as a Service</a>
+  </collapsible-list-item>
+  <collapsible-list-item
+    [disabled]="false"
+    [routerLink]="mitigateLink"
+    [marginTop]="10"
+  >
+    <a>Mitigate</a>
+  </collapsible-list-item>
 </collapsible-list>

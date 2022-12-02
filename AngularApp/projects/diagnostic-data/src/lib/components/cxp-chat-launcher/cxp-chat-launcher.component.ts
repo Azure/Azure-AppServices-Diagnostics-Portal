@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CXPChatService } from '../../services/cxp-chat.service';
 import { Guid } from '../../utilities/guid';
 
@@ -8,7 +8,6 @@ import { Guid } from '../../utilities/guid';
   styleUrls: ['./cxp-chat-launcher.component.scss']
 })
 export class CxpChatLauncherComponent implements OnInit {
-
   @Input() trackingId: string;
   @Input() chatUrl: string;
   @Input() supportTopicId: string;
@@ -16,11 +15,12 @@ export class CxpChatLauncherComponent implements OnInit {
   public showChatConfDialog: boolean = false;
   public firstTimeCheck: boolean = true;
   public diagnosticLogsConsent: string = '';
-  public chatWelcomeMessage: string = "";
+  public chatWelcomeMessage: string = '';
   public showChatButtons: boolean = true;
   public showDiagnosticsConsentOption: boolean = true;
   public completeChatUrl: string = '';
-  public readonly windowFeatures: string = 'menubar=no,location=no,resizable=no,scrollbars=no,status=no,height=550,width=450';
+  public readonly windowFeatures: string =
+    'menubar=no,location=no,resizable=no,scrollbars=no,status=no,height=550,width=450';
   private chatUrlRefreshTimerHandle: number = 0;
   private readonly chatUrlTimeout: number = 1800000; //30 minutes
   private readonly chatBubbleConfirmationDisplayDelay: number = 10000; //10 seconds
@@ -28,27 +28,36 @@ export class CxpChatLauncherComponent implements OnInit {
   public showChatBubble: boolean = false;
 
   constructor(private _cxpChatService: CXPChatService) {
-    this.chatWelcomeMessage = "I'd love to help you out with your issue and connect you with our quick help chat team.";
+    this.chatWelcomeMessage =
+      "I'd love to help you out with your issue and connect you with our quick help chat team.";
   }
-
 
   ngOnInit() {
     window.setTimeout(() => {
-
-
       //Have to check for first time due to the way our components are structured.
       //This gets called multiple times for each detector, specifically for child detectors that are collapsed and then expanded later.
       //This will also avoid telemetry noise.
       if (!this.isComponentInitialized() && this.firstTimeCheck) {
         //We do not have a chat URL, no need to show the chat bubble
-        this._cxpChatService.logUserActionOnChat('ChatBubbleNotShown', this.trackingId, this.chatUrl);
-      }
-      else if (this.isComponentInitialized() && this.firstTimeCheck) {
+        this._cxpChatService.logUserActionOnChat(
+          'ChatBubbleNotShown',
+          this.trackingId,
+          this.chatUrl
+        );
+      } else if (this.isComponentInitialized() && this.firstTimeCheck) {
         this.showChatBubble = true;
-        this._cxpChatService.logUserActionOnChat('ChatBubbleShown', this.trackingId, this.chatUrl);
+        this._cxpChatService.logUserActionOnChat(
+          'ChatBubbleShown',
+          this.trackingId,
+          this.chatUrl
+        );
 
         //Initialize blade return value indicating that the chat was not engaged.
-        this._cxpChatService.notifyChatOpened(this.trackingId, this.chatUrl, false);
+        this._cxpChatService.notifyChatOpened(
+          this.trackingId,
+          this.chatUrl,
+          false
+        );
       }
       this.firstTimeCheck = false;
 
@@ -56,10 +65,13 @@ export class CxpChatLauncherComponent implements OnInit {
         if (!this.chatConfDialogOpenedAtleastOnce && !this.showChatConfDialog) {
           this.showChatConfDialog = true;
           this.chatConfDialogOpenedAtleastOnce = true;
-          this._cxpChatService.logUserActionOnChat('ChatConfDialogShownBySystem', this.trackingId, this.chatUrl);
+          this._cxpChatService.logUserActionOnChat(
+            'ChatConfDialogShownBySystem',
+            this.trackingId,
+            this.chatUrl
+          );
         }
       }, this.chatBubbleConfirmationDisplayDelay);
-
     }, this.chatBubbleDisplayDelay);
 
     this.refreshChatUrl();
@@ -71,16 +83,17 @@ export class CxpChatLauncherComponent implements OnInit {
       //Set a 30 minute timer to refresh the URL Cache
       this.chatUrlRefreshTimerHandle = window.setTimeout(() => {
         let trackingId = Guid.newGuid();
-        this._cxpChatService.getChatURL(this.supportTopicId, trackingId, true).subscribe((chatApiResponse: any) => {
-          if (!!chatApiResponse && chatApiResponse != '') {
-            this.trackingId = trackingId;
-            this.chatUrl = chatApiResponse;
-          }
-        });
+        this._cxpChatService
+          .getChatURL(this.supportTopicId, trackingId, true)
+          .subscribe((chatApiResponse: any) => {
+            if (!!chatApiResponse && chatApiResponse != '') {
+              this.trackingId = trackingId;
+              this.chatUrl = chatApiResponse;
+            }
+          });
         this.refreshChatUrl();
       }, this.chatUrlTimeout);
-    }
-    else {
+    } else {
       window.clearTimeout(this.chatUrlRefreshTimerHandle);
     }
   }
@@ -90,15 +103,17 @@ export class CxpChatLauncherComponent implements OnInit {
     this.showDiagnosticsConsentOption = false;
     window.clearTimeout(this.chatUrlRefreshTimerHandle);
 
-    let browserUrl = (window.location != window.parent.location) ? document.referrer : document.location.href;
+    let browserUrl =
+      window.location != window.parent.location
+        ? document.referrer
+        : document.location.href;
     let portalUrl = 'https://portal.azure.com';
 
-    if (browserUrl.includes("azure.cn")) {
+    if (browserUrl.includes('azure.cn')) {
       portalUrl = 'https://portal.azure.cn';
-    }
-    else if (browserUrl.includes("azure.us")) {
+    } else if (browserUrl.includes('azure.us')) {
       portalUrl = 'https://portal.azure.us';
-    } else if (browserUrl.includes("azure.de")) {
+    } else if (browserUrl.includes('azure.de')) {
       portalUrl = 'https://portal.azure.de';
     }
 
@@ -107,12 +122,19 @@ export class CxpChatLauncherComponent implements OnInit {
 
 In case chat did not start in a pop up window, disable your pop up blocker and click <strong><a role="link" aria-label="Click to launch chat pop up" title="Launch chat pop up."  style='color:skyblue' href="javascript:window.open('${this.completeChatUrl}', 'AzureSupportCaseChat', '${this.windowFeatures}');">here</a></strong> to launch chat again.`;
 
-    this._cxpChatService.notifyChatOpened(this.trackingId, this.completeChatUrl, true);
+    this._cxpChatService.notifyChatOpened(
+      this.trackingId,
+      this.completeChatUrl,
+      true
+    );
   }
 
   public isComponentInitialized(): boolean {
-
-    let initializedTestResult: boolean = !!this.chatUrl && this.chatUrl != '' && !!this.trackingId && this.trackingId != '';
+    let initializedTestResult: boolean =
+      !!this.chatUrl &&
+      this.chatUrl != '' &&
+      !!this.trackingId &&
+      this.trackingId != '';
 
     return initializedTestResult;
   }
@@ -121,29 +143,48 @@ In case chat did not start in a pop up window, disable your pop up blocker and c
     this.showChatConfDialog = !this.showChatConfDialog;
     if (this.showChatConfDialog) {
       this.chatConfDialogOpenedAtleastOnce = true;
-      this._cxpChatService.logUserActionOnChat('ChatConfDialogShown', this.trackingId, this.chatUrl);
-    }
-    else {
-      this._cxpChatService.logUserActionOnChat('ChatConfDialogDismissed', this.trackingId, this.chatUrl);
+      this._cxpChatService.logUserActionOnChat(
+        'ChatConfDialogShown',
+        this.trackingId,
+        this.chatUrl
+      );
+    } else {
+      this._cxpChatService.logUserActionOnChat(
+        'ChatConfDialogDismissed',
+        this.trackingId,
+        this.chatUrl
+      );
     }
   }
 
   public hideChatConfDialog(isUserInitiated: boolean, source: string): void {
     if (isUserInitiated) {
-      this._cxpChatService.logUserActionOnChat(`ChatConfDialogCancelFrom${source.replace(' ', '')}`, this.trackingId, this.chatUrl);
+      this._cxpChatService.logUserActionOnChat(
+        `ChatConfDialogCancelFrom${source.replace(' ', '')}`,
+        this.trackingId,
+        this.chatUrl
+      );
     }
     this.showChatConfDialog = false;
   }
 
   public openChatPopup(): void {
     if (this.chatUrl != '') {
-      if (this.diagnosticLogsConsent == 'Yes' || this.diagnosticLogsConsent == 'No') {
-        this.completeChatUrl = `${this.chatUrl}&diagnosticsConsent=${(this.diagnosticLogsConsent == 'Yes')}`;
+      if (
+        this.diagnosticLogsConsent == 'Yes' ||
+        this.diagnosticLogsConsent == 'No'
+      ) {
+        this.completeChatUrl = `${this.chatUrl}&diagnosticsConsent=${
+          this.diagnosticLogsConsent == 'Yes'
+        }`;
         window.open(this.completeChatUrl, '_blank', this.windowFeatures);
-        this._cxpChatService.logUserActionOnChat('ChatUrlOpened', this.trackingId, this.completeChatUrl);
+        this._cxpChatService.logUserActionOnChat(
+          'ChatUrlOpened',
+          this.trackingId,
+          this.completeChatUrl
+        );
         this.showChatOpenedMessage();
-      }
-      else {
+      } else {
         this.diagnosticLogsConsent = '';
       }
     }

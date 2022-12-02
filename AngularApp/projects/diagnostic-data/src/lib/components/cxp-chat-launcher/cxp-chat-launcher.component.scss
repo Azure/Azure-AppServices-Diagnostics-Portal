@@ -1,192 +1,192 @@
-@import "../../../../../app-service-diagnostics/src/styles/common/variables";
-@import "../../../../../app-service-diagnostics/src/styles/controls/buttons";
+@import '../../../../../app-service-diagnostics/src/styles/common/variables';
+@import '../../../../../app-service-diagnostics/src/styles/controls/buttons';
 
 $chatBubble-color: #008080;
 $zIndex: 99;
 
 .chatBubble {
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 4em;
-    height: 4em;
-    bottom: 10px;
-    left: 10px;
-    text-align: center;
-    box-shadow: 0 0 15px #00214b;
-    border-radius: 50%;
-    cursor: pointer;
-    background-color: $chatBubble-color;
-    z-index: $zIndex;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 4em;
+  height: 4em;
+  bottom: 10px;
+  left: 10px;
+  text-align: center;
+  box-shadow: 0 0 15px #00214b;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: $chatBubble-color;
+  z-index: $zIndex;
 }
 
 .cxpChat-FlatButton {
-    background-color: $chatBubble-color;
-    border: thin;
+  background-color: $chatBubble-color;
+  border: thin;
 }
 
 .cxpChat-RemoveOutline {
-    outline: none;
+  outline: none;
 }
 
 .agentImage {
-    height: 2em;
-    width: 2em;
-    border-radius: 50%;
+  height: 2em;
+  width: 2em;
+  border-radius: 50%;
 }
 
 .agentName {
-    padding-left: 4px;
+  padding-left: 4px;
 }
 
 .chatIcon {
-    font-size: 1.7em;
-    color: ghostwhite;
+  font-size: 1.7em;
+  color: ghostwhite;
 }
 
 .arrow-bottom {
-    width: 2.5%;
-    height: 0;
-    position: fixed;
-    bottom: 4.9em;
-    left: 2em;
-    z-index: $zIndex + 1;
+  width: 2.5%;
+  height: 0;
+  position: fixed;
+  bottom: 4.9em;
+  left: 2em;
+  z-index: $zIndex + 1;
 }
 
 .arrow-bottom::before {
-    content: "";
-    display: block;
-    width: 0;
-    margin-top: -10px;
-    z-index: $zIndex + 1;
+  content: '';
+  display: block;
+  width: 0;
+  margin-top: -10px;
+  z-index: $zIndex + 1;
 
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 10px solid $chatBubble-color;
-    border-bottom: 10px solid transparent;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid $chatBubble-color;
+  border-bottom: 10px solid transparent;
 }
 
 .cxpChat-ConfContainer {
-    background: $chatBubble-color;
-    color: var(--bodyBackground);
-    font-size: 14px;
-    padding: 5px;
-    z-index: $zIndex;
-    border-radius: 2px;
-    border: solid 1px $chatBubble-color;
-    position: fixed;
-    left: 1.8em;
-    bottom: 5.2em;
+  background: $chatBubble-color;
+  color: var(--bodyBackground);
+  font-size: 14px;
+  padding: 5px;
+  z-index: $zIndex;
+  border-radius: 2px;
+  border: solid 1px $chatBubble-color;
+  position: fixed;
+  left: 1.8em;
+  bottom: 5.2em;
 }
 
 .cxpChat-CloseIcon {
-    cursor: pointer;
-    color: var(--bodyBackground);
-    margin-right: 4px;
+  cursor: pointer;
+  color: var(--bodyBackground);
+  margin-right: 4px;
 }
 
 .cxpChat-ConfText {
-    padding-top: 10px;
-    padding-right: 15px;
-    padding-bottom: 15px;
-    padding-left: 15px;
-    width: 25em;
+  padding-top: 10px;
+  padding-right: 15px;
+  padding-bottom: 15px;
+  padding-left: 15px;
+  width: 25em;
 }
 
 .cxpChat-ConsentContainer {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 .cxpChat-moreDetailsContainer {
-    display: flex;
-	align-items: baseline;
-	padding: 0.5em;
+  display: flex;
+  align-items: baseline;
+  padding: 0.5em;
 }
 
 .cxpChat-optionsContainer {
-    width: 4em;
+  width: 4em;
 }
 
 .cxpChat-ConsentOptionContainer {
-    display: flex;
+  display: flex;
 }
 
 .cxpChat-ConsentText {
-    padding-left: 0.2em;
+  padding-left: 0.2em;
 }
 
 label {
-    color: var(--bodyBackground);
-    margin-left: 3px;
-    margin-bottom: 0px;
+  color: var(--bodyBackground);
+  margin-left: 3px;
+  margin-bottom: 0px;
 }
 
 a {
-    color: skyblue;
+  color: skyblue;
 }
 
 hr {
-    margin-top: 5px;
-    margin-bottom: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
 }
 
 .cxpChat-actionBtnContainer {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 10px;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 10px;
 }
 
 .inactive-button {
-    background-color: $chatBubble-color;
-    margin-left: 0px;
-    padding-left: 35px;
-    padding-right: 35px;
-    &:focus,
-    &:hover {
-        background-color: $primary-color;
-    }
+  background-color: $chatBubble-color;
+  margin-left: 0px;
+  padding-left: 35px;
+  padding-right: 35px;
+  &:focus,
+  &:hover {
+    background-color: $primary-color;
+  }
 }
 
 .default-button {
-    background-color: var(--bodyBackground);
-    color: $chatBubble-color;
-    font-weight: bold;
-    margin-left: 0px;
-    padding-left: 35px;
-    padding-right: 35px;
-    &:enabled:focus,
-    &:enabled:hover {
-        color: var(--bodyBackground);
-        background-color: $primary-color;
-    }
-    &:disabled {
-        font-weight: lighter;
-        cursor: not-allowed;
-        color: ghostwhite;
-    }
+  background-color: var(--bodyBackground);
+  color: $chatBubble-color;
+  font-weight: bold;
+  margin-left: 0px;
+  padding-left: 35px;
+  padding-right: 35px;
+  &:enabled:focus,
+  &:enabled:hover {
+    color: var(--bodyBackground);
+    background-color: $primary-color;
+  }
+  &:disabled {
+    font-weight: lighter;
+    cursor: not-allowed;
+    color: ghostwhite;
+  }
 }
 
 .white-border {
-    border: 1px solid white;
+  border: 1px solid white;
 }
 
 .cxpChat-Required {
-    color: red;
+  color: red;
 }
 
 .cxpChat-FlatButton:focus > .cxpChat-ChangeIcon > .fa,
 .cxpChat-ChangeIcon > .fa + .fa,
 .cxpChat-ChangeIcon:hover > .fa {
-    display: none;
+  display: none;
 }
 
 .cxpChat-FlatButton:focus > .cxpChat-ChangeIcon > .fa + .fa,
 .cxpChat-ChangeIcon:hover > .fa + .fa {
-    display: inherit;
-    color: #ba141a;
-    background-color: var(--bodyBackground);
-    margin-top: 5px;
-    margin-right: 0px;
+  display: inherit;
+  color: #ba141a;
+  background-color: var(--bodyBackground);
+  margin-top: 5px;
+  margin-right: 0px;
 }

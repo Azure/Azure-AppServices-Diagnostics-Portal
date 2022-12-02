@@ -1,61 +1,60 @@
 .input-group-addon {
-    padding: 6px;
-    border: none;
+  padding: 6px;
+  border: none;
 }
 
 input {
-    border-top-left-radius: 2px;
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
-    border-bottom-left-radius: 2px;
-    border: none;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 2px;
+  border: none;
 }
 
 .search-container {
-    padding: 6px;
-    font-size: 13px;
+  padding: 6px;
+  font-size: 13px;
 }
 
 /* DARK THEME */
 
 :host-context(.dark-theme) .light-theme-only {
-    display: none;
+  display: none;
 }
 
 :host-context(.dark-theme) input,
 :host-context(.dark-theme) .input-group-addon {
-    color: rgb(102, 102, 102);
-    background-color: rgb(55, 72, 80);
+  color: rgb(102, 102, 102);
+  background-color: rgb(55, 72, 80);
 }
 
 :host-context(.dark-theme) input:focus,
 :host-context(.dark-theme) input:focus ~ .input-group-addon {
-    background-color: rgb(255, 255, 255);
-    color: rgb(102, 102, 102);
+  background-color: rgb(255, 255, 255);
+  color: rgb(102, 102, 102);
 }
 
 /* LIGHT THEME */
 
 :host-context(.light-theme) .dark-theme-only {
-    display: none;
+  display: none;
 }
 
 :host-context(.light-theme) input {
-    height: 30px;
-    font-size: 13px;
-    padding: 6px;
+  height: 30px;
+  font-size: 13px;
+  padding: 6px;
 }
 
 :host-context(.light-theme) .input-group {
-    border: 1px solid #cccccc;
+  border: 1px solid #cccccc;
 }
 
 :host-context(.light-theme) .input-group-addon {
-    font-size: 13px;
-    padding: 3px 0px 3px 5px;
+  font-size: 13px;
+  padding: 3px 0px 3px 5px;
 }
 
-
 input-group {
-    border: 1px solid var(--inputGroupBorder);
+  border: 1px solid var(--inputGroupBorder);
 }

@@ -1,5 +1,11 @@
 import {
-  DetectorControlService, DiagnosticService, DetectorMetaData, DetectorResponse, TelemetryService, TelemetryEventNames, ResiliencyScoreReportHelper
+  DetectorControlService,
+  DiagnosticService,
+  DetectorMetaData,
+  DetectorResponse,
+  TelemetryService,
+  TelemetryEventNames,
+  ResiliencyScoreReportHelper
 } from 'diagnostic-data';
 import { Component, AfterViewInit, Input } from '@angular/core';
 import { Globals } from '../../../globals';
@@ -28,11 +34,11 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   fullReportPath: string;
   subscriptionId: string;
 
-  displayRPDFButton: boolean = false;  
+  displayRPDFButton: boolean = false;
   gRPDFButtonChild: Element;
   gRPDFButtonId: string;
   gRPDFCoachmarkId: string;
-  gRPDFButtonText: string = "Get Resiliency Score report";
+  gRPDFButtonText: string = 'Get Resiliency Score report';
   gRPDFButtonIcon: any = { iconName: 'Download' };
   gRPDFFileName: string;
   gRPDFButtonDisabled: boolean;
@@ -56,15 +62,23 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     this.resourcePlatform = webSiteService.platform;
     this.resourceAppType = webSiteService.appType;
     this.resourceSku = webSiteService.sku;
-    return this._resourceService && this._resourceService instanceof WebSitesService
-      && ((webSiteService.platform === platform) && (webSiteService.appType === AppType.WebApp) && (webSiteService.sku > 8)); //Only for Web Apps  in Standard or higher
+    return (
+      this._resourceService &&
+      this._resourceService instanceof WebSitesService &&
+      webSiteService.platform === platform &&
+      webSiteService.appType === AppType.WebApp &&
+      webSiteService.sku > 8
+    ); //Only for Web Apps  in Standard or higher
   }
 
   // add logic for presenting initially to 100% of Subscriptions:  percentageToRelease = 1 (1=100%)
-  private _percentageOfSubscriptions(subscriptionId: string, percentageToRelease: number): boolean {
-    let firstDigit = "0x" + subscriptionId.substring(0, 1);
+  private _percentageOfSubscriptions(
+    subscriptionId: string,
+    percentageToRelease: number
+  ): boolean {
+    let firstDigit = '0x' + subscriptionId.substring(0, 1);
     // roughly split of percentageToRelease of subscriptions to use new feature.
-     return ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease);
+    return (16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease;
   }
 
   ngOnInit(): void {
@@ -72,66 +86,94 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     let _isBetaSubscription: boolean = false;
     this.subscriptionId = this._route.parent.snapshot.params['subscriptionid'];
     // allowlisting beta subscriptions for testing purposes
-    _isBetaSubscription = DemoSubscriptions.betaSubscriptions.indexOf(this.subscriptionId) >= 0;
+    _isBetaSubscription =
+      DemoSubscriptions.betaSubscriptions.indexOf(this.subscriptionId) >= 0;
     // allowing 0% of subscriptions to use new feature
-    _isSubIdInPercentageToRelease = this._percentageOfSubscriptions(this.subscriptionId, 0);
+    _isSubIdInPercentageToRelease = this._percentageOfSubscriptions(
+      this.subscriptionId,
+      0
+    );
 
     // Releasing to only Beta Subscriptions for Web App (Linux) in standard or higher and all Web App (Windows) in standard or higher
-    this.displayRPDFButton = ((this._checkIsWebAppProdSku(OperatingSystem.linux) && (_isSubIdInPercentageToRelease || _isBetaSubscription)) || this._checkIsWebAppProdSku(OperatingSystem.windows));
+    this.displayRPDFButton =
+      (this._checkIsWebAppProdSku(OperatingSystem.linux) &&
+        (_isSubIdInPercentageToRelease || _isBetaSubscription)) ||
+      this._checkIsWebAppProdSku(OperatingSystem.windows);
     const rSBDEventProperties = {
-      'ResiliencyScoreButtonDisplayed': this.displayRPDFButton.toString(),
-      'Subscription': this.subscriptionId,
-      'Platform': this.resourcePlatform != undefined ? this.resourcePlatform.toString() : "",
-      'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString(): "",
-      'resourceSku': this.resourceSku != undefined ? this.resourceSku.toString(): "",
+      ResiliencyScoreButtonDisplayed: this.displayRPDFButton.toString(),
+      Subscription: this.subscriptionId,
+      Platform:
+        this.resourcePlatform != undefined
+          ? this.resourcePlatform.toString()
+          : '',
+      AppType:
+        this.resourceAppType != undefined
+          ? this.resourceAppType.toString()
+          : '',
+      resourceSku:
+        this.resourceSku != undefined ? this.resourceSku.toString() : ''
     };
-    this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportButtonDisplayed, rSBDEventProperties);
+    this.telemetryService.logEvent(
+      TelemetryEventNames.ResiliencyScoreReportButtonDisplayed,
+      rSBDEventProperties
+    );
     const loggingError = new Error();
     this.gRPDFButtonDisabled = false;
     //Get showCoachMark value(string) from local storage (if exists), then convert to boolean
     try {
-      if (this.displayRPDFButton){
-        if (localStorage.getItem("showCoachmark") != undefined) {
-          this.showCoachmark = localStorage.getItem("showCoachmark") === "true";
-        }
-        else {
+      if (this.displayRPDFButton) {
+        if (localStorage.getItem('showCoachmark') != undefined) {
+          this.showCoachmark = localStorage.getItem('showCoachmark') === 'true';
+        } else {
           this.showCoachmark = true;
         }
       }
-    }
-    catch (error) {
+    } catch (error) {
       // Use TelemetryService logEvent when not able to access local storage.
       // Most likely due to browsing in InPrivate/Incognito mode.
       const eventProperties = {
-        'Subscription': this.subscriptionId,
-        'Error': error,
-        'Message': 'Error trying to retrieve showCoachmark from localStorage'        
-      }
-      this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
+        Subscription: this.subscriptionId,
+        Error: error,
+        Message: 'Error trying to retrieve showCoachmark from localStorage'
+      };
+      this.telemetryService.logEvent(
+        TelemetryEventNames.ResiliencyScoreReportInPrivateAccess,
+        eventProperties
+      );
     }
 
     //
-    // Retrieving custom fonts from assets/vfs_fonts.json in each project, to be passed to 
-    // PDFMake to generate ResiliencyScoreReport. 
+    // Retrieving custom fonts from assets/vfs_fonts.json in each project, to be passed to
+    // PDFMake to generate ResiliencyScoreReport.
     // Using this as an alternative to using the vfs_fonts.js build with PDFMake's build-vfs.js
     // as this file caused problems when being compiled in a library project like diagnostic-data
     //
-    this.http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => {this.vfsFonts=data}); 
+    this.http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => {
+      this.vfsFonts = data;
+    });
   }
 
-  constructor(private globals: Globals, private _detectorControlService: DetectorControlService, private _diagnosticService: DiagnosticService, private _route: ActivatedRoute, private router: Router, private telemetryService: TelemetryService, private _resourceService: ResourceService, private http: HttpClient) {
-  }
+  constructor(
+    private globals: Globals,
+    private _detectorControlService: DetectorControlService,
+    private _diagnosticService: DiagnosticService,
+    private _route: ActivatedRoute,
+    private router: Router,
+    private telemetryService: TelemetryService,
+    private _resourceService: ResourceService,
+    private http: HttpClient
+  ) {}
 
   toggleOpenState() {
     this.telemetryService.logEvent(TelemetryEventNames.OpenGenie, {
-      'Place': 'LandingPage'
-    })
+      Place: 'LandingPage'
+    });
     this.globals.openGeniePanel = !this.globals.openGeniePanel;
   }
 
   sendFeedback() {
     this.telemetryService.logEvent(TelemetryEventNames.OpenFeedbackPanel, {
-      'Place': 'LandingPage'
+      Place: 'LandingPage'
     });
     this.globals.openFeedback = !this.globals.openFeedback;
   }
@@ -139,34 +181,38 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   generateResiliencyPDF() {
     let sT = new Date();
     const rSEventProperties = {
-      'Subscription': this.subscriptionId,
-      'TimeClicked': sT.toUTCString()
+      Subscription: this.subscriptionId,
+      TimeClicked: sT.toUTCString()
     };
-    this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportButtonClicked, rSEventProperties);
+    this.telemetryService.logEvent(
+      TelemetryEventNames.ResiliencyScoreReportButtonClicked,
+      rSEventProperties
+    );
     // Once the button is clicked no need to show Coachmark anymore:
     const loggingError = new Error();
     try {
-      if (localStorage.getItem("showCoachmark") != undefined) {
-        this.showCoachmark = localStorage.getItem("showCoachmark") === "true";
-      }
-      else {
+      if (localStorage.getItem('showCoachmark') != undefined) {
+        this.showCoachmark = localStorage.getItem('showCoachmark') === 'true';
+      } else {
         this.showCoachmark = false;
-        localStorage.setItem("showCoachmark", "false");
+        localStorage.setItem('showCoachmark', 'false');
       }
-    }
-    catch (error) {
+    } catch (error) {
       // Use TelemetryService logEvent when not able to access local storage.
       // Most likely due to browsing in InPrivate/Incognito mode.
       const eventProperties = {
-        'Subscription': this.subscriptionId,
-        'Error': error,
-        'Message': 'Error trying to retrieve showCoachmark from localStorage'    
-      }
-      this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
+        Subscription: this.subscriptionId,
+        Error: error,
+        Message: 'Error trying to retrieve showCoachmark from localStorage'
+      };
+      this.telemetryService.logEvent(
+        TelemetryEventNames.ResiliencyScoreReportInPrivateAccess,
+        eventProperties
+      );
     }
     // Taking starting time
 
-    this.gRPDFButtonText = "Getting Resiliency Score report...";
+    this.gRPDFButtonText = 'Getting Resiliency Score report...';
     this.gRPDFButtonIcon = {
       iconName: 'Download',
       styles: {
@@ -175,81 +221,126 @@ export class DetectorCommandBarComponent implements AfterViewInit {
         }
       }
     };
-    this.gRPDFButtonDisabled = true;    
-    this._diagnosticService.getDetector("ResiliencyScore", this._detectorControlService.startTimeString, this._detectorControlService.endTimeString)
-      .subscribe((httpResponse: DetectorResponse) => {
-        //If the page hasn't been refreshed this will use a cached request, so changing File Name to use the same name + "(cached)" to let them know they are seeing a cached version.
-        let eT = new Date();
-        let detectorTimeTaken = eT.getTime() - sT.getTime();
-        
-        
-        if (this.gRPDFFileName == undefined) {
-          this.generatedOn = ResiliencyScoreReportHelper.generatedOn();
-          this.gRPDFFileName = `ResiliencyReport-${JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName}-${this.generatedOn.replace(":", "-")}`;          
-          ResiliencyScoreReportHelper.generateResiliencyReport(httpResponse.dataset[0].table, `${this.gRPDFFileName}`, this.generatedOn, this.vfsFonts);
+    this.gRPDFButtonDisabled = true;
+    this._diagnosticService
+      .getDetector(
+        'ResiliencyScore',
+        this._detectorControlService.startTimeString,
+        this._detectorControlService.endTimeString
+      )
+      .subscribe(
+        (httpResponse: DetectorResponse) => {
+          //If the page hasn't been refreshed this will use a cached request, so changing File Name to use the same name + "(cached)" to let them know they are seeing a cached version.
+          let eT = new Date();
+          let detectorTimeTaken = eT.getTime() - sT.getTime();
+
+          if (this.gRPDFFileName == undefined) {
+            this.generatedOn = ResiliencyScoreReportHelper.generatedOn();
+            this.gRPDFFileName = `ResiliencyReport-${
+              JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName
+            }-${this.generatedOn.replace(':', '-')}`;
+            ResiliencyScoreReportHelper.generateResiliencyReport(
+              httpResponse.dataset[0].table,
+              `${this.gRPDFFileName}`,
+              this.generatedOn,
+              this.vfsFonts
+            );
+          } else {
+            this.gRPDFFileName = `${this.gRPDFFileName}`;
+            ResiliencyScoreReportHelper.generateResiliencyReport(
+              httpResponse.dataset[0].table,
+              `${this.gRPDFFileName}_(cached)`,
+              this.generatedOn,
+              this.vfsFonts
+            );
+          }
+          // Time after downloading report
+          eT = new Date();
+          // Estimate total time it took to download report
+          let totalTimeTaken = eT.getTime() - sT.getTime();
+          // log telemetry for interaction
+          const eventProperties = {
+            Subscription: this.subscriptionId,
+            CustomerName: JSON.parse(httpResponse.dataset[0].table.rows[0][0])
+              .CustomerName,
+            NameSite1: JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0]
+              .Name,
+            ScoreSite1: JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0]
+              .OverallScore,
+            DetectorTimeTaken: detectorTimeTaken.toString(),
+            TotalTimeTaken: totalTimeTaken.toString()
+          };
+          this.telemetryService.logEvent(
+            TelemetryEventNames.ResiliencyScoreReportDownloaded,
+            eventProperties
+          );
+          this.gRPDFButtonText = 'Get Resiliency Score report';
+          this.gRPDFButtonIcon = { iconName: 'Download' };
+          this.gRPDFButtonDisabled = false;
+        },
+        (error) => {
+          loggingError.message = 'Error calling ResiliencyScore detector';
+          loggingError.stack = error;
+          this.telemetryService.logException(loggingError);
         }
-        else {
-          this.gRPDFFileName = `${this.gRPDFFileName}`;
-          ResiliencyScoreReportHelper.generateResiliencyReport(httpResponse.dataset[0].table, `${this.gRPDFFileName}_(cached)`, this.generatedOn, this.vfsFonts);
-        }
-        // Time after downloading report
-        eT = new Date();
-        // Estimate total time it took to download report
-        let totalTimeTaken = eT.getTime() - sT.getTime();
-        // log telemetry for interaction
-        const eventProperties = {
-          'Subscription': this.subscriptionId,
-          'CustomerName': JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName,
-          'NameSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].Name,
-          'ScoreSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].OverallScore,
-          'DetectorTimeTaken': detectorTimeTaken.toString(),
-          'TotalTimeTaken': totalTimeTaken.toString()
-        };
-        this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportDownloaded, eventProperties);
-        this.gRPDFButtonText = "Get Resiliency Score report";
-        this.gRPDFButtonIcon = { iconName: 'Download' };
-        this.gRPDFButtonDisabled = false;
-      }, error => {
-        loggingError.message = 'Error calling ResiliencyScore detector';
-        loggingError.stack = error;
-        this.telemetryService.logException(loggingError);
-      });
+      );
   }
 
   refreshPage() {
     let childRouteSnapshot = this._route.firstChild.snapshot;
     let childRouteType = childRouteSnapshot.url[0].toString();
 
-    let instanceId = childRouteType === "overview" ? this._route.snapshot.params["category"] : (this._route.snapshot.params["category"] === "DiagnosticTools" ? childRouteSnapshot.url[1].toString() : childRouteType === "detectors" ? childRouteSnapshot.params["detectorName"] : childRouteSnapshot.params["analysisId"]);
-    let isDiagnosticToolUIPage = this._route.snapshot.params["category"] === "DiagnosticTools" && childRouteType !== "overview" && instanceId !== "eventviewer" && instanceId !== "freblogs";
+    let instanceId =
+      childRouteType === 'overview'
+        ? this._route.snapshot.params['category']
+        : this._route.snapshot.params['category'] === 'DiagnosticTools'
+        ? childRouteSnapshot.url[1].toString()
+        : childRouteType === 'detectors'
+        ? childRouteSnapshot.params['detectorName']
+        : childRouteSnapshot.params['analysisId'];
+    let isDiagnosticToolUIPage =
+      this._route.snapshot.params['category'] === 'DiagnosticTools' &&
+      childRouteType !== 'overview' &&
+      instanceId !== 'eventviewer' &&
+      instanceId !== 'freblogs';
 
     const eventProperties = {
-      'Category': this._route.snapshot.params['category'],
-      'Place': 'LandingPage'
+      Category: this._route.snapshot.params['category'],
+      Place: 'LandingPage'
     };
-    if (childRouteType === "detectors") {
+    if (childRouteType === 'detectors') {
       eventProperties['Detector'] = childRouteSnapshot.params['detectorName'];
       eventProperties['Type'] = 'detector';
-    } else if (childRouteType === "analysis") {
-      eventProperties['Analysis'] = childRouteSnapshot.params["analysisId"];
+    } else if (childRouteType === 'analysis') {
+      eventProperties['Analysis'] = childRouteSnapshot.params['analysisId'];
       eventProperties['Type'] = 'analysis';
-    } else if (childRouteType === "overview") {
+    } else if (childRouteType === 'overview') {
       eventProperties['Type'] = 'overview';
-    } else if (this._route.snapshot.params["category"] === "DiagnosticTools") {
+    } else if (this._route.snapshot.params['category'] === 'DiagnosticTools') {
       eventProperties['Type'] = 'DiagnosticTools';
-      eventProperties['Tool'] = instanceId ? instanceId : "";
+      eventProperties['Tool'] = instanceId ? instanceId : '';
     }
 
-    this.telemetryService.logEvent(TelemetryEventNames.RefreshClicked, eventProperties);
+    this.telemetryService.logEvent(
+      TelemetryEventNames.RefreshClicked,
+      eventProperties
+    );
     if (isDiagnosticToolUIPage) {
       // Currently there is no easy way to force reloading the static UI child component under DiagnosticTools Category
-      this.router.navigate(['overview'], { relativeTo: this._route, skipLocationChange: true }).then(() => this.router.navigate([`tools/${instanceId}`], { relativeTo: this._route }));
-    }
-    else if (instanceId) {
+      this.router
+        .navigate(['overview'], {
+          relativeTo: this._route,
+          skipLocationChange: true
+        })
+        .then(() =>
+          this.router.navigate([`tools/${instanceId}`], {
+            relativeTo: this._route
+          })
+        );
+    } else if (instanceId) {
       this._detectorControlService.refresh(instanceId);
     }
   }
-
 
   ngAfterViewInit() {
     // Async to get button element after grandchild is rendered
@@ -258,22 +349,25 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     });
   }
 
-
   updateAriaExpanded() {
-    const btns = document.querySelectorAll("#fab-command-bar button");
-    const pdfButtonId = "generatePDFButton";
-    const coachMarkId = "fab-coachmark";
+    const btns = document.querySelectorAll('#fab-command-bar button');
+    const pdfButtonId = 'generatePDFButton';
+    const coachMarkId = 'fab-coachmark';
     let PDFButtonIndex = -1;
     if (btns && btns.length > 0) {
-      btns.forEach((btn,i) => {
-        if(btn.textContent.includes(this.gRPDFButtonText)) {
+      btns.forEach((btn, i) => {
+        if (btn.textContent.includes(this.gRPDFButtonText)) {
           PDFButtonIndex = i;
         }
       });
 
-      if(PDFButtonIndex >= 0 && PDFButtonIndex < btns.length && btns[PDFButtonIndex]) {
+      if (
+        PDFButtonIndex >= 0 &&
+        PDFButtonIndex < btns.length &&
+        btns[PDFButtonIndex]
+      ) {
         const PDFButton = btns[PDFButtonIndex];
-        PDFButton.setAttribute("id", pdfButtonId);
+        PDFButton.setAttribute('id', pdfButtonId);
       }
     }
 
@@ -282,10 +376,9 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   }
 
   coachMarkViewed() {
-    if (!this.showTeachingBubble){
-      
+    if (!this.showTeachingBubble) {
       //
-      // TeachingBubbles inherit from Callout react component and they have a 
+      // TeachingBubbles inherit from Callout react component and they have a
       // some issue in the current version of the libaray with *ngIf and they are
       // not disposed properly. Due to this, the event keeps getting fired when a
       //  user clicks anywhere in the portal. Avoid executing the rest of the function
@@ -301,23 +394,25 @@ export class DetectorCommandBarComponent implements AfterViewInit {
 
     //Once Coachmark has been seen, disable it by setting boolean value to local storage
     try {
-      localStorage.setItem("showCoachmark", "false");
-    }
-    catch (error) {
+      localStorage.setItem('showCoachmark', 'false');
+    } catch (error) {
       // Use TelemetryService logEvent when not able to access local storage.
       // Most likely due to browsing in InPrivate/Incognito mode.
       const eventProperties = {
-        'Subscription': this.subscriptionId,
-        'Error': error
-      }
-      this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
+        Subscription: this.subscriptionId,
+        Error: error
+      };
+      this.telemetryService.logEvent(
+        TelemetryEventNames.ResiliencyScoreReportInPrivateAccess,
+        eventProperties
+      );
     }
 
     this.removeTeachingBubbleFromDom();
   }
 
-  showingTeachingBubble(){
-    if (this.displayRPDFButton){
+  showingTeachingBubble() {
+    if (this.displayRPDFButton) {
       this.showTeachingBubble = true;
     }
   }
@@ -328,7 +423,9 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   //
 
   removeTeachingBubbleFromDom() {
-    const htmlElements = document.querySelectorAll<HTMLElement>('.ms-Callout.ms-TeachingBubble');
+    const htmlElements = document.querySelectorAll<HTMLElement>(
+      '.ms-Callout.ms-TeachingBubble'
+    );
     if (htmlElements.length > 0) {
       htmlElements[0].parentElement.remove();
     }

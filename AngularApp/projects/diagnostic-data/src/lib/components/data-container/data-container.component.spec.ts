@@ -8,9 +8,8 @@ describe('DataContainerComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DataContainerComponent ]
-    })
-    .compileComponents();
+      declarations: [DataContainerComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

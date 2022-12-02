@@ -9,7 +9,10 @@ describe('GithubApiService', () => {
     });
   });
 
-  it('should be created', inject([GithubApiService], (service: GithubApiService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [GithubApiService],
+    (service: GithubApiService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

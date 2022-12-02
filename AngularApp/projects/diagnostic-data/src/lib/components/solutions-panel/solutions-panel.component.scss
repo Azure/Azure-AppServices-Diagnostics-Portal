@@ -1,25 +1,25 @@
-@import "../../scss/styles.scss";
+@import '../../scss/styles.scss';
 .solutions-panel-container {
-    word-break: break-word;
+  word-break: break-word;
 }
 .solution-head > h3 {
-    font-size: 24px;
-    line-height: 32px;
-    font-weight: 600;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
 }
 
 .solution-head > h4 {
-    color: var(--summaryText);
-    font-size: 12px;
-    line-height: 16px;
+  color: var(--summaryText);
+  font-size: 12px;
+  line-height: 16px;
 }
 
 .solution-section {
-    margin-bottom: 16px;
-    color:var(--bodyText);
+  margin-bottom: 16px;
+  color: var(--bodyText);
 }
 
 .solution-option-title {
-    font-size: 20px;
-    margin-bottom: 16px;
+  font-size: 20px;
+  margin-bottom: 16px;
 }

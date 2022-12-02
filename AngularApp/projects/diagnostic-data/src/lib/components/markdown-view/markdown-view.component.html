@@ -1,23 +1,44 @@
 <ng-template #header>
-    {{renderingProperties.title}}
-    <button class="btn btn-default markdown-button" style="float:right;margin-top: -7px" *ngIf="!isPublic" (click)="copyMarkdown()">
-        <span class="fa fa-copy"></span>
-        Copy to Email
-    </button>
-    <button class="btn btn-default markdown-button" style="float:right;margin-top: -7px;margin-right:10px" *ngIf="!isPublic" (click)="openEmail()">
-        <span class="fa fa-envelope"></span>
-        Open in Outlook
-    </button>
+  {{ renderingProperties.title }}
+  <button
+    class="btn btn-default markdown-button"
+    style="float: right; margin-top: -7px"
+    *ngIf="!isPublic"
+    (click)="copyMarkdown()"
+  >
+    <span class="fa fa-copy"></span>
+    Copy to Email
+  </button>
+  <button
+    class="btn btn-default markdown-button"
+    style="float: right; margin-top: -7px; margin-right: 10px"
+    *ngIf="!isPublic"
+    (click)="openEmail()"
+  >
+    <span class="fa fa-envelope"></span>
+    Open in Outlook
+  </button>
 </ng-template>
 
-<data-container *ngIf="renderingProperties.isContainerNeeded else noContainerMarkdown" [headerTemplate]="header" [title]="renderingProperties.title">
-    <markdown-text [markdownData]="markdownData" [detector]="detector" [isMarkdownView]="true"></markdown-text>
+<data-container
+  *ngIf="renderingProperties.isContainerNeeded; else noContainerMarkdown"
+  [headerTemplate]="header"
+  [title]="renderingProperties.title"
+>
+  <markdown-text
+    [markdownData]="markdownData"
+    [detector]="detector"
+    [isMarkdownView]="true"
+  ></markdown-text>
 </data-container>
 
 <!-- If there is no title, do not use container. Note this is called from the else statement in the *ngIf above -->
 <ng-template #noContainerMarkdown>
-    <div *ngIf="renderingProperties.title">
-        <h1>{{renderingProperties.title}}</h1>
-    </div>
-    <markdown-text [markdownData]="markdownData" [isMarkdownView]="true"></markdown-text>
+  <div *ngIf="renderingProperties.title">
+    <h1>{{ renderingProperties.title }}</h1>
+  </div>
+  <markdown-text
+    [markdownData]="markdownData"
+    [isMarkdownView]="true"
+  ></markdown-text>
 </ng-template>

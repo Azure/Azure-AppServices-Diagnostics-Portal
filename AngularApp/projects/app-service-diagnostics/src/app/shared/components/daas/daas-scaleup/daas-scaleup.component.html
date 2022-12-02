@@ -1,19 +1,18 @@
 <div class="action-box" style="margin-top: 10px">
-    <div *ngIf="currentServerFarm">
-        <div>Current App Service Plan Tier</div>
-        <div class="highlight-blue" *ngIf="currentServerFarm">
-            {{currentServerFarm.sku.name + ' ' + currentServerFarm.sku.tier}}
-        </div>
-        <br/>
-        <p>
-            You can upgrade to a Standard Plan to use Diagnostics as a Service
-        </p>
-        <div style="text-align:right">
-            <button class="btn btn-primary" (click)="openBlade()">Open Scale Up App Service Plan</button>
-        </div>
+  <div *ngIf="currentServerFarm">
+    <div>Current App Service Plan Tier</div>
+    <div class="highlight-blue" *ngIf="currentServerFarm">
+      {{ currentServerFarm.sku.name + ' ' + currentServerFarm.sku.tier }}
     </div>
-    <div style="text-align:center" *ngIf="!currentServerFarm">
-        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+    <br />
+    <p>You can upgrade to a Standard Plan to use Diagnostics as a Service</p>
+    <div style="text-align: right">
+      <button class="btn btn-primary" (click)="openBlade()">
+        Open Scale Up App Service Plan
+      </button>
     </div>
-
+  </div>
+  <div style="text-align: center" *ngIf="!currentServerFarm">
+    <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+  </div>
 </div>

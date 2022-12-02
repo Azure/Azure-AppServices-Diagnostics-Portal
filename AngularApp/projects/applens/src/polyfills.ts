@@ -38,35 +38,33 @@ import 'core-js/es/array';
 import 'intersection-observer/intersection-observer';
 
 /** IE10 and IE11 requires the following for the Reflect API. */
-import 'core-js/es/reflect';  // Run `npm install --save web-animations-js`.
+import 'core-js/es/reflect'; // Run `npm install --save web-animations-js`.
 
 /**
  * By default, zone.js will patch all possible macroTask and DomEvents
  * user can disable parts of macroTask/DomEvents patch by setting following flags
  */
 
- // (window as any).__Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
- // (window as any).__Zone_disable_on_property = true; // disable patch onProperty such as onclick
- // (window as any).__zone_symbol__BLACK_LISTED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
+// (window as any).__Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
+// (window as any).__Zone_disable_on_property = true; // disable patch onProperty such as onclick
+// (window as any).__zone_symbol__BLACK_LISTED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
 
- /*
+/*
  * in IE/Edge developer tools, the addEventListener will also be wrapped by zone.js
  * with the following flag, it will bypass `zone.js` patch for IE/Edge
  */
 // (window as any).__Zone_enable_cross_context_check = true;
 
 // https://stackoverflow.com/questions/50313745/angular-6-process-is-not-defined-when-trying-to-serve-application
-(window as any).process = { env: { DEBUG: undefined }, };
+(window as any).process = { env: { DEBUG: undefined } };
 // @ts-ignore
 window.Buffer = window.Buffer || require('buffer').Buffer;
-require("setimmediate"); 
+require('setimmediate');
 
 /***************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-import 'zone.js';  // Included with Angular CLI.
-
-
+import 'zone.js'; // Included with Angular CLI.
 
 /***************************************************************************************************
  * APPLICATION IMPORTS

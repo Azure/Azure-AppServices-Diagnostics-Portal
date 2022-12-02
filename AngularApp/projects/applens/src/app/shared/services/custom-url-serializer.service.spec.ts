@@ -9,7 +9,10 @@ describe('CustomUrlSerializerService', () => {
     });
   });
 
-  it('should be created', inject([CustomUrlSerializerService], (service: CustomUrlSerializerService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [CustomUrlSerializerService],
+    (service: CustomUrlSerializerService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

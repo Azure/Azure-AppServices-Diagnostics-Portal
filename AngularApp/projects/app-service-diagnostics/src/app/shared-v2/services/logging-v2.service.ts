@@ -10,8 +10,12 @@ import { HealthStatus } from 'diagnostic-data';
 
 @Injectable()
 export class LoggingV2Service extends LoggingService {
-
-  constructor(private _portalService: PortalService, private _authService: AuthService, private _armService: ArmService, private _resourceService: ResourceService) {
+  constructor(
+    private _portalService: PortalService,
+    private _authService: AuthService,
+    private _armService: ArmService,
+    private _resourceService: ResourceService
+  ) {
     super(_portalService, _authService, _armService);
   }
 
@@ -19,7 +23,11 @@ export class LoggingV2Service extends LoggingService {
     this._log(V2EventType[V2EventType.CategorySelected], category, {});
   }
 
-  LogTopLevelDetector(detectorId: string, detectorName: string, category: string) {
+  LogTopLevelDetector(
+    detectorId: string,
+    detectorName: string,
+    category: string
+  ) {
     this._log(V2EventType[V2EventType.TopLevelDetectorSelected], category, {
       detectorId: detectorId,
       detectorName: detectorName
@@ -32,7 +40,12 @@ export class LoggingV2Service extends LoggingService {
     });
   }
 
-  LogSearchSelection(searchValue: string, selectionId: string, selectionName: string, selectionType: string) {
+  LogSearchSelection(
+    searchValue: string,
+    selectionId: string,
+    selectionName: string,
+    selectionType: string
+  ) {
     this._log(V2EventType[V2EventType.SearchResultSelected], 'HomeV2', {
       searchValue: searchValue,
       selectionId: selectionId,
@@ -41,13 +54,25 @@ export class LoggingV2Service extends LoggingService {
     });
   }
 
-  LogDetectorSummaryFullReportSelection(parentDetectorId: string, category: string) {
-    this._log(V2EventType[V2EventType.DetectorSummaryFullReportSelected], category, {
-      parentDetectorId: parentDetectorId,
-    });
+  LogDetectorSummaryFullReportSelection(
+    parentDetectorId: string,
+    category: string
+  ) {
+    this._log(
+      V2EventType[V2EventType.DetectorSummaryFullReportSelected],
+      category,
+      {
+        parentDetectorId: parentDetectorId
+      }
+    );
   }
 
-  LogDetectorSummarySelection(parentDetectorId: string, name: string, status: HealthStatus, category: string) {
+  LogDetectorSummarySelection(
+    parentDetectorId: string,
+    name: string,
+    status: HealthStatus,
+    category: string
+  ) {
     this._log(V2EventType[V2EventType.DetectorSummarySelected], category, {
       parentDetectorId: parentDetectorId,
       name: name,
@@ -55,32 +80,67 @@ export class LoggingV2Service extends LoggingService {
     });
   }
 
-  LogChildDetectorSelection(parentDetectorId: string, detectorId: string, detectorName: string, status: HealthStatus, category: string) {
-    this.LogDetectorSummarySelection(parentDetectorId, detectorName, status, category);
-    this._log(V2EventType[V2EventType.DetectorSummaryChildDetectorSelected], category, {
-      parentDetectorId: parentDetectorId,
-      detectorId: detectorId,
-      detectorName: detectorName,
-      status: HealthStatus[status]
-    });
+  LogChildDetectorSelection(
+    parentDetectorId: string,
+    detectorId: string,
+    detectorName: string,
+    status: HealthStatus,
+    category: string
+  ) {
+    this.LogDetectorSummarySelection(
+      parentDetectorId,
+      detectorName,
+      status,
+      category
+    );
+    this._log(
+      V2EventType[V2EventType.DetectorSummaryChildDetectorSelected],
+      category,
+      {
+        parentDetectorId: parentDetectorId,
+        detectorId: detectorId,
+        detectorName: detectorName,
+        status: HealthStatus[status]
+      }
+    );
   }
 
-  LogDetectorSummaryInsightSelection(parentDetectorId: string, insightName: string, status: HealthStatus, category: string) {
-    this.LogDetectorSummarySelection(parentDetectorId, insightName, status, category);
-    this._log(V2EventType[V2EventType.DetectorSummaryInsightSelected], category, {
-      parentDetectorId: parentDetectorId,
-      insightName: insightName,
-      status: HealthStatus[status]
-    });
+  LogDetectorSummaryInsightSelection(
+    parentDetectorId: string,
+    insightName: string,
+    status: HealthStatus,
+    category: string
+  ) {
+    this.LogDetectorSummarySelection(
+      parentDetectorId,
+      insightName,
+      status,
+      category
+    );
+    this._log(
+      V2EventType[V2EventType.DetectorSummaryInsightSelected],
+      category,
+      {
+        parentDetectorId: parentDetectorId,
+        insightName: insightName,
+        status: HealthStatus[status]
+      }
+    );
   }
 
-  LogChatSearch(searchValue: string, category: string ) {
+  LogChatSearch(searchValue: string, category: string) {
     this._log(V2EventType[V2EventType.ChatSearch], category, {
       searchValue: searchValue
     });
   }
 
-  LogChatSearchSelection(searchValue: string, category: string, selectionName: string, url: string, selectionType: string) {
+  LogChatSearchSelection(
+    searchValue: string,
+    category: string,
+    selectionName: string,
+    url: string,
+    selectionType: string
+  ) {
     this._log(V2EventType[V2EventType.ChatSearchSelected], category, {
       searchValue: searchValue,
       url: url,

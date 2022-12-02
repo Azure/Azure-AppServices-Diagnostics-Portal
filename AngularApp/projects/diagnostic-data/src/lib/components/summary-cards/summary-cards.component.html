@@ -1,16 +1,26 @@
-<div style="margin-bottom: 20px; display: flex; justify-content: start; font-size: 15px;">
-  <div class="card-container" tabindex="0"
-        *ngFor="let summaryCard of summaryCards;let i = index" 
-        (click)="onClickCard(summaryCard)"
-        (keyup.enter)="onClickCard(summaryCard)"
-        [ngClass]="{'card-container-hover':summaryCard.isClickable}"
-    >
-      <h3 class="card-title">{{summaryCard.title}}</h3>
-      <div class="card-message">
-          <div class="mr-3"><status-icon [status]="summaryCard.status"></status-icon></div>
-          <div>{{summaryCard.message}}</div>
+<div
+  style="
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: start;
+    font-size: 15px;
+  "
+>
+  <div
+    class="card-container"
+    tabindex="0"
+    *ngFor="let summaryCard of summaryCards; let i = index"
+    (click)="onClickCard(summaryCard)"
+    (keyup.enter)="onClickCard(summaryCard)"
+    [ngClass]="{ 'card-container-hover': summaryCard.isClickable }"
+  >
+    <h3 class="card-title">{{ summaryCard.title }}</h3>
+    <div class="card-message">
+      <div class="mr-3">
+        <status-icon [status]="summaryCard.status"></status-icon>
       </div>
-      <p class="card-description">{{summaryCard.description}}</p>
+      <div>{{ summaryCard.message }}</div>
+    </div>
+    <p class="card-description">{{ summaryCard.description }}</p>
   </div>
 </div>
-

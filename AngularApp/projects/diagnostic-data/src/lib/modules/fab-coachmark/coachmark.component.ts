@@ -11,7 +11,7 @@ import {
   Input,
   Output,
   Renderer2,
-  ViewChild,  
+  ViewChild
 } from '@angular/core';
 import { ICoachmarkProps } from 'office-ui-fabric-react/lib/Coachmark';
 
@@ -29,12 +29,12 @@ import { ICoachmarkProps } from 'office-ui-fabric-react/lib/Coachmark';
       [ariaLabelledBy]="ariaLabelledBy"
       [ariaLabelledByText]="ariaLabelledByText"
       [beaconColorOne]="beaconColorOne"
-      [beaconColorTwo]="beaconColorTwo"            
-      [className]="className"      
+      [beaconColorTwo]="beaconColorTwo"
+      [className]="className"
       [color]="color"
       [componentRef]="componentRef"
       [delayBeforeCoachmarkAnimation]="delayBeforeCoachmarkAnimation"
-      [delayBeforeMouseOpen]="delayBeforeMouseOpen"      
+      [delayBeforeMouseOpen]="delayBeforeMouseOpen"
       [isCollapsed]="isCollapsed"
       [isPositionForced]="isPositionForced"
       [mouseProximityOffset]="mouseProximityOffset"
@@ -46,14 +46,14 @@ import { ICoachmarkProps } from 'office-ui-fabric-react/lib/Coachmark';
       [positioningContainerProps]="positioningContainerProps"
       [preventDismissOnLostFocus]="preventDismissOnLostFocus"
       [preventFocusOnMount]="preventFocusOnMount"
-      [styles]="styles"            
-      [theme]="theme"      
+      [styles]="styles"
+      [theme]="theme"
     >
       <ReactContent><ng-content></ng-content></ReactContent>
     </Coachmark>
   `,
   styles: [],
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class FabCoachmarkComponent extends ReactWrapperComponent<ICoachmarkProps> {
   @ViewChild('reactNode', { static: true }) protected reactNodeRef: ElementRef;
@@ -65,28 +65,35 @@ export class FabCoachmarkComponent extends ReactWrapperComponent<ICoachmarkProps
   @Input() ariaLabelledBy?: ICoachmarkProps['ariaLabelledBy'];
   @Input() ariaLabelledByText?: ICoachmarkProps['ariaLabelledByText'];
   @Input() beaconColorOne?: ICoachmarkProps['beaconColorOne'];
-  @Input() beaconColorTwo?: ICoachmarkProps['beaconColorTwo'];  
+  @Input() beaconColorTwo?: ICoachmarkProps['beaconColorTwo'];
   @Input() className?: ICoachmarkProps['className'];
   @Input() color?: ICoachmarkProps['color'];
   @Input() componentRef?: ICoachmarkProps['componentRef'];
-  @Input() delayBeforeCoachmarkAnimation?: ICoachmarkProps['delayBeforeCoachmarkAnimation'];
+  @Input()
+  delayBeforeCoachmarkAnimation?: ICoachmarkProps['delayBeforeCoachmarkAnimation'];
   @Input() delayBeforeMouseOpen?: ICoachmarkProps['delayBeforeMouseOpen'];
   @Input() isCollapsed?: ICoachmarkProps['isCollapsed'];
   @Input() isPositionForced?: ICoachmarkProps['isPositionForced'];
-  @Input() mouseProximityOffset?: ICoachmarkProps['mouseProximityOffset'];  
-  @Input() positioningContainerProps?: ICoachmarkProps['positioningContainerProps'];
-  @Input() preventDismissOnLostFocus?: ICoachmarkProps['preventDismissOnLostFocus'];
-  @Input() preventFocusOnMount?: ICoachmarkProps['preventFocusOnMount'];  
+  @Input() mouseProximityOffset?: ICoachmarkProps['mouseProximityOffset'];
+  @Input()
+  positioningContainerProps?: ICoachmarkProps['positioningContainerProps'];
+  @Input()
+  preventDismissOnLostFocus?: ICoachmarkProps['preventDismissOnLostFocus'];
+  @Input() preventFocusOnMount?: ICoachmarkProps['preventFocusOnMount'];
   @Input() styles?: ICoachmarkProps['styles'];
-  @Input() theme?: ICoachmarkProps['theme'];  
+  @Input() theme?: ICoachmarkProps['theme'];
   @Input() persistentBeak?: boolean;
 
   @Output() readonly onAnimationOpenEnd = new EventEmitter<void>();
   @Output() readonly onAnimationOpenStart = new EventEmitter<void>();
   @Output() readonly onDismiss = new EventEmitter<{ ev?: any }>();
-  @Output() readonly onMouseMove = new EventEmitter<{ e: any}>();
+  @Output() readonly onMouseMove = new EventEmitter<{ e: any }>();
 
-  constructor(elementRef: ElementRef, changeDetectorRef: ChangeDetectorRef, renderer: Renderer2) {
+  constructor(
+    elementRef: ElementRef,
+    changeDetectorRef: ChangeDetectorRef,
+    renderer: Renderer2
+  ) {
     super(elementRef, changeDetectorRef, renderer);
   }
 }

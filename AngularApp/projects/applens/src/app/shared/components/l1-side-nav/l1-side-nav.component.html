@@ -1,15 +1,38 @@
-<nav class="l1-side-nav" [ngStyle]="{'width': sideNavWidth + 'px' }">
+<nav class="l1-side-nav" [ngStyle]="{ width: sideNavWidth + 'px' }">
   <div>
-    <div class="side-item" [class.side-item-expand]="isExpand" [class.side-item-collapse]="!isExpand"  (click)="toggleSideNavExpand()" (keyup.enter)="toggleSideNavExpand()" tabindex="0">
-      <img src="assets/img/applens-skeleton/side-nav/hamburger.svg" alt="">
+    <div
+      class="side-item"
+      [class.side-item-expand]="isExpand"
+      [class.side-item-collapse]="!isExpand"
+      (click)="toggleSideNavExpand()"
+      (keyup.enter)="toggleSideNavExpand()"
+      tabindex="0"
+    >
+      <img src="assets/img/applens-skeleton/side-nav/hamburger.svg" alt="" />
     </div>
 
-
-    <div *ngFor="let item of sideItems" [ngClass]="{'selected-section' : item.subItems && expandSubItem === item.type}">
-      <ng-container [ngTemplateOutlet]="sideItem" [ngTemplateOutletContext]="{'item':item}"></ng-container>
-      <ng-container *ngIf="item.subItems && item.subItems.length > 0 && expandSubItem === item.type">
+    <div
+      *ngFor="let item of sideItems"
+      [ngClass]="{
+        'selected-section': item.subItems && expandSubItem === item.type
+      }"
+    >
+      <ng-container
+        [ngTemplateOutlet]="sideItem"
+        [ngTemplateOutletContext]="{ item: item }"
+      ></ng-container>
+      <ng-container
+        *ngIf="
+          item.subItems &&
+          item.subItems.length > 0 &&
+          expandSubItem === item.type
+        "
+      >
         <ng-container *ngFor="let subItem of item.subItems">
-          <ng-container [ngTemplateOutlet]="sideSubItem" [ngTemplateOutletContext]="{'item':subItem}"></ng-container>
+          <ng-container
+            [ngTemplateOutlet]="sideSubItem"
+            [ngTemplateOutletContext]="{ item: subItem }"
+          ></ng-container>
         </ng-container>
       </ng-container>
     </div>
@@ -28,17 +51,32 @@
 </fab-dialog> -->
 
 <ng-template #sideItem let-item="item">
-  <div class="side-item" (click)="clickSideItem(item)" type="button" (keyup.enter)="clickSideItem(item)" tabindex="0"
-    [attr.aria-label]="item.displayName" [class.highlight-side-item]="currentHightLightItem === item.type">
-    <img [src]="item.iconPath" [alt]="item.displayName">
-    <div *ngIf="isExpand" class="ml-3">{{item.displayName}}</div>
+  <div
+    class="side-item"
+    (click)="clickSideItem(item)"
+    type="button"
+    (keyup.enter)="clickSideItem(item)"
+    tabindex="0"
+    [attr.aria-label]="item.displayName"
+    [class.highlight-side-item]="currentHightLightItem === item.type"
+  >
+    <img [src]="item.iconPath" [alt]="item.displayName" />
+    <div *ngIf="isExpand" class="ml-3">{{ item.displayName }}</div>
   </div>
 </ng-template>
 
 <ng-template #sideSubItem let-item="item">
-  <div class="side-item" [ngClass]="{'side-sub-item': isExpand}" (click)="clickSideItem(item)" type="button" (keyup.enter)="clickSideItem(item)" tabindex="0"
-    [attr.aria-label]="item.displayName" [class.highlight-side-item]="currentHightLightItem === item.type">
-    <img [src]="item.iconPath" [alt]="item.displayName">
-    <div *ngIf="isExpand" class="ml-3">{{item.displayName}}</div>
+  <div
+    class="side-item"
+    [ngClass]="{ 'side-sub-item': isExpand }"
+    (click)="clickSideItem(item)"
+    type="button"
+    (keyup.enter)="clickSideItem(item)"
+    tabindex="0"
+    [attr.aria-label]="item.displayName"
+    [class.highlight-side-item]="currentHightLightItem === item.type"
+  >
+    <img [src]="item.iconPath" [alt]="item.displayName" />
+    <div *ngIf="isExpand" class="ml-3">{{ item.displayName }}</div>
   </div>
 </ng-template>

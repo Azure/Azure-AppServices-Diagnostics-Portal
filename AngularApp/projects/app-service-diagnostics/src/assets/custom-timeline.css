@@ -1,44 +1,46 @@
 .vis-item.green {
-    background-color: lightseagreen;
-    border-color: green;
+  background-color: lightseagreen;
+  border-color: green;
 }
 
 .vis-item.blue {
-    background-color: lightblue;
-    border-color: blue;
+  background-color: lightblue;
+  border-color: blue;
 }
 .vis-item {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 div.vis-tooltip {
-   font-family: "Segoe UI", "Segoe UI", "Segoe", Tahoma, Helvetica, Arial, sans-serif;
-    font-size: 13px;
-    width: 350px;
-    height: 145px;
-    word-break: break-all;
-    background-color: #fff;
-     /* These are technically the same, but use both */
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+  font-family: 'Segoe UI', 'Segoe UI', 'Segoe', Tahoma, Helvetica, Arial,
+    sans-serif;
+  font-size: 13px;
+  width: 350px;
+  height: 145px;
+  word-break: break-all;
+  background-color: #fff;
+  /* These are technically the same, but use both */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 
-    -ms-word-break: break-all;
-    /* This is the dangerous one in WebKit, as it breaks things wherever */
-    word-break: break-all;
-    /* Instead use this non-standard one: */
-    word-break: break-word;
+  -ms-word-break: break-all;
+  /* This is the dangerous one in WebKit, as it breaks things wherever */
+  word-break: break-all;
+  /* Instead use this non-standard one: */
+  word-break: break-word;
 
-    /* Adds a hyphen where the word breaks, if supported (No Blink) */
-    -ms-hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
-    hyphens: auto;
-    white-space: pre-line;
-    color: #646464;
-    border: 1px solid #fff;
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.133) 0px 6.4px 14.4px 0px, rgba(0, 0, 0, 0.11) 0px 1.2px 3.6px 0px;
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  white-space: pre-line;
+  color: #646464;
+  border: 1px solid #fff;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.133) 0px 6.4px 14.4px 0px,
+    rgba(0, 0, 0, 0.11) 0px 1.2px 3.6px 0px;
 }
-.vis-tooltip span{
-    color:  #323130;
+.vis-tooltip span {
+  color: #323130;
 }

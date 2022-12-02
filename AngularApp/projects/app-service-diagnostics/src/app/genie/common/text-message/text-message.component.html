@@ -1,3 +1,8 @@
-<div [class.message-sent-by-system-genie]="!messageByUser" [class.message-sent-by-user-genie]="messageByUser" tabindex="0" #messagefocus>
-    {{message}}
+<div
+  [class.message-sent-by-system-genie]="!messageByUser"
+  [class.message-sent-by-user-genie]="messageByUser"
+  tabindex="0"
+  #messagefocus
+>
+  {{ message }}
 </div>

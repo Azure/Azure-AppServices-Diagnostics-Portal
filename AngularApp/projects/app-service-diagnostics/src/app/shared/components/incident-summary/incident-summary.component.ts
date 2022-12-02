@@ -8,14 +8,9 @@ import { IncidentStatus } from '../../models/icm-incident';
   styleUrls: ['./incident-summary.component.scss']
 })
 export class IncidentSummaryComponent implements OnInit {
-
   IncidentStatus = IncidentStatus;
 
-  constructor(public incidentService: ServiceIncidentService) {
+  constructor(public incidentService: ServiceIncidentService) {}
 
-  }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

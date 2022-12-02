@@ -1,31 +1,48 @@
 <div class="container">
-    <h2 tabindex="0">{{ title }}</h2>
-    <p tabindex="0">{{ description }}</p>
+  <h2 tabindex="0">{{ title }}</h2>
+  <p tabindex="0">{{ description }}</p>
 
-    <div class="wizardcontainer">
+  <div class="wizardcontainer">
+    <java-flight-recorder
+      [scmPath]="scmPath"
+      [siteToBeDiagnosed]="siteToBeDiagnosed"
+      (SessionsEvent)="updateSessions($event)"
+    >
+    </java-flight-recorder>
+  </div>
 
-        <java-flight-recorder [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed"
-            (SessionsEvent)="updateSessions($event)">
-        </java-flight-recorder>
+  <h3>What you should know before collecting a Java Flight Recorder trace</h3>
+  <ul>
+    <li>
+      Once the
+      <a
+        target="_blank"
+        href="https://docs.microsoft.com/en-us/azure/app-service/configure-language-java#use-flight-recorder"
+        >Flight Recorder</a
+      >
+      is started, reproduce the issue by browsing to the app.
+    </li>
+    <li>The trace will automatically stop after 60 seconds.</li>
+    <li>
+      Your app will not be restarted as a result of running the flight recorder.
+    </li>
+    <li>The JFR Trace is collected using the Java Flight Recorder tool.</li>
+    <li>
+      <a
+        target="_blank"
+        href="https://docs.microsoft.com/en-us/java/azure/jdk/java-jdk-flight-recorder-and-mission-control"
+        >Learn more</a
+      >
+      about analyzing the trace file.
+    </li>
+  </ul>
 
-    </div>
-
-    <h3>What you should know before collecting a Java Flight Recorder trace</h3>
-    <ul>
-        <li>Once the <a target="_blank"
-                href='https://docs.microsoft.com/en-us/azure/app-service/configure-language-java#use-flight-recorder'>Flight
-                Recorder</a> is started, reproduce the issue by browsing to the app.</li>
-        <li>The trace will automatically stop after 60 seconds.</li>
-        <li>Your app will not be restarted as a result of running the flight recorder.</li>
-        <li>The JFR Trace is collected using the Java Flight Recorder tool.</li>
-        <li><a target="_blank"
-                href='https://docs.microsoft.com/en-us/java/azure/jdk/java-jdk-flight-recorder-and-mission-control'>Learn
-                more</a> about analyzing the trace file.</li>
-    </ul>
-
-    <div class="sessions">
-        <daas-sessions [refreshSessions]="refreshSessions" diagnoserNameLookup="JAVA Flight Recorder"
-            [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed"></daas-sessions>
-    </div>
-
+  <div class="sessions">
+    <daas-sessions
+      [refreshSessions]="refreshSessions"
+      diagnoserNameLookup="JAVA Flight Recorder"
+      [scmPath]="scmPath"
+      [siteToBeDiagnosed]="siteToBeDiagnosed"
+    ></daas-sessions>
+  </div>
 </div>

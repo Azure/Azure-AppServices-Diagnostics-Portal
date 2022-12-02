@@ -1,11 +1,37 @@
 <ng-container *ngIf="commAlertToShow">
-  <fab-message-bar [messageBarType]="commAlertStatus" isMultiline="false"
-    dismissButtonAriaLabel="Close" [truncated]="true" [styles]="messageBarStyles" overflowButtonAriaLabel="See more">
-    {{commAlertTitle}} <a class="view-more" (click)="isAlertExpanded = !isAlertExpanded" tabindex="0" aria-label="View more" (keyup.enter)="isAlertExpanded = !isAlertExpanded" >View more</a>.</fab-message-bar>
+  <fab-message-bar
+    [messageBarType]="commAlertStatus"
+    isMultiline="false"
+    dismissButtonAriaLabel="Close"
+    [truncated]="true"
+    [styles]="messageBarStyles"
+    overflowButtonAriaLabel="See more"
+  >
+    {{ commAlertTitle }}
+    <a
+      class="view-more"
+      (click)="isAlertExpanded = !isAlertExpanded"
+      tabindex="0"
+      aria-label="View more"
+      (keyup.enter)="isAlertExpanded = !isAlertExpanded"
+      >View more</a
+    >.</fab-message-bar
+  >
 </ng-container>
 
-<fab-panel [isOpen]="isAlertExpanded" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true" [styles]="panelStyles"
-  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'" (onDismiss)="dismissPanel()" [headerText]="'Service outage detail'">
+<fab-panel
+  [isOpen]="isAlertExpanded"
+  [type]="type"
+  [customWidth]="width"
+  [isHiddenOnDismiss]="true"
+  [styles]="panelStyles"
+  [isLightDismiss]="true"
+  [hasCloseButton]="true"
+  [isBlocking]="false"
+  [closeButtonAriaLabel]="'close'"
+  (onDismiss)="dismissPanel()"
+  [headerText]="'Service outage detail'"
+>
   <div class="panel-padding">
     <div>
       <div>
@@ -13,41 +39,57 @@
           <div class="comm-info-container">
             <div class="comm-info-row">
               <div class="comm-info-label">Issue</div>
-              <div class="issue-title">{{commAlertToShow.title}}</div>
+              <div class="issue-title">{{ commAlertToShow.title }}</div>
             </div>
             <div class="comm-info-row">
-              <div style="display:inline-block;width:30%">
+              <div style="display: inline-block; width: 30%">
                 <div class="comm-info-label">Status</div>
                 <div class="comm-info-data">
                   <span *ngIf="commAlertToShow.status === 0">Active</span>
                   <span *ngIf="commAlertToShow.status === 1">Resolved</span>
                 </div>
               </div>
-              <div style="display:inline-block;width:30%">
+              <div style="display: inline-block; width: 30%">
                 <div class="comm-info-label">Last Updated On: (UTC)</div>
-                <div class="comm-info-data">{{commPublishedTime}}</div>
+                <div class="comm-info-data">{{ commPublishedTime }}</div>
               </div>
-              <div *ngIf="!isPublic" style="display:inline-block;width:30%">
+              <div *ngIf="!isPublic" style="display: inline-block; width: 30%">
                 <div class="comm-info-label">ICM:</div>
                 <div class="comm-info-data">
-                  <a href="https://portal.microsofticm.com/imp/v3/incidents/details/{{commAlertToShow.icmId}}/home"
-                    target="_blank"><b>{{commAlertToShow.icmId}}</b></a>
+                  <a
+                    href="https://portal.microsofticm.com/imp/v3/incidents/details/{{
+                      commAlertToShow.icmId
+                    }}/home"
+                    target="_blank"
+                    ><b>{{ commAlertToShow.icmId }}</b></a
+                  >
                 </div>
               </div>
             </div>
 
-            <div *ngIf="!isPublic && commAlertToShow.commType !== 2" class="comm-info-row">
-              <div style="display:inline-block;width:30%;vertical-align: top">
+            <div
+              *ngIf="!isPublic && commAlertToShow.commType !== 2"
+              class="comm-info-row"
+            >
+              <div
+                style="display: inline-block; width: 30%; vertical-align: top"
+              >
                 <div class="comm-info-label">Impacted Region(s)</div>
-                <div class="comm-info-data">{{impactedRegions}}</div>
+                <div class="comm-info-data">{{ impactedRegions }}</div>
               </div>
-              <div style="display:inline-block;vertical-align: top;width:30%">
+              <div
+                style="display: inline-block; vertical-align: top; width: 30%"
+              >
                 <div class="comm-info-label">Impacted Service(s)</div>
-                <div class="comm-info-data">{{impactedServices}}</div>
+                <div class="comm-info-data">{{ impactedServices }}</div>
               </div>
-              <div style="display:inline-block;vertical-align: top;width:30%">
+              <div
+                style="display: inline-block; vertical-align: top; width: 30%"
+              >
                 <div class="comm-info-label">Incident Tracking Id</div>
-                <div class="comm-info-data"><b>{{commAlertToShow.incidentId}}</b></div>
+                <div class="comm-info-data">
+                  <b>{{ commAlertToShow.incidentId }}</b>
+                </div>
               </div>
             </div>
             <div class="comm-info-row">
@@ -57,14 +99,21 @@
               </div>
             </div>
 
-            <div *ngIf="isPublic" class="comm-info-row" style="margin-bottom:10px">
-              <a class="comm-action-button" href="https://app.azure.com/h/{{commAlertToShow.incidentId}}"
-                target="_blank">Download Summary(PDF) or Request RCA in Azure Service Health <i
-                  class="fa fa fa-external-link" aria-hidden="true"></i></a>
+            <div
+              *ngIf="isPublic"
+              class="comm-info-row"
+              style="margin-bottom: 10px"
+            >
+              <a
+                class="comm-action-button"
+                href="https://app.azure.com/h/{{ commAlertToShow.incidentId }}"
+                target="_blank"
+                >Download Summary(PDF) or Request RCA in Azure Service Health
+                <i class="fa fa fa-external-link" aria-hidden="true"></i
+              ></a>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>

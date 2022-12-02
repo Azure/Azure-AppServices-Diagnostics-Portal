@@ -1,16 +1,16 @@
-label{
-	display: inline-block;
-	padding: 12px 0px;
-    vertical-align: middle;
-    color:darkgray;
+label {
+  display: inline-block;
+  padding: 12px 0px;
+  vertical-align: middle;
+  color: darkgray;
 }
 
 li .reportlink {
-    color: blue!important;
+  color: blue !important;
 }
 
-.nav>li .reportlink:hover {
-    text-decoration: underline!important;
-    color : rgb(108, 2, 247)!important;
-    background-color: var(--bodyBackground);
+.nav > li .reportlink:hover {
+  text-decoration: underline !important;
+  color: rgb(108, 2, 247) !important;
+  background-color: var(--bodyBackground);
 }

@@ -1,4 +1,10 @@
-import { Component, OnInit, Input, OnChanges, SimpleChange } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  OnChanges,
+  SimpleChange
+} from '@angular/core';
 import { SiteDaasInfo } from '../../../../models/solution-metadata';
 import { ActiveMonitoringSession } from '../../../../models/daas';
 
@@ -8,31 +14,30 @@ import { ActiveMonitoringSession } from '../../../../models/daas';
   styleUrls: ['./cpu-monitoring-activity.component.scss']
 })
 export class CpuMonitoringActivityComponent implements OnInit, OnChanges {
-
-  constructor() {
-  }
+  constructor() {}
 
   @Input() scmPath: string;
   @Input() siteToBeDiagnosed: SiteDaasInfo;
   @Input() activeMonitoringSession: ActiveMonitoringSession;
 
-  highlightPhrases: string[] = ["threshold", "dump", "killed"];
+  highlightPhrases: string[] = ['threshold', 'dump', 'killed'];
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
-  ngOnChanges() {
-  }
+  ngOnChanges() {}
 
   formatInstanceLogs(logs: string) {
-    let logsArray = logs.split("\r\n");
+    let logsArray = logs.split('\r\n');
 
     for (let index = 0; index < logsArray.length; index++) {
-      if (this.highlightPhrases.some(function(v) { return logsArray[index].indexOf(v) >= 0; })) {
-        logsArray[index] = "<strong>" + logsArray[index] + "</strong>";
+      if (
+        this.highlightPhrases.some(function (v) {
+          return logsArray[index].indexOf(v) >= 0;
+        })
+      ) {
+        logsArray[index] = '<strong>' + logsArray[index] + '</strong>';
       }
     }
-    return logsArray.join("\r\n");
-
+    return logsArray.join('\r\n');
   }
 }

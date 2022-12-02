@@ -5,12 +5,9 @@ import * as clipboardProxy from 'copy-html-to-clipboard';
 // See: https://github.com/rollup/rollup/issues/1267 comment by epiqueras
 const clipboard: any = (<any>clipboardProxy).default || clipboardProxy;
 
-
 @Injectable()
 export class ClipboardService {
-
   copyAsHtml(htmlString: string) {
-
     clipboard(htmlString, {
       asHtml: true
     });

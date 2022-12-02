@@ -8,49 +8,58 @@ import { StartupInfo } from '../../models/portal';
 
 @Injectable()
 export class BotLoggingService extends LoggingService {
+  constructor(
+    private _portalService: PortalService,
+    private _authService: AuthService,
+    private _armService: ArmService
+  ) {
+    super(_portalService, _authService, _armService);
+  }
 
-    constructor(private _portalService: PortalService, private _authService: AuthService, private _armService: ArmService) {
-        super(_portalService, _authService, _armService);
-    }
+  LogStartUpInfo(startupInfo: StartupInfo, category: string = 'Availability') {
+    //This is a No-Op so that it only gets logged in base
+  }
 
-    LogStartUpInfo(startupInfo: StartupInfo, category: string = 'Availability') {
-        //This is a No-Op so that it only gets logged in base
-    }
+  LogHealthCheckInvoked(): void {
+    this._log(BotEventType[BotEventType.HealthCheckInvoked], 'Support Home');
+  }
 
-    LogHealthCheckInvoked(): void {
-        this._log(BotEventType[BotEventType.HealthCheckInvoked], 'Support Home');
-    }
+  LogDetectorViewInBot(detector: string, displayed: boolean) {
+    this._log(
+      BotEventType[BotEventType.DetectorViewChatDisplayed],
+      'Support Home',
+      {
+        detector: detector,
+        displayed: displayed
+      }
+    );
+  }
 
-    LogDetectorViewInBot(detector: string, displayed: boolean) {
-        this._log(BotEventType[BotEventType.DetectorViewChatDisplayed], 'Support Home', {
-            detector: detector,
-            displayed: displayed
-        });
-    }
+  LogHealthCheckResults(healthCheckResults: string[]): void {
+    this._log(BotEventType[BotEventType.HealthCheckResults], 'Support Home', {
+      results: healthCheckResults
+        ? healthCheckResults.toString().replace(new RegExp(',', 'g'), '|')
+        : ''
+    });
+  }
 
-    LogHealthCheckResults(healthCheckResults: string[]): void {
-        this._log(BotEventType[BotEventType.HealthCheckResults], 'Support Home', {
-            results: healthCheckResults ? healthCheckResults.toString().replace(new RegExp(',', 'g'), '|') : ''
-        });
-    }
+  LogLiveChatWidgetOpened(source: string): void {
+    this._log(BotEventType[BotEventType.LiveChatWidgetOpened], source, {});
+  }
 
-    LogLiveChatWidgetOpened(source: string): void {
-        this._log(BotEventType[BotEventType.LiveChatWidgetOpened], source, {});
-    }
+  LogLiveChatWidgetClosed(source: string): void {
+    this._log(BotEventType[BotEventType.LiveChatWidgetClosed], source, {});
+  }
 
-    LogLiveChatWidgetClosed(source: string): void {
-        this._log(BotEventType[BotEventType.LiveChatWidgetClosed], source, {});
-    }
+  LogLiveChatWidgetBeginInit(source: string): void {
+    this._log(BotEventType[BotEventType.LiveChatWidgetInit], source, {});
+  }
 
-    LogLiveChatWidgetBeginInit(source: string): void {
-        this._log(BotEventType[BotEventType.LiveChatWidgetInit], source, {});
-    }
+  LogLiveChatWidgetSkipped(source: string): void {
+    this._log(BotEventType[BotEventType.LiveChatWidgetSkipped], source, {});
+  }
 
-    LogLiveChatWidgetSkipped(source:string): void {
-        this._log(BotEventType[BotEventType.LiveChatWidgetSkipped], source, {});
-    }
-
-    LogLiveChatWidgetLoaded(source: string): void {
-        this._log(BotEventType[BotEventType.LiveChatWidgetLoaded], source, {});
-    }
+  LogLiveChatWidgetLoaded(source: string): void {
+    this._log(BotEventType[BotEventType.LiveChatWidgetLoaded], source, {});
+  }
 }

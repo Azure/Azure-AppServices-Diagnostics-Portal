@@ -1,26 +1,26 @@
 .status-box {
-    border: 1px solid #ebebeb;
-    padding:15px;
-    margin-top:20px;
+  border: 1px solid #ebebeb;
+  padding: 15px;
+  margin-top: 20px;
 }
 
 .action-box {
-    padding:15px;
+  padding: 15px;
 }
 
-.mode-explanation{
-    border: 0.5px solid #adb0b7;
-    clear: both;
-    float: left;
-    display: block;
-    position: relative;
-    margin-bottom: 10px;
-    padding: 10px;
-    background-color: var(--bodyBackground);
+.mode-explanation {
+  border: 0.5px solid #adb0b7;
+  clear: both;
+  float: left;
+  display: block;
+  position: relative;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: var(--bodyBackground);
 }
 
-::ng-deep{
-    .custom-height .list-header {
-        font-size: 18px;
-    }
+::ng-deep {
+  .custom-height .list-header {
+    font-size: 18px;
+  }
 }

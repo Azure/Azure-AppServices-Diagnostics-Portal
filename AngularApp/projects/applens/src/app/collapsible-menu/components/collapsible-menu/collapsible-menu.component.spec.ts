@@ -8,9 +8,8 @@ describe('CollapsibleMenuComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CollapsibleMenuComponent ]
-    })
-    .compileComponents();
+      declarations: [CollapsibleMenuComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

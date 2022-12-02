@@ -8,9 +8,8 @@ describe('TabDevelopComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TabDevelopComponent ]
-    })
-    .compileComponents();
+      declarations: [TabDevelopComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

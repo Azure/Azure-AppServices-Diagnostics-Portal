@@ -1,15 +1,15 @@
 .article-container {
-    display: flex;
+  display: flex;
 }
 
 .article {
-    width: 600px;
-    border: 1px solid #dddddd;
-    cursor: pointer;
-    padding:10px;
-    margin-right: 10px;
+  width: 600px;
+  border: 1px solid #dddddd;
+  cursor: pointer;
+  padding: 10px;
+  margin-right: 10px;
 }
 
 .article > h5 {
-    color: blue;
+  color: blue;
 }

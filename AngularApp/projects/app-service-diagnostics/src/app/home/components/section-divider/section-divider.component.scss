@@ -1,72 +1,72 @@
 .not-expandable {
-    cursor: auto;
-    padding-left: 28px;
+  cursor: auto;
+  padding-left: 28px;
 }
 
 .section-expand-icon {
-    min-width: 10px;
-    font-size:small;
+  min-width: 10px;
+  font-size: small;
 }
 
 .expandable-content {
-    overflow-y: visible;
+  overflow-y: visible;
 }
 
 .section-divider {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
 .section-divider {
-    color: var(--bodyText);
-    background-color: var(--bodyBackground);
-    padding: 5px 25px 5px 15px;
-    font-weight: 600;
-    font-size: 12px;
-    border-bottom: 1px solid var(--borderBottom);
+  color: var(--bodyText);
+  background-color: var(--bodyBackground);
+  padding: 5px 25px 5px 15px;
+  font-weight: 600;
+  font-size: 12px;
+  border-bottom: 1px solid var(--borderBottom);
 }
 
 .main-sidebar {
-    background-color: var(--mainSiderBar);
+  background-color: var(--mainSiderBar);
 }
 
 .section-divider.overview-header {
-    padding: 10px 25px 7px 34px!important;
+  padding: 10px 25px 7px 34px !important;
 }
 
 .section-divider.overview-header:hover {
-    background-color: var(--listItemBackgroundHovered)
+  background-color: var(--listItemBackgroundHovered);
 }
 
 .section-divider.selected {
-    background-color: var(--listItemBackgroundSelected)!important;
+  background-color: var(--listItemBackgroundSelected) !important;
 }
 
 .menu,
 .main-sidebar {
-    background-color: var(--bodyBackground);
+  background-color: var(--bodyBackground);
 }
 
 .menu-label {
-    position: relative;
-    padding-left: 4px;
-    font-size:12px;
-    font-weight: 600;
-    display: flex;
+  position: relative;
+  padding-left: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
 }
 
 .menu-expand-icon {
-   margin-left: auto;
-   margin-right: 0;
+  margin-left: auto;
+  margin-right: 0;
 }
 
 .menu-title-icon {
-    width: 15px;
-    height:15px;
-    margin-left: -10px;
+  width: 15px;
+  height: 15px;
+  margin-left: -10px;
 }
 
 .menu-title {
-    padding-left:10px;
+  padding-left: 10px;
 }

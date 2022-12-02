@@ -3,10 +3,13 @@
     <div class="row-fluid">
       <div class="sidebar-nav">
         <ul class="commits-table">
-          <li *ngFor="let commit of commitsList.slice().reverse()" [class.selected]="commit.sha === version"
-            (click)="setCodeDiffView(commit)">
-            <span class="badge"> {{commit.author}} </span>
-            <span> {{commit.dateTime}} </span>
+          <li
+            *ngFor="let commit of commitsList.slice().reverse()"
+            [class.selected]="commit.sha === version"
+            (click)="setCodeDiffView(commit)"
+          >
+            <span class="badge"> {{ commit.author }} </span>
+            <span> {{ commit.dateTime }} </span>
           </li>
         </ul>
       </div>
@@ -17,6 +20,10 @@
     <p>No commits history so far..</p>
   </div>
   <div *ngIf="!noCommitsHistory" class="col-md-11 commit-editor">
-    <ngx-monaco-editor class="diff-view" [options]="options" [(ngModel)]="currentCode"></ngx-monaco-editor>
+    <ngx-monaco-editor
+      class="diff-view"
+      [options]="options"
+      [(ngModel)]="currentCode"
+    ></ngx-monaco-editor>
   </div>
 </div>

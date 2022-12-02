@@ -5,7 +5,6 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SolutionService {
-
   ArmApi(resourceUri: string, actionOptions: {}): Observable<any> {
     return null;
   }
@@ -21,5 +20,4 @@ export class SolutionService {
   ToggleStdoutSetting(resourceUri: string, actionOptions: {}): Observable<any> {
     return null;
   }
-
 }

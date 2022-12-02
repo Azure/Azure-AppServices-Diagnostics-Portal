@@ -1,59 +1,56 @@
-@import "../../../../styles/global.scss";
-@import "../../../../styles/icons.scss";
+@import '../../../../styles/global.scss';
+@import '../../../../styles/icons.scss';
 
 .home-container {
-    padding: 30px 40px;
-    height: 100%;
+  padding: 30px 40px;
+  height: 100%;
 }
 
 #page-description {
-    width:500px;
+  width: 500px;
 }
 
 .search-input-group {
-    width:600px;
+  width: 600px;
 }
 
 .category-container {
-    display: flex;
-    align-items: stretch;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
 }
 
 .privacy-statement {
-    width: 100%;
-    text-align: right;
-    padding: 20px 50px;
+  width: 100%;
+  text-align: right;
+  padding: 20px 50px;
 }
 
 .main-area {
-    padding-top:10px;
+  padding-top: 10px;
 }
 
 ::placeholder {
-    color: #626262;
+  color: #626262;
 }
-
 
 :host {
-    display: block;
+  display: block;
 
-    fab-button {
-      margin-right: 20px;
-    }
-
-    hr {
-      margin: 40px 0 20px 0;
-    }
+  fab-button {
+    margin-right: 20px;
   }
 
-
-  .search-box{
-    height: 23px;
-    width: 330px;
-    box-sizing: border-box;
+  hr {
+    margin: 40px 0 20px 0;
+  }
 }
 
+.search-box {
+  height: 23px;
+  width: 330px;
+  box-sizing: border-box;
+}
 
 //For new home page
 
@@ -82,10 +79,9 @@
 .section-title {
   font-size: 16px;
   font-weight: 600;
-  color:var(--sectionTitle);
+  color: var(--sectionTitle);
   outline: none;
 }
-
 
 .section-container {
   margin-top: 24px;
@@ -117,7 +113,8 @@
   color: var(--link);
 }
 
-.switch2new-context-text, .switch2old-context-text{
+.switch2new-context-text,
+.switch2old-context-text {
   background: #b3d6f2;
 }
 
@@ -128,9 +125,9 @@
 }
 
 .home-banner-preview {
-    background-color: var(--homeBannerPreview);
+  background-color: var(--homeBannerPreview);
 }
 
 .home-banner-prod {
-    background-color: var(--homeBannerProd);
+  background-color: var(--homeBannerProd);
 }

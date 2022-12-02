@@ -6,7 +6,7 @@ import { NgxSmartModalModule } from 'ngx-smart-modal';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '../../shared/shared.module';
 import { FormsModule } from '@angular/forms';
-import { IncidentAssistanceService } from "./services/incident-assistance.service";
+import { IncidentAssistanceService } from './services/incident-assistance.service';
 import { HttpClientModule } from '@angular/common/http';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { DiagnosticDataModule } from 'diagnostic-data';
@@ -17,17 +17,17 @@ import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown
 import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-field';
 import { FabCommandBarModule } from '@angular-react/fabric/lib/components/command-bar';
 
-
-export const IncidentAssistModuleRoutes: ModuleWithProviders<IncidentAssistModule> = RouterModule.forChild([
-  {
-    path: 'manage',
-    component: TemplateManagementComponent
-  },
-  {
-    path: ':incidentId',
-    component: IncidentValidationComponent
-  }
-]);
+export const IncidentAssistModuleRoutes: ModuleWithProviders<IncidentAssistModule> =
+  RouterModule.forChild([
+    {
+      path: 'manage',
+      component: TemplateManagementComponent
+    },
+    {
+      path: ':incidentId',
+      component: IncidentValidationComponent
+    }
+  ]);
 
 @NgModule({
   imports: [
@@ -46,6 +46,10 @@ export const IncidentAssistModuleRoutes: ModuleWithProviders<IncidentAssistModul
     DiagnosticDataModule
   ],
   providers: [IncidentAssistanceService],
-  declarations: [IncidentValidationComponent, TemplateManagementComponent, SafeHtmlPipe]
+  declarations: [
+    IncidentValidationComponent,
+    TemplateManagementComponent,
+    SafeHtmlPipe
+  ]
 })
-export class IncidentAssistModule { }
+export class IncidentAssistModule {}

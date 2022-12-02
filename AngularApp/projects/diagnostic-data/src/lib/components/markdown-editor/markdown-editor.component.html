@@ -1,31 +1,50 @@
 <div class="panel panel-default with-nav-tabs">
-  <div class="panel-heading" style="padding:0">
-    
-      <div class="row row-adj">
-        <div class="col col-md-6 col-adj">
-            <ul class="nav nav-tabs">
-            <li class="app-nav-tab" role="presentation" *ngFor="let tab of tabs; let i = index" [ngClass]="{'active': tab === selectedTab}">
-                <a (click)="selectedTab = tab">
-                  {{tab}}
-                </a>
-              </li>
-              </ul>
-        </div>
-        <div class="col col-md-6 col-adj">
-            <button class="custom-button copy-button pull-right btn-small-text" [class.copy-button-success]="showCopySuccess" 
-            [class.custom-button-inverted]="showCopySuccess"  (click)="copyText()">{{showCopySuccess ? 'Copied!' : 'Copy'}}</button>
-        </div>
+  <div class="panel-heading" style="padding: 0">
+    <div class="row row-adj">
+      <div class="col col-md-6 col-adj">
+        <ul class="nav nav-tabs">
+          <li
+            class="app-nav-tab"
+            role="presentation"
+            *ngFor="let tab of tabs; let i = index"
+            [ngClass]="{ active: tab === selectedTab }"
+          >
+            <a (click)="selectedTab = tab">
+              {{ tab }}
+            </a>
+          </li>
+        </ul>
       </div>
+      <div class="col col-md-6 col-adj">
+        <button
+          class="custom-button copy-button pull-right btn-small-text"
+          [class.copy-button-success]="showCopySuccess"
+          [class.custom-button-inverted]="showCopySuccess"
+          (click)="copyText()"
+        >
+          {{ showCopySuccess ? 'Copied!' : 'Copy' }}
+        </button>
+      </div>
+    </div>
   </div>
   <div *ngIf="selectedTab === 'Edit'" class="panel-body">
-    <div >
-      <textarea class="form-control" rows="20" [(ngModel)]="rawMarkdown" (ngModelChange)="emitMarkdown()"></textarea>
+    <div>
+      <textarea
+        class="form-control"
+        rows="20"
+        [(ngModel)]="rawMarkdown"
+        (ngModelChange)="emitMarkdown()"
+      ></textarea>
     </div>
-   
   </div>
-  <div class="panel-body no-padding" *ngIf="selectedTab === 'Preview'" (mouseenter)="markdownHover = true" (mouseleave)="markdownHover = false">
+  <div
+    class="panel-body no-padding"
+    *ngIf="selectedTab === 'Preview'"
+    (mouseenter)="markdownHover = true"
+    (mouseleave)="markdownHover = false"
+  >
     <div class="markdown-container">
-        <markdown [data]="rawMarkdown"></markdown>
-      </div>
+      <markdown [data]="rawMarkdown"></markdown>
+    </div>
   </div>
 </div>

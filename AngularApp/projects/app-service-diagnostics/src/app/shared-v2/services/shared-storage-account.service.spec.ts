@@ -6,7 +6,9 @@ describe('SharedStorageAccountService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: SharedStorageAccountService = TestBed.get(SharedStorageAccountService);
+    const service: SharedStorageAccountService = TestBed.get(
+      SharedStorageAccountService
+    );
     expect(service).toBeTruthy();
   });
 });

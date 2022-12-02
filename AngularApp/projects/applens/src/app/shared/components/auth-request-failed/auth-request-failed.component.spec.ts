@@ -8,9 +8,8 @@ describe('AuthRequestFailedComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AuthRequestFailedComponent ]
-    })
-    .compileComponents();
+      declarations: [AuthRequestFailedComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

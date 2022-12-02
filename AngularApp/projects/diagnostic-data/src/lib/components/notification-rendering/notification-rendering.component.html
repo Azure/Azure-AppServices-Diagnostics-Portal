@@ -1,20 +1,38 @@
-<data-container [title]="renderingProperties.title" [description]="renderingProperties.description">
-  <div *ngFor="let notification of notifications" class="notification-container" attr.name="{{notification.Title}}"
-    attr.aria-label="{{notification.Title}}" role="button">
+<data-container
+  [title]="renderingProperties.title"
+  [description]="renderingProperties.description"
+>
+  <div
+    *ngFor="let notification of notifications"
+    class="notification-container"
+    attr.name="{{ notification.Title }}"
+    attr.aria-label="{{ notification.Title }}"
+    role="button"
+  >
     <div div class="notification-panel">
       <div class="notification-panel-heading">
         <h5 class="panel-title">
-          <div style="display: table;">
+          <div style="display: table">
             <div style="display: table-row">
               <div style="display: table-cell">
-                <span class="fa status-icon"
-                  [class.fa-exclamation-circle]="notification.Status === NotificationStatus.Critical"
-                  [class.fa-exclamation-triangle]="notification.Status === NotificationStatus.Warning"
-                  [class.fa-check-circle]="notification.Status === NotificationStatus.Success"
-                  [class.fa-info-circle]="notification.Status === NotificationStatus.Info"></span>
+                <span
+                  class="fa status-icon"
+                  [class.fa-exclamation-circle]="
+                    notification.Status === NotificationStatus.Critical
+                  "
+                  [class.fa-exclamation-triangle]="
+                    notification.Status === NotificationStatus.Warning
+                  "
+                  [class.fa-check-circle]="
+                    notification.Status === NotificationStatus.Success
+                  "
+                  [class.fa-info-circle]="
+                    notification.Status === NotificationStatus.Info
+                  "
+                ></span>
               </div>
-              <div style="display: table-cell;width:100%;font-size: 14px;">
-                {{notification.Title}}
+              <div style="display: table-cell; width: 100%; font-size: 14px">
+                {{ notification.Title }}
               </div>
             </div>
           </div>
@@ -23,11 +41,17 @@
       <div class="notification-body">
         <div *ngIf="notification.Description">
           <div class="width:100%; font-size:13px!important">
-            <markdown-text [markdownData]="notification.Description" [detector]="detector"></markdown-text>
+            <markdown-text
+              [markdownData]="notification.Description"
+              [detector]="detector"
+            ></markdown-text>
           </div>
         </div>
         <ng-container *ngIf="hasSolution(notification)">
-          <solution [data]="notification.Solution" [isIbizaSolution]="true"></solution>
+          <solution
+            [data]="notification.Solution"
+            [isIbizaSolution]="true"
+          ></solution>
         </ng-container>
       </div>
     </div>

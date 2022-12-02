@@ -1,4 +1,4 @@
 export interface Validation {
-    isValid: boolean;
-    reason: string;
+  isValid: boolean;
+  reason: string;
 }

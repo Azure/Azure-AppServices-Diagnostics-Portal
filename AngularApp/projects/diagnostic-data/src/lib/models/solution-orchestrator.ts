@@ -1,6 +1,6 @@
 export enum RenderingMode {
-    CaseSubmission,
-    Genie,
-    DiagnoseAndSolve,
-    AppLens
+  CaseSubmission,
+  Genie,
+  DiagnoseAndSolve,
+  AppLens
 }

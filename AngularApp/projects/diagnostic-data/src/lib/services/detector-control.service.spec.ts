@@ -9,7 +9,10 @@ describe('DetectorControlService', () => {
     });
   });
 
-  it('should be created', inject([DetectorControlService], (service: DetectorControlService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [DetectorControlService],
+    (service: DetectorControlService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

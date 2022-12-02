@@ -1,13 +1,53 @@
 @import './variables';
 
-@mixin xs { @media (min-width: #{$screen-xs-min}) {@content;} }
-@mixin sm { @media (min-width: #{$screen-sm-min}) {@content;} }
-@mixin md { @media (min-width: #{$screen-md-min}) {@content;} }
-@mixin lg { @media (min-width: #{$screen-lg-min}) {@content;} }
-@mixin xl { @media (min-width: #{$screen-xl-min}) {@content;} }
+@mixin xs {
+  @media (min-width: #{$screen-xs-min}) {
+    @content;
+  }
+}
+@mixin sm {
+  @media (min-width: #{$screen-sm-min}) {
+    @content;
+  }
+}
+@mixin md {
+  @media (min-width: #{$screen-md-min}) {
+    @content;
+  }
+}
+@mixin lg {
+  @media (min-width: #{$screen-lg-min}) {
+    @content;
+  }
+}
+@mixin xl {
+  @media (min-width: #{$screen-xl-min}) {
+    @content;
+  }
+}
 
-@mixin xs-height { @media (min-height: #{$screen-xs-height-min}) {@content;} }
-@mixin sm-height { @media (min-height: #{$screen-sm-height-min}) {@content;} }
-@mixin md-height { @media (min-height: #{$screen-md-height-min}) {@content;} }
-@mixin lg-height { @media (min-height: #{$screen-lg-height-min}) {@content;} }
-@mixin xl-height { @media (min-height: #{$screen-xl-height-min}) {@content;} }
+@mixin xs-height {
+  @media (min-height: #{$screen-xs-height-min}) {
+    @content;
+  }
+}
+@mixin sm-height {
+  @media (min-height: #{$screen-sm-height-min}) {
+    @content;
+  }
+}
+@mixin md-height {
+  @media (min-height: #{$screen-md-height-min}) {
+    @content;
+  }
+}
+@mixin lg-height {
+  @media (min-height: #{$screen-lg-height-min}) {
+    @content;
+  }
+}
+@mixin xl-height {
+  @media (min-height: #{$screen-xl-height-min}) {
+    @content;
+  }
+}

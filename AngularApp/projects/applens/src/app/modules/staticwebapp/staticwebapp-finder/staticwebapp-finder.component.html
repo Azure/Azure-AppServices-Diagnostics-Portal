@@ -1,22 +1,33 @@
 <applens-header></applens-header>
 <div class="container-fluid main-container content-under-header">
   <div class="big-text" *ngIf="loading">Searching for Static Web App...</div>
-  <div class="big-text" *ngIf="!loading && error">{{error}}</div>
-  <div class="big-text" *ngIf="!loading && !error && matchingSites.length == 1">Redirecting to {{defaultHostNameOrAppName}}</div>
+  <div class="big-text" *ngIf="!loading && error">{{ error }}</div>
+  <div class="big-text" *ngIf="!loading && !error && matchingSites.length == 1">
+    Redirecting to {{ defaultHostNameOrAppName }}
+  </div>
   <div *ngIf="!loading && !error && matchingSites.length > 0">
     <div class="multiple-sites">
       <div>
-        <h3>Multiple static web apps with the name '{{defaultHostNameOrAppName}}' found. Pick the correct one:</h3>
+        <h3>
+          Multiple static web apps with the name '{{
+            defaultHostNameOrAppName
+          }}' found. Pick the correct one:
+        </h3>
       </div>
       <div class="matching-site" *ngFor="let site of matchingSites">
         <div class="panel main-panel">
           <div class="panel-body">
-            <h5 class="panel-title">{{site.Name}}
-            </h5>
-            <p class="panel-text">{{site.SubscriptionName}}</p>
-            <p class="panel-text">{{site.ResourceGroupName}}</p>
-            <p class="panel-text">{{site.DefaultHostname}}</p>
-            <a tabindex="0" (keyup.enter)="navigateToSite(site)" (click)="navigateToSite(site)" class="btn btn-primary">Select</a>
+            <h5 class="panel-title">{{ site.Name }}</h5>
+            <p class="panel-text">{{ site.SubscriptionName }}</p>
+            <p class="panel-text">{{ site.ResourceGroupName }}</p>
+            <p class="panel-text">{{ site.DefaultHostname }}</p>
+            <a
+              tabindex="0"
+              (keyup.enter)="navigateToSite(site)"
+              (click)="navigateToSite(site)"
+              class="btn btn-primary"
+              >Select</a
+            >
           </div>
         </div>
       </div>

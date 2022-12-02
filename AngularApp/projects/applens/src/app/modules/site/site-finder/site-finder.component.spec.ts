@@ -8,9 +8,8 @@ describe('SiteFinderComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SiteFinderComponent ]
-    })
-    .compileComponents();
+      declarations: [SiteFinderComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

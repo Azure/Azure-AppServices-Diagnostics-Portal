@@ -1,44 +1,44 @@
 export class StorageAccount {
-    id: string;
-    kind: string;
-    location: string;
-    name: string;
-    type: string;
+  id: string;
+  kind: string;
+  location: string;
+  name: string;
+  type: string;
 }
 
 export interface StorageKey {
-    keyName: string;
-    value: string;
-    permissions: string;
+  keyName: string;
+  value: string;
+  permissions: string;
 }
 
 export interface StorageKeys {
-    keys: StorageKey[];
+  keys: StorageKey[];
 }
 
 export class NewStorageAccount {
-    sku: StorageAccountSku = new StorageAccountSku();
-    kind: string = "StorageV2";
-    location: string;
+  sku: StorageAccountSku = new StorageAccountSku();
+  kind: string = 'StorageV2';
+  location: string;
 }
 
 export class NewContainer {
-    properties: any = { publicAccess: "None" };
+  properties: any = { publicAccess: 'None' };
 }
 
 export class StorageAccountSku {
-    name: string = "Standard_GRS";
+  name: string = 'Standard_GRS';
 }
 
 export class SasUriPostBody {
-    signedServices: string;
-    signedResourceTypes: string;
-    signedPermission: string;
-    signedProtocol: string;
-    signedStart: string;
-    signedExpiry: string;
+  signedServices: string;
+  signedResourceTypes: string;
+  signedPermission: string;
+  signedProtocol: string;
+  signedStart: string;
+  signedExpiry: string;
 }
 
 export interface SasUriPostResponse {
-    accountSasToken: string;
+  accountSasToken: string;
 }

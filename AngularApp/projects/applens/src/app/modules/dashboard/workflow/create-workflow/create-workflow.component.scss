@@ -11,11 +11,11 @@ main {
   border: 1px solid darkgray;
 }
 
-div#canvas[disabled="true"] {
+div#canvas[disabled='true'] {
   opacity: 1;
 }
 
-div#canvas[disabled="true"] ::ng-deep.ngflowchart-step-wrapper {
+div#canvas[disabled='true'] ::ng-deep.ngflowchart-step-wrapper {
   opacity: 1;
 }
 

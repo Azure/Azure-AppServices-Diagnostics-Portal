@@ -1,5 +1,5 @@
 export enum SearchAnalysisMode {
-    CaseSubmission,
-    Genie,
-    DetectorView
+  CaseSubmission,
+  Genie,
+  DetectorView
 }

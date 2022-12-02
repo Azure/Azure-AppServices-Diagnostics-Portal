@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { AutohealingRuleComponent } from '../autohealing-rule/autohealing-rule.component';
-import { StatusCodeRules, StatusCodesBasedTrigger, StatusCodesRangeBasedTrigger } from '../../shared/models/autohealing';
+import {
+  StatusCodeRules,
+  StatusCodesBasedTrigger,
+  StatusCodesRangeBasedTrigger
+} from '../../shared/models/autohealing';
 import { FormatHelper } from '../../shared/utilities/formattingHelper';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/components/ChoiceGroup';
 
@@ -10,7 +14,6 @@ import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/components/Choice
   styleUrls: ['../autohealing.component.scss']
 })
 export class AutohealingStatuscodesRuleComponent extends AutohealingRuleComponent {
-
   showRuleOptions: boolean = true;
   currentRangeRule: StatusCodesRangeBasedTrigger;
   currentStatusCodeRule: StatusCodesBasedTrigger;
@@ -20,8 +23,23 @@ export class AutohealingStatuscodesRuleComponent extends AutohealingRuleComponen
   statusCodeRangeError: string = '';
 
   choiceGroupOptions: IChoiceGroupOption[] = [
-    { key: 'singleStatusRule', text: 'Single HTTP Status', defaultChecked: true, onClick: () => { this.rangeRule = false; this.updateInMemoryRules(this.rangeRule); } },
-    { key: 'rangeRule', text: 'HTTP Status Range', onClick: () => { this.rangeRule = true; this.updateInMemoryRules(this.rangeRule); } }
+    {
+      key: 'singleStatusRule',
+      text: 'Single HTTP Status',
+      defaultChecked: true,
+      onClick: () => {
+        this.rangeRule = false;
+        this.updateInMemoryRules(this.rangeRule);
+      }
+    },
+    {
+      key: 'rangeRule',
+      text: 'HTTP Status Range',
+      onClick: () => {
+        this.rangeRule = true;
+        this.updateInMemoryRules(this.rangeRule);
+      }
+    }
   ];
 
   constructor() {
@@ -29,7 +47,6 @@ export class AutohealingStatuscodesRuleComponent extends AutohealingRuleComponen
   }
 
   addNewRule() {
-
     //
     // when someone is adding a new rule,
     // default to a StatusCodeRule
@@ -111,7 +128,8 @@ export class AutohealingStatuscodesRuleComponent extends AutohealingRuleComponen
       if (this.statusCodeIndex < 0) {
         this.rule.statusCodes.push(this.currentStatusCodeRule);
       } else {
-        this.rule.statusCodes[this.statusCodeIndex] = this.currentStatusCodeRule;
+        this.rule.statusCodes[this.statusCodeIndex] =
+          this.currentStatusCodeRule;
       }
     }
 
@@ -123,15 +141,29 @@ export class AutohealingStatuscodesRuleComponent extends AutohealingRuleComponen
       if (!this.isValidUrlPattern(this.currentRangeRule.path)) {
         return false;
       }
-      return this.isValidStatusCodesRange(this.currentRangeRule.statusCodes) && this.currentRangeRule.count > 0 && FormatHelper.timespanToSeconds(this.currentRangeRule.timeInterval) > 0;
+      return (
+        this.isValidStatusCodesRange(this.currentRangeRule.statusCodes) &&
+        this.currentRangeRule.count > 0 &&
+        FormatHelper.timespanToSeconds(this.currentRangeRule.timeInterval) > 0
+      );
     } else {
       if (!this.isValidUrlPattern(this.currentStatusCodeRule.path)) {
         return false;
       }
-      return this.currentStatusCodeRule.count > 0 && this.currentStatusCodeRule.status > 100
-        && this.currentStatusCodeRule.status < 530
-        && !(this.currentStatusCodeRule.status === 500 && this.currentStatusCodeRule.subStatus == 121)
-        && (this.currentStatusCodeRule.timeInterval && this.currentStatusCodeRule.timeInterval && FormatHelper.timespanToSeconds(this.currentStatusCodeRule.timeInterval) > 0);
+      return (
+        this.currentStatusCodeRule.count > 0 &&
+        this.currentStatusCodeRule.status > 100 &&
+        this.currentStatusCodeRule.status < 530 &&
+        !(
+          this.currentStatusCodeRule.status === 500 &&
+          this.currentStatusCodeRule.subStatus == 121
+        ) &&
+        this.currentStatusCodeRule.timeInterval &&
+        this.currentStatusCodeRule.timeInterval &&
+        FormatHelper.timespanToSeconds(
+          this.currentStatusCodeRule.timeInterval
+        ) > 0
+      );
     }
   }
 
@@ -140,9 +172,15 @@ export class AutohealingStatuscodesRuleComponent extends AutohealingRuleComponen
       return rule.status.toString();
     } else {
       if (rule.win32Status == 0) {
-        return rule.status.toString() + "." + rule.subStatus.toString();
+        return rule.status.toString() + '.' + rule.subStatus.toString();
       } else {
-        return rule.status.toString() + "." + rule.subStatus + "." + rule.win32Status.toString();
+        return (
+          rule.status.toString() +
+          '.' +
+          rule.subStatus +
+          '.' +
+          rule.win32Status.toString()
+        );
       }
     }
   }
@@ -169,19 +207,20 @@ export class AutohealingStatuscodesRuleComponent extends AutohealingRuleComponen
 
     if (Number.isInteger(start) && Number.isInteger(end)) {
       if (start >= 100 && end >= 100 && start <= 530 && end <= 530) {
-
         if (start < end) {
-          this.statusCodeRangeError = "";
+          this.statusCodeRangeError = '';
           return true;
         } else {
-          this.statusCodeRangeError = "HTTP Status start range cannot be lower than HTTP Status end range";
+          this.statusCodeRangeError =
+            'HTTP Status start range cannot be lower than HTTP Status end range';
         }
-
       } else {
-        this.statusCodeRangeError = "Valid HTTP Status codes range from HTTP 100 to HTTP 530 only";
+        this.statusCodeRangeError =
+          'Valid HTTP Status codes range from HTTP 100 to HTTP 530 only';
       }
     } else {
-      this.statusCodeRangeError = "HTTP Status code range specified is not a numberic value";
+      this.statusCodeRangeError =
+        'HTTP Status code range specified is not a numberic value';
     }
     return false;
   }

@@ -8,8 +8,10 @@ import { FormatHelper } from '../../shared/utilities/formattingHelper';
   templateUrl: './autohealing-requests-rule.component.html',
   styleUrls: ['../autohealing.component.scss']
 })
-export class AutohealingRequestsRuleComponent extends AutohealingRuleComponent implements OnInit {
-
+export class AutohealingRequestsRuleComponent
+  extends AutohealingRuleComponent
+  implements OnInit
+{
   constructor() {
     super();
   }
@@ -21,8 +23,15 @@ export class AutohealingRequestsRuleComponent extends AutohealingRuleComponent i
   }
 
   isValid(): boolean {
-    if (this.ruleCopy && this.ruleCopy.timeInterval && this.ruleCopy.timeInterval !== '') {
-      return (FormatHelper.timespanToSeconds(this.ruleCopy.timeInterval) > 0 && this.ruleCopy.count > 0);
+    if (
+      this.ruleCopy &&
+      this.ruleCopy.timeInterval &&
+      this.ruleCopy.timeInterval !== ''
+    ) {
+      return (
+        FormatHelper.timespanToSeconds(this.ruleCopy.timeInterval) > 0 &&
+        this.ruleCopy.count > 0
+      );
     } else {
       return false;
     }

@@ -1,27 +1,59 @@
 <div class="network-troubleshooter" #networkCheckingTool>
-    <div class="container" [ngClass]="{'apim-container': !!siteInfo && siteInfo.kind == 'apimanagement'}">
-        <div *ngFor="let viewModel of stepViews" >
-            <div class="step-container" *ngIf="!viewModel.stepView.hidden" [ngSwitch]="viewModel.stepView.type">
-                <dropdown-step *ngSwitchCase="0" [viewModel]="viewModel"></dropdown-step>
-                <check-step *ngSwitchCase="1" [viewModel]="viewModel"></check-step>
-                <input-step *ngSwitchCase="2" [viewModel]="viewModel"></input-step>
-                <info-step *ngSwitchCase="3" [viewModel]="viewModel"></info-step>
-                <button-step *ngSwitchCase="4" [viewModel]="viewModel"></button-step>
-                <form-step *ngSwitchCase="5" [viewModel]="viewModel"></form-step>
-            </div>
-        </div>
-        <div class="loading-spin" *ngIf="stepFlowManager.loadingView && stepFlowManager.loadingView.loadingText != null">
-            <fab-spinner [ariaLabel]="stepFlowManager.loadingView.loadingText"></fab-spinner>
-            <div class="loading-text">{{stepFlowManager.loadingView.loadingText}}</div>
-        </div>
-        <div *ngIf="stepFlowManager.errorMsg" class="error-section">
-            <div class="error-message">
-                {{stepFlowManager.errorMsg}}
-            </div>
-            <div class="error-detail">
-                <div class="markdown" tabindex="0"><markdown ngPreserveWhitespaces [data]=stepFlowManager.errorDetailMarkdown></markdown></div>
-            </div>
-        </div>
-        <cxp-chat-launcher *ngIf="showChatButton()" [trackingId]="cxpChatTrackingId" [chatUrl]="cxpChatUrl" [supportTopicId]="supportTopicId"></cxp-chat-launcher>
+  <div
+    class="container"
+    [ngClass]="{
+      'apim-container': !!siteInfo && siteInfo.kind === 'apimanagement'
+    }"
+  >
+    <div *ngFor="let viewModel of stepViews">
+      <div
+        class="step-container"
+        *ngIf="!viewModel.stepView.hidden"
+        [ngSwitch]="viewModel.stepView.type"
+      >
+        <dropdown-step
+          *ngSwitchCase="0"
+          [viewModel]="viewModel"
+        ></dropdown-step>
+        <check-step *ngSwitchCase="1" [viewModel]="viewModel"></check-step>
+        <input-step *ngSwitchCase="2" [viewModel]="viewModel"></input-step>
+        <info-step *ngSwitchCase="3" [viewModel]="viewModel"></info-step>
+        <button-step *ngSwitchCase="4" [viewModel]="viewModel"></button-step>
+        <form-step *ngSwitchCase="5" [viewModel]="viewModel"></form-step>
+      </div>
     </div>
+    <div
+      class="loading-spin"
+      *ngIf="
+        stepFlowManager.loadingView &&
+        stepFlowManager.loadingView.loadingText != null
+      "
+    >
+      <fab-spinner
+        [ariaLabel]="stepFlowManager.loadingView.loadingText"
+      ></fab-spinner>
+      <div class="loading-text">
+        {{ stepFlowManager.loadingView.loadingText }}
+      </div>
+    </div>
+    <div *ngIf="stepFlowManager.errorMsg" class="error-section">
+      <div class="error-message">
+        {{ stepFlowManager.errorMsg }}
+      </div>
+      <div class="error-detail">
+        <div class="markdown" tabindex="0">
+          <markdown
+            ngPreserveWhitespaces
+            [data]="stepFlowManager.errorDetailMarkdown"
+          ></markdown>
+        </div>
+      </div>
+    </div>
+    <cxp-chat-launcher
+      *ngIf="showChatButton()"
+      [trackingId]="cxpChatTrackingId"
+      [chatUrl]="cxpChatUrl"
+      [supportTopicId]="supportTopicId"
+    ></cxp-chat-launcher>
+  </div>
 </div>

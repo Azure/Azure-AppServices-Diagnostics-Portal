@@ -9,7 +9,10 @@ describe('FeatureService', () => {
     });
   });
 
-  it('should be created', inject([FeatureService], (service: FeatureService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [FeatureService],
+    (service: FeatureService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

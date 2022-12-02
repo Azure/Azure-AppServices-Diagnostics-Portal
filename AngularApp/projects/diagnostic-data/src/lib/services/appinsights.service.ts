@@ -1,70 +1,67 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, of, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, of } from 'rxjs';
 
 @Injectable()
-
 export class AppInsightsQueryService {
+  public loadAppInsightsResourceObservable: BehaviorSubject<boolean>;
 
-    public loadAppInsightsResourceObservable: BehaviorSubject<boolean>;
+  public appInsightsSettings: any = {
+    validForStack: undefined,
+    enabledForWebApp: undefined,
+    connectedWithSupportCenter: undefined,
+    resourceUri: undefined,
+    name: undefined,
+    appId: undefined
+  };
 
-    public appInsightsSettings: any = {
-        validForStack: undefined,
-        enabledForWebApp: undefined,
-        connectedWithSupportCenter: undefined,
-        resourceUri: undefined,
-        name: undefined,
-        appId: undefined
-    };
+  CheckIfAppInsightsEnabled(): Observable<boolean> {
+    return null;
+  }
 
-    CheckIfAppInsightsEnabled(): Observable<boolean> {
-        return null;
-    }
+  ExecuteQuerywithPostMethod(query: string): Observable<any> {
+    return null;
+  }
 
-    ExecuteQuerywithPostMethod(query: string): Observable<any> {
-        return null;
-    }
+  openAppInsightsFailuresBlade() {}
 
-    openAppInsightsFailuresBlade() {
-    }
+  openAppInsightsBlade() {}
 
-    openAppInsightsBlade() {
-    }
+  openAppInsightsPerformanceBlade() {}
 
-    openAppInsightsPerformanceBlade() {
-    }
+  openAppInsightsExtensionBlade(detailBlade?: string) {}
 
-    openAppInsightsExtensionBlade(detailBlade?: string) {
+  logAppInsightsError(resourceUri: string, telmetryEvent: string, error: any) {}
 
-    }
+  logAppInsightsEvent(resourceUri: string, telmetryEvent: string) {}
 
-    logAppInsightsError(resourceUri: string, telmetryEvent: string, error: any) {
-    }
+  connectAppInsights(
+    resourceUri: string,
+    appInsightsResourceUri: string,
+    appId: string
+  ): Observable<any> {
+    return null;
+  }
 
-    logAppInsightsEvent(resourceUri: string, telmetryEvent: string) {
-    }
+  updateAppInsightsEncryptedAppSettings(
+    encryptedKey: string,
+    appId: string
+  ): Observable<any> {
+    return null;
+  }
 
-    connectAppInsights(resourceUri: string, appInsightsResourceUri: string, appId: string): Observable<any> {
-        return null;
-    }
+  checkAppInsightsAccess(appInsightsResourceUri: string): Observable<boolean> {
+    return null;
+  }
 
-    updateAppInsightsEncryptedAppSettings(encryptedKey: string, appId: string): Observable<any> {
-        return null;
-    }
+  getAppInsightsStoredConfiguration(resourceUri: string): Observable<any> {
+    return null;
+  }
 
-    checkAppInsightsAccess(appInsightsResourceUri: string): Observable<boolean> {
-        return null;
-    }
+  getAppInsightsApiKeysCount(): Observable<number> {
+    return null;
+  }
 
-    getAppInsightsStoredConfiguration(resourceUri: string): Observable<any> {
-        return null;
-    }
-
-    getAppInsightsApiKeysCount(): Observable<number> {
-        return null;
-    }
-
-    getAppInsightsConnected(resourceId: string): Observable<boolean> {
-        return null;
-    }
+  getAppInsightsConnected(resourceId: string): Observable<boolean> {
+    return null;
+  }
 }
-

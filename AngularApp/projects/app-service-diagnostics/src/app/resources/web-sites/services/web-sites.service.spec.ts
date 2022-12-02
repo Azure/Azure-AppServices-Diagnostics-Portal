@@ -9,7 +9,10 @@ describe('WebSitesService', () => {
     });
   });
 
-  it('should be created', inject([WebSitesService], (service: WebSitesService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [WebSitesService],
+    (service: WebSitesService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

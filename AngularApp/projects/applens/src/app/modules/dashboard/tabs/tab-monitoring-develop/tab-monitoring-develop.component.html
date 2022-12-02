@@ -1,38 +1,47 @@
-<div class=" container" style="margin-left: 20px; padding-left: 5px">
-    <div class="col-sm-1" style="padding-left: 0px; padding-right: 0px">
-      <label>Filtered by </label>
-    </div>
-    <div class="col-sm-8" style="padding-left: 0px;">
-      <ul class="nav nav-pills">
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{selectedTimeRange}}
-            <span class="caret" style="position: right;"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <li *ngFor="let key of timeRangeKeys">
-              <a (click)="setTimeRange(key)">{{key}}</a>
-            </li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{selectedDataSource}}
-            <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <li *ngFor="let key of dataSourceKeys">
-              <a (click)="setDataSource(key)">{{key}}</a>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <a class="reportlink">
-            <span class="fa fa-heart"></span>
-          </a>
-        </li>
-      </ul>
-    </div>
+<div class="container" style="margin-left: 20px; padding-left: 5px">
+  <div class="col-sm-1" style="padding-left: 0px; padding-right: 0px">
+    <label>Filtered by </label>
   </div>
+  <div class="col-sm-8" style="padding-left: 0px">
+    <ul class="nav nav-pills">
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#"
+          >{{ selectedTimeRange }}
+          <span class="caret" style="position: right"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li *ngFor="let key of timeRangeKeys">
+            <a (click)="setTimeRange(key)">{{ key }}</a>
+          </li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#"
+          >{{ selectedDataSource }}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          <li *ngFor="let key of dataSourceKeys">
+            <a (click)="setDataSource(key)">{{ key }}</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a class="reportlink">
+          <span class="fa fa-heart"></span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
 <div class="flow-container">
-  <onboarding-flow [mode]="mode" [id]="detectorId" [dataSource] = "dataSourceFlag" [timeRange] = "timeRangeInHours" [startTime] = "startTime" [endTime] = "endTime">
+  <onboarding-flow
+    [mode]="mode"
+    [id]="detectorId"
+    [dataSource]="dataSourceFlag"
+    [timeRange]="timeRangeInHours"
+    [startTime]="startTime"
+    [endTime]="endTime"
+  >
   </onboarding-flow>
 </div>

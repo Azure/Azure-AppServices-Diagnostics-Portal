@@ -17,10 +17,7 @@ import { LinuxAvailabilityPerformanceFlow } from '../supportbot/message-flow/v2-
 import { GenericPortalService } from 'diagnostic-data';
 
 @NgModule({
-  imports: [
-    HttpClientModule,
-    CommonModule
-  ],
+  imports: [HttpClientModule, CommonModule],
   declarations: []
 })
 export class StartupModule {
@@ -41,7 +38,7 @@ export class StartupModule {
         GenieMessageProcessor,
         AvailabilityPerformanceFlow,
         LinuxAvailabilityPerformanceFlow,
-        GenericCategoryFlow,
+        GenericCategoryFlow
       ]
     };
   }

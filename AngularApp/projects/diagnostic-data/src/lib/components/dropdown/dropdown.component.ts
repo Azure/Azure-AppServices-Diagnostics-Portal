@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
-import { DataTableResponseObject, DiagnosticData, Rendering } from '../../models/detector';
+import {
+  DataTableResponseObject,
+  DiagnosticData,
+  Rendering
+} from '../../models/detector';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 
 @Component({
@@ -8,7 +12,6 @@ import { DataRenderBaseComponent } from '../data-render-base/data-render-base.co
   styleUrls: ['./dropdown.component.scss']
 })
 export class DropdownComponent extends DataRenderBaseComponent {
-
   renderingProperties: Rendering;
   label: string;
   selectedKey: string;
@@ -24,7 +27,6 @@ export class DropdownComponent extends DataRenderBaseComponent {
   }
 
   private parseData(table: DataTableResponseObject) {
-
     const labelColumn = 0;
     const keyColumn = 1;
     const selectedColumn = 2;
@@ -33,7 +35,6 @@ export class DropdownComponent extends DataRenderBaseComponent {
     this.keyDataMapping = new Map<string, DiagnosticData[]>();
 
     for (let i: number = 0; i < table.rows.length; i++) {
-
       const row = table.rows[i];
       this.label = row[labelColumn];
       const key: string = row[keyColumn];
@@ -53,7 +54,7 @@ export class DropdownComponent extends DataRenderBaseComponent {
     this.keys = Array.from(this.keyDataMapping.keys());
   }
 
-  selectKey(key: string,event:any) {
+  selectKey(key: string, event: any) {
     this.selectedKey = key;
     this.selectedData = this.keyDataMapping.get(this.selectedKey);
     event.preventDefault();

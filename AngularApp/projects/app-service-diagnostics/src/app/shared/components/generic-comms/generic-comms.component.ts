@@ -8,18 +8,18 @@ import { StartupInfo } from '../../models/portal';
   styleUrls: ['./generic-comms.component.scss']
 })
 export class GenericCommsComponent implements OnInit {
-
   autoExpand: boolean = false;
   showAlert: boolean = false;
 
-  constructor(private _authService: AuthService) { }
+  constructor(private _authService: AuthService) {}
 
   ngOnInit() {
     this._authService.getStartupInfo().subscribe((startupInfo: StartupInfo) => {
       // For now, only showing alert in case submission
-      this.showAlert = (startupInfo.supportTopicId && startupInfo.supportTopicId != '');
-      this.autoExpand = (startupInfo.supportTopicId && startupInfo.supportTopicId != '');
+      this.showAlert =
+        startupInfo.supportTopicId && startupInfo.supportTopicId != '';
+      this.autoExpand =
+        startupInfo.supportTopicId && startupInfo.supportTopicId != '';
     });
   }
-
 }

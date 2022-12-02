@@ -1,52 +1,50 @@
-.network-troubleshooter{
-    position: static;
-    min-width: 475px;
-    padding-bottom: 20px;
-    margin-left: -12px;
-    margin-top: -20px;
+.network-troubleshooter {
+  position: static;
+  min-width: 475px;
+  padding-bottom: 20px;
+  margin-left: -12px;
+  margin-top: -20px;
 }
 .container {
-    min-width: 500px;
-    width: 80%;
-    max-width: 750px;
-    margin-left: 0px;
-    .error-section{
-        .error-message{
-            color: red;
-        }
+  min-width: 500px;
+  width: 80%;
+  max-width: 750px;
+  margin-left: 0px;
+  .error-section {
+    .error-message {
+      color: red;
     }
+  }
 
-    &.apim-container {
-        width: auto;
-        max-width: none;
-    }
+  &.apim-container {
+    width: auto;
+    max-width: none;
+  }
 }
 
-.step-container{
-    padding: 7px 7px 7px 0px;
+.step-container {
+  padding: 7px 7px 7px 0px;
 }
 
-.step{
-    border: 1px solid #e5e5e5;
-    overflow: hidden;
+.step {
+  border: 1px solid #e5e5e5;
+  overflow: hidden;
 }
 
-.loading-spin{
-    padding-left: 8px;
-    padding-top: 5px;
-    .fa-spin{
-        font-size: 18px;
-    }
+.loading-spin {
+  padding-left: 8px;
+  padding-top: 5px;
+  .fa-spin {
+    font-size: 18px;
+  }
 
-    .ms-Spinner{
-        align-items: unset;
-        margin-left: -3px;
-    }
-    
+  .ms-Spinner {
+    align-items: unset;
+    margin-left: -3px;
+  }
 
-
-    .loading-text{
-        margin-top: -20px;
-        margin-left: 25px;
-    }
+  .loading-text {
+    margin-top: -20px;
+    margin-left: 25px;
+  }
 }

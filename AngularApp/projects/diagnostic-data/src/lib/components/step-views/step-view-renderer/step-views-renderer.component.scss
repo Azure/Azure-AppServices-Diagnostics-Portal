@@ -1,20 +1,20 @@
 @import '../../../../../../app-service-diagnostics/src/styles/icons.scss';
 
-.step-views-container{
-    position: relative;
+.step-views-container {
+  position: relative;
 }
 
-.step-container{
-    padding: 7px 7px 7px 0px;
+.step-container {
+  padding: 7px 7px 7px 0px;
 }
 
-.step{
-    border: 1px solid #e5e5e5;
-    overflow: hidden;
+.step {
+  border: 1px solid #e5e5e5;
+  overflow: hidden;
 }
 
 .check-container .check-title {
-    font-size: inherit !important;
-    margin-top: -20px;
-    margin-left: 30px;
+  font-size: inherit !important;
+  margin-top: -20px;
+  margin-left: 30px;
 }

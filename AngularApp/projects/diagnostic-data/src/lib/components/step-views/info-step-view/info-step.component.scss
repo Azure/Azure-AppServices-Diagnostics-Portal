@@ -1,51 +1,49 @@
 @import '../../../../../../app-service-diagnostics/src/styles/icons.scss';
 
-.info-icon{
-    height: 30px;
+.info-icon {
+  height: 30px;
 }
 
-.info-icon svg{
-    height: inherit;
-    fill: rgb(255, 255, 255);
-    padding: 5px;
+.info-icon svg {
+  height: inherit;
+  fill: rgb(255, 255, 255);
+  padding: 5px;
 }
 
 .recommendation-info {
-    height: inherit;
-    background-color: var(--recommendationInfoBg);
-
+  height: inherit;
+  background-color: var(--recommendationInfoBg);
 }
 
-.recommendation-info svg{
-    background-color: rgb(1, 92, 218);
+.recommendation-info svg {
+  background-color: rgb(1, 92, 218);
 }
 
 .diagnostic-info {
-    height: inherit;
-    background-color: var(--diagnosticInfoBg);
-
+  height: inherit;
+  background-color: var(--diagnosticInfoBg);
 }
 
-.diagnostic-info svg{
-    background-color: rgb(138, 45, 165);
+.diagnostic-info svg {
+  background-color: rgb(138, 45, 165);
 }
 
-.markdown-title{
-    margin-top: -25px;
-    margin-left: 40px;
-    position: absolute;
+.markdown-title {
+  margin-top: -25px;
+  margin-left: 40px;
+  position: absolute;
 }
 
-.markdown-container{
-    padding: 13px 13px 0px 13px;
-    overflow-x: auto;
-    
-    ul {
-        margin-left: -25px;
-    };
-    h4{
-        font-weight: 500;
-        margin-top: 25px;
-        margin-bottom: 10px;
-    }
+.markdown-container {
+  padding: 13px 13px 0px 13px;
+  overflow-x: auto;
+
+  ul {
+    margin-left: -25px;
+  }
+  h4 {
+    font-weight: 500;
+    margin-top: 25px;
+    margin-bottom: 10px;
+  }
 }

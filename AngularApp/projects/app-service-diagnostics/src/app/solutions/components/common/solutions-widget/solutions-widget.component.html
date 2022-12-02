@@ -1,9 +1,20 @@
-<vertical-display-list *ngIf="!loadingSolutions && solutions.length > 0" [showTitle]="showTitle" [smallMenu]="smallMenu">
-    <vertical-display-list-item [name]="solution.data.title" [tags]="solution.data.tags" [index]="i" *ngFor="let solution of solutions; index as i">
-        <dynamic-solution [solutionHolder]="solution"></dynamic-solution>
-    </vertical-display-list-item>
+<vertical-display-list
+  *ngIf="!loadingSolutions && solutions.length > 0"
+  [showTitle]="showTitle"
+  [smallMenu]="smallMenu"
+>
+  <vertical-display-list-item
+    [name]="solution.data.title"
+    [tags]="solution.data.tags"
+    [index]="i"
+    *ngFor="let solution of solutions; index as i"
+  >
+    <dynamic-solution [solutionHolder]="solution"></dynamic-solution>
+  </vertical-display-list-item>
 </vertical-display-list>
 
 <div class="stepper-content" *ngIf="!loadingSolutions && solutions.length <= 0">
-    <div style="padding:10px;font-size:16px;">The system could not determine any next steps for your specific situation</div>
+  <div style="padding: 10px; font-size: 16px">
+    The system could not determine any next steps for your specific situation
+  </div>
 </div>

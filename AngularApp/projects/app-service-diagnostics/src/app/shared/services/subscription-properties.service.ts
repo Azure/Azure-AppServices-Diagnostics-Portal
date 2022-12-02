@@ -6,10 +6,15 @@ import { HttpResponse } from '@angular/common/http';
   providedIn: 'root'
 })
 export class SubscriptionPropertiesService {
+  constructor(private ArmService: ArmService) {}
 
-  constructor(private ArmService: ArmService) { }
-
-  getSubscriptionProperties(subscriptionId: string): Observable<HttpResponse<any>> {
-    return this.ArmService.getResourceFullResponse<any>(`/subscriptions/${subscriptionId}`, false, '2019-06-01');
+  getSubscriptionProperties(
+    subscriptionId: string
+  ): Observable<HttpResponse<any>> {
+    return this.ArmService.getResourceFullResponse<any>(
+      `/subscriptions/${subscriptionId}`,
+      false,
+      '2019-06-01'
+    );
   }
 }

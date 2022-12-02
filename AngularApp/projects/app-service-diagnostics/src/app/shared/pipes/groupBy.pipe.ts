@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({name: 'groupBy'})
+@Pipe({ name: 'groupBy' })
 export class GroupByPipe implements PipeTransform {
   transform(value: Array<any>, field: string): Array<any> {
     const groupedObj = value.reduce((prev, cur) => {
@@ -11,6 +11,9 @@ export class GroupByPipe implements PipeTransform {
       }
       return prev;
     }, {});
-    return Object.keys(groupedObj).map(key => ({ key, value: groupedObj[key] }));
+    return Object.keys(groupedObj).map((key) => ({
+      key,
+      value: groupedObj[key]
+    }));
   }
 }

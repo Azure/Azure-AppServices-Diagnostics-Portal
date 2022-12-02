@@ -3,48 +3,74 @@
     <div class="cxpChat-ConfText">
       <div class="cxpChat-ConsentContainer">
         <div>
-          <img src="assets/img/cindy.jpg" class="agentImage">
+          <img src="assets/img/cindy.jpg" class="agentImage" />
           <span class="agentName"> Cindy </span>
         </div>
-        <button class="cxpChat-RemoveOutline cxpChat-FlatButton" role="button" title="Close"
-          aria-label="Close chat dialogue" (click)="hideChatConfDialog(true, 'CloseIcon')">
+        <button
+          class="cxpChat-RemoveOutline cxpChat-FlatButton"
+          role="button"
+          title="Close"
+          aria-label="Close chat dialogue"
+          (click)="hideChatConfDialog(true, 'CloseIcon')"
+        >
           <div class="cxpChat-ChangeIcon">
             <i class="fa fa-times cxpChat-CloseIcon"></i>
             <i class="fa fa-window-close fa-lg cxpChat-CloseIcon"></i>
           </div>
         </button>
       </div>
-      <hr>
+      <hr />
       <div>
         <markdown ngPreserveWhitespaces [data]="chatWelcomeMessage"></markdown>
       </div>
-      <div *ngIf="showDiagnosticsConsentOption" class="cxpChat-ConsentContainer">
+      <div
+        *ngIf="showDiagnosticsConsentOption"
+        class="cxpChat-ConsentContainer"
+      >
         <div class="cxpChat-ConsentOptionContainer">
           <div>
             <span>Allow collection of advanced diagnostic information?</span>
           </div>
           <div class="cxpChat-ConsentText cxpChat-moreDetailsContainer">
             <sup class="cxpChat-Required"> * </sup>
-            <a target="_blank" role="link" aria-label="Click to learn more about the information we collect"
+            <a
+              target="_blank"
+              role="link"
+              aria-label="Click to learn more about the information we collect"
               title="Click to learn more about the information we collect."
-              href="https://azure.microsoft.com/en-us/support/legal/support-diagnostic-information-collection/">
+              href="https://azure.microsoft.com/en-us/support/legal/support-diagnostic-information-collection/"
+            >
               <i class="fa fa-info-circle"></i>
             </a>
           </div>
         </div>
         <div class="cxpChat-optionsContainer">
-          <div role="radiogroup"
+          <div
+            role="radiogroup"
             aria-roledescription="Consent options to allow Microsoft access to diagnostic information."
-            aria-required="true">
-            <input id="diagConsentYes" aria-label="Yes, share diagnostic information with Microsoft." type="radio"
-              name="diagConsentOptions" value="Yes" [(ngModel)]="diagnosticLogsConsent">
+            aria-required="true"
+          >
+            <input
+              id="diagConsentYes"
+              aria-label="Yes, share diagnostic information with Microsoft."
+              type="radio"
+              name="diagConsentOptions"
+              value="Yes"
+              [(ngModel)]="diagnosticLogsConsent"
+            />
             <span class="cxpChat-ConsentText">
               <label for="diagConsentYes">Yes</label>
             </span>
           </div>
           <div>
-            <input id="diagConsentNo" aria-label="No, do not share diagnostic information with Microsoft." type="radio"
-              name="diagConsentOptions" value="No" [(ngModel)]="diagnosticLogsConsent">
+            <input
+              id="diagConsentNo"
+              aria-label="No, do not share diagnostic information with Microsoft."
+              type="radio"
+              name="diagConsentOptions"
+              value="No"
+              [(ngModel)]="diagnosticLogsConsent"
+            />
             <span class="cxpChat-ConsentText">
               <label for="diagConsentNo">No</label>
             </span>
@@ -56,18 +82,40 @@
       </div>
     </div>
     <div *ngIf="showChatButtons" class="cxpChat-actionBtnContainer">
-      <input class="custom-button inactive-button white-border" (click)="hideChatConfDialog(true, 'CancelButton')"
-        type="button" role="button" aria-label="Maybe later" value="Maybe later" />
-      <input class="custom-button default-button white-border" [disabled]="diagnosticLogsConsent==''"
-        [title]="diagnosticLogsConsent==''?'Select an option to share diagnostic information before you start the chat.':'Confirm and start chat.'"
-        (click)="openChatPopup()" type="button" role="button" aria-label="Confirm and Start" value="Confirm & Start!" />
+      <input
+        class="custom-button inactive-button white-border"
+        (click)="hideChatConfDialog(true, 'CancelButton')"
+        type="button"
+        role="button"
+        aria-label="Maybe later"
+        value="Maybe later"
+      />
+      <input
+        class="custom-button default-button white-border"
+        [disabled]="diagnosticLogsConsent === ''"
+        [title]="
+          diagnosticLogsConsent === ''
+            ? 'Select an option to share diagnostic information before you start the chat.'
+            : 'Confirm and start chat.'
+        "
+        (click)="openChatPopup()"
+        type="button"
+        role="button"
+        aria-label="Confirm and Start"
+        value="Confirm & Start!"
+      />
     </div>
   </div>
 
   <div *ngIf="showChatConfDialog" class="arrow-bottom"></div>
 
-  <button role="button" class='chatBubble cxpChat-FlatButton' *ngIf="showChatBubble" (click)="toggleChatConfDialog()">
-    <div class='chatBubble'>
+  <button
+    role="button"
+    class="chatBubble cxpChat-FlatButton"
+    *ngIf="showChatBubble"
+    (click)="toggleChatConfDialog()"
+  >
+    <div class="chatBubble">
       <i class="fa fa-comments chatIcon" aria-hidden="true"></i>
     </div>
   </button>

@@ -9,7 +9,10 @@ describe('CaseCleansingApiService', () => {
     });
   });
 
-  it('should be created', inject([CaseCleansingApiService], (service: CaseCleansingApiService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [CaseCleansingApiService],
+    (service: CaseCleansingApiService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

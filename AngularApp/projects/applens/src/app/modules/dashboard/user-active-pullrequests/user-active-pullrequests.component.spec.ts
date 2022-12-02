@@ -8,9 +8,8 @@ describe('UserActivePullrequestsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ UserActivePullrequestsComponent ]
-    })
-    .compileComponents();
+      declarations: [UserActivePullrequestsComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

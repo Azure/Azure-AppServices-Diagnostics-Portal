@@ -1,17 +1,20 @@
 import { Component } from '@angular/core';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
-import { RenderingType, DiagnosticData, InsightsRendering, HealthStatus } from '../../models/detector';
+import {
+  DiagnosticData,
+  HealthStatus,
+  InsightsRendering,
+  RenderingType
+} from '../../models/detector';
 import { Insight, InsightUtils } from '../../models/insight';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
-
 
 @Component({
   templateUrl: './insights.component.html',
   styleUrls: ['./insights.component.scss']
 })
 export class InsightsComponent extends DataRenderBaseComponent {
-
   DataRenderingType = RenderingType.Insights;
   renderingProperties: InsightsRendering;
   public insights: Insight[];
@@ -30,7 +33,11 @@ export class InsightsComponent extends DataRenderBaseComponent {
 
   toggleInsightStatus(insight: any) {
     insight.isExpanded = this.hasContent(insight) && !insight.isExpanded;
-    this.logInsightClickEvent(insight.title, insight.isExpanded, insight.status);
+    this.logInsightClickEvent(
+      insight.title,
+      insight.isExpanded,
+      insight.status
+    );
   }
 
   hasContent(insight: Insight) {
@@ -41,11 +48,15 @@ export class InsightsComponent extends DataRenderBaseComponent {
     return insight.solutions != null && insight.solutions.length > 0;
   }
 
-  logInsightClickEvent(insightName: string, isExpanded: boolean, status: string) {
+  logInsightClickEvent(
+    insightName: string,
+    isExpanded: boolean,
+    status: string
+  ) {
     const eventProps: { [name: string]: string } = {
-      'Title': insightName,
-      'IsExpanded': String(isExpanded),
-      'Status': status
+      Title: insightName,
+      IsExpanded: String(isExpanded),
+      Status: status
     };
 
     this.logEvent(TelemetryEventNames.InsightTitleClicked, eventProps);
@@ -54,9 +65,9 @@ export class InsightsComponent extends DataRenderBaseComponent {
   setInsightComment(insight: any, isHelpful: boolean) {
     if (!insight.isRated) {
       const eventProps: { [name: string]: string } = {
-        'Title': insight.title,
-        'IsHelpful': String(isHelpful)
-      }
+        Title: insight.title,
+        IsHelpful: String(isHelpful)
+      };
       insight.isRated = true;
       insight.isHelpful = isHelpful;
       this.logEvent(TelemetryEventNames.InsightRated, eventProps);

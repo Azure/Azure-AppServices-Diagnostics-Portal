@@ -8,9 +8,8 @@ describe('GistChangelistComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GistChangelistComponent ]
-    })
-    .compileComponents();
+      declarations: [GistChangelistComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,24 +1,39 @@
-<div class="container-fluid" [style.height.px]="contentHeight" style="background-color: #e4e4e4;">
+<div
+  class="container-fluid"
+  [style.height.px]="contentHeight"
+  style="background-color: #e4e4e4"
+>
   <div class="row" style="padding-top: 200px">
     <div class="col-md-6 col-md-offset-3">
       <div class="box box-primary">
         <div class="box-header with-border">
-          <h3 class="box-title" *ngIf="!error && !popUpsBlocked">Logging In...</h3>
-          <h3 class="box-title" *ngIf="error && !popUpsBlocked">AAD Login Error</h3>
+          <h3 class="box-title" *ngIf="!error && !popUpsBlocked">
+            Logging In...
+          </h3>
+          <h3 class="box-title" *ngIf="error && !popUpsBlocked">
+            AAD Login Error
+          </h3>
           <h3 class="box-title" *ngIf="popUpsBlocked">Click to Authenticate</h3>
         </div>
         <div style="padding: 10px">
           <div *ngIf="!popUpsBlocked">
-            <p *ngIf="error">Error: {{error}}</p>
+            <p *ngIf="error">Error: {{ error }}</p>
             <p>Click below to retry</p>
             <div style="text-align: center">
-                <button class="btn btn-primary" (click)="login()">Authenticate</button>
-              </div>
+              <button class="btn btn-primary" (click)="login()">
+                Authenticate
+              </button>
+            </div>
           </div>
           <div *ngIf="popUpsBlocked">
-            <p>You may allow pop ups for this site to skip this step in the future</p>
+            <p>
+              You may allow pop ups for this site to skip this step in the
+              future
+            </p>
             <div style="text-align: center">
-              <button class="btn btn-primary" (click)="login()">Authenticate</button>
+              <button class="btn btn-primary" (click)="login()">
+                Authenticate
+              </button>
             </div>
           </div>
         </div>

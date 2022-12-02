@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 
@@ -7,9 +7,7 @@ import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
   templateUrl: './star-rating.component.html',
   styleUrls: ['./star-rating.component.scss']
 })
-
 export class StarRatingComponent {
-
   @Input() isModal: boolean;
   @Input() ratingEventProperties: any;
   @Output() submit: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -21,8 +19,7 @@ export class StarRatingComponent {
 
   hideWholeForm: boolean;
 
-  constructor(protected telemetryService: TelemetryService) {
-  }
+  constructor(protected telemetryService: TelemetryService) {}
 
   setStar(data: any, comments?: any) {
     this.rating = data;
@@ -40,7 +37,11 @@ export class StarRatingComponent {
     this.submit.emit(this.showThanksMessage);
   }
 
-  protected logEvent(eventMessage: string, eventProperties?: any, measurements?: any) {
+  protected logEvent(
+    eventMessage: string,
+    eventProperties?: any,
+    measurements?: any
+  ) {
     for (const id of Object.keys(this.ratingEventProperties)) {
       if (this.ratingEventProperties.hasOwnProperty(id)) {
         eventProperties[id] = String(this.ratingEventProperties[id]);
@@ -48,5 +49,4 @@ export class StarRatingComponent {
     }
     this.telemetryService.logEvent(eventMessage, eventProperties, measurements);
   }
-
 }

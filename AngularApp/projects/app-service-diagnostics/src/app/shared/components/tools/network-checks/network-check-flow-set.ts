@@ -1,6 +1,6 @@
-import { NetworkCheckFlow } from "./network-check-flow";
+import { NetworkCheckFlow } from './network-check-flow';
 
-export interface NetworkCheckFlowSet{
-    name: string;
-    flows: NetworkCheckFlow[];
+export interface NetworkCheckFlowSet {
+  name: string;
+  flows: NetworkCheckFlow[];
 }

@@ -3,70 +3,117 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DiagnosticApiService } from './diagnostic-api.service';
 import { isArray } from 'util';
-import { ObserverAseResponse, ObserverContainerAppResponse, ObserverSiteDetailsResponse, ObserverSiteInfo, ObserverSiteResponse, ObserverSiteSku, ObserverStampResponse, ObserverStaticWebAppResponse } from '../models/observer';
+import {
+  ObserverAseResponse,
+  ObserverContainerAppResponse,
+  ObserverSiteDetailsResponse,
+  ObserverSiteInfo,
+  ObserverSiteResponse,
+  ObserverSiteSku,
+  ObserverStampResponse,
+  ObserverStaticWebAppResponse
+} from '../models/observer';
 
 @Injectable()
 export class ObserverService {
-
-  constructor(private _diagnosticApiService: DiagnosticApiService) { }
+  constructor(private _diagnosticApiService: DiagnosticApiService) {}
 
   // WARNING: This is broken logic because of bug in sites API
   //          Hostnames will be incorrect if there is another
   //          app with the same name. Pending fix from Hawk
   public getSite(site: string): Observable<ObserverSiteResponse> {
-    return this._diagnosticApiService.get<ObserverSiteResponse>(`api/sites/${site}`).pipe(
-      map((siteRes: ObserverSiteResponse) => {
-        if (siteRes && siteRes.details && isArray(siteRes.details)) {
-          siteRes.details.map(info => this.getSiteInfoWithSlot(info));
-        }
+    return this._diagnosticApiService
+      .get<ObserverSiteResponse>(`api/sites/${site}`)
+      .pipe(
+        map((siteRes: ObserverSiteResponse) => {
+          if (siteRes && siteRes.details && isArray(siteRes.details)) {
+            siteRes.details.map((info) => this.getSiteInfoWithSlot(info));
+          }
 
-        return siteRes;
-      }));
+          return siteRes;
+        })
+      );
   }
 
   public getSiteSku(stamp: string, site: string): Observable<ObserverSiteSku> {
-    return this._diagnosticApiService.get<{ details: ObserverSiteSku }>(`api/stamps/${stamp}/sites/${site}/sku`).pipe(map(res => res.details));
+    return this._diagnosticApiService
+      .get<{ details: ObserverSiteSku }>(
+        `api/stamps/${stamp}/sites/${site}/sku`
+      )
+      .pipe(map((res) => res.details));
   }
 
-  public getContainerApp(containerAppName: string): Observable<ObserverContainerAppResponse> {
-    return this._diagnosticApiService.get<ObserverContainerAppResponse>(`api/containerapps/${containerAppName}`).pipe(
-      map((containerAppRes: ObserverContainerAppResponse) => {
-        if (containerAppRes && containerAppRes.details && isArray(containerAppRes.details)) {
-          containerAppRes.details.map(info => info);
-        }
+  public getContainerApp(
+    containerAppName: string
+  ): Observable<ObserverContainerAppResponse> {
+    return this._diagnosticApiService
+      .get<ObserverContainerAppResponse>(
+        `api/containerapps/${containerAppName}`
+      )
+      .pipe(
+        map((containerAppRes: ObserverContainerAppResponse) => {
+          if (
+            containerAppRes &&
+            containerAppRes.details &&
+            isArray(containerAppRes.details)
+          ) {
+            containerAppRes.details.map((info) => info);
+          }
 
-        return containerAppRes;
-      }));
+          return containerAppRes;
+        })
+      );
   }
 
-  public getStaticWebApp(defaultHostNameOrAppName: string): Observable<ObserverStaticWebAppResponse> {
-    return this._diagnosticApiService.get<ObserverStaticWebAppResponse>(`api/staticwebapps/${defaultHostNameOrAppName}`).pipe(
-      map((staticWebAppRes: ObserverStaticWebAppResponse) => {
-        if (staticWebAppRes && staticWebAppRes.details && isArray(staticWebAppRes.details)) {
-          staticWebAppRes.details.map(info => info);
-        }
-        return staticWebAppRes;
-      }));
+  public getStaticWebApp(
+    defaultHostNameOrAppName: string
+  ): Observable<ObserverStaticWebAppResponse> {
+    return this._diagnosticApiService
+      .get<ObserverStaticWebAppResponse>(
+        `api/staticwebapps/${defaultHostNameOrAppName}`
+      )
+      .pipe(
+        map((staticWebAppRes: ObserverStaticWebAppResponse) => {
+          if (
+            staticWebAppRes &&
+            staticWebAppRes.details &&
+            isArray(staticWebAppRes.details)
+          ) {
+            staticWebAppRes.details.map((info) => info);
+          }
+          return staticWebAppRes;
+        })
+      );
   }
 
   public getAse(ase: string): Observable<ObserverAseResponse> {
-    return this._diagnosticApiService.get<ObserverAseResponse>(`api/hostingEnvironments/${ase}`);
+    return this._diagnosticApiService.get<ObserverAseResponse>(
+      `api/hostingEnvironments/${ase}`
+    );
   }
 
   public getSiteRequestBody(site: string, stamp: string) {
-    return this._diagnosticApiService.get<ObserverSiteResponse>(`api/stamps/${stamp}/sites/${site}/postBody`);
+    return this._diagnosticApiService.get<ObserverSiteResponse>(
+      `api/stamps/${stamp}/sites/${site}/postBody`
+    );
   }
 
   public getSiteRequestDetails(site: string, stamp: string) {
-    return this._diagnosticApiService.get<ObserverSiteDetailsResponse>(`api/stamps/${stamp}/sites/${site}/details`);
+    return this._diagnosticApiService.get<ObserverSiteDetailsResponse>(
+      `api/stamps/${stamp}/sites/${site}/details`
+    );
   }
 
   public getAseRequestBody(name: string) {
-    return this._diagnosticApiService.get<ObserverSiteResponse>(`api/hostingEnvironments/${name}/postBody`);
+    return this._diagnosticApiService.get<ObserverSiteResponse>(
+      `api/hostingEnvironments/${name}/postBody`
+    );
   }
 
   public getStamp(stampName: string): Observable<ObserverStampResponse> {
-    return this._diagnosticApiService.get<ObserverStampResponse>(`api/stamps/${stampName}`);
+    return this._diagnosticApiService.get<ObserverStampResponse>(
+      `api/stamps/${stampName}`
+    );
   }
 
   private getSiteInfoWithSlot(site: ObserverSiteInfo): ObserverSiteInfo {
@@ -81,5 +128,4 @@ export class ObserverService {
     site.SlotName = slot;
     return site;
   }
-
 }

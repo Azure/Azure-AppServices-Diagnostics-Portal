@@ -8,9 +8,8 @@ describe('SupportTopicPageComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SupportTopicPageComponent ]
-    })
-    .compileComponents();
+      declarations: [SupportTopicPageComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

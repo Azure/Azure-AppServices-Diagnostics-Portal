@@ -1,7 +1,18 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
-import { DataTableResponseObject, Rendering, DiagnosticData, HealthStatus } from '../../models/detector';
-import { GuageGraphic, GuageSize, GuageElement, GuageRenderDirection, GuageControl } from '../../models/guage';
+import {
+  DataTableResponseObject,
+  DiagnosticData,
+  HealthStatus,
+  Rendering
+} from '../../models/detector';
+import {
+  GuageControl,
+  GuageElement,
+  GuageGraphic,
+  GuageRenderDirection,
+  GuageSize
+} from '../../models/guage';
 
 @Component({
   selector: 'guage-control',
@@ -39,7 +50,7 @@ export class GuageControlComponent extends DataRenderBaseComponent {
 
     if (!(table.rows === undefined || table.rows.length < 1)) {
       this.guage = new GuageControl();
-      this.guage.renderDirection = table.rows[0][renderDirectionColumn];      
+      this.guage.renderDirection = table.rows[0][renderDirectionColumn];
       this.guage.guages = [];
 
       var currFillColor: HealthStatus;
@@ -62,8 +73,15 @@ export class GuageControlComponent extends DataRenderBaseComponent {
         }
 
         this.guage.guages[i] = new GuageElement(
-          new GuageGraphic(currFillColor, row[percentFilledColumn], row[displayValueColumn], row[labelColumn], row[sizeColumn])
-          , row[descriptionColumn]);
+          new GuageGraphic(
+            currFillColor,
+            row[percentFilledColumn],
+            row[displayValueColumn],
+            row[labelColumn],
+            row[sizeColumn]
+          ),
+          row[descriptionColumn]
+        );
       }
     }
   }

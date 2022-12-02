@@ -3,7 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 @Component({
   selector: 'gantt-chart-taskbar-colors',
   templateUrl: './gantt-chart-taskbar-colors.component.html',
-  styleUrls: ['./gantt-chart-taskbar-colors.component.scss'],
+  styleUrls: ['./gantt-chart-taskbar-colors.component.scss']
 })
 export class GanttChartTaskbarColorsComponent implements OnInit {
   customColorData: any[];
@@ -12,7 +12,9 @@ export class GanttChartTaskbarColorsComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.formattedGanttChartData.length > 0) {
-      this.customColorData = this._getCustomColorData(this.formattedGanttChartData);
+      this.customColorData = this._getCustomColorData(
+        this.formattedGanttChartData
+      );
     }
   }
 
@@ -29,7 +31,7 @@ export class GanttChartTaskbarColorsComponent implements OnInit {
       if (!colorCodesAndDescription.has(colorCode)) {
         colorData.push({
           colorCode,
-          colorDescription,
+          colorDescription
         });
         colorCodesAndDescription.set(colorCode, colorDescription);
       }

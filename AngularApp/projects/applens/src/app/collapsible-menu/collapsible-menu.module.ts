@@ -6,7 +6,7 @@ import { CollapsibleMenuItemComponent } from './components/collapsible-menu-item
 import { SectionDividerComponent } from './components/section-divider/section-divider.component';
 import { SearchBoxComponent } from './components/search-box/search-box.component';
 import { MenuScrollComponent } from './components/menu-scroll/menu-scroll.component';
-import { SearchPipe, SearchMatchPipe } from './pipes/search.pipe';
+import { SearchMatchPipe, SearchPipe } from './pipes/search.pipe';
 import { FabIconModule } from '@angular-react/fabric/lib/components/icon';
 import { FabTooltipModule } from '@angular-react/fabric/lib/components/tooltip';
 
@@ -18,8 +18,23 @@ import { FabTooltipModule } from '@angular-react/fabric/lib/components/tooltip';
     FabIconModule,
     FabTooltipModule
   ],
-  declarations: [CollapsibleMenuComponent, CollapsibleMenuItemComponent, SectionDividerComponent, SearchBoxComponent, MenuScrollComponent, SearchPipe, SearchMatchPipe],
-  exports: [CollapsibleMenuComponent, CollapsibleMenuItemComponent, SectionDividerComponent, SearchBoxComponent, MenuScrollComponent, SearchPipe],
+  declarations: [
+    CollapsibleMenuComponent,
+    CollapsibleMenuItemComponent,
+    SectionDividerComponent,
+    SearchBoxComponent,
+    MenuScrollComponent,
+    SearchPipe,
+    SearchMatchPipe
+  ],
+  exports: [
+    CollapsibleMenuComponent,
+    CollapsibleMenuItemComponent,
+    SectionDividerComponent,
+    SearchBoxComponent,
+    MenuScrollComponent,
+    SearchPipe
+  ],
   providers: [SearchPipe]
 })
-export class CollapsibleMenuModule { }
+export class CollapsibleMenuModule {}

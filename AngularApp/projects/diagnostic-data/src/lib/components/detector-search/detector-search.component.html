@@ -1,193 +1,405 @@
-<div inViewport [inViewportOptions]="{ threshold: [0.3, 0.7] }" (inViewportAction)="listenVisibility($event)" role="search" class="search-container-for-scroll">
-<div *ngIf="showSearchBar && (searchConfiguration.DetectorSearchEnabled || searchConfiguration.WebSearchEnabled)">
-    <div style="display:block;margin-bottom:10px;margin-top:10px;" tabindex="0">
-        <span class="span-h1">Didn't find a solution? Give us more details and we'll recommend{{searchConfiguration.DetectorSearchEnabled? " diagnostics": ""}}{{(searchConfiguration.DetectorSearchEnabled && searchConfiguration.WebSearchEnabled)? " &": ""}}{{searchConfiguration.WebSearchEnabled? " docs": ""}}:</span>
+<div
+  inViewport
+  [inViewportOptions]="{ threshold: [0.3, 0.7] }"
+  (inViewportAction)="listenVisibility($event)"
+  role="search"
+  class="search-container-for-scroll"
+>
+  <div
+    *ngIf="
+      showSearchBar &&
+      (searchConfiguration.DetectorSearchEnabled ||
+        searchConfiguration.WebSearchEnabled)
+    "
+  >
+    <div
+      style="display: block; margin-bottom: 10px; margin-top: 10px"
+      tabindex="0"
+    >
+      <span class="span-h1"
+        >Didn't find a solution? Give us more details and we'll recommend{{
+          searchConfiguration.DetectorSearchEnabled ? ' diagnostics' : ''
+        }}{{
+          searchConfiguration.DetectorSearchEnabled &&
+          searchConfiguration.WebSearchEnabled
+            ? ' &'
+            : ''
+        }}{{ searchConfiguration.WebSearchEnabled ? ' docs' : '' }}:</span
+      >
     </div>
-    <div style="margin-left:20px;">
-        <div class="input-group input-group-sm search-input-group" *ngIf="!searchConfiguration.DetectorSearchEnabled || detectorId == ''">
-            <input class="form-control search-result-input" [(ngModel)]="searchTerm" tabindex="0" type="search" placeholder="Describe your problem here" (keydown.enter)="hitSearch(true)" maxlength="140" (ngModelChange)="resetAlert()" #searchInputBox>
-            <div class="input-group-btn" id="clear-search">
-                <button aria-label="Please provide at least 2 characters"
-                title="Please provide at least 2 characters"
-                [style.display]="searchTerm?.trim().length>0 && searchTerm?.trim().length<2? '': 'none'"
-                class="btn btn-default"
-                style="padding-top:1px;" tabindex="0">
-                    <i class="fa fa-exclamation icon-err"></i>
-                </button>
-                <button aria-label="Clear search input" (keydown.enter)="clearButtonEnter($event)" class="btn btn-default" style="padding-top:1px;" tabindex="0" title="Clear" type="button" (click)="clearSearchTerm()">
-                <i class="fa fa-close"></i>
-                </button>
-            </div>
+    <div style="margin-left: 20px">
+      <div
+        class="input-group input-group-sm search-input-group"
+        *ngIf="!searchConfiguration.DetectorSearchEnabled || detectorId === ''"
+      >
+        <input
+          class="form-control search-result-input"
+          [(ngModel)]="searchTerm"
+          tabindex="0"
+          type="search"
+          placeholder="Describe your problem here"
+          (keydown.enter)="hitSearch(true)"
+          maxlength="140"
+          (ngModelChange)="resetAlert()"
+          #searchInputBox
+        />
+        <div class="input-group-btn" id="clear-search">
+          <button
+            aria-label="Please provide at least 2 characters"
+            title="Please provide at least 2 characters"
+            [style.display]="
+              searchTerm?.trim().length > 0 && searchTerm?.trim().length < 2
+                ? ''
+                : 'none'
+            "
+            class="btn btn-default"
+            style="padding-top: 1px"
+            tabindex="0"
+          >
+            <i class="fa fa-exclamation icon-err"></i>
+          </button>
+          <button
+            aria-label="Clear search input"
+            (keydown.enter)="clearButtonEnter($event)"
+            class="btn btn-default"
+            style="padding-top: 1px"
+            tabindex="0"
+            title="Clear"
+            type="button"
+            (click)="clearSearchTerm()"
+          >
+            <i class="fa fa-close"></i>
+          </button>
         </div>
-        <p #charAlertRef *ngIf="showCharAlert" tabindex="0">Please provide at least 2 characters</p>
+      </div>
+      <p #charAlertRef *ngIf="showCharAlert" tabindex="0">
+        Please provide at least 2 characters
+      </p>
     </div>
-</div>
-<div style="margin-left:20px;" *ngIf="searchConfiguration.DetectorSearchEnabled" #searchResultsSection>
+  </div>
+  <div
+    style="margin-left: 20px"
+    *ngIf="searchConfiguration.DetectorSearchEnabled"
+    #searchResultsSection
+  >
     <div [hidden]="detectorId === ''">
-        <div>
-            <div style="display: inline-block;margin-top: 10px">
-            <a tabindex="0" (keyup.enter)="goBackToSearch()" aria-label="Link to go back to the analysis view" role="button"
-                (click)="goBackToSearch()" *ngIf="detectorId !== ''">Back to Observations</a>
-            </div>
+      <div>
+        <div style="display: inline-block; margin-top: 10px">
+          <a
+            tabindex="0"
+            (keyup.enter)="goBackToSearch()"
+            aria-label="Link to go back to the analysis view"
+            role="button"
+            (click)="goBackToSearch()"
+            *ngIf="detectorId !== ''"
+            >Back to Observations</a
+          >
         </div>
+      </div>
     </div>
-    <span *ngIf="showPreLoadingError" style="margin-left:10px;margin-top:10px;">{{preLoadingErrorMessage}}</span>
-    <span *ngIf="showPreLoader" style="margin-top:10px;">
-        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-        <span style="margin-left:5px">Fetching diagnostics...</span>
+    <span
+      *ngIf="showPreLoadingError"
+      style="margin-left: 10px; margin-top: 10px"
+      >{{ preLoadingErrorMessage }}</span
+    >
+    <span *ngIf="showPreLoader" style="margin-top: 10px">
+      <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+      <span style="margin-left: 5px">Fetching diagnostics...</span>
     </span>
-    <div *ngIf="showSearchTermPractices && (forceShowSearchPractices || (!webSearchResults || webSearchResults.length==0))" class="no-results-section">
-        <span class="no-results-header">Your search "{{searchTermDisplay}}" did not yield any diagnostics results.</span>
-        <span class="no-results-content">Suggestions:</span>
-        <ul class="no-results-content">
-            <li>Make sure all words are spelled correctly.</li>
-            <li>Try different keywords.</li>
-            <li>Try more general keywords.</li>
-        </ul>
+    <div
+      *ngIf="
+        showSearchTermPractices &&
+        (forceShowSearchPractices ||
+          !webSearchResults || webSearchResults.length == 0)
+      "
+      class="no-results-section"
+    >
+      <span class="no-results-header"
+        >Your search "{{ searchTermDisplay }}" did not yield any diagnostics
+        results.</span
+      >
+      <span class="no-results-content">Suggestions:</span>
+      <ul class="no-results-content">
+        <li>Make sure all words are spelled correctly.</li>
+        <li>Try different keywords.</li>
+        <li>Try more general keywords.</li>
+      </ul>
     </div>
-    <div [hidden]="detectorId !== ''" style="margin-top:20px;">
-        <div *ngIf="getPendingDetectorCount() > 0" style="margin-top:10px;margin-bottom: 20px">
-            <i class="fa fa-circle-o-notch fa-2x fa-spin spin-icon" aria-hidden="true"></i>
-            <span [@loadingAnimation]="showLoadingMessage ? 'shown' : 'hidden'"
-                class="loading-message">{{loadingMessages[loadingMessageIndex]}}</span>
-            <span style="margin-left:10px">Running Diagnostics ({{ detectors.length - getPendingDetectorCount() }} of {{ detectors.length }}
-                checks completed)
-            </span>
+    <div [hidden]="detectorId !== ''" style="margin-top: 20px">
+      <div
+        *ngIf="getPendingDetectorCount() > 0"
+        style="margin-top: 10px; margin-bottom: 20px"
+      >
+        <i
+          class="fa fa-circle-o-notch fa-2x fa-spin spin-icon"
+          aria-hidden="true"
+        ></i>
+        <span
+          [@loadingAnimation]="showLoadingMessage ? 'shown' : 'hidden'"
+          class="loading-message"
+          >{{ loadingMessages[loadingMessageIndex] }}</span
+        >
+        <span style="margin-left: 10px"
+          >Running Diagnostics ({{
+            detectors.length - getPendingDetectorCount()
+          }}
+          of {{ detectors.length }}
+          checks completed)
+        </span>
+      </div>
+      <div
+        *ngIf="
+          (detectors.length > 0 && issueDetectedViewModels.length > 0) ||
+          (getPendingDetectorCount() === 0 && loadingChildDetectors)
+        "
+        class="list-wrapper"
+      >
+        <div
+          class="diagnostics-heading"
+          *ngIf="
+            detectors.length > 0 &&
+            (issueDetectedViewModels.length > 0 ||
+              successfulViewModels.length > 0 ||
+              allSolutions.length > 0)
+          "
+          tabindex="0"
+        >
+          Diagnostics results
         </div>
-        <div *ngIf="detectors.length > 0 && (issueDetectedViewModels.length > 0) || (getPendingDetectorCount() === 0 && loadingChildDetectors)"
-            class="list-wrapper">
-            <div class="diagnostics-heading" *ngIf="detectors.length>0 && (issueDetectedViewModels.length>0 || successfulViewModels.length>0 || allSolutions.length>0)" tabindex="0">
-                Diagnostics results
+        <div
+          class="list-item-wrapper"
+          *ngIf="issueDetectedViewModels.length > 0"
+        >
+          <div class="list-item">
+            <div *ngIf="getPendingDetectorCount() > 0" style="margin-top: 10px">
+              <i
+                class="fa fa-circle-o-notch fa-spin spin-icon"
+                aria-hidden="true"
+              ></i>
+              <span style="margin-left: 5px">Loading...</span>
             </div>
-            <div class="list-item-wrapper" *ngIf="issueDetectedViewModels.length > 0">
-                <div class="list-item">
-                    <div *ngIf="getPendingDetectorCount() > 0" style="margin-top:10px">
-                        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-                        <span style="margin-left:5px">Loading...</span>
-                    </div>
-                    <div class="list-text">
-                        <div *ngIf="issueDetectedViewModels.length === 0 && getPendingDetectorCount() === 0" role="alert">
-                            <div class="success-msg">We could not identify any issues that caused availability drops to your
-                                app
-                            </div>
-                        </div>
-                        <div *ngIf="issueDetectedViewModels.length > 0" class="table-responsive">
-                            <table class="table detector-list">
-                                <tbody>
-                                    <tr *ngFor="let viewModel of issueDetectedViewModels">
-                                        <td class="col-sm-1">
-                                            <div style="white-space: nowrap">
-                                                <div style="display: inline-block">
-                                                    <status-icon [loading]="viewModel.model.loadingStatus"
-                                                        [status]="viewModel.model.status" [size]="20">
-                                                    </status-icon>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="col-sm-11">
-                                            <div style="margin-top: 5px;white-space: nowrap;">
-                                                <a tabindex="0" role="button"
-                                                    attr.aria-label="More info for failed check - {{ viewModel.model.title }}"
-                                                    (keyup.enter)="selectDetector(viewModel)"
-                                                    (click)="selectDetector(viewModel)">{{ viewModel.insightTitle }}
-                                                    <i class="fa fa-arrow-circle-o-right"
-                                                        style="margin-left:5px; font-size: 15px"></i>
-                                                </a>
-                                            </div>
-                                            <div style="margin-top:10px" tabindex="0">
-                                                <markdown [data]="viewModel.insightDescription"></markdown>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            <div class="list-text">
+              <div
+                *ngIf="
+                  issueDetectedViewModels.length === 0 &&
+                  getPendingDetectorCount() === 0
+                "
+                role="alert"
+              >
+                <div class="success-msg">
+                  We could not identify any issues that caused availability
+                  drops to your app
                 </div>
+              </div>
+              <div
+                *ngIf="issueDetectedViewModels.length > 0"
+                class="table-responsive"
+              >
+                <table class="table detector-list">
+                  <tbody>
+                    <tr *ngFor="let viewModel of issueDetectedViewModels">
+                      <td class="col-sm-1">
+                        <div style="white-space: nowrap">
+                          <div style="display: inline-block">
+                            <status-icon
+                              [loading]="viewModel.model.loadingStatus"
+                              [status]="viewModel.model.status"
+                              [size]="20"
+                            >
+                            </status-icon>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="col-sm-11">
+                        <div style="margin-top: 5px; white-space: nowrap">
+                          <a
+                            tabindex="0"
+                            role="button"
+                            attr.aria-label="More info for failed check - {{
+                              viewModel.model.title
+                            }}"
+                            (keyup.enter)="selectDetector(viewModel)"
+                            (click)="selectDetector(viewModel)"
+                            >{{ viewModel.insightTitle }}
+                            <i
+                              class="fa fa-arrow-circle-o-right"
+                              style="margin-left: 5px; font-size: 15px"
+                            ></i>
+                          </a>
+                        </div>
+                        <div style="margin-top: 10px" tabindex="0">
+                          <markdown
+                            [data]="viewModel.insightDescription"
+                          ></markdown>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
+          </div>
+        </div>
 
-            <div class="list-item-wrapper" *ngIf="allSolutions.length > 0">
-                <div class="list-item">
-                    <div class="list-title">Troubleshooting and Next Steps</div>
-                    <div>Next steps curated specifically for your app</div>
-                    <div class="list-text">
-                        <div *ngIf="allSolutions.length === 0 && getPendingDetectorCount() === 0">
-                            <div class="success-msg">We could not identify any futher troubleshooting steps or solutions
-                            </div>
-                        </div>
-                        <div class="analysis-content">
-                            <div *ngIf="getPendingDetectorCount() === 0 && allSolutions.length > 0">
-                                <solutions [solutions]="allSolutions">
-                                </solutions>
-                            </div>
-                            <div *ngIf="getPendingDetectorCount() > 0">
-                                <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-                                <span style="margin-left:5px">Loading...</span>
-                            </div>
-                        </div>
-                    </div>
+        <div class="list-item-wrapper" *ngIf="allSolutions.length > 0">
+          <div class="list-item">
+            <div class="list-title">Troubleshooting and Next Steps</div>
+            <div>Next steps curated specifically for your app</div>
+            <div class="list-text">
+              <div
+                *ngIf="
+                  allSolutions.length === 0 && getPendingDetectorCount() === 0
+                "
+              >
+                <div class="success-msg">
+                  We could not identify any futher troubleshooting steps or
+                  solutions
                 </div>
-            </div>
-            <div class="list-item-wrapper"  *ngIf="successfulViewModels.length > 0">
-                <div style="display:block"><span (click)="toggleSuccessfulChecks()" class="successful-section-title" role="button" tabindex="0" (keyup.enter)="toggleSuccessfulChecks()" aria-label="Click here to display or hide successful checks">{{successfulViewModels.length}} check(s) succeeded</span></div>
-                <div class="list-item" [ngClass]="{'shown' : showSuccessfulChecks || (getPendingDetectorCount() === 0 && issueDetectedViewModels.length === 0 && webSearchResults.length === 0), 'hidden': !showSuccessfulChecks && !(getPendingDetectorCount() === 0 && issueDetectedViewModels.length === 0 && webSearchResults.length === 0)}">
-                    <div class="list-text">
-                        <table class="table detector-list">
-                            <tbody>
-                                <tr *ngFor="let viewModel of successfulViewModels">
-                                    <td class="col-sm-1">
-                                        <div style="white-space: nowrap">
-                                            <div style="display: inline-block">
-                                                <status-icon [loading]="viewModel.model.loadingStatus"
-                                                    [status]="viewModel.model.status" [size]="20">
-                                                </status-icon>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="col-sm-11">
-                                        <div style="margin-top: 5px;white-space: nowrap;">
-                                            <a tabindex="0" role="button"
-                                                attr.aria-label="More info for successful check - {{ viewModel.model.title }}"
-                                                (keyup.enter)="selectDetector(viewModel)"
-                                                (click)="selectDetector(viewModel)">{{ viewModel.insightTitle }}
-                                                <i class="fa fa-arrow-circle-o-right"
-                                                    style="margin-left:5px; font-size: 15px"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+              </div>
+              <div class="analysis-content">
+                <div
+                  *ngIf="
+                    getPendingDetectorCount() === 0 && allSolutions.length > 0
+                  "
+                >
+                  <solutions [solutions]="allSolutions"> </solutions>
                 </div>
+                <div *ngIf="getPendingDetectorCount() > 0">
+                  <i
+                    class="fa fa-circle-o-notch fa-spin spin-icon"
+                    aria-hidden="true"
+                  ></i>
+                  <span style="margin-left: 5px">Loading...</span>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
+        <div class="list-item-wrapper" *ngIf="successfulViewModels.length > 0">
+          <div style="display: block">
+            <span
+              (click)="toggleSuccessfulChecks()"
+              class="successful-section-title"
+              role="button"
+              tabindex="0"
+              (keyup.enter)="toggleSuccessfulChecks()"
+              aria-label="Click here to display or hide successful checks"
+              >{{ successfulViewModels.length }} check(s) succeeded</span
+            >
+          </div>
+          <div
+            class="list-item"
+            [ngClass]="{
+              shown:
+                showSuccessfulChecks ||
+                (getPendingDetectorCount() === 0 &&
+                  issueDetectedViewModels.length === 0 &&
+                  webSearchResults.length === 0),
+              hidden:
+                !showSuccessfulChecks &&
+                !(
+                  getPendingDetectorCount() === 0 &&
+                  issueDetectedViewModels.length === 0 &&
+                  webSearchResults.length === 0
+                )
+            }"
+          >
+            <div class="list-text">
+              <table class="table detector-list">
+                <tbody>
+                  <tr *ngFor="let viewModel of successfulViewModels">
+                    <td class="col-sm-1">
+                      <div style="white-space: nowrap">
+                        <div style="display: inline-block">
+                          <status-icon
+                            [loading]="viewModel.model.loadingStatus"
+                            [status]="viewModel.model.status"
+                            [size]="20"
+                          >
+                          </status-icon>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="col-sm-11">
+                      <div style="margin-top: 5px; white-space: nowrap">
+                        <a
+                          tabindex="0"
+                          role="button"
+                          attr.aria-label="More info for successful check - {{
+                            viewModel.model.title
+                          }}"
+                          (keyup.enter)="selectDetector(viewModel)"
+                          (click)="selectDetector(viewModel)"
+                          >{{ viewModel.insightTitle }}
+                          <i
+                            class="fa fa-arrow-circle-o-right"
+                            style="margin-left: 5px; font-size: 15px"
+                          ></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div *ngIf="detectorId !== ''">
-        <detector-view [detector]="detectorId" [startTime]="startTime" [endTime]="endTime" [detectorResponse]="detectorResponse" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
+      <detector-view
+        [detector]="detectorId"
+        [startTime]="startTime"
+        [endTime]="endTime"
+        [detectorResponse]="detectorResponse"
+        [hideDetectorHeader]="true"
+        [hideDetectorControl]="true"
+      ></detector-view>
     </div>
-</div>
-<div style="margin-left:20px;margin-top:20px;" *ngIf="searchConfiguration.WebSearchEnabled">
-    <web-search [searchTerm]="searchTerm"
-                [searchId]="searchId" 
-                [isChildComponent]="true" 
-                [(searchResults)]="webSearchResults" 
-                [webSearchConfig]="searchConfiguration.WebSearchConfiguration"
-                [numArticlesExpanded]="3"
+  </div>
+  <div
+    style="margin-left: 20px; margin-top: 20px"
+    *ngIf="searchConfiguration.WebSearchEnabled"
+  >
+    <web-search
+      [searchTerm]="searchTerm"
+      [searchId]="searchId"
+      [isChildComponent]="true"
+      [(searchResults)]="webSearchResults"
+      [webSearchConfig]="searchConfiguration.WebSearchConfiguration"
+      [numArticlesExpanded]="3"
     >
     </web-search>
-</div>
+  </div>
 
-<div style="margin-left:20px;margin-top:20px;" *ngIf="!isPublic && searchConfiguration.WebSearchEnabled">
-    <documents-search   [searchTerm]="searchTerm"
-                        [searchId] = "searchId"
-                        [isChildComponent]="true"
-                        [numDocumentsExpanded] = "2">
+  <div
+    style="margin-left: 20px; margin-top: 20px"
+    *ngIf="!isPublic && searchConfiguration.WebSearchEnabled"
+  >
+    <documents-search
+      [searchTerm]="searchTerm"
+      [searchId]="searchId"
+      [isChildComponent]="true"
+      [numDocumentsExpanded]="2"
+    >
     </documents-search>
-</div>
+  </div>
 
-<div *ngIf="isPublic && showScrollButton && (detectors.length>0 || !(!webSearchResults || webSearchResults.length==0))" class="more-results-button">
+  <div
+    *ngIf="
+      isPublic &&
+      showScrollButton &&
+      (detectors.length > 0 ||
+        !(!webSearchResults || webSearchResults.length == 0))
+    "
+    class="more-results-button"
+  >
     <fab-primary-button
-        text='More Results' [iconProps]="moreResultsIconProps" [styles]="moreResultsButtonStyles" (onClick)="scrollToResults()">
+      text="More Results"
+      [iconProps]="moreResultsIconProps"
+      [styles]="moreResultsButtonStyles"
+      (onClick)="scrollToResults()"
+    >
     </fab-primary-button>
+  </div>
 </div>

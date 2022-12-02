@@ -8,9 +8,8 @@ describe('AppInsightsEnablementComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AppInsightsEnablementComponent ]
-    })
-    .compileComponents();
+      declarations: [AppInsightsEnablementComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

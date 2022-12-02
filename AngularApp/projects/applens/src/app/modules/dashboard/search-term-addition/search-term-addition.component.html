@@ -1,57 +1,116 @@
 <div class="search-term-addition">
   <br />
-  <span>Make your detector discoverable for users by adding at least 5 search terms that describe the problems your detector can solve. We have some <strong>recommendations based on the detector description you provided</strong>.</span>
-  <table style="width:100%;table-layout:fixed;">
+  <span
+    >Make your detector discoverable for users by adding at least 5 search terms
+    that describe the problems your detector can solve. We have some
+    <strong
+      >recommendations based on the detector description you provided</strong
+    >.</span
+  >
+  <table style="width: 100%; table-layout: fixed">
     <tr>
-      <td><div class="utterancestab"><strong>Add new Search Terms from below</strong></div></td>
-      <td><div class="utterancestab"><strong>Search terms already added to your detector</strong></div></td>
+      <td>
+        <div class="utterancestab">
+          <strong>Add new Search Terms from below</strong>
+        </div>
+      </td>
+      <td>
+        <div class="utterancestab">
+          <strong>Search terms already added to your detector</strong>
+        </div>
+      </td>
     </tr>
     <tr>
       <td class="utterancessection">
         <div class="utterancestabcontent">
           <div class="custom-utterance-box">
-            <input type="text" class="custom-utterance-input" placeholder="Add your custom search term" (keyup.enter)="createUtterance();" [(ngModel)]="utteranceInput">
-            <span class="icon-err" [style.display]="displayError? '': 'none'" title="At least 5 characters">
+            <input
+              type="text"
+              class="custom-utterance-input"
+              placeholder="Add your custom search term"
+              (keyup.enter)="createUtterance()"
+              [(ngModel)]="utteranceInput"
+            />
+            <span
+              class="icon-err"
+              [style.display]="displayError ? '' : 'none'"
+              title="At least 5 characters"
+            >
               <i class="fa fa-exclamation"></i>
             </span>
-            <button type="button" class="btn-create" (click)="createUtterance();">
+            <button
+              type="button"
+              class="btn-create"
+              (click)="createUtterance()"
+            >
               <i class="fa fa-plus"></i>
             </button>
           </div>
-          <div style="width: 90%;">
-            <span class="recommended-terms-title"><strong>Recommended Search Terms</strong></span>
-            <ul class="utteranceslist-rec" *ngIf="recommendedUtterances.length>0">
-              <li *ngFor="let utterance of recommendedUtterances;">
-                <button type="button" class="btn-add" (click)="addUtterance(utterance)">
-                  <i class="fa fa-plus"></i>
-                </button>&nbsp;&nbsp;
-                <span class="utterances-text">{{utterance.sampleUtterance.text}}</span>
-                <span *ngIf="utterance.sampleUtterance.links && utterance.sampleUtterance.links.length>0">&nbsp;[Problem Links]</span>
-                <span *ngFor="let link of utterance.sampleUtterance.links; let i=index;">
-                  <a href="{{link}}" target="_blank">[{{i+1}}]</a>
+          <div style="width: 90%">
+            <span class="recommended-terms-title"
+              ><strong>Recommended Search Terms</strong></span
+            >
+            <ul
+              class="utteranceslist-rec"
+              *ngIf="recommendedUtterances.length > 0"
+            >
+              <li *ngFor="let utterance of recommendedUtterances">
+                <button
+                  type="button"
+                  class="btn-add"
+                  (click)="addUtterance(utterance)"
+                >
+                  <i class="fa fa-plus"></i></button
+                >&nbsp;&nbsp;
+                <span class="utterances-text">{{
+                  utterance.sampleUtterance.text
+                }}</span>
+                <span
+                  *ngIf="
+                    utterance.sampleUtterance.links &&
+                    utterance.sampleUtterance.links.length > 0
+                  "
+                  >&nbsp;[Problem Links]</span
+                >
+                <span
+                  *ngFor="
+                    let link of utterance.sampleUtterance.links;
+                    let i = index
+                  "
+                >
+                  <a href="{{ link }}" target="_blank">[{{ i + 1 }}]</a>
                 </span>
               </li>
             </ul>
-            <span class="recommended-terms-title" *ngIf="recommendedUtterances.length==0">Nothing new.</span>
+            <span
+              class="recommended-terms-title"
+              *ngIf="recommendedUtterances.length == 0"
+              >Nothing new.</span
+            >
           </div>
         </div>
       </td>
-      <td  class="utterancessection">
+      <td class="utterancessection">
         <div class="utterancestabcontent">
-          <div style="width:100%;" *ngIf="allUtterances.length==0">
+          <div style="width: 100%" *ngIf="allUtterances.length == 0">
             <span>No utterances added.</span>
           </div>
-          <div style="width: 100%;" *ngIf="allUtterances.length>0">
+          <div style="width: 100%" *ngIf="allUtterances.length > 0">
             <ul class="utteranceslist-all">
-              <li *ngFor="let utterance of allUtterances;">
+              <li *ngFor="let utterance of allUtterances">
                 <div class="utterances-list-item">
-                  <span class="utterances-text">{{utterance.text}}</span>
-                  <span *ngIf="utterance.links && utterance.links.length>0">&nbsp;[Problem Links]</span>
-                  <span *ngFor="let link of utterance.links; let i=index;">
-                    <a href="{{link}}" target="_blank">[{{i+1}}]</a>
+                  <span class="utterances-text">{{ utterance.text }}</span>
+                  <span *ngIf="utterance.links && utterance.links.length > 0"
+                    >&nbsp;[Problem Links]</span
+                  >
+                  <span *ngFor="let link of utterance.links; let i = index">
+                    <a href="{{ link }}" target="_blank">[{{ i + 1 }}]</a>
                   </span>
                 </div>
-                <i class="fa fa-trash utterancesremoveicon" (click)="removeUtterance(utterance)"></i>
+                <i
+                  class="fa fa-trash utterancesremoveicon"
+                  (click)="removeUtterance(utterance)"
+                ></i>
               </li>
             </ul>
           </div>

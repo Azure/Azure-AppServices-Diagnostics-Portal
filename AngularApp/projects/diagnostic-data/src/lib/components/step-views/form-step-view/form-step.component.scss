@@ -1,75 +1,74 @@
 @import '../../../../../../app-service-diagnostics/src/styles/icons.scss';
 
 .form-step {
-    border: 1px solid #e5e5e5;
-    padding: 10px 10px 15px 10px;
+  border: 1px solid #e5e5e5;
+  padding: 10px 10px 15px 10px;
 
-    fab-primary-button{
-        margin-left: -1px;
+  fab-primary-button {
+    margin-left: -1px;
 
-        .ms-Button{
-            height: 28px;
-            width: fit-content;
-            border-radius: 2px;
-        }
-
-        .ms-Button-flexContainer{
-            font-size: 13px;
-            font-weight: 500;
-        }
+    .ms-Button {
+      height: 28px;
+      width: fit-content;
+      border-radius: 2px;
     }
 
-    
-    .input-tooltip{
-        margin-top: 2px;
-        position: absolute;
-        margin-left: 3px;
+    .ms-Button-flexContainer {
+      font-size: 13px;
+      font-weight: 500;
+    }
+  }
+
+  .input-tooltip {
+    margin-top: 2px;
+    position: absolute;
+    margin-left: 3px;
+  }
+
+  .view-description {
+    font-weight: 600;
+  }
+
+  .form-entry {
+    margin-bottom: 10px;
+  }
+
+  .input-container {
+    .input-box {
+      position: absolute;
+      margin-left: 200px;
+      margin-top: -21px;
+      width: 225px;
     }
 
-    .view-description{
-        font-weight: 600;
+    .input-error {
+      margin-left: 200px;
+      color: red;
+      margin-top: 12px;
     }
 
-
-    .form-entry {
-        margin-bottom: 10px;
+    .input-error-icon {
+      margin-right: 4px;
+      margin-top: 3px;
+      float: left;
     }
 
-    .input-container {
-
-        .input-box{
-            position: absolute;
-            margin-left: 200px;
-            margin-top: -21px;
-            width: 225px;
-        }
-    
-        .input-error{
-            margin-left: 200px;
-            color: red;
-            margin-top: 12px;
-        }
-    
-        .input-error-icon{
-            margin-right: 4px;
-            margin-top: 3px;
-            float: left;
-        }
-
-        .ms-Dropdown-caretDownWrapper,.ms-Dropdown-title{
-            height: 24px;
-            padding-top: 2px;
-            line-height: unset;
-        }
+    .ms-Dropdown-caretDownWrapper,
+    .ms-Dropdown-title {
+      height: 24px;
+      padding-top: 2px;
+      line-height: unset;
     }
+  }
 }
 
-.ms-Dropdown-optionText,.ms-Dropdown-title{
-    font-size: 13px;
-    overflow:unset;
+.ms-Dropdown-optionText,
+.ms-Dropdown-title {
+  font-size: 13px;
+  overflow: unset;
 }
 
-.ms-Callout-container .ms-Callout-main{
-    max-height: calc(50vh - 30px) !important;
-    overflow-y: overlay !important;
+.ms-Callout-container .ms-Callout-main {
+  max-height: calc(50vh - 30px) !important;
+  overflow-y: overlay !important;
 }

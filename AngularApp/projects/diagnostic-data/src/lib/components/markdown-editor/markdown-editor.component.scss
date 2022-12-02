@@ -1,44 +1,45 @@
 .markdown-container {
-    padding: 0px 15px 15px 15px;
+  padding: 0px 15px 15px 15px;
 }
 
 .copy-bar {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .no-padding {
-    padding:0px;
+  padding: 0px;
 }
 
 .copy-button {
-    position: relative;
-    right:0px;
-    padding: 5px;
-    width:100px;
-    margin-top: 3px;
-    font-size: 11px;
+  position: relative;
+  right: 0px;
+  padding: 5px;
+  width: 100px;
+  margin-top: 3px;
+  font-size: 11px;
 }
 
 textarea {
-    resize: vertical;
+  resize: vertical;
 }
 
 .row-adj {
-    margin:0px;
+  margin: 0px;
 }
 
 .col-adj {
-    padding-left:5px;
-    padding-right:5px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 $copy-button-success-color: #428000;
 
 .copy-button-success {
-    background-color: $copy-button-success-color;
-    
-    &:hover, &:focus {
-        background-color: lighten($copy-button-success-color, 10%);
-    }
+  background-color: $copy-button-success-color;
+
+  &:hover,
+  &:focus {
+    background-color: lighten($copy-button-success-color, 10%);
+  }
 }

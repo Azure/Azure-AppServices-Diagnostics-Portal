@@ -6,13 +6,13 @@ import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
   styleUrls: ['../autohealing.component.scss']
 })
 export class AutohealingStartupTimeComponent implements OnInit {
-
-  constructor() { }
+  constructor() {}
 
   editMode: boolean = false;
 
   @Input() minProcessExecutionTime: number;
-  @Output() minProcessExecutionTimeChange: EventEmitter<number> = new EventEmitter<number>();
+  @Output() minProcessExecutionTimeChange: EventEmitter<number> =
+    new EventEmitter<number>();
 
   localMinProcessExecutionTime: number;
 
@@ -35,11 +35,14 @@ export class AutohealingStartupTimeComponent implements OnInit {
   }
 
   isValid(): boolean {
-    if (this.localMinProcessExecutionTime != null && this.localMinProcessExecutionTime != this.minProcessExecutionTime && this.localMinProcessExecutionTime <= 7200) {
+    if (
+      this.localMinProcessExecutionTime != null &&
+      this.localMinProcessExecutionTime != this.minProcessExecutionTime &&
+      this.localMinProcessExecutionTime <= 7200
+    ) {
       return true;
     } else {
       return false;
     }
   }
-
 }

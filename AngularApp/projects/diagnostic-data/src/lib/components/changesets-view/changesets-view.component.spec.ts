@@ -8,9 +8,8 @@ describe('ChangesetsViewComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChangesetsViewComponent ]
-    })
-    .compileComponents();
+      declarations: [ChangesetsViewComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

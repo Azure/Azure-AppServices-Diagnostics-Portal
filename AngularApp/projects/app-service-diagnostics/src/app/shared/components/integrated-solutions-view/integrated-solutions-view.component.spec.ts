@@ -8,9 +8,8 @@ describe('IntegratedSolutionsViewComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ IntegratedSolutionsViewComponent ]
-    })
-    .compileComponents();
+      declarations: [IntegratedSolutionsViewComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

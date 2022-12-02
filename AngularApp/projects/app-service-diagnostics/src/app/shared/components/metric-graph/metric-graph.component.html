@@ -1,16 +1,24 @@
-<div style="padding:5px">
-    <div style="border-bottom: 1px #bbbbbb solid;margin-right: 45px;">
-        <div style="font-size:13px;font-weight: 500;" *ngIf="title">
-            {{title}}
-            <div *ngIf="description" class="tool-tip pull-right"><i class="fa fa-info-circle" style="color:rgb(84, 143, 255)"></i>
-                <span class="tool-tip-text">{{description}}</span>
-            </div>
-        </div>
+<div style="padding: 5px">
+  <div style="border-bottom: 1px #bbbbbb solid; margin-right: 45px">
+    <div style="font-size: 13px; font-weight: 500" *ngIf="title">
+      {{ title }}
+      <div *ngIf="description" class="tool-tip pull-right">
+        <i class="fa fa-info-circle" style="color: rgb(84, 143, 255)"></i>
+        <span class="tool-tip-text">{{ description }}</span>
+      </div>
     </div>
-    <div class="row" style="padding-right: 10px; height: 200px">
-        <div class="row" style="text-align: center; padding-top:85px" *ngIf="!chartData">
-            <i class="fa fa-circle-o-notch fa-2x fa-spin spin-icon" aria-hidden="true"></i>
-        </div>
-        <!-- <app-nvD3-chart [options]="chartOptions" [data]="chartData" *ngIf="chartData"></app-nvD3-chart> -->
+  </div>
+  <div class="row" style="padding-right: 10px; height: 200px">
+    <div
+      class="row"
+      style="text-align: center; padding-top: 85px"
+      *ngIf="!chartData"
+    >
+      <i
+        class="fa fa-circle-o-notch fa-2x fa-spin spin-icon"
+        aria-hidden="true"
+      ></i>
     </div>
+    <!-- <app-nvD3-chart [options]="chartOptions" [data]="chartData" *ngIf="chartData"></app-nvD3-chart> -->
+  </div>
 </div>

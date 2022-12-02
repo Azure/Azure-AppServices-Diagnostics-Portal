@@ -1,34 +1,51 @@
 <fab-command-bar tabindex="0" [contentClass]="'fab-command-bar-class'">
   <items>
-    <fab-command-bar-item key="feedback" role="menu" text="Feedback" [iconProps]="{ iconName: 'Emoji2' }" (click)="openFeedback()"></fab-command-bar-item>
-    <fab-command-bar-item *ngIf="displayDownloadReportButton" key="downloadReport" [text]="downloadReportText" [style]="displayDownloadReportButtonStyle" [id]="'downloadReportId'" 
-      [iconProps]="downloadReportIcon" (click)="downloadReport()" [disabled]="downloadReportButtonDisabled"></fab-command-bar-item>
+    <fab-command-bar-item
+      key="feedback"
+      role="menu"
+      text="Feedback"
+      [iconProps]="{ iconName: 'Emoji2' }"
+      (click)="openFeedback()"
+    ></fab-command-bar-item>
+    <fab-command-bar-item
+      *ngIf="displayDownloadReportButton"
+      key="downloadReport"
+      [text]="downloadReportText"
+      [style]="displayDownloadReportButtonStyle"
+      [id]="'downloadReportId'"
+      [iconProps]="downloadReportIcon"
+      (click)="downloadReport()"
+      [disabled]="downloadReportButtonDisabled"
+    ></fab-command-bar-item>
   </items>
 </fab-command-bar>
-<fab-coachmark 
-   *ngIf="showCoachmark==true"
-  [attr.id]="'fab-coachmark'" 
-  [target]="downloadReportId" 
+<fab-coachmark
+  *ngIf="showCoachmark == true"
+  [attr.id]="'fab-coachmark'"
+  [target]="downloadReportId"
   (onAnimationOpenEnd)="showingTeachingBubble()"
   [positioningContainerProps]="coachmarkPositioningContainerProps"
   delayBeforeCoachmarkAnimation="4000"
   ariaAlertText="A coachmark has appeared"
-  ariaDescribedBy="coachmark-desc1" 
+  ariaDescribedBy="coachmark-desc1"
   ariaLabelledBy="coachmark-label1"
   ariaDescribedByText="Press enter or alt + C to open the coachmark notification"
-  ariaLabelledByText="Coachmark notification">
+  ariaLabelledByText="Coachmark notification"
+>
   <fab-teachingbubble
-    *ngIf="showTeachingBubble==true"    
-    headline="Download Resiliency Score report here!" 
-    (onDismiss)="coachMarkViewed()" 
-    [target]="downloadReportId"    
-    [hasCloseIcon]="true" 
+    *ngIf="showTeachingBubble == true"
+    headline="Download Resiliency Score report here!"
+    (onDismiss)="coachMarkViewed()"
+    [target]="downloadReportId"
+    [hasCloseIcon]="true"
     [calloutProps]="teachingBubbleCalloutProps"
     closeButtonAriaLabel="Close"
     hasCondensedHeadline="true"
-    ariaDescribedBy="downloadreport-description1" 
-    ariaLabelledBy="downloadreport-label1">
-    Click here to download a report to check how well this Web App scores against our recommended resiliency best practices.
+    ariaDescribedBy="downloadreport-description1"
+    ariaLabelledBy="downloadreport-label1"
+  >
+    Click here to download a report to check how well this Web App scores
+    against our recommended resiliency best practices.
   </fab-teachingbubble>
 </fab-coachmark>
 <collapsible-list-fabric [collapsed]="false" [title]="'Resource Information'">
@@ -45,56 +62,108 @@
             </td>
             <td>
               <div class="info-item-value">
-                <a href="{{observerLink}}" target="_blank">Observer Link<i class="hyper-link-icon ml-1"
-                    aria-hidden="true"></i></a>
+                <a href="{{ observerLink }}" target="_blank"
+                  >Observer Link<i
+                    class="hyper-link-icon ml-1"
+                    aria-hidden="true"
+                  ></i
+                ></a>
               </div>
             </td>
           </tr>
           <tr *ngFor="let keyPair of keyPairs">
             <td>
-              <div class="info-item-key">{{keyPair[0]}}</div>
+              <div class="info-item-key">{{ keyPair[0] }}</div>
             </td>
             <td>
               <div class="info-item-splitter">:</div>
             </td>
             <td>
-              <ng-container [ngTemplateOutlet]="checkUseEmbeddedHTML(resource[keyPair[0]])? embeddedHTML:interpretation"
-                [ngTemplateOutletContext]="{data:resource[keyPair[0]]}"></ng-container>
-              <div style="display: inline;" *ngIf="keyPair[0] == 'StampName' && stampAppLensLink !== ''" class="info-item-value">
-                <a href="{{stampAppLensLink}}" target="_blank">Open in AppLens<i class="hyper-link-icon ml-1"
-                    aria-hidden="true"></i></a>
+              <ng-container
+                [ngTemplateOutlet]="
+                  checkUseEmbeddedHTML(resource[keyPair[0]])
+                    ? embeddedHTML
+                    : interpretation
+                "
+                [ngTemplateOutletContext]="{ data: resource[keyPair[0]] }"
+              ></ng-container>
+              <div
+                style="display: inline"
+                *ngIf="keyPair[0] === 'StampName' && stampAppLensLink !== ''"
+                class="info-item-value"
+              >
+                <a href="{{ stampAppLensLink }}" target="_blank"
+                  >Open in AppLens<i
+                    class="hyper-link-icon ml-1"
+                    aria-hidden="true"
+                  ></i
+                ></a>
               </div>
             </td>
             <td>
               <div class="info-item-copy">
                 <img
-                  *ngIf="resource[keyPair[0]] !== null && resource[keyPair[0]] !== undefined  && !checkWithHref(resource[keyPair[0]])"
-                  src="/assets/img/copy-icon.png" style="height: 12px; background-color:var(--imgButtonBackground);"
-                  (click)="copyToClipboard(resource[keyPair[0]], $event)" alt="Copy to clipboard" />
+                  *ngIf="
+                    resource[keyPair[0]] !== null &&
+                    resource[keyPair[0]] !== undefined &&
+                    !checkWithHref(resource[keyPair[0]])
+                  "
+                  src="/assets/img/copy-icon.png"
+                  style="
+                    height: 12px;
+                    background-color: var(--imgButtonBackground);
+                  "
+                  (click)="copyToClipboard(resource[keyPair[0]], $event)"
+                  alt="Copy to clipboard"
+                />
               </div>
             </td>
             <ng-container *ngIf="keyPair[1] !== ''">
               <td>
-                <div class="info-item-key">{{keyPair[1]}}</div>
+                <div class="info-item-key">{{ keyPair[1] }}</div>
               </td>
               <td>
                 <div class="info-item-splitter">:</div>
               </td>
               <td>
-                <ng-container [ngTemplateOutlet]="checkUseEmbeddedHTML(resource[keyPair[1]])? embeddedHTML:interpretation"
-                [ngTemplateOutletContext]="{data:resource[keyPair[1]]}">
+                <ng-container
+                  [ngTemplateOutlet]="
+                    checkUseEmbeddedHTML(resource[keyPair[1]])
+                      ? embeddedHTML
+                      : interpretation
+                  "
+                  [ngTemplateOutletContext]="{ data: resource[keyPair[1]] }"
+                >
                 </ng-container>
-                <div style="display: inline;" *ngIf="keyPair[1] == 'StampName' && stampAppLensLink !== ''" class="info-item-value">
-                  <a href="{{stampAppLensLink}}" target="_blank">Open in AppLens<i class="hyper-link-icon ml-1"
-                      aria-hidden="true"></i></a>
+                <div
+                  style="display: inline"
+                  *ngIf="keyPair[1] === 'StampName' && stampAppLensLink !== ''"
+                  class="info-item-value"
+                >
+                  <a href="{{ stampAppLensLink }}" target="_blank"
+                    >Open in AppLens<i
+                      class="hyper-link-icon ml-1"
+                      aria-hidden="true"
+                    ></i
+                  ></a>
                 </div>
               </td>
               <td>
                 <div class="info-item-copy">
                   <img
-                    *ngIf="resource[keyPair[1]] !== null && resource[keyPair[1]] !== undefined  && !checkWithHref(resource[keyPair[1]])"
-                    src="/assets/img/copy-icon.png" style="height: 12px; background-color:var(--imgButtonBackground);"
-                    (click)="copyToClipboard(resource[keyPair[1]], $event)" alt="Copy to clipboard" />
+                    *ngIf="
+                      resource[keyPair[1]] !== null &&
+                      resource[keyPair[1]] !== undefined &&
+                      !checkWithHref(resource[keyPair[1]])
+                    "
+                    src="/assets/img/copy-icon.png"
+                    style="
+                      height: 12px;
+                      background-color: var(--imgButtonBackground);
+                    "
+                    (click)="copyToClipboard(resource[keyPair[1]], $event)"
+                    alt="Copy to clipboard"
+                  />
                 </div>
               </td>
             </ng-container>
@@ -104,10 +173,17 @@
     </div>
   </collapsible-list-item>
 </collapsible-list-fabric>
-<collapsible-list-fabric *ngIf="showMetrics" [collapsed]="false" [title]="'Metrics'">
+<collapsible-list-fabric
+  *ngIf="showMetrics"
+  [collapsed]="false"
+  [title]="'Metrics'"
+>
   <collapsible-list-item body>
     <div>
-      <detector-container [detector]="_resourceService.overviewPageMetricsId" [hideDetectorControl]="true">
+      <detector-container
+        [detector]="_resourceService.overviewPageMetricsId"
+        [hideDetectorControl]="true"
+      >
       </detector-container>
     </div>
   </collapsible-list-item>
@@ -115,10 +191,10 @@
 
 <favorite-detectors></favorite-detectors>
 
-<ng-template #interpretation let-data='data'>
-  <div class="info-item-value">{{data}}</div>
+<ng-template #interpretation let-data="data">
+  <div class="info-item-value">{{ data }}</div>
 </ng-template>
 
-<ng-template #embeddedHTML let-data='data'>
+<ng-template #embeddedHTML let-data="data">
   <div class="info-item-value" [innerHTML]="data"></div>
 </ng-template>

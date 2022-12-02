@@ -6,7 +6,9 @@ describe('GenericArmConfigService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: GenericArmConfigService = TestBed.get(GenericArmConfigService);
+    const service: GenericArmConfigService = TestBed.get(
+      GenericArmConfigService
+    );
     expect(service).toBeTruthy();
   });
 });

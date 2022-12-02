@@ -1,26 +1,36 @@
-
-import { Component, Pipe, PipeTransform, Inject, OnInit, Input, ViewEncapsulation, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Inject,
+  Input,
+  OnChanges,
+  OnInit,
+  Pipe,
+  PipeTransform,
+  SimpleChanges,
+  ViewEncapsulation
+} from '@angular/core';
 import { HealthStatus } from '../../../models/detector';
 import { TelemetryService } from '../../../services/telemetry/telemetry.service';
-import { Check, checkResultLevel, CheckStepView, StepViewContainer } from '../step-view-lib';
-
-
+import {
+  Check,
+  CheckStepView,
+  StepViewContainer,
+  checkResultLevel
+} from '../step-view-lib';
 
 @Component({
   selector: 'check',
   templateUrl: './check.component.html',
   styleUrls: ['./check.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.None
 })
 export class CheckComponent implements OnInit {
   @Input() bold = false;
-  @Input() check:Check;
+  @Input() check: Check;
   expanded = false;
   detailsPanelOpened = false;
 
-  constructor(private _telemetryService: TelemetryService) {
-
-  }
+  constructor(private _telemetryService: TelemetryService) {}
 
   ngOnInit(): void {
     this.expanded = this.check.expandByDefault;
@@ -30,11 +40,11 @@ export class CheckComponent implements OnInit {
     this.expanded = !this.expanded;
   }
 
-  toggleDetails(): void{
+  toggleDetails(): void {
     this.detailsPanelOpened = true;
   }
 
-  detailsPanelDismissedHandler(): void{
+  detailsPanelDismissedHandler(): void {
     this.detailsPanelOpened = false;
   }
 }

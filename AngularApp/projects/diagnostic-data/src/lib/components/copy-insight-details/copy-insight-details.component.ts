@@ -9,36 +9,38 @@ import { TelemetryService } from '../../services/telemetry/telemetry.service';
   styleUrls: ['./copy-insight-details.component.scss']
 })
 export class CopyInsightDetailsComponent implements OnInit {
-
   insightCopyText = '';
 
   @Input() detectorResponse: DetectorResponse;
 
-  constructor(private _logger: TelemetryService) { }
+  constructor(private _logger: TelemetryService) {}
 
   ngOnInit() {
-    this.createMarkdownText(InsightUtils.parseAllInsightsFromResponse(this.detectorResponse));
+    this.createMarkdownText(
+      InsightUtils.parseAllInsightsFromResponse(this.detectorResponse)
+    );
     this._logger.logEvent('report-expanded', {});
   }
 
   createMarkdownText(insights: Insight[]) {
     if (!insights || insights.length === 0) {
       this.insightCopyText = 'No insights in this detector';
-    }
-    else {
-      insights.forEach(insight => {
+    } else {
+      insights.forEach((insight) => {
         this.insightCopyText += '## ' + insight.title + '\n\n';
 
         for (let key in insight.data) {
           this.insightCopyText += `### ${key}\n\n`;
-          let data = insight.data[key].replace('<markdown>','').replace('</markdown>', '');
+          let data = insight.data[key]
+            .replace('<markdown>', '')
+            .replace('</markdown>', '');
           let lines = data.split(/\r?\n/);
 
-          for(let line in lines) {
+          for (let line in lines) {
             this.insightCopyText += lines[line].trim() + '\n';
           }
 
-          this.insightCopyText += '\n'
+          this.insightCopyText += '\n';
         }
         this.insightCopyText += '\n***\n';
       });

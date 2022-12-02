@@ -36,7 +36,9 @@
   </ng-container>
   <div *ngIf="!selectedSeries">Loading Data...</div>
   <gantt-chart-taskbar-colors
-    *ngIf="graphOptions?.taskBar?.useCustomColor && !!formattedGanttChartData.length"
+    *ngIf="
+      graphOptions?.taskBar?.useCustomColor && !!formattedGanttChartData.length
+    "
     [formattedGanttChartData]="formattedGanttChartData"
     [graphOptions]="graphOptions"
   ></gantt-chart-taskbar-colors>

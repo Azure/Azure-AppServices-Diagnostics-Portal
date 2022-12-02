@@ -8,9 +8,8 @@ describe('StampFinderComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ StampFinderComponent ]
-    })
-    .compileComponents();
+      declarations: [StampFinderComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

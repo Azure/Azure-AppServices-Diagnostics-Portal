@@ -1,49 +1,61 @@
-<default-solution-template [title]="title" [description]="description" [tags]="data.tags">
-
-    <div class="action-box">
-        <div *ngIf="currentServerFarm">
-            <div>Current App Service Plan</div>
-            <table style="border:none;padding:5px">
-                <tr style="font-size:20px;font-weight:500;color: #286090;" *ngIf="currentServerFarm">
-                    <td>{{currentServerFarm.sku.name + ' ' + currentServerFarm.sku.tier}}</td>
-                    <td>{{currentServerFarm.additionalProperties.ramInGB}}
-                        <span style="font-size:16px">GB</span>
-                    </td>
-                    <td>{{currentServerFarm.additionalProperties.cores}}</td>
-                    <td>{{currentServerFarm.sku.capacity}}</td>
-                    <!-- <td>{{currentServerFarm.properties.numberOfSites}}</td> -->
-                </tr>
-                <tr id="table-labels" style="font-size:11px">
-                    <td>Tier</td>
-                    <td>RAM</td>
-                    <td>Cores</td>
-                    <td>Instance Count</td>
-                    <!-- <td>App Count</td> -->
-                </tr>
-            </table>
-            <br/>
-            <p [innerHtml]="suggestion"></p>
-            <div style="text-align:right">
-                <button class="btn btn-primary" (click)="openBlade()">Open Scale Up App Service Plan</button>
-            </div>
-
-        </div>
-        <div style="text-align:center" *ngIf="!currentServerFarm">
-            <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
-        </div>
-
+<default-solution-template
+  [title]="title"
+  [description]="description"
+  [tags]="data.tags"
+>
+  <div class="action-box">
+    <div *ngIf="currentServerFarm">
+      <div>Current App Service Plan</div>
+      <table style="border: none; padding: 5px">
+        <tr
+          style="font-size: 20px; font-weight: 500; color: #286090"
+          *ngIf="currentServerFarm"
+        >
+          <td>
+            {{ currentServerFarm.sku.name + ' ' + currentServerFarm.sku.tier }}
+          </td>
+          <td>
+            {{ currentServerFarm.additionalProperties.ramInGB }}
+            <span style="font-size: 16px">GB</span>
+          </td>
+          <td>{{ currentServerFarm.additionalProperties.cores }}</td>
+          <td>{{ currentServerFarm.sku.capacity }}</td>
+          <!-- <td>{{currentServerFarm.properties.numberOfSites}}</td> -->
+        </tr>
+        <tr id="table-labels" style="font-size: 11px">
+          <td>Tier</td>
+          <td>RAM</td>
+          <td>Cores</td>
+          <td>Instance Count</td>
+          <!-- <td>App Count</td> -->
+        </tr>
+      </table>
+      <br />
+      <p [innerHtml]="suggestion"></p>
+      <div style="text-align: right">
+        <button class="btn btn-primary" (click)="openBlade()">
+          Open Scale Up App Service Plan
+        </button>
+      </div>
     </div>
+    <div style="text-align: center" *ngIf="!currentServerFarm">
+      <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+    </div>
+  </div>
 
-    <p style="padding: 10px 0px 0px 0px" [innerHtml]="secondarySuggestion" *ngIf="secondarySuggestion"></p>
+  <p
+    style="padding: 10px 0px 0px 0px"
+    [innerHtml]="secondarySuggestion"
+    *ngIf="secondarySuggestion"
+  ></p>
 
-    <div class="header2">Why you should scale up</div>
-    <ul>
-        <li *ngFor="let statement of whyToScale">{{statement}}</li>
-    </ul>
+  <div class="header2">Why you should scale up</div>
+  <ul>
+    <li *ngFor="let statement of whyToScale">{{ statement }}</li>
+  </ul>
 
-    <div class="header2">Why you should not scale up</div>
-    <ul>
-        <li *ngFor="let statement of whyNotToScale">{{statement}}</li>
-    </ul>
-
+  <div class="header2">Why you should not scale up</div>
+  <ul>
+    <li *ngFor="let statement of whyNotToScale">{{ statement }}</li>
+  </ul>
 </default-solution-template>

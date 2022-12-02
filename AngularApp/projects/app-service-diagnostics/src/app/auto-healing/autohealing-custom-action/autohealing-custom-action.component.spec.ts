@@ -8,9 +8,8 @@ describe('AutohealingCustomActionComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ AutohealingCustomActionComponent ]
-    })
-    .compileComponents();
+      declarations: [AutohealingCustomActionComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

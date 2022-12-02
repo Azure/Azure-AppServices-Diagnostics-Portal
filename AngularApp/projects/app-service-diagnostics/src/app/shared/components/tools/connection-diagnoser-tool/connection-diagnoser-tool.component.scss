@@ -1,11 +1,11 @@
 .panel-heading {
-    cursor: pointer;
-    background-color: var(--bodyBackground);
-    color: var(--bodyText);
+  cursor: pointer;
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
 }
 
 .healthy-icon-color {
-    color: #488b00
+  color: #488b00;
 }
 
 .panel-body {
@@ -20,5 +20,5 @@
 }
 
 .fixed-table {
-  table-layout:fixed
+  table-layout: fixed;
 }

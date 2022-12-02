@@ -9,7 +9,10 @@ describe('SiteFeatureService', () => {
     });
   });
 
-  it('should be created', inject([SiteFeatureService], (service: SiteFeatureService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [SiteFeatureService],
+    (service: SiteFeatureService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

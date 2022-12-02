@@ -1,7 +1,10 @@
-import { Component, OnChanges, Input } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Component, Input, OnChanges } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgxSmartModalService } from 'ngx-smart-modal';
-import { CaseCleansingApiService, CaseSimple } from '../../../shared/services/casecleansing-api.service'
+import {
+  CaseCleansingApiService,
+  CaseSimple
+} from '../../../shared/services/casecleansing-api.service';
 
 @Component({
   selector: 'casecleansingmodal',
@@ -13,17 +16,20 @@ export class CasecleansingmodalComponent implements OnChanges {
     select: new FormControl(''),
     other: new FormControl('')
   });
-  public showProgress : boolean = false;
-  public activeIncident : any;
-  public content : any;
-  public contentJSON : string;
-  @Input() selectedCase : CaseSimple;
+  public showProgress: boolean = false;
+  public activeIncident: any;
+  public content: any;
+  public contentJSON: string;
+  @Input() selectedCase: CaseSimple;
 
-  constructor(private caseCleansingService: CaseCleansingApiService, public ngxSmartModalService: NgxSmartModalService) { 
+  constructor(
+    private caseCleansingService: CaseCleansingApiService,
+    public ngxSmartModalService: NgxSmartModalService
+  ) {
     this.activeIncident = {
-      title: "...",
-      recommendations: ["..."],
-      rules: ["..."]
+      title: '...',
+      recommendations: ['...'],
+      rules: ['...']
     };
   }
 
@@ -34,45 +40,53 @@ export class CasecleansingmodalComponent implements OnChanges {
   }
 
   public async onSubmit() {
-    let closeReason :string = this.caseCleansingForm.value.select;
-    if (closeReason === "other") {
-      closeReason = "Other: " + this.caseCleansingForm.value.other;
+    let closeReason: string = this.caseCleansingForm.value.select;
+    if (closeReason === 'other') {
+      closeReason = 'Other: ' + this.caseCleansingForm.value.other;
     }
     this.showProgress = true;
-    let result = await this.caseCleansingService.CloseCase(this.selectedCase.incidentId, closeReason).toPromise();
+    let result = await this.caseCleansingService
+      .CloseCase(this.selectedCase.incidentId, closeReason)
+      .toPromise();
     this.showProgress = false;
     if (result) {
       this.ngxSmartModalService.getModal('infoModal').close();
       //this.cases.splice(this.cases.indexOf(this.selectedCase), 1);
     } else {
-      alert("there was an error updating this case");
+      alert('there was an error updating this case');
     }
   }
 
   public async toggleDebugInformation() {
     if (!this.contentJSON) {
-      this.contentJSON = "Rule Name: " + this.activeIncident.rule + "\n" + JSON.stringify(this.content, null, 2);
+      this.contentJSON =
+        'Rule Name: ' +
+        this.activeIncident.rule +
+        '\n' +
+        JSON.stringify(this.content, null, 2);
     } else {
       this.contentJSON = undefined;
     }
   }
 
-  private async getDetails(incidentID:string) {
+  private async getDetails(incidentID: string) {
     this.activeIncident = {
-      title: "...",
-      recommendations: ["..."]
-    }
+      title: '...',
+      recommendations: ['...']
+    };
     this.contentJSON = undefined;
     this.content = undefined;
     this.showProgress = true;
     this.caseCleansingForm.reset();
     this.caseCleansingForm.updateValueAndValidity();
-    this.caseCleansingForm.controls['select'].setValue("");
+    this.caseCleansingForm.controls['select'].setValue('');
 
     this.ngxSmartModalService.getModal('infoModal').open();
 
-    this.content = await this.caseCleansingService.GetCaseDetails(this.selectedCase.incidentId).toPromise();
-    
+    this.content = await this.caseCleansingService
+      .GetCaseDetails(this.selectedCase.incidentId)
+      .toPromise();
+
     this.activeIncident.title = this.content.kustoData.Incidents_Title;
     this.activeIncident.recommendations = this.content.recommendations;
 
@@ -80,14 +94,13 @@ export class CasecleansingmodalComponent implements OnChanges {
   }
 
   public onSelectChange(args) {
-    let selectValue = args.target.value; 
-    let otherControl = this.caseCleansingForm.get("other") as FormControl;
+    let selectValue = args.target.value;
+    let otherControl = this.caseCleansingForm.get('other') as FormControl;
     if (selectValue === 'other') {
-      otherControl.setValidators([Validators.required])
+      otherControl.setValidators([Validators.required]);
     } else {
       otherControl.clearValidators();
     }
     otherControl.updateValueAndValidity();
   }
-
 }

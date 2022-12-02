@@ -1,26 +1,49 @@
-<div *ngIf="!isIbizaSolution else newSolution" class="solution-container">
+<div *ngIf="!isIbizaSolution; else newSolution" class="solution-container">
   <div *ngIf="solution.DescriptionMarkdown" class="my-2 mx-0">
     <markdown [data]="solution.DescriptionMarkdown"></markdown>
   </div>
 
   <ng-container *ngIf="showActionButton">
-    <div *ngIf="!solution.IsInternal; else internal_solution" class="solution-action mt-5">
-      <div *ngIf="solution.RequiresConfirmation; else dont_confirm_buttons" class="confirm-buttons">
-        <span class="mr-3">{{solution.Name}} for App <span class="app-name">{{appName}}</span>?</span>
+    <div
+      *ngIf="!solution.IsInternal; else internal_solution"
+      class="solution-action mt-5"
+    >
+      <div
+        *ngIf="solution.RequiresConfirmation; else dont_confirm_buttons"
+        class="confirm-buttons"
+      >
+        <span class="mr-3"
+          >{{ solution.Name }} for App
+          <span class="app-name">{{ appName }}</span
+          >?</span
+        >
         <div class="action-buttons">
-          <button type="button" class="custom-button deny">No, Don't {{solution.Name}}</button>
-          <button type="button" (click)="performAction()" class="custom-button confirm">
-            Yes, {{solution.Name}}
+          <button type="button" class="custom-button deny">
+            No, Don't {{ solution.Name }}
+          </button>
+          <button
+            type="button"
+            (click)="performAction()"
+            class="custom-button confirm"
+          >
+            Yes, {{ solution.Name }}
           </button>
         </div>
       </div>
 
       <span class="ml-3">
-        <span *ngIf="showCompletionConfirmation()">{{actionStatus}}</span>
+        <span *ngIf="showCompletionConfirmation()">{{ actionStatus }}</span>
         <span *ngIf="actionStatus === 'Running...'">
-          <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+          <i
+            class="fa fa-circle-o-notch fa-spin spin-icon"
+            aria-hidden="true"
+          ></i>
         </span>
-        <span *ngIf="actionStatus === confirmationMessage && showCompletionConfirmation()">
+        <span
+          *ngIf="
+            actionStatus === confirmationMessage && showCompletionConfirmation()
+          "
+        >
           <i class="fa fa-check-circle" aria-hidden="true"></i>
         </span>
       </span>
@@ -30,15 +53,17 @@
   <ng-container *ngIf="!showActionButton && solution.IsInternal">
     <ng-container *ngTemplateOutlet="internal_solution"></ng-container>
   </ng-container>
-
 </div>
 
 <ng-template #internal_solution>
   <ng-template #header>
     Instructions for the Customer
-    <button class="btn btn-default copy-text" (click)="copyInstructions(renderedInternalMarkdown)">
+    <button
+      class="btn btn-default copy-text"
+      (click)="copyInstructions(renderedInternalMarkdown)"
+    >
       <span class="fa fa-copy"></span>
-      {{copyText}}
+      {{ copyText }}
     </button>
   </ng-template>
 
@@ -51,11 +76,23 @@
 
 <ng-template #dont_confirm_buttons>
   <div class="action-buttons">
-    <span class="mr-3">Name: <span class="app-name">{{appName}}</span></span>
-    <button (click)="performAction()" type="button" class="custom-button">{{solution.Title}}</button>
+    <span class="mr-3"
+      >Name: <span class="app-name">{{ appName }}</span></span
+    >
+    <button (click)="performAction()" type="button" class="custom-button">
+      {{ solution.Title }}
+    </button>
   </div>
 </ng-template>
 
 <ng-template #newSolution>
-  <div (click)="performAction()" type="button" class="custom-solution-button" tabindex="0" (keyup.enter)="performAction()">{{solution.Title}}</div>
+  <div
+    (click)="performAction()"
+    type="button"
+    class="custom-solution-button"
+    tabindex="0"
+    (keyup.enter)="performAction()"
+  >
+    {{ solution.Title }}
+  </div>
 </ng-template>

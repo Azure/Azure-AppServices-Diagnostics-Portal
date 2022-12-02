@@ -2,48 +2,48 @@
 @import 'buttons';
 
 %tile {
-    @extend %button;
-    width: 140px;
-    padding: 5px;
-    font-size: 14px;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    min-height: 64px;
-    box-shadow: $card-box-shadow;
-    margin-left: 0px;
-    margin-right: 15px;
-    justify-content: center;
-    text-align: center;
-    margin-bottom: 10px;
+  @extend %button;
+  width: 140px;
+  padding: 5px;
+  font-size: 14px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  min-height: 64px;
+  box-shadow: $card-box-shadow;
+  margin-left: 0px;
+  margin-right: 15px;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .tile {
-    @extend %tile;
-    border: 1px solid transparent;
+  @extend %tile;
+  border: 1px solid transparent;
 
-    &:hover {
-        background-color: lighten($primary-color, 10%);
-        box-shadow: $card-box-shadow-hover;
-        color: $body-bg-color;
-        text-decoration: none;
-    }
+  &:hover {
+    background-color: lighten($primary-color, 10%);
+    box-shadow: $card-box-shadow-hover;
+    color: $body-bg-color;
+    text-decoration: none;
+  }
 
-    &:active {
-        background-color: darken($primary-color, 10%)
-    }
+  &:active {
+    background-color: darken($primary-color, 10%);
+  }
 
-    &:disabled {
-        background: $disabled-color;
-        cursor: arrow;
-    }
+  &:disabled {
+    background: $disabled-color;
+    cursor: arrow;
+  }
 
-    &:focus {
-        background-color: lighten($primary-color, 10%);
-    }
+  &:focus {
+    background-color: lighten($primary-color, 10%);
+  }
 }
 
 .tile-container {
-    display: flex;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
 }

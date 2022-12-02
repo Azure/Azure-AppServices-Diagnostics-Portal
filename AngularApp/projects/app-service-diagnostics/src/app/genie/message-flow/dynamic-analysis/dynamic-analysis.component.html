@@ -1,27 +1,52 @@
-<div class="detector-summary-container" [class.with-full-report]="false" >
-   <generic-analysis [analysisId]="'searchResultsAnalysis'" [resourceId]="resourceId" [targetedScore]="targetedScore" [searchTerm]="keyword" [searchMode]="searchMode" (onComplete)="updateStatus($event)"></generic-analysis>
+<div class="detector-summary-container" [class.with-full-report]="false">
+  <generic-analysis
+    [analysisId]="'searchResultsAnalysis'"
+    [resourceId]="resourceId"
+    [targetedScore]="targetedScore"
+    [searchTerm]="keyword"
+    [searchMode]="searchMode"
+    (onComplete)="updateStatus($event)"
+  ></generic-analysis>
   <div *ngIf="noSearchResult === true">
-      <div tabindex="0" class="message-sent-by-system-genie" style="margin-bottom:10px">
-      <span>Sorry we are not able to find any result based on your questions. Can you rephrase your last message?</span>
-      </div>
+    <div
+      tabindex="0"
+      class="message-sent-by-system-genie"
+      style="margin-bottom: 10px"
+    >
+      <span
+        >Sorry we are not able to find any result based on your questions. Can
+        you rephrase your last message?</span
+      >
     </div>
+  </div>
   <div *ngIf="showFeedback">
-      <div tabindex="0" class="message-sent-by-system-genie" style="margin-top:10px; margin-bottom:10px">{{feedbackText}}
-      </div>
-      <div style="height:0px;overflow-y: hidden">
-        </div>
+    <div
+      tabindex="0"
+      class="message-sent-by-system-genie"
+      style="margin-top: 10px; margin-bottom: 10px"
+    >
+      {{ feedbackText }}
+    </div>
+    <div style="height: 0px; overflow-y: hidden"></div>
   </div>
 
   <div id="search-documents" *ngIf="content">
-      <div class="article-container">
-        <div class="article-heading">Recommended Documents</div>
-        <div class="article" *ngFor="let article of content" (click)="openArticle(article)" tabindex="0" (keyup.enter)="openArticle(article)" >
-          <a>{{article.title}}
-            <i class="fa fa-external-link"></i>
-          </a>
-          <div class="article-link">{{getLink(article.link)}}</div>
-          {{article.description}}
-        </div>
+    <div class="article-container">
+      <div class="article-heading">Recommended Documents</div>
+      <div
+        class="article"
+        *ngFor="let article of content"
+        (click)="openArticle(article)"
+        tabindex="0"
+        (keyup.enter)="openArticle(article)"
+      >
+        <a
+          >{{ article.title }}
+          <i class="fa fa-external-link"></i>
+        </a>
+        <div class="article-link">{{ getLink(article.link) }}</div>
+        {{ article.description }}
       </div>
+    </div>
   </div>
-
+</div>

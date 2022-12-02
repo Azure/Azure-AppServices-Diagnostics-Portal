@@ -1,14 +1,15 @@
 import { MessageGroup } from '../models/message-group';
-import { Observable ,  BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 export class IMessageFlowProvider {
-    protected additionalMessageFlows: BehaviorSubject<MessageGroup[]> = new BehaviorSubject<MessageGroup[]>(null);
+  protected additionalMessageFlows: BehaviorSubject<MessageGroup[]> =
+    new BehaviorSubject<MessageGroup[]>(null);
 
-    GetMessageFlowList(): MessageGroup[] {
-        return [];
-    }
+  GetMessageFlowList(): MessageGroup[] {
+    return [];
+  }
 
-    SubscribeToAdditionalMessageFlowLists(): Observable<MessageGroup[]> {
-        return this.additionalMessageFlows;
-    }
+  SubscribeToAdditionalMessageFlowLists(): Observable<MessageGroup[]> {
+    return this.additionalMessageFlows;
+  }
 }

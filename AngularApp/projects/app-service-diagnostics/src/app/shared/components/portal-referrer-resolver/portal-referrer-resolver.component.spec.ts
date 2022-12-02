@@ -8,9 +8,8 @@ describe('PortalReferrerResolverComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PortalReferrerResolverComponent ]
-    })
-    .compileComponents();
+      declarations: [PortalReferrerResolverComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

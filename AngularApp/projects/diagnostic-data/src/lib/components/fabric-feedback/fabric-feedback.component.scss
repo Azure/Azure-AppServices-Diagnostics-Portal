@@ -1,129 +1,128 @@
-@import"../../scss/styles.scss";
+@import '../../scss/styles.scss';
 
 .selected-icon {
-    color: #0078D4;
-    position: relative;
-    border-color: #0058ad;
-    background-color: #d7ecf9;
-    border: 1px solid transparent;
-    border-radius: 20%;
+  color: #0078d4;
+  position: relative;
+  border-color: #0058ad;
+  background-color: #d7ecf9;
+  border: 1px solid transparent;
+  border-radius: 20%;
 }
 
 .hover-item:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .hover-item .tooltiptext {
-    display:none;
-    background: white;
+  display: none;
+  background: white;
 }
 
 .hover-item:hover .tooltiptext {
-    display: block;
-    opacity: 1;
-    background: white!important;
-    white-space: nowrap;
-    z-index: 999;
-    margin-top: 6px;
-    position: absolute;
-    border: 1px solid black;
-    padding: 3px;
-    font-size: 12px;
-    color: var(--bodyText);
+  display: block;
+  opacity: 1;
+  background: white !important;
+  white-space: nowrap;
+  z-index: 999;
+  margin-top: 6px;
+  position: absolute;
+  border: 1px solid black;
+  padding: 3px;
+  font-size: 12px;
+  color: var(--bodyText);
 }
 
 .panel-close :hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .panel-close {
-    position: absolute;
-    top:10px;right:10px;
-    height: 35px;
-    width: 35px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  height: 35px;
+  width: 35px;
 }
 
 .panel-text {
-    font-size: 12px;
-    line-height: 16px;
-    margin-left: 20px;
-    font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  margin-left: 20px;
+  font-weight: 400;
 }
 
 .feedback-panel-icons {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    display: flex;
-    font-size: 25px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: flex;
+  font-size: 25px;
 }
 
-
 .feedback-panel-divider {
-    border-top: 1px solid #C8C6C4;
+  border-top: 1px solid #c8c6c4;
 }
 
 .feedback-panel-link {
-    margin-top: 6px;
-    margin-bottom: 12px;
-    color: #0078D4;
+  margin-top: 6px;
+  margin-bottom: 12px;
+  color: #0078d4;
 }
 
 .submitted-panel-text {
-    font-weight: 600;
-    display: flex;
-    justify-content: space-between;
-    margin: 5px 0px;
-    font-size: 14px;
-    margin-bottom: 16px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  margin: 5px 0px;
+  font-size: 14px;
+  margin-bottom: 16px;
 }
 
 .submitted-panel-icon {
-    color: #57A300;
-    margin-right: 10px;
+  color: #57a300;
+  margin-right: 10px;
 }
 
 .feedback-panel-container {
-    height: 80vh;
-    display: flex;
-    flex-direction: column;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .feedback-panel-content {
-    flex: 1 1 auto;
-    color: var(--bodyText)
+  flex: 1 1 auto;
+  color: var(--bodyText);
 }
 
 .feedback-panel-footer {
-    flex: 0 0 auto;
+  flex: 0 0 auto;
 }
 
 .feedback-submit-button {
-    border:solid 1px;
-    border-color: var(--bodyText);
+  border: solid 1px;
+  border-color: var(--bodyText);
 }
 //Will impact all panels paddings
 //Todo, move it to a shared place instead of sitting in a component scss file
 ::ng-deep .ms-Panel-content {
-    padding-left: 0px;
+  padding-left: 0px;
 }
 
 ::ng-deep .ms-Panel-footerInner {
-    padding-left: $panel-padding-left;
-    padding-right: $panel-padding-right;
+  padding-left: $panel-padding-left;
+  padding-right: $panel-padding-right;
 }
 
 ::ng-deep {
-    .ms-Panel-header {
-        padding-left: $panel-padding-left;
-        padding-right: $panel-padding-right;
-    }
+  .ms-Panel-header {
+    padding-left: $panel-padding-left;
+    padding-right: $panel-padding-right;
+  }
 
-    .ms-Panel-headerText {
-        font-weight: 600;
-    }
+  .ms-Panel-headerText {
+    font-weight: 600;
+  }
 
-    .submitted-panel-height {
-        height:100px;
-    }
-    
+  .submitted-panel-height {
+    height: 100px;
+  }
 }

@@ -1,9 +1,9 @@
-@import "styles/common/variables";
-@import "styles/controls/buttons";
-@import "~@ng-select/ng-select/themes/default.theme.css";
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
-@import "styles/vendor/bootstrap-4-utilities.min.css";
-@import "styles/icons.scss";
+@import 'styles/common/variables';
+@import 'styles/controls/buttons';
+@import '~@ng-select/ng-select/themes/default.theme.css';
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import 'styles/vendor/bootstrap-4-utilities.min.css';
+@import 'styles/icons.scss';
 
 /* You can add global styles to this file, and also import other style files */
 body {
@@ -26,9 +26,9 @@ a:hover {
   color: var(--summaryText);
 }
 
-.skin-purple-light .sidebar-menu>li:hover>a,
-.skin-purple-light .sidebar-menu>li.active>a {
-  background: var(--bodyBackground)
+.skin-purple-light .sidebar-menu > li:hover > a,
+.skin-purple-light .sidebar-menu > li.active > a {
+  background: var(--bodyBackground);
 }
 
 .critical-color {
@@ -68,7 +68,7 @@ a:hover {
   max-width: 100% !important;
   max-height: 90%;
   overflow-y: scroll !important;
-  background-color: var(--bodyBackground)!important;
+  background-color: var(--bodyBackground) !important;
 }
 
 .panel.with-nav-tabs .panel-heading.app-nav-bar {
@@ -83,7 +83,7 @@ a:hover {
   margin-bottom: -1px;
 }
 
-.nav>li>a {
+.nav > li > a {
   padding: 5px 15px;
 }
 
@@ -102,52 +102,77 @@ a:hover {
 
 /********************************************************************/
 /*** PANEL DEFAULT ***/
-.with-nav-tabs.panel-default .nav-tabs>li>a {
+.with-nav-tabs.panel-default .nav-tabs > li > a {
   background-color: var(--bodyBackground);
 }
 
-.with-nav-tabs.panel-default .nav-tabs>li>a,
-.with-nav-tabs.panel-default .nav-tabs>li>a:hover,
-.with-nav-tabs.panel-default .nav-tabs>li>a:focus {
+.with-nav-tabs.panel-default .nav-tabs > li > a,
+.with-nav-tabs.panel-default .nav-tabs > li > a:hover,
+.with-nav-tabs.panel-default .nav-tabs > li > a:focus {
   color: rgb(49, 49, 49);
 }
 
-.with-nav-tabs.panel-default .nav-tabs>.open>a,
-.with-nav-tabs.panel-default .nav-tabs>.open>a:hover,
-.with-nav-tabs.panel-default .nav-tabs>.open>a:focus,
-.with-nav-tabs.panel-default .nav-tabs>li>a:hover,
-.with-nav-tabs.panel-default .nav-tabs>li>a:focus {
+.with-nav-tabs.panel-default .nav-tabs > .open > a,
+.with-nav-tabs.panel-default .nav-tabs > .open > a:hover,
+.with-nav-tabs.panel-default .nav-tabs > .open > a:focus,
+.with-nav-tabs.panel-default .nav-tabs > li > a:hover,
+.with-nav-tabs.panel-default .nav-tabs > li > a:focus {
   color: rgb(37, 37, 37);
   background-color: var(--bodyBackground);
   border-color: transparent;
 }
 
-.with-nav-tabs.panel-default .nav-tabs>li.active>a,
-.with-nav-tabs.panel-default .nav-tabs>li.active>a:hover,
-.with-nav-tabs.panel-default .nav-tabs>li.active>a:focus {
+.with-nav-tabs.panel-default .nav-tabs > li.active > a,
+.with-nav-tabs.panel-default .nav-tabs > li.active > a:hover,
+.with-nav-tabs.panel-default .nav-tabs > li.active > a:focus {
   color: rgb(26, 26, 26);
   background-color: var(--bodyBackground);
   border-color: #ddd;
   border-bottom-color: transparent;
 }
 
-.with-nav-tabs.panel-default .nav-tabs>li.dropdown .dropdown-menu {
+.with-nav-tabs.panel-default .nav-tabs > li.dropdown .dropdown-menu {
   background-color: var(--bodyBackground);
   border-color: #ddd;
 }
 
-.with-nav-tabs.panel-default .nav-tabs>li.dropdown .dropdown-menu>li>a {
+.with-nav-tabs.panel-default .nav-tabs > li.dropdown .dropdown-menu > li > a {
   color: #777;
 }
 
-.with-nav-tabs.panel-default .nav-tabs>li.dropdown .dropdown-menu>li>a:hover,
-.with-nav-tabs.panel-default .nav-tabs>li.dropdown .dropdown-menu>li>a:focus {
+.with-nav-tabs.panel-default
+  .nav-tabs
+  > li.dropdown
+  .dropdown-menu
+  > li
+  > a:hover,
+.with-nav-tabs.panel-default
+  .nav-tabs
+  > li.dropdown
+  .dropdown-menu
+  > li
+  > a:focus {
   background-color: var(--bodyBackground);
 }
 
-.with-nav-tabs.panel-default .nav-tabs>li.dropdown .dropdown-menu>.active>a,
-.with-nav-tabs.panel-default .nav-tabs>li.dropdown .dropdown-menu>.active>a:hover,
-.with-nav-tabs.panel-default .nav-tabs>li.dropdown .dropdown-menu>.active>a:focus {
+.with-nav-tabs.panel-default
+  .nav-tabs
+  > li.dropdown
+  .dropdown-menu
+  > .active
+  > a,
+.with-nav-tabs.panel-default
+  .nav-tabs
+  > li.dropdown
+  .dropdown-menu
+  > .active
+  > a:hover,
+.with-nav-tabs.panel-default
+  .nav-tabs
+  > li.dropdown
+  .dropdown-menu
+  > .active
+  > a:focus {
   color: var(--bodyBackground);
   background-color: #555;
 }
@@ -157,19 +182,19 @@ a:hover {
 }
 
 .skin-blue .wrapper {
-  background-color: var(--bodyBackground)
+  background-color: var(--bodyBackground);
 }
 
 .publish-dialog {
   min-width: 70vw !important;
   min-height: 70vh !important;
-  background-color: var(--bodyBackground)!important;
+  background-color: var(--bodyBackground) !important;
 }
 
 .icm-template-permissions-dialog {
   min-width: 50vw !important;
   min-height: 20vh !important;
-  background-color: var(--bodyBackground)!important;
+  background-color: var(--bodyBackground) !important;
 }
 
 /* highchart container configuration */
@@ -188,9 +213,10 @@ highcharts-chart {
 }
 
 .highcharts-tooltip-container span {
-    font-size: "12px";
-    font-weight: "normal";
-    font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif!important;
+  font-size: '12px';
+  font-weight: 'normal';
+  font-family: 'Lucida Grande', 'Lucida Sans Unicode', Arial, Helvetica,
+    sans-serif !important;
 }
 
 fab-command-bar .ms-SearchBox {
@@ -200,7 +226,6 @@ fab-command-bar .ms-SearchBox {
 .ms-CommandBar {
   padding: 0px !important;
 }
-
 
 .ms-Button--commandBar:hover {
   background-color: rgba(85, 179, 255, 0.1) !important;
@@ -238,7 +263,7 @@ fab-command-bar .ms-SearchBox {
 }
 
 //Fix for markdown color
-code[class*=language-] {
+code[class*='language-'] {
   color: var(--bodyText) !important;
   background-color: var(--bodyBackground) !important;
 }
@@ -248,11 +273,11 @@ pre {
   color: var(--bodyText) !important;
 }
 
-code[class*=language-]>span.token.operator {
+code[class*='language-'] > span.token.operator {
   color: var(--bodyText) !important;
 }
 
-code[class*=language-]>span.token.punctuation {
+code[class*='language-'] > span.token.punctuation {
   color: var(--bodyText) !important;
 }
 
@@ -267,39 +292,39 @@ button.ms-Link:focus {
 // Please note that markdown component/directive no longer comes with default styling. This change affects table and blockquote HTML elements only but still, we suggest you review your pages.
 // https://github.com/jfcere/ngx-markdown/pull/108
 
-
-markdown, .markdown {
+markdown,
+.markdown {
   table {
-      border-spacing: 0;
-      border-collapse: collapse;
-      margin-bottom: 16px;
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin-bottom: 16px;
 
-      th,
-      td {
-          padding: 6px 13px;
-          border: 1px solid #ddd;
+    th,
+    td {
+      padding: 6px 13px;
+      border: 1px solid #ddd;
 
-          &[align="left"] {
-              text-align: left;
-          }
-
-          &[align="center"] {
-              text-align: center;
-          }
-
-          &[align="right"] {
-              text-align: right;
-          }
+      &[align='left'] {
+        text-align: left;
       }
 
-      tr:nth-child(2n) {
-          background-color: rgba(0, 0, 0, 0.03);
+      &[align='center'] {
+        text-align: center;
       }
+
+      &[align='right'] {
+        text-align: right;
+      }
+    }
+
+    tr:nth-child(2n) {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
   }
 
   blockquote {
-      padding: 0 1em;
-      color: rgba(0, 0, 0, 0.535);
-      border-left: 0.25em solid rgba(0, 0, 0, 0.11);
+    padding: 0 1em;
+    color: rgba(0, 0, 0, 0.535);
+    border-left: 0.25em solid rgba(0, 0, 0, 0.11);
   }
 }

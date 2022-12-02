@@ -1,12 +1,21 @@
-fieldset, label { margin: 0; padding: 0; }
-body{ margin: 20px; }
-h1 { font-size: 1.2em; margin: 10px; }
+fieldset,
+label {
+  margin: 0;
+  padding: 0;
+}
+body {
+  margin: 20px;
+}
+h1 {
+  font-size: 1.2em;
+  margin: 10px;
+}
 
 /****** Style Star Rating Widget *****/
 .review-container {
   max-width: 630px;
-    border: 1px solid rgb(223, 223, 223);
-    border-top: none;
+  border: 1px solid rgb(223, 223, 223);
+  border-top: none;
 }
 
 textarea {
@@ -21,7 +30,7 @@ textarea {
 }
 
 textarea:focus {
-  box-shadow: 0 0 10px #719ECE;
+  box-shadow: 0 0 10px #719ece;
 }
 
 .rating-container {
@@ -31,13 +40,13 @@ textarea:focus {
 .review-header {
   background-color: #3c8dbc;
   border: 1px solid #3c8dbc;
-  color:white;
+  color: white;
   min-height: 42px;
   max-width: 630px;
 }
 
 .review-container > h1 {
-  color:  #3c8dbc;
+  color: #3c8dbc;
 }
 
 .feedback-response {
@@ -49,18 +58,20 @@ textarea:focus {
   float: left;
 }
 
-.rating > input { display: none; }
+.rating > input {
+  display: none;
+}
 .rating > label:before {
   margin: 5px;
   font-size: 1.5em;
   font-family: FontAwesome;
   display: inline-block;
-  content: "\f005";
+  content: '\f005';
 }
 
 .rating > .half:before {
   font-size: 1.5em;
-  content: "\f089";
+  content: '\f089';
   position: absolute;
 }
 
@@ -70,13 +81,17 @@ textarea:focus {
 }
 
 /***** CSS Magic to Highlight Stars on Hover *****/
-.rating:not(:hover) > input:checked ~ label  { color: #FFD700;  } /* show gold star when clicked */
-.rating:not(:checked) > label:hover ~ label { color: #FFED85;  } /* hover previous stars in list */
-.rating:not(:checked) > label:hover { color: #FFED85;  } /* hover current star */
+.rating:not(:hover) > input:checked ~ label {
+  color: #ffd700;
+} /* show gold star when clicked */
+.rating:not(:checked) > label:hover ~ label {
+  color: #ffed85;
+} /* hover previous stars in list */
+.rating:not(:checked) > label:hover {
+  color: #ffed85;
+} /* hover current star */
 
 /* .rating > input:checked + label:hover,   hover current star when changing rating
  .rating > input:checked ~ label:hover,
 .rating > label:hover ~ input:checked ~ label,  lighten current selection
 .rating > input:checked ~ label:hover ~ label { color: #FFED85;  }  */
-
-

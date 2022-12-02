@@ -1,7 +1,15 @@
-<ng-container *ngIf="incidentService.incidents && incidentService.incidents.length > 0 && !closed">
-    <div class="incident-notification" [routerLink]="['availability/apprestartanalysis']" (click)="openIncidentView()">
-        <i class="fa fa-warning"></i> 
-        {{incidentService.notificationMessage}}
-        <i class="fa fa-close pull-right" (click)="close()"></i>
-    </div>
+<ng-container
+  *ngIf="
+    incidentService.incidents && incidentService.incidents.length > 0 && !closed
+  "
+>
+  <div
+    class="incident-notification"
+    [routerLink]="['availability/apprestartanalysis']"
+    (click)="openIncidentView()"
+  >
+    <i class="fa fa-warning"></i>
+    {{ incidentService.notificationMessage }}
+    <i class="fa fa-close pull-right" (click)="close()"></i>
+  </div>
 </ng-container>

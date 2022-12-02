@@ -8,9 +8,8 @@ describe('DaasComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DaasComponent ]
-    })
-    .compileComponents();
+      declarations: [DaasComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -8,9 +8,8 @@ describe('TabDetectorChangelistComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TabChangelistComponent ]
-    })
-    .compileComponents();
+      declarations: [TabChangelistComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -39,77 +39,77 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DiagnosticDataModule } from 'diagnostic-data';
 import { CollapsibleMenuItemComponent } from '../home/components/collapsible-menu-item/collapsible-menu-item.component';
-import { SearchPipe, SearchMatchPipe } from '../home/components/pipes/search.pipe';
+import {
+  SearchPipe,
+  SearchMatchPipe
+} from '../home/components/pipes/search.pipe';
 import { DiagosticSessionsPanelComponent } from './components/diagostic-sessions-panel/diagostic-sessions-panel.component';
 import { SharedModule } from '../shared/shared.module';
 import { CreateStorageAccountPanelComponent } from './components/create-storage-account-panel/create-storage-account-panel.component';
 import { CallstackPanelComponent } from './components/callstack-panel/callstack-panel.component';
 
-
 @NgModule({
-    declarations: [
-        FabricSearchResultsComponent,
-        DetectorCommandBarComponent,
-        CategorySummaryComponent,
-        CategoryOverviewComponent,
-        CategoryNavComponent,
-        SectionDividerComponent,
-        CollapsibleMenuItemComponent,
-        SearchPipe,
-        SearchMatchPipe,
-        DiagosticSessionsPanelComponent,
-        CreateStorageAccountPanelComponent,
-        CallstackPanelComponent
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        RouterModule,
-        FabIconModule,
-        FabChoiceGroupModule,
-        FabFabricModule,
-        FabIconModule,
-        FabButtonModule,
-        FabDialogModule,
-        FabImageModule,
-        FabDropdownModule,
-        FabPanelModule,
-        FabCommandBarModule,
-        FabBreadcrumbModule,
-        FabCheckboxModule,
-        FabChoiceGroupModule,
-        FabGroupedListModule,
-        FabDatePickerModule,
-        FabSpinnerModule,
-        FabToggleModule,
-        FabPivotModule,
-        FabLinkModule,
-        FabMessageBarModule,
-        FabHoverCardModule,
-        FabModalModule,
-        FabTooltipModule,
-        FabSliderModule,
-        FabSearchBoxModule,
-        FabCalendarModule,
-        FabDetailsListModule,
-        FabGroupModule,
-        FabSpinButtonModule,
-        FabTextFieldModule,
-        FabContextualMenuModule,
-        DiagnosticDataModule,
-        SharedModule
-    ],
-    exports: [
-        FabricSearchResultsComponent,
-        DetectorCommandBarComponent,
-        CategorySummaryComponent,
-        CategoryOverviewComponent,
-        CategoryNavComponent,
-        SectionDividerComponent,
-        CollapsibleMenuItemComponent
-    ],
-    providers: [
-    ]
+  declarations: [
+    FabricSearchResultsComponent,
+    DetectorCommandBarComponent,
+    CategorySummaryComponent,
+    CategoryOverviewComponent,
+    CategoryNavComponent,
+    SectionDividerComponent,
+    CollapsibleMenuItemComponent,
+    SearchPipe,
+    SearchMatchPipe,
+    DiagosticSessionsPanelComponent,
+    CreateStorageAccountPanelComponent,
+    CallstackPanelComponent
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    FabIconModule,
+    FabChoiceGroupModule,
+    FabFabricModule,
+    FabIconModule,
+    FabButtonModule,
+    FabDialogModule,
+    FabImageModule,
+    FabDropdownModule,
+    FabPanelModule,
+    FabCommandBarModule,
+    FabBreadcrumbModule,
+    FabCheckboxModule,
+    FabChoiceGroupModule,
+    FabGroupedListModule,
+    FabDatePickerModule,
+    FabSpinnerModule,
+    FabToggleModule,
+    FabPivotModule,
+    FabLinkModule,
+    FabMessageBarModule,
+    FabHoverCardModule,
+    FabModalModule,
+    FabTooltipModule,
+    FabSliderModule,
+    FabSearchBoxModule,
+    FabCalendarModule,
+    FabDetailsListModule,
+    FabGroupModule,
+    FabSpinButtonModule,
+    FabTextFieldModule,
+    FabContextualMenuModule,
+    DiagnosticDataModule,
+    SharedModule
+  ],
+  exports: [
+    FabricSearchResultsComponent,
+    DetectorCommandBarComponent,
+    CategorySummaryComponent,
+    CategoryOverviewComponent,
+    CategoryNavComponent,
+    SectionDividerComponent,
+    CollapsibleMenuItemComponent
+  ],
+  providers: []
 })
-export class FabricModule {
-}
+export class FabricModule {}

@@ -8,9 +8,8 @@ describe('KeystoneInsightComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ KeystoneInsightComponent ]
-    })
-    .compileComponents();
+      declarations: [KeystoneInsightComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -8,7 +8,10 @@ describe('ContentService', () => {
     });
   });
 
-  it('should be created', inject([ClientScriptService], (service: ClientScriptService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [ClientScriptService],
+    (service: ClientScriptService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

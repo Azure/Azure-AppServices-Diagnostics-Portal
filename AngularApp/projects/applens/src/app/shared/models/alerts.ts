@@ -1,25 +1,24 @@
-import { HealthStatus } from "diagnostic-data";
+import { HealthStatus } from 'diagnostic-data';
 
 export interface AlertInfo {
-    header: string;
-    details: string;
-    seekConfirmation: boolean;
-    confirmationOptions: ConfirmationOption[]; 
-    alertStatus: HealthStatus;
+  header: string;
+  details: string;
+  seekConfirmation: boolean;
+  confirmationOptions: ConfirmationOption[];
+  alertStatus: HealthStatus;
 }
 
 export interface ConfirmationOption {
-    label: string;
-    value: string;
+  label: string;
+  value: string;
 }
 
-export enum UserAccessStatus
-{
+export enum UserAccessStatus {
   Unauthorized,
-  Forbidden,  
-  NotFound, 
-  BadRequest,  
-  ResourceNotRelatedToCase,  
+  Forbidden,
+  NotFound,
+  BadRequest,
+  ResourceNotRelatedToCase,
   RequestFailure,
   SGMembershipNeeded,
   CaseNumberNeeded,

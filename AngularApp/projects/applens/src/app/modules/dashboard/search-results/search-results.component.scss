@@ -1,10 +1,10 @@
 .outer-container {
-    padding: 20px;
-    position: relative;
+  padding: 20px;
+  position: relative;
 }
 
 .alert-container {
-    margin-left: -20px;
+  margin-left: -20px;
 }
 
 .back-button {
@@ -12,7 +12,7 @@
   background: transparent;
   background-repeat: no-repeat;
   border: none;
-  cursor:pointer;
+  cursor: pointer;
   overflow: hidden;
   outline: none;
   width: 100px;
@@ -20,14 +20,15 @@
   padding: 12px;
 
   &:hover {
-      color: #0d1dea;
+    color: #0d1dea;
   }
 
-  &:active:focus, &:active:focus {
+  &:active:focus,
+  &:active:focus {
     outline: none;
   }
 }
 
-.btn-container{
+.btn-container {
   height: 20px;
 }

@@ -11,69 +11,89 @@ import { AuthService } from '../../../startup/services/auth.service';
   styleUrls: ['./tabs.component.scss']
 })
 export class TabsComponent implements OnInit {
-
   public navigationItems: INavigationItem[];
-  public isLegacy:boolean = true;
-    constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _versionTestService:VersionTestService,private _authService: AuthService) {
+  public isLegacy: boolean = true;
+  constructor(
+    private _router: Router,
+    private _activatedRoute: ActivatedRoute,
+    private _versionTestService: VersionTestService,
+    private _authService: AuthService
+  ) {
     this.navigationItems = [];
-    this._versionTestService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
+    this._versionTestService.isLegacySub.subscribe(
+      (isLegacy) => (this.isLegacy = isLegacy)
+    );
   }
 
   ngOnInit() {
-    this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
-      const navigationTitleStr: string = 'navigationTitle';
-      let currentRoute = this._activatedRoute.root;
-      while (currentRoute.children[0] !== undefined) {
-        currentRoute = currentRoute.children[0];
-      }
+    this._router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        const navigationTitleStr: string = 'navigationTitle';
+        let currentRoute = this._activatedRoute.root;
+        while (currentRoute.children[0] !== undefined) {
+          currentRoute = currentRoute.children[0];
+        }
 
-      if (currentRoute.snapshot.data.hasOwnProperty(navigationTitleStr)) {
+        if (currentRoute.snapshot.data.hasOwnProperty(navigationTitleStr)) {
+          let navigationTitle =
+            currentRoute.snapshot.data[navigationTitleStr].toString();
 
-        let navigationTitle = currentRoute.snapshot.data[navigationTitleStr].toString();
-
-        if (navigationTitle.indexOf(':') >= 0) {
-          const parameterName = navigationTitle.replace(':', '');
-          if (currentRoute.snapshot.params.hasOwnProperty(parameterName)) {
-            navigationTitle = currentRoute.snapshot.params[parameterName];
+          if (navigationTitle.indexOf(':') >= 0) {
+            const parameterName = navigationTitle.replace(':', '');
+            if (currentRoute.snapshot.params.hasOwnProperty(parameterName)) {
+              navigationTitle = currentRoute.snapshot.params[parameterName];
+            }
           }
+
+          const url = this._router.url.split('?')[0];
+          let existingTab = this.navigationItems.find(
+            (item) => item.url.split('?')[0] === url
+          );
+          let analysisTab = this.getAnalysisTabIfAnalysisDetector(url);
+          if (analysisTab) {
+            existingTab = analysisTab;
+          }
+          var allParams = {};
+          Object.keys(currentRoute.snapshot.params).forEach(
+            (key) => (allParams[key] = currentRoute.snapshot.params[key])
+          );
+          Object.keys(currentRoute.snapshot.queryParams).forEach(
+            (key) => (allParams[key] = currentRoute.snapshot.queryParams[key])
+          );
+
+          if (!existingTab) {
+            existingTab = {
+              title: navigationTitle,
+              url: url,
+              params: allParams,
+              isActive: false
+            };
+
+            this.navigationItems.push(existingTab);
+          }
+
+          this.selectTab(existingTab);
         }
-
-        const url = this._router.url.split('?')[0];
-        let existingTab = this.navigationItems.find(item => item.url.split('?')[0] === url);
-        let analysisTab = this.getAnalysisTabIfAnalysisDetector(url);
-        if (analysisTab) {
-          existingTab = analysisTab;
-        }
-        var allParams = {}
-        Object.keys(currentRoute.snapshot.params).forEach(key => allParams[key] = currentRoute.snapshot.params[key]);
-        Object.keys(currentRoute.snapshot.queryParams).forEach(key => allParams[key] = currentRoute.snapshot.queryParams[key]);
-
-        if (!existingTab) {
-          existingTab = {
-            title: navigationTitle,
-            url: url,
-            params: allParams,
-            isActive: false
-          };
-
-          this.navigationItems.push(existingTab);
-        }
-
-        this.selectTab(existingTab);
-      }
-    });
+      });
   }
 
   getAnalysisTabIfAnalysisDetector(url: string) {
-    if (url.indexOf("/analysis/") >=0 && url.indexOf("/detectors/") >= 0 && url.indexOf("/legacy/") === -1) {
-      let detectorWithAnalysisPath = url.split("/analysis/")[1];
-      if (detectorWithAnalysisPath.indexOf("/detectors/") > 0) {
-        if (detectorWithAnalysisPath.indexOf("/") > 0) {
-          let urlArray = url.split("/");
+    if (
+      url.indexOf('/analysis/') >= 0 &&
+      url.indexOf('/detectors/') >= 0 &&
+      url.indexOf('/legacy/') === -1
+    ) {
+      let detectorWithAnalysisPath = url.split('/analysis/')[1];
+      if (detectorWithAnalysisPath.indexOf('/detectors/') > 0) {
+        if (detectorWithAnalysisPath.indexOf('/') > 0) {
+          let urlArray = url.split('/');
           if (urlArray.length > 1) {
             urlArray.splice(urlArray.length - 2);
-            let analysisUrl = urlArray.join("/");
-            let existingTab = this.navigationItems.find(item => item.url.split('?')[0] === analysisUrl);
+            let analysisUrl = urlArray.join('/');
+            let existingTab = this.navigationItems.find(
+              (item) => item.url.split('?')[0] === analysisUrl
+            );
             return existingTab;
           }
         }
@@ -82,13 +102,12 @@ export class TabsComponent implements OnInit {
   }
 
   selectTab(tab: INavigationItem) {
-
     if (tab.isActive) {
       // Tab is already active.
       return;
     }
 
-    this.navigationItems.forEach(element => {
+    this.navigationItems.forEach((element) => {
       element.isActive = false;
     });
 
@@ -97,7 +116,6 @@ export class TabsComponent implements OnInit {
   }
 
   closeTab(index: number): void {
-
     // We dont want to close the first tab.
     if (index > 0) {
       const tab = this.navigationItems[index];
@@ -107,17 +125,14 @@ export class TabsComponent implements OnInit {
         this._router.navigateByUrl(this.navigationItems[index - 1].url);
       }
     }
+  }
+
+  navigateTab(index: number): void {
+    if (index >= 0) {
+      const tab = this.navigationItems[index];
+      if (!tab.isActive) {
+        this._router.navigateByUrl(tab.url);
+      }
     }
-
-    navigateTab(index: number): void {
-
-        if (index >= 0) {
-            const tab = this.navigationItems[index];
-            if (!tab.isActive) {
-                this._router.navigateByUrl(tab.url);
-            }
-        }
-    }
-
-
+  }
 }

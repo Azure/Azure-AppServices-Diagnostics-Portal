@@ -8,9 +8,8 @@ describe('CpuMonitoringActivityComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ CpuMonitoringActivityComponent ]
-    })
-    .compileComponents();
+      declarations: [CpuMonitoringActivityComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

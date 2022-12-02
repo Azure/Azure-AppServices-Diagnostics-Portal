@@ -1,10 +1,29 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { DataTableDataType, DiagnosticData, TimeSeriesPerInstanceRendering, DataTableResponseObject, DataTableResponseColumn } from '../../models/detector';
-import { DataRenderBaseComponent, DataRenderer } from '../data-render-base/data-render-base.component';
-import { InstanceDetails, DetailedInstanceTimeSeries, DetailedInstanceHighChartTimeSeries,MetricType,GraphSeries, GraphPoint } from '../../models/time-series';
-import { TimeZones, TimeUtilities } from '../../utilities/time-utilities';
+import { Component, Input, OnInit } from '@angular/core';
+import {
+  DataTableDataType,
+  DataTableResponseColumn,
+  DataTableResponseObject,
+  DiagnosticData,
+  TimeSeriesPerInstanceRendering
+} from '../../models/detector';
+import {
+  DataRenderBaseComponent,
+  DataRenderer
+} from '../data-render-base/data-render-base.component';
+import {
+  DetailedInstanceHighChartTimeSeries,
+  DetailedInstanceTimeSeries,
+  GraphPoint,
+  GraphSeries,
+  InstanceDetails,
+  MetricType
+} from '../../models/time-series';
+import { TimeUtilities, TimeZones } from '../../utilities/time-utilities';
 import * as momentNs from 'moment';
-import { HighchartsData, HighchartGraphSeries } from '../highcharts-graph/highcharts-graph.component';
+import {
+  HighchartGraphSeries,
+  HighchartsData
+} from '../highcharts-graph/highcharts-graph.component';
 
 const moment = momentNs;
 
@@ -13,8 +32,10 @@ const moment = momentNs;
   templateUrl: './time-series-instance-graph.component.html',
   styleUrls: ['./time-series-instance-graph.component.scss']
 })
-export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent implements OnInit, DataRenderer {
-
+export class TimeSeriesInstanceGraphComponent
+  extends DataRenderBaseComponent
+  implements OnInit, DataRenderer
+{
   allSeries: DetailedInstanceTimeSeries[] = [];
   allSeriesNames: string[] = [];
 
@@ -51,17 +72,19 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
 
       TimeUtilities.roundDownByMinute(start, this.timeGrainInMinutes);
       TimeUtilities.roundDownByMinute(end, this.timeGrainInMinutes);
-      end.minute(end.minute() - end.minute() % timeGrain).second(0);
+      end.minute(end.minute() - (end.minute() % timeGrain)).second(0);
       this.startTime = start;
       this.endTime = end;
 
-      this.renderingProperties = <TimeSeriesPerInstanceRendering>data.renderingProperties;
+      this.renderingProperties = <TimeSeriesPerInstanceRendering>(
+        data.renderingProperties
+      );
       this.dataTable = data.table;
       this.graphOptions = data.renderingProperties.graphOptions;
       this._processDiagnosticData(data);
       this.selectSeries();
 
-      if(this.renderingProperties.metricType != undefined) {
+      if (this.renderingProperties.metricType != undefined) {
         this.metricType = this.renderingProperties.metricType;
       }
     }
@@ -78,12 +101,16 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
     //   this.selectedInstance = this.instances[0];
     // }
 
-    this.selectedSeries = this.allSeries.map(series => series.series);
-    this.selectedHighChartSeries = this.allHighChartSeries.map(series => series.series);
+    this.selectedSeries = this.allSeries.map((series) => series.series);
+    this.selectedHighChartSeries = this.allHighChartSeries.map(
+      (series) => series.series
+    );
   }
 
   private _processDiagnosticData(data: DiagnosticData) {
-    const timestampColumnIndex = data.table.columns.findIndex(column => column.dataType === DataTableDataType.DateTime);
+    const timestampColumnIndex = data.table.columns.findIndex(
+      (column) => column.dataType === DataTableDataType.DateTime
+    );
     const instances = this._determineInstances(data.table);
     this.instances = instances;
 
@@ -94,11 +121,16 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
     const allSeries: DetailedInstanceTimeSeries[] = [];
     const allHighChartSeries: DetailedInstanceHighChartTimeSeries[] = [];
     const tablePoints: InstanceTablePoint[] = [];
-    if (!this.renderingProperties.counterColumnName || this.renderingProperties.counterColumnName === '') {
-      const valueColumns: DataTableResponseColumn[] = data.table.columns.filter(column => DataTableDataType.NumberTypes.indexOf(column.dataType) >= 0);
-      this.counters = valueColumns.map(col => col.columnName);
-      valueColumns.forEach(column => instances.forEach(instance =>
-        {
+    if (
+      !this.renderingProperties.counterColumnName ||
+      this.renderingProperties.counterColumnName === ''
+    ) {
+      const valueColumns: DataTableResponseColumn[] = data.table.columns.filter(
+        (column) => DataTableDataType.NumberTypes.indexOf(column.dataType) >= 0
+      );
+      this.counters = valueColumns.map((col) => col.columnName);
+      valueColumns.forEach((column) =>
+        instances.forEach((instance) => {
           allSeries.push(<DetailedInstanceTimeSeries>{
             instance: instance,
             name: column.columnName,
@@ -108,27 +140,28 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
             }
           });
 
-        allHighChartSeries.push(<DetailedInstanceHighChartTimeSeries>{
-          instance: instance,
-          name: column.columnName,
-          series: <HighchartGraphSeries>{
-            name: `${instance.displayName}-${column.columnName}`,
-            data: [],
-            accessibility: {
-              description: `${instance.displayName}-${column.columnName}`,
-              enabled: true,
-              exposeAsGroupOnly: false,
-              keyboardNavigation: {
-                enabled: true
+          allHighChartSeries.push(<DetailedInstanceHighChartTimeSeries>{
+            instance: instance,
+            name: column.columnName,
+            series: <HighchartGraphSeries>{
+              name: `${instance.displayName}-${column.columnName}`,
+              data: [],
+              accessibility: {
+                description: `${instance.displayName}-${column.columnName}`,
+                enabled: true,
+                exposeAsGroupOnly: false,
+                keyboardNavigation: {
+                  enabled: true
+                }
+              }
             }
-          }
-        }});
-        }
-    ));
+          });
+        })
+      );
 
-      data.table.rows.forEach(row => {
+      data.table.rows.forEach((row) => {
         const instance = this._getInstanceFromRow(data.table, row);
-        valueColumns.forEach(column => {
+        valueColumns.forEach((column) => {
           const columnIndex: number = data.table.columns.indexOf(column);
 
           const timestamp = moment.utc(row[timestampColumnIndex]);
@@ -144,48 +177,50 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
         });
       });
     } else {
-      const counterNameColumnIndex = data.table.columns.findIndex(column => column.columnName.toLowerCase() === 'countername');
-      const uniqueCounterNames = data.table.rows.map(row => row[counterNameColumnIndex]).filter((item, index, array) => array.indexOf(item) === index);
+      const counterNameColumnIndex = data.table.columns.findIndex(
+        (column) => column.columnName.toLowerCase() === 'countername'
+      );
+      const uniqueCounterNames = data.table.rows
+        .map((row) => row[counterNameColumnIndex])
+        .filter((item, index, array) => array.indexOf(item) === index);
       // Only allow one value column => default is first number column
-      const counterValueColumnIndex = data.table.columns.findIndex(column => DataTableDataType.NumberTypes.indexOf(column.dataType) >= 0);
+      const counterValueColumnIndex = data.table.columns.findIndex(
+        (column) => DataTableDataType.NumberTypes.indexOf(column.dataType) >= 0
+      );
 
       this.counters = uniqueCounterNames;
 
-      uniqueCounterNames.forEach(counter =>
-        instances.forEach(instance =>
-          {
-            allSeries.push(<DetailedInstanceTimeSeries>{
-              instance: instance,
-              name: counter,
-              series: <GraphSeries>{
-                key: `${instance.displayName}-${counter}`,
-                values: []
-              }
-            });
+      uniqueCounterNames.forEach((counter) =>
+        instances.forEach((instance) => {
+          allSeries.push(<DetailedInstanceTimeSeries>{
+            instance: instance,
+            name: counter,
+            series: <GraphSeries>{
+              key: `${instance.displayName}-${counter}`,
+              values: []
+            }
+          });
 
-            allHighChartSeries.push(<DetailedInstanceHighChartTimeSeries>{
-              instance: instance,
-              name: counter,
-              series: <HighchartGraphSeries>{
-                name: `${instance.displayName}-${counter}`,
-                data: [],
-                accessibility: {
-                  description: `${instance.displayName}-${counter}`,
-                  enabled: true,
-                  exposeAsGroupOnly: false,
-                  keyboardNavigation: {
-                    enabled: true
-                }
+          allHighChartSeries.push(<DetailedInstanceHighChartTimeSeries>{
+            instance: instance,
+            name: counter,
+            series: <HighchartGraphSeries>{
+              name: `${instance.displayName}-${counter}`,
+              data: [],
+              accessibility: {
+                description: `${instance.displayName}-${counter}`,
+                enabled: true,
+                exposeAsGroupOnly: false,
+                keyboardNavigation: {
+                  enabled: true
                 }
               }
-            });
-          }
-
-        )
+            }
+          });
+        })
       );
 
-      data.table.rows.forEach(row => {
-
+      data.table.rows.forEach((row) => {
         const timestamp = moment.utc(row[timestampColumnIndex]);
         const instance = this._getInstanceFromRow(data.table, row);
 
@@ -200,16 +235,22 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
       });
     }
 
-    allSeries.forEach(series => {
-
-      const pointsForThisSeries =
-        tablePoints
-          .filter(point => point.instance.equals(series.instance) && point.counterName === series.name)
-          .sort((b, a) => a.timestamp.diff(b.timestamp));
+    allSeries.forEach((series) => {
+      const pointsForThisSeries = tablePoints
+        .filter(
+          (point) =>
+            point.instance.equals(series.instance) &&
+            point.counterName === series.name
+        )
+        .sort((b, a) => a.timestamp.diff(b.timestamp));
 
       let pointToAdd = pointsForThisSeries.pop();
 
-      for (const d = this.startTime.clone(); d.isBefore(this.endTime); d.add(this.timeGrainInMinutes, 'minutes')) {
+      for (
+        const d = this.startTime.clone();
+        d.isBefore(this.endTime);
+        d.add(this.timeGrainInMinutes, 'minutes')
+      ) {
         let value = this.defaultValue;
 
         if (pointToAdd && d.isSame(moment.utc(pointToAdd.timestamp))) {
@@ -222,16 +263,22 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
       }
     });
 
-    allHighChartSeries.forEach(series => {
-
-      const pointsForThisSeries =
-        tablePoints
-          .filter(point => point.instance.equals(series.instance) && point.counterName === series.name)
-          .sort((b, a) => a.timestamp.diff(b.timestamp));
+    allHighChartSeries.forEach((series) => {
+      const pointsForThisSeries = tablePoints
+        .filter(
+          (point) =>
+            point.instance.equals(series.instance) &&
+            point.counterName === series.name
+        )
+        .sort((b, a) => a.timestamp.diff(b.timestamp));
 
       let pointToAdd = pointsForThisSeries.pop();
 
-      for (const d = this.startTime.clone(); d.isBefore(this.endTime); d.add(this.timeGrainInMinutes, 'minutes')) {
+      for (
+        const d = this.startTime.clone();
+        d.isBefore(this.endTime);
+        d.add(this.timeGrainInMinutes, 'minutes')
+      ) {
         let value = this.defaultValue;
 
         if (pointToAdd && d.isSame(moment.utc(pointToAdd.timestamp))) {
@@ -240,7 +287,7 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
           pointToAdd = pointsForThisSeries.pop();
         }
 
-        series.series.data.push([d.clone().valueOf(), value ]);
+        series.series.data.push([d.clone().valueOf(), value]);
       }
     });
 
@@ -248,42 +295,73 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
     this.allHighChartSeries = allHighChartSeries;
   }
 
-  private _getPointsFromValueColumns(instance: InstanceDetails, row: string[]) {
-
-  }
+  private _getPointsFromValueColumns(
+    instance: InstanceDetails,
+    row: string[]
+  ) {}
 
   private _getInstanceFromRow(table: DataTableResponseObject, row: string[]) {
-    const roleInstanceColumnIndex = table.columns.findIndex(column => column.columnName.toLowerCase() === 'roleinstance');
-    const tenantColumnIndex = table.columns.findIndex(column => column.columnName.toLowerCase() === 'tenant');
-    const machineNameColumnIndex = table.columns.findIndex(column => column.columnName.toLowerCase() === 'machinename');
+    const roleInstanceColumnIndex = table.columns.findIndex(
+      (column) => column.columnName.toLowerCase() === 'roleinstance'
+    );
+    const tenantColumnIndex = table.columns.findIndex(
+      (column) => column.columnName.toLowerCase() === 'tenant'
+    );
+    const machineNameColumnIndex = table.columns.findIndex(
+      (column) => column.columnName.toLowerCase() === 'machinename'
+    );
 
-    return new InstanceDetails(roleInstanceColumnIndex >= 0 ? row[roleInstanceColumnIndex] : '',
+    return new InstanceDetails(
+      roleInstanceColumnIndex >= 0 ? row[roleInstanceColumnIndex] : '',
       tenantColumnIndex >= 0 ? row[tenantColumnIndex] : '',
-      machineNameColumnIndex >= 0 ? row[machineNameColumnIndex] : '');
+      machineNameColumnIndex >= 0 ? row[machineNameColumnIndex] : ''
+    );
   }
 
   private _determineInstances(table: DataTableResponseObject) {
-    const roleInstanceColumnIndex = table.columns.findIndex(column => column.columnName.toLowerCase() === 'roleinstance');
-    const tenantColumnIndex = table.columns.findIndex(column => column.columnName.toLowerCase() === 'tenant');
-    const machineNameColumnIndex = table.columns.findIndex(column => column.columnName.toLowerCase() === 'machinename');
+    const roleInstanceColumnIndex = table.columns.findIndex(
+      (column) => column.columnName.toLowerCase() === 'roleinstance'
+    );
+    const tenantColumnIndex = table.columns.findIndex(
+      (column) => column.columnName.toLowerCase() === 'tenant'
+    );
+    const machineNameColumnIndex = table.columns.findIndex(
+      (column) => column.columnName.toLowerCase() === 'machinename'
+    );
 
-    if (roleInstanceColumnIndex === -1 && tenantColumnIndex === -1 && machineNameColumnIndex === -1) {
+    if (
+      roleInstanceColumnIndex === -1 &&
+      tenantColumnIndex === -1 &&
+      machineNameColumnIndex === -1
+    ) {
       this.error = 'Could not find appropriate instance name columns';
       return [];
     }
 
     if (tenantColumnIndex === -1 && machineNameColumnIndex === -1) {
-      this.warning = 'If you are only grouping instances by RoleInstance name, your query may be invalid for megastamps';
+      this.warning =
+        'If you are only grouping instances by RoleInstance name, your query may be invalid for megastamps';
     }
 
     const roleInstances: InstanceDetails[] = [];
-    table.rows.forEach(row => {
-      const roleInstance = roleInstanceColumnIndex >= 0 ? row[roleInstanceColumnIndex] : '';
+    table.rows.forEach((row) => {
+      const roleInstance =
+        roleInstanceColumnIndex >= 0 ? row[roleInstanceColumnIndex] : '';
       const tenant = tenantColumnIndex >= 0 ? row[tenantColumnIndex] : '';
-      const machineName = machineNameColumnIndex >= 0 ? row[machineNameColumnIndex] : '';
+      const machineName =
+        machineNameColumnIndex >= 0 ? row[machineNameColumnIndex] : '';
 
-      if (!roleInstances.find(instance => instance.roleInstance === roleInstance && instance.tenant === tenant && instance.machineName === machineName)) {
-        roleInstances.push(new InstanceDetails(roleInstance, tenant, machineName));
+      if (
+        !roleInstances.find(
+          (instance) =>
+            instance.roleInstance === roleInstance &&
+            instance.tenant === tenant &&
+            instance.machineName === machineName
+        )
+      ) {
+        roleInstances.push(
+          new InstanceDetails(roleInstance, tenant, machineName)
+        );
       }
     });
 
@@ -291,28 +369,47 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
   }
 
   private _getTimeStampColumn() {
-    const timeStampColumn = this.renderingProperties.timestampColumnName ?
-      this.dataTable.columns.findIndex(column => this.renderingProperties.timestampColumnName === column.columnName) :
-      this.dataTable.columns.findIndex(column => column.dataType === DataTableDataType.DateTime);
+    const timeStampColumn = this.renderingProperties.timestampColumnName
+      ? this.dataTable.columns.findIndex(
+          (column) =>
+            this.renderingProperties.timestampColumnName === column.columnName
+        )
+      : this.dataTable.columns.findIndex(
+          (column) => column.dataType === DataTableDataType.DateTime
+        );
 
     return timeStampColumn;
   }
 
   private _getRoleInstanceColumn() {
-    const timeStampColumn = this.renderingProperties.roleInstanceColumnName ?
-      this.dataTable.columns.findIndex(column => this.renderingProperties.roleInstanceColumnName === column.columnName) :
-      this.dataTable.columns.findIndex(column => column.columnName === 'RoleInstance');
+    const timeStampColumn = this.renderingProperties.roleInstanceColumnName
+      ? this.dataTable.columns.findIndex(
+          (column) =>
+            this.renderingProperties.roleInstanceColumnName ===
+            column.columnName
+        )
+      : this.dataTable.columns.findIndex(
+          (column) => column.columnName === 'RoleInstance'
+        );
 
-    this.renderingProperties.roleInstanceColumnName = this.dataTable.columns[timeStampColumn].columnName;
+    this.renderingProperties.roleInstanceColumnName =
+      this.dataTable.columns[timeStampColumn].columnName;
 
     return timeStampColumn;
   }
 
   private _getCounterNameColumn() {
-    const timeStampColumn = this.renderingProperties.counterColumnName ?
-      this.dataTable.columns.findIndex(column => this.renderingProperties.counterColumnName === column.columnName) :
-      this.dataTable.columns.findIndex(column => column.columnName !== this.renderingProperties.roleInstanceColumnName
-        && column.dataType === DataTableDataType.String);
+    const timeStampColumn = this.renderingProperties.counterColumnName
+      ? this.dataTable.columns.findIndex(
+          (column) =>
+            this.renderingProperties.counterColumnName === column.columnName
+        )
+      : this.dataTable.columns.findIndex(
+          (column) =>
+            column.columnName !==
+              this.renderingProperties.roleInstanceColumnName &&
+            column.dataType === DataTableDataType.String
+        );
 
     return timeStampColumn;
   }

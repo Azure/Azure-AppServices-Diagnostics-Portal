@@ -9,7 +9,10 @@ describe('WebHostingEnvironmentsService', () => {
     });
   });
 
-  it('should be created', inject([WebHostingEnvironmentsService], (service: WebHostingEnvironmentsService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', inject(
+    [WebHostingEnvironmentsService],
+    (service: WebHostingEnvironmentsService) => {
+      expect(service).toBeTruthy();
+    }
+  ));
 });

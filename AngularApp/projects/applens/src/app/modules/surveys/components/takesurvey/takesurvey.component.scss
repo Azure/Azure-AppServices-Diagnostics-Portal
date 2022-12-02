@@ -1,136 +1,139 @@
-@import "../../../../../../../diagnostic-data/src/lib/scss/styles.scss";
+@import '../../../../../../../diagnostic-data/src/lib/scss/styles.scss';
 .main-container {
-    background-color: var(--bodyBackground);
-    height: 100vh;
+  background-color: var(--bodyBackground);
+  height: 100vh;
 }
 
-.top-banner{
-    background-image: linear-gradient(#4fb0e8 0,#3c8dbc 70%);
-    height: 40px;
+.top-banner {
+  background-image: linear-gradient(#4fb0e8 0, #3c8dbc 70%);
+  height: 40px;
 }
 
-.banner-text{
-    color: var(--bodyBackground);
-    padding: 5px 10px;
-    font-size: 22px;
+.banner-text {
+  color: var(--bodyBackground);
+  padding: 5px 10px;
+  font-size: 22px;
 }
 
-.box-header{
-    height: 62px;
-    padding: 10px 0px;
+.box-header {
+  height: 62px;
+  padding: 10px 0px;
 }
 
-.box-title{
-    width: 100%;
-    padding: 2px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.box-title {
+  width: 100%;
+  padding: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.panel-title{
-    width: 100%;
-    padding: 2px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 18px;
+.panel-title {
+  width: 100%;
+  padding: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 18px;
 }
 
 .main-row {
-    padding-top: 30px;
+  padding-top: 30px;
 }
 
 .go-form {
-    padding: 1em;
-    text-align: right;
-    height: 50px;
-    padding-top: 0px;
-    margin-top: -20px;
+  padding: 1em;
+  text-align: right;
+  height: 50px;
+  padding-top: 0px;
+  margin-top: -20px;
 }
 
-.form-content{
-    max-height: calc(100% - 100px);
+.form-content {
+  max-height: calc(100% - 100px);
 }
 
 .go-button {
-    width: 50px;
-    margin-top: 10px;
+  width: 50px;
+  margin-top: 10px;
 }
 
-.loader-block{
-    z-index: 100;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    position: absolute;
-    opacity: 0.2;
-    background-color: grey;
-    text-align: center;
+.loader-block {
+  z-index: 100;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  position: absolute;
+  opacity: 0.2;
+  background-color: grey;
+  text-align: center;
 }
 
-.loader-icon{
-    font-size: 10em;top: 36vh;position: relative;color: #0a0a0a;
+.loader-icon {
+  font-size: 10em;
+  top: 36vh;
+  position: relative;
+  color: #0a0a0a;
 }
 
-.card-box{
-    padding: 20px;
-    width: 50%;
-    max-height: calc(100vh - 80px);
-    margin: 0 auto;
-    border: 2px solid #d1d1da;
-    box-shadow: 10px 5px 14px #e4e4e4;
-    background-color: var(--bodyBackground);
+.card-box {
+  padding: 20px;
+  width: 50%;
+  max-height: calc(100vh - 80px);
+  margin: 0 auto;
+  border: 2px solid #d1d1da;
+  box-shadow: 10px 5px 14px #e4e4e4;
+  background-color: var(--bodyBackground);
 }
 
 *::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background-color: grey;
-    border-radius: 20px;
-  }
-
-.error-message{
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-    color:red;
-    margin:1px;
+  width: 8px;
 }
 
-.success-message{
-    color: green;
-    margin: 0px 15px;
+*::-webkit-scrollbar-thumb {
+  background-color: grey;
+  border-radius: 20px;
 }
 
-.failed-message{
-    color: red;
-    margin: 0px 15px;
+.error-message {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  color: red;
+  margin: 1px;
 }
 
-.field-box{
-    padding-bottom: 30px;
+.success-message {
+  color: green;
+  margin: 0px 15px;
 }
 
-.input-box{
-    width: 95%;
-    display: inline-block;
-    border-radius: 5px;
+.failed-message {
+  color: red;
+  margin: 0px 15px;
 }
 
-.pass-icon{
-    color: green;
-    fill: green;
-    font-size: 20px;
-    margin-top: 10px;
-    margin-left: 10px;
-    display: inline-block;
+.field-box {
+  padding-bottom: 30px;
+}
+
+.input-box {
+  width: 95%;
+  display: inline-block;
+  border-radius: 5px;
+}
+
+.pass-icon {
+  color: green;
+  fill: green;
+  font-size: 20px;
+  margin-top: 10px;
+  margin-left: 10px;
+  display: inline-block;
 }
 
 .case-details {
-    font-size: 14px;
-    padding: 2px;
-    color: #2081af;
-    cursor: pointer;
+  font-size: 14px;
+  padding: 2px;
+  color: #2081af;
+  cursor: pointer;
 }

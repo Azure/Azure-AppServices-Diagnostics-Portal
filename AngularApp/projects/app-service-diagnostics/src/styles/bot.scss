@@ -1,172 +1,171 @@
 @import '../styles/common/variables';
 
 textarea {
-    resize: none;
+  resize: none;
 }
 
 .chat-message-container {
-    margin-top: 10px !important;
-    margin-right: 10px !important;
+  margin-top: 10px !important;
+  margin-right: 10px !important;
 }
 
 %chat-message {
-    font-size: 13px;
-    display: inline-block;
-    padding: 10px;
-    padding-right: 30px;
-    border-radius: 10px;
-    margin-bottom: 10px;
+  font-size: 13px;
+  display: inline-block;
+  padding: 10px;
+  padding-right: 30px;
+  border-radius: 10px;
+  margin-bottom: 10px;
 }
 
 .message-sent-by-system {
-    @extend %chat-message;
+  @extend %chat-message;
 
-    max-width: 50%;
-    background-color: $chat-message-system-color;
-    border-bottom-left-radius: 0;
-    border: $chat-message-system-border;
-    float: left;
+  max-width: 50%;
+  background-color: $chat-message-system-color;
+  border-bottom-left-radius: 0;
+  border: $chat-message-system-border;
+  float: left;
 }
 
 .message-sent-by-user {
-    @extend %chat-message;
+  @extend %chat-message;
 
-    max-width: 50%;
-    background-color: $chat-message-user-color;
-    border-bottom-right-radius: 0;
-    border: none;
-    float: right;
-    color: $chat-message-user-text-color;
+  max-width: 50%;
+  background-color: $chat-message-user-color;
+  border-bottom-right-radius: 0;
+  border: none;
+  float: right;
+  color: $chat-message-user-text-color;
 }
 
 .message-sent-by-system-genie {
-    @extend %chat-message;
+  @extend %chat-message;
 
-    max-width: 80%;
-    background-color: var(--genieSystemMessageBackgroundColor);
-    border-bottom-left-radius: 0;
-    border: $chat-message-system-border;
-    float: left;
+  max-width: 80%;
+  background-color: var(--genieSystemMessageBackgroundColor);
+  border-bottom-left-radius: 0;
+  border: $chat-message-system-border;
+  float: left;
 }
 
 .message-sent-by-user-genie {
-    @extend %chat-message;
+  @extend %chat-message;
 
-    max-width: 80%;
-    background-color: $chat-message-user-color;
-    border-bottom-right-radius: 0;
-    border: none;
-    float: right;
-    color: $chat-message-user-text-color;
+  max-width: 80%;
+  background-color: $chat-message-user-color;
+  border-bottom-right-radius: 0;
+  border: none;
+  float: right;
+  color: $chat-message-user-text-color;
 }
 
 .bot-button {
-    font-size: 13px;
-    margin-left: 0px;
+  font-size: 13px;
+  margin-left: 0px;
 }
 
 .category-container-header {
-    margin-left: 12px;
-    color: #989898;
-    font-size: 13px;
-    font-variant: small-caps;
+  margin-left: 12px;
+  color: #989898;
+  font-size: 13px;
+  font-variant: small-caps;
 }
 
 .category-content {
-    margin-left: auto;
-    margin-right: auto;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-    text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center;
 }
 
 /* Animation CSS */
 .animated {
-    animation-duration: 200ms !important;
-    -webkit-animation-duration: 200ms !important;
-    -moz-animation-duration: 200ms !important;
+  animation-duration: 200ms !important;
+  -webkit-animation-duration: 200ms !important;
+  -moz-animation-duration: 200ms !important;
 }
 
 .load-message .load-message-dot:nth-last-child(1) {
-    animation: loadingMessageAnimation .6s .1s linear infinite;
+  animation: loadingMessageAnimation 0.6s 0.1s linear infinite;
 }
 
 .load-message .load-message-dot:nth-last-child(2) {
-    animation: loadingMessageAnimation .6s .2s linear infinite;
+  animation: loadingMessageAnimation 0.6s 0.2s linear infinite;
 }
 
 .load-message .load-message-dot:nth-last-child(3) {
-    animation: loadingMessageAnimation .6s .3s linear infinite;
+  animation: loadingMessageAnimation 0.6s 0.3s linear infinite;
 }
 
 .load-message-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 4px;
-    background-color: #C7C7C7;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #c7c7c7;
 }
 
 @keyframes loadingMessageAnimation {
-    0% {
-        transform: translate(0, 0);
-    }
+  0% {
+    transform: translate(0, 0);
+  }
 
-    50% {
-        transform: translate(0, 8px);
-    }
+  50% {
+    transform: translate(0, 8px);
+  }
 
-    100% {
-        transform: translate(0, 0);
-    }
+  100% {
+    transform: translate(0, 0);
+  }
 }
 
 #chat-scrollbar {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    width: 100%;
-    padding: 10px 10px 20px 10px;
-    background-color: white;
-
+  overflow-y: scroll;
+  overflow-x: hidden;
+  width: 100%;
+  padding: 10px 10px 20px 10px;
+  background-color: white;
 }
 
 #chat-scrollbar::-webkit-scrollbar-track {
-    background-color: rgba(226, 226, 226, 0.28);
-    border-radius: 5px;
+  background-color: rgba(226, 226, 226, 0.28);
+  border-radius: 5px;
 }
 
 #chat-scrollbar::-webkit-scrollbar {
-    width: 5px;
-    background-color: transparent;
+  width: 5px;
+  background-color: transparent;
 }
 
 #chat-scrollbar::-webkit-scrollbar-thumb {
-    border-radius: 5px;
-    background-color: rgba(172, 172, 172, 0.28);
+  border-radius: 5px;
+  background-color: rgba(172, 172, 172, 0.28);
 }
 
 .report-tab {
-    margin-top: 8px !important;
+  margin-top: 8px !important;
 }
 
 .report-tab:hover {
-    cursor: hand !important;
+  cursor: hand !important;
 }
 
 .report-tab.active {
-    margin-top: 5px !important;
+  margin-top: 5px !important;
 }
 
-.report-tab>a {
-    cursor: pointer !important;
-    border: 1px solid #d8d8d8 !important;
-    border-radius: 5px !important;
-    border-bottom-left-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
-    margin-left: 10px !important;
+.report-tab > a {
+  cursor: pointer !important;
+  border: 1px solid #d8d8d8 !important;
+  border-radius: 5px !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  margin-left: 10px !important;
 }
 
-.report-tab.active>a {
-    border-bottom: 3px solid #5d8ea6 !important;
+.report-tab.active > a {
+  border-bottom: 3px solid #5d8ea6 !important;
 }

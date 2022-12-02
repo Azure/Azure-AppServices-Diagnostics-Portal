@@ -1,8 +1,8 @@
 export enum SlotType {
-    Prod,
-    Staging,
-    Local,
-    Preview,
-    PreviewStaging,
-    Testing
+  Prod,
+  Staging,
+  Local,
+  Preview,
+  PreviewStaging,
+  Testing
 }

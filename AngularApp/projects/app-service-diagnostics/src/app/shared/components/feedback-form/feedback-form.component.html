@@ -1,30 +1,50 @@
-<div style="padding:15px" *ngIf="!hideWholeForm">
-    <div *ngIf="!showThanksMessage && !showMessageBox">
-        <label for="feedbackbutton"> Was this helpful?</label>
-        <br/>
-        <button name="feedbackbutton" type="button" class="btn btn-default btn-xs" [ngClass]="{'btn-primary':yesSelected}" (click)="feedbackButtonClicked(true)">
-            Yes
-        </button>
-        <button name="feedbackbutton" type="button" class="btn btn-default btn-xs" [ngClass]="{'btn-primary':noSelected}" (click)="feedbackButtonClicked(false)">
-            No
-        </button>
+<div style="padding: 15px" *ngIf="!hideWholeForm">
+  <div *ngIf="!showThanksMessage && !showMessageBox">
+    <label for="feedbackbutton"> Was this helpful?</label>
+    <br />
+    <button
+      name="feedbackbutton"
+      type="button"
+      class="btn btn-default btn-xs"
+      [ngClass]="{ 'btn-primary': yesSelected }"
+      (click)="feedbackButtonClicked(true)"
+    >
+      Yes
+    </button>
+    <button
+      name="feedbackbutton"
+      type="button"
+      class="btn btn-default btn-xs"
+      [ngClass]="{ 'btn-primary': noSelected }"
+      (click)="feedbackButtonClicked(false)"
+    >
+      No
+    </button>
+  </div>
+  <div *ngIf="showMessageBox">
+    <label for="feedbackImproveText">
+      Was this helpful? What can we improve?
+    </label>
+    <br />
+    <div style="padding: 5px 0px 5px 0px">
+      <!--<input type="text" [(ngModel)]="feedbackText" required> -->
+      <textarea
+        ref-textarea
+        id="feedbackImproveText"
+        [(ngModel)]="feedbackText"
+        rows="2"
+        style="width: 100%; max-width: 400px"
+      ></textarea>
     </div>
-    <div *ngIf="showMessageBox">
-        <label for="feedbackImproveText"> Was this helpful?
-            What can we improve?
-        </label>
-        <br/>
-        <div style="padding:5px 0px 5px 0px">
-            <!--<input type="text" [(ngModel)]="feedbackText" required> -->
-             <textarea ref-textarea id="feedbackImproveText" [(ngModel)]="feedbackText" rows="2" style="width: 100%;max-width: 400px"></textarea>
-        </div>
-        <div>
-            <button type="button" class="btn btn-primary btn-xs" (click)="feedbackMessageSubmitted()">
-                Submit
-            </button>
-        </div>
+    <div>
+      <button
+        type="button"
+        class="btn btn-primary btn-xs"
+        (click)="feedbackMessageSubmitted()"
+      >
+        Submit
+      </button>
     </div>
-    <div *ngIf="showThanksMessage">
-        Thanks for the feedback!
-    </div>
+  </div>
+  <div *ngIf="showThanksMessage">Thanks for the feedback!</div>
 </div>

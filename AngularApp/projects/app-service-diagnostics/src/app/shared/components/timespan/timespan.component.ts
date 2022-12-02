@@ -1,4 +1,12 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges
+} from '@angular/core';
 import { FormatHelper } from '../../utilities/formattingHelper';
 
 @Component({
@@ -7,8 +15,7 @@ import { FormatHelper } from '../../utilities/formattingHelper';
   styleUrls: ['./timespan.component.scss']
 })
 export class TimespanComponent implements OnInit {
-
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
     if (this.timeSpan && this.timeSpan !== '') {
@@ -19,7 +26,7 @@ export class TimespanComponent implements OnInit {
   @Input() timeSpan: string;
   @Input() placeholder: string;
   @Input() allowZeroValue: boolean;
-  @Input() ControlId:string;
+  @Input() ControlId: string;
 
   @Input() label: string;
 
@@ -28,9 +35,8 @@ export class TimespanComponent implements OnInit {
   Seconds: number;
 
   updateTimeSpan(val) {
-      this.Seconds = val;
-      const timeSpan = FormatHelper.secondsToTimespan(this.Seconds);
-      this.timeSpanChange.emit(timeSpan);
+    this.Seconds = val;
+    const timeSpan = FormatHelper.secondsToTimespan(this.Seconds);
+    this.timeSpanChange.emit(timeSpan);
   }
-
 }

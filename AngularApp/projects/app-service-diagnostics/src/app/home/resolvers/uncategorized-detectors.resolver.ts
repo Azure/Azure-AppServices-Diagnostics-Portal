@@ -5,13 +5,15 @@ import { DetectorCategorizationService } from '../../shared/services/detector-ca
 import { FeatureService } from '../../shared-v2/services/feature.service';
 
 @Injectable()
-export class UncategorizedDetectorsResolver implements Resolve<Observable<boolean>> {
-    constructor(private _detectorCategorization: DetectorCategorizationService) { }
+export class UncategorizedDetectorsResolver
+  implements Resolve<Observable<boolean>>
+{
+  constructor(private _detectorCategorization: DetectorCategorizationService) {}
 
-    resolve(activatedRouteSnapshot: ActivatedRouteSnapshot): Observable<boolean> {
-        let detectorId = activatedRouteSnapshot.params["detectorName"];
-        let categoryId = activatedRouteSnapshot.parent.params["category"];
-        // this._detectorCategorization.addDetectorToCategory(detectorId, categoryId);
-        return of(true);
-    }
+  resolve(activatedRouteSnapshot: ActivatedRouteSnapshot): Observable<boolean> {
+    let detectorId = activatedRouteSnapshot.params['detectorName'];
+    let categoryId = activatedRouteSnapshot.parent.params['category'];
+    // this._detectorCategorization.addDetectorToCategory(detectorId, categoryId);
+    return of(true);
+  }
 }

@@ -9,14 +9,17 @@ import { ApplensGlobal } from '../../../applens-global';
   styleUrls: ['./search-results.component.scss']
 })
 export class SearchResultsComponent implements OnInit {
-  constructor(public _searchService: SearchService, private _location: Location, private _applensGlobal: ApplensGlobal) {
-  }
+  constructor(
+    public _searchService: SearchService,
+    private _location: Location,
+    private _applensGlobal: ApplensGlobal
+  ) {}
 
   navigateBack() {
     this._location.back();
   }
 
   ngOnInit() {
-    this._applensGlobal.updateHeader("Searching");
+    this._applensGlobal.updateHeader('Searching');
   }
 }

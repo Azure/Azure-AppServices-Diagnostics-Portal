@@ -1,26 +1,45 @@
 <div class="container">
-    <h2 tabindex="0">{{ title }}</h2>
-    <p tabindex="0">{{ description }}</p>
+  <h2 tabindex="0">{{ title }}</h2>
+  <p tabindex="0">{{ description }}</p>
 
-    <div class="wizardcontainer">
-        <profiler [scmPath]="scmPath" [siteToBeDiagnosed]="siteToBeDiagnosed"
-            (SessionsEvent)="updateSessions($event)" [allLinuxInstancesOnAnt98]="allLinuxInstancesOnAnt98"> 
-        </profiler>
-    </div>
+  <div class="wizardcontainer">
+    <profiler
+      [scmPath]="scmPath"
+      [siteToBeDiagnosed]="siteToBeDiagnosed"
+      (SessionsEvent)="updateSessions($event)"
+      [allLinuxInstancesOnAnt98]="allLinuxInstancesOnAnt98"
+    >
+    </profiler>
+  </div>
 
-    <h3>What you should know before collecting a Profiler trace</h3>
-    <ul *ngIf="isWindowsApp">
-        <li *ngFor="let statement of thingsToKnowBefore">{{statement}}</li>
-    </ul>
-    <ul *ngIf="!isWindowsApp">
-        <li>Once the profiler trace is started, reproduce the issue by browsing to the web app.</li>
-        <li>Your web app will not be restarted as a result of running the profiler.</li>
-        <li>To analyze the profiler traces, use the latest version of PerfView tool from <a target="_blank"
-                href="https://github.com/microsoft/perfview/releases">PerfView Github releases</a> page.</li>
-    </ul>
+  <h3>What you should know before collecting a Profiler trace</h3>
+  <ul *ngIf="isWindowsApp">
+    <li *ngFor="let statement of thingsToKnowBefore">{{ statement }}</li>
+  </ul>
+  <ul *ngIf="!isWindowsApp">
+    <li>
+      Once the profiler trace is started, reproduce the issue by browsing to the
+      web app.
+    </li>
+    <li>
+      Your web app will not be restarted as a result of running the profiler.
+    </li>
+    <li>
+      To analyze the profiler traces, use the latest version of PerfView tool
+      from
+      <a target="_blank" href="https://github.com/microsoft/perfview/releases"
+        >PerfView Github releases</a
+      >
+      page.
+    </li>
+  </ul>
 
-    <div class="sessions">
-        <daas-sessions [refreshSessions]="refreshSessions" diagnoserNameLookup="Profiler" [scmPath]="scmPath"
-            [siteToBeDiagnosed]="siteToBeDiagnosed"></daas-sessions>
-    </div>
+  <div class="sessions">
+    <daas-sessions
+      [refreshSessions]="refreshSessions"
+      diagnoserNameLookup="Profiler"
+      [scmPath]="scmPath"
+      [siteToBeDiagnosed]="siteToBeDiagnosed"
+    ></daas-sessions>
+  </div>
 </div>

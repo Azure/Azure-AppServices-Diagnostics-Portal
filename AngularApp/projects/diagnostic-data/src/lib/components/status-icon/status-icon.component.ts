@@ -9,7 +9,6 @@ import { LoadingStatus } from '../../models/loading';
   styleUrls: ['./status-icon.component.scss']
 })
 export class StatusIconComponent implements OnChanges {
-
   @Input() status: HealthStatus;
   @Input() loading: LoadingStatus = LoadingStatus.Success;
   @Input() size: number = 16;
@@ -18,12 +17,11 @@ export class StatusIconComponent implements OnChanges {
 
   statusIcon: string;
 
-  constructor() { }
+  constructor() {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes['status'] && this.status !== null) {
       this.statusIcon = StatusStyles.getIconByStatus(this.status);
     }
   }
-
 }

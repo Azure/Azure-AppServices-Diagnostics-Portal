@@ -1,8 +1,24 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { DirectionalHint, IButtonStyles, IChoiceGroup, IChoiceGroupOption } from 'office-ui-fabric-react';
-import { TableFilterSelectionOption, TableFilter } from '../../models/data-table';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
+import {
+  DirectionalHint,
+  IButtonStyles,
+  IChoiceGroup,
+  IChoiceGroupOption
+} from 'office-ui-fabric-react';
+import {
+  TableFilter,
+  TableFilterSelectionOption
+} from '../../models/data-table';
 
-const all = "all";
+const all = 'all';
 
 @Component({
   selector: 'fab-data-table-filter',
@@ -19,30 +35,36 @@ export class FabDataTableFilterComponent implements OnInit {
   @Input() index: number;
   @Input() tableId: number;
 
-  @Output() onFilterUpdate: EventEmitter<Set<string>> = new EventEmitter<Set<string>>();
-  name: string = "";
+  @Output() onFilterUpdate: EventEmitter<Set<string>> = new EventEmitter<
+    Set<string>
+  >();
+  name: string = '';
   filterOption: TableFilterSelectionOption = TableFilterSelectionOption.Single;
   selected: Set<string> = new Set<string>();
-  optionsWithFormattedName: { name: string, formattedName: string, defaultSelection: boolean }[] = [];
+  optionsWithFormattedName: {
+    name: string;
+    formattedName: string;
+    defaultSelection: boolean;
+  }[] = [];
 
   //For single choice
   optionsForSingleChoice: IChoiceGroupOption[] = [];
-  selectedKey: string = "";
-  displayName: string = "";
+  selectedKey: string = '';
+  displayName: string = '';
   isCallOutVisible: boolean = false;
 
   buttonStyle: IButtonStyles = {
     root: {
-   //   color: "#323130",
-      borderRadius: "12px",
-      margin: " 0px 5px",
-      background: "rgba(0, 120, 212, 0.1)",
-      fontSize: "13",
-      fontWeight: "600",
-      height: "80%"
+      //   color: "#323130",
+      borderRadius: '12px',
+      margin: ' 0px 5px',
+      background: 'rgba(0, 120, 212, 0.1)',
+      fontSize: '13',
+      fontWeight: '600',
+      height: '80%'
     }
-  }
-  constructor() { }
+  };
+  constructor() {}
 
   ngOnInit() {
     this.filterOption = this.tableFilter.selectionOption;
@@ -52,8 +74,12 @@ export class FabDataTableFilterComponent implements OnInit {
     this.filterId = `fab-data-table-filter-${this.tableId}-${this.index}`;
     this.filterSelector = `#${this.filterId}`;
 
-    this.options.forEach(option => {
-      this.optionsWithFormattedName.push({ name: option, formattedName: this.formatOptionName(option), defaultSelection: this.checkIsDefaultSelected(option) });
+    this.options.forEach((option) => {
+      this.optionsWithFormattedName.push({
+        name: option,
+        formattedName: this.formatOptionName(option),
+        defaultSelection: this.checkIsDefaultSelected(option)
+      });
     });
 
     if (this.filterOption === TableFilterSelectionOption.Single) {
@@ -100,14 +126,18 @@ export class FabDataTableFilterComponent implements OnInit {
   initForSingleSelect() {
     //If has defaultSelection and can be found then make it as default select, otherwise use first one
     let option = this.optionsWithFormattedName[0];
-    if (this.optionsWithFormattedName.find(o => o.defaultSelection === true)) {
-      option = this.optionsWithFormattedName.find(o => o.defaultSelection === true);
+    if (
+      this.optionsWithFormattedName.find((o) => o.defaultSelection === true)
+    ) {
+      option = this.optionsWithFormattedName.find(
+        (o) => o.defaultSelection === true
+      );
     }
 
     this.selectedKey = option.formattedName;
     this.selected.add(option.name);
 
-    this.optionsWithFormattedName.forEach(option => {
+    this.optionsWithFormattedName.forEach((option) => {
       this.optionsForSingleChoice.push({
         key: option.formattedName,
         text: option.formattedName,
@@ -115,17 +145,17 @@ export class FabDataTableFilterComponent implements OnInit {
           this.selected.clear();
           this.selectedKey = option.formattedName;
           this.selected.add(option.name);
-        },
+        }
       });
     });
   }
 
   initForMultipleSelection() {
-    this.optionsWithFormattedName.forEach(o => {
+    this.optionsWithFormattedName.forEach((o) => {
       if (o.defaultSelection) {
         this.selected.add(o.name);
       }
-    })
+    });
   }
 
   updateTableWithOptions() {
@@ -137,8 +167,8 @@ export class FabDataTableFilterComponent implements OnInit {
   private formatOptionName(name: string): string {
     let formattedString = name;
     //remove empty space and <i> tag
-    formattedString = formattedString.replace(/&nbsp;/g, "");
-    formattedString = formattedString.replace(/<i.*><\/i>/g, "");
+    formattedString = formattedString.replace(/&nbsp;/g, '');
+    formattedString = formattedString.replace(/<i.*><\/i>/g, '');
     return formattedString;
   }
 
@@ -164,12 +194,17 @@ export class FabDataTableFilterComponent implements OnInit {
   }
 
   private updateMultipleSelectionText() {
-    if (this.selected.size === 0 || this.selected.size === this.options.length) {
+    if (
+      this.selected.size === 0 ||
+      this.selected.size === this.options.length
+    ) {
       //Selected nothing will be same as selected all as for display
       this.displayName = `${this.tableFilter.name}: ${all}`;
     } else if (this.selected.size == 1) {
       const selectedName = Array.from(this.selected)[0];
-      const formattedSelectionName = this.optionsWithFormattedName.find(o => selectedName === o.name).formattedName;
+      const formattedSelectionName = this.optionsWithFormattedName.find(
+        (o) => selectedName === o.name
+      ).formattedName;
       this.displayName = `${this.tableFilter.name}: ${formattedSelectionName}`;
     } else if (this.selected.size < this.options.length) {
       this.displayName = `${this.tableFilter.name}: ${this.selected.size} of ${this.options.length} selected`;
@@ -178,7 +213,10 @@ export class FabDataTableFilterComponent implements OnInit {
 
   emitSelectedOption() {
     //For multiple selection,if selected nothing when clicking from callout or no default selection then it will show as selected nothing ,but for updating table it will be same as selected everything
-    if (this.filterOption === TableFilterSelectionOption.Multiple && this.selected.size === 0) {
+    if (
+      this.filterOption === TableFilterSelectionOption.Multiple &&
+      this.selected.size === 0
+    ) {
       this.onFilterUpdate.emit(new Set(this.options));
     } else {
       this.onFilterUpdate.emit(this.selected);

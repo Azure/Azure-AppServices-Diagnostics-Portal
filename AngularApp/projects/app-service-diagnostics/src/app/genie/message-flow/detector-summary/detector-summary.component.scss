@@ -1,45 +1,45 @@
 @import '../../../../styles/common/variables';
 
 .detector-summary-container {
-    margin: 10px 0px;
-    display: table;
+  margin: 10px 0px;
+  display: table;
 }
 
 .with-full-report {
-    border: $chat-message-system-border;
-    padding: 10px;
+  border: $chat-message-system-border;
+  padding: 10px;
 }
 
 .status-bar {
-    width: 700px;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 8px;
-    background-color: $chat-message-system-color;
-    border: $chat-message-system-border;
-    display: flex;
-    margin: 10px 0px;
-    cursor: pointer;
-    justify-content: space-between;
+  width: 700px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  background-color: $chat-message-system-color;
+  border: $chat-message-system-border;
+  display: flex;
+  margin: 10px 0px;
+  cursor: pointer;
+  justify-content: space-between;
 }
 
 .align-content-center {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .status-bar-icon {
-    padding: 0px 20px 0px 5px;
+  padding: 0px 20px 0px 5px;
 }
 
 .status-bar-title {
-    width: inherit;
+  width: inherit;
 }
 
 .full-report {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 .full-report-link {
-    float: right;
+  float: right;
 }

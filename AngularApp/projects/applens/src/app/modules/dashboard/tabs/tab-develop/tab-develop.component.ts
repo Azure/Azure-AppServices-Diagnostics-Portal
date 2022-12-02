@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DevelopMode, OnboardingFlowComponent } from '../../onboarding-flow/onboarding-flow.component';
+import {
+  DevelopMode,
+  OnboardingFlowComponent
+} from '../../onboarding-flow/onboarding-flow.component';
 
 @Component({
   selector: 'tab-develop',
@@ -8,18 +11,17 @@ import { DevelopMode, OnboardingFlowComponent } from '../../onboarding-flow/onbo
   styleUrls: ['./tab-develop.component.scss']
 })
 export class TabDevelopComponent implements OnInit {
-
   DevelopMode = DevelopMode;
   id: string;
 
-  constructor(private _route: ActivatedRoute) {
-  }
+  constructor(private _route: ActivatedRoute) {}
 
-  @ViewChild("onboardingFlow",{static: true}) onboardingFlowComponent: OnboardingFlowComponent;
+  @ViewChild('onboardingFlow', { static: true })
+  onboardingFlowComponent: OnboardingFlowComponent;
 
   canExit(): boolean {
     return this.onboardingFlowComponent.canExit();
-  };
+  }
 
   ngOnInit() {
     this.id = this._route.parent.snapshot.params['detector'];

@@ -1,36 +1,121 @@
-<div class="focus-box focus-box-info" [ngClass]="{'focus-box-nobackground': !openedFromTicketFlow}" *ngIf="abnormalTimePeriod && allSolutionsUIModels">
-    <h4 class="not-bold" *ngIf="allSolutionsUIModels && allSolutionsUIModels.length === 0">We were not able to determine solutions specific to your problem. Please look into the solutions to common problems below.</h4>
-    <expandable-list [title]="'Suggested Solutions'" *ngIf="allSolutionsUIModels && allSolutionsUIModels.length > 0">
-        <expandable-list-item *ngFor="let solution of allSolutionsUIModels; let i = index" [title]="solution.properties.title" [titleColor]="'#00b5ea'" [selected]="i == 0" (onSelected)="solution.logExpandSolutionEvent($event)">
-            {{solution.properties.description}}
-            <div class="col" *ngIf="solution.properties.actionText" style="margin-top:10px">
-                <button type="button" class="btn btn-info" (click)="solution.execute()">
-                    <i *ngIf="solution.properties.actionType === 1" class="fa fa-play" aria-hidden="true"></i>
-                    {{solution.properties.actionText}}  
-                    <i *ngIf="solution.properties.actionType === 2" class="fa fa-chevron-right" aria-hidden="true"></i>
-                    <i *ngIf="solution.properties.actionType === 4" class="fa fa-external-link" aria-hidden="true"></i>
-                    
-                </button>
-                <div *ngIf="solution.properties.actionType === 1" class="row" style="margin-left: 30px;padding: 10px;border-left: 1px solid #c7c7c7;">
-                    <div class="col sub-text" style="font-size:12px" *ngFor="let subaction of solution.properties.subActions">
-                        <i *ngIf="subaction.status === 1" class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true" style="font-size: 12px"></i>
-                        <i *ngIf="subaction.status === 2" class="fa fa-exclamation-circle health-icon unhealthy-icon-color" aria-hidden="true" style="font-size: 12px"></i>
-                        <i *ngIf="subaction.status === 3" class="fa fa-check health-icon healthy-icon-color" aria-hidden="true" style="font-size: 12px"></i>
-                        {{subaction.title}}
-                    </div>
-                    <div class="col sub-text check-health-box" style="font-size:12px" *ngIf="solution.allSubActionsCompleted">
-                        <span *ngIf="solution.allSubActionSuccessful">{{solution.properties.actionText}} successful! Monitor your application health using <a (click)="openPulseBlade()">Live Http Traffic</a>. 
-                        Within a few minutes your application should return to health, however, if that is not the case you may need to try the next suggested solution.</span>
-                        <span *ngIf="!solution.allSubActionSuccessful">{{solution.properties.actionText}} failed. Please try again or move on to the next solution.</span>
-                    </div>
-                </div>
-            </div>
+<div
+  class="focus-box focus-box-info"
+  [ngClass]="{ 'focus-box-nobackground': !openedFromTicketFlow }"
+  *ngIf="abnormalTimePeriod && allSolutionsUIModels"
+>
+  <h4
+    class="not-bold"
+    *ngIf="allSolutionsUIModels && allSolutionsUIModels.length === 0"
+  >
+    We were not able to determine solutions specific to your problem. Please
+    look into the solutions to common problems below.
+  </h4>
+  <expandable-list
+    [title]="'Suggested Solutions'"
+    *ngIf="allSolutionsUIModels && allSolutionsUIModels.length > 0"
+  >
+    <expandable-list-item
+      *ngFor="let solution of allSolutionsUIModels; let i = index"
+      [title]="solution.properties.title"
+      [titleColor]="'#00b5ea'"
+      [selected]="i == 0"
+      (onSelected)="solution.logExpandSolutionEvent($event)"
+    >
+      {{ solution.properties.description }}
+      <div
+        class="col"
+        *ngIf="solution.properties.actionText"
+        style="margin-top: 10px"
+      >
+        <button type="button" class="btn btn-info" (click)="solution.execute()">
+          <i
+            *ngIf="solution.properties.actionType === 1"
+            class="fa fa-play"
+            aria-hidden="true"
+          ></i>
+          {{ solution.properties.actionText }}
+          <i
+            *ngIf="solution.properties.actionType === 2"
+            class="fa fa-chevron-right"
+            aria-hidden="true"
+          ></i>
+          <i
+            *ngIf="solution.properties.actionType === 4"
+            class="fa fa-external-link"
+            aria-hidden="true"
+          ></i>
+        </button>
+        <div
+          *ngIf="solution.properties.actionType === 1"
+          class="row"
+          style="
+            margin-left: 30px;
+            padding: 10px;
+            border-left: 1px solid #c7c7c7;
+          "
+        >
+          <div
+            class="col sub-text"
+            style="font-size: 12px"
+            *ngFor="let subaction of solution.properties.subActions"
+          >
+            <i
+              *ngIf="subaction.status === 1"
+              class="fa fa-circle-o-notch fa-spin spin-icon"
+              aria-hidden="true"
+              style="font-size: 12px"
+            ></i>
+            <i
+              *ngIf="subaction.status === 2"
+              class="fa fa-exclamation-circle health-icon unhealthy-icon-color"
+              aria-hidden="true"
+              style="font-size: 12px"
+            ></i>
+            <i
+              *ngIf="subaction.status === 3"
+              class="fa fa-check health-icon healthy-icon-color"
+              aria-hidden="true"
+              style="font-size: 12px"
+            ></i>
+            {{ subaction.title }}
+          </div>
+          <div
+            class="col sub-text check-health-box"
+            style="font-size: 12px"
+            *ngIf="solution.allSubActionsCompleted"
+          >
+            <span *ngIf="solution.allSubActionSuccessful"
+              >{{ solution.properties.actionText }} successful! Monitor your
+              application health using
+              <a (click)="openPulseBlade()">Live Http Traffic</a>. Within a few
+              minutes your application should return to health, however, if that
+              is not the case you may need to try the next suggested
+              solution.</span
+            >
+            <span *ngIf="!solution.allSubActionSuccessful"
+              >{{ solution.properties.actionText }} failed. Please try again or
+              move on to the next solution.</span
+            >
+          </div>
+        </div>
+      </div>
 
-            <div class="col" *ngIf="solution.properties.additionalData && solution.properties.additionalData.length > 0" style="margin-top:10px">
-                <div *ngFor="let dataItem of solution.properties.additionalData">
-                    {{dataItem.message.split('*')[0]}}<a (click)="openBlogUrl(dataItem, solution);">{{dataItem.message.split('*')[1]}}</a>{{dataItem.message.split('*')[2]}}
-                </div>
-            </div>
-        </expandable-list-item>
-    </expandable-list>
+      <div
+        class="col"
+        *ngIf="
+          solution.properties.additionalData &&
+          solution.properties.additionalData.length > 0
+        "
+        style="margin-top: 10px"
+      >
+        <div *ngFor="let dataItem of solution.properties.additionalData">
+          {{ dataItem.message.split('*')[0]
+          }}<a (click)="openBlogUrl(dataItem, solution)">{{
+            dataItem.message.split('*')[1]
+          }}</a
+          >{{ dataItem.message.split('*')[2] }}
+        </div>
+      </div>
+    </expandable-list-item>
+  </expandable-list>
 </div>

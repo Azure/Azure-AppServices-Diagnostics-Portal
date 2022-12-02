@@ -1,3 +1,3 @@
 export interface Cache<T> {
-    [K: string]: T;
+  [K: string]: T;
 }

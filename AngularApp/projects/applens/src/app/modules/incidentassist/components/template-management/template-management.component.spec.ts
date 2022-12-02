@@ -8,9 +8,8 @@ describe('TemplateManagementComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TemplateManagementComponent ]
-    })
-    .compileComponents();
+      declarations: [TemplateManagementComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -8,9 +8,8 @@ describe('GuageGraphicComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GuageGraphicComponent ]
-    })
-    .compileComponents();
+      declarations: [GuageGraphicComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

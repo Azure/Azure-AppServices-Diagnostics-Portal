@@ -8,9 +8,8 @@ describe('RiskAlertsPanelomponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ RiskAlertsPanelomponent ]
-    })
-    .compileComponents();
+      declarations: [RiskAlertsPanelomponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

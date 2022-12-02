@@ -3,10 +3,9 @@ import { ArmResource, ResourceServiceInputs } from '../models/resources';
 
 @Injectable()
 export class StartupService {
-
   private _resourceServiceInputs: ResourceServiceInputs;
 
-  constructor() { }
+  constructor() {}
 
   public getResourceInfo(): ArmResource {
     return this._resourceServiceInputs.armResource;

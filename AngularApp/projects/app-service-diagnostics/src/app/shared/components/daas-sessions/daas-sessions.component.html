@@ -1,28 +1,40 @@
-<div *ngIf="supportedTier && !showDetailedView" class="header2 mb-2">Last 5 {{DiagnoserHeading}}
-  <div *ngIf="showDetailsLink" style="display:inline">
-    <div *ngIf="!enableSessionsPanel else useSessionsPanel" style="display:inline" [routerLink]="allSessions">
-      (<a tabindex="0" aria-label="View all sessions">View all sessions</a>)</div>
+<div *ngIf="supportedTier && !showDetailedView" class="header2 mb-2">
+  Last 5 {{ DiagnoserHeading }}
+  <div *ngIf="showDetailsLink" style="display: inline">
+    <div
+      *ngIf="!enableSessionsPanel; else useSessionsPanel"
+      style="display: inline"
+      [routerLink]="allSessions"
+    >
+      (<a tabindex="0" aria-label="View all sessions">View all sessions</a>)
+    </div>
     <ng-template #useSessionsPanel>
-      <div style="display:inline" (click)="toggleSessionPanel()" (keyup.enter)="toggleSessionPanel()">
-        (<a tabindex="0" aria-label="View all sessions">View all sessions</a>)</div>
+      <div
+        style="display: inline"
+        (click)="toggleSessionPanel()"
+        (keyup.enter)="toggleSessionPanel()"
+      >
+        (<a tabindex="0" aria-label="View all sessions">View all sessions</a>)
+      </div>
     </ng-template>
   </div>
 </div>
 <div>
-  <div class="col" *ngIf="checkingExistingSessions" style="height:30px">
+  <div class="col" *ngIf="checkingExistingSessions" style="height: 30px">
     <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
     Populating diagnostic sessions...
   </div>
 
   <div *ngIf="!checkingExistingSessions && !showDetailedView">
-    <div *ngIf="sessions.length === 0">
-      No sessions found
-    </div>
-    <table *ngIf="sessions.length > 0" class="table table-bordered report-table">
+    <div *ngIf="sessions.length === 0">No sessions found</div>
+    <table
+      *ngIf="sessions.length > 0"
+      class="table table-bordered report-table"
+    >
       <thead class="thead-light">
         <tr>
           <th>Date</th>
-          <th>{{ isWindowsApp ? "Reports" : "Logs" }}</th>
+          <th>{{ isWindowsApp ? 'Reports' : 'Logs' }}</th>
         </tr>
       </thead>
       <tbody>
@@ -30,11 +42,20 @@
           <td tabindex="0">{{ session.startDate }} (UTC)</td>
           <td>
             <div *ngIf="isWindowsApp">
-              <ul style="list-style: none;" *ngIf="isArrayWithItems(session.reports)">
+              <ul
+                style="list-style: none"
+                *ngIf="isArrayWithItems(session.reports)"
+              >
                 <li *ngFor="let report of session.reports">
-                  {{ getInstanceNameFromReport(report.name, diagnoserNameLookup) }}
-                  <a tabindex="0" (click)="openUrl(report.relativePath)" (keyup.enter)="openUrl(report.relativePath)"
-                    style="cursor: pointer">
+                  {{
+                    getInstanceNameFromReport(report.name, diagnoserNameLookup)
+                  }}
+                  <a
+                    tabindex="0"
+                    (click)="openUrl(report.relativePath)"
+                    (keyup.enter)="openUrl(report.relativePath)"
+                    style="cursor: pointer"
+                  >
                     <i class="fa fa-external-link" aria-hidden="true"></i>
                   </a>
                 </li>
@@ -43,24 +64,43 @@
                 Analysis not requested
               </div>
               <div *ngIf="isArrayWithItems(session.collectorErrors)">
-                <fab-tooltip-host content="{{session.collectorErrors[0]}}" [directionalHint]="directionalHint"
-                  [tooltipOptions]="toolTipOptionsValue">
-                  <i class="fa fa-exclamation-triangle" style="color:rgb(180, 10, 10)"></i>
+                <fab-tooltip-host
+                  content="{{ session.collectorErrors[0] }}"
+                  [directionalHint]="directionalHint"
+                  [tooltipOptions]="toolTipOptionsValue"
+                >
+                  <i
+                    class="fa fa-exclamation-triangle"
+                    style="color: rgb(180, 10, 10)"
+                  ></i>
                 </fab-tooltip-host>
               </div>
               <div *ngIf="isArrayWithItems(session.analyzerErrors)">
-                <fab-tooltip-host content="{{session.analyzerErrors[0]}}" [directionalHint]="directionalHint"
-                  [tooltipOptions]="toolTipOptionsValue">
-                  <i class="fa fa-exclamation-triangle" style="color:rgb(180, 10, 10)"></i>
+                <fab-tooltip-host
+                  content="{{ session.analyzerErrors[0] }}"
+                  [directionalHint]="directionalHint"
+                  [tooltipOptions]="toolTipOptionsValue"
+                >
+                  <i
+                    class="fa fa-exclamation-triangle"
+                    style="color: rgb(180, 10, 10)"
+                  ></i>
                 </fab-tooltip-host>
               </div>
             </div>
             <div *ngIf="!isWindowsApp">
-              <ul style="list-style: none;" *ngIf="isArrayWithItems(session.logs)">
+              <ul
+                style="list-style: none"
+                *ngIf="isArrayWithItems(session.logs)"
+              >
                 <li *ngFor="let log of session.logs">
                   {{ log.name }}
-                  <a tabindex="0" (click)="openUrl(log.relativePath)" (keyup.enter)="openUrl(log.relativePath)"
-                    style="cursor: pointer">
+                  <a
+                    tabindex="0"
+                    (click)="openUrl(log.relativePath)"
+                    (keyup.enter)="openUrl(log.relativePath)"
+                    style="cursor: pointer"
+                  >
                     <i class="fa fa-external-link" aria-hidden="true"></i>
                   </a>
                 </li>
@@ -72,55 +112,104 @@
     </table>
   </div>
   <div *ngIf="!checkingExistingSessions && showDetailedView">
-    <div *ngIf="sessions?.length === 0">
-      No sessions found
-    </div>
+    <div *ngIf="sessions?.length === 0">No sessions found</div>
 
-    <div style="margin-top:20px" *ngFor="let session of sessions; let i = index">
+    <div
+      style="margin-top: 20px"
+      *ngFor="let session of sessions; let i = index"
+    >
       <div class="panel panel-default">
         <div class="panel-heading">
           <span *ngIf="!isSessionInProgress(session)">
-            <i class="fa health-icon fa-exclamation-triangle warning-icon-color" *ngIf="hasErrors(session)"
-              aria-hidden="true"></i>
-            <i class="fa health-icon fa-check-circle healthy-icon-color" *ngIf="!hasErrors(session)"
-              aria-hidden="true"></i>
+            <i
+              class="fa health-icon fa-exclamation-triangle warning-icon-color"
+              *ngIf="hasErrors(session)"
+              aria-hidden="true"
+            ></i>
+            <i
+              class="fa health-icon fa-check-circle healthy-icon-color"
+              *ngIf="!hasErrors(session)"
+              aria-hidden="true"
+            ></i>
           </span>
           <span *ngIf="isSessionInProgress(session)">
-            <i class="fa health-icon fa-hourglass-half warning-icon-color" aria-hidden="true"></i>
+            <i
+              class="fa health-icon fa-hourglass-half warning-icon-color"
+              aria-hidden="true"
+            ></i>
           </span>
           <b>{{ session.startDate }} UTC</b>
-          <span>- {{ convertUtcIfNeeded(session.startDate) | datetimediff }} ago</span>
+          <span
+            >-
+            {{ convertUtcIfNeeded(session.startDate) | datetimediff }} ago</span
+          >
           <span>{{ getSessionSize(session) }}</span>
-          <div class="inline" style="margin-left:30px" *ngIf="!isSessionInProgress(session)">
-            <div class="inline tool-tip hotspot-clickable" style="font-size:medium">
-              <fab-tooltip-host content="Click here
+          <div
+            class="inline"
+            style="margin-left: 30px"
+            *ngIf="!isSessionInProgress(session)"
+          >
+            <div
+              class="inline tool-tip hotspot-clickable"
+              style="font-size: medium"
+            >
+              <fab-tooltip-host
+                content="Click here
                             to delete this session and any collected logs and reports generated for this
-                            session" [directionalHint]="directionalHint" [tooltipOptions]="toolTipOptionsValue">
-                <i tabindex="0" class="fa fa-trash" aria-hidden="true" (click)="deleteSession(i)"
-                  (keyup.enter)="deleteSession(i)"></i>
+                            session"
+                [directionalHint]="directionalHint"
+                [tooltipOptions]="toolTipOptionsValue"
+              >
+                <i
+                  tabindex="0"
+                  class="fa fa-trash"
+                  aria-hidden="true"
+                  (click)="deleteSession(i)"
+                  (keyup.enter)="deleteSession(i)"
+                ></i>
               </fab-tooltip-host>
             </div>
             <span *ngIf="session.deleting">
-              <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+              <i
+                class="fa fa-circle-o-notch fa-spin spin-icon"
+                aria-hidden="true"
+              ></i>
               Deleting...
             </span>
           </div>
-          <span tabindex="0" class="pull-right" (click)="toggleExpanded(i)" (keyup.enter)="toggleExpanded(i)">
-            <i class="fa fa-plus" *ngIf="!session.Expanded" aria-hidden="true"></i>
-            <i class="fa fa-minus" *ngIf="session.Expanded" aria-hidden="true"></i>
+          <span
+            tabindex="0"
+            class="pull-right"
+            (click)="toggleExpanded(i)"
+            (keyup.enter)="toggleExpanded(i)"
+          >
+            <i
+              class="fa fa-plus"
+              *ngIf="!session.Expanded"
+              aria-hidden="true"
+            ></i>
+            <i
+              class="fa fa-minus"
+              *ngIf="session.Expanded"
+              aria-hidden="true"
+            ></i>
           </span>
         </div>
         <div class="panel-body" *ngIf="session.expanded">
           <div>
-            <div *ngIf="session.deletingFailure" class="alert alert-danger" role="alert">
-              {{ session.deletingFailure}}
+            <div
+              *ngIf="session.deletingFailure"
+              class="alert alert-danger"
+              role="alert"
+            >
+              {{ session.deletingFailure }}
             </div>
             <div class="table-responsive">
               <table class="table table-bordered">
                 <thead class="thead-light">
                   <tr>
-                    <th style="width:250px">Diagnoser</th>
-                    <th style="width:250px">Data</th>
+                    <th style="width: 250px">Diagnoser</th>
+                    <th style="width: 250px">Data</th>
                     <th>Reports</th>
                   </tr>
                 </thead>
@@ -128,53 +217,117 @@
                   <tr>
                     <td tabindex="0">{{ session.tool }}</td>
                     <td>
-                      <ul style="list-style: none;padding:0" *ngIf="isArrayWithItems(session.logs)">
+                      <ul
+                        style="list-style: none; padding: 0"
+                        *ngIf="isArrayWithItems(session.logs)"
+                      >
                         <li *ngFor="let log of session.logs">
-                          <a tabindex="0" (keyup.enter)="openUrl(log.relativePath)" (click)="openUrl(log.relativePath)"
-                            style="cursor: pointer">
+                          <a
+                            tabindex="0"
+                            (keyup.enter)="openUrl(log.relativePath)"
+                            (click)="openUrl(log.relativePath)"
+                            style="cursor: pointer"
+                          >
                             {{ log.name }}
                           </a>
-                          <div style="width: 100%;text-align: center;" *ngIf="hasDifferentBlobStorage(log, session)">
-                            <fab-tooltip-host content="A different storage account
-                                                            '{{session.blobStorageHostName}}' was used when this session
+                          <div
+                            style="width: 100%; text-align: center"
+                            *ngIf="hasDifferentBlobStorage(log, session)"
+                          >
+                            <fab-tooltip-host
+                              content="A different storage account
+                                                            '{{
+                                session.blobStorageHostName
+                              }}' was used when this session
                                                             was created. Data may not exist at the same location."
-                              [directionalHint]="directionalHint" [tooltipOptions]="toolTipOptionsValue">
-                              <i class="fa fa-exclamation-triangle" style="color:rgb(180, 10, 10)"></i>
+                              [directionalHint]="directionalHint"
+                              [tooltipOptions]="toolTipOptionsValue"
+                            >
+                              <i
+                                class="fa fa-exclamation-triangle"
+                                style="color: rgb(180, 10, 10)"
+                              ></i>
                             </fab-tooltip-host>
                           </div>
                         </li>
                       </ul>
-                      <div *ngIf="isSessionInProgress(session) && isCollectingData(session)">
-                        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+                      <div
+                        *ngIf="
+                          isSessionInProgress(session) &&
+                          isCollectingData(session)
+                        "
+                      >
+                        <i
+                          class="fa fa-circle-o-notch fa-spin spin-icon"
+                          aria-hidden="true"
+                        ></i>
                         Collecting data...
                       </div>
-                      <div style="width: 100%;text-align: center;" *ngIf="isArrayWithItems(session.collectorErrors)">
-                        <fab-tooltip-host content="{{session.collectorErrors[0]}}" [directionalHint]="directionalHint"
-                          [tooltipOptions]="toolTipOptionsValue">
-                          <i class="fa fa-exclamation-triangle" style="color:rgb(180, 10, 10)"></i>
+                      <div
+                        style="width: 100%; text-align: center"
+                        *ngIf="isArrayWithItems(session.collectorErrors)"
+                      >
+                        <fab-tooltip-host
+                          content="{{ session.collectorErrors[0] }}"
+                          [directionalHint]="directionalHint"
+                          [tooltipOptions]="toolTipOptionsValue"
+                        >
+                          <i
+                            class="fa fa-exclamation-triangle"
+                            style="color: rgb(180, 10, 10)"
+                          ></i>
                         </fab-tooltip-host>
                       </div>
                     </td>
                     <td>
-                      <ul *ngIf="isArrayWithItems(session.reports)" style="list-style: none;padding:0">
+                      <ul
+                        *ngIf="isArrayWithItems(session.reports)"
+                        style="list-style: none; padding: 0"
+                      >
                         <li *ngFor="let report of session.reports">
-                          <a tabindex="0" (click)="openUrl(report.relativePath)"
-                            (keyup.enter)="openReport(report.relativePath)" style="cursor: pointer">
-                            {{ getInstanceNameFromReport(report.name, session.tool) }}
+                          <a
+                            tabindex="0"
+                            (click)="openUrl(report.relativePath)"
+                            (keyup.enter)="openReport(report.relativePath)"
+                            style="cursor: pointer"
+                          >
+                            {{
+                              getInstanceNameFromReport(
+                                report.name,
+                                session.tool
+                              )
+                            }}
                           </a>
                         </li>
                       </ul>
                       <div *ngIf="!isAnalysisRequested(session)">
                         Analysis not requested
                       </div>
-                      <div style="width: 100%;text-align: center;" *ngIf="isArrayWithItems(session.analyzerErrors)">
-                        <fab-tooltip-host content="{{session.analyzerErrors[0]}}" [directionalHint]="directionalHint"
-                          [tooltipOptions]="toolTipOptionsValue">
-                          <i class="fa fa-exclamation-triangle" style="color:rgb(180, 10, 10)"></i>
+                      <div
+                        style="width: 100%; text-align: center"
+                        *ngIf="isArrayWithItems(session.analyzerErrors)"
+                      >
+                        <fab-tooltip-host
+                          content="{{ session.analyzerErrors[0] }}"
+                          [directionalHint]="directionalHint"
+                          [tooltipOptions]="toolTipOptionsValue"
+                        >
+                          <i
+                            class="fa fa-exclamation-triangle"
+                            style="color: rgb(180, 10, 10)"
+                          ></i>
                         </fab-tooltip-host>
                       </div>
-                      <div *ngIf="isSessionInProgress(session) && isAnalysisRequested(session)">
-                        <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+                      <div
+                        *ngIf="
+                          isSessionInProgress(session) &&
+                          isAnalysisRequested(session)
+                        "
+                      >
+                        <i
+                          class="fa fa-circle-o-notch fa-spin spin-icon"
+                          aria-hidden="true"
+                        ></i>
                         {{ getAnalyzerStatus(session) }}
                       </div>
                     </td>

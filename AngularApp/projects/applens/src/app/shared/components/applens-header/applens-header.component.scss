@@ -1,105 +1,104 @@
 .header-img {
-    width: 24px;
-    height: 24px;
+  width: 24px;
+  height: 24px;
 }
 
 .avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    margin: 5px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin: 5px;
 }
 
 .avatar :hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .header-nav {
-    display: flex;
-    height: 50px;
-    background-color: var(--bodyBackground);
-    align-items: center;
-    box-shadow: 0px 1px 0px #CECECE;
-    justify-content: space-between;
+  display: flex;
+  height: 50px;
+  background-color: var(--bodyBackground);
+  align-items: center;
+  box-shadow: 0px 1px 0px #cecece;
+  justify-content: space-between;
 }
 
 .header-title {
-    display: flex;
-    width: 250px;
-    padding-left: 24px;
-    border-right: 1px solid #CECECE;
-    align-items: center;
-    font-size: 14px;
+  display: flex;
+  width: 250px;
+  padding-left: 24px;
+  border-right: 1px solid #cecece;
+  align-items: center;
+  font-size: 14px;
 }
 
 .resource-info {
-    display: flex;
-    padding-left: 15px;
-    align-items: center;
+  display: flex;
+  padding-left: 15px;
+  align-items: center;
 }
 
 .bold-text {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .resource-summary {
-    display: inline-block;
-    float: right;
-    padding: 2px 2px 2px 5px;
-    color:#367fa9;
-  }
+  display: inline-block;
+  float: right;
+  padding: 2px 2px 2px 5px;
+  color: #367fa9;
+}
 
-  .resource-summary i {
-    font-size:18px;
-    color: #367fa9;
-  }
+.resource-summary i {
+  font-size: 18px;
+  color: #367fa9;
+}
 
-  .resource-summary i:hover{
-    color: var(--bodyText);
-  }
+.resource-summary i:hover {
+  color: var(--bodyText);
+}
 
-  .header-callout {
-    position: absolute;
-    z-index: 999;
-    background: var(--bodyBackground);
-    top:50px;
-    right: 0px;
-    border: 1px solid black;
-    width: 300px;
-    height: 300px;
+.header-callout {
+  position: absolute;
+  z-index: 999;
+  background: var(--bodyBackground);
+  top: 50px;
+  right: 0px;
+  border: 1px solid black;
+  width: 300px;
+  height: 300px;
 }
 
 .user-setting-section {
-    padding: 10px;
+  padding: 10px;
 }
 
 .user-photo-container {
-    margin-right: 16px;
-    display: flex;
-    align-items: center;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
 }
 
 .user-photo-container :hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .user-initial {
-    background-color: #CDDAEA;
-    color: #0F3057;
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
+  background-color: #cddaea;
+  color: #0f3057;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .image-label {
-    font-style: italic;
-    color: var(--imageLabel);
-    font-weight: bold;
+  font-style: italic;
+  color: var(--imageLabel);
+  font-weight: bold;
 }
 
 .header-search {
-    width: 300px;
-    height: 40px;
+  width: 300px;
+  height: 40px;
 }

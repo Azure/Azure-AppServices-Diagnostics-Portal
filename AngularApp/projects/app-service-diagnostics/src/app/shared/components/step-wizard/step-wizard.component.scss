@@ -26,7 +26,7 @@ body {
 }
 #wizard-progress .step-indicator li:after {
   background-color: #ccc;
-  content: "";
+  content: '';
   display: block;
   height: 1px;
   position: absolute;
@@ -71,13 +71,13 @@ body {
 }
 #wizard-progress .step-indicator .step:hover {
   cursor: pointer;
-} 
+}
 #wizard-progress .step-indicator .caption {
   color: #ccc;
   padding: 11px 16px;
 }
 
-.wizard-status{
+.wizard-status {
   font-size: smaller;
   margin-left: 20px;
 }

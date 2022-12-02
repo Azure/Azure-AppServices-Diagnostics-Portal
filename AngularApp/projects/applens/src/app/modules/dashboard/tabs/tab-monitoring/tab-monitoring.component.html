@@ -1,47 +1,91 @@
-<div *ngIf="!isPPE; else redirectMonitoringBlock" style="margin:5px 0px 0px 20px">
-  <div class=" container" style="margin-left: 0px; padding-left: 0px; width: 100%">
+<div
+  *ngIf="!isPPE; else redirectMonitoringBlock"
+  style="margin: 5px 0px 0px 20px"
+>
+  <div
+    class="container"
+    style="margin-left: 0px; padding-left: 0px; width: 100%"
+  >
     <div class="col-sm-6 titleElements">
-        <h3 style="margin-top:8px">{{reportName}}</h3>
-      </div>
+      <h3 style="margin-top: 8px">{{ reportName }}</h3>
+    </div>
     <div class="col-sm-5 titleElements">
       <ul class="nav nav-pills" style="float: right">
         <li class="dropdown">
-          <fab-default-button [styles]="buttonStyle" [iconProps]="{ iconName: 'clock' }"  class="dropdown-toggle" data-toggle="dropdown" href="#">Time range: {{selectedTimeRange}}
-            <span class="caret" style="position: right;"></span>
+          <fab-default-button
+            [styles]="buttonStyle"
+            [iconProps]="{ iconName: 'clock' }"
+            class="dropdown-toggle"
+            data-toggle="dropdown"
+            href="#"
+            >Time range: {{ selectedTimeRange }}
+            <span class="caret" style="position: right"></span>
           </fab-default-button>
           <ul class="dropdown-menu">
             <li *ngFor="let key of timeRangeKeys">
-              <a (click)="setTimeRange(key)">{{key}}</a>
+              <a (click)="setTimeRange(key)">{{ key }}</a>
             </li>
           </ul>
         </li>
         <li class="dropdown">
-          <fab-default-button [styles]="buttonStyle" [iconProps]="{ iconName: 'SyncOccurence' }" class="dropdown-toggle" data-toggle="dropdown" href="#">Data source: {{selectedDataSource}}
+          <fab-default-button
+            [styles]="buttonStyle"
+            [iconProps]="{ iconName: 'SyncOccurence' }"
+            class="dropdown-toggle"
+            data-toggle="dropdown"
+            href="#"
+            >Data source: {{ selectedDataSource }}
             <span class="caret"></span>
           </fab-default-button>
           <ul class="dropdown-menu">
             <li *ngFor="let key of dataSourceKeys">
-              <a (click)="setDataSource(key)">{{key}}</a>
+              <a (click)="setDataSource(key)">{{ key }}</a>
             </li>
           </ul>
         </li>
       </ul>
     </div>
   </div>
-  <detector-view [detectorResponse]="systemInvokerResponse" [error]="error" [startTime]="startTime" [endTime]="endTime" [hideDetectorControl]="true" [isSystemInvoker]="true" [authorInfo]="authorInfo" [feedbackDetector]="detectorId">
+  <detector-view
+    [detectorResponse]="systemInvokerResponse"
+    [error]="error"
+    [startTime]="startTime"
+    [endTime]="endTime"
+    [hideDetectorControl]="true"
+    [isSystemInvoker]="true"
+    [authorInfo]="authorInfo"
+    [feedbackDetector]="detectorId"
+  >
   </detector-view>
 </div>
 <ng-template #redirectMonitoringBlock>
-    <div *ngIf="isPPE && statisticsType === 0; else redirectAnalyticsBlock" style="margin:5px 0px 0px 20px">
-      <div class=" container" style="margin-left: 0px; padding-left: 0px; width: 100%">
-        <p>Monitoring data for PPE is available to view on AppLens (Prod). Click <a [href]="prodMonitoringLink">here</a> to view the Monitoring tab on AppLens (Prod).</p>
-      </div>
+  <div
+    *ngIf="isPPE && statisticsType === 0; else redirectAnalyticsBlock"
+    style="margin: 5px 0px 0px 20px"
+  >
+    <div
+      class="container"
+      style="margin-left: 0px; padding-left: 0px; width: 100%"
+    >
+      <p>
+        Monitoring data for PPE is available to view on AppLens (Prod). Click
+        <a [href]="prodMonitoringLink">here</a> to view the Monitoring tab on
+        AppLens (Prod).
+      </p>
     </div>
+  </div>
 </ng-template>
 <ng-template #redirectAnalyticsBlock>
-  <div *ngIf="isPPE && statisticsType === 1" style="margin:5px 0px 0px 20px">
-    <div class=" container" style="margin-left: 0px; padding-left: 0px; width: 100%">
-      <p>Analytics data for PPE is available to view on AppLens (Prod). Click <a [href]="prodMonitoringLink">here</a> to view the Analytics tab on AppLens (Prod).</p>
+  <div *ngIf="isPPE && statisticsType === 1" style="margin: 5px 0px 0px 20px">
+    <div
+      class="container"
+      style="margin-left: 0px; padding-left: 0px; width: 100%"
+    >
+      <p>
+        Analytics data for PPE is available to view on AppLens (Prod). Click
+        <a [href]="prodMonitoringLink">here</a> to view the Analytics tab on
+        AppLens (Prod).
+      </p>
     </div>
   </div>
 </ng-template>

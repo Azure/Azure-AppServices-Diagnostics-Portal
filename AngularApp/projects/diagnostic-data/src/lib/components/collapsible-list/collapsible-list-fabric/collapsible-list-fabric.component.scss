@@ -1,80 +1,80 @@
 .collapsable-list {
-    padding: 0px 10px;
-    border-bottom: 1px solid #ccc;
+  padding: 0px 10px;
+  border-bottom: 1px solid #ccc;
 }
 
 .collapsable-list-less-margin {
-    margin-top: 5px;
-    padding: 0px 10px;
-    border-bottom: 1px solid #ccc;
+  margin-top: 5px;
+  padding: 0px 10px;
+  border-bottom: 1px solid #ccc;
 }
 
 .list-header {
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    height:37px;
-    color:var(--listHeader);
-    -webkit-user-select: none; /* Chrome/Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+ */
-    -o-user-select: none;
-    user-select: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  height: 37px;
+  color: var(--listHeader);
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
+  -o-user-select: none;
+  user-select: none;
 }
 
 .collapse-icon {
-    /*float:right;*/
-    font-size: 10px;
+  /*float:right;*/
+  font-size: 10px;
 }
 .list-items-container {
-    margin-left: 5px;
-    margin-bottom: 18px;
+  margin-left: 5px;
+  margin-bottom: 18px;
 }
 .list-item {
-    padding-top: 10px;
+  padding-top: 10px;
 }
 .list-item > a {
-    cursor: pointer;
-    color: #3999c6;
+  cursor: pointer;
+  color: #3999c6;
 }
 /* .list-item:hover{
     text-decoration: underline;
 } */
 .list-item.disabled {
-    color: #8e8e8e;
-    cursor: not-allowed;
+  color: #8e8e8e;
+  cursor: not-allowed;
 }
 .list-item.disabled:hover {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 button {
-    background-color: Transparent;
-    background-repeat: no-repeat;
-    border: none;
-    overflow: hidden;
+  background-color: Transparent;
+  background-repeat: no-repeat;
+  border: none;
+  overflow: hidden;
 }
 
 .btn-outer:focus,
 .btn-inner:focus {
-    outline: none;
+  outline: none;
 }
 
 .btn-outer > .btn-inner {
-    box-shadow: 0 0 2px 2px #51a7e8; /* keyboard-only focus styles */
-    color: #00bcf2; /* keyboard-only focus styles */
+  box-shadow: 0 0 2px 2px #51a7e8; /* keyboard-only focus styles */
+  color: #00bcf2; /* keyboard-only focus styles */
 }
 
 .custom-caret {
-    transition: transform 0.1s linear 0s;
+  transition: transform 0.1s linear 0s;
 }
 
 .custom-caret-down {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 
 .collapsible-list-title {
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--bodyText);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--bodyText);
 }

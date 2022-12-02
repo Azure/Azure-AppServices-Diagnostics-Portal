@@ -8,9 +8,8 @@ describe('ResourceRedirectComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ResourceRedirectComponent ]
-    })
-    .compileComponents();
+      declarations: [ResourceRedirectComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

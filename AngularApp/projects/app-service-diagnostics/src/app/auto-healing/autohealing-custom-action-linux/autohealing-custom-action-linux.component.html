@@ -2,69 +2,103 @@
   <div class="panel panel-default">
     <div class="panel-body">
       <div class="detail-cards">
-        <ng-container *ngFor="let item of Diagnosers;let i = index">
-          <button class="detail-card" (click)="chooseDiagnoser(item)"
-            [ngClass]="{'detail-card-active': item.Name === diagnoser.Name}">
-            <h4>{{item.Name}}</h4>
+        <ng-container *ngFor="let item of Diagnosers; let i = index">
+          <button
+            class="detail-card"
+            (click)="chooseDiagnoser(item)"
+            [ngClass]="{ 'detail-card-active': item.Name === diagnoser.Name }"
+          >
+            <h4>{{ item.Name }}</h4>
             <p>{{ item.Description }}</p>
           </button>
         </ng-container>
       </div>
-      <hr>
-      <div class="diagnostic-options-heading">
-        Tool Options
-      </div>
+      <hr />
+      <div class="diagnostic-options-heading">Tool Options</div>
       <div class="row diagnostic-options">
         <div class="row mt-4" *ngIf="diagnoser && diagnoser.Name">
           <div *ngIf="diagnoser.Name === 'MemoryDump'">
             <label for="chooseDumpType">Choose Dump type</label>
-            <select id="chooseDumpType" class="ml-2" [(ngModel)]="linuxDumpType">
-              <option *ngFor="let dumpType of allowedDumpTypes">{{dumpType}}</option>
+            <select
+              id="chooseDumpType"
+              class="ml-2"
+              [(ngModel)]="linuxDumpType"
+            >
+              <option *ngFor="let dumpType of allowedDumpTypes">
+                {{ dumpType }}
+              </option>
             </select>
           </div>
           <div *ngIf="diagnoser.Name === 'Profiler'">
-            <label for="chooseProfilerDuration">Choose profiler trace duration</label>
-            <select id="chooseProfilerDuration" class="ml-2" [(ngModel)]="linuxProfileDuration">
-              <option *ngFor="let duration of allowedDurationValues" [value]='duration'>{{duration}} seconds</option>
+            <label for="chooseProfilerDuration"
+              >Choose profiler trace duration</label
+            >
+            <select
+              id="chooseProfilerDuration"
+              class="ml-2"
+              [(ngModel)]="linuxProfileDuration"
+            >
+              <option
+                *ngFor="let duration of allowedDurationValues"
+                [value]="duration"
+              >
+                {{ duration }} seconds
+              </option>
             </select>
           </div>
         </div>
         <div class="row mt-4">
-          Configure additional options that control how the diagnostic tools chosen above should behave:
+          Configure additional options that control how the diagnostic tools
+          chosen above should behave:
         </div>
         <div class="row">
           <div class="col-sm-3">
             <ng-container *ngFor="let option of DiagnoserOptions">
               <div class="radio">
                 <label>
-                  <input type="radio" name="optradio" [checked]="diagnoserOption.option === option.option"
-                    [value]="option.option" (change)="chooseDiagnoserAction(option)"> {{ option.option }}
+                  <input
+                    type="radio"
+                    name="optradio"
+                    [checked]="diagnoserOption.option === option.option"
+                    [value]="option.option"
+                    (change)="chooseDiagnoserAction(option)"
+                  />
+                  {{ option.option }}
                 </label>
               </div>
             </ng-container>
           </div>
           <div class="col-sm-9">
-            <div class="diagnoser-option"> {{ diagnoserOption.Description}} </div>
+            <div class="diagnoser-option">
+              {{ diagnoserOption.Description }}
+            </div>
           </div>
         </div>
         <div class="row mb-2 ml-2">
           <div *ngIf="showDiagnoserOptionWarning">
-            <table class="ml-4 mt-4 table table-bordered" style="width:90%">
+            <table class="ml-4 mt-4 table table-bordered" style="width: 90%">
               <th>
                 <tr>
                   <td>
                     <div style="padding: 10px">
-                      <i class="fa health-icon fa-exclamation-triangle warning-icon-color"></i> Warning
+                      <i
+                        class="fa health-icon fa-exclamation-triangle warning-icon-color"
+                      ></i>
+                      Warning
                     </div>
                   </td>
                 </tr>
               </th>
               <tbody>
                 <tr>
-                  <td> You have chosen a tool option that does not restart the process. This can cause
-                    auto-healing actions to kick in multiple times thus generating a lot of data. It is
-                    recommended to choose <strong>CollectLogsAndKill</strong> option to ensure that the process gets
-                    restarted after collecting data.</td>
+                  <td>
+                    You have chosen a tool option that does not restart the
+                    process. This can cause auto-healing actions to kick in
+                    multiple times thus generating a lot of data. It is
+                    recommended to choose
+                    <strong>CollectLogsAndKill</strong> option to ensure that
+                    the process gets restarted after collecting data.
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -72,22 +106,35 @@
         </div>
       </div>
       <div class="mt-3" *ngIf="diagnoser && diagnoser.Name">
-        <daas-validator #daasValidatorRef [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoser.Name"
-          (DaasValidated)="onDaasValidated($event)"></daas-validator>
+        <daas-validator
+          #daasValidatorRef
+          [siteToBeDiagnosed]="siteToBeDiagnosed"
+          [diagnoserName]="diagnoser.Name"
+          (DaasValidated)="onDaasValidated($event)"
+        ></daas-validator>
       </div>
     </div>
 
     <div *ngIf="validationResult.Validated" class="ml-4">
       Action chosen:
-      <span class="final-action">{{ updatedCustomAction.exe + ' ' + updatedCustomAction.parameters }}</span>
+      <span class="final-action">{{
+        updatedCustomAction.exe + ' ' + updatedCustomAction.parameters
+      }}</span>
       <div class="custom-action-note">
-        <strong>Note:</strong> The custom action is executed <strong>each time</strong> the auto-healing condition is
-        met in the app
+        <strong>Note:</strong> The custom action is executed
+        <strong>each time</strong> the auto-healing condition is met in the app
       </div>
       <div class="mt-2 mb-2">
-        <button type="button" class="btn btn-primary btn-sm"
-          [disabled]="updatedCustomAction.exe && updatedCustomAction.exe.length === 0"
-          (click)="saveCustomAction()">Save</button>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm"
+          [disabled]="
+            updatedCustomAction.exe && updatedCustomAction.exe.length === 0
+          "
+          (click)="saveCustomAction()"
+        >
+          Save
+        </button>
       </div>
     </div>
   </div>

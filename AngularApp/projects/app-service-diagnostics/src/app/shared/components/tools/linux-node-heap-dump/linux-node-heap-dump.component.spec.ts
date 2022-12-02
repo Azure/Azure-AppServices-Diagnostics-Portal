@@ -8,9 +8,8 @@ describe('LinuxNodeHeapDumpComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ LinuxNodeHeapDumpComponent ]
-    })
-    .compileComponents();
+      declarations: [LinuxNodeHeapDumpComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

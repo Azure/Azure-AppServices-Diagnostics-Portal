@@ -8,9 +8,8 @@ describe('TreeViewComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ TreeViewComponent ]
-    })
-    .compileComponents();
+      declarations: [TreeViewComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

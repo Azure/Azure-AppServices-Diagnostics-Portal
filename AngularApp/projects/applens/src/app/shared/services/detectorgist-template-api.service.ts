@@ -7,10 +7,12 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class DetectorGistApiService {
-
-  constructor(private _diagnosticApiService: DiagnosticApiService) { }
+  constructor(private _diagnosticApiService: DiagnosticApiService) {}
 
   public getTemplate(name: string): Observable<string> {
-    return this._diagnosticApiService.get<string>(`api/templates/${name}`, true);
+    return this._diagnosticApiService.get<string>(
+      `api/templates/${name}`,
+      true
+    );
   }
 }

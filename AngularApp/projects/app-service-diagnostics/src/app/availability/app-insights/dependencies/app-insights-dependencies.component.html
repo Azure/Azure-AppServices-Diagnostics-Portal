@@ -1,44 +1,46 @@
-<div style="text-align: center; padding:20px" *ngIf="loading">
-    <i class="fa fa-circle-o-notch fa-2x fa-spin spin-icon" aria-hidden="true"></i>
+<div style="text-align: center; padding: 20px" *ngIf="loading">
+  <i
+    class="fa fa-circle-o-notch fa-2x fa-spin spin-icon"
+    aria-hidden="true"
+  ></i>
 </div>
 
 <div *ngIf="!loading && dependencies.length > 0">
-    <table class="table table-hover table-responsive no-border">
-        <thead>
-            <tr>
-                <th>Endpoint</th>
-                <th *ngIf="!bladeOpenedFromSupportTicketFlow">Type</th>
-                <th *ngIf="!bladeOpenedFromSupportTicketFlow">Average Duration(ms)</th>
-                <th>Percentile-50 (ms)</th>
-                <th *ngIf="!bladeOpenedFromSupportTicketFlow">Percentile-90 (ms)</th>
-                <th>Percentile-95 (ms)</th>
-                <th>Total Requests</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let item of dependencies" style="font-size:13px">
-                <td>{{item.endpoint}}</td>
-                <td *ngIf="!bladeOpenedFromSupportTicketFlow">{{item.type}}</td>
-                <td *ngIf="!bladeOpenedFromSupportTicketFlow">{{item.avg}}</td>
-                <td>{{item.p_50}}</td>
-                <td *ngIf="!bladeOpenedFromSupportTicketFlow">{{item.p_90}}</td>
-                <td>{{item.p_95}}</td>
-                <td>{{item.requests}}</td>
-            </tr>
-        </tbody>
-
-    </table>
-    <div style="width:100%;text-align:right;font-size:13px;padding:3px">
-        <a (click)="OpenAppInsights()">
-            View More in App Insights
-            <i class="fa fa-arrow-circle-o-right" style="font-size: 15px"></i>
-        </a>
-    </div>
+  <table class="table table-hover table-responsive no-border">
+    <thead>
+      <tr>
+        <th>Endpoint</th>
+        <th *ngIf="!bladeOpenedFromSupportTicketFlow">Type</th>
+        <th *ngIf="!bladeOpenedFromSupportTicketFlow">Average Duration(ms)</th>
+        <th>Percentile-50 (ms)</th>
+        <th *ngIf="!bladeOpenedFromSupportTicketFlow">Percentile-90 (ms)</th>
+        <th>Percentile-95 (ms)</th>
+        <th>Total Requests</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of dependencies" style="font-size: 13px">
+        <td>{{ item.endpoint }}</td>
+        <td *ngIf="!bladeOpenedFromSupportTicketFlow">{{ item.type }}</td>
+        <td *ngIf="!bladeOpenedFromSupportTicketFlow">{{ item.avg }}</td>
+        <td>{{ item.p_50 }}</td>
+        <td *ngIf="!bladeOpenedFromSupportTicketFlow">{{ item.p_90 }}</td>
+        <td>{{ item.p_95 }}</td>
+        <td>{{ item.requests }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="width: 100%; text-align: right; font-size: 13px; padding: 3px">
+    <a (click)="OpenAppInsights()">
+      View More in App Insights
+      <i class="fa fa-arrow-circle-o-right" style="font-size: 15px"></i>
+    </a>
+  </div>
 </div>
 
-
-
-
-<div *ngIf="!loading && dependencies.length === 0" style="font-size:16px;padding:10px">
-    No slow dependencies found during this time.
+<div
+  *ngIf="!loading && dependencies.length === 0"
+  style="font-size: 16px; padding: 10px"
+>
+  No slow dependencies found during this time.
 </div>

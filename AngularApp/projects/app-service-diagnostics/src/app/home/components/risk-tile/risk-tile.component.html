@@ -1,15 +1,25 @@
 <div (click)="clickTileHandler()" class="risk-tile">
-  <div class="risk-tile-container" tabindex="0" role="button" (keyup.enter)="clickTileHandler()">
-    <h3 class="risk-title risk-section">{{title}}</h3>
-    <div class="risk-section" *ngIf="loading != LoadingStatus.Loading else loadingPlaceHolder">
+  <div
+    class="risk-tile-container"
+    tabindex="0"
+    role="button"
+    (keyup.enter)="clickTileHandler()"
+  >
+    <h3 class="risk-title risk-section">{{ title }}</h3>
+    <div
+      class="risk-section"
+      *ngIf="loading != LoadingStatus.Loading; else loadingPlaceHolder"
+    >
       <div *ngFor="let info of infoList" class="risk-icon-section">
-        <div class="mr-3"><status-icon [status]="info.status"></status-icon></div>
-        <div>{{info.message}}</div>
+        <div class="mr-3">
+          <status-icon [status]="info.status"></status-icon>
+        </div>
+        <div>{{ info.message }}</div>
       </div>
     </div>
 
     <div class="risk-section">
-      <a>{{linkText}}</a>
+      <a>{{ linkText }}</a>
     </div>
   </div>
 </div>
@@ -19,4 +29,3 @@
     <fab-spinner [ariaLabel]="loadingAriaLabel"></fab-spinner>
   </div>
 </ng-template>
-

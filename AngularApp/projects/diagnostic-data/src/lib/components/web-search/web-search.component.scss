@@ -1,71 +1,70 @@
 .search-input-group {
-    width:98%;
-    height: 30px;
+  width: 98%;
+  height: 30px;
 }
 
 .search-result-input::placeholder {
-    color: var(--inputPlaceholderText);
+  color: var(--inputPlaceholderText);
 }
 
-
-.icon-err{
-    color: #bf0000;
+.icon-err {
+  color: #bf0000;
 }
 
-.no-results-section{
-    margin-top: 10px;
+.no-results-section {
+  margin-top: 10px;
 }
 
-.no-results-header{
-    display: block;
-    font-weight: 500;
-    font-size: 16px;
-  }
-
-.no-results-content{
-    display:block;
-    font-size: 14px;
+.no-results-header {
+  display: block;
+  font-weight: 500;
+  font-size: 16px;
 }
 
-.form-control{
-    font-size: 16px;
-    color: var(--bodyText);
-    background-color: var(--bodyBackground);
+.no-results-content {
+  display: block;
+  font-size: 14px;
+}
+
+.form-control {
+  font-size: 16px;
+  color: var(--bodyText);
+  background-color: var(--bodyBackground);
 }
 
 .article-container {
-    max-width: 80%;
-    font-size: 14px;
-    //margin-bottom: 100px;
+  max-width: 80%;
+  font-size: 14px;
+  //margin-bottom: 100px;
 }
 
 .article {
-    border: 1px solid #bbbbbb;
-    cursor: pointer;
-    padding: 10px;
-    background-color: var(--bodyBackground);
-    margin: 10px 0px;
-    overflow-wrap: break-word;
+  border: 1px solid #bbbbbb;
+  cursor: pointer;
+  padding: 10px;
+  background-color: var(--bodyBackground);
+  margin: 10px 0px;
+  overflow-wrap: break-word;
 }
 
 .article > h5 {
-    color: blue;
+  color: blue;
 }
 
 .article-link {
-    color:  var(--summaryText);
+  color: var(--summaryText);
 }
 
 .article-heading {
-    color: var(--bodyText);
-    font-weight: bold;
-    margin-bottom:5px;
+  color: var(--bodyText);
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
-a{
-    cursor: pointer;
+a {
+  cursor: pointer;
 }
 
-br{
-   display : none ;
+br {
+  display: none;
 }

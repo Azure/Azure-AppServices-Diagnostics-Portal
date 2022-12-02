@@ -10,14 +10,19 @@ import { DetectorControlService } from 'diagnostic-data';
   templateUrl: './autohealing-detector.component.html',
   styleUrls: ['./autohealing-detector.component.scss']
 })
-
-export class AutohealingDetectorComponent extends DetectorViewBaseComponent implements OnInit {
-
-  constructor(protected _route: ActivatedRoute, protected _appAnalysisService: AppAnalysisService, protected _detectorControlService: DetectorControlService) {
+export class AutohealingDetectorComponent
+  extends DetectorViewBaseComponent
+  implements OnInit
+{
+  constructor(
+    protected _route: ActivatedRoute,
+    protected _appAnalysisService: AppAnalysisService,
+    protected _detectorControlService: DetectorControlService
+  ) {
     super(_route, _appAnalysisService, _detectorControlService);
   }
   getDetectorName(): string {
-    return "autoheal";
+    return 'autoheal';
   }
 
   static getDetectorName(): string {
@@ -31,8 +36,9 @@ export class AutohealingDetectorComponent extends DetectorViewBaseComponent impl
   processDetectorResponse(response: IDetectorResponse) {
     this.detectorResponse = response;
     this.detectorMetrics = response.metrics;
-    this.detectorMetricsTitle = this.detectorMetricsTitle != undefined && this.detectorMetricsTitle != '' ?
-      this.detectorMetricsTitle : response.detectorDefinition.displayName;
-
+    this.detectorMetricsTitle =
+      this.detectorMetricsTitle != undefined && this.detectorMetricsTitle != ''
+        ? this.detectorMetricsTitle
+        : response.detectorDefinition.displayName;
   }
 }

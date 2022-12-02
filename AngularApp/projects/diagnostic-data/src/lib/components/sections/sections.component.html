@@ -1,9 +1,20 @@
 <div *ngFor="let section of sections">
-  <collapsible-list-fabric [collapsed]="!section.isExpand" [title]="section.title">
+  <collapsible-list-fabric
+    [collapsed]="!section.isExpand"
+    [title]="section.title"
+  >
     <collapsible-list-item body>
       <ng-container *ngFor="let data of section.diagnosticData">
-        <dynamic-data [diagnosticData]="data" class="dynamic-data-container" [startTime]="startTime" [endTime]="endTime"  [xAxisPlotBands]="xAxisPlotBands" 
-        [zoomBehavior] = "zoomBehavior" (XAxisSelection)="onXAxisSelection($event)" [isAnalysisView]="isAnalysisView"></dynamic-data>
+        <dynamic-data
+          [diagnosticData]="data"
+          class="dynamic-data-container"
+          [startTime]="startTime"
+          [endTime]="endTime"
+          [xAxisPlotBands]="xAxisPlotBands"
+          [zoomBehavior]="zoomBehavior"
+          (XAxisSelection)="onXAxisSelection($event)"
+          [isAnalysisView]="isAnalysisView"
+        ></dynamic-data>
       </ng-container>
     </collapsible-list-item>
   </collapsible-list-fabric>

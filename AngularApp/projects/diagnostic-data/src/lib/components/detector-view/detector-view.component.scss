@@ -1,89 +1,89 @@
-@import "../../../../../app-service-diagnostics/src/styles/main.scss";
+@import '../../../../../app-service-diagnostics/src/styles/main.scss';
 
 .detector-control {
-    display: flex;
-    align-items: baseline;
-    margin: 16px 0px 12px 0px;
+  display: flex;
+  align-items: baseline;
+  margin: 16px 0px 12px 0px;
 }
 
 .control-pill-text {
-    font-size: 13px;
-    color: var(--bodyText);
+  font-size: 13px;
+  color: var(--bodyText);
 }
 
-.control-pill-text:hover{
-    color: var(--bodyBackground);
+.control-pill-text:hover {
+  color: var(--bodyBackground);
 }
 
 .control-pill-text :first-child {
-    font-weight: 400;
+  font-weight: 400;
 }
 
-.edit-button{
-    float:right;
-    margin-top: 10px;
+.edit-button {
+  float: right;
+  margin-top: 10px;
 }
 
 .dynamic-data-container {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
 }
 
-.content-header>h1 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 400;
+.content-header > h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 400;
 }
 
-.content-header>h1>small {
-    font-size: 15px;
-    padding-left: 4px;
-    font-weight: 300;
+.content-header > h1 > small {
+  font-size: 15px;
+  padding-left: 4px;
+  font-weight: 300;
 }
 
 .content-header {
-    position: relative;
-    padding: 0px;
+  position: relative;
+  padding: 0px;
 }
 
 .detector-button-list {
-    padding: 5px 10px;
-    display: inline-block
+  padding: 5px 10px;
+  display: inline-block;
 }
 
-.detector-button-list > span{
-    color: var(--bodyBackground);
+.detector-button-list > span {
+  color: var(--bodyBackground);
 }
 
 .detector-button-list:hover {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .custom-button-align-left {
-    margin-left: 0px;
+  margin-left: 0px;
 }
 
-.downtime-select{
-    margin-bottom: 10px;
+.downtime-select {
+  margin-bottom: 10px;
 }
 
 .downtime-container {
-    display:inline-flex;
-    flex-flow: row;
-    align-items: baseline;
-    border:0.15em solid darkgrey;
-    border-radius: 2em;
-    padding-left: 1em;
-    padding-right:2em;
-    padding-top:1em;
-    padding-bottom: 0.5em;
+  display: inline-flex;
+  flex-flow: row;
+  align-items: baseline;
+  border: 0.15em solid darkgrey;
+  border-radius: 2em;
+  padding-left: 1em;
+  padding-right: 2em;
+  padding-top: 1em;
+  padding-bottom: 0.5em;
 }
 
 .downtime-icon {
-    padding-right: 0.5em;
-    color:deepskyblue
+  padding-right: 0.5em;
+  color: deepskyblue;
 }
 
 .errorMessage {
-    padding-top: 10px;
-    color: $error-color;
+  padding-top: 10px;
+  color: $error-color;
 }

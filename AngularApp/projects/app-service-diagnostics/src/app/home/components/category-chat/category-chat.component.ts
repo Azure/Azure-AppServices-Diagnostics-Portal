@@ -15,19 +15,27 @@ export class CategoryChatComponent implements OnInit {
   startingKey: string;
   category: Category;
 
-  constructor(private _injector: Injector, private _activatedRoute: ActivatedRoute, private _categoryService: CategoryService, private _chatState: CategoryChatStateService) {
-    this._activatedRoute.params.subscribe(params => {
-      this._categoryService.categories.subscribe(categories => {
-        this.category = categories.find(category => category.id === this._activatedRoute.snapshot.params.category);
+  constructor(
+    private _injector: Injector,
+    private _activatedRoute: ActivatedRoute,
+    private _categoryService: CategoryService,
+    private _chatState: CategoryChatStateService
+  ) {
+    this._activatedRoute.params.subscribe((params) => {
+      this._categoryService.categories.subscribe((categories) => {
+        this.category = categories.find(
+          (category) =>
+            category.id === this._activatedRoute.snapshot.params.category
+        );
         this._chatState.category = this.category;
-        let categoryId = this.category != undefined && this.category.id != undefined ? this.category.id : "";
+        let categoryId =
+          this.category != undefined && this.category.id != undefined
+            ? this.category.id
+            : '';
         this.startingKey = `welcome-${categoryId}`;
       });
     });
   }
 
-  ngOnInit() {
-
-  }
-
+  ngOnInit() {}
 }

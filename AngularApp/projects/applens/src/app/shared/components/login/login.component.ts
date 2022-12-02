@@ -9,7 +9,6 @@ import { AdalService } from 'adal-angular4';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-
   error: string;
 
   contentHeight: number;
@@ -36,7 +35,10 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    if (this.browser && (this.browser.name === 'IE' || this.browser.name === 'Edge')) {
+    if (
+      this.browser &&
+      (this.browser.name === 'IE' || this.browser.name === 'Edge')
+    ) {
       this.clearLocalStorage();
     }
 
@@ -48,12 +50,12 @@ export class LoginComponent implements OnInit {
   }
 
   handleError(error: string) {
-    let popupDisabledMessage = 'Popup Window is null. This can happen if you are using IE';
+    let popupDisabledMessage =
+      'Popup Window is null. This can happen if you are using IE';
 
     if (error === popupDisabledMessage) {
       this.popUpsBlocked = true;
-    }
-    else {
+    } else {
       this.error = error;
     }
   }
@@ -63,7 +65,10 @@ export class LoginComponent implements OnInit {
       clearInterval(this.interval);
     }
 
-    if (this.browser && (this.browser.name === 'IE' || this.browser.name === 'Edge')) {
+    if (
+      this.browser &&
+      (this.browser.name === 'IE' || this.browser.name === 'Edge')
+    ) {
       this.clearLocalStorage();
     }
 
@@ -72,11 +77,10 @@ export class LoginComponent implements OnInit {
       if (this._adalService.userInfo.authenticated) {
         clearInterval(this.interval);
         this.grantAccess();
-      }
-      else if (this._adalService.userInfo.error) {
+      } else if (this._adalService.userInfo.error) {
         this.handleError(this._adalService.userInfo.error);
       }
-    }, 100)
+    }, 100);
 
     this._adalService.login();
   }
@@ -89,7 +93,6 @@ export class LoginComponent implements OnInit {
         keysToRemove.push(key);
       }
     }
-    keysToRemove.forEach(key => localStorage.removeItem(key));
-
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
   }
 }

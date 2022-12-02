@@ -1,104 +1,108 @@
 .article {
-    border: 1px solid #bbbbbb;
-    cursor: pointer;
-    padding: 10px;
-    background-color: var(--bodyBackground);
-    overflow-wrap: break-word;
-    box-shadow: 0px 1.6px 3.6px rgba(0, 0, 0, 0.132), 0px 0.3px 0.9px rgba(0, 0, 0, 0.108);
+  border: 1px solid #bbbbbb;
+  cursor: pointer;
+  padding: 10px;
+  background-color: var(--bodyBackground);
+  overflow-wrap: break-word;
+  box-shadow: 0px 1.6px 3.6px rgba(0, 0, 0, 0.132),
+    0px 0.3px 0.9px rgba(0, 0, 0, 0.108);
 }
 
 .article > h5 {
-    color: blue;
+  color: blue;
 }
 
 .article-link {
-    color:  var(--summaryText);
+  color: var(--summaryText);
 }
 
 .article-heading {
-    color:black;
-    font-weight: bold;
-    margin-bottom:5px;
+  color: black;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
-a{
-    cursor: pointer;
+a {
+  cursor: pointer;
 }
 
-br{
-   display : none ;
+br {
+  display: none;
 }
 
 .insight-box {
-    border: 1px solid #bbbbbb;
-    cursor: pointer;
-    padding: 10px 30px;
-    background-color: var(--bodyBackground);
-    margin: -4px 10px 0px 0px;
-    overflow-wrap: break-word;
-    box-shadow: 0px 1.6px 3.6px rgba(0, 0, 0, 0.132), 0px 0.3px 0.9px rgba(0, 0, 0, 0.108);
+  border: 1px solid #bbbbbb;
+  cursor: pointer;
+  padding: 10px 30px;
+  background-color: var(--bodyBackground);
+  margin: -4px 10px 0px 0px;
+  overflow-wrap: break-word;
+  box-shadow: 0px 1.6px 3.6px rgba(0, 0, 0, 0.132),
+    0px 0.3px 0.9px rgba(0, 0, 0, 0.108);
 }
 
 .insight-detector-name {
-    font-weight: 700;
-    font-size: 14px;
-    display: inline-block;
-    margin-left: 15px;
+  font-weight: 700;
+  font-size: 14px;
+  display: inline-block;
+  margin-left: 15px;
 }
 
 .insight-message {
-    display: block;
-    font-size: 12px;
-    margin-left: 32px;
-    margin-top: 6px;
+  display: block;
+  font-size: 12px;
+  margin-left: 32px;
+  margin-top: 6px;
 }
 
 .web-doc-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* number of lines to show */
-    -webkit-box-orient: vertical;
- }
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* number of lines to show */
+  -webkit-box-orient: vertical;
+}
 
- .support-doc-section{
-    border: 1px solid #bbbbbb;
-    cursor: pointer;
-    padding: 10px;
-    background-color: var(--bodyBackground);
-    margin: 10px 0px;
-    overflow-wrap: break-word;
-    box-shadow: 0px 1.6px 3.6px rgba(0, 0, 0, 0.132), 0px 0.3px 0.9px rgba(0, 0, 0, 0.108);
- }
+.support-doc-section {
+  border: 1px solid #bbbbbb;
+  cursor: pointer;
+  padding: 10px;
+  background-color: var(--bodyBackground);
+  margin: 10px 0px;
+  overflow-wrap: break-word;
+  box-shadow: 0px 1.6px 3.6px rgba(0, 0, 0, 0.132),
+    0px 0.3px 0.9px rgba(0, 0, 0, 0.108);
+}
 
 .article-link {
-    color:  var(--summaryText);
+  color: var(--summaryText);
 }
 
-.solutions-small-card-outer{
-    height: 50px;
-    padding: 5px;
-    margin: 10px 0px;
-    white-space: nowrap;
-    display: table;
-    box-shadow: 0px 1.6px 3.6px rgba(0, 0, 0, 0.132), 0px 0.3px 0.9px rgba(0, 0, 0, 0.108);
+.solutions-small-card-outer {
+  height: 50px;
+  padding: 5px;
+  margin: 10px 0px;
+  white-space: nowrap;
+  display: table;
+  box-shadow: 0px 1.6px 3.6px rgba(0, 0, 0, 0.132),
+    0px 0.3px 0.9px rgba(0, 0, 0, 0.108);
 }
 
-.solutions-small-card{
-    //border: 1px solid #bbbbbb;
-    text-align: center;
-    font-size: 18px;
-    cursor: pointer;
-    height: 100%;
-    vertical-align: middle;
-    margin: 0 10px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.solutions-small-card {
+  //border: 1px solid #bbbbbb;
+  text-align: center;
+  font-size: 18px;
+  cursor: pointer;
+  height: 100%;
+  vertical-align: middle;
+  margin: 0 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.sections-loading-title{
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    padding-left: 1rem !important;
+.sections-loading-title {
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding-left: 1rem !important;
 }

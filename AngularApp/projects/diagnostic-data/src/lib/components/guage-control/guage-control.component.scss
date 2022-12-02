@@ -1,33 +1,32 @@
-.vertical-container{
-	display:flex;
-	flex-direction: column ;
+.vertical-container {
+  display: flex;
+  flex-direction: column;
 }
 
-.horizontal-container{
-	display:flex;
-	flex-direction: row ;	
-	flex-wrap: wrap;
-	align-items:center;
+.horizontal-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-.guage-iterator{
-	padding:10px;
+.guage-iterator {
+  padding: 10px;
 }
 
-.guage-container{
-	display:flex;
-	flex-direction:row;
-	width:100%;	
-	border: solid lightgrey 2px;
-	border-radius: 15px;
-	align-items:center;
+.guage-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  border: solid lightgrey 2px;
+  border-radius: 15px;
+  align-items: center;
 }
-.guage-graphic-container
-{
-	padding:10px;
+.guage-graphic-container {
+  padding: 10px;
 }
 
-.guage-description{
-	width:100%;
-	padding:10px;
+.guage-description {
+  width: 100%;
+  padding: 10px;
 }

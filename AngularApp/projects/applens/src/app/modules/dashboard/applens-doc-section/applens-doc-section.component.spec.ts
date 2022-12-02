@@ -8,9 +8,8 @@ describe('ApplensDocSectionComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ApplensDocSectionComponent ]
-    })
-    .compileComponents();
+      declarations: [ApplensDocSectionComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

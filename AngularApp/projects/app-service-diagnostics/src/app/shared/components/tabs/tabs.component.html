@@ -2,22 +2,48 @@
   <ng-container *ngIf="isLegacy">
     <div class="panel-heading app-nav-bar">
       <ul class="nav nav-tabs">
-        <li role="tab" class="app-nav-tab" *ngFor="let tab of navigationItems; let i = index" tabindex="0"
-          [routerLink]="tab.isActive? []: [tab.url]" (keyup.enter)="navigateTab(i)"
-          [ngClass]="{'active':  tab.isActive}">
+        <li
+          role="tab"
+          class="app-nav-tab"
+          *ngFor="let tab of navigationItems; let i = index"
+          tabindex="0"
+          [routerLink]="tab.isActive ? [] : [tab.url]"
+          (keyup.enter)="navigateTab(i)"
+          [ngClass]="{ active: tab.isActive }"
+        >
           <a>
-            {{tab.title}}
-            <i *ngIf="i !== 0" class="fa fa-times" (click)="closeTab(i)" (keyup.enter)="closeTab(i)" tabindex="0"
-              style="margin-left:10px"></i>
+            {{ tab.title }}
+            <i
+              *ngIf="i !== 0"
+              class="fa fa-times"
+              (click)="closeTab(i)"
+              (keyup.enter)="closeTab(i)"
+              tabindex="0"
+              style="margin-left: 10px"
+            ></i>
           </a>
         </li>
       </ul>
     </div>
   </ng-container>
 
-  <div id="app-content" [ngClass]="{'panel-body-withtab':isLegacy, 'panel-body-notab':!isLegacy}" class="panel-body" style="scroll-behavior: smooth;">
+  <div
+    id="app-content"
+    [ngClass]="{
+      'panel-body-withtab': isLegacy,
+      'panel-body-notab': !isLegacy
+    }"
+    class="panel-body"
+    style="scroll-behavior: smooth"
+  >
     <notification></notification>
-    <div class="tab-content container-fluid" [ngClass]="{'panel-body-nopadding':!isLegacy, 'panel-body-padding':isLegacy}">
+    <div
+      class="tab-content container-fluid"
+      [ngClass]="{
+        'panel-body-nopadding': !isLegacy,
+        'panel-body-padding': isLegacy
+      }"
+    >
       <ng-content></ng-content>
     </div>
   </div>

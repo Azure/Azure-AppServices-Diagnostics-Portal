@@ -5,21 +5,19 @@ import { Observable, of } from 'rxjs';
   providedIn: 'root'
 })
 export class GenericSolutionService {
-
   ArmApi(resourceUri: string, actionOptions: {}): Observable<any> {
-    return of("Not implemented");
+    return of('Not implemented');
   }
 
   OpenTab(resourceUri: string, actionOptions: {}): Observable<any> {
-    return of("Not implemented");
+    return of('Not implemented');
   }
 
   GoToBlade(resourceUri: string, actionOptions: {}): Observable<any> {
-    return of("Not implemented");
+    return of('Not implemented');
   }
 
   ToggleStdoutSetting(resourceUri: string, actionOptions: {}): Observable<any> {
-    return of("Not implemented");
+    return of('Not implemented');
   }
-
 }

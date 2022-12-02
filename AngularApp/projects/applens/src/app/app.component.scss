@@ -1,42 +1,42 @@
-.top-banner{
-    position: fixed;
-    z-index: 10000;
-    left: 28%;
-    right: 25%;
-    background: rgb(228, 188, 137);
-    border-radius: 1px;
-    height: 50px;
+.top-banner {
+  position: fixed;
+  z-index: 10000;
+  left: 28%;
+  right: 25%;
+  background: rgb(228, 188, 137);
+  border-radius: 1px;
+  height: 50px;
 }
 
 .banner-text {
-    padding-top: 13px;
-    font-size: 21px;
-    text-align: center;
-    line-height: 12px;
-    color: #363535;
+  padding-top: 13px;
+  font-size: 21px;
+  text-align: center;
+  line-height: 12px;
+  color: #363535;
 }
 
 .close-icon {
-    font-size: 29px;
-    color: #e52727;
-    margin-top: -5px;
-    cursor: pointer;
-    float: right;
-    margin-right: 11px;
+  font-size: 29px;
+  color: #e52727;
+  margin-top: -5px;
+  cursor: pointer;
+  float: right;
+  margin-right: 11px;
 }
 
 .fa-times-thin:before {
-	content: '\00d7';
+  content: '\00d7';
 }
 
 .warning-icon {
-    margin-right: 11px;
-    color: #b57500;
+  margin-right: 11px;
+  color: #b57500;
 }
 
 .app-container {
-    // position: relative;
-    // height: calc(100% - 50px);
-    // top: 50px;
-    height: 100%;
+  // position: relative;
+  // height: calc(100% - 50px);
+  // top: 50px;
+  height: 100%;
 }

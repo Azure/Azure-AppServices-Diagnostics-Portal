@@ -8,9 +8,8 @@ describe('DetectorCommandBarComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DetectorCommandBarComponent ]
-    })
-    .compileComponents();
+      declarations: [DetectorCommandBarComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {
