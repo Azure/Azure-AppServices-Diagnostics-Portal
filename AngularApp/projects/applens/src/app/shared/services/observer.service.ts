@@ -10,9 +10,6 @@ export class ObserverService {
 
   constructor(private _diagnosticApiService: DiagnosticApiService) { }
 
-  // WARNING: This is broken logic because of bug in sites API
-  //          Hostnames will be incorrect if there is another
-  //          app with the same name. Pending fix from Hawk
   public getSite(site: string): Observable<ObserverSiteResponse> {
     return this._diagnosticApiService.get<ObserverSiteResponse>(`api/sites/${site}`).pipe(
       map((siteRes: ObserverSiteResponse) => {
