@@ -21,7 +21,7 @@
     "build": "npm run fixAngularReact && npm run build-lib && npm run build-applens && npm run build-asd && npm run build-ng-flowchart",
     "test": "ng test",
     "fixAngularReact": "node fixAngularReactLib.js",
-    "lint": "ng lint --fix",
+    "lint": "ng lint",
     "format": "npx prettier --write \"**/src/**/*.{js,jsx,ts,tsx,html,css,scss}\"",
     "e2e": "ng e2e",
     "lib": "npm run fixAngularReact && ng build diagnostic-data --watch",
