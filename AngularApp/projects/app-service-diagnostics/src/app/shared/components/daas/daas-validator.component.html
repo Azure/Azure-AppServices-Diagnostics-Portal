@@ -91,7 +91,8 @@
   style="margin-top: 15px"
   *ngIf="
     (!supportedTier || !daasRunnerJobRunning || foundDiagnoserWarnings) &&
-    !checkingDaasWebJobStatus && !checkingSupportedTier
+    !checkingDaasWebJobStatus &&
+    !checkingSupportedTier
   "
 >
   <button class="btn btn-link pull-right" (click)="validateDaasSettings()">

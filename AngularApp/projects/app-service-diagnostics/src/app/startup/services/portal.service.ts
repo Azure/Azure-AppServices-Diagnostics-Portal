@@ -130,7 +130,9 @@ export class PortalService {
       BroadcastEvent.Error,
       (error) => {
         if (error.details) {
-          this.logException('broadcast get error', { error: error.details });
+          this.logException('broadcast get error', {
+            error: error.details
+          });
         }
       }
     );

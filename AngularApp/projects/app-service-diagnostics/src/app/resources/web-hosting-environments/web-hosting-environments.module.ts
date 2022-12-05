@@ -31,7 +31,10 @@ const ResourceRoutes = RouterModule.forChild([
     WebHostingEnvironmentsService,
     LoggingV2Service,
     CXPChatCallerService,
-    { provide: ResourceService, useExisting: WebHostingEnvironmentsService },
+    {
+      provide: ResourceService,
+      useExisting: WebHostingEnvironmentsService
+    },
     { provide: CategoryService, useClass: AseCategoryService },
     SupportTopicService,
     ResourceResolver

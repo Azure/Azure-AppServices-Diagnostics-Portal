@@ -110,7 +110,8 @@
       *ngIf="
         showSearchTermPractices &&
         (forceShowSearchPractices ||
-          !webSearchResults || webSearchResults.length == 0)
+          !webSearchResults ||
+          webSearchResults.length == 0)
       "
       class="no-results-section"
     >

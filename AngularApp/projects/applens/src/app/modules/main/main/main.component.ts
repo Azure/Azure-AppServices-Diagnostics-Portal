@@ -275,12 +275,18 @@ export class MainComponent implements OnInit {
     this.resourceTypeList = [
       { name: 'App', imgSrc: 'assets/img/Azure-WebApps-Logo.png' },
       { name: 'Linux App', imgSrc: 'assets/img/Azure-Tux-Logo.png' },
-      { name: 'Function App', imgSrc: 'assets/img/Azure-Functions-Logo.png' },
+      {
+        name: 'Function App',
+        imgSrc: 'assets/img/Azure-Functions-Logo.png'
+      },
       {
         name: 'Logic App',
         imgSrc: 'assets/img/Azure-LogicAppsPreview-Logo.svg'
       },
-      { name: 'App Service Environment', imgSrc: 'assets/img/ASE-Logo.jpg' },
+      {
+        name: 'App Service Environment',
+        imgSrc: 'assets/img/ASE-Logo.jpg'
+      },
       {
         name: 'Virtual Machine',
         imgSrc: 'assets/img/Icon-compute-21-Virtual-Machine.svg'
@@ -289,7 +295,10 @@ export class MainComponent implements OnInit {
         name: 'Container App',
         imgSrc: 'assets/img/Azure-ContainerApp-Logo.png'
       },
-      { name: 'Internal Stamp', imgSrc: 'assets/img/Cloud-Service-Logo.svg' }
+      {
+        name: 'Internal Stamp',
+        imgSrc: 'assets/img/Cloud-Service-Logo.svg'
+      }
     ];
 
     // TODO: Use this to restrict access to routes that don't match a supported resource type

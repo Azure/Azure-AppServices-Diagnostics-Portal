@@ -915,7 +915,9 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
           monaco.Uri.parse(`file:///workspace/${fileName}.cs`)
         );
         editor.setModel(editorModel);
-        MonacoServices.install(editor, { rootUri: 'file:///workspace' });
+        MonacoServices.install(editor, {
+          rootUri: 'file:///workspace'
+        });
         const webSocket = this.createWebSocket(this.languageServerUrl);
 
         listen({

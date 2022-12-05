@@ -259,7 +259,10 @@ export class TimeSeriesInstanceGraphComponent
           pointToAdd = pointsForThisSeries.pop();
         }
 
-        series.series.values.push(<GraphPoint>{ x: d.clone(), y: value });
+        series.series.values.push(<GraphPoint>{
+          x: d.clone(),
+          y: value
+        });
       }
     });
 

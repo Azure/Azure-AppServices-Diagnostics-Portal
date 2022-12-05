@@ -72,6 +72,8 @@ export class ContainerAppFinderComponent implements OnInit {
     // resourceArray.push('home');
     // resourceArray.push('category');
 
-    this._router.navigate(resourceArray, { queryParamsHandling: 'preserve' });
+    this._router.navigate(resourceArray, {
+      queryParamsHandling: 'preserve'
+    });
   }
 }

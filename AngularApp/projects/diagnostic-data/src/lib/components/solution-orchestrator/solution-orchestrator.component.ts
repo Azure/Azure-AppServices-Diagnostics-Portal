@@ -632,7 +632,10 @@ export class SolutionOrchestratorComponent
         relativeTo: this._activatedRoute,
         queryParamsHandling: 'merge',
         preserveFragment: true,
-        queryParams: { searchTerm: searchTerm, hideShieldComponent: true }
+        queryParams: {
+          searchTerm: searchTerm,
+          hideShieldComponent: true
+        }
       });
     }
   }
@@ -670,7 +673,10 @@ export class SolutionOrchestratorComponent
         key: 'mainSolutions',
         onClick: () => this.goBackToOrchestrator()
       },
-      { text: detectorName ? detectorName : solution.Title, key: detectorId }
+      {
+        text: detectorName ? detectorName : solution.Title,
+        key: detectorId
+      }
     ];
     this.telemetryService.logEvent(
       TelemetryEventNames.SolutionOrchestratorViewSupportingDataClicked,

@@ -1031,7 +1031,10 @@ export class ResiliencyScoreReportHelper {
             widths: [109, 'auto', 329],
             body: [
               [
-                { text: 'Site name', style: 'detectTableheader' },
+                {
+                  text: 'Site name',
+                  style: 'detectTableheader'
+                },
                 { text: 'Grade', style: 'detectTableheader' },
                 { text: 'Comments', style: 'detectTableheader' }
               ],
@@ -1099,9 +1102,17 @@ export class ResiliencyScoreReportHelper {
             'Azure Portal:',
             {
               ul: [
-                { text: ['Open the ', { text: 'Azure Portal', bold: true }] },
                 {
-                  text: ['Click on ', { text: 'App Service plans', bold: true }]
+                  text: ['Open the ', { text: 'Azure Portal', bold: true }]
+                },
+                {
+                  text: [
+                    'Click on ',
+                    {
+                      text: 'App Service plans',
+                      bold: true
+                    }
+                  ]
                 },
                 'Click on the App Service Plan hosting the Web App(s) you want to scale out.',
                 {
@@ -1109,10 +1120,15 @@ export class ResiliencyScoreReportHelper {
                     'Under ',
                     { text: 'Settings ', bold: true },
                     'click on ',
-                    { text: 'Scale out (App Service plan)', bold: true }
+                    {
+                      text: 'Scale out (App Service plan)',
+                      bold: true
+                    }
                   ]
                 },
-                { text: ['Click ', { text: 'Manual scale', bold: true }] },
+                {
+                  text: ['Click ', { text: 'Manual scale', bold: true }]
+                },
                 'Increase the number of instances to the desired value (at least 2)\n'
               ]
             },
@@ -1122,8 +1138,13 @@ export class ResiliencyScoreReportHelper {
                 {
                   text: [
                     'Use the ',
-                    { text: 'Set-AzAppServicePlan ', bold: true },
-                    { text: 'command.\nFor more information see: ' },
+                    {
+                      text: 'Set-AzAppServicePlan ',
+                      bold: true
+                    },
+                    {
+                      text: 'command.\nFor more information see: '
+                    },
                     {
                       text: 'https://docs.microsoft.com/en-us/azure/app-service/scripts/powershell-scale-manual\n',
                       color: 'blue',
@@ -1141,8 +1162,13 @@ export class ResiliencyScoreReportHelper {
                 {
                   text: [
                     'Use the ',
-                    { text: 'az appservice plan update ', bold: true },
-                    { text: 'command.\nFor more information see: ' },
+                    {
+                      text: 'az appservice plan update ',
+                      bold: true
+                    },
+                    {
+                      text: 'command.\nFor more information see: '
+                    },
                     {
                       text: 'https://docs.microsoft.com/en-us/azure/app-service/scripts/cli-scale-manual\n',
                       color: 'blue',
@@ -1212,7 +1238,10 @@ export class ResiliencyScoreReportHelper {
             widths: [109, 'auto', 329],
             body: [
               [
-                { text: 'Site name', style: 'detectTableheader' },
+                {
+                  text: 'Site name',
+                  style: 'detectTableheader'
+                },
                 { text: 'Grade', style: 'detectTableheader' },
                 { text: 'Comments', style: 'detectTableheader' }
               ],
@@ -1272,10 +1301,14 @@ export class ResiliencyScoreReportHelper {
         {
           style: 'paragraph',
           ul: [
-            { text: ['Using the ', { text: 'Azure Portal', bold: true }, ':'] },
+            {
+              text: ['Using the ', { text: 'Azure Portal', bold: true }, ':']
+            },
             {
               ul: [
-                { text: ['Open the ', { text: 'Azure Portal', bold: true }] },
+                {
+                  text: ['Open the ', { text: 'Azure Portal', bold: true }]
+                },
                 {
                   text: ['Click on an ', { text: 'App Services', bold: true }]
                 },
@@ -1289,7 +1322,9 @@ export class ResiliencyScoreReportHelper {
                     '.'
                   ]
                 },
-                { text: ['Click ', { text: 'Enable', bold: true }, '.'] },
+                {
+                  text: ['Click ', { text: 'Enable', bold: true }, '.']
+                },
                 {
                   text: [
                     'Under ',
@@ -1389,7 +1424,10 @@ export class ResiliencyScoreReportHelper {
             widths: [109, 'auto', 329],
             body: [
               [
-                { text: 'Site name', style: 'detectTableheader' },
+                {
+                  text: 'Site name',
+                  style: 'detectTableheader'
+                },
                 { text: 'Grade', style: 'detectTableheader' },
                 { text: 'Comments', style: 'detectTableheader' }
               ],
@@ -1449,10 +1487,14 @@ export class ResiliencyScoreReportHelper {
         {
           style: 'paragraph',
           ul: [
-            { text: ['To enable ', { text: 'Auto-Heal', bold: true }, ':'] },
+            {
+              text: ['To enable ', { text: 'Auto-Heal', bold: true }, ':']
+            },
             {
               ul: [
-                { text: ['Open the ', { text: 'Azure Portal', bold: true }] },
+                {
+                  text: ['Open the ', { text: 'Azure Portal', bold: true }]
+                },
                 {
                   text: ['Click on an ', { text: 'App Services', bold: true }]
                 },
@@ -1460,7 +1502,10 @@ export class ResiliencyScoreReportHelper {
                 {
                   text: [
                     'Click ',
-                    { text: 'Diagnose and solve problems ', bold: true }
+                    {
+                      text: 'Diagnose and solve problems ',
+                      bold: true
+                    }
                   ]
                 },
                 {
@@ -1478,9 +1523,15 @@ export class ResiliencyScoreReportHelper {
                     {
                       text: [
                         'Under the ',
-                        { text: 'Custom Auto-Heal Rules ', bold: true },
+                        {
+                          text: 'Custom Auto-Heal Rules ',
+                          bold: true
+                        },
                         'tab set ',
-                        { text: 'Custom Auto-Heal Rules ', bold: true },
+                        {
+                          text: 'Custom Auto-Heal Rules ',
+                          bold: true
+                        },
                         'to ',
                         { text: 'Enabled', bold: true }
                       ]
@@ -1493,9 +1544,15 @@ export class ResiliencyScoreReportHelper {
                     {
                       text: [
                         'Under the ',
-                        { text: 'Proactive Auto-Heal ', bold: true },
+                        {
+                          text: 'Proactive Auto-Heal ',
+                          bold: true
+                        },
                         'tab set ',
-                        { text: 'Proactive Auto-Heal ', bold: true },
+                        {
+                          text: 'Proactive Auto-Heal ',
+                          bold: true
+                        },
                         'to ',
                         { text: 'Enabled', bold: true }
                       ]
@@ -1562,7 +1619,10 @@ export class ResiliencyScoreReportHelper {
             widths: [109, 'auto', 329],
             body: [
               [
-                { text: 'Site name', style: 'detectTableheader' },
+                {
+                  text: 'Site name',
+                  style: 'detectTableheader'
+                },
                 { text: 'Grade', style: 'detectTableheader' },
                 { text: 'Comments', style: 'detectTableheader' }
               ],
@@ -1710,7 +1770,10 @@ export class ResiliencyScoreReportHelper {
             widths: [109, 'auto', 329],
             body: [
               [
-                { text: 'Site name', style: 'detectTableheader' },
+                {
+                  text: 'Site name',
+                  style: 'detectTableheader'
+                },
                 { text: 'Grade', style: 'detectTableheader' },
                 { text: 'Comments', style: 'detectTableheader' }
               ],
@@ -1929,20 +1992,44 @@ export class ResiliencyScoreReportHelper {
             widths: ['auto', 'auto'],
             body: [
               [
-                { text: 'Worker Size', style: 'maxSiteperWorkerSizeheader' },
-                { text: 'Max sites', style: 'maxSiteperWorkerSizeheader' }
+                {
+                  text: 'Worker Size',
+                  style: 'maxSiteperWorkerSizeheader'
+                },
+                {
+                  text: 'Max sites',
+                  style: 'maxSiteperWorkerSizeheader'
+                }
               ],
               [
-                { text: 'Small', style: 'maxSiteperWorkerSizeevenrow' },
-                { text: '8', style: 'maxSiteperWorkerSizeevenrow' }
+                {
+                  text: 'Small',
+                  style: 'maxSiteperWorkerSizeevenrow'
+                },
+                {
+                  text: '8',
+                  style: 'maxSiteperWorkerSizeevenrow'
+                }
               ],
               [
-                { text: 'Medium', style: 'maxSiteperWorkerSizeoddrow' },
-                { text: '16', style: 'maxSiteperWorkerSizeoddrow' }
+                {
+                  text: 'Medium',
+                  style: 'maxSiteperWorkerSizeoddrow'
+                },
+                {
+                  text: '16',
+                  style: 'maxSiteperWorkerSizeoddrow'
+                }
               ],
               [
-                { text: 'Large', style: 'maxSiteperWorkerSizeevenrow' },
-                { text: '32', style: 'maxSiteperWorkerSizeevenrow' }
+                {
+                  text: 'Large',
+                  style: 'maxSiteperWorkerSizeevenrow'
+                },
+                {
+                  text: '32',
+                  style: 'maxSiteperWorkerSizeevenrow'
+                }
               ]
             ]
           },
@@ -1975,7 +2062,10 @@ export class ResiliencyScoreReportHelper {
             widths: [109, 'auto', 329],
             body: [
               [
-                { text: 'Site name', style: 'detectTableheader' },
+                {
+                  text: 'Site name',
+                  style: 'detectTableheader'
+                },
                 { text: 'Grade', style: 'detectTableheader' },
                 { text: 'Comments', style: 'detectTableheader' }
               ],
@@ -2056,7 +2146,9 @@ export class ResiliencyScoreReportHelper {
               text: [
                 'While on the ',
                 { text: 'Overview ', bold: true },
-                { text: 'blade, click on the link next to Apps(s) / Slots.' }
+                {
+                  text: 'blade, click on the link next to Apps(s) / Slots.'
+                }
               ]
             },
             {
@@ -2233,7 +2325,10 @@ export class ResiliencyScoreReportHelper {
             widths: [109, 'auto', 329],
             body: [
               [
-                { text: 'Site name', style: 'detectTableheader' },
+                {
+                  text: 'Site name',
+                  style: 'detectTableheader'
+                },
                 { text: 'Grade', style: 'detectTableheader' },
                 { text: 'Comments', style: 'detectTableheader' }
               ],
@@ -2304,14 +2399,18 @@ export class ResiliencyScoreReportHelper {
               ol: [
                 'Browse to the Azure Portal (https://portal.azure.com) ',
                 'Click on the Portal menu on the top left corner',
-                { text: ['Click on ', { text: 'App Services', bold: true }] },
+                {
+                  text: ['Click on ', { text: 'App Services', bold: true }]
+                },
                 {
                   text: [
                     'Select the App Service for which you want to enable ',
                     { text: 'Always on ', bold: true }
                   ]
                 },
-                { text: ['Click on ', { text: 'Configuration', bold: true }] },
+                {
+                  text: ['Click on ', { text: 'Configuration', bold: true }]
+                },
                 {
                   text: ['Click on ', { text: 'General settings', bold: true }]
                 },
@@ -2324,7 +2423,9 @@ export class ResiliencyScoreReportHelper {
                     '.'
                   ]
                 },
-                { text: ['Click on ', { text: 'Save', bold: true }] }
+                {
+                  text: ['Click on ', { text: 'Save', bold: true }]
+                }
               ]
             },
             {
@@ -2350,13 +2451,18 @@ export class ResiliencyScoreReportHelper {
                 }
               ]
             },
-            { text: ['Using ', { text: 'Azure CLI', bold: true }, ':'] },
+            {
+              text: ['Using ', { text: 'Azure CLI', bold: true }, ':']
+            },
             {
               ol: [
                 {
                   text: [
                     'Use ',
-                    { text: 'az web app config set', bold: true },
+                    {
+                      text: 'az web app config set',
+                      bold: true
+                    },
                     ':\nFor example:\n',
                     ' az webapp config set -g MyResourceGroup -n MyUniqueApp --always-on true\n'
                   ]
@@ -2452,7 +2558,10 @@ export class ResiliencyScoreReportHelper {
             widths: [109, 'auto', 329],
             body: [
               [
-                { text: 'Site name', style: 'detectTableheader' },
+                {
+                  text: 'Site name',
+                  style: 'detectTableheader'
+                },
                 { text: 'Grade', style: 'detectTableheader' },
                 { text: 'Comments', style: 'detectTableheader' }
               ],
@@ -2521,10 +2630,14 @@ export class ResiliencyScoreReportHelper {
         {
           style: 'paragraph',
           ul: [
-            { text: ['Using the ', { text: 'Azure Portal', bold: true }, ':'] },
+            {
+              text: ['Using the ', { text: 'Azure Portal', bold: true }, ':']
+            },
             {
               ul: [
-                { text: ['Open the ', { text: 'Azure Portal', bold: true }] },
+                {
+                  text: ['Open the ', { text: 'Azure Portal', bold: true }]
+                },
                 {
                   text: ['Click on an ', { text: 'App Services', bold: true }]
                 },
@@ -2532,9 +2645,15 @@ export class ResiliencyScoreReportHelper {
                 {
                   text: [
                     'Under ',
-                    { text: 'Support + troubleshooting', bold: true },
+                    {
+                      text: 'Support + troubleshooting',
+                      bold: true
+                    },
                     ', click on ',
-                    { text: 'App Service Advisor', bold: true }
+                    {
+                      text: 'App Service Advisor',
+                      bold: true
+                    }
                   ]
                 }
               ]
@@ -2609,7 +2728,10 @@ export class ResiliencyScoreReportHelper {
             widths: [109, 'auto', 329],
             body: [
               [
-                { text: 'Site name', style: 'detectTableheader' },
+                {
+                  text: 'Site name',
+                  style: 'detectTableheader'
+                },
                 { text: 'Grade', style: 'detectTableheader' },
                 { text: 'Comments', style: 'detectTableheader' }
               ],
@@ -2672,8 +2794,12 @@ export class ResiliencyScoreReportHelper {
             'To disable ARR Affinity:',
             {
               ol: [
-                { text: ['Open the ', { text: 'Azure Portal', bold: true }] },
-                { text: ['Click on ', { text: 'App Services', bold: true }] },
+                {
+                  text: ['Open the ', { text: 'Azure Portal', bold: true }]
+                },
+                {
+                  text: ['Click on ', { text: 'App Services', bold: true }]
+                },
                 'Click on the Web App for which you want to disable ARR Affinity',
                 {
                   text: [
@@ -2682,7 +2808,10 @@ export class ResiliencyScoreReportHelper {
                     'click on ',
                     { text: 'Configuration', bold: true },
                     { text: ' then ' },
-                    { text: 'General settings', bold: true },
+                    {
+                      text: 'General settings',
+                      bold: true
+                    },
                     '.'
                   ]
                 },
@@ -2754,7 +2883,10 @@ export class ResiliencyScoreReportHelper {
             widths: [109, 'auto', 329],
             body: [
               [
-                { text: 'Site name', style: 'detectTableheader' },
+                {
+                  text: 'Site name',
+                  style: 'detectTableheader'
+                },
                 { text: 'Grade', style: 'detectTableheader' },
                 { text: 'Comments', style: 'detectTableheader' }
               ],
@@ -2819,12 +2951,22 @@ export class ResiliencyScoreReportHelper {
         {
           style: 'paragraph',
           ul: [
-            { text: ['Using the ', { text: 'Azure Portal', bold: true }, ':'] },
+            {
+              text: ['Using the ', { text: 'Azure Portal', bold: true }, ':']
+            },
             {
               ul: [
-                { text: ['Open the ', { text: 'Azure Portal', bold: true }] },
                 {
-                  text: ['Click on ', { text: 'App Service Plans', bold: true }]
+                  text: ['Open the ', { text: 'Azure Portal', bold: true }]
+                },
+                {
+                  text: [
+                    'Click on ',
+                    {
+                      text: 'App Service Plans',
+                      bold: true
+                    }
+                  ]
                 },
                 'Click on the App Service Plan hosting the Web App(s) you want to scale out',
                 {
@@ -2832,7 +2974,10 @@ export class ResiliencyScoreReportHelper {
                     'Under ',
                     { text: 'Settings ', bold: true },
                     'click on ',
-                    { text: 'Scale up (App Service Plan)', bold: true }
+                    {
+                      text: 'Scale up (App Service Plan)',
+                      bold: true
+                    }
                   ]
                 },
                 {

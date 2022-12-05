@@ -15,7 +15,9 @@ export class ComponentManager {
     this.supportedComponentTypes = new Set<Type<any>>([
       DynamicInsightV4Component
     ]);
-    this.componentDict = { VnetIntegrationCheck: new VnetIntegrationCheck() };
+    this.componentDict = {
+      VnetIntegrationCheck: new VnetIntegrationCheck()
+    };
   }
 
   public tryGetComponent(name: string): ClientScriptComponent {

@@ -220,22 +220,30 @@ export class SolutionsWidgetComponent implements OnInit {
     }
 
     if (this.solutions.findIndex((x) => x.data.solution.id === 3) < 0) {
-      const t = this._solutionFactoryService.getSolution(<ISolution>{ id: 3 });
+      const t = this._solutionFactoryService.getSolution(<ISolution>{
+        id: 3
+      });
       this.solutions.push(t);
     }
 
     if (this.solutions.findIndex((x) => x.data.solution.id === 4) < 0) {
-      const t = this._solutionFactoryService.getSolution(<ISolution>{ id: 4 });
+      const t = this._solutionFactoryService.getSolution(<ISolution>{
+        id: 4
+      });
       this.solutions.push(t);
     }
 
     if (this.solutions.findIndex((x) => x.data.solution.id === 12) < 0) {
-      const t = this._solutionFactoryService.getSolution(<ISolution>{ id: 12 });
+      const t = this._solutionFactoryService.getSolution(<ISolution>{
+        id: 12
+      });
       this.solutions.push(t);
     }
 
     if (this.solutions.findIndex((x) => x.data.solution.id === 17) < 0) {
-      const t = this._solutionFactoryService.getSolution(<ISolution>{ id: 17 });
+      const t = this._solutionFactoryService.getSolution(<ISolution>{
+        id: 17
+      });
       this.solutions.push(t);
     }
 

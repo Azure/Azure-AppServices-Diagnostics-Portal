@@ -138,7 +138,10 @@ import { ClientScriptService } from './shared-v2/services/client-script.service'
     ResourceResolver,
     { provide: VersionService, useExisting: VersionTestService },
     { provide: BackendCtrlQueryService, useExisting: BackendCtrlService },
-    { provide: PortalActionGenericService, useExisting: PortalActionService },
+    {
+      provide: PortalActionGenericService,
+      useExisting: PortalActionService
+    },
     QuickLinkService,
     RiskAlertService,
     ThemeService,

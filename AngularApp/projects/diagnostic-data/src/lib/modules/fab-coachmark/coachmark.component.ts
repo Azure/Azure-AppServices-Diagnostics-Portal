@@ -56,7 +56,8 @@ import { ICoachmarkProps } from 'office-ui-fabric-react/lib/Coachmark';
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class FabCoachmarkComponent extends ReactWrapperComponent<ICoachmarkProps> {
-  @ViewChild('reactNode', { static: true }) protected reactNodeRef: ElementRef;
+  @ViewChild('reactNode', { static: true })
+  protected reactNodeRef: ElementRef;
 
   @Input() target?: ICoachmarkProps['target'];
   @Input() ariaAlertText?: ICoachmarkProps['ariaAlertText'];

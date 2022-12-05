@@ -40,7 +40,9 @@ function getVNetConfigsByLocation(
 function getRouteTableByLocation(
   diagProvider: DiagProvider,
   serviceResource: ApiManagementServiceResourceContract,
-  vnetConfigsByLocation: { [key: string]: VirtualNetworkConfigurationContract }
+  vnetConfigsByLocation: {
+    [key: string]: VirtualNetworkConfigurationContract;
+  }
 ): { [key: string]: Promise<RouteTableContract | null> } {
   let routeTableByLocation = {};
 

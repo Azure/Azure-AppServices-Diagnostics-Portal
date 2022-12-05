@@ -177,7 +177,9 @@ export class CategoryPageComponent implements OnInit {
                     }
                   };
 
-                  let detectorUsersImages: { [name: string]: string } = {};
+                  let detectorUsersImages: {
+                    [name: string]: string;
+                  } = {};
                   if (detector.author != undefined) {
                     let authors = detector.author.toLowerCase();
                     const separators = [' ', ',', ';', ':'];

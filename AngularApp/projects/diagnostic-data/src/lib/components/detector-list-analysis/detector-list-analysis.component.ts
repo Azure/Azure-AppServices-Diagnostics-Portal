@@ -1303,7 +1303,10 @@ export class DetectorListAnalysisComponent
       if (detectorInsight.hasData()) {
         description = detectorInsight.data['Description'];
       }
-      insight = { title: detectorInsight.title, description: description };
+      insight = {
+        title: detectorInsight.title,
+        description: description
+      };
 
       // now populate solutions for all the insights
       const solutions: Solution[] = [];

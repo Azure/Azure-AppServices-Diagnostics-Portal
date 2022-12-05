@@ -548,7 +548,10 @@ export class AppInsightsService {
     encryptedKey: string,
     appId: string
   ): Observable<boolean> {
-    let settingValue = JSON.stringify({ ApiKey: encryptedKey, AppId: appId });
+    let settingValue = JSON.stringify({
+      ApiKey: encryptedKey,
+      AppId: appId
+    });
     if (!this.useAppSettingsForAppInsightEncryption) {
       return of(false);
     }

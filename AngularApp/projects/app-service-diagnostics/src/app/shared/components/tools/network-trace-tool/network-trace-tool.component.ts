@@ -244,7 +244,9 @@ export class NetworkTraceToolComponent implements OnInit {
         headers: this._armClient.getHeaders()
       });
     } else {
-      return this._http.get<S>(url, { headers: this._armClient.getHeaders() });
+      return this._http.get<S>(url, {
+        headers: this._armClient.getHeaders()
+      });
     }
   }
 }

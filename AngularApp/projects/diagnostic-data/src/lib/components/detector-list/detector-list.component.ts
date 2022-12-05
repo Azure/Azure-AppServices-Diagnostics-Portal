@@ -561,7 +561,10 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         const additionalParams = this.renderingProperties.additionalParams
           ? JSON.parse(this.renderingProperties.additionalParams)
           : {};
-        const combinedParams = { ...this.queryParams, ...additionalParams };
+        const combinedParams = {
+          ...this.queryParams,
+          ...additionalParams
+        };
         if (targetDetector === 'appchanges' && this.isPublic) {
           this._portalActionService.openChangeAnalysisBlade(
             this._detectorControl.startTimeString,

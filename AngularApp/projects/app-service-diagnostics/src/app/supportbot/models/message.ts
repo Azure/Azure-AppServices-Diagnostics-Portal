@@ -32,7 +32,11 @@ export class TextMessage extends Message {
 
 export class ButtonListMessage extends Message {
   constructor(
-    buttonList: { title: string; type: ButtonActionType; next_key: string }[],
+    buttonList: {
+      title: string;
+      type: ButtonActionType;
+      next_key: string;
+    }[],
     context: string,
     category: string = 'Support Home',
     sender: MessageSender = MessageSender.System

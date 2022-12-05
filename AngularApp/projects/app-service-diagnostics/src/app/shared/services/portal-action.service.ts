@@ -275,7 +275,12 @@ export class PortalActionService {
 
   public openBladeAdvancedAppRestartBladeForCurrentSite() {
     this.openBladeAdvancedAppRestartBlade(
-      [{ resourceUri: this.currentSite.id, siteName: this.currentSite.name }],
+      [
+        {
+          resourceUri: this.currentSite.id,
+          siteName: this.currentSite.name
+        }
+      ],
       []
     );
   }

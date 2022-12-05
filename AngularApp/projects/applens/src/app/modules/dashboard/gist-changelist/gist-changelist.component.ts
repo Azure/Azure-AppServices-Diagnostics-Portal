@@ -64,7 +64,10 @@ export class GistChangelistComponent implements OnInit {
         if (code) {
           this.currentSha = commit.sha;
           this.currentCode = code;
-          this.change.emit({ version: this.version, code: this.currentCode });
+          this.change.emit({
+            version: this.version,
+            code: this.currentCode
+          });
         }
       });
   }

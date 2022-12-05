@@ -95,14 +95,46 @@ const sampleIncident: any = {
       EndTime: '2018-03-05T00:00:00Z',
       TimeGrain: '00:05:00',
       Values: [
-        { Timestamp: '2018-03-04T18:45:00Z', Total: 1.0, IsAggregated: true },
-        { Timestamp: '2018-03-04T18:50:00Z', Total: 1.0, IsAggregated: true },
-        { Timestamp: '2018-03-04T18:55:00Z', Total: 1.0, IsAggregated: true },
-        { Timestamp: '2018-03-04T19:00:00Z', Total: 1.0, IsAggregated: true },
-        { Timestamp: '2018-03-04T19:05:00Z', Total: 1.0, IsAggregated: true },
-        { Timestamp: '2018-03-04T19:10:00Z', Total: 1.0, IsAggregated: true },
-        { Timestamp: '2018-03-04T19:15:00Z', Total: 1.0, IsAggregated: true },
-        { Timestamp: '2018-03-04T19:20:00Z', Total: 1.0, IsAggregated: true }
+        {
+          Timestamp: '2018-03-04T18:45:00Z',
+          Total: 1.0,
+          IsAggregated: true
+        },
+        {
+          Timestamp: '2018-03-04T18:50:00Z',
+          Total: 1.0,
+          IsAggregated: true
+        },
+        {
+          Timestamp: '2018-03-04T18:55:00Z',
+          Total: 1.0,
+          IsAggregated: true
+        },
+        {
+          Timestamp: '2018-03-04T19:00:00Z',
+          Total: 1.0,
+          IsAggregated: true
+        },
+        {
+          Timestamp: '2018-03-04T19:05:00Z',
+          Total: 1.0,
+          IsAggregated: true
+        },
+        {
+          Timestamp: '2018-03-04T19:10:00Z',
+          Total: 1.0,
+          IsAggregated: true
+        },
+        {
+          Timestamp: '2018-03-04T19:15:00Z',
+          Total: 1.0,
+          IsAggregated: true
+        },
+        {
+          Timestamp: '2018-03-04T19:20:00Z',
+          Total: 1.0,
+          IsAggregated: true
+        }
       ]
     }
   ],

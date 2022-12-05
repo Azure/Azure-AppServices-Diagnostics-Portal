@@ -105,7 +105,11 @@ export class FeedbackMessageFlow extends IMessageFlowProvider {
 
 export class FeedbackMessage extends Message {
   constructor(
-    buttonList: { title: string; type: ButtonActionType; next_key: string }[],
+    buttonList: {
+      title: string;
+      type: ButtonActionType;
+      next_key: string;
+    }[],
     submitButtonName: string,
     context: string,
     category: string = 'Support Home',

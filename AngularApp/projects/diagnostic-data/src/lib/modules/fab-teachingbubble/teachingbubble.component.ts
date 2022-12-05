@@ -49,7 +49,8 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FabTeachingBubbleComponent extends ReactWrapperComponent<ITeachingBubbleProps> {
-  @ViewChild('reactNode', { static: true }) protected reactNodeRef: ElementRef;
+  @ViewChild('reactNode', { static: true })
+  protected reactNodeRef: ElementRef;
 
   @Input() target?: ITeachingBubbleProps['target'];
   @Input() ariaDescribedBy?: ITeachingBubbleProps['ariaDescribedBy'];
@@ -57,13 +58,16 @@ export class FabTeachingBubbleComponent extends ReactWrapperComponent<ITeachingB
   @Input() calloutProps?: ITeachingBubbleProps['calloutProps'];
   @Input() componentRef?: ITeachingBubbleProps['componentRef'];
   @Input() footerContent?: ITeachingBubbleProps['footerContent'];
-  @Input() closeButtonAriaLabel?: ITeachingBubbleProps['closeButtonAriaLabel'];
+  @Input()
+  closeButtonAriaLabel?: ITeachingBubbleProps['closeButtonAriaLabel'];
   @Input() hasCloseButton?: ITeachingBubbleStyles['closeButton'];
   @Input() hasCloseIcon?: ITeachingBubbleProps['hasCloseIcon'];
-  @Input() hasCondensedHeadline?: ITeachingBubbleProps['hasCondensedHeadline'];
+  @Input()
+  hasCondensedHeadline?: ITeachingBubbleProps['hasCondensedHeadline'];
   @Input() headline?: ITeachingBubbleProps['headline'];
   @Input() primaryButtonProps?: ITeachingBubbleProps['primaryButtonProps'];
-  @Input() secondaryButtonProps?: ITeachingBubbleProps['secondaryButtonProps'];
+  @Input()
+  secondaryButtonProps?: ITeachingBubbleProps['secondaryButtonProps'];
   @Input() styles?: ITeachingBubbleProps['styles'];
   @Input() theme?: ITeachingBubbleProps['theme'];
 

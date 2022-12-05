@@ -59,6 +59,8 @@ export class StampFinderComponent implements OnInit {
   navigateToStamp(matchingStamp: ObserverStampResponse) {
     let resourceArray: string[] = ['stamps', matchingStamp.name];
 
-    this._router.navigate(resourceArray, { queryParamsHandling: 'preserve' });
+    this._router.navigate(resourceArray, {
+      queryParamsHandling: 'preserve'
+    });
   }
 }

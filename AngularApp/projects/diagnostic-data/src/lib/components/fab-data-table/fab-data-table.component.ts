@@ -287,7 +287,9 @@ export class FabDataTableComponent implements AfterContentInit {
 
   updateFilter(name: string, options: Set<string>) {
     this.filterSelectionMap.set(name, options);
-    this.telemetryService.logEvent('TableFilterUpdated', { FilterName: name });
+    this.telemetryService.logEvent('TableFilterUpdated', {
+      FilterName: name
+    });
     this.updateTable();
   }
 

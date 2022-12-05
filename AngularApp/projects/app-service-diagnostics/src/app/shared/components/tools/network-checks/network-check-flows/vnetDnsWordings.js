@@ -164,7 +164,11 @@ export class VnetDnsWordings {
         };
         if (dnsSettings != null && dnsSettings.length > 0) {
           var subChecks = dnsSettings.map(
-            (d) => new CheckStepView({ title: `${d} (${source})`, level: 3 })
+            (d) =>
+              new CheckStepView({
+                title: `${d} (${source})`,
+                level: 3
+              })
           );
           if (fallbackToAzureDns) {
             subChecks.push(defaultDns);

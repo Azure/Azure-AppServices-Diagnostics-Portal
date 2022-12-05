@@ -765,7 +765,10 @@ export const HomeRoutes = RouterModule.forChild([
     MetricsPerInstanceAppServicePlanResolver,
     AdvanceApplicationRestartResolver,
     SecurityScanningResolver,
-    { provide: GenericSupportTopicService, useExisting: SupportTopicService },
+    {
+      provide: GenericSupportTopicService,
+      useExisting: SupportTopicService
+    },
     { provide: GenericContentService, useExisting: ContentService },
     {
       provide: GenericDocumentsSearchService,
@@ -773,7 +776,10 @@ export const HomeRoutes = RouterModule.forChild([
     },
     { provide: CXPChatService, useExisting: CXPChatCallerService },
     { provide: GenericResourceService, useExisting: ResourceService },
-    { provide: GenericClientScriptService, useExisting: ClientScriptService }
+    {
+      provide: GenericClientScriptService,
+      useExisting: ClientScriptService
+    }
   ]
 })
 export class HomeModule {}

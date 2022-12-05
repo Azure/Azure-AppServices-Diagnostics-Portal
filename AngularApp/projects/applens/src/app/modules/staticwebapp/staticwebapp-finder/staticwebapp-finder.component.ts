@@ -70,6 +70,8 @@ export class StaticWebAppFinderComponent implements OnInit {
       matchingSite.Name
     ];
 
-    this._router.navigate(resourceArray, { queryParamsHandling: 'preserve' });
+    this._router.navigate(resourceArray, {
+      queryParamsHandling: 'preserve'
+    });
   }
 }

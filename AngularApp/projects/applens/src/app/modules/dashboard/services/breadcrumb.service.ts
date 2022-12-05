@@ -24,7 +24,10 @@ export class BreadcrumbService {
     private _detectorControl: DetectorControlService
   ) {
     this.resourceId = this._diagnosticService.resourceId;
-    this.defaultBreadcrumbItem = { name: 'Home', fullPath: this.resourceId };
+    this.defaultBreadcrumbItem = {
+      name: 'Home',
+      fullPath: this.resourceId
+    };
     this.breadcrumbSubject.next([this.defaultBreadcrumbItem]);
   }
 
@@ -72,7 +75,9 @@ export class BreadcrumbService {
     }
 
     if (item) {
-      this._router.navigate([item.fullPath], { queryParams: routingParams });
+      this._router.navigate([item.fullPath], {
+        queryParams: routingParams
+      });
       return;
     }
   }

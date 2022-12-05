@@ -546,7 +546,10 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> =
     { provide: GenieGlobals, useExisting: ApplensGlobals },
     { provide: GenericBreadcrumbService, useExisting: BreadcrumbService },
     { provide: GenericUserSettingService, useExisting: UserSettingService },
-    { provide: GenericClientScriptService, useExisting: ClientScriptService }
+    {
+      provide: GenericClientScriptService,
+      useExisting: ClientScriptService
+    }
   ],
   declarations: [
     DashboardComponent,
