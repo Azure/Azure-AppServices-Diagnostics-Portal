@@ -138,12 +138,12 @@ export class UpdateDetectorReferencesComponent implements OnInit{
           }
       });
       
-          forkJoin(requestsArr).subscribe( res2 => {
-            tempReferenceList = res2; 
+          forkJoin(requestsArr).subscribe( resArr => {
+            tempReferenceList = resArr; 
             let refDict = {}; 
 
             for(let i =0; i < tempReferenceKeys.length; i++){
-              refDict[tempReferenceKeys[i]] = res2[i];
+              refDict[tempReferenceKeys[i]] = resArr[i];
               
             }
             
