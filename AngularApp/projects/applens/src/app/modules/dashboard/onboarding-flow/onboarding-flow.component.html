@@ -182,11 +182,13 @@
       <p>This action will update the gist commit versions that the detectors reference.<br>
        <strong>Current Gist Commit Version:</strong> {{gistCommitVersion}} </p>
 
-      <div class="detectorreferences-list" *ngIf = "detectorReferencesTable"> 
-        <fab-data-table [table]="detectorReferencesTable" [columnOptions]="" [allowColumnSearch]="true" [tableHeight]="'100%'" 
-        [descriptionColumnName] = "'Multiple'" [buttonText] = "'Update All'" (selectedItems) = updateDetectorReferences($event)>
-        </fab-data-table>
-        </div>
+        <update-detector-references [id] = "id" [Branch] = "Branch" [resourceId] = "resourceId" [mode] = "mode" 
+        [dataSource] = "dataSource"  [timeRange] = "timeRange"  [compilationPackage]  = "compilationPackage"
+        [queryResponse] = "queryResponse"  [userName] = "userName" [useAutoMergeText] = "useAutoMergeText"
+        [PRLink] = "PRLink"  [defaultBranch] = "defaultBranch" [owners] = "owners"  [DevopsConfig] = "DevopsConfig"
+        [detectorReferencesDialogHidden]  = "detectorReferencesDialogHidden" [detectorReferencesTable] = "detectorReferencesTable"
+        [detectorReferencesList] = "detectorReferencesList"
+        [gistCommitVersion] = "gistCommitVersion"></update-detector-references>
 
 
       <div class="mt-5">
