@@ -179,14 +179,12 @@
 
   <fab-dialog [hidden]="detectorReferencesDialogHidden" (onDismiss)="dismissDetectorRefDialog()"  [minWidth]="'80%'">
     <fab-dialog-content [title]="deleteDetectorReferencesTitle">
-      <p>This action will update the gist commit versions that the detectors reference.<br>
-       <strong>Current Gist Commit Version:</strong> {{gistCommitVersion}} </p>
 
         <update-detector-references [id] = "id" [Branch] = "Branch" [resourceId] = "resourceId" [mode] = "mode" 
         [dataSource] = "dataSource"  [timeRange] = "timeRange"  [compilationPackage]  = "compilationPackage"
         [queryResponse] = "queryResponse"  [userName] = "userName" [useAutoMergeText] = "useAutoMergeText"
         [PRLink] = "PRLink"  [defaultBranch] = "defaultBranch" [owners] = "owners"  [DevopsConfig] = "DevopsConfig"
-        [detectorReferencesDialogHidden]  = "detectorReferencesDialogHidden" [detectorReferencesTable] = "detectorReferencesTable"
+        [detectorReferencesDialogHidden]  = "detectorReferencesDialogHidden" 
         [detectorReferencesList] = "detectorReferencesList"
         [gistCommitVersion] = "gistCommitVersion"></update-detector-references>
 

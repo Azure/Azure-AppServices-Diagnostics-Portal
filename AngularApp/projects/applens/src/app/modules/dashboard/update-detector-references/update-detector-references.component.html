@@ -1,4 +1,8 @@
 
+      <div>
+        <p>This action will update the gist commit versions that the detectors reference.<br>
+          <strong>Current Gist Commit Version:</strong> {{gistCommitVersion}} </p>
+      </div>
       <div class="detectorreferences-list" *ngIf = "detectorReferencesTable"> 
         <fab-data-table [table]="detectorReferencesTable" [columnOptions]="" [allowColumnSearch]="true" [tableHeight]="'100%'" 
         [descriptionColumnName] = "'Multiple'" [buttonText] = "'Update Selected'" (selectedItems) = updateDetectorReferences($event)>

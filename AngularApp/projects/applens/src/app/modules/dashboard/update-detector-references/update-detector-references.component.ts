@@ -28,7 +28,7 @@ export class UpdateDetectorReferencesComponent implements OnInit{
   constructor( private diagnosticApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService, private _activatedRoute: ActivatedRoute) { }
 
  
-  @Input() id: string = ""; //gist id 
+  @Input() id: string; //gist id 
   @Input() Branch : string = ""; 
   @Input() resourceId : string = ""; 
   @Input() mode: DevelopMode = DevelopMode.Create;
@@ -43,9 +43,7 @@ export class UpdateDetectorReferencesComponent implements OnInit{
   @Input() owners: string[] = [];
   @Input() DevopsConfig: DevopsConfig;
   @Input() detectorReferencesDialogHidden : boolean = true; 
-  @Input() detectorReferencesTable : DataTableResponseObject = null; 
   @Input() detectorReferencesList : any[] = []; 
-  @Input()   gistCommitVersion : string = ""; 
 
 
 
@@ -57,29 +55,37 @@ export class UpdateDetectorReferencesComponent implements OnInit{
   detectorsToUpdate: Map<string, any> = new Map(); 
   errorDetectorsList : Map<string, any> = new Map(); 
   updateDetectorSuccess : boolean = false; 
-  detectorCompilationList : object= {};
+  gistCommitVersion : string = ""; 
   updatedDetectors : object= {};
+  detectorReferencesTable : DataTableResponseObject = null; 
 
 
 
 
   ngOnInit(): void {
 
+    this._activatedRoute.params.subscribe((params: Params) => {
+      if (params.hasOwnProperty('gist')) {
+
+        this.id = params['gist']; 
+        this.displayDetectorReferenceTable(); 
+   }
+    });
+
   }
 
+
+  ngAfterViewInit() {
+  }
+  
   
   
   updateDetectorReferences(detectorReferences : any[]) {
     
     detectorReferences.forEach( key => {
-      //key = key.replace(/<(.|\n)*?>/g, ''); 
       this.detectorsToCheck.add(key.Name); 
     })
-    
-    console.log("inside update detector references method");
-    console.log(this.detectorsToCheck);  
    
-
     this.detectorReferencesTable = this.generateProgressDetectorReferenceTable(); 
 
     detectorReferences.forEach( detector =>{
@@ -91,9 +97,8 @@ export class UpdateDetectorReferencesComponent implements OnInit{
 
   private checkCompilation(detector : any, num: number) {
 
-
+    //if detector is already up to date, do not update 
     if( this.detectorReferencesList["detectorReferences"][detector.Name] == this.gistCommitVersion){
-      //debugger; 
       this.detectorsToCheck.delete(detector.Name); 
       if(this.detectorsToCheck.size == 0){
         this.updateDetectorPackageJsonAll(); 
@@ -102,143 +107,123 @@ export class UpdateDetectorReferencesComponent implements OnInit{
     }
 
     else{
-      //debugger; 
-    //console.log(num == this.selectedDetectors.length); 
-    let tempCode; 
-    let tempReference; 
-    let tempReferenceList = []; 
-    let tempUtterances; 
-    var body;
 
-    //this.Branch = ( this.Branch == '') ? 'MainMVP' : this.Branch; 
-    
+      let tempCode; 
+      let tempReference; 
+      let tempReferenceList = []; 
+      let tempUtterances; 
+      var body;
 
-    let code = this.diagnosticApiService.getDetectorCode(`${detector.Name}/${detector.Name}.csx`, this.Branch, this.resourceId);
-    let utterances = this.diagnosticApiService.getDetectorCode(`${detector.Name}/metadata.json`, this.Branch, this.resourceId); 
-    let reference = this.diagnosticApiService.getDetectorCode(`${detector.Name}/package.json`, this.Branch, this.resourceId); 
+      
 
-    forkJoin([code, reference, utterances]).subscribe( res =>{
-      //debugger; 
-      tempCode = res[0]; 
-      tempReference = JSON.parse(res[1])['dependencies'] || {}; // 
-      tempUtterances = JSON.parse(res[2]).utterances; 
-      //tempUtterances = ""; 
+      let code = this.diagnosticApiService.getDetectorCode(`${detector.Name}/${detector.Name}.csx`, this.Branch, this.resourceId);
+      let utterances = this.diagnosticApiService.getDetectorCode(`${detector.Name}/metadata.json`, this.Branch, this.resourceId); 
+      let reference = this.diagnosticApiService.getDetectorCode(`${detector.Name}/package.json`, this.Branch, this.resourceId); 
 
-      let tempReferenceKeys = Object.keys(tempReference); 
-      let requestsArr = []; 
+      forkJoin([code, reference, utterances]).subscribe( res =>{
 
-      tempReferenceKeys.forEach(el => {
-        //somehow map this and push result to tempReferenceList 
-        if( el == this.id){
-          //this.gistCommitVersion = "f8a45ccc13abbdea2a7611cfd9fa4919c23d1a6f"; 
-          requestsArr.push(this.getGistCommitContent(el, this.gistCommitVersion)); 
-        }
-        else{
-          requestsArr.push(this.getGistCommitContent(el,tempReference[el])); 
-        }
-    });
-    
-        forkJoin(requestsArr).subscribe( res2 => {
-          //debugger; 
-          tempReferenceList = res2; 
-          let refDict = {}; 
+        tempCode = res[0]; 
+        tempReference = JSON.parse(res[1])['dependencies'] || {}; // 
+        tempUtterances = JSON.parse(res[2]).utterances; 
 
-          for(let i =0; i < tempReferenceKeys.length; i++){
-            refDict[tempReferenceKeys[i]] = res2[i];
-            
+        let tempReferenceKeys = Object.keys(tempReference); 
+        let requestsArr = []; 
+
+        tempReferenceKeys.forEach(el => {
+          if( el == this.id){
+            requestsArr.push(this.getGistCommitContent(el, this.gistCommitVersion)); 
           }
-          
-          var body = {
-            script: tempCode,
-            references: refDict,
-            entityType: 'signal',
-            detectorUtterances: JSON.stringify(tempUtterances.map(x => x.text))
-          };
-          let isSystemInvoker: boolean = this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics;
+          else{
+            requestsArr.push(this.getGistCommitContent(el,tempReference[el])); 
+          }
+      });
+      
+          forkJoin(requestsArr).subscribe( res2 => {
+            tempReferenceList = res2; 
+            let refDict = {}; 
 
-          //call compilation 
-
-          this._activatedRoute.queryParams.subscribe((params: Params) => {
-            //debugger; 
-              let queryParams = JSON.parse(JSON.stringify(params));
-              queryParams.startTime = undefined;
-              queryParams.endTime = undefined;
-              let serializedParams = this.serializeQueryParams(queryParams);
-              if (serializedParams && serializedParams.length > 0) {
-                serializedParams = "&" + serializedParams;
-              };
-              this.diagnosticApiService.getCompilerResponse(body, isSystemInvoker, detector.Name.toLowerCase(), '',
-                '', this.dataSource, this.timeRange, {
-                scriptETag: this.compilationPackage.scriptETag,
-                assemblyName: this.compilationPackage.assemblyName,
-                formQueryParams: serializedParams,
-                getFullResponse: true
-              },detector.Name.toLowerCase())
-                .subscribe((response: any) => {
-                    //debugger; 
-                    this.queryResponse = response.body;
-            //if compilation succeeds, update 
-                if (this.queryResponse.compilationOutput.compilationSucceeded === true) {
-                  //this.detectorCompilationList[detector.Name] = true; 
-                  
-                  
-                  //this.updateDetectorPackageJson(res[1], detector.Name);
-                  //console.log(`${detector.Name} ========== Build: 1 succeeded, 0 failed ==========`); 
-
-                  
-                  this.detectorsToCheck.delete(detector.Name);
-                  this.detectorsToUpdate.set(detector.Name, res[1]);
-                  if(this.detectorsToCheck.size == 0){
-                    this.updateDetectorPackageJsonAll(); 
-                  }
-                
-                } 
-                //else do not update, remove from "detectorsToCheck", add error into the 
-                else {
-                  //debugger; 
-                  this.detectorCompilationList[detector.Name] = false; 
-                  this.updatedDetectors[detector.Name] == false; 
-                  this.detectorsToCheck.delete(detector.Name); 
-                  this.errorDetectorsList.set(detector.Name, this.queryResponse.compilationOutput.compilationTraces);
-                   
-                  if(this.detectorsToCheck.size == 0){
-                    this.updateDetectorPackageJsonAll(); 
-                  }
-                //console.log(`${detector.Name}========== Build: 0 succeeded, 1 failed ==========`); 
-                }
-                if (this.queryResponse.runtimeLogOutput) {
-                  this.queryResponse.runtimeLogOutput.forEach(element => {
-                    if (element.exception) {
+            for(let i =0; i < tempReferenceKeys.length; i++){
+              refDict[tempReferenceKeys[i]] = res2[i];
+              
+            }
             
-                      console.log(`${element.timeStamp}: ${element.message}: 
-                      ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`);
-                    
-                      }
-                    });
-                    }
-                //debugger; 
-                // if(Object.keys(this.detectorCompilationList).length == num){
-                //   this.displayUpdateDetectorResults(); 
-                // }
-                }, err => {
-                  //debugger; 
-                  this.detectorCompilationList[detector.Name] = false; 
-                  this.updatedDetectors[detector.Name] = false; 
-                  this.detectorsToCheck.delete(detector.Name); 
-                  this.errorDetectorsList.set(detector.Name, err); 
-                  console.log("error 1 : ", err); 
-                  if(this.detectorsToCheck.size == 0){
-                    this.updateDetectorPackageJsonAll(); 
-                  }
-                });
-            }); 
-    
-            }); 
-        }); 
-    
+            var body = {
+              script: tempCode,
+              references: refDict,
+              entityType: 'signal',
+              detectorUtterances: JSON.stringify(tempUtterances.map(x => x.text))
+            };
+            let isSystemInvoker: boolean = this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics;
 
+            this._activatedRoute.queryParams.subscribe((params: Params) => {
+
+                let queryParams = JSON.parse(JSON.stringify(params));
+                queryParams.startTime = undefined;
+                queryParams.endTime = undefined;
+                let serializedParams = this.serializeQueryParams(queryParams);
+                if (serializedParams && serializedParams.length > 0) {
+                  serializedParams = "&" + serializedParams;
+                };
+                this.diagnosticApiService.getCompilerResponse(body, isSystemInvoker, detector.Name.toLowerCase(), '',
+                  '', this.dataSource, this.timeRange, {
+                  scriptETag: this.compilationPackage.scriptETag,
+                  assemblyName: this.compilationPackage.assemblyName,
+                  formQueryParams: serializedParams,
+                  getFullResponse: true
+                },detector.Name.toLowerCase())
+                  .subscribe((response: any) => {
+
+                    this.queryResponse = response.body;
+              //if compilation succeeds, update 
+                  if (this.queryResponse.compilationOutput.compilationSucceeded === true) {
+                   
+                    this.detectorsToCheck.delete(detector.Name);
+                    this.detectorsToUpdate.set(detector.Name, res[1]);
+                    if(this.detectorsToCheck.size == 0){
+                      this.updateDetectorPackageJsonAll(); 
+                    }
+                  
+                  } 
+                  //else do not update and add into errors list 
+                  else {
+                     
+                    this.updatedDetectors[detector.Name] == false; 
+                    this.detectorsToCheck.delete(detector.Name); 
+                    this.errorDetectorsList.set(detector.Name, this.queryResponse.compilationOutput.compilationTraces);
+                    
+                    //check if all detectors are done compiling 
+                    if(this.detectorsToCheck.size == 0){
+                      this.updateDetectorPackageJsonAll(); 
+                    }
+                 
+                  }
+                  if (this.queryResponse.runtimeLogOutput) {
+                    this.queryResponse.runtimeLogOutput.forEach(element => {
+                      if (element.exception) {
+              
+                        console.log(`${element.timeStamp}: ${element.message}: 
+                        ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`);
+                      
+                        }
+                      });
+                      }
+                  
+                  }, err => {
+                    
+                    this.updatedDetectors[detector.Name] = false; 
+                    this.detectorsToCheck.delete(detector.Name); 
+                    this.errorDetectorsList.set(detector.Name, err); 
+                    
+                    //check if all detectors are done compiling 
+                    if(this.detectorsToCheck.size == 0){
+                      this.updateDetectorPackageJsonAll(); 
+                    }
+                  });
+              }); 
+      
+              }); 
+          }); 
     }
-    
     
 }
 
@@ -264,32 +249,24 @@ updateDetectorPackageJsonAll(){
     gradPublishFileTitles.push( `/${key.toLowerCase()}/package.json`);
 
   }); 
-
-  // debugger; 
-  // var requestBranch = this.Branch; 
+ 
   var requestBranch = `dev/${this.userName.split("@")[0]}/gist/${this.id.toLowerCase()}`; 
   if(this.useAutoMergeText){
     requestBranch = this.Branch; 
   }
     
-  
-
   const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.id} Detector References Author : ${this.userName}`, 
   commitType, this.resourceId); 
   const makePullRequestObservable = this.diagnosticApiService.makePullRequest(requestBranch, this.defaultBranch, `Changing ${this.id} detector references`, this.resourceId, this.owners, "temp description");
 
   
   DetectorObservable.subscribe(_ => {
-    //debugger; 
 
     makePullRequestObservable.finally( () => {
       this.displayUpdateDetectorResults(); 
     }).subscribe( _ => {
-      //debugger; 
       this.PRLink = `${_["webUrl"]}/pullrequest/${_["prId"]}`;
-      console.log(`PR LINK: ${this.PRLink}`);
       this.updateDetectorSuccess = true; 
-      //console.log(${_["prId"]}); 
 
       this.detectorsToUpdate.forEach( (value, key) =>{
         this.detectorReferencesList["detectorReferences"][key] = this.gistCommitVersion; 
@@ -314,19 +291,12 @@ updateDetectorPackageJsonAll(){
 }
 
 
-displayDetectorReferenceTable(){ //showupdateDetectorReferencedialog
+displayDetectorReferenceTable(){ 
 
-
-    
     this.diagnosticApiService.getGistId(this.id).subscribe( data=>{ 
-    //debugger; 
     this.detectorReferencesList = data;
     this.gistCommitVersion = this.detectorReferencesList["currentCommitVersion"]; 
-    console.log(this.detectorReferencesList); 
-    console.log(this.gistCommitVersion); 
-
-
-
+    
     var detectorKeys = Object.keys(this.detectorReferencesList["detectorReferences"]); 
     
     let rows: any[][] = [];
@@ -363,20 +333,11 @@ displayDetectorReferenceTable(){ //showupdateDetectorReferencedialog
 
 
 displayUpdateDetectorResults(){
-  //debugger; 
-  Object.keys(this.detectorCompilationList).forEach( el => {
-  if( this.detectorCompilationList[el]){
-    console.log(`${el} ========== Build: 1 succeeded, 0 failed ==========`); 
-  }
-  else{
-    console.log(`${el} ========== Build: 1 succeeded, 0 failed ==========`); 
-  }
-})
-
+  
   var detectorKeys = Object.keys(this.detectorReferencesList["detectorReferences"]); 
 
   let rows: any[][] = [];
-  
+
   rows = detectorKeys.map(key => {
 
   let path = `${this.resourceId}/detectors/${key}`;
@@ -395,21 +356,20 @@ displayUpdateDetectorResults(){
   }
   if(this.errorDetectorsList.has(key)){
   status = `<markdown><span class="critical-color"><i class="fa fa-times-circle fa-lg"></i> ERROR</span></markdown>`;
-  console.log(this.errorDetectorsList.get(key)); 
+  //console.log(this.errorDetectorsList.get(key)); 
   miscKey = this.errorDetectorsList.get(key).toString(); 
   misc = `<a href="${path}">${miscKey}</a>`
   }
   else if( this.detectorsToUpdate.has(key) && this.updateDetectorSuccess){
   misc = `<a href="${this.PRLink}">PR LINK</a>`
   }
-  
-  
+
+
   return [name, status, commitId, misc];
   });
 
 
   this.detectorReferencesTable = this.generateDetectorReferenceTable(rows); 
-  this.detectorCompilationList = {}; 
   this.detectorsToCheck.clear(); 
   this.updatedDetectors = {}; 
   this.detectorsToUpdate.clear(); 
@@ -422,11 +382,7 @@ displayUpdateDetectorResults(){
 
 
 generateDetectorReferenceTable(rows: any[][]){
-  //debugger; 
-
-  console.log("hello"); 
-
-    
+  
   const columns: DataTableResponseColumn[] = [
     { columnName: "Name" },
     { columnName: "Status" },
@@ -438,15 +394,7 @@ generateDetectorReferenceTable(rows: any[][]){
     columns: columns,
     rows: rows
   }
-
-  
-
-  console.log("finished generateDetectorReferenceTable method"); 
-  console.log(dataTableObject); 
   return dataTableObject;
-
-
-
 }
 
 
@@ -482,7 +430,7 @@ generateProgressDetectorReferenceTable(){
   }
   else if(this.errorDetectorsList.has(key)){
     status = `<span class="critical-color"><i class="fa fa-times-circle fa-lg"></i> ERROR </span>`;
-    console.log(this.errorDetectorsList.get(key)); 
+    //console.log(this.errorDetectorsList.get(key)); 
     miscKey = this.errorDetectorsList.get(key).toString(); 
     misc = `<a href="${path}">${miscKey}</a>`
     }
@@ -503,8 +451,7 @@ generateProgressDetectorReferenceTable(){
     columns: columns,
     rows: rows
   }
-  console.log("finished generateDetectorReferenceTable method"); 
-  console.log(dataTableObject); 
+  
   return dataTableObject;
 
 }

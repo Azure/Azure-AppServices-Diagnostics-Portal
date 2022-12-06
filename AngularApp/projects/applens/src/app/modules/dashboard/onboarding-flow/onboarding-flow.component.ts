@@ -213,39 +213,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   DevopsConfig: DevopsConfig;
   useAutoMergeText: boolean = false;
   detectorReferencesDialogHidden : boolean = true; 
-  detectorReferencesTable : DataTableResponseObject = null; 
-  detectorReferencesTableUpdated : DataTableResponseObject = null;
-  detectorReferencesList : any[] = []; 
-  detectorCompilationList : object= {};
   gistCommitVersion : string = ""; 
-  updatedDetectors : object= {};
-  detectorsToCheck: Set<any> = new Set();  
-  detectorsToUpdate: Map<string, any> = new Map(); 
-  selectedDetectorsList: any[] = []; 
-  //delete below line 
-  selectedDetectors: any[] = []; 
-  detectorTableLoading: boolean = false; 
-  deleteDetectorReferencesTitle : string = "Detector References";
-  displayFinalTable: boolean = false; 
-  errorDetectorsList : Map<string, any> = new Map(); 
-  updateDetectorSuccess : boolean = false; 
-  
-  columnOptions: TableColumnOption[] = [
-    {
-      name: "Name",
-      selectionOption: TableFilterSelectionOption.Multiple
-    },
-    {
-      name: "Status",
-      selectionOption: TableFilterSelectionOption.Multiple
-    },
-    {
-      name: "Commit Id",
-      selectionOption: TableFilterSelectionOption.Multiple
-    }
-
-  ];
-
 
   runButtonStyle: any = {
     root: { cursor: "default" }
@@ -782,107 +750,13 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
 
   showUpdateDetectorReferencesDialog() {
-    // this.diagnosticApiService.getGists(); 
-    
-    //console.log("inside update detector references method"); 
-    //debugger; 
-
-    // this.diagnosticApiService.getBranches(this.resourceService.getCurrentResourceId()).subscribe(branches => {
-    //   debugger; 
-    //   console.log(branches);
-    // });
-    
-    
-    this.diagnosticApiService.getGistId(this.id).subscribe( data=>{ 
-    //debugger; 
-    this.detectorReferencesList = data;
-    this.gistCommitVersion = this.detectorReferencesList["currentCommitVersion"]; 
-    console.log(this.detectorReferencesList); 
-    console.log(this.gistCommitVersion); 
-
-
-
-    var detectorKeys = Object.keys(this.detectorReferencesList["detectorReferences"]); 
-    
-    let rows: any[][] = [];
-    const resourceId = this.diagnosticApiService.resourceId;
-    rows = detectorKeys.map(key => {
-    
-      let path = `${this.resourceId}/detectors/${key}`;
-      // if (this.isCurrentUser) {
-      path = path + "/edit";
-      //}
-      
-
-     const name = key;
-     //const name = `<a href="${path}">${key}</a>`
-     const commitId = this.detectorReferencesList["detectorReferences"][key];
-     let status = (this.gistCommitVersion == commitId) ? "Up to Date" : "Out of Date"; 
-     if( this.gistCommitVersion == commitId){
-      status = `<span class="success-color"><i class="fa fa-check-circle fa-lg"></i> Up to Date</span>`;
-     }
-     else{
-      status = `<span class="warning-color"><i class="fa fa-times-circle fa-lg"></i> Out of Date</span>`;
-     }
-     
-      return [name, status, commitId, ""];
-    });
-
-
-    this.detectorReferencesTable = this.generateDetectorReferenceTable(rows); 
-   }); 
-   
-   
-   this.detectorReferencesDialogHidden = false; 
-   //this.detectorTableLoading = false; 
-   //this.detectorRefDialogOutput.emit(this.detectorReferencesTable); 
-
-   
-   
-
+    this.detectorReferencesDialogHidden = false; 
   }
-  
-  generateDetectorReferenceTable(rows: any[][]){
-
-    
-    const columns: DataTableResponseColumn[] = [
-      { columnName: "Name" },
-      { columnName: "Status" },
-      { columnName: "Commit Id" },
-      { columnName: "Miscellaneous" }
-    ];
-
-    const dataTableObject: DataTableResponseObject = {
-      columns: columns,
-      rows: rows
-    }
-
-    
-
-    console.log("finished generateDetectorReferenceTable method"); 
-    console.log(dataTableObject); 
-    return dataTableObject;
-
-
-
-  }
-
-
-
-
 
 
   dismissDetectorRefDialog() {
-    console.log("will delete these detectors"); 
-    this.detectorReferencesDialogHidden = true; 
-    this.detectorCompilationList = {}; 
-    this.detectorsToCheck.clear(); 
-    this.updatedDetectors = {}; 
-    this.detectorsToUpdate.clear(); 
-    this.errorDetectorsList.clear(); 
-    this.updateDetectorSuccess = false; 
-    this.detectorReferencesTable = null; 
-    
+    //console.log("will delete these detectors"); 
+    this.detectorReferencesDialogHidden = true;    
   }
   
 

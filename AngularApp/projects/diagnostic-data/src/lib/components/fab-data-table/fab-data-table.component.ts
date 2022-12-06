@@ -70,18 +70,14 @@ export class FabDataTableComponent implements AfterContentInit {
       if (selectionCount === 0) {
         this.selectionText = "";
       } else if (selectionCount === 1) {
-        // console.log("enter else if condition on selection changes"); 
 
         const row = this.selection.getSelection()[0];
+
         if (this.descriptionColumnName) {
           const selectionText = row[this.descriptionColumnName];
           this.selectionText = selectionText !== undefined ? selectionText : "";
         }
-      }
-      // else{
-      //   console.log("enter else condition on selection changes"); 
-      // }
-      // console.log(this.selection.getSelection()); 
+      } 
     }
   });
 
@@ -331,23 +327,8 @@ export class FabDataTableComponent implements AfterContentInit {
   }
 
   returnSelectedItems() {
-    // console.log("entered returnSelectedItems"); 
-    // console.log(this.selection.getSelection()); 
     this.selectedItems.emit(this.selection.getSelection()); 
-    //this.selectedItems.emit(this.selection.getSelection()); 
   }
 
-  /*
-  clickedCheckbox(name: string, col: string, ev: Event){
-     debugger; 
-    this.fabDetailsList.selection = this.selection;
-    console.log(`${name} was clicked`);
-    console.log(`${ev} was clicked`);
-    const currRow = this.rows.find( (el) => {
-      return el.Name == name; 
-    })
-    console.log(`${currRow[col]} is the row name`); 
-
-  }
-  */
+  
 }
