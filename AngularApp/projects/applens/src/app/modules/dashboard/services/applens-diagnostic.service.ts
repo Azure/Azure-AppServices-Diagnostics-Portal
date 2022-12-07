@@ -138,7 +138,7 @@ export class ApplensDiagnosticService {
     }));
   }
 
-  getGistId(id: string) : Observable<DetectorMetaData[]>{
+  getGistDetailsById(id: string) : Observable<DetectorMetaData[]>{
     return this._diagnosticApi.getGistId(this._resourceService.versionPrefix, 
       this._resourceService.getCurrentResourceId(true), id); 
   }

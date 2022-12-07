@@ -9,7 +9,7 @@ import {
 import { forkJoin } from 'rxjs';
 import { inputProperties } from 'office-ui-fabric-react';
 import { DevopsConfig } from '../../../shared/models/devopsConfig';
-
+import { UriUtilities } from 'diagnostic-data';
 
 export enum DevelopMode {
   Create,
@@ -38,18 +38,13 @@ export class UpdateDetectorReferencesComponent implements OnInit{
   @Input() queryResponse: QueryResponse<DetectorResponse>;
   @Input() userName: string;
   @Input() useAutoMergeText: boolean = false;
-  @Input() PRLink : string = "";
   @Input() defaultBranch : string;
   @Input() owners: string[] = [];
   @Input() DevopsConfig: DevopsConfig;
   @Input() detectorReferencesDialogHidden : boolean = true; 
   @Input() detectorReferencesList : any[] = []; 
 
-
-
   DevelopMode = DevelopMode;
-
-
 
   detectorsToCheck: Set<any> = new Set();  
   detectorsToUpdate: Map<string, any> = new Map(); 
@@ -58,8 +53,7 @@ export class UpdateDetectorReferencesComponent implements OnInit{
   gistCommitVersion : string = ""; 
   updatedDetectors : object= {};
   detectorReferencesTable : DataTableResponseObject = null; 
-
-
+  PRLink : string = "";
 
 
   ngOnInit(): void {
@@ -74,10 +68,8 @@ export class UpdateDetectorReferencesComponent implements OnInit{
 
   }
 
-
   ngAfterViewInit() {
   }
-  
   
   
   updateDetectorReferences(detectorReferences : any[]) {
@@ -92,7 +84,6 @@ export class UpdateDetectorReferencesComponent implements OnInit{
       this.checkCompilation(detector, detectorReferences.length); 
     }); 
     
-
   }
 
   private checkCompilation(detector : any, num: number) {
@@ -113,8 +104,6 @@ export class UpdateDetectorReferencesComponent implements OnInit{
       let tempReferenceList = []; 
       let tempUtterances; 
       var body;
-
-      
 
       let code = this.diagnosticApiService.getDetectorCode(`${detector.Name}/${detector.Name}.csx`, this.Branch, this.resourceId);
       let utterances = this.diagnosticApiService.getDetectorCode(`${detector.Name}/metadata.json`, this.Branch, this.resourceId); 
@@ -160,7 +149,7 @@ export class UpdateDetectorReferencesComponent implements OnInit{
                 let queryParams = JSON.parse(JSON.stringify(params));
                 queryParams.startTime = undefined;
                 queryParams.endTime = undefined;
-                let serializedParams = this.serializeQueryParams(queryParams);
+                let serializedParams = UriUtilities.serializeQueryParams(queryParams);
                 if (serializedParams && serializedParams.length > 0) {
                   serializedParams = "&" + serializedParams;
                 };
@@ -273,27 +262,25 @@ updateDetectorPackageJsonAll(){
       }); 
 
     }, err =>{
-      console.log(err); 
+      console.log(`Unable to update detector references ${err}`); 
     })
     
 
   }, err => {
     if (err.error.includes('has already been updated by another client')){
-      console.log("err ============== ", err); 
+      console.log(`Unable to update detector references ${err}`); 
     }
 
     console.log(err);
   }
-  
 
   );
-
 }
 
 
 displayDetectorReferenceTable(){ 
 
-    this.diagnosticApiService.getGistId(this.id).subscribe( data=>{ 
+    this.diagnosticApiService.getGistDetailsById(this.id).subscribe( data=>{ 
     this.detectorReferencesList = data;
     this.gistCommitVersion = this.detectorReferencesList["currentCommitVersion"]; 
     
@@ -304,13 +291,9 @@ displayDetectorReferenceTable(){
     rows = detectorKeys.map(key => {
     
       let path = `${this.resourceId}/detectors/${key}`;
-      // if (this.isCurrentUser) {
       path = path + "/edit";
-      //}
-      
 
      const name = key;
-     //const name = `<a href="${path}">${key}</a>`
      const commitId = this.detectorReferencesList["detectorReferences"][key];
      let status = (this.gistCommitVersion == commitId) ? "Up to Date" : "Out of Date"; 
      if( this.gistCommitVersion == commitId){
@@ -356,7 +339,6 @@ displayUpdateDetectorResults(){
   }
   if(this.errorDetectorsList.has(key)){
   status = `<markdown><span class="critical-color"><i class="fa fa-times-circle fa-lg"></i> ERROR</span></markdown>`;
-  //console.log(this.errorDetectorsList.get(key)); 
   miscKey = this.errorDetectorsList.get(key).toString(); 
   misc = `<a href="${path}">${miscKey}</a>`
   }
@@ -399,8 +381,7 @@ generateDetectorReferenceTable(rows: any[][]){
 
 
 generateProgressDetectorReferenceTable(){
-  
-  //debugger; 
+
   const columns: DataTableResponseColumn[] = [
     { columnName: "Name" },
     { columnName: "Status" },
@@ -413,7 +394,6 @@ generateProgressDetectorReferenceTable(){
   var detectorKeys = Object.keys(this.detectorReferencesList["detectorReferences"]); 
 
   rows = detectorKeys.map(key =>{
-    //debugger; 
   const name = key; 
 
   let path = `${this.resourceId}/detectors/${key}`;
@@ -430,7 +410,6 @@ generateProgressDetectorReferenceTable(){
   }
   else if(this.errorDetectorsList.has(key)){
     status = `<span class="critical-color"><i class="fa fa-times-circle fa-lg"></i> ERROR </span>`;
-    //console.log(this.errorDetectorsList.get(key)); 
     miscKey = this.errorDetectorsList.get(key).toString(); 
     misc = `<a href="${path}">${miscKey}</a>`
     }
@@ -439,11 +418,8 @@ generateProgressDetectorReferenceTable(){
       `<span class="success-color"><i class="fa fa-check-circle fa-lg"></i> Up to Date</span>`:
       `<span class="warning-color"><i class="fa fa-times-circle fa-lg"></i> Out of Date</span>`;
   }
-  
 
   return [name, status, commitId, misc];
-
-    
   });
 
 
@@ -459,18 +435,6 @@ generateProgressDetectorReferenceTable(){
 getGistCommitContent = (gistId, gistCommitVersion) => {
   return this.diagnosticApiService.getDevopsCommitContent(`${this.DevopsConfig.folderPath}/${gistId}/${gistId}.csx`, gistCommitVersion, this.resourceId);   
 };
-
-
-serializeQueryParams(obj) {
-  var str = [];
-  for (var p in obj)
-    if (obj.hasOwnProperty(p) && obj[p] !== undefined) {
-      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-    }
-  return str.join("&");
-}
-
-
 
 
 }

@@ -550,13 +550,11 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   }
 
   getBranchList() {
-    //debugger; 
     this.optionsForSingleChoice = [];
     //callout stops working if showBranches ever becomes empty
     this.showBranches = [{key: "", text: ""}];
     this.resourceId = this.resourceId == undefined || this.resourceId == '' ? this.resourceService.getCurrentResourceId() : this.resourceId;
     this.diagnosticApiService.getBranches(this.resourceId).subscribe(branches => {
-      //debugger; 
       var branchRegEx = this.gistMode ? new RegExp(`^dev\/.*\/gist\/${this.id}$`, "i") : new RegExp(`^dev\/.*\/detector\/${this.id}$`, "i");
       branches.forEach(option => {
         this.optionsForSingleChoice.push({
@@ -589,7 +587,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
         this.noBranchesAvailable();
       }
       else {
-        //debugger; 
         var targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${this.id.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`;
         // if a branch is present via query params, default to that branch.
         if (this.branchInput != undefined && this.branchInput != '' && this.mode == DevelopMode.Edit) {
@@ -755,7 +752,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
 
   dismissDetectorRefDialog() {
-    //console.log("will delete these detectors"); 
     this.detectorReferencesDialogHidden = true;    
   }
   
