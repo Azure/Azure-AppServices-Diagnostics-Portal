@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { OnboardingFlowComponent } from '../onboarding-flow/onboarding-flow.component';
 import { ActivatedRoute, ActivatedRouteSnapshot, CanDeactivate, Params, Router, RouterStateSnapshot } from "@angular/router";
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
@@ -7,7 +6,6 @@ import {
   CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, TableColumnOption, TableFilterSelectionOption, DataTableResponseObject, DataTableResponseColumn, FabDataTableComponent
 } from 'diagnostic-data';
 import { forkJoin } from 'rxjs';
-import { inputProperties, IPanelProps, PanelType } from 'office-ui-fabric-react';
 import { DevopsConfig } from '../../../shared/models/devopsConfig';
 import { UriUtilities } from 'diagnostic-data';
 
