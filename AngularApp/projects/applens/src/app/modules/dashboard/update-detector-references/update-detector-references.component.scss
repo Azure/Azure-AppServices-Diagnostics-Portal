@@ -1,2 +1,15 @@
-@import "../../../../../../app-service-diagnostics/src/styles/icons.scss";
-@import "../../../../../../app-service-diagnostics/src/styles/main.scss";
+.error-bar{
+    margin-bottom: 15px;
+    background:#fde7e9;
+    padding:5px;
+}
+
+.error-bar-content{
+    margin-top: 10px; 
+    margin-left:5px;
+}
+
+
+.error-bar-text{
+    margin-left:5px;
+}

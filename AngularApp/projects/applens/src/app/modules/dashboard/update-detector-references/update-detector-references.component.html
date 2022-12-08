@@ -5,10 +5,10 @@
 
           
       <div *ngIf = "updateDetectorFailed" >
-      <div style="display: flex;align-items: center;margin-bottom: 15px; background:#fde7e9;padding:5px">
-          <div style="display: flex; margin-top: 10px; margin-left:5px">
+      <div class = "error-bar" style="display: flex;align-items: center;">
+          <div class = "error-bar-content" style="display: flex;">
             <i class="ms-Icon ms-Icon--ErrorBadge"></i>
-            <div style="margin-left:5px"><p>{{panelText}}</p></div></div>
+            <div class = "error-bar-text"><p>{{panelText}}</p></div></div>
           <span> {{ onOpenUpdateFailedPanel() }} </span>
       </div>
     </div>

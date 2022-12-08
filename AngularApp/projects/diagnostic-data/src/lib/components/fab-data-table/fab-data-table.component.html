@@ -41,7 +41,7 @@
   </div>
 </div>
 
-<div *ngIf = "buttonText != ''" style="display: flex;margin-bottom: -62px;margin-left: 90px;padding-top:20px;">
+<div *ngIf = "buttonText != ''" class = "table-button" style="display: flex;">
   <fab-primary-button [text]="buttonText" (onClick) = "returnSelectedItems()" [contentClass]="'mr-3'">
   </fab-primary-button>
 </div>
