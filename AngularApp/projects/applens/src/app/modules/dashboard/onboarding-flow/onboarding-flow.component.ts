@@ -1858,7 +1858,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   }
 
   private showAlertBox(alertClass: string, message: string) {
-    debugger; 
     this.alertClass = alertClass;
     this.alertMessage = message;
     this.showAlert = true;
