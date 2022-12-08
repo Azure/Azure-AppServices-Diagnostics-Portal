@@ -33,7 +33,6 @@ export class FabDataTableComponent implements AfterContentInit {
   @Input() allowColumnSearch: boolean = false;
   @Input() tableHeight: string = "";
   @Input() description: string = "";
-  //@Input() checkboxes: boolean = false; 
   @Input("searchPlaceholder") private _searchPlaceholder: string = "";
   @Input() buttonText: string = ""; 
   @Output() selectedItems = new EventEmitter(); 

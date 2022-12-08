@@ -177,7 +177,7 @@ export class UpdateDetectorReferencesComponent implements OnInit{
                     }
                   
                   } 
-                  //else do not update and add into errors list 
+                  //else it's a compilation error, do not update and add detector error into errors list 
                   else {
                      
                     this.updatedDetectors[detector.Name] == false; 
@@ -190,16 +190,23 @@ export class UpdateDetectorReferencesComponent implements OnInit{
                     }
                  
                   }
+                  // if there was a runtime error, add into errors list. update the detector 
+                  //error with runtime error 
                   if (this.queryResponse.runtimeLogOutput) {
                     this.queryResponse.runtimeLogOutput.forEach(element => {
                       if (element.exception) {
               
-                        console.log(`${element.timeStamp}: ${element.message}: 
-                        ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`);
-                      
+                        this.updatedDetectors[detector.Name] = false; 
+                        this.detectorsToCheck.delete(detector.Name); 
+                        this.errorDetectorsList.set(detector.Name, `${element.timeStamp}: ${element.message}: ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`); 
+                        
+                        //check if all detectors are done compiling/running 
+                        if(this.detectorsToCheck.size == 0){
+                          this.updateDetectorPackageJsonAll(); 
                         }
-                      });
                       }
+                    });
+                  }
                   
                   }, err => {
                     

@@ -34,7 +34,6 @@ import { ApplensGlobal } from '../../../applens-global';
 import { IDeactivateComponent } from '../develop-navigation-guard.service';
 import { HttpParams } from '@angular/common/http';
 import { ThemeService } from 'projects/app-service-diagnostics/src/app/theme/theme.service';
-//import { retry } from 'rxjs-compat/operator/retry';
 
 
 const codePrefix = `// *****PLEASE DO NOT MODIFY THIS PART*****
