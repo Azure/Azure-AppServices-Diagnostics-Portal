@@ -53,7 +53,6 @@ export class UpdateDetectorReferencesComponent implements OnInit{
   updateDetectorSuccess : boolean = false; 
   updateDetectorFailed : boolean = false; 
   gistCommitVersion : string = ""; 
-  updatedDetectors : object= {};
   detectorReferencesTable : DataTableResponseObject = null; 
   PRLink : string = "";
   submittedPanelTimer: any = null;
@@ -179,8 +178,6 @@ export class UpdateDetectorReferencesComponent implements OnInit{
                   } 
                   //else it's a compilation error, do not update and add detector error into errors list 
                   else {
-                     
-                    this.updatedDetectors[detector.Name] == false; 
                     this.detectorsToCheck.delete(detector.Name); 
                     this.errorDetectorsList.set(detector.Name, this.queryResponse.compilationOutput.compilationTraces);
                     
@@ -195,8 +192,6 @@ export class UpdateDetectorReferencesComponent implements OnInit{
                   if (this.queryResponse.runtimeLogOutput) {
                     this.queryResponse.runtimeLogOutput.forEach(element => {
                       if (element.exception) {
-              
-                        this.updatedDetectors[detector.Name] = false; 
                         this.detectorsToCheck.delete(detector.Name); 
                         this.errorDetectorsList.set(detector.Name, `${element.timeStamp}: ${element.message}: ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`); 
                         
@@ -209,8 +204,6 @@ export class UpdateDetectorReferencesComponent implements OnInit{
                   }
                   
                   }, err => {
-                    
-                    this.updatedDetectors[detector.Name] = false; 
                     this.detectorsToCheck.delete(detector.Name); 
                     this.errorDetectorsList.set(detector.Name, err); 
                     
@@ -363,7 +356,6 @@ displayUpdateDetectorResults(){
 
   this.detectorReferencesTable = this.generateDetectorReferenceTable(rows); 
   this.detectorsToCheck.clear(); 
-  this.updatedDetectors = {}; 
   this.detectorsToUpdate.clear(); 
   this.updateDetectorSuccess = false; 
   this.errorDetectorsList.clear(); 
