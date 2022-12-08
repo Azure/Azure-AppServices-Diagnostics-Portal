@@ -2,9 +2,20 @@
       <div>
         <p>This action will update the gist commit versions that the detectors reference.<br>
           <strong>Current Gist Commit Version:</strong> {{gistCommitVersion}} </p>
+
+          
+      <div *ngIf = "updateDetectorFailed" >
+      <div style="display: flex;align-items: center; margin-left: 650px; margin-right: 850px; background:#fde7e9;padding:5px">
+          <div style="display: flex; margin-top: 10px; margin-left:5px">
+            <i class="ms-Icon ms-Icon--ErrorBadge"></i>
+            <div style="margin-left:5px"><p>{{panelText}}</p></div></div>
+          <span> {{ onOpenUpdateFailedPanel() }} </span>
       </div>
-      <div class="detectorreferences-list" *ngIf = "detectorReferencesTable"> 
+    </div>
+
+      <div *ngIf = "detectorReferencesTable"> 
         <fab-data-table [table]="detectorReferencesTable" [columnOptions]="" [allowColumnSearch]="true" [tableHeight]="'100%'" 
         [descriptionColumnName] = "'Multiple'" [buttonText] = "'Update Selected'" (selectedItems) = updateDetectorReferences($event)>
         </fab-data-table>
         </div>
+

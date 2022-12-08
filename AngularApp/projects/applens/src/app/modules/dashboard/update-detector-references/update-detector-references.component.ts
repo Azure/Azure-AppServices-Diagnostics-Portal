@@ -7,7 +7,7 @@ import {
   CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, TableColumnOption, TableFilterSelectionOption, DataTableResponseObject, DataTableResponseColumn, FabDataTableComponent
 } from 'diagnostic-data';
 import { forkJoin } from 'rxjs';
-import { inputProperties } from 'office-ui-fabric-react';
+import { inputProperties, IPanelProps, PanelType } from 'office-ui-fabric-react';
 import { DevopsConfig } from '../../../shared/models/devopsConfig';
 import { UriUtilities } from 'diagnostic-data';
 
@@ -45,15 +45,19 @@ export class UpdateDetectorReferencesComponent implements OnInit{
   @Input() detectorReferencesList : any[] = []; 
 
   DevelopMode = DevelopMode;
+  HealthStatus = HealthStatus; 
 
   detectorsToCheck: Set<any> = new Set();  
   detectorsToUpdate: Map<string, any> = new Map(); 
   errorDetectorsList : Map<string, any> = new Map(); 
   updateDetectorSuccess : boolean = false; 
+  updateDetectorFailed : boolean = false; 
   gistCommitVersion : string = ""; 
   updatedDetectors : object= {};
   detectorReferencesTable : DataTableResponseObject = null; 
   PRLink : string = "";
+  submittedPanelTimer: any = null;
+  panelText : string = "Error pushing changes to branch. Unable to update selected detectors"; 
 
 
   ngOnInit(): void {
@@ -243,7 +247,7 @@ updateDetectorPackageJsonAll(){
   if(this.useAutoMergeText){
     requestBranch = this.Branch; 
   }
-    
+
   const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.id} Detector References Author : ${this.userName}`, 
   commitType, this.resourceId); 
   const makePullRequestObservable = this.diagnosticApiService.makePullRequest(requestBranch, this.defaultBranch, `Changing ${this.id} detector references`, this.resourceId, this.owners, "temp description");
@@ -262,16 +266,15 @@ updateDetectorPackageJsonAll(){
       }); 
 
     }, err =>{
-      console.log(`Unable to update detector references ${err}`); 
+      this.updateDetectorFailed = true; 
+
     })
     
 
   }, err => {
-    if (err.error.includes('has already been updated by another client')){
-      console.log(`Unable to update detector references ${err}`); 
-    }
+    this.updateDetectorFailed = true; 
+    this.displayUpdateDetectorResults(); 
 
-    console.log(err);
   }
 
   );
@@ -435,6 +438,19 @@ generateProgressDetectorReferenceTable(){
 getGistCommitContent = (gistId, gistCommitVersion) => {
   return this.diagnosticApiService.getDevopsCommitContent(`${this.DevopsConfig.folderPath}/${gistId}/${gistId}.csx`, gistCommitVersion, this.resourceId);   
 };
+
+
+
+onOpenUpdateFailedPanel() {
+  this.submittedPanelTimer = setTimeout(() => {
+    this.dismissUpdateHandler();
+  }, 5000);
+}
+
+dismissUpdateHandler() {
+  this.updateDetectorFailed = false; 
+}
+
 
 
 }

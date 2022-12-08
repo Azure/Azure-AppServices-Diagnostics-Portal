@@ -99,7 +99,6 @@ export class FabDataTableComponent implements AfterContentInit {
 
       this.createFabricDataTableObjects(t);
 
-      //this.fabDetailsList.selectionMode = this.descriptionColumnName !== "" ? SelectionMode.single : SelectionMode.none;
       if(this.descriptionColumnName == "Multiple"){
         this.fabDetailsList.selectionMode = SelectionMode.multiple; 
       }

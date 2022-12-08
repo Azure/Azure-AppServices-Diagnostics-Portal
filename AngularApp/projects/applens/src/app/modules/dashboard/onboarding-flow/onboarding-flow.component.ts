@@ -114,7 +114,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   @Input() endTime: momentNs.Moment = moment.utc();
   @Input() gistMode: boolean = false;
   @Input() branchInput: string = '';
-  @Output() detectorRefDialogOutput = new EventEmitter();  
   DevelopMode = DevelopMode;
   HealthStatus = HealthStatus;
   PanelType = PanelType;
@@ -205,6 +204,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   deleteButtonText: string = "Delete";
   deleteDialogTitle: string = "Delete Detector";
   deleteDialogHidden: boolean = true;
+  detectorReferencesTitle : string = "Detector References";
   deleteAvailable: boolean = false;
   deletingDetector: boolean = false;
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -1858,6 +1858,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   }
 
   private showAlertBox(alertClass: string, message: string) {
+    debugger; 
     this.alertClass = alertClass;
     this.alertMessage = message;
     this.showAlert = true;

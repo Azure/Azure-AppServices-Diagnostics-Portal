@@ -178,7 +178,7 @@
   </fab-dialog>
 
   <fab-dialog [hidden]="detectorReferencesDialogHidden" (onDismiss)="dismissDetectorRefDialog()"  [minWidth]="'80%'">
-    <fab-dialog-content [title]="deleteDetectorReferencesTitle">
+    <fab-dialog-content [title]="detectorReferencesTitle">
 
         <update-detector-references [id] = "id" [Branch] = "Branch" [resourceId] = "resourceId" [mode] = "mode" 
         [dataSource] = "dataSource"  [timeRange] = "timeRange"  [compilationPackage]  = "compilationPackage"
@@ -188,10 +188,7 @@
         [detectorReferencesList] = "detectorReferencesList"
         [gistCommitVersion] = "gistCommitVersion"></update-detector-references>
 
-
       <div class="mt-5">
-        <!-- <fab-primary-button text="Update All" (onClick)="updateDetectorReferences()" [contentClass]="'mr-3'">
-        </fab-primary-button> -->
         <fab-default-button text="Cancel" (onClick)="dismissDetectorRefDialog()"></fab-default-button>
       </div>
     </fab-dialog-content>
