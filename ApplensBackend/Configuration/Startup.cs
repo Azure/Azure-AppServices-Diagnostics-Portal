@@ -119,7 +119,7 @@ namespace AppLensV3
                 GraphTokenService.Instance.Initialize(Configuration);
             }
 
-            if (!Configuration.GetValue<bool>("DiagnosticRole:clientCertEnabled"))
+            if (!Configuration.GetValue<bool>("DiagnosticRole:clientCertEnabled", true))
             {
                 DiagnosticClientToken.Instance.Initialize(Configuration);
             }
