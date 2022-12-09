@@ -341,10 +341,10 @@ displayUpdateDetectorResults(){
   if(this.errorDetectorsList.has(key)){
   status = `<markdown><span class="critical-color"><i class="fa fa-times-circle fa-lg"></i> ERROR</span></markdown>`;
   miscKey = this.errorDetectorsList.get(key).toString(); 
-  misc = `<a href="${path}">${miscKey}</a>`
+  misc = `<a href="${path}" target="_blank">${miscKey}</a>`
   }
   else if( this.detectorsToUpdate.has(key) && this.updateDetectorSuccess){
-  misc = `<a href="${this.PRLink}">PR LINK</a>`
+  misc = `<a href="${this.PRLink}" target="_blank">PR LINK</a>`
   }
 
 
@@ -411,7 +411,7 @@ generateProgressDetectorReferenceTable(){
   else if(this.errorDetectorsList.has(key)){
     status = `<span class="critical-color"><i class="fa fa-times-circle fa-lg"></i> ERROR </span>`;
     miscKey = this.errorDetectorsList.get(key).toString(); 
-    misc = `<a href="${path}">${miscKey}</a>`
+    misc = `<a href="${path}" target="_blank">${miscKey}</a>`
     }
   else{
     status = this.detectorReferencesList["detectorReferences"][key] == this.gistCommitVersion ? 
