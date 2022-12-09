@@ -28,10 +28,11 @@ export class CategoryTileV4Component implements OnInit {
   clickCategoryQuickLink(e:Event, quickLink:CategoryQuickLinkDetails):void {
     e.stopPropagation();
     this._telemetryService.logEvent(TelemetryEventNames.QuickLinkOnCategoryTileClicked, {
-      'categoryId': this.category.id,
-      'quickLinkType': quickLink.type,
-      'quickLinkId': quickLink.id,
-      'quickLinkDisplayText': quickLink.displayText
+      'Category': this.category.id,
+      'CategoryName': this.category.name,
+      'DetectorType': quickLink.type,
+      'DetectorId': quickLink.id,
+      'DetectorName': quickLink.displayText
     });
 
     if(quickLink.type === DetectorType.Detector || quickLink.type === DetectorType.Analysis) {
@@ -46,13 +47,15 @@ export class CategoryTileV4Component implements OnInit {
   openBladeDiagnoseCategoryBlade() {
     this._portalService.openBladeDiagnoseCategoryBlade(this.category.id);
     this._telemetryService.logEvent('CategorySelected',{
-      'CategoryName': this.category.name
+      'Category': this.category.id,
+      'CategoryName': this.category.name,
     });
   }
 
   navigateToCategory(): void {
     this._telemetryService.logEvent('CategorySelected',{
-      'CategoryName': this.category.name
+      'Category': this.category.id,
+      'CategoryName': this.category.name,
     });
 
     if (this.category.overridePath) {

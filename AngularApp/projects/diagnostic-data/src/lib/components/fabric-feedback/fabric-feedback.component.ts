@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import * as momentNs from 'moment';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { PIIUtilities } from '../../utilities/pii-utilities';
-import { TelemetryEventNames, TelemetrySource } from '../../services/telemetry/telemetry.common';
+import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { Guid } from '../../utilities/guid';
 import { DiagnosticDataConfig, DIAGNOSTIC_DATA_CONFIG } from '../../config/diagnostic-data-config';
 import { GenieGlobals } from '../../services/genie.service';
@@ -73,11 +73,11 @@ export class FabricFeedbackComponent implements AfterViewInit, OnInit, OnDestroy
     const detectorName = this.feedbackPanelConfig.detectorName || this.globals.getDetectorName();
     if (this.isPublic) {
       const isHomepage = !this.activatedRoute.root.firstChild.firstChild.firstChild.firstChild.snapshot.params["category"];
-      this.ratingEventProperties["Location"] = isHomepage ? TelemetrySource.LandingPage : TelemetrySource.CategoryPage;
+      this.ratingEventProperties["Place"] = isHomepage ? "LandingPage" : "CategoryPage";
     } else {
       const user = this.globals.getUserAlias();
       this.ratingEventProperties["User"] = user;
-      this.ratingEventProperties["Location"] = detectorName ? TelemetrySource.OverviewPage : TelemetrySource.DetectorPage
+      this.ratingEventProperties["Place"] = detectorName ? "OverviewPage" : "DetectorPage";
     }
     this.ratingEventProperties["DetectorId"] = detectorName;
     this.ratingEventProperties["Url"] = window.location.href;

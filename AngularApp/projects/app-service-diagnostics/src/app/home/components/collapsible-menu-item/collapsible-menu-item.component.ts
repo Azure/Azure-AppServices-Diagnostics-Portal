@@ -1,8 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BehaviorSubject } from 'rxjs';
-import { SearchPipe } from '../pipes/search.pipe';
-import { TelemetryService, TelemetryEventNames } from 'diagnostic-data';
 import { DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
 
 @Component({
@@ -12,9 +9,6 @@ import { DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
 })
 
 export class CollapsibleMenuItemComponent implements OnInit {
-    private _searchValueSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
-    private searchValueLocal: string;
-
   @Input() menuItem: CollapsibleMenuItem;
   @Input() level: number = 0;
 
@@ -24,7 +18,7 @@ export class CollapsibleMenuItemComponent implements OnInit {
   imagePlaceHolder: string = '../../../../assets/img/detectors/default.svg';
   directionalHint = DirectionalHint.bottomRightEdge;
 
-  constructor(private telemetryService:TelemetryService) { }
+  constructor() { }
 
   ngOnInit() {
     this.children = this.menuItem.subItems;
@@ -41,9 +35,6 @@ export class CollapsibleMenuItemComponent implements OnInit {
         document.getElementById(this.menuItem.label).focus();
       }
 
-      this.telemetryService.logEvent(TelemetryEventNames.CategoryNavItemClicked,{
-        'Title':this.menuItem.label
-      });
       this.menuItem.onClick();
     }
   }

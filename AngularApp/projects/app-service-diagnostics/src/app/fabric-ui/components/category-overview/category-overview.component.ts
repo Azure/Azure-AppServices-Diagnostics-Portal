@@ -64,6 +64,6 @@ export class CategoryOverviewComponent implements OnInit {
     }
 
     ngAfterViewInit() {
-        this._telemetryService.logPageView(TelemetryEventNames.CategoryOverviewPageLoaded, { "categoryId": this.categoryId });
+        this._telemetryService.logPageView(TelemetryEventNames.CategoryOverviewPageLoaded, { "Category": this.categoryId,"CategoryName": this.category.name });
     }
 }

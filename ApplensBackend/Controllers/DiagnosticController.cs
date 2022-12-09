@@ -45,7 +45,7 @@ namespace AppLensV3.Controllers
         private readonly bool detectorDevelopmentEnabled;
         private readonly IList<string> apiEndpointsForDetectorDevelopment;
 
-        private readonly string[] AllowedSections = new string[] { "ContentSearch", "DeepSearch", "ApplicationInsights", "AcceptOriginSuffix:Origins", "CodeCompletion", "DetectorDevelopmentEnabled", "DetectorDevelopmentEnv", "PPEHostname", "APPLENS_ENVIRONMENT", "APPLENS_HOST" };
+        private readonly string[] AllowedSections = new string[] { "ContentSearch", "DeepSearch", "ApplicationInsights", "AcceptOriginSuffix:Origins", "CodeCompletion", "DetectorDevelopmentEnabled", "DetectorDevelopmentEnv", "PPEHostname", "APPLENS_ENVIRONMENT", "APPLENS_HOST", "SystemInvokers:ResourceIDString", "SystemInvokers:DocumentationStagingBranch", "SystemInvokers:DocumentationRoot", "SystemInvokers:DiagnosticsMainBranch" };
 
         private class InvokeHeaders
         {

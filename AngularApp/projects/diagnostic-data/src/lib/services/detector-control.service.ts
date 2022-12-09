@@ -52,7 +52,7 @@ export class DetectorControlService {
 
   private _refresh: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-  public _effectiveLocale: string="";
+  public _effectiveLocale: string = "";
 
   private detectorQueryParams: BehaviorSubject<string> = new BehaviorSubject<string>("");
 
@@ -69,7 +69,7 @@ export class DetectorControlService {
     selectedText: TimePickerOptions.Last24Hours
   });
 
-  public changeFromTimePicker:boolean = false;
+  public changeFromTimePicker: boolean = false;
 
   public timePickerStrSub: BehaviorSubject<string> = new BehaviorSubject(TimePickerOptions.Last24Hours);
 
@@ -77,7 +77,7 @@ export class DetectorControlService {
     this.internalClient = !config.isPublic;
     this._duration = this.durationSelections[2];
     this._startTime = moment.utc().subtract(this._duration.duration);
-    this._endTime = moment.utc().subtract(15,'minute');
+    this._endTime = moment.utc().subtract(15, 'minute');
   }
 
   public get update() {
@@ -219,8 +219,7 @@ export class DetectorControlService {
     if (this.getTimeDurationError(start, end) === '') {
       this._startTime = startTime;
       this._endTime = endTime;
-      if (!refreshInstanceId)
-      {
+      if (!refreshInstanceId) {
         this._refreshData("V3ControlRefresh");
       }
     }
@@ -251,7 +250,7 @@ export class DetectorControlService {
           }
         }
         else {
-          this.timeRangeErrorString = `Time range set to last 24 hrs. Start and End date time must not be more than ${(this.allowedDurationInDays * 24).toString()} hrs apart, Start date must be within the past 30 days and end date must be 15 minutes less than the current time.`;
+          this.timeRangeErrorString = `Error: The selected time range is not allowed. The start time must be within the past 30 days. The end time must be within ${(this.allowedDurationInDays * 24).toString()} hours of the start time and at least 15 minutes before the current time. Time range has been set to the last 24 hours by default`
           this._endTime = moment.utc().subtract(16, 'minutes');
           this._startTime = this._endTime.clone().subtract(1, 'days');
         }
@@ -263,7 +262,7 @@ export class DetectorControlService {
   public selectDuration(duration: DurationSelector) {
     this._duration = duration;
     this._startTime = moment.utc().subtract(duration.duration);
-    this._endTime = moment.utc().subtract(15,'minute');
+    this._endTime = moment.utc().subtract(15, 'minute');
     this.setCustomStartEnd(this._startTime.format(this.stringFormat), this.endTime.format(this.stringFormat));
   }
 
@@ -325,7 +324,7 @@ export class DetectorControlService {
   }
 
   public get effectiveLocale(): string {
-      return this._effectiveLocale;
+    return this._effectiveLocale;
   }
 
   public updateTimePickerInfo(updatedInfo: TimePickerInfo) {

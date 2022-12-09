@@ -5,7 +5,7 @@ import { WindowService } from '../../../startup/services/window.service';
 import { environment } from '../../../../environments/environment';
 import { StartupInfo } from '../../models/portal';
 import { DemoSubscriptions } from '../../../betaSubscriptions';
-import { DetectorType, TelemetryService } from 'diagnostic-data';
+import { DetectorType, TelemetryService, TelemetrySource } from 'diagnostic-data';
 import { VersionTestService } from '../../../fabric-ui/version-test.service';
 
 @Component({
@@ -20,6 +20,7 @@ export class ResourceRedirectComponent implements OnInit {
   constructor(private _authService: AuthService, private _router: Router, private _windowService: WindowService, private _versionTestService: VersionTestService, private _telemetryService: TelemetryService) { }
 
   ngOnInit() {
+    this._telemetryService.updateCommonProperties({'Location': TelemetrySource.DiagAndSolveBlade});
     this._versionTestService.isLegacySub.subscribe(useLegacyVersion => this._useLegacyVersion = useLegacyVersion);
     this.navigateToExperience();
   }
@@ -82,6 +83,7 @@ export class ResourceRedirectComponent implements OnInit {
 
             var referrerParam = info.optionalParameters.find(param => param.key.toLowerCase() === "referrer");
             if (referrerParam) {
+              this._telemetryService.updateCommonProperties({'Location': TelemetrySource.PortalReferral});
              let referrerValue = referrerParam.value;
               path += `/portalReferrerResolver`;
 
@@ -99,6 +101,7 @@ export class ResourceRedirectComponent implements OnInit {
           }
 
           if (info.supportTopicId || info.sapSupportTopicId) {
+            this._telemetryService.updateCommonProperties({'Location': TelemetrySource.CaseSubmissionFlow});
             path += `/supportTopicId`;
             navigationExtras.queryParams = {
               ...navigationExtras.queryParams,

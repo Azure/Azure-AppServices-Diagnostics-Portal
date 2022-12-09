@@ -6,7 +6,7 @@ using AppLensV3.Models;
 
 namespace AppLensV3.Services
 {
-    public class NationalCloudGraphClientService : IGraphClientService
+    public class NullableGraphClientService : IGraphClientService
     {
         Task<string> IGraphClientService.GetOrCreateUserImageAsync(string userId)
         {
