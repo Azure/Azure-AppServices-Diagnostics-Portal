@@ -113,7 +113,7 @@ export class UpdateDetectorReferencesComponent implements OnInit{
       forkJoin([code, reference, utterances]).subscribe( res =>{
 
         tempCode = res[0]; 
-        tempReference = JSON.parse(res[1])['dependencies'] || {}; // 
+        tempReference = JSON.parse(res[1])['dependencies'] || {}; 
         tempUtterances = JSON.parse(res[2]).utterances; 
 
         let tempReferenceKeys = Object.keys(tempReference); 
@@ -162,44 +162,38 @@ export class UpdateDetectorReferencesComponent implements OnInit{
                   getFullResponse: true
                 },detector.Name.toLowerCase())
                   .subscribe((response: any) => {
-
                     this.queryResponse = response.body;
-              //if compilation succeeds, update 
-                  if (this.queryResponse.compilationOutput.compilationSucceeded === true) {
+                  //if compilation AND runtime succeeds, add into update list 
+                  if (this.queryResponse.compilationOutput.compilationSucceeded === true && this.queryResponse.runtimeSucceeded === true) {
                    
                     this.detectorsToCheck.delete(detector.Name);
                     this.detectorsToUpdate.set(detector.Name, res[1]);
-                    if(this.detectorsToCheck.size == 0){
-                      this.updateDetectorPackageJsonAll(); 
-                    }
-                  
                   } 
                   //else it's a compilation error, do not update and add detector error into errors list 
-                  else {
+                  else if(this.queryResponse.compilationOutput.compilationSucceeded === false){
                     this.detectorsToCheck.delete(detector.Name); 
                     this.errorDetectorsList.set(detector.Name, this.queryResponse.compilationOutput.compilationTraces);
-                    
-                    //check if all detectors are done compiling 
-                    if(this.detectorsToCheck.size == 0){
-                      this.updateDetectorPackageJsonAll(); 
-                    }
-                 
                   }
                   // if there was a runtime error, add into errors list. update the detector 
                   //error with runtime error 
-                  if (this.queryResponse.runtimeLogOutput) {
-                    this.queryResponse.runtimeLogOutput.forEach(element => {
-                      if (element.exception) {
-                        this.detectorsToCheck.delete(detector.Name); 
-                        this.errorDetectorsList.set(detector.Name, `${element.timeStamp}: ${element.message}: ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`); 
-                        
-                        //check if all detectors are done compiling/running 
-                        if(this.detectorsToCheck.size == 0){
-                          this.updateDetectorPackageJsonAll(); 
+                  else if(this.queryResponse.runtimeSucceeded === false){
+                    if (this.queryResponse.runtimeLogOutput) {
+                      this.queryResponse.runtimeLogOutput.forEach(element => {
+                        if (element.exception) {
+                          this.detectorsToCheck.delete(detector.Name); 
+                          this.errorDetectorsList.set(detector.Name, `${element.timeStamp}: ${element.message}: ${element.exception.ClassName}: ${element.exception.Message}: ${element.exception.StackTraceString}`); 
+                          
                         }
-                      }
-                    });
+                      });
+                    }
                   }
+
+                  
+                  //check if all detectors are done compiling /running
+                  if(this.detectorsToCheck.size == 0){
+                    this.updateDetectorPackageJsonAll(); 
+                  }
+                 
                   
                   }, err => {
                     this.detectorsToCheck.delete(detector.Name); 
@@ -341,10 +335,10 @@ displayUpdateDetectorResults(){
   if(this.errorDetectorsList.has(key)){
   status = `<markdown><span class="critical-color"><i class="fa fa-times-circle fa-lg"></i> ERROR</span></markdown>`;
   miscKey = this.errorDetectorsList.get(key).toString(); 
-  misc = `<a href="${path}">${miscKey}</a>`
+  misc = `<a href="${path}" target="_blank">${miscKey}</a>`
   }
   else if( this.detectorsToUpdate.has(key) && this.updateDetectorSuccess){
-  misc = `<a href="${this.PRLink}">PR LINK</a>`
+  misc = `<a href="${this.PRLink}" target="_blank">PR LINK</a>`
   }
 
 
@@ -411,7 +405,7 @@ generateProgressDetectorReferenceTable(){
   else if(this.errorDetectorsList.has(key)){
     status = `<span class="critical-color"><i class="fa fa-times-circle fa-lg"></i> ERROR </span>`;
     miscKey = this.errorDetectorsList.get(key).toString(); 
-    misc = `<a href="${path}">${miscKey}</a>`
+    misc = `<a href="${path}" target="_blank">${miscKey}</a>`
     }
   else{
     status = this.detectorReferencesList["detectorReferences"][key] == this.gistCommitVersion ? 
