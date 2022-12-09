@@ -105,7 +105,7 @@ namespace AppLensV3
 
             services.AddSingletonWhenEnabled<ISurveysService, SurveysService, NullableSurveysService>(Configuration, "Surveys");
 
-            services.AddSingletonWhenEnabled<ICosmosDBUserSettingHandler, CosmosDBUserSettingHandler>(Configuration, "UserSetting");
+            services.AddSingletonWhenEnabled<ICosmosDBUserSettingHandler, CosmosDBUserSettingHandler, NullableCosmosDBUserSettingsHandler>(Configuration, "UserSetting");
 
             services.AddSingletonWhenEnabled<IDetectorGistTemplateService, TemplateService>(Configuration, "DetectorGistTemplateService");
 
@@ -119,8 +119,10 @@ namespace AppLensV3
                 GraphTokenService.Instance.Initialize(Configuration);
             }
 
-            // If we are using runtime host directly
-            DiagnosticClientToken.Instance.Initialize(Configuration);
+            if (!Configuration.GetValue<bool>("DiagnosticRole:clientCertEnabled"))
+            {
+                DiagnosticClientToken.Instance.Initialize(Configuration);
+            }
 
             cloudEnvironmentStartup.AddCloudSpecificServices(services, Configuration, Environment);
         }
