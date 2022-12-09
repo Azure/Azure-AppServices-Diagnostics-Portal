@@ -1287,16 +1287,25 @@ export class ResiliencyScoreReportHelper {
                         widths: ['auto', 'auto'],
                         body: [
                             [
-                                { text: 'Worker Size', style: 'maxSiteperWorkerSizeheader' }, { text: 'Max sites', style: 'maxSiteperWorkerSizeheader' }
+                                { text: 'App Service Plan SKU', style: 'maxSiteperWorkerSizeheader' }, { text: 'Max sites', style: 'maxSiteperWorkerSizeheader' }
                             ],
                             [
-                                { text: 'Small', style: 'maxSiteperWorkerSizeevenrow' }, { text: '8', style: 'maxSiteperWorkerSizeevenrow' }
+                                { text: 'B1, S1, P1v2, I1v1', style: 'maxSiteperWorkerSizeevenrow' }, { text: '8', style: 'maxSiteperWorkerSizeevenrow' }
                             ],
                             [
-                                { text: 'Medium', style: 'maxSiteperWorkerSizeoddrow' }, { text: '16', style: 'maxSiteperWorkerSizeoddrow' }
+                                { text: 'B2, S2, P2v2, I2v1', style: 'maxSiteperWorkerSizeoddrow' }, { text: '16', style: 'maxSiteperWorkerSizeoddrow' }
                             ],
                             [
-                                { text: 'Large', style: 'maxSiteperWorkerSizeevenrow' }, { text: '32', style: 'maxSiteperWorkerSizeevenrow' }
+                                { text: 'B3, S3, P3v2, I3v1', style: 'maxSiteperWorkerSizeevenrow' }, { text: '32', style: 'maxSiteperWorkerSizeevenrow' }
+                            ],
+                            [
+                                { text: 'P1v3, I1v2', style: 'maxSiteperWorkerSizeoddrow' }, { text: '16', style: 'maxSiteperWorkerSizeoddrow' }
+                            ],
+                            [
+                                { text: 'P2v3, I2v2', style: 'maxSiteperWorkerSizeevenrow' }, { text: '32', style: 'maxSiteperWorkerSizeevenrow' }
+                            ],
+                            [
+                                { text: 'P3v3, I3v2', style: 'maxSiteperWorkerSizeoddrow' }, { text: '64', style: 'maxSiteperWorkerSizeoddrow' }
                             ]
                         ]
                     },

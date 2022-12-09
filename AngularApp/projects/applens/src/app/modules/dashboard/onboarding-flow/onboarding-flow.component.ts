@@ -1,6 +1,6 @@
 import { AdalService } from 'adal-angular4';
 import {
-  CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities
+  CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, TableColumnOption, TableFilterSelectionOption, DataTableResponseObject, DataTableResponseColumn, FabDataTableComponent
 } from 'diagnostic-data';
 import * as momentNs from 'moment';
 import { NgxSmartModalService } from 'ngx-smart-modal';
@@ -9,8 +9,8 @@ import {
   forkJoin
   , Observable, of
 } from 'rxjs';
-import { flatMap, last, map } from 'rxjs/operators'
-import { ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Injectable, Input, OnChanges, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
+import { catchError, finalize, flatMap, last, map, mergeMap, retryWhen, switchMap, retry, delay, tap } from 'rxjs/operators'
+import { ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, ViewContainerRef, EventEmitter } from '@angular/core';
 import { Package } from '../../../shared/models/package';
 import { GithubApiService } from '../../../shared/services/github-api.service';
 import { DetectorGistApiService } from '../../../shared/services/detectorgist-template-api.service';
@@ -23,7 +23,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot, CanDeactivate, Params, Router, 
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
 import { listen, MessageConnection } from 'vscode-ws-jsonrpc';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { MonacoLanguageClient, CloseAction, ErrorAction, MonacoServices, createConnection } from 'monaco-languageclient';
+import { MonacoLanguageClient, CloseAction, ErrorAction, MonacoServices, createConnection, ReferencesRequest } from 'monaco-languageclient';
 import { v4 as uuid } from 'uuid';
 import { IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IPanelProps, IPivotProps, MessageBarType, PanelType, TagItemSuggestion } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
@@ -32,6 +32,8 @@ import { ApplensCommandBarService } from '../services/applens-command-bar.servic
 import { DevopsConfig } from '../../../shared/models/devopsConfig';
 import { ApplensGlobal } from '../../../applens-global';
 import { IDeactivateComponent } from '../develop-navigation-guard.service';
+import { HttpParams } from '@angular/common/http';
+import { ThemeService } from 'projects/app-service-diagnostics/src/app/theme/theme.service';
 
 
 const codePrefix = `// *****PLEASE DO NOT MODIFY THIS PART*****
@@ -201,6 +203,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   deleteButtonText: string = "Delete";
   deleteDialogTitle: string = "Delete Detector";
   deleteDialogHidden: boolean = true;
+  detectorReferencesTitle : string = "Detector References";
   deleteAvailable: boolean = false;
   deletingDetector: boolean = false;
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -208,6 +211,9 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   PPERedirectTimer: number = 10;
   DevopsConfig: DevopsConfig;
   useAutoMergeText: boolean = false;
+  detectorReferencesDialogHidden : boolean = true; 
+  gistCommitVersion : string = ""; 
+
   runButtonStyle: any = {
     root: { cursor: "default" }
   };
@@ -418,6 +424,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   dismissDeleteDialog() {
     this.deleteDialogHidden = true;
   }
+  
 
   updateTempBranch(event: any) {
     this.tempBranch = event.option.key;
@@ -825,6 +832,21 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     window.open(this.commitHistoryLink);
   }
 
+
+
+
+  showUpdateDetectorReferencesDialog() {
+    this.detectorReferencesDialogHidden = false; 
+  }
+
+
+  dismissDetectorRefDialog() {
+    this.detectorReferencesDialogHidden = true;    
+  }
+  
+
+
+
   updateGistVersionOptions(event: string) {
     this.loadingGistVersions = true;
     this.pastGistEvent = event;
@@ -1187,7 +1209,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     } as CompilationTraceOutputDetails);
     let currentCode = this.code;
     this.markCodeLinesInEditor(null);
-
     var body = {
       script: this.code,
       references: this.reference,

@@ -1,11 +1,12 @@
-import { AfterContentInit, Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { DetailsListLayoutMode, IColumn, IListProps, ISelection, SelectionMode, Selection } from 'office-ui-fabric-react';
+import { AfterContentInit, Component, Input, OnInit, Output, TemplateRef, ViewChild, EventEmitter } from '@angular/core';
+import { DetailsListLayoutMode, IColumn, IListProps, ISelection, SelectionMode, Selection, } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
 import { DataTableResponseObject } from '../../models/detector';
 import { TableColumnOption, TableFilter, TableFilterSelectionOption } from '../../models/data-table';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { FabDetailsListComponent } from '@angular-react/fabric/lib/components/details-list';
 import { FabSearchBoxComponent } from '@angular-react/fabric/lib/components/search-box';
+
 
 
 const columnMinWidth: number = 100;
@@ -33,6 +34,8 @@ export class FabDataTableComponent implements AfterContentInit {
   @Input() tableHeight: string = "";
   @Input() description: string = "";
   @Input("searchPlaceholder") private _searchPlaceholder: string = "";
+  @Input() buttonText: string = ""; 
+  @Output() selectedItems = new EventEmitter(); 
 
   get searchPlaceholder() {
     if (this._searchPlaceholder && this._searchPlaceholder.length > 0) {
@@ -66,12 +69,14 @@ export class FabDataTableComponent implements AfterContentInit {
       if (selectionCount === 0) {
         this.selectionText = "";
       } else if (selectionCount === 1) {
+
         const row = this.selection.getSelection()[0];
+
         if (this.descriptionColumnName) {
           const selectionText = row[this.descriptionColumnName];
           this.selectionText = selectionText !== undefined ? selectionText : "";
         }
-      }
+      } 
     }
   });
 
@@ -93,8 +98,15 @@ export class FabDataTableComponent implements AfterContentInit {
 
       this.createFabricDataTableObjects(t);
 
-
-      this.fabDetailsList.selectionMode = this.descriptionColumnName !== "" ? SelectionMode.single : SelectionMode.none;
+      if(this.descriptionColumnName == "Multiple"){
+        this.fabDetailsList.selectionMode = SelectionMode.multiple; 
+      }
+      else if(this.descriptionColumnName == "Single"){
+        this.fabDetailsList.selectionMode = SelectionMode.single; 
+      }
+      else{
+        this.fabDetailsList.selectionMode = SelectionMode.none; 
+      }
       this.fabDetailsList.selection = this.selection;
 
       //Ideally,it should be enable if table is too large.
@@ -311,4 +323,10 @@ export class FabDataTableComponent implements AfterContentInit {
     str = str.trim();
     return str.startsWith('<markdown>') && str.endsWith('</markdown>');
   }
+
+  returnSelectedItems() {
+    this.selectedItems.emit(this.selection.getSelection()); 
+  }
+
+  
 }

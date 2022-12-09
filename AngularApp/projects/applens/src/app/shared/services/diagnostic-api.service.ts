@@ -148,6 +148,14 @@ export class DiagnosticApiService {
     return this.invoke<DetectorResponse[]>(path, HttpMethod.POST, body).pipe(retry(1), map(response => response.map(gist => gist.metadata)));
   }
 
+  
+  public getGistId(version: string, resourceId: string, gistId: string, body?: any): Observable<any>{
+    
+    let path = `${version}${resourceId}/gists/${gistId}`;
+    return this.invoke<any>(path, HttpMethod.POST, body, true); 
+  }
+
+
   public getCompilerResponse(version: string, resourceId: string, body: any, startTime?: string, endTime?: string,
     additionalParams?: any, publishingDetectorId: string = ""): Observable<QueryResponse<DetectorResponse>> {
     let timeParameters = this._getTimeQueryParameters(startTime, endTime);

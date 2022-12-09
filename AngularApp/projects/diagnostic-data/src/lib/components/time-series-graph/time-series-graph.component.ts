@@ -339,11 +339,7 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
       }
     
     private _getTimeStamp(datetimeString: string) {
-        const dateTimeWithoutMilliseconds = datetimeString.includes('.')
-            ? datetimeString.split('.')[0] + 'Z'
-            : datetimeString;
-
-        return new Date(dateTimeWithoutMilliseconds).getTime();
+        return new Date(datetimeString.split('.')[0]).getTime();
     }
 
     private _getGreatestCommonFactor(timestamp: momentNs.Moment): momentNs.Duration {

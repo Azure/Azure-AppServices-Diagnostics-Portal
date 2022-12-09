@@ -32,6 +32,16 @@ export class UriUtilities {
         }
 
     }
+
+    static serializeQueryParams(obj) {
+      var str = [];
+      for (var p in obj)
+        if (obj.hasOwnProperty(p) && obj[p] !== undefined) {
+          str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        }
+      return str.join("&");
+    }
+    
     
     static removeQueryParams(allQueryParams: { [key: string]: any }, removeQueryList: string[]) {
         const allQueryParamKeys = Object.keys(allQueryParams);

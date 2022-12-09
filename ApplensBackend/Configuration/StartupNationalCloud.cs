@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using AppLensV3.Authorization;
 using AppLensV3.Helpers;
+using AppLensV3.Middleware;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -51,6 +52,16 @@ namespace AppLensV3
                     setup.Filters.Add(new AllowAnonymousFilter());
                 }).AddNewtonsoftJson();
             }
+        }
+
+        public void AddConfigurations(ConfigurationBuilder builder, IWebHostEnvironment env, string cloudDomain)
+        {
+            builder.SetBasePath(env.ContentRootPath)
+                                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                                .AddJsonFile("appsettings.NationalClouds.json", optional: false, reloadOnChange: true)
+                                .AddJsonFile($"appsettings.{cloudDomain}.json", optional: false, reloadOnChange: true)
+                                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                                .AddEnvironmentVariables();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -125,7 +136,7 @@ namespace AppLensV3
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-
+            app.UseMiddleware<RequestMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

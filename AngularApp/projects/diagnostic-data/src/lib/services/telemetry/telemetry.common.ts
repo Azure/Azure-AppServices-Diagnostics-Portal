@@ -109,6 +109,7 @@ export const TelemetryEventNames = {
     ICMTemplateManagementPage: 'ICMTemplateManagementPage',
     ICMTeamTemplateLoaded: 'ICMTeamTemplateLoaded',
     ICMTeamTemplateUpdate: 'ICMTeamTemplateUpdate',
+    HomePageLogUser: 'HomePageLogUser',
 };
 
 export const TelemetrySource = {

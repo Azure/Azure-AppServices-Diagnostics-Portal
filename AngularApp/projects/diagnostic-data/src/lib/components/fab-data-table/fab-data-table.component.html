@@ -8,6 +8,7 @@
       <div *ngFor="let filter of tableFilters;let i = index" style="margin-left: 16px;">
         <fab-data-table-filter [tableFilter]="filter" [options]="getOptionsWithColName(filter.name)" (onFilterUpdate)="updateFilter(filter.name,$event)" [index]="i" [tableId]="tableId"></fab-data-table-filter>
       </div>
+   
     </div>
   </div>
 
@@ -38,6 +39,11 @@
   <div *ngIf="descriptionColumnName !== '' && selectionText !== ''">
     <pre class="description-text">{{ selectionText }}</pre>
   </div>
+</div>
+
+<div *ngIf = "buttonText != ''" class = "table-button">
+  <fab-primary-button [text]="buttonText" (onClick) = "returnSelectedItems()" [contentClass]="'mr-3'">
+  </fab-primary-button>
 </div>
 
 <ng-template #emptyTableFooter>
