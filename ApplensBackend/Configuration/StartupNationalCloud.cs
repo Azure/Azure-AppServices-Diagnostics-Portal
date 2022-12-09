@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using AppLensV3.Authorization;
 using AppLensV3.Helpers;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -95,30 +96,15 @@ namespace AppLensV3
                 {
                     if (!context.User.Identity.IsAuthenticated)
                     {
-                        if (!context.Request.Path.ToString().Contains("signin"))
-                        {
-                            context.Response.Redirect($"https://{context.Request.Host}/federation/signin", false);
-                        }
-                        else
-                        {
-                            //The controller is backed by auth, get auth middleware to kick in
-                            await next.Invoke();
-                        }
+                        await context.ChallengeAsync();
                     }
                     else
                     {
-                        if (context.Request.Path.ToString().Contains("signin"))
+                        await next();
+                        if (context.Response.StatusCode == 404 && !Path.HasExtension(context.Request.Path.Value) && !context.Request.Path.Value.StartsWith("/api/"))
                         {
-                            context.Response.Redirect($"https://{context.Request.Host}/index.html", false);
-                        }
-                        else
-                        {
+                            context.Request.Path = "/index.html";
                             await next();
-                            if (context.Response.StatusCode == 404 && !Path.HasExtension(context.Request.Path.Value) && !context.Request.Path.Value.StartsWith("/api/"))
-                            {
-                                context.Request.Path = "/index.html";
-                                await next();
-                            }
                         }
                     }
                 });

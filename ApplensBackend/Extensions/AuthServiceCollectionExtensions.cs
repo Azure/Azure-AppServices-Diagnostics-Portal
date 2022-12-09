@@ -112,23 +112,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     options.ClaimsIssuer = configuration["DatacenterFederationConfiguration:Issuer"];
                     options.SecurityTokenHandlers = new List<ISecurityTokenValidator> { new Saml2SecurityTokenHandler() };
                 })
-                .AddCookie(options =>
-                {
-                    options.ForwardDefaultSelector = context =>
-                    {
-                        string authScheme = null;
-                        if (context.Request.Headers.TryGetValue("Authorization", out StringValues authHeaders) && authHeaders[0].StartsWith("Bearer", StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            authScheme = AzureADDefaults.BearerAuthenticationScheme;
-                        }
-
-                        return authScheme;
-                    };
-                })
-                .AddAzureADBearer(options =>
-                {
-                    configuration.Bind("AzureAd", options);
-                });
+                .AddCookie();
         }
     }
 }
