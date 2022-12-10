@@ -78,6 +78,7 @@ export class DetectorViewComponent implements OnInit {
   downtimeButtonStr: string = "";
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   timePickerButtonStr: string = "";
+  timePickerErrorStr: string = "";
   buttonStyle: IButtonStyles = {
     root: {
       // color: "#323130",
@@ -817,6 +818,10 @@ export class DetectorViewComponent implements OnInit {
     if (this.breadCrumb) {
       this._router.navigate([this.breadCrumb.fullPath], { queryParams: combinedParams });
     }
+  }
+
+  updateTimePickerErrorMessage(message: string) {
+    this.timePickerErrorStr = message;
   }
 }
 

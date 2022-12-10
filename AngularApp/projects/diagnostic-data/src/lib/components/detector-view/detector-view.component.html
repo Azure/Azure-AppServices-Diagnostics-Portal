@@ -46,87 +46,9 @@
   </div>
 </div>
 
+<div *ngIf="timePickerErrorStr !==''" class="error-time-picker-message">{{timePickerErrorStr}}</div>
+
 <div *ngIf="detectorDataLocalCopy">
-  <!-- <div *ngIf="((!hideDetectorHeader && !analysisMode) || isPopoutFromAnalysis) && !isInCaseSubmission()">
-    <section class="content-header">
-      <h2 style="display: flex;">
-        <div *ngIf="!isSystemInvoker && !insideDetectorList &&!isPublic" tabindex="0" id="detector-name">
-          {{detectorDataLocalCopy.metadata.name}}</div>
-        <div *ngIf="!isSystemInvoker && !insideDetectorList && !isPublic && detectorDataLocalCopy.metadata.description" class="blade-description">&nbsp;- &nbsp;</div>
-        <div class="blade-description">
-          <span *ngIf="!overWriteDetectorDescription || overWriteDetectorDescription.length === 0;else overwriteDescription">
-            {{detectorDataLocalCopy.metadata.description}}
-          </span>
-        </div>
-      </h2>
-      <section *ngIf="!isPublic">
-        <div class="description">By
-          <span style="padding:2px; color: #0066c0;">
-            <a *ngIf="authorInfo !== ''; else unknownAuthor" href="{{emailToAuthor}}">
-              {{authorInfo}}
-            </a>
-            <ng-template #unknownAuthor>
-              Unknown
-            </ng-template>
-          </span>
-        </div>
-      </section>
-      <div *ngIf="!insideDetectorList && !hideDetectorControl">
-        <div style="margin-top:10px">
-          <button (click)="toggleButtonView(Feedback)"
-            class="custom-button custom-button-align-left detector-button-list">
-            <span> {{feedbackButtonLabel}}</span>
-          </button>
-          <a *ngIf="!isPublic && authorInfo !== ''; else onlyToApplensTeam" class="custom-button detector-button-list"
-            href="{{emailToAuthor}}">
-            <span> Email Author</span>
-          </a>
-          <ng-template #onlyToApplensTeam>
-            <a *ngIf="!isPublic" class="custom-button-green detector-button-list" href="{{emailToApplensTeam}}">
-              <span> Email Author</span>
-            </a>
-          </ng-template>
-          <button (click)="toggleButtonView(Report)" class="custom-button detector-button-list">
-            <span *ngIf="buttonViewActiveComponent !== Report">Copy Report</span>
-            <span *ngIf="buttonViewActiveComponent === Report">Hide Report</span>
-          </button>
-        </div>
-        <div style="height:0px;overflow-y: hidden" [@expand]="buttonViewVisible ? 'shown' : 'hidden'">
-          <feedback *ngIf="buttonViewActiveComponent === Feedback" [showFeedbackForm]="buttonViewVisible"
-            (showFeedbackFormChange)="toggleButtonView(Feedback)" [source]="'appanalysis'"
-            [ratingEventProperties]="ratingEventProperties"></feedback>
-          <copy-insight-details *ngIf="detectorDataLocalCopy && buttonViewActiveComponent === Report"
-            [detectorResponse]="detectorDataLocalCopy"></copy-insight-details>
-        </div>
-      </div>
-    </section>
-    <hr>
-  </div> -->
-
-  <!-- <br *ngIf="isInCaseSubmission() && !isKeystoneView"> -->
-
-  <!-- <div *ngIf="isAnalysisView && supportsDownTime" class="dynamic-data-container">
-    <div class="downtime-container">
-      <span class="downtime-icon"><i class="fa fa-filter fa-lg" aria-hidden="true"></i></span>
-      <label for="downtimeFilter" tabindex="0" aria-label="Select a downtime to investigate."
-        role="text"><strong>Downtime</strong></label>
-      <fab-dropdown id="downtimeFilter" role="combobox" [options]="fabOptions" (onChange)="selectFabricKey($event)"
-        [defaultSelectedKey]="selectedKey" [disabled]="downtimeFilterDisabled"
-        [contentStyle]="'margin-top: -5px; margin-left: 5px;width:{{fabDropdownWidth}}px;min-width:336px'">
-      </fab-dropdown>
-    </div>
-    <div *ngIf="downtimeSelectionErrorStr!=''" class="errorMessage"
-      attr.aria-label="Error : {{downtimeSelectionErrorStr}}" tabindex="0" role="text">
-      <strong>Error :</strong> {{downtimeSelectionErrorStr}}<span style='vertical-align:super'>*</span>
-    </div>
-  </div> -->
-
-  <!-- <div style="margin-bottom: 24px;">
-    <span *ngIf="!overWriteDetectorDescription || overWriteDetectorDescription.length === 0;else overwriteDescription">
-      {{detectorDataLocalCopy.metadata.description}}
-    </span>
-  </div> -->
-
   <div *ngFor="let data of detectorDataLocalCopy.dataset  | renderfilter:isAnalysisView"
     [ngClass]="{'dynamic-data-container': !isRiskAlertDetector}">
     <dynamic-data [isRiskAlertDetector]="isRiskAlertDetector" [isAnalysisView]="isAnalysisView" [diagnosticData]="data"
@@ -140,13 +62,6 @@
 <data-container *ngIf="!isAnalysisView && supportDocumentRendered" [title]="'Additional troubleshooting resources'">
   <markdown *ngIf="supportDocumentContent.length>0" #markdownDiv [data]="supportDocumentContent"></markdown>
 </data-container>
-
-<!-- <div *ngIf="isAnalysisView && supportsDownTime && downTimes.length > 0 && !!selectedDownTime && !!selectedDownTime.StartTime && !!selectedDownTime.EndTime" class="dynamic-data-container" tabindex="0"
-  role="text"
-  attr.aria-label="Showing results from {{ getTimestampAsString(selectedDownTime.StartTime) }} to {{ getTimestampAsString(selectedDownTime.EndTime) }}">
-  <h2 aria-hidden="true">Showing results from {{ getTimestampAsString(selectedDownTime.StartTime) }} to
-    {{ getTimestampAsString(selectedDownTime.EndTime) }}</h2>
-</div> -->
 
 <cxp-chat-launcher *ngIf="showChatButton()" [trackingId]="cxpChatTrackingId" [chatUrl]="cxpChatUrl"
   [supportTopicId]="supportTopicId"></cxp-chat-launcher>
@@ -184,5 +99,5 @@
   </div>
 </ng-template>
 
-<detector-time-picker [target]="'#time-picker-button'" [openTimePickerCalloutObservable]="openTimePickerSubject">
+<detector-time-picker [target]="'#time-picker-button'" [openTimePickerCalloutObservable]="openTimePickerSubject" (updateTimerErrorMessage)="updateTimePickerErrorMessage($event)">
 </detector-time-picker>

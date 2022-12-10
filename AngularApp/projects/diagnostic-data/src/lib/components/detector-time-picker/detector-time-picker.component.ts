@@ -22,7 +22,8 @@ export class DetectorTimePickerComponent implements OnInit {
   openTimePickerCallout: boolean = false;
   @Input() target: string = "";
   @Input() disableUpdateQueryParams: boolean = false;
-  @Output() updateTimerMessage: EventEmitter<string> = new EventEmitter();
+  //@Output() updateTimerMessage: EventEmitter<string> = new EventEmitter();
+  @Output() updateTimerErrorMessage: EventEmitter<string> = new EventEmitter();
   timePickerButtonStr: string = "";
   showCalendar: boolean = false;
   showTimePicker: boolean = false;
@@ -100,9 +101,6 @@ export class DetectorTimePickerComponent implements OnInit {
     this.openTimePickerCalloutObservable.subscribe(o => {
       this.openTimePickerCallout = o;
     });
-    this.detectorControlService.timePickerStrSub.subscribe(s => {
-      this.updateTimerMessage.next(s);
-    })
 
 
     this.detectorControlService.timePickerInfoSub.subscribe(timerPickerInfo => {
@@ -124,9 +122,10 @@ export class DetectorTimePickerComponent implements OnInit {
       }
     });
 
-    this.timeDiffError = '';
+    //this.timeDiffError = '';
     if (this.detectorControlService.timeRangeDefaulted) {
-      this.timeDiffError = this.detectorControlService.timeRangeErrorString;
+      //this.timeDiffError = this.detectorControlService.timeRangeErrorString;
+      this.updateTimerErrorMessage.emit(this.detectorControlService.timeRangeErrorString);
     }
 
     this.detectorControlService.update.subscribe(validUpdate => {
@@ -211,6 +210,7 @@ export class DetectorTimePickerComponent implements OnInit {
     if (this.timeDiffError === '') {
       this.detectorControlService.setCustomStartEnd(startDateWithTime, endDateWithTime);
       this.detectorControlService.updateTimePickerInfo(timePickerInfo);
+      this.updateTimerErrorMessage.emit("");
     }
     this.openTimePickerCallout = this.timeDiffError !== "";
 

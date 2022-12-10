@@ -376,7 +376,7 @@ export class TemplateManagementComponent implements OnInit {
   }
 
   updateTemplateAuthors(e: { event: Event, newValue?: string }) {
-    this.teamTemplateAuthors = e.newValue.toString();
+    this.templateAuthors = e.newValue.toString();
   }
 
   updateTestIncidentId(e: { event: Event, newValue?: string }) {

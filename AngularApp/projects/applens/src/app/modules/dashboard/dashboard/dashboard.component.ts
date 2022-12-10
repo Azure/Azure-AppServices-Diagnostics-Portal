@@ -196,7 +196,7 @@ export class DashboardComponent implements OnDestroy {
     let queryParams = {
       caseNumber: this._diagnosticApiService.CustomerCaseNumber,
       errorMessage: this.accessError,
-      resourceType: mainPageResourceType? mainPageResourceType.resourceType: "",
+      resourceType: mainPageResourceType? mainPageResourceType.resourceType: "armresourceid",
       resourceName: resourceInfo.resourceName,
       resourceId: this._resourceService.getCurrentResourceId()
     };

@@ -138,6 +138,11 @@ export class ApplensDiagnosticService {
     }));
   }
 
+  getGistDetailsById(id: string) : Observable<DetectorMetaData[]>{
+    return this._diagnosticApi.getGistId(this._resourceService.versionPrefix, 
+      this._resourceService.getCurrentResourceId(true), id); 
+  }
+
 
   getUserPhoto(userId: string = ""): Observable<any> {
     return this._diagnosticApi.getUserPhoto(userId);

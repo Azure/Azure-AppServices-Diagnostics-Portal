@@ -30,7 +30,7 @@
                 <label for="icm-template-authors-field" style="display: flex; flex: 1;">
                   Template Authors <span class="required">*</span><span style="display: block; font-size: 0.9em;">(Comma separated string of user aliases)</span>
                 </label>
-                <fab-text-field id="icm-template-authors-field" [ariaLabel]="'Template Authors'" [defaultValue]="teamTemplateAuthors" (onChange)="updateTemplateAuthors($event)" [styles]="narrowTextFieldStyles"
+                <fab-text-field id="icm-template-authors-field" [ariaLabel]="'Template Authors'" [value]="templateAuthors" (onChange)="updateTemplateAuthors($event)" [styles]="narrowTextFieldStyles"
                   [placeholder]="'Comma separated string of user aliases'" style="display: flex; flex: 1;">
                 </fab-text-field>
               </div>
@@ -62,19 +62,14 @@
                   </items>
                   </fab-command-bar>
               </div>
-              <div class="form-row">
+              <div class="form-row editor-border-style">
                 <ngx-monaco-editor [options]="editorOptions" [(ngModel)]="teamTemplate" style="height:600px">
                 </ngx-monaco-editor>
               </div>
             </div>
-            <div class="form-group go-form">
-              <fab-primary-button id="test-template-button" [contentStyle]="'margin-top: 20px; margin-left: 10px;'"
-                  type="Submit" text='Test Template' (click)="onTestClick()" [disabled]="testButtonDisabled">
-              </fab-primary-button>
-            </div>
-            <div class="form-group go-form">
-              <fab-primary-button id="update-template-button" [contentStyle]="'margin-top: 20px; margin-left: 10px;'"
-                  type="Submit" text='Update Template' (click)="onUpdateClick()" [disabled]="updateButtonDisabled">
+            <div class="form-group go-form" style="height: 1px;">
+              <fab-primary-button id="update-template-button" [contentStyle]="'margin-top: 20px; margin-left: 10px; opacity: 0.1;'"
+                  type="Submit" text='' [disabled]="true">
               </fab-primary-button>
             </div>
             <div *ngIf="footerMessage!=null" [class.success-message]="footerMessageType=='success'" [class.failed-message]="footerMessageType=='error'">
@@ -92,7 +87,7 @@
                 <label for="test-incident-input-field">
                   Incident Id <span class="required">*</span>
                 </label>
-                <fab-text-field id="test-incident-input-field" [ariaLabel]="'Incident Id'" (onChange)="updateTestIncidentId($event)" [styles]="narrowTextFieldStyles"
+                <fab-text-field id="test-incident-input-field" [ariaLabel]="'Incident Id'" [value]="testIncidentId" (onChange)="updateTestIncidentId($event)" [styles]="narrowTextFieldStyles"
                   [placeholder]="'Type an incident id'">
                 </fab-text-field>
               </div>

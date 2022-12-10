@@ -1,25 +1,15 @@
-using System.IO;
-using AppLensV3.Helpers;
 using AppLensV3.Services;
 using AppLensV3.Services.DiagnosticClientService;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authorization;
-using AppLensV3.Authorization;
-using System.Collections.Generic;
 using AppLensV3.Models;
 using Microsoft.ApplicationInsights.Extensibility;
 using AppLensV3.Services.ApplensTelemetryInitializer;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using AppLensV3.Services.AppSvcUxDiagnosticDataService;
 using Microsoft.Extensions.Hosting;
-using System.Configuration;
-using System;
 
 namespace AppLensV3
 {
@@ -30,12 +20,26 @@ namespace AppLensV3
         public Startup(IWebHostEnvironment env)
         {
             Environment = env;
-            var builder = new ConfigurationBuilder()
+
+            var tmpBuilder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{System.Environment.GetEnvironmentVariable("CloudDomain") ?? "PublicAzure"}.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
+            var tmpConfiguration = tmpBuilder.Build();
+
+            if (tmpConfiguration.IsPublicAzure())
+            {
+                cloudEnvironmentStartup = new StartupPublicAzure();
+            }
+
+            if (tmpConfiguration.IsAzureUSGovernment() || tmpConfiguration.IsAzureChinaCloud() || tmpConfiguration.IsAirGappedCloud())
+            {
+                cloudEnvironmentStartup = new StartupNationalCloud();
+            }
+
+            var builder = new ConfigurationBuilder();
+            cloudEnvironmentStartup.AddConfigurations(builder, env, tmpConfiguration.GetCloudDomain());
 
             if (env.IsDevelopment())
             {
@@ -43,15 +47,6 @@ namespace AppLensV3
             }
 
             Configuration = builder.Build();
-
-            if (Configuration.IsPublicAzure())
-            {
-                cloudEnvironmentStartup = new StartupPublicAzure();
-            }
-            else if (Configuration.IsAzureUSGovernment() || Configuration.IsAzureChinaCloud() || Configuration.IsAirGappedCloud())
-            {
-                cloudEnvironmentStartup = new StartupNationalCloud();
-            }
         }
 
         public IConfiguration Configuration { get; }
@@ -105,7 +100,7 @@ namespace AppLensV3
 
             services.AddSingletonWhenEnabled<ISurveysService, SurveysService, NullableSurveysService>(Configuration, "Surveys");
 
-            services.AddSingletonWhenEnabled<ICosmosDBUserSettingHandler, CosmosDBUserSettingHandler>(Configuration, "UserSetting");
+            services.AddSingletonWhenEnabled<ICosmosDBUserSettingHandler, CosmosDBUserSettingHandler, NullableCosmosDBUserSettingsHandler>(Configuration, "UserSetting");
 
             services.AddSingletonWhenEnabled<IDetectorGistTemplateService, TemplateService>(Configuration, "DetectorGistTemplateService");
 
@@ -119,8 +114,10 @@ namespace AppLensV3
                 GraphTokenService.Instance.Initialize(Configuration);
             }
 
-            // If we are using runtime host directly
-            DiagnosticClientToken.Instance.Initialize(Configuration);
+            if (!Configuration.GetValue<bool>("DiagnosticRole:clientCertEnabled", true))
+            {
+                DiagnosticClientToken.Instance.Initialize(Configuration);
+            }
 
             cloudEnvironmentStartup.AddCloudSpecificServices(services, Configuration, Environment);
         }

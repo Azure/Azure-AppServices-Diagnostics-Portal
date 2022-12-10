@@ -177,6 +177,23 @@
     </fab-dialog-content>
   </fab-dialog>
 
+  <fab-dialog [hidden]="detectorReferencesDialogHidden" (onDismiss)="dismissDetectorRefDialog()"  [minWidth]="'80%'">
+    <fab-dialog-content [title]="detectorReferencesTitle">
+
+        <update-detector-references [id] = "id" [Branch] = "Branch" [resourceId] = "resourceId" [mode] = "mode" 
+        [dataSource] = "dataSource"  [timeRange] = "timeRange"  [compilationPackage]  = "compilationPackage"
+        [queryResponse] = "queryResponse"  [userName] = "userName" [useAutoMergeText] = "useAutoMergeText"
+        [defaultBranch] = "defaultBranch" [owners] = "owners"  [DevopsConfig] = "DevopsConfig"
+        [detectorReferencesDialogHidden]  = "detectorReferencesDialogHidden" 
+        [detectorReferencesList] = "detectorReferencesList"
+        [gistCommitVersion] = "gistCommitVersion"></update-detector-references>
+
+      <div class="mt-5">
+        <fab-default-button text="Cancel" (onClick)="dismissDetectorRefDialog()"></fab-default-button>
+      </div>
+    </fab-dialog-content>
+  </fab-dialog>
+
   <fab-dialog *ngIf="gists.length == 0" [hidden]="gistDialogHidden" (onDismiss)="dismissGistDialog()">
     <fab-dialog-content [title]="gistUpdateTitle">
       <div class="mt-5">
@@ -329,6 +346,9 @@
       (click)="openCommitHistory()"></fab-command-bar-item>
       <fab-command-bar-item [style]="deleteVisibilityStyle" key="delete" text="Delete" [iconProps]="{iconName: 'Delete'}"
         (click)="showDeleteDialog()"></fab-command-bar-item>
+      <fab-command-bar-item *ngIf = "gistMode" [style]="detectorReferences" key="detectorRefs" text="Update Detector References" [iconProps]="{iconName: 'BackToWindow'}"
+      (click)="showUpdateDetectorReferencesDialog()">
+      </fab-command-bar-item>
       <!-- <fab-command-bar-item key="internal" [text]="internalExternalText" [iconProps]="{ iconName: 'View' }"
         (click)="internalExternalToggle()"></fab-command-bar-item> -->
       <far-items>        

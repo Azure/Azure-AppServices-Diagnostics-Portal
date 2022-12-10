@@ -24,7 +24,7 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       enabled: true,
       caseId: false,
       id: 'App Service Environment',
-      userAuthorizationEnabled: true
+      userAuthorizationEnabled: false
     },
     {
       resourceType: "Microsoft.Web/containerApps",
@@ -34,7 +34,7 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       enabled: true,
       caseId: false,
       id: 'Container App',
-      userAuthorizationEnabled: true
+      userAuthorizationEnabled: false
     }, {
       resourceType: "Microsoft.Web/staticSites",
       resourceTypeLabel: 'Static App Name Or Default Host Name',
@@ -43,7 +43,7 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       enabled: true,
       caseId: false,
       id: 'Static Web App',
-      userAuthorizationEnabled: true
+      userAuthorizationEnabled: false
     },
     {
       resourceType: "Microsoft.Compute/virtualMachines",
@@ -53,7 +53,7 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       enabled: true,
       caseId: false,
       id: 'Virtual Machine',
-      userAuthorizationEnabled: true
+      userAuthorizationEnabled: false
     },
     {
       resourceType: "ARMResourceId",
@@ -63,7 +63,7 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       enabled: true,
       caseId: false,
       id: 'ARM Resource ID',
-      userAuthorizationEnabled: true
+      userAuthorizationEnabled: false
     },
     {
       resourceType: null,
