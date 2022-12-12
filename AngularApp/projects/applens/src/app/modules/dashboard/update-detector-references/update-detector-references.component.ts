@@ -195,18 +195,52 @@ export class UpdateDetectorReferencesComponent implements OnInit{
                   }
                  
                   
-                  }, err => {
+                  }, err4 => { //error handling for getCompilerResponse 
                     this.detectorsToCheck.delete(detector.Name); 
-                    this.errorDetectorsList.set(detector.Name, err); 
+                    this.errorDetectorsList.set(detector.Name, err4.message); 
                     
                     //check if all detectors are done compiling 
                     if(this.detectorsToCheck.size == 0){
                       this.updateDetectorPackageJsonAll(); 
                     }
                   });
-              }); 
+              }, 
+              err3 => { //error handling for activate query params 
+
+                this.detectorsToCheck.delete(detector.Name); 
+                this.errorDetectorsList.set(detector.Name, err3.message); 
+                
+                //check if all detectors are done compiling 
+                if(this.detectorsToCheck.size == 0){
+                  this.updateDetectorPackageJsonAll(); 
+                }
+
+              }
+              ); 
       
+              }, 
+              err2 =>{ //error handling for inner forkjoin 
+
+                this.detectorsToCheck.delete(detector.Name); 
+                this.errorDetectorsList.set(detector.Name, err2.message); 
+                
+                //check if all detectors are done compiling 
+                if(this.detectorsToCheck.size == 0){
+                  this.updateDetectorPackageJsonAll(); 
+                }
+
               }); 
+          }, 
+          err1 => { //error handling for outermost forkjoin 
+
+            this.detectorsToCheck.delete(detector.Name); 
+            this.errorDetectorsList.set(detector.Name, err1.message); 
+            
+            //check if all detectors are done compiling 
+            if(this.detectorsToCheck.size == 0){
+              this.updateDetectorPackageJsonAll(); 
+            }
+
           }); 
     }
     
