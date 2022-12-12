@@ -1,0 +1,371 @@
+{
+  "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/scopeBindings.json",
+  "contentVersion": "0.0.0.1",
+  "scopeBindings": [
+    {
+      "scopeTagName": "General",
+      "bindings": [
+        {
+          "find": "__TENANT_ID__",
+          "replaceWith": "$callerTenantId()"
+        },
+        {
+          "find": "__CLOUD_ENVIRONMENT__",
+          "replaceWith": "$rolloutInfra()"
+        },
+        {
+          "find": "__OBSERVER_SITENAME__",
+          "replaceWith": "diagobserver"
+        },
+        {
+          "find": "__RUNTIMEHOST_SITENAME__",
+          "replaceWith": "diag-runtimehost"
+        },
+        {
+          "find": "__KEYVAULTNAME__",
+          "replaceWith": "runtimehost-kv"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "ApplensWestUs",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-wus"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "Applens",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "AppServiceDiagnostics",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "appservice-diagnostics"
+        },
+        {
+          "find": "__TARGET_DEPLOYMENT_SLOT__",
+          "replaceWith": "staging"
+        },
+        {
+          "find": "__ZIPDEPLOY_PACKAGE__",
+          "replaceWith": "bin\\AppServiceDiagnostics.zip"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "WestUSRegion",
+      "bindings": [
+        {
+          "find": "__LOCATION_ABBR__",
+          "replaceWith": "wus"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "West US"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "USSecWestRegion",
+      "bindings": [
+        {
+          "find": "__LOCATION_ABBR__",
+          "replaceWith": "ussecwest"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "USSec West"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "USNatWestRegion",
+      "bindings": [
+        {
+          "find": "__LOCATION_ABBR__",
+          "replaceWith": "usnatwest"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "USNat West"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "FairfaxVirginiaRegion",
+      "bindings": [
+        {
+          "find": "__LOCATION_ABBR__",
+          "replaceWith": "bn1"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "USGov Virginia"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "Fairfax",
+      "bindings": [
+        {
+          "find": "__AZURE_PORTAL_DOMAIN__",
+          "replaceWith": "portal.azure.us"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "Mooncake",
+      "bindings": [
+        {
+          "find": "__AZURE_PORTAL_DOMAIN__",
+          "replaceWith": "portal.azure.cn"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "TEST",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-pr"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "West US"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "MWH",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-mwh"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "West US 2"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "AM2",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-am2"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "West Europe"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "BLU",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-blu"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "East US"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "PublicAzure",
+      "bindings": [
+        {
+          "find": "__AZURE_AD_AUTHORITY__",
+          "replaceWith": "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47"
+        },
+        {
+          "find": "__OBSERVER_AAD_CLIENTID__",
+          "replaceWith": "75b6b750-c38e-481b-b56f-320f148174a9"
+        },
+        {
+          "find": "__APPSERVICE_DNS_SUFFIX__",
+          "replaceWith": "azurewebsites.net"
+        },
+        {
+          "find": "__STORAGE_DNS_SUFFIX__",
+          "replaceWith": "core.windows.net"
+        },
+        {
+          "find": "__DSTS_REALM__",
+          "replaceWith": "svc://applens-wus@azurewebsites.net/"
+        },
+        {
+          "find": "__RUNTIMEHOST_AZUREAD_RESOURCE__",
+          "replaceWith": "75b6b750-c38e-481b-b56f-320f148174a9"
+        },
+        {
+          "find": "__OBSERVER_AAD_RESOURCE__",
+          "replaceWith": "d1abfd91-e19c-426e-802f-a6c55421a5ef"
+        },
+        {
+          "find": "__AZURE_AD_CLIENTID__",
+          "replaceWith": "75b6b750-c38e-481b-b56f-320f148174a9"
+        },
+        {
+          "find": "__DSTS_METADATA_ADDRESS__",
+          "replaceWith": "https://prod-dsts.dsts.core.windows.net/dsts/api/federationmetadata"
+        },
+        {
+          "find": "__DSTS_ISSUER__",
+          "replaceWith": "https://prod-passive-dsts.dsts.core.windows.net/v2/wsfederation"
+        },
+        {
+          "find": "__RUNTIMEHOST_AZUREAD_KEY__",
+          "replaceWith": "@Microsoft.KeyVault(SecretUri=https://runtimehost-kv-wus.vault.azure.net/secrets/RuntimeHostAadKey)"
+        },
+        {
+          "find": "__OBSERVER_AZUREAD_KEY__",
+          "replaceWith": "@Microsoft.KeyVault(SecretUri=https://runtimehost-kv-wus.vault.azure.net/secrets/SupportObserver--Appkey)"
+        },
+        {
+          "find": "__DETECTORS_STORAGEKEY__",
+          "replaceWith": "na"
+        },
+        {
+          "find": "__AZURE_PORTAL_DOMAIN__",
+          "replaceWith": "portal.azure.com"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "USNAT",
+      "bindings": [
+        {
+          "find": "__AZURE_AD_AUTHORITY__",
+          "replaceWith": "https://login.microsoftonline.eaglex.ic.gov/70a90262-f46c-48aa-ac4c-37e37f8be1a2"
+        },
+        {
+          "find": "__OBSERVER_AAD_CLIENTID__",
+          "replaceWith": "9f3f38f0-4179-4a3b-a754-7a657f8317f6"
+        },
+        {
+          "find": "__APPSERVICE_DNS_SUFFIX__",
+          "replaceWith": "appservice.eaglex.ic.gov"
+        },
+        {
+          "find": "__STORAGE_DNS_SUFFIX__",
+          "replaceWith": "core.eaglex.ic.gov"
+        },
+        {
+          "find": "__DSTS_REALM__",
+          "replaceWith": "svc://applens@appservice.eaglex.ic.gov/"
+        },
+        {
+          "find": "__RUNTIMEHOST_AZUREAD_RESOURCE__",
+          "replaceWith": "9f3f38f0-4179-4a3b-a754-7a657f8317f6"
+        },
+        {
+          "find": "__AZURE_AD_CLIENTID__",
+          "replaceWith": "9f3f38f0-4179-4a3b-a754-7a657f8317f6"
+        },
+        {
+          "find": "__OBSERVER_AAD_RESOURCE__",
+          "replaceWith": "3296b888-a1cc-4acf-b24e-d2818486093f"
+        },
+        {
+          "find": "__DSTS_METADATA_ADDRESS__",
+          "replaceWith": "https://prod-dsts.dsts.core.eaglex.ic.gov/dsts/api/federationmetadata"
+        },
+        {
+          "find": "__DSTS_ISSUER__",
+          "replaceWith": "https://prod-passive-dsts.dsts.core.eaglex.ic.gov/v2/wsfederation"
+        },
+        {
+          "find": "__RUNTIMEHOST_AZUREAD_KEY__",
+          "replaceWith": "@Microsoft.KeyVault(SecretUri=https://runtimehost-kv-usnatwest.vault.cloudapi.eaglex.ic.gov/secrets/RuntimeHost--AppKey)"
+        },
+        {
+          "find": "__OBSERVER_AZUREAD_KEY__",
+          "replaceWith": "@Microsoft.KeyVault(SecretUri=https://runtimehost-kv-usnatwest.vault.cloudapi.eaglex.ic.gov/secrets/SupportObserver--AppKey)"
+        },
+        {
+          "find": "__DETECTORS_STORAGEKEY__",
+          "replaceWith": "@Microsoft.KeyVault(SecretUri=https://runtimehost-kv-usnatwest.vault.cloudapi.eaglex.ic.gov/secrets/SourceWatcher--DiagStorageKey)"
+        },
+        {
+          "find": "__AZURE_PORTAL_DOMAIN__",
+          "replaceWith": "portal.azure.eaglex.ic.gov"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "USSEC",
+      "bindings": [
+        {
+          "find": "__AZURE_AD_AUTHORITY__",
+          "replaceWith": "https://login.microsoftonline.microsoft.scloud/20ac2fc4-effc-4f76-ba7d-63c5ae134f5f"
+        },
+        {
+          "find": "__OBSERVER_AAD_CLIENTID__",
+          "replaceWith": "adfedc6b-efb2-4222-97a6-6509ff068ccb"
+        },
+        {
+          "find": "__APPSERVICE_DNS_SUFFIX__",
+          "replaceWith": "appservice.microsoft.scloud"
+        },
+        {
+          "find": "__STORAGE_DNS_SUFFIX__",
+          "replaceWith": "core.microsoft.scloud"
+        },
+        {
+          "find": "__DSTS_REALM__",
+          "replaceWith": "svc://applens@appservice.microsoft.scloud/"
+        },
+        {
+          "find": "__RUNTIMEHOST_AZUREAD_RESOURCE__",
+          "replaceWith": "adfedc6b-efb2-4222-97a6-6509ff068ccb"
+        },
+        {
+          "find": "__AZURE_AD_CLIENTID__",
+          "replaceWith": "adfedc6b-efb2-4222-97a6-6509ff068ccb"
+        },
+        {
+          "find": "__OBSERVER_AAD_RESOURCE__",
+          "replaceWith": "adfedc6b-efb2-4222-97a6-6509ff068ccb"
+        },
+        {
+          "find": "__DSTS_METADATA_ADDRESS__",
+          "replaceWith": "https://prod-dsts.dsts.core.microsoft.scloud/dsts/api/federationmetadata"
+        },
+        {
+          "find": "__DSTS_ISSUER__",
+          "replaceWith": "https://prod-passive-dsts.dsts.core.microsoft.scloud/v2/wsfederation"
+        },
+        {
+          "find": "__RUNTIMEHOST_AZUREAD_KEY__",
+          "replaceWith": "@Microsoft.KeyVault(SecretUri=https://runtimehost-kv-ussecwest.vault.cloudapi.microsoft.scloud/secrets/RuntimeHost--AppKey)"
+        },
+        {
+          "find": "__OBSERVER_AZUREAD_KEY__",
+          "replaceWith": "@Microsoft.KeyVault(SecretUri=https://runtimehost-kv-ussecwest.vault.cloudapi.microsoft.scloud/secrets/SupportObserver--AppKey)"
+        },
+        {
+          "find": "__DETECTORS_STORAGEKEY__",
+          "replaceWith": "@Microsoft.KeyVault(SecretUri=https://runtimehost-kv-ussecwest.vault.cloudapi.microsoft.scloud/secrets/SourceWatcher--DiagStorageKey)"
+        },
+        {
+          "find": "__AZURE_PORTAL_DOMAIN__",
+          "replaceWith": "portal.azure.microsoft.scloud"
+        }
+      ]
+    }
+  ]
+}

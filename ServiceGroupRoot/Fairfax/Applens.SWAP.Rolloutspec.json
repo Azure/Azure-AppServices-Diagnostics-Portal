@@ -1,9 +1,9 @@
 {
     "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/rolloutSpecification.json",
     "rolloutMetadata": {
-        "serviceModelPath": "USSec\\ServiceModel.json",
-        "scopeBindingsPath": "USSec\\ScopeBindings.json",
-        "name": "ApplensRollout",
+        "serviceModelPath": "PublicAzure\\Prod\\Applens\\ServiceModel.json",
+        "scopeBindingsPath": "PublicAzure\\ScopeBindings.json",
+        "name": "AM2 SWAP",
         "rolloutType": "Major",
         "buildSource": {
             "parameters": {
@@ -12,15 +12,22 @@
         },
         "notification": {
             "email": {
-                "to": "hawfor@microsoft.com"
+                "to": "applensv2team@microsoft.com",
+                "options": {
+                    "when": [
+                        "onError",
+                        "onComplete"
+                    ],
+                    "verbosity": "Compact"
+                }
             }
         }
     },
     "orchestratedsteps": [
         {
-            "name": "UsSec West Region",
+            "name": "SWAP AM2",
             "targetType": "ServiceResource",
-            "targetName": "ApplensUsSec",
+            "targetName": "AM2SWAP",
             "actions": [
                 "Deploy"
             ]
