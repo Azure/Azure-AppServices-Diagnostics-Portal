@@ -35,7 +35,8 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
     yAxisCategories: any = [];
     formattedGanttChartData: any[] = [];
     mappedGanttChartData: { [key: string]: any[] } = {};
-    timestampColumnName: string;
+    startTimestampColumnName: string;
+    endTimestampColumnName: string;
 
     renderingProperties: TimeSeriesRendering;
     dataTable: DataTableResponseObject;
@@ -76,70 +77,73 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
     }
 
     private _processDiagnosticDataForGanttChart(diagnosticData: DiagnosticData) {
-        const { timeGrain } = this.graphOptions || {};
         const { columns, rows } = diagnosticData?.table || {};
-        const { eventStatusColumnName, seriesColumns } =
+        const { eventStatusColumnName, seriesColumns, startTimestampColumnName, endTimestampColumnName } =
         this.renderingProperties || {};
 
         if (
         !seriesColumns?.length ||
-        eventStatusColumnName == null ||
-        timeGrain == null
+        endTimestampColumnName == null ||
+        startTimestampColumnName  == null
         )
         return;
 
         const { columnName: yAxisColumnName } =
         this._getCounterValueColumns()[0] || {};
 
-        const timestampColumnIndex = this._getTimeStampColumnIndex();
-        this.timestampColumnName = columns[timestampColumnIndex].columnName;
+        this.startTimestampColumnName = startTimestampColumnName;
+        this.endTimestampColumnName = endTimestampColumnName;
 
         this.formattedGanttChartData = this._getFormattedChartData(rows, columns);
         this.formattedGanttChartData.forEach((data) => {
-        const key = data[yAxisColumnName];
-        const currentTime: string = data[this.timestampColumnName];
+            const key = data[yAxisColumnName];
+            const currentStartTime: string = data[this.startTimestampColumnName];
+            const currentEndTime : string = data[this.endTimestampColumnName];
 
-        const chartRowData = this.mappedGanttChartData[key];
-        if (chartRowData != null) {
+            const chartRowData = this.mappedGanttChartData[key];
+            if (chartRowData != null) {
             const lastElementInChartRowDataArray =
-            chartRowData[chartRowData.length - 1];
-            const endTime: string = lastElementInChartRowDataArray.EndTime;
+                chartRowData[chartRowData.length - 1];
+            const endTime: string =
+                lastElementInChartRowDataArray[this.endTimestampColumnName];
             const diffInMinutes = this._getDifferenceInMinutes(
-            currentTime,
-            endTime
+                currentStartTime,
+                endTime
             );
-
+    
             if (
-            diffInMinutes !== 0 ||
-            data[eventStatusColumnName] !==
-                lastElementInChartRowDataArray[eventStatusColumnName]
+                diffInMinutes !== 0 ||
+                (!!eventStatusColumnName &&
+                data[eventStatusColumnName] !==
+                    lastElementInChartRowDataArray[eventStatusColumnName])
             ) {
                 chartRowData.push({
-                    ...data,
-                    [this.timestampColumnName]: momentNs.utc(currentTime).toISOString(),
-                    EndTime: momentNs
-                      .utc(currentTime)
-                      .add(timeGrain, 'm')
-                      .toISOString(),
-                  });
-                } else {
-                  lastElementInChartRowDataArray.EndTime = momentNs
-                    .utc(currentTime)
-                    .add(timeGrain, 'm')
-                    .toISOString();
-                }
-              } else {
-                this.mappedGanttChartData[key] = [
-                  {
-                    ...data,
-                    [this.timestampColumnName]: momentNs.utc(currentTime).toISOString(),
-                    EndTime: momentNs
-                      .utc(currentTime)
-                      .add(timeGrain, 'm')
-                      .toISOString(),
-                  },
-                ];
-              }
+                ...data,
+                [this.startTimestampColumnName]: momentNs
+                    .utc(currentStartTime)
+                    .toISOString(),
+                [this.endTimestampColumnName]: momentNs
+                    .utc(currentEndTime)
+                    .toISOString(),
+                });
+            } else {
+                lastElementInChartRowDataArray[this.endTimestampColumnName] = momentNs
+                .utc(currentEndTime)
+                .toISOString();
+            }
+            } else {
+            this.mappedGanttChartData[key] = [
+                {
+                ...data,
+                [this.startTimestampColumnName]: momentNs
+                    .utc(currentStartTime)
+                    .toISOString(),
+                [this.endTimestampColumnName]: momentNs
+                    .utc(currentEndTime)
+                    .toISOString(),
+                },
+            ];
+            }
         });
     }
 
@@ -283,8 +287,8 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
         value.forEach((data: any) => {
             xAxisData.push({
             id: data[customTooltipColumnName] || key,
-            x2: Date.parse(data.EndTime),
-            x: Date.parse(data[this.timestampColumnName]),
+            x2: Date.parse(data[this.endTimestampColumnName]),
+            x: Date.parse(data[this.startTimestampColumnName]),
             y: yIndex,
             ...(!!useCustomColor && {
                 color: data[customColorColumnName],
@@ -324,8 +328,8 @@ export class TimeSeriesGraphComponent extends DataRenderBaseComponent implements
         })
         .sort((a, b) => {
             return (
-            new Date(a[this.timestampColumnName]).getTime() -
-            new Date(b[this.timestampColumnName]).getTime()
+            new Date(a[this.startTimestampColumnName]).getTime() -
+            new Date(b[this.startTimestampColumnName]).getTime()
             );
         });
     }
