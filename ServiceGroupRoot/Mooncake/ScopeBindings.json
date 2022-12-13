@@ -24,6 +24,26 @@
         {
           "find": "__KEYVAULTNAME__",
           "replaceWith": "runtimehost-kv"
+        },
+        {
+          "find": "__APPSERVICE_DNS_SUFFIX__",
+          "replaceWith": "chinacloudsites.cn"
+        },
+        {
+          "find": "__DSTS_REALM__",
+          "replaceWith": "svc://applens@chinacloudsites.cn/"
+        },
+        {
+          "find": "__DSTS_METADATA_ADDRESS__",
+          "replaceWith": "https://prod-dsts.dsts.core.chinacloudapi.cn/dsts/api/federationmetadata"
+        },
+        {
+          "find": "__DSTS_ISSUER__",
+          "replaceWith": "https://prod-passive-dsts.dsts.core.chinacloudapi.cn/v2/wsfederation"
+        },
+        {
+          "find": "__AZURE_PORTAL_DOMAIN__",
+          "replaceWith": "portal.azure.cn"
         }
       ]
     },
@@ -54,40 +74,6 @@
         {
           "find": "__ZIP_PACKAGE__",
           "replaceWith": "bin\\AppServiceDiagnostics.zip"
-        }
-      ]
-    },
-    {
-      "scopeTagName": "Mooncake",
-      "bindings": [
-        {
-          "find": "__AZURE_PORTAL_DOMAIN__",
-          "replaceWith": "portal.azure.cn"
-        }
-      ]
-    },
-    {
-      "scopeTagName": "Mooncake",
-      "bindings": [
-        {
-          "find": "__APPSERVICE_DNS_SUFFIX__",
-          "replaceWith": "chinacloudsites.cn"
-        },
-        {
-          "find": "__DSTS_REALM__",
-          "replaceWith": "svc://applens@chinacloudsites.cn/"
-        },
-        {
-          "find": "__DSTS_METADATA_ADDRESS__",
-          "replaceWith": "https://prod-dsts.dsts.core.chinacloudapi.cn/dsts/api/federationmetadata"
-        },
-        {
-          "find": "__DSTS_ISSUER__",
-          "replaceWith": "https://prod-passive-dsts.dsts.core.chinacloudapi.cn/v2/wsfederation"
-        },
-        {
-          "find": "__AZURE_PORTAL_DOMAIN__",
-          "replaceWith": "portal.azure.cn"
         }
       ]
     }
