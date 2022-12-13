@@ -55,7 +55,7 @@ extends:
               system: 'RevisionCounter'
               major: '1'
               minor: '0'
-              exclude_commit: true
+              exclude_commit: false
 
           - task: NodeTool@0
             inputs:
