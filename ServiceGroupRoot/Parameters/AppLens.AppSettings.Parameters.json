@@ -5,9 +5,6 @@
         "siteName": {
             "value": "__SITENAME__"
         },
-        "aspNetCoreEnvironment": {
-            "value": "__ASPNET_CORE_ENVIRONMENT__"
-        },
         "slotName": {
             "value": "staging"
         },

@@ -2,7 +2,7 @@
     "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/rolloutSpecification.json",
     "rolloutMetadata": {
         "serviceModelPath": "PublicAzure\\Test\\ServiceModel.json",
-        "scopeBindingsPath": "PublicAzure\\ScopeBindings.json",
+        "scopeBindingsPath": "PublicAzure\\Test\\ScopeBindings.json",
         "name": "TEST SWAP",
         "rolloutType": "Major",
         "buildSource": {
@@ -25,9 +25,9 @@
     },
     "orchestratedsteps": [
         {
-            "name": "SWAP TEST",
+            "name": "Swap",
             "targetType": "ServiceResource",
-            "targetName": "TESTSWAP",
+            "targetName": "Swap",
             "actions": [
                 "Deploy"
             ]

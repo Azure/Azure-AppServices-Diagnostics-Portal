@@ -2,7 +2,7 @@
   "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/rolloutSpecification.json",
   "rolloutMetadata": {
     "serviceModelPath": "PublicAzure\\Test\\ServiceModel.json",
-    "scopeBindingsPath": "PublicAzure\\ScopeBindings.json",
+    "scopeBindingsPath": "PublicAzure\\Test\\ScopeBindings.json",
     "name": "Test Staging",
     "rolloutType": "Major",
     "buildSource": {

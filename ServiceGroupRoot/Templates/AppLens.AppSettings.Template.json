@@ -12,7 +12,7 @@
             },
             "defaultValue": "staging"
         },
-        "aspNetCoreEnvironment": {
+        "cloudEnvironment": {
             "type": "string"
         }
     },
@@ -24,8 +24,8 @@
             "properties": {
                 "WEBSITE_ADD_SITENAME_BINDINGS_IN_APPHOST_CONFIG": "1",
                 "WEBSITE_LOAD_CERTIFICATES": "*",
-                "ASPNETCORE_ENVIRONMENT": "[parameters('aspNetCoreEnvironment')]",
-                "CloudDomain": "[parameters('cloudEnvironment')]"
+                "ASPNETCORE_ENVIRONMENT": "Production",
+                "CloudDomain": "[if(or(equals(parameters('cloudEnvironment'), 'Prod'), equals(parameters('cloudEnvironment'), 'Test')), 'PublicAzure', parameters('cloudEnvironment'))]"
             }
         }
     ]

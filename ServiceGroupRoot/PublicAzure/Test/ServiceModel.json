@@ -59,9 +59,6 @@
         },
         {
           "name": "PublicAzure"
-        },
-        {
-          "name": "TEST"
         }
       ],
       "serviceResources": [
@@ -76,11 +73,12 @@
         },        
         {
           "name": "ApplensZipDeploy",
-          "instanceOf": "ZipDeployDefinition"
-        },
-        {
-          "name": "TESTSWAP",
-          "instanceOf": "AutoSwapDefinition"
+          "instanceOf": "ZipDeployDefinition",
+          "scopeTags": [
+            {
+              "name": "Applens"
+            }
+          ]
         }
       ]
     }
