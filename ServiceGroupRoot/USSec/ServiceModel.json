@@ -22,7 +22,7 @@
           "composedOf": {
             "arm": {
               "templatePath": "Templates\\WebAppZipDeploy.json",
-              "parametersPath": "Parameters\\ApplensZipDeploy.Parameters.json"
+              "parametersPath": "Parameters\\ZipDeploy.Parameters.json"
             }
           }
         },
@@ -34,92 +34,20 @@
                     "parametersPath": "Parameters\\AutoSwap.Parameters.json"
                 }
             }
+        },
+        {
+          "name": "ApplensAppSettingsDefinition",
+          "composedOf": {
+            "arm": {
+              "templatePath": "Templates\\AppLens.AppSettings.Template.json",
+              "parametersPath": "Parameters\\AppLens.AppSettings.Parameters.json"
+            }
+          }
         }
       ]
     }
   ],
   "serviceResourceGroups": [
-    {
-      "azureResourceGroupName": "applens-mwh",
-      "location": "West US 2",
-      "instanceOf": "WebAppResourceGroupDefinitions",
-      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
-      "scopeTags": [
-        {
-          "name": "General"
-        },
-        {
-          "name": "PublicAzure"
-        },
-        {
-          "name": "MWH"
-        }
-      ],
-      "serviceResources": [
-        {
-          "name": "ApplensZipDeployMWH",
-          "instanceOf": "ZipDeployDefinition"
-        },
-        {
-          "name": "MWHSWAP",
-          "instanceOf": "AutoSwapDefinition"
-        }
-      ]
-    },
-    {
-      "azureResourceGroupName": "applens-am2",
-      "location": "West Europe",
-      "instanceOf": "WebAppResourceGroupDefinitions",
-      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
-      "scopeTags": [
-        {
-          "name": "General"
-        },
-        {
-          "name": "PublicAzure"
-        },
-        {
-          "name": "AM2"
-        }
-      ],
-      "serviceResources": [
-        {
-          "name": "ApplensZipDeploy",
-          "instanceOf": "ZipDeployDefinition"
-        },
-        {
-          "name": "AM2SWAP",
-          "instanceOf": "AutoSwapDefinition"
-        }
-      ]
-    },
-    {
-      "azureResourceGroupName": "applens-blu",
-      "location": "East US",
-      "instanceOf": "WebAppResourceGroupDefinitions",
-      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
-      "scopeTags": [
-        {
-          "name": "General"
-        },
-        {
-          "name": "PublicAzure"
-        },
-        {
-          "name": "BLU"
-        }
-      ],
-      "serviceResources": [
-        {
-          "name": "ApplensZipDeployBLU",
-          "instanceOf": "ZipDeployDefinition"
-        },
-        {
-          "name": "BLUSWAP",
-          "instanceOf": "AutoSwapDefinition"
-        }
-      ]
-    },
     {
       "azureResourceGroupName": "DiagnosticBackendUsSecWest",
       "location": "USSec West",
@@ -128,46 +56,21 @@
       "scopeTags": [
         {
           "name": "General"
-        },
-        {
-          "name": "USSEC"
-        },
-        {
-          "name": "USSecWestRegion"
         }
       ],
       "serviceResources": [
         {
-          "name": "ApplensUsSec",
-          "instanceOf": "WebAppDefinitionV2",
+          "name": "AppSettingsUpdate",
+          "instanceOf": "ApplensAppSettingsDefinition",
           "scopeTags": [
             {
               "name": "Applens"
             }
           ]
-        }
-      ]
-    },
-    {
-      "azureResourceGroupName": "Support-RG",
-      "location": "USGov Virginia",
-      "instanceOf": "WebAppResourceGroupDefinitions",
-      "azureSubscriptionId": "86067b54-e1da-4079-96bb-4c4b5e1be1b6",
-      "scopeTags": [
-        {
-          "name": "General"
         },
         {
-          "name": "Fairfax"
-        },
-        {
-          "name": "USSecWestRegion"
-        }
-      ],
-      "serviceResources": [
-        {
-          "name": "ApplensFairfax",
-          "instanceOf": "WebAppDefinitionV2",
+          "name": "ApplensZipDeploy",
+          "instanceOf": "ZipDeployDefinition",
           "scopeTags": [
             {
               "name": "Applens"

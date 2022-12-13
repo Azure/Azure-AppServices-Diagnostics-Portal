@@ -3,7 +3,7 @@
   "rolloutMetadata": {
     "serviceModelPath": "PublicAzure\\Test\\ServiceModel.json",
     "scopeBindingsPath": "PublicAzure\\ScopeBindings.json",
-    "name": "TEST STAGING",
+    "name": "Test Staging",
     "rolloutType": "Major",
     "buildSource": {
       "parameters": {
@@ -25,11 +25,22 @@
   },
   "orchestratedsteps": [
     {
+      "name": "AppSettingsUpdate",
+      "targetType": "ServiceResource",
+      "targetName": "AppSettingsUpdate",
+      "actions": [
+        "Deploy"
+      ]
+    },
+    {
       "name": "ZipDeploy",
       "targetType": "ServiceResource",
       "targetName": "ApplensZipDeploy",
       "actions": [
         "Deploy"
+      ],
+      "dependsOn": [
+        "AppSettingsUpdate"
       ]
     }
   ]

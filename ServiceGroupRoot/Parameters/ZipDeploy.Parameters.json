@@ -8,16 +8,13 @@
     ],
     "parameters": {
         "siteName": {
-            "value": "__SITENAME_PREFIX__-__LOCATION_ABBR__"
-        },
-        "siteName2": {
             "value": "__SITENAME__"
         },
         "slotName": {
             "value": "staging"
         },
         "servicePackageLink": {
-            "value": "bin\\Applens.zip"
+            "value": "bin\\__ZIP_PACKAGE__"
         }
     }
 }

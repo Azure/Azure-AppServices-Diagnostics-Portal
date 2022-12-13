@@ -12,7 +12,7 @@
     },
     "notification": {
       "email": {
-        "to": "applensv2team@microsoft.com",
+        "to": "applensdeployments@microsoft.com",
         "options": {
           "when": [
             "onError",
@@ -25,11 +25,22 @@
   },
   "orchestratedsteps": [
     {
+      "name": "AppSettingsUpdate",
+      "targetType": "ServiceResource",
+      "targetName": "AppSettingsUpdate",
+      "actions": [
+        "Deploy"
+      ]
+    },
+    {
       "name": "ZipDeploy",
       "targetType": "ServiceResource",
       "targetName": "ApplensZipDeploy",
       "actions": [
         "Deploy"
+      ],
+      "dependsOn": [
+        "AppSettingsUpdate"
       ]
     }
   ]

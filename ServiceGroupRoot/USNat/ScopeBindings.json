@@ -28,20 +28,15 @@
       ]
     },
     {
-      "scopeTagName": "ApplensWestUs",
-      "bindings": [
-        {
-          "find": "__SITENAME__",
-          "replaceWith": "applens-wus"
-        }
-      ]
-    },
-    {
       "scopeTagName": "Applens",
       "bindings": [
         {
           "find": "__SITENAME__",
           "replaceWith": "applens"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "ApplensNationalCloud.zip"
         }
       ]
     },
@@ -57,7 +52,7 @@
           "replaceWith": "staging"
         },
         {
-          "find": "__ZIPDEPLOY_PACKAGE__",
+          "find": "__ZIP_PACKAGE__",
           "replaceWith": "bin\\AppServiceDiagnostics.zip"
         }
       ]

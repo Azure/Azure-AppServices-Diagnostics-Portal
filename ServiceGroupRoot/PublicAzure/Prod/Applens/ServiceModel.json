@@ -22,7 +22,7 @@
           "composedOf": {
             "arm": {
               "templatePath": "Templates\\WebAppZipDeploy.json",
-              "parametersPath": "Parameters\\ApplensZipDeploy.Parameters.json"
+              "parametersPath": "Parameters\\ZipDeploy.Parameters.json"
             }
           }
         },

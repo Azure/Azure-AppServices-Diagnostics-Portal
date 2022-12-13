@@ -22,7 +22,7 @@
           "composedOf": {
             "arm": {
               "templatePath": "Templates\\WebAppZipDeploy.json",
-              "parametersPath": "Parameters\\ApplensZipDeploy.Parameters.json"
+              "parametersPath": "Parameters\\ZipDeploy.Parameters.json"
             }
           }
         },
@@ -34,6 +34,15 @@
                     "parametersPath": "Parameters\\AutoSwap.Parameters.json"
                 }
             }
+        },
+        {
+          "name": "ApplensAppSettingsDefinition",
+          "composedOf": {
+            "arm": {
+              "templatePath": "Templates\\AppLens.AppSettings.Template.json",
+              "parametersPath": "Parameters\\AppLens.AppSettings.Parameters.json"
+            }
+          }
         }
       ]
     }
@@ -56,6 +65,15 @@
         }
       ],
       "serviceResources": [
+        {
+          "name": "AppSettingsUpdate",
+          "instanceOf": "ApplensAppSettingsDefinition",
+          "scopeTags": [
+            {
+              "name": "Applens"
+            }
+          ]
+        },        
         {
           "name": "ApplensZipDeploy",
           "instanceOf": "ZipDeployDefinition"

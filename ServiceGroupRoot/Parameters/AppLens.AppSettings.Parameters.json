@@ -6,70 +6,13 @@
             "value": "__SITENAME__"
         },
         "aspNetCoreEnvironment": {
-            "value": "__ASPNET_CORE_ENVIRONMENT__   "
+            "value": "__ASPNET_CORE_ENVIRONMENT__"
         },
         "slotName": {
             "value": "staging"
         },
-        "location": {
-            "value": "__LOCATION__"
-        },
-        "appServicePlanName": {
-            "value": "__SITENAME__-__LOCATION_ABBR__-asp"
-        },
-        "sku": {
-            "value": "S1"
-        },
-        "keyVaultName": {
-            "value": "__KEYVAULTNAME__-__LOCATION_ABBR__"
-        },
-        "azureAdClientId": {
-            "value": "__AZURE_AD_CLIENTID__"
-        },
-        "azureAdAuthority": {
-            "value": "__AZURE_AD_AUTHORITY__"
-        },
-        "servicePackageLink": {
-            "value": "bin\\Applens.zip"
-        },
-        "runtimeHostEndpoint": {
-            "value": "https://__RUNTIMEHOST_SITENAME__-__LOCATION_ABBR__.__APPSERVICE_DNS_SUFFIX__"
-        },
-        "runtimeHostAzureAdResourceId": {
-            "value": "__RUNTIMEHOST_AZUREAD_RESOURCE__"
-        },
-        "observerEndpoint": {
-            "value": "https://__OBSERVER_SITENAME__-__LOCATION_ABBR__.__APPSERVICE_DNS_SUFFIX__/api/"
-        },
-        "observerClientId": {
-            "value": "__OBSERVER_AAD_CLIENTID__"
-        },
-        "observerAadResource": {
-            "value": "__OBSERVER_AAD_RESOURCE__"
-        },
-        "storageAccountName": {
-            "value": "diagstoreprod__LOCATION_ABBR__"
-        },
-        "storageDnsSuffix": {
-            "value": "__STORAGE_DNS_SUFFIX__"
-        },
-        "dstsRealm": {
-            "value": "__DSTS_REALM__"
-        },
-        "dstsMetadataAddress": {
-            "value": "__DSTS_METADATA_ADDRESS__"
-        },
-        "dstsIssuer": {
-            "value": "__DSTS_ISSUER__"
-        },
-        "runtimeHostAzureAdKey": {
-            "value": "__RUNTIMEHOST_AZUREAD_KEY__"
-        },
-        "observerAzureAdKey": {
-            "value": "__OBSERVER_AZUREAD_KEY__"
-        },
-        "detectorsStorageKey": {
-            "value": "__DETECTORS_STORAGEKEY__"
+        "cloudEnvironment": {
+            "value": "__CLOUD_ENVIRONMENT__"
         }
     }
 }
