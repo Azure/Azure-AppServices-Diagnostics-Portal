@@ -66,14 +66,43 @@ extends:
           - script: |
               cd AngularApp
               npm install
-              npm run build-applens
+              npm run build
             displayName: 'npm install and build'
 
           - task: CopyFiles@2
             inputs:
               SourceFolder: 'ApplensBackend/wwwroot'
               Contents: '**'
-              TargetFolder: '$(Build.SourcesDirectory)/out'
+              TargetFolder: '$(ob_outputDirectory)'
+
+      - job: BuildAngularForNationalCloud
+        pool:
+          type: linux
+
+        variables: # More settings at https://aka.ms/obpipelines/yaml/jobs
+          ob_outputDirectory: '$(Build.SourcesDirectory)/out' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
+
+        steps: # These steps will be run in unrestricted container's network
+          - task: NodeTool@0
+            inputs:
+                versionSpec: '14.18.x'
+            displayName: 'Install Node.js'
+
+          - task: npmAuthenticate@0
+            inputs:
+              workingFile: './AngularApp/.npmrc'
+
+          - script: |
+              cd AngularApp
+              npm install
+              npm run build-ncloud-applens-prod
+            displayName: 'npm install and build'
+
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: 'ApplensBackend/wwwroot'
+              Contents: '**'
+              TargetFolder: '$(ob_outputDirectory)'              
 
       - job: BuildApplensBackend
         pool:
@@ -136,6 +165,14 @@ extends:
             downloadPath: '$(System.ArtifactsDirectory)/drop_Build_BuildAngular'
 
         - task: DownloadBuildArtifacts@1
+          displayName: 'Download Applens Client Build Artifacts For NationalClouds'
+          inputs:
+            buildType: 'current'
+            downloadType: 'single'
+            artifactName: 'drop_Build_BuildAngularForNationalCloud'
+            downloadPath: '$(System.ArtifactsDirectory)/drop_Build_BuildAngularForNationalCloud'            
+
+        - task: DownloadBuildArtifacts@1
           displayName: 'Download Applens Backend Build Artifacts'
           inputs:
             buildType: 'current'
@@ -156,6 +193,18 @@ extends:
             TargetFolder: '$(System.ArtifactsDirectory)/applensdrop/ApplensBackend/wwwroot'
 
         - task: CopyFiles@2
+          displayName: 'Copy Backend Files to: $(System.ArtifactsDirectory)/applensdrop_nationalcloud'
+          inputs:
+            SourceFolder: '$(System.ArtifactsDirectory)/drop_Build_BuildApplensBackend'
+            TargetFolder: '$(System.ArtifactsDirectory)/applensdrop_nationalcloud'
+
+        - task: CopyFiles@2
+          displayName: 'Copy Client Files to: $(System.ArtifactsDirectory)/applensdrop/ApplensBackend/wwwroot'
+          inputs:
+            SourceFolder: '$(System.ArtifactsDirectory)/drop_Build_BuildAngularForNationalCloud'
+            TargetFolder: '$(System.ArtifactsDirectory)/applensdrop_nationalcloud/ApplensBackend/wwwroot'            
+
+        - task: CopyFiles@2
           displayName: 'Copy ev2 root'
           inputs:
             SourceFolder: 'ServiceGroupRoot'
@@ -170,10 +219,19 @@ extends:
             archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/Applens.zip'
             replaceExistingArchive: true
 
+        - task: ArchiveFiles@2
+          inputs:
+            rootFolderOrFile: '$(System.ArtifactsDirectory)/applensdrop_nationalcloud/ApplensBackend'
+            includeRootFolder: false
+            archiveType: 'zip'
+            archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/ApplensNationalCloud.zip'
+            replaceExistingArchive: true            
+
         - task: DeleteFiles@1
           inputs:
             SourceFolder: '$(System.ArtifactsDirectory)'
             Contents: |
               drop_Build_BuildApplensBackend
               drop_Build_BuildAngular
+              drop_Build_BuildAngularForNationalCloud
               applensdrop
