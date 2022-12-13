@@ -90,7 +90,7 @@
       ]
     },
     {
-      "scopeTagName": "FairfaxVirginiaRegion",
+      "scopeTagName": "USGovVirginiaLocation",
       "bindings": [
         {
           "find": "__LOCATION_ABBR__",

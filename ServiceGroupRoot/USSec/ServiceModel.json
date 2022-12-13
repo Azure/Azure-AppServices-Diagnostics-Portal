@@ -76,6 +76,18 @@
               "name": "Applens"
             }
           ]
+        },
+        {
+          "name": "ApplensSwap",
+          "instanceOf": "AutoSwapDefinition",
+          "scopeTags": [
+            {
+              "name": "Applens"
+            },
+            {
+              "name": "USSecWestRegion"
+            }
+          ]
         }
       ]
     }

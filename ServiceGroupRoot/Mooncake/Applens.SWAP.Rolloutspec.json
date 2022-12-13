@@ -1,9 +1,9 @@
 {
     "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/rolloutSpecification.json",
     "rolloutMetadata": {
-        "serviceModelPath": "PublicAzure\\Prod\\Applens\\ServiceModel.json",
-        "scopeBindingsPath": "PublicAzure\\ScopeBindings.json",
-        "name": "AM2 SWAP",
+        "serviceModelPath": "Mooncake\\ServiceModel.json",
+        "scopeBindingsPath": "Mooncake\\ScopeBindings.json",
+        "name": "Applens Swap",
         "rolloutType": "Major",
         "buildSource": {
             "parameters": {
@@ -25,9 +25,9 @@
     },
     "orchestratedsteps": [
         {
-            "name": "SWAP AM2",
+            "name": "ApplensSwap",
             "targetType": "ServiceResource",
-            "targetName": "AM2SWAP",
+            "targetName": "ApplensSwap",
             "actions": [
                 "Deploy"
             ]

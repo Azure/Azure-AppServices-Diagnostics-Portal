@@ -71,19 +71,6 @@
       ]
     },
     {
-      "scopeTagName": "USNatWestRegion",
-      "bindings": [
-        {
-          "find": "__LOCATION_ABBR__",
-          "replaceWith": "usnatwest"
-        },
-        {
-          "find": "__LOCATION__",
-          "replaceWith": "USNat West"
-        }
-      ]
-    },
-    {
       "scopeTagName": "USSEC",
       "bindings": [
         {

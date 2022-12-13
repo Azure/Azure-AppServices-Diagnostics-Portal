@@ -3,7 +3,7 @@
     "rolloutMetadata": {
         "serviceModelPath": "PublicAzure\\Test\\ServiceModel.json",
         "scopeBindingsPath": "PublicAzure\\Test\\ScopeBindings.json",
-        "name": "TEST SWAP",
+        "name": "Applens Swap",
         "rolloutType": "Major",
         "buildSource": {
             "parameters": {
@@ -12,7 +12,7 @@
         },
         "notification": {
             "email": {
-                "to": "applensv2team@microsoft.com",
+                "to": "applensdeployments@microsoft.com",
                 "options": {
                     "when": [
                         "onError",
@@ -25,9 +25,9 @@
     },
     "orchestratedsteps": [
         {
-            "name": "Swap",
+            "name": "ApplensSwap",
             "targetType": "ServiceResource",
-            "targetName": "Swap",
+            "targetName": "ApplensSwap",
             "actions": [
                 "Deploy"
             ]

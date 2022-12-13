@@ -3,9 +3,6 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "siteName1": {
-            "value": "__SITENAME_PREFIX__-__LOCATION_ABBR__"
-        },
-        "siteName2": {
             "value": "__SITENAME__"
         },
         "location": {

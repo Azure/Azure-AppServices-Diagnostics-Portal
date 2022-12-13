@@ -48,6 +48,19 @@
       ]
     },
     {
+      "scopeTagName": "ChinaNorthRegion",
+      "bindings": [
+        {
+          "find": "__LOCATION_ABBR__",
+          "replaceWith": "bjb"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "China North"
+        }
+      ]
+    },
+    {
       "scopeTagName": "Applens",
       "bindings": [
         {
