@@ -88,6 +88,16 @@ extends:
               version: '7.0.x'
 
           - task: onebranch.pipeline.signing@1
+            displayName: '🔒 Setup Signing'
+            inputs:
+              command: 'setup'
+              signing_environment: 'azure-ado'
+              use_cache_v2: true
+              install_cert: true
+              watch_directory: $(Build.SourcesDirectory)
+              cache_directory: $(Build.SourcesDirectory)/.sign/.cache              
+
+          - task: onebranch.pipeline.signing@1
             displayName: 'Signing'
             inputs:
               command: 'sign'
@@ -132,7 +142,17 @@ extends:
             displayName: 'Install DotNet'
             inputs:
               packageType: 'sdk'
-              version: '7.0.x'            
+              version: '7.0.x'
+
+          - task: onebranch.pipeline.signing@1
+            displayName: '🔒 Setup Signing'
+            inputs:
+              command: 'setup'
+              signing_environment: 'azure-ado'
+              use_cache_v2: true
+              install_cert: true
+              watch_directory: $(Build.SourcesDirectory)
+              cache_directory: $(Build.SourcesDirectory)/.sign/.cache                       
 
           - task: onebranch.pipeline.signing@1
             displayName: 'Signing'
@@ -176,7 +196,7 @@ extends:
             displayName: 'Install DotNet'
             inputs:
               packageType: 'sdk'
-              version: '7.0.x'
+              version: '7.0.x'             
 
           - task: DotNetCoreCLI@2
             inputs:
@@ -190,6 +210,16 @@ extends:
             inputs:
               projects: ApplensBackend/AppLensV3.csproj
               arguments: '--configuration $(BuildConfiguration)'
+
+          - task: onebranch.pipeline.signing@1
+            displayName: '🔒 Setup Signing'
+            inputs:
+              command: 'setup'
+              signing_environment: 'azure-ado'
+              use_cache_v2: true
+              install_cert: true
+              watch_directory: $(Build.SourcesDirectory)
+              cache_directory: $(Build.SourcesDirectory)/.sign/.cache               
 
           - task: onebranch.pipeline.signing@1
             displayName: 'Signing'
