@@ -82,6 +82,16 @@ extends:
             displayName: 'npm install and build'
 
           - task: onebranch.pipeline.signing@1
+            displayName: '🔒 Setup Signing'
+            inputs:
+              command: 'setup'
+              signing_environment: 'azure-ado'
+              use_cache_v2: true
+              install_cert: true
+              watch_directory: $(Build.SourcesDirectory)
+              cache_directory: $(Build.SourcesDirectory)/.sign/.cache
+
+          - task: onebranch.pipeline.signing@1
             displayName: 'Signing'
             inputs:
               command: 'sign'
@@ -121,6 +131,16 @@ extends:
               npm install
               npm run build-ncloud-applens-prod
             displayName: 'npm install and build'
+
+          - task: onebranch.pipeline.signing@1
+            displayName: '🔒 Setup Signing'
+            inputs:
+              command: 'setup'
+              signing_environment: 'azure-ado'
+              use_cache_v2: true
+              install_cert: true
+              watch_directory: $(Build.SourcesDirectory)
+              cache_directory: $(Build.SourcesDirectory)/.sign/.cache            
 
           - task: onebranch.pipeline.signing@1
             displayName: 'Signing'
@@ -172,6 +192,16 @@ extends:
             inputs:
               projects: ApplensBackend/AppLensV3.csproj
               arguments: '--configuration $(BuildConfiguration)'
+
+          - task: onebranch.pipeline.signing@1
+            displayName: '🔒 Setup Signing'
+            inputs:
+              command: 'setup'
+              signing_environment: 'azure-ado'
+              use_cache_v2: true
+              install_cert: true
+              watch_directory: $(Build.SourcesDirectory)
+              cache_directory: $(Build.SourcesDirectory)/.sign/.cache
 
           - task: onebranch.pipeline.signing@1
             displayName: 'Signing'
