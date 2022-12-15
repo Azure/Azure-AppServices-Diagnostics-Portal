@@ -164,7 +164,6 @@ extends:
 
         variables: # More settings at https://aka.ms/obpipelines/yaml/jobs
           ob_outputDirectory: '$(Build.SourcesDirectory)/out' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts          
-          ob_artifactBaseName: 'drop'
 
         steps: # These steps will be run in unrestricted container's network
         - task: DownloadBuildArtifacts@1
