@@ -106,6 +106,13 @@ extends:
               arguments: '--configuration $(BuildConfiguration) --output $(System.ArtifactsDirectory)/ApplensPublicAzure'
               zipAfterPublish: false
 
+          - task: CopyFiles@2
+            displayName: 'Copy ev2 root'
+            inputs:
+              SourceFolder: 'ServiceGroupRoot'
+              Contents: '**'
+              TargetFolder: '$(ob_outputDirectory)/Ev2ServiceGroupRoot'              
+
           - task: ArchiveFiles@2
             inputs:
               rootFolderOrFile: '$(System.ArtifactsDirectory)/ApplensPublicAzure/ApplensBackend'
