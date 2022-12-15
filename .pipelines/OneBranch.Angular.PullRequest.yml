@@ -36,9 +36,9 @@ extends:
       #   suppressionFile: $(Build.SourcesDirectory)\.gdn\global.gdnsuppress
 
     stages:
-    - stage: Build
+    - stage: main
       jobs:
-      - job: BuildAngular
+      - job: build
         pool:
           type: linux
 
@@ -47,6 +47,7 @@ extends:
           ob_sdl_binskim_break: true # always break the build on binskim issues, even if TSA enabled. You can disable it by setting to 'false'
           ob_sdl_roslyn_break: true
           ob_sdl_codeSignValidation_excludes: 'regex|.+(?:dll|exe|sys|ps1|ps1xml|psc1|psd1|cdxml|vbs|js|wsf)$;-:file|**\*.zip*\**'
+          ob_artifactBaseName: 'drop'
 
         steps: # These steps will be run in unrestricted container's network
           - task: onebranch.pipeline.version@1
@@ -56,6 +57,17 @@ extends:
               major: '1'
               minor: '0'
               exclude_commit: false
+
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: 'echo ''export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1'' >> ~/.bashrc'
+
+          - task: UseDotNet@2
+            displayName: 'Install DotNet'
+            inputs:
+              packageType: 'sdk'
+              version: '6.0.x'                            
 
           - task: NodeTool@0
             inputs:
@@ -70,178 +82,62 @@ extends:
               cd AngularApp
               npm install
               npm run build
-            displayName: 'npm install and build'
-
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: 'ApplensBackend/wwwroot'
-              Contents: '**'
-              TargetFolder: '$(ob_outputDirectory)'
-
-      - job: BuildAngularForNationalCloud
-        pool:
-          type: linux
-
-        variables: # More settings at https://aka.ms/obpipelines/yaml/jobs
-          ob_outputDirectory: '$(Build.SourcesDirectory)/out' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
-          ob_sdl_binskim_break: true # always break the build on binskim issues, even if TSA enabled. You can disable it by setting to 'false'
-          ob_sdl_roslyn_break: true
-          ob_sdl_codeSignValidation_excludes: 'regex|.+(?:dll|exe|sys|ps1|ps1xml|psc1|psd1|cdxml|vbs|js|wsf)$;-:file|**\*.zip*\**'
-
-        steps: # These steps will be run in unrestricted container's network
-          - task: NodeTool@0
-            inputs:
-                versionSpec: '14.18.x'
-            displayName: 'Install Node.js'
-
-          - task: npmAuthenticate@0
-            inputs:
-              workingFile: './AngularApp/.npmrc'
-
-          - script: |
-              cd AngularApp
-              npm install
-              npm run build-ncloud-applens-prod
-            displayName: 'npm install and build'
-
-          - task: CopyFiles@2
-            inputs:
-              SourceFolder: 'ApplensBackend/wwwroot'
-              Contents: '**'
-              TargetFolder: '$(ob_outputDirectory)'              
-
-      - job: BuildApplensBackend
-        pool:
-          type: linux
-
-        variables: # More settings at https://aka.ms/obpipelines/yaml/jobs
-          ob_outputDirectory: '$(Build.SourcesDirectory)/out' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
-          ob_sdl_binskim_break: true # always break the build on binskim issues, even if TSA enabled. You can disable it by setting to 'false'
-          ob_sdl_roslyn_break: true
-          ob_sdl_codeSignValidation_excludes: 'regex|.+(?:dll|exe|sys|ps1|ps1xml|psc1|psd1|cdxml|vbs|js|wsf)$;-:file|**\*.zip*\**'
-          BuildConfiguration: 'Release' 
-
-        steps:
-          - task: Bash@3
-            inputs:
-              targetType: 'inline'
-              script: 'echo ''export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1'' >> ~/.bashrc'
-                
-          - task: UseDotNet@2
-            displayName: 'Install DotNet'
-            inputs:
-              packageType: 'sdk'
-              version: '6.0.x'
+            displayName: 'build applens public azure'
 
           - task: DotNetCoreCLI@2
             inputs:
               command: 'restore'
               projects: 'ApplensBackend/AppLensV3.csproj'
               feedsToUse: 'config'
-              nugetConfigPath: 'ApplensBackend/nuget.config'
+              nugetConfigPath: 'ApplensBackend/nuget.config' 
 
           - task: DotNetCoreCLI@2
-            displayName: Build
+            displayName: 'build applens backend'
             inputs:
               projects: ApplensBackend/AppLensV3.csproj
               arguments: '--configuration $(BuildConfiguration)'
 
           - task: DotNetCoreCLI@2
-            displayName: Publish
+            displayName: 'publish applens public azure'
             inputs:
               command: publish
               publishWebProjects: false
               projects: ApplensBackend/AppLensV3.csproj
-              arguments: '--configuration $(BuildConfiguration) --output $(ob_outputDirectory)'
+              arguments: '--configuration $(BuildConfiguration) --output $(System.ArtifactsDirectory)/ApplensPublicAzure'
               zipAfterPublish: false
 
-    - stage: Package
-      dependsOn: Build
-      jobs:
-      - job: PackageArtifacts
-        pool:
-          type: linux
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: '$(System.ArtifactsDirectory)/ApplensPublicAzure/ApplensBackend'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/Applens.zip'
+              replaceExistingArchive: true              
 
-        variables: # More settings at https://aka.ms/obpipelines/yaml/jobs
-          ob_outputDirectory: '$(Build.SourcesDirectory)/out' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts          
+          - script: |
+              cd AngularApp
+              npm install
+              npm run build-ncloud-applens-prod
+            displayName: 'build applens national clouds'
 
-        steps: # These steps will be run in unrestricted container's network
-        - task: DownloadBuildArtifacts@1
-          displayName: 'Download Applens Client Build Artifacts'
-          inputs:
-            buildType: 'current'
-            downloadType: 'single'
-            artifactName: 'drop_Build_BuildAngular'
-            downloadPath: '$(System.ArtifactsDirectory)/drop_Build_BuildAngular'
+          - task: DotNetCoreCLI@2
+            displayName: 'build applens backend'
+            inputs:
+              projects: ApplensBackend/AppLensV3.csproj
+              arguments: '--configuration $(BuildConfiguration)'            
 
-        - task: DownloadBuildArtifacts@1
-          displayName: 'Download Applens Client Build Artifacts For NationalClouds'
-          inputs:
-            buildType: 'current'
-            downloadType: 'single'
-            artifactName: 'drop_Build_BuildAngularForNationalCloud'
-            downloadPath: '$(System.ArtifactsDirectory)/drop_Build_BuildAngularForNationalCloud'            
+          - task: DotNetCoreCLI@2
+            displayName: 'publish applens national clouds'
+            inputs:
+              command: publish
+              publishWebProjects: false
+              projects: ApplensBackend/AppLensV3.csproj
+              arguments: '--configuration $(BuildConfiguration) --output $(System.ArtifactsDirectory)/ApplensNationalClouds'
+              zipAfterPublish: false
 
-        - task: DownloadBuildArtifacts@1
-          displayName: 'Download Applens Backend Build Artifacts'
-          inputs:
-            buildType: 'current'
-            downloadType: 'single'
-            artifactName: 'drop_Build_BuildApplensBackend'
-            downloadPath: '$(System.ArtifactsDirectory)/drop_Build_BuildApplensBackend'
-
-        - task: CopyFiles@2
-          displayName: 'Copy Backend Files to: $(System.ArtifactsDirectory)/applensdrop'
-          inputs:
-            SourceFolder: '$(System.ArtifactsDirectory)/drop_Build_BuildApplensBackend'
-            TargetFolder: '$(System.ArtifactsDirectory)/applensdrop'
-
-        - task: CopyFiles@2
-          displayName: 'Copy Client Files to: $(System.ArtifactsDirectory)/applensdrop/ApplensBackend/wwwroot'
-          inputs:
-            SourceFolder: '$(System.ArtifactsDirectory)/drop_Build_BuildAngular'
-            TargetFolder: '$(System.ArtifactsDirectory)/applensdrop/ApplensBackend/wwwroot'
-
-        - task: CopyFiles@2
-          displayName: 'Copy Backend Files to: $(System.ArtifactsDirectory)/applensdrop_nationalcloud'
-          inputs:
-            SourceFolder: '$(System.ArtifactsDirectory)/drop_Build_BuildApplensBackend'
-            TargetFolder: '$(System.ArtifactsDirectory)/applensdrop_nationalcloud'
-
-        - task: CopyFiles@2
-          displayName: 'Copy Client Files to: $(System.ArtifactsDirectory)/applensdrop/ApplensBackend/wwwroot'
-          inputs:
-            SourceFolder: '$(System.ArtifactsDirectory)/drop_Build_BuildAngularForNationalCloud'
-            TargetFolder: '$(System.ArtifactsDirectory)/applensdrop_nationalcloud/ApplensBackend/wwwroot'            
-
-        - task: CopyFiles@2
-          displayName: 'Copy ev2 root'
-          inputs:
-            SourceFolder: 'ServiceGroupRoot'
-            Contents: '**'
-            TargetFolder: '$(ob_outputDirectory)/Ev2ServiceGroupRoot'
-
-        - task: ArchiveFiles@2
-          inputs:
-            rootFolderOrFile: '$(System.ArtifactsDirectory)/applensdrop/ApplensBackend'
-            includeRootFolder: false
-            archiveType: 'zip'
-            archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/Applens.zip'
-            replaceExistingArchive: true
-
-        - task: ArchiveFiles@2
-          inputs:
-            rootFolderOrFile: '$(System.ArtifactsDirectory)/applensdrop_nationalcloud/ApplensBackend'
-            includeRootFolder: false
-            archiveType: 'zip'
-            archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/ApplensNationalCloud.zip'
-            replaceExistingArchive: true            
-
-        - task: DeleteFiles@1
-          inputs:
-            SourceFolder: '$(System.ArtifactsDirectory)'
-            Contents: |
-              drop_Build_BuildApplensBackend
-              drop_Build_BuildAngular
-              drop_Build_BuildAngularForNationalCloud
-              applensdrop
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: '$(System.ArtifactsDirectory)/ApplensNationalClouds/ApplensBackend'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/ApplensNationalCloud.zip'
