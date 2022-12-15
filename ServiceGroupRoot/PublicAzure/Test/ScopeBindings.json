@@ -54,7 +54,7 @@
           },
           {
             "find": "__ZIP_PACKAGE__",
-            "replaceWith": "bin\\AppServiceDiagnostics.zip"
+            "replaceWith": "AppServiceDiagnostics.zip"
           }
         ]
       },

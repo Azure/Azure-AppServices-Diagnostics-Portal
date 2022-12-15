@@ -14,7 +14,7 @@
             "value": "__TARGET_DEPLOYMENT_SLOT__"
         },
         "servicePackageLink": {
-            "value": "bin\\AppServiceDiagnostics.zip"
+            "value": "AppServiceDiagnostics.zip"
         }
     }
 }
