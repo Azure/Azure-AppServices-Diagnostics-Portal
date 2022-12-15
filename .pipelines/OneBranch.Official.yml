@@ -34,6 +34,7 @@ extends:
         - Package
       artifacts:
         - drop_Package_PackageArtifacts
+      mergeOutputs: true
     globalSdl: # https://aka.ms/obpipelines/sdl
       tsa:
         enabled: false # SDL results of non-official builds aren't uploaded to TSA by default.

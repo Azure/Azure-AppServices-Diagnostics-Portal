@@ -47,7 +47,6 @@ extends:
           ob_sdl_binskim_break: true # always break the build on binskim issues, even if TSA enabled. You can disable it by setting to 'false'
           ob_sdl_roslyn_break: true
           ob_sdl_codeSignValidation_excludes: 'regex|.+(?:dll|exe|sys|ps1|ps1xml|psc1|psd1|cdxml|vbs|js|wsf)$;-:file|**\*.zip*\**'
-          ob_artifactBaseName: 'drop'
 
         steps: # These steps will be run in unrestricted container's network
           - task: onebranch.pipeline.version@1
@@ -88,7 +87,6 @@ extends:
           ob_sdl_binskim_break: true # always break the build on binskim issues, even if TSA enabled. You can disable it by setting to 'false'
           ob_sdl_roslyn_break: true
           ob_sdl_codeSignValidation_excludes: 'regex|.+(?:dll|exe|sys|ps1|ps1xml|psc1|psd1|cdxml|vbs|js|wsf)$;-:file|**\*.zip*\**'
-          ob_artifactBaseName: 'drop'
 
         steps: # These steps will be run in unrestricted container's network
           - task: NodeTool@0
@@ -121,8 +119,7 @@ extends:
           ob_sdl_binskim_break: true # always break the build on binskim issues, even if TSA enabled. You can disable it by setting to 'false'
           ob_sdl_roslyn_break: true
           ob_sdl_codeSignValidation_excludes: 'regex|.+(?:dll|exe|sys|ps1|ps1xml|psc1|psd1|cdxml|vbs|js|wsf)$;-:file|**\*.zip*\**'
-          BuildConfiguration: 'Release'
-          ob_artifactBaseName: 'drop'     
+          BuildConfiguration: 'Release' 
 
         steps:
           - task: Bash@3
