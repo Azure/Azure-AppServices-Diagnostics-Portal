@@ -14,7 +14,7 @@ private static string GetQuery(OperationContext<ArmResource> cxt)
 }
 
 
-[ArmResourceFilter(provider: "microsoft.cost", resourceTypeName: "billing")]
+[ArmResourceFilter(provider: "Microsoft.Cost", resourceTypeName: "billing")]
 [Definition(Id = "YOUR_DETECTOR_ID", Name = "", Author = "YOUR_ALIAS", Description = "")]
 public async static Task<Response> Run(DataProviders dp, OperationContext<ArmResource> cxt, Response res)
 {
