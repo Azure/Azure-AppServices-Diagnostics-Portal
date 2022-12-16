@@ -105,7 +105,7 @@ export class FabDataTableComponent implements AfterContentInit {
         this.fabDetailsList.selectionMode = SelectionMode.single; 
       }
       else{
-        this.fabDetailsList.selectionMode = SelectionMode.none; 
+        this.fabDetailsList.selectionMode = this.descriptionColumnName !== "" ? SelectionMode.single : SelectionMode.none; 
       }
       this.fabDetailsList.selection = this.selection;
 
