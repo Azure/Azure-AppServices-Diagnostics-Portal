@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, ExtraOptions, NavigationEnd, Router, RouterModule } from '@angular/router';
+import { inputControlHeight } from '@uifabric/azure-themes/lib/azure/Constants';
 import { numberFormat } from 'highcharts';
 import { resetControlledWarnings } from 'office-ui-fabric-react';
 import { forkJoin } from 'rxjs';
@@ -16,6 +17,11 @@ export enum ComponentType {
   InPageLink
 }
 
+export enum DocumentMode {
+  docsPage,
+  examplesTab
+}
+
 @Component({
   selector: 'applens-docs',
   templateUrl: './applens-docs.component.html',
@@ -23,6 +29,10 @@ export enum ComponentType {
 })
 
 export class ApplensDocsComponent implements OnInit {
+  @Input() mode: DocumentMode = DocumentMode.docsPage;
+  @Input() category: string = "";
+  @Input() doc: string = "";
+  
   applensDocs = applensDocs;
   constructor(private _applensGlobal:ApplensGlobal, private diagnosticApiService: ApplensDiagnosticService, private ref: ChangeDetectorRef,
     private _activatedRoute: ActivatedRoute, private _diagnosticApi: DiagnosticApiService, private _router: Router, private _documentationService: ApplensDocumentationService) {
@@ -47,8 +57,7 @@ export class ApplensDocsComponent implements OnInit {
 
   fileNames: string[][] = [];
 
-  category: string;
-  doc: string;
+  
 
   files:any[][] = [];
 
@@ -61,22 +70,31 @@ export class ApplensDocsComponent implements OnInit {
     this._applensGlobal.updateHeader("");
     this._activatedRoute.paramMap.subscribe(params => {
       this.reset();
-      this.category = params.get('category');
-      this.doc = params.get('doc');
+      if (this.mode == DocumentMode.docsPage){
+        this.category = params.get('category');
+        this.doc = params.get('doc');
+      }
+      
+      this.initialize();
+    });
+  }
+  ngOnChanges(){
+    this.reset();
+    this.initialize();
+  }
+  initialize(){
+    this._documentationService.getDocsRepoSettings().subscribe(settings => {
+      this.documentationRepoSettings = settings;
 
-      this._documentationService.getDocsRepoSettings().subscribe(settings => {
-        this.documentationRepoSettings = settings;
-
-        if (this.documentationRepoSettings.isStaging) { this.docsBranch = this.documentationRepoSettings.stagingBranch; }
-        this.diagnosticApiService.getDetectorCode(`${this.documentationRepoSettings.root}/${this.category}/${this.doc}/${'index'}`, this.docsBranch, this.documentationRepoSettings.resourceId).subscribe(x => {
-          this.populateComponentsList(x);
-          this.markdownCode = x.split(this.customTagRegEx);
-          this.folders = this.getCodeFolders(x);
-          this.folders.forEach(f => {
-            this.getFiles(f);
-          });
-          this.inPageLinks = this.getInPageLinks(x);
+      if (this.documentationRepoSettings.isStaging) { this.docsBranch = this.documentationRepoSettings.stagingBranch; }
+      this.diagnosticApiService.getDetectorCode(`${this.documentationRepoSettings.root}/${this.category}/${this.doc}/${'index'}`, this.docsBranch, this.documentationRepoSettings.resourceId).subscribe(x => {
+        this.populateComponentsList(x);
+        this.markdownCode = x.split(this.customTagRegEx);
+        this.folders = this.getCodeFolders(x);
+        this.folders.forEach(f => {
+          this.getFiles(f);
         });
+        this.inPageLinks = this.getInPageLinks(x);
       });
     });
   }

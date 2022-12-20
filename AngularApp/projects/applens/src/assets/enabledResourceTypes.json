@@ -67,6 +67,18 @@
             "searchSuffix": "AZURE CONTAINER APP",
             "displayName": "Container App"
         },
+         {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.App/managedEnvironments",
+            "templateFileName": "ContainerAppEnvironments",
+            "imgSrc": "assets/img/Azure-ContainerAppEnvironment-Logo.svg",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "containerapp",
+            "pesId": "17677",
+            "staticSelfHelpContent": "microsoft.app",
+            "searchSuffix": "AZURE CONTAINER APP ENVIRONMENT",
+            "displayName": "Container App Environment"
+        },
         {
             "service": "ResourceService",
             "resourceType": "Microsoft.ContainerService/managedClusters",
@@ -661,6 +673,42 @@
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE INFORMATION PROTECTION",
             "displayName": "Azure Information Protection"
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.Dashboard/grafana",
+            "templateFileName": "Grafana",
+            "imgSrc": "assets/img/Azure-Grafana-Logo.svg",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "",
+            "pesId": "17749",
+            "staticSelfHelpContent": "",
+            "searchSuffix": "AZURE MANAGED GRAFANA",
+            "displayName": "Azure Managed Grafana"
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.Cost/billing",
+            "templateFileName": "Billing",
+            "imgSrc": "assets/img/Azure-Cost-Logo.svg",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "",
+            "pesId": "15659",
+            "staticSelfHelpContent": "",
+            "searchSuffix": "AZURE COST MANAGEMENT",
+            "displayName": "Azure Cost Management"
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.Change/analysis",
+            "templateFileName": "ChangeAnalysis",
+            "imgSrc": "assets/img/Azure-ChangeAnalysis-Logo.svg",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "",
+            "pesId": "17816",
+            "staticSelfHelpContent": "",
+            "searchSuffix": "AZURE CHANGE ANALYSIS",
+            "displayName": "Azure Change Analysis"
         }
     ]
 }
