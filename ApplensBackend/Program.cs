@@ -76,6 +76,7 @@ namespace AppLensV3
                 webHostBuilder.ConfigureLogging((logging) =>
                 {
                     logging.ClearProviders();
+                    logging.AddProvider(new FileLoggerProvider());
                 });
             }
 
