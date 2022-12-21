@@ -76,7 +76,11 @@ namespace AppLensV3
                 webHostBuilder.ConfigureLogging((logging) =>
                 {
                     logging.ClearProviders();
-                    logging.AddProvider(new FileLoggerProvider());
+
+                    if (config.GetValue<bool>("FileLogging:Enabled"))
+                    {
+                        logging.AddProvider(new FileLoggerProvider());
+                    }
                 });
             }
 
