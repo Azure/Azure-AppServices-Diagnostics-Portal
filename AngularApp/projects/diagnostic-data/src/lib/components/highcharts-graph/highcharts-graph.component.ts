@@ -647,7 +647,12 @@ export class HighchartsGraphComponent implements OnInit {
         }
     }
 
-    private _updateObject(obj: Object, replacement: any): Object {
+    private _updateObject(obj: any, replacement: any): Object {
+        //Not update tooltip background color as it will be break in the dark mode
+        if(replacement?.tooltip?.backgroundColor) {
+            delete replacement.tooltip.backgroundColor;
+        }
+
         // The option keys are different from nvd3. eg. In order to override default colors,
         // use "colors" as key  instead of "color"
         Object.keys(replacement).forEach(key => {

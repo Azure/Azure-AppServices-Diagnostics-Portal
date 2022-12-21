@@ -3,21 +3,19 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace AppLensV3
 {
     public class GenericCertLoader
     {
-        private static readonly Lazy<GenericCertLoader> _instance = new Lazy<GenericCertLoader>(() => new GenericCertLoader());
-
-        public static GenericCertLoader Instance => _instance.Value;
+        private readonly ILogger _logger;
 
         private ConcurrentDictionary<string, X509Certificate2> _certCollection = new ConcurrentDictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
 
-        public void Initialize()
+        public GenericCertLoader(ILogger<GenericCertLoader> logger)
         {
-            DateTime invocationStartTime = DateTime.UtcNow;
+            _logger = logger;
             LoadCertsFromFromUserStore();
         }
 
@@ -33,8 +31,9 @@ namespace AppLensV3
                 // Look up only valid certificates that have not expired.
                 ProcessCertCollection(certStore.Certificates.Find(X509FindType.FindByTimeValid, DateTime.UtcNow, true));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex.Message} occurred while trying to load certs. Stack Trace: {ex.StackTrace} ");
                 throw;
             }
             finally
@@ -126,8 +125,8 @@ namespace AppLensV3
                 {
                     if (!_certCollection.ContainsKey(currCert.Subject))
                     {
-                        // TODO: Log a message indicating which certificate was sucessfully loaded.
                         _certCollection.TryAdd(currCert.Subject, currCert);
+                        _logger.LogInformation($"Successfully loaded cert SubjectName:{currCert.Subject} CertType:{(currCert.HasPrivateKey ? "PFX" : "CER")} isRetry:{isRetry}");
                     }
                 }
             }

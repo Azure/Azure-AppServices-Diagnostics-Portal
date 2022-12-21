@@ -16,6 +16,7 @@ import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.se
 import { element } from 'protractor';
 import { ApplensDocumentationService } from '../services/applens-documentation.service';
 import { DocumentationRepoSettings } from '../../../shared/models/documentationRepoSettings';
+import { DocumentationFilesList } from './documentationFilesList';
 
 @Component({
   selector: 'side-nav',
@@ -40,6 +41,7 @@ export class SideNavComponent implements OnInit {
   docsCopy: CollapsibleMenuItem[] = [];
   documentationRepoSettings: DocumentationRepoSettings;
   docsBranch = null;
+  documentList: DocumentationFilesList = new DocumentationFilesList();
   
   favoriteDetectors: CollapsibleMenuItem[] = [];
   favoriteDetectorsCopy: CollapsibleMenuItem[] = [];
@@ -316,6 +318,7 @@ export class SideNavComponent implements OnInit {
             });
             fileNames.push(folderList);
             fileNames[filesIndex].forEach(d => {
+              this.documentList.addDocument(`${categories[filesIndex]}:${d}`);
               let docItem: CollapsibleMenuItem = {
                 label: d,
                 id: "",

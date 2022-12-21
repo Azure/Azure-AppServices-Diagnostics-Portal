@@ -36,10 +36,33 @@ namespace AppLensV3
         private const string DEFAULT_PUBLIC_AZURE_AAD_AUTHORITY = "https://login.microsoftonline.com/microsoft.onmicrosoft.com";
 
         private IConfiguration _configuration;
+        private SupportObserverCertLoader _certLoader;
 
-        public SupportObserverClientService(IConfiguration configuration)
+        public SupportObserverClientService(IConfiguration configuration, SupportObserverCertLoader certLoader)
         {
             _configuration = configuration;
+            _certLoader = certLoader;
+
+            _client = new Lazy<HttpClient>(() =>
+                {
+                    var handler = new HttpClientHandler()
+                    {
+                        ServerCertificateCustomValidationCallback = delegate { return true; },
+                    };
+
+                    if (_certLoader.Cert != null)
+                    {
+                        handler.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
+                        handler.ClientCertificates.Add(_certLoader.Cert);
+                    }
+
+                    var client = new HttpClient(handler);
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    client.Timeout = TimeSpan.FromSeconds(30);
+                    client.DefaultRequestHeaders.Add("User-Agent", "applens");
+                    return client;
+                });
         }
 
         /// <summary>
@@ -89,32 +112,12 @@ namespace AppLensV3
         /// <summary>
         /// http client
         /// </summary>
-        private static readonly Lazy<HttpClient> _client = new Lazy<HttpClient>(() =>
-            {
-                var handler = new HttpClientHandler()
-                {
-                    ServerCertificateCustomValidationCallback = delegate { return true; },
-                };
-
-                if (SupportObserverCertLoader.Instance.Cert != null)
-                {
-                    handler.SslProtocols = System.Security.Authentication.SslProtocols.Tls12;
-                    handler.ClientCertificates.Add(SupportObserverCertLoader.Instance.Cert);
-                }
-
-                var client = new HttpClient(handler);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.Timeout = TimeSpan.FromSeconds(30);
-                client.DefaultRequestHeaders.Add("User-Agent", "applens");
-                return client;
-            }
-        );
+        private readonly Lazy<HttpClient> _client;
 
         /// <summary>
         /// http client
         /// </summary>
-        private static HttpClient _httpClient
+        private HttpClient _httpClient
         {
             get
             {
@@ -283,7 +286,7 @@ namespace AppLensV3
 
         private async Task<ObserverResponse> SendObserverRequestAsync(HttpRequestMessage request, string apiName = "")
         {
-            if (SupportObserverCertLoader.Instance.Cert == null)
+            if (_certLoader.Cert == null)
             {
                 request.Headers.Add("Authorization", await GetSupportObserverAccessToken());
             }

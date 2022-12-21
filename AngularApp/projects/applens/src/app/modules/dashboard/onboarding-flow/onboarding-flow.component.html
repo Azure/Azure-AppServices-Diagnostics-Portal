@@ -484,6 +484,11 @@
               [detectorResponse]="queryResponse.invocationOutput">
             </tab-data-sources>
           </fab-pivot-item>
+          <fab-pivot-item [headerText]="'Example'" (onClick)="loadExamples()">
+            <p>Choose the example that best matches your detector</p>
+            <fab-dropdown placeholder="Select Document" [styles]="examplesDropdownStyle" [options]="examplesDropdownOptions" (onChange)="changeExampleDoc($event)"></fab-dropdown>
+            <applens-docs *ngIf="showExample" [mode]="DocumentMode.examplesTab" [doc]="exampleDoc" [category]="exampleCat"></applens-docs>
+          </fab-pivot-item>
         </fab-pivot>
         <!-- <div class="invocation-output-title-container">
 

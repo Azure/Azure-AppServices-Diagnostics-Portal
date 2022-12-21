@@ -95,6 +95,16 @@
       </div>
       <div style="width: 360px;" class="main-card">
         <div class="main-content-header">
+          <img src="assets/img/applens-skeleton/main/documents.svg" alt="dashboards" class="mr-3">
+          <h3>Dashboards</h3>
+        </div>
+        <div class="mb-3" *ngFor="let dash of applensDashboards">
+          <a class="applens-dashboards" [href]="dash.link" target="_blank">{{dash.name}}<i class="hyper-link-icon ml-1"
+              aria-hidden="true"></i></a>
+        </div>
+      </div>
+      <div style="width: 360px;" class="main-card">
+        <div class="main-content-header">
           <img src="assets/img/applens-skeleton/main/documents.svg" alt="documentations" class="mr-3">
           <h3>Documentation</h3>
         </div>

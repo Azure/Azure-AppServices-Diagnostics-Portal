@@ -16,6 +16,7 @@ import { applensDocs } from '../../../shared/utilities/applens-docs-constant';
 import { defaultResourceTypes } from '../../../shared/utilities/main-page-menu-options';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { UserAccessStatus } from '../../../shared/models/alerts';
+import { applensDashboards } from '../../../shared/utilities/applens-dashboards-constant';
 const moment = momentNs;
 
 @Component({
@@ -92,6 +93,7 @@ export class MainComponent implements OnInit {
   userGivenName: string = "";
   table: RecentResourceDisplay[];
   applensDocs = applensDocs;
+  applensDashboards = applensDashboards;
 
   constructor(private _router: Router, private _http: HttpClient, private _detectorControlService: DetectorControlService, private _adalService: AdalService, private _userSettingService: UserSettingService, private _themeService: GenericThemeService, private _diagnosticApiService: DiagnosticApiService, private _activatedRoute: ActivatedRoute) {
     this.endTime = moment.utc();
