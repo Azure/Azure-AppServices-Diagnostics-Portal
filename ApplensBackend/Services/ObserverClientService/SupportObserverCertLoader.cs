@@ -8,18 +8,16 @@ namespace AppLensV3
 {
     public class SupportObserverCertLoader
     {
-        private static readonly Lazy<SupportObserverCertLoader> _instance = new Lazy<SupportObserverCertLoader>();
-
-        public static SupportObserverCertLoader Instance => _instance.Value;
         protected string SubjectName { get; set; }
+
         public X509Certificate2 Cert { get; private set; }
 
-        public void Initialize(IConfiguration configuration)
+        public SupportObserverCertLoader(IConfiguration configuration, GenericCertLoader certLoader)
         {
             if (configuration.GetValue("Observer:clientCertEnabled", false))
             {
                 SubjectName = configuration["Observer:certSubjectName"];
-                Cert = !string.IsNullOrWhiteSpace(SubjectName) ? GenericCertLoader.Instance.GetCertBySubjectName(SubjectName) : throw new Exception("Null or whitespace SupportObserver:CertSubjectName");
+                Cert = !string.IsNullOrWhiteSpace(SubjectName) ? certLoader.GetCertBySubjectName(SubjectName) : throw new Exception("Null or whitespace SupportObserver:CertSubjectName");
             }
         }
     }

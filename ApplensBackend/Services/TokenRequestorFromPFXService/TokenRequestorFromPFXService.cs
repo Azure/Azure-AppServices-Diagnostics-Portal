@@ -1,25 +1,24 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Identity.Client;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Identity.Client;
 
 namespace AppLensV3
 {
     public class TokenRequestorFromPFXService
     {
         private IConfiguration _config;
-        private static readonly Lazy<TokenRequestorFromPFXService> instance = new Lazy<TokenRequestorFromPFXService>(() => new TokenRequestorFromPFXService());
-
-        public static TokenRequestorFromPFXService Instance => instance.Value;
+        private GenericCertLoader _certLoader;
 
         public static readonly string TokenServiceName = "PFXTokenRequestorService";
 
-        public void Initialize(IConfiguration config)
+        public TokenRequestorFromPFXService(IConfiguration config, GenericCertLoader certLoader)
         {
             // Empty for now, keeping it here for any startup operation that may be required later.
             // e.g.. Prefetch the token for any specific provider based ont the config.
             _config = config;
+            _certLoader = certLoader;
         }
 
         /// <summary>
@@ -29,7 +28,7 @@ namespace AppLensV3
         /// <returns>IConfidentialClientApplication that can be used to request tokens.</returns>
         public IConfidentialClientApplication GetClientApp(string certificateSubjectName)
             => string.IsNullOrWhiteSpace(certificateSubjectName) ? null
-            : TokenRequestorFromPFXService.Instance.certToClientAppMap.TryGetValue(certificateSubjectName, out IConfidentialClientApplication cApp) ? cApp : null;
+            : certToClientAppMap.TryGetValue(certificateSubjectName, out IConfidentialClientApplication cApp) ? cApp : null;
 
         /// <summary>
         /// Gets the authorization token from AAD by passing it the certificate.
@@ -48,12 +47,12 @@ namespace AppLensV3
         public async Task<string> GetAuthorizationTokenAsync(string clientId, Uri aadTenantAuthorityUri, string audience, string certificateSubjectName, bool isTokenForHTTPRequest = true)
         {
             TokenCacheKey cacheKey = new TokenCacheKey(clientId, aadTenantAuthorityUri, audience);
-            if (!Instance.tokenCache.ContainsKey(cacheKey))
+            if (tokenCache.ContainsKey(cacheKey))
             {
                 await TryAddTokenCacheItemAsync(cacheKey, certificateSubjectName);
             }
 
-            if (Instance.tokenCache.TryGetValue(cacheKey, out TokenCacheValue token))
+            if (tokenCache.TryGetValue(cacheKey, out TokenCacheValue token))
             {
                 return isTokenForHTTPRequest ? await token.GetAuthorizationTokenAsync() : await token.GetAuthorizationTokenRawAsync();
             }
@@ -121,16 +120,16 @@ namespace AppLensV3
 
             certificateSubjectName = certificateSubjectName.ToUpperInvariant();
 
-            if (!Instance.certToClientAppMap.ContainsKey(certificateSubjectName))
+            if (certToClientAppMap.ContainsKey(certificateSubjectName))
             {
                 try
                 {
                     IConfidentialClientApplication cApp = ConfidentialClientApplicationBuilder.Create(cacheKey.ClientId)
-                                                      .WithCertificate(GenericCertLoader.Instance.GetCertBySubjectName(certificateSubjectName))
+                                                      .WithCertificate(_certLoader.GetCertBySubjectName(certificateSubjectName))
                                                       .WithAuthority(cacheKey.AadTenantDomainUri, validateAuthority: true)
                                                       .Build();
 
-                    Instance.certToClientAppMap.TryAdd(certificateSubjectName, cApp);
+                    certToClientAppMap.TryAdd(certificateSubjectName, cApp);
                 }
                 catch (Exception)
                 {
@@ -138,22 +137,26 @@ namespace AppLensV3
                 }
             }
 
-            TokenCacheValue cacheValue = new TokenCacheValue(cacheKey.ClientId, cacheKey.Audience, certificateSubjectName);
-            Instance.tokenCache.TryAdd(cacheKey, cacheValue);
+            TokenCacheValue cacheValue = new TokenCacheValue(cacheKey.ClientId, cacheKey.Audience, certificateSubjectName, this);
+            tokenCache.TryAdd(cacheKey, cacheValue);
             return new Tuple<TokenCacheKey, TokenCacheValue>(cacheKey, cacheValue);
         }
     }
 
     public class TokenCacheValue
     {
+        private TokenRequestorFromPFXService _pfxService;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenCacheValue"/> class. Provides methods to acquire AAD tokens with support for in-memory token caching and auto referesh.</summary>
         /// <param name="clientId">Client Id of the AAD app that is to be contacted to issue the token.</param>
         /// <param name="audience">Target resource to whom the token will be sent to. Ensure the audience also includes required scope. The default scope is "{ResourceIdUri/.default}".
         /// <br/>e.g.. https://msazurecloud.onmicrosoft.com/azurediagnostic/.default </param>
         /// <param name="certificateSubjectName">Subject name of the certificate that is configured as trusted on the AAD app.</param>
-        public TokenCacheValue(string clientId, string audience, string certificateSubjectName)
+        public TokenCacheValue(string clientId, string audience, string certificateSubjectName, TokenRequestorFromPFXService pfxService)
         {
+            _pfxService = pfxService;
+
             if (string.IsNullOrWhiteSpace(clientId))
             {
                 throw new ArgumentNullException(paramName: nameof(clientId), message: "Failed to create TokenCacheValue. Please supply a client id for the AAD app from where the token should be requested.");
@@ -220,7 +223,7 @@ namespace AppLensV3
         /// <returns>Raw result after contacting AAD and acquiring the auth token.</returns>
         private async Task<AuthenticationResult> GetAuthenticationResultRawAsync()
         {
-            IConfidentialClientApplication cApp = TokenRequestorFromPFXService.Instance.GetClientApp(this.CertificateSubjectName);
+            IConfidentialClientApplication cApp = _pfxService.GetClientApp(this.CertificateSubjectName);
             if (cApp == null)
             {
                 throw new Exception("AAD token builder must be setup before trying to acquire a token.");
