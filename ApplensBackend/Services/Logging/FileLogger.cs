@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Text;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 
@@ -12,16 +13,19 @@ namespace AppLensV3
         {
             return new StreamWriter(File.Open($"diagnostics-{DateTime.UtcNow.ToString("yyyyMMdd-HHmm")}.log", FileMode.Append, FileAccess.Write, FileShare.ReadWrite));
         });
+
         private static readonly StreamWriter logWriter = streamWriter.Value;
-        private bool isDisposed;
-        private readonly string logCategory;
         private static ConcurrentQueue<string> messages = new ConcurrentQueue<string>();
-        private static Timer logWriting = new Timer(WriteLogs, messages, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+        private static Timer logWriting = new Timer(WriteLogs, messages, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
+        private static object lockObject = new object();
+        private readonly string logCategory;
+        private bool isDisposed;
         private bool isTimerDisposed;
 
         public FileLogger(string category, string filePath)
         {
             logCategory = category;
+            logWriter.AutoFlush = true;
         }
 
         public IDisposable BeginScope<TState>(TState state)
@@ -70,25 +74,25 @@ namespace AppLensV3
             }
         }
 
-        private static void WriteLogs(Object stateInfo)
+        private static void WriteLogs(object stateInfo)
         {
-            int buffer = 0;
             var stateMessages = stateInfo as ConcurrentQueue<string>;
+            var sb = new StringBuilder();
 
             if (stateMessages.Count > 0)
             {
-                while (stateMessages.TryDequeue(out string logMessage))
+                lock (lockObject)
                 {
-                    if (buffer > 10)
+                    if (stateMessages.Count > 0)
                     {
-                        break;
+                        while (stateMessages.TryDequeue(out string logMessage))
+                        {
+                            sb.AppendLine(logMessage);
+                        }
+
+                        logWriter.WriteLineAsync(sb);
                     }
-
-                    logWriter.WriteLineAsync(logMessage);
-                    buffer++;
                 }
-
-                logWriter.FlushAsync();
             }
         }
     }
