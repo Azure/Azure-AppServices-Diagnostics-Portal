@@ -1,0 +1,17 @@
+<div class="option-picker-flex-center option-picker-root-container">
+    <ng-container *ngFor="let pickerOption of pickerOptions;let i = index">
+        <div *ngIf = "i > 0" class="option-picker-flex-center option-picker-divider-container">
+            <div class="option-picker-flex-self-center option-picker-divider"></div>
+        </div>
+        <fab-link (onClick)="chooseCreateExperience(pickerOption)">
+            <div class="option-picker-flex-center option-picker-option-container">
+                <div class="option-picker-flex-center option-picker-circle">
+                    <div class="option-picker-flex-self-center option-picker-option-icon">
+                        <fab-icon [iconName]="pickerOption.iconName" ></fab-icon>
+                    </div>
+                </div>
+                <div class="option-picker-flex-self-center option-picker-option-text">{{pickerOption.displayText}}</div>
+            </div>
+        </fab-link>
+    </ng-container>
+</div>
