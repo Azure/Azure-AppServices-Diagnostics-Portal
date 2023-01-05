@@ -163,6 +163,14 @@ export class DiagnosticApiService {
     return useCache ? this._cacheService.get(this.getCacheKey(HttpMethod.POST, url + body.toString()), request, invalidateCache) : request;
   }
 
+  public getSuggestionForAlias(aliasStartsWith:string, useCache: boolean = true, invalidateCache: boolean = false): Observable<any> {
+    let url: string = `${this.diagnosticApi}api/graph/users/suggestion/${aliasStartsWith}`;
+    let request = this._httpClient.get(url, {
+      headers: this._getHeaders()
+    });
+    return useCache ? this._cacheService.get(this.getCacheKey(HttpMethod.POST, url), request, invalidateCache) : request;    
+  }
+
   public getKustoClusterForGeoRegion(geoRegion: string, useCache: boolean = true, invalidateCache: boolean = false): Observable<any> {
     let path = `api/kustogeo/${geoRegion}`;
     return this.get(path, invalidateCache);

@@ -133,6 +133,19 @@ export class SideNavComponent implements OnInit {
       icon: null
     },
     {
+      label: 'Quick Create New Detector',
+      id: "",
+      onClick: () => {
+        this.navigateTo('designDetector');
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `designDetector`.toLowerCase();
+      },
+      icon: null
+    },
+    {
       label: 'New Detector',
       id: "",
       onClick: () => {

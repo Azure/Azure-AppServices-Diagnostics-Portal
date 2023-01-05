@@ -27,5 +27,10 @@ namespace AppLensV3.Services
         {
             return Task.FromResult((IDictionary<string, string>)new Dictionary<string, string>());
         }
+
+        Task<List<AuthorInfo>> IGraphClientService.GetSuggestionForAlias(string aliasFilter)
+        {
+            return Task.FromResult(new List<AuthorInfo>());
+        }
     }
 }

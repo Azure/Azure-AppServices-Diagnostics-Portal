@@ -11,6 +11,7 @@ using AppLensV3.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 
 namespace AppLensV3.Services
 {
@@ -20,6 +21,8 @@ namespace AppLensV3.Services
         Task<string> GetUserImageAsync(string userId);
         Task<IDictionary<string, string>> GetUsers(string[] users);
         Task<AuthorInfo> GetUserInfoAsync(string userId);
+
+        Task<List<AuthorInfo>> GetSuggestionForAlias(string aliasFilter);
     }
 
     public class GraphClientService : IGraphClientService
@@ -146,6 +149,55 @@ namespace AppLensV3.Services
 
             await Task.WhenAll(tasks);
             return authorsDictionary;
+        }
+
+        public async Task<List<AuthorInfo>> GetSuggestionForAlias(string aliasFilter)
+        {
+            List<AuthorInfo> returnValue = new List<AuthorInfo>();
+            if (!string.IsNullOrWhiteSpace(aliasFilter) && !string.Equals(aliasFilter, "undefined", StringComparison.OrdinalIgnoreCase))
+            {
+                string authorizationToken = await GraphTokenService.Instance.GetAuthorizationTokenAsync();
+
+                // Count will force 'eventual' type processing on the request and orderBy will work.
+                string orderByDirective = "$orderBy=displayName%20asc&$count=true";
+                string filterDirective = $"$filter=startswith(userPrincipalName,'{System.Web.HttpUtility.UrlEncode(aliasFilter)}')%20and%20endswith(userPrincipalName,'@microsoft.com')";
+                string topDirective = "$top=5";
+
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, string.Format(GraphConstants.GraphApiEndpointFormat,
+                    $"users?{filterDirective}&{orderByDirective}&{topDirective}"));
+                request.Headers.Add("Authorization", authorizationToken);
+                request.Headers.Add("ConsistencyLevel", "eventual");
+
+                CancellationTokenSource tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+                HttpResponseMessage responseMsg = await _httpClient.SendAsync(request, tokenSource.Token);
+
+                string result = string.Empty;
+
+
+                if (responseMsg.IsSuccessStatusCode)
+                {
+                    string str = "";
+                    result = await responseMsg.Content.ReadAsStringAsync();
+                    JToken jt = JToken.Parse(result);
+                    var searchResults = jt["value"];
+                    if (searchResults != null && searchResults.Type == JTokenType.Array)
+                    {
+                        foreach (dynamic resultObject in searchResults)
+                        {
+                            returnValue.Add(new AuthorInfo(
+                                resultObject.businessPhones.ToString(),
+                                resultObject.displayName.ToString(),
+                                resultObject.givenName.ToString(),
+                                resultObject.jobTitle.ToString(),
+                                resultObject.mail.ToString(),
+                                resultObject.officeLocation.ToString(),
+                                resultObject.userPrincipalName.ToString()));
+                        }
+                    }
+                }
+            }
+
+            return returnValue;
         }
     }
 }
