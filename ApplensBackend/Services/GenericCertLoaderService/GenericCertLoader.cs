@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using AppLensV3.Helpers;
 using Microsoft.Extensions.Logging;
 
 namespace AppLensV3
@@ -136,10 +137,11 @@ namespace AppLensV3
 
             foreach (X509Certificate2 currCert in certCollection)
             {
-                if (!_certCollection.ContainsKey(currCert.Subject))
+                var subjectCommonName = currCert.GetSubjectCommonName();
+                if (!_certCollection.ContainsKey(subjectCommonName))
                 {
-                    _certCollection.TryAdd(currCert.Subject, currCert);
-                    _logger.LogInformation($"Successfully loaded cert SubjectName:{currCert.Subject} CertType:{(currCert.HasPrivateKey ? "PFX" : "CER")} isRetry:{isRetry}");
+                    _certCollection.TryAdd(currCert.GetSubjectCommonName(), currCert);
+                    _logger.LogInformation($"Successfully loaded cert SubjectName:{subjectCommonName} CertType:{(currCert.HasPrivateKey ? "PFX" : "CER")} isRetry:{isRetry}");
                 }
             }
         }
