@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using AppLensV3.Authorization;
@@ -141,6 +142,16 @@ namespace AppLensV3.Helpers
             }
 
             return userId;
+        }
+
+        /// <summary>
+        /// Get the common name of the certificate subject name that is the part that part in the subject name that starts with CN=.
+        /// </summary>
+        /// <param name="certificate">certificate.</param>
+        /// <returns>Common Name</returns>
+        public static string GetSubjectCommonName(this X509Certificate2 certificate)
+        {
+            return certificate.Subject.Split(new char[] { ',', '|' }).FirstOrDefault()?.Trim();
         }
     }
 }

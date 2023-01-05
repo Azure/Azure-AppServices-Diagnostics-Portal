@@ -70,7 +70,7 @@
          {
             "service": "ResourceService",
             "resourceType": "Microsoft.App/managedEnvironments",
-            "templateFileName": "ContainerAppEnvironments",
+            "templateFileName": "ContainerAppEnvironment",
             "imgSrc": "assets/img/Azure-ContainerAppEnvironment-Logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "containerapp",

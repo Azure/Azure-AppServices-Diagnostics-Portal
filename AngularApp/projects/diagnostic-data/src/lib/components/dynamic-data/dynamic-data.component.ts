@@ -106,7 +106,7 @@ export class DynamicDataComponent implements OnInit {
   ngOnInit(): void {
     this.versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
     this.dataBehaviorSubject.subscribe((diagnosticData: DiagnosticData) => {
-      const isVisible = (<Rendering>diagnosticData.renderingProperties).isVisible;
+      const isVisible = (<Rendering>diagnosticData?.renderingProperties)?.isVisible;
       if (isVisible !== undefined && !isVisible) {
         return;
       }

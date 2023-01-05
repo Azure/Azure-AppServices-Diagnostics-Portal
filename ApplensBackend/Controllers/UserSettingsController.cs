@@ -25,21 +25,6 @@ namespace AppLensV3.Controllers
             _isEnabled = configuration.GetValue("UserSetting:Enabled", false);
         }
 
-        /// <summary>
-        /// This method get's called by our UI code when the adal library is not running in the UI. This is for non-PublicAzure cases.
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<IActionResult> GetUserInfo()
-        {
-            if (!_isEnabled)
-            {
-                return await GetUserInfo("noname");
-            }
-
-            return BadRequest("userId cannot be empty");
-        }
-
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserInfo(string userId)
         {
