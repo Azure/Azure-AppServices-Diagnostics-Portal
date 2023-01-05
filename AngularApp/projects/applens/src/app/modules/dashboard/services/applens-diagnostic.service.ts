@@ -159,6 +159,10 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getUsers(body);
   }
 
+  getSuggestionForAlias(aliasStartsWith:string): Observable<any> {
+    return this._diagnosticApi.getSuggestionForAlias(aliasStartsWith);
+  }
+
   getSupportTopics(pesId: any): Observable<any> {
     return this._diagnosticApi.getSupportTopics(pesId);
   }
