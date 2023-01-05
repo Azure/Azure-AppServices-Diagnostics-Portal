@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AppLensV3.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace AppLensV3.Services
 {
@@ -8,9 +9,9 @@ namespace AppLensV3.Services
     {
         private UserSetting nullableUserSetting;
 
-        public NullableCosmosDBUserSettingsHandler()
+        public NullableCosmosDBUserSettingsHandler(IConfiguration configration)
         {
-            nullableUserSetting = new UserSetting("__default");
+            nullableUserSetting = new UserSetting(configration["UserSetting:DefaultUserSettingId"]);
         }
 
         public Task<UserSetting> AddFavoriteDetector(string id, string detectorId, FavoriteDetectorProp prop)
