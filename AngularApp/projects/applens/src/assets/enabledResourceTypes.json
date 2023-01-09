@@ -709,6 +709,18 @@
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE CHANGE ANALYSIS",
             "displayName": "Azure Change Analysis"
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.WindowsPushNotificationServices/Registrations",
+            "templateFileName": "WNS",
+            "imgSrc": "assets/img/WNS-Logo.svg",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "",
+            "pesId": "18035",
+            "staticSelfHelpContent": "",
+            "searchSuffix": "WINDOWS NOTIFICATION SERVICE",
+            "displayName": "Windows Notification Service"
         }
     ]
 }
