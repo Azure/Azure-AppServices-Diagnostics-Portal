@@ -119,7 +119,7 @@
     "selfsigned": "^1.10.2",
     "ts-node": "~4.1.0",
     "typescript": "~4.6.4",
-    "webpack-bundle-analyzer": "^3.6.0"
+    "webpack-bundle-analyzer": "^4.7.0"
   },
   "browser": {
     "fs": false,
