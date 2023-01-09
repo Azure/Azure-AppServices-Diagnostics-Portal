@@ -1,8 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { EditorInstance, EditorOption } from 'angular-markdown-editor';
-import { DetectorControlService } from 'diagnostic-data';
-import { stepVariable } from 'dist/diagnostic-data/public_api';
+import { DetectorControlService, stepVariable } from 'diagnostic-data';
 import { MarkdownService } from 'ngx-markdown';
 import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
 import { dynamicExpressionBody } from '../models/kusto';
