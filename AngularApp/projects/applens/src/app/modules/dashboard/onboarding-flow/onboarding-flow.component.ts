@@ -566,9 +566,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       });
     }
 
-    let grad = false;
     this.diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(devopsConfig => {
-      this.detectorGraduation = devopsConfig.graduationEnabled && !this.isWorkflowDetector && grad;
+      this.detectorGraduation = devopsConfig.graduationEnabled && !this.isWorkflowDetector;
       this.DevopsConfig = new DevopsConfig(devopsConfig);
 
       this.commitHistoryLink = (devopsConfig.folderPath === "/") ? `https://dev.azure.com/${devopsConfig.organization}/${devopsConfig.project}/_git/${devopsConfig.repository}?path=${devopsConfig.folderPath}${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&_a=history` : `https://dev.azure.com/${devopsConfig.organization}/${devopsConfig.project}/_git/${devopsConfig.repository}?path=${devopsConfig.folderPath}/${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&_a=history`;
