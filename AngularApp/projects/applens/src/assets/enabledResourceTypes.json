@@ -16,7 +16,8 @@
             "emergingIssuesICMLookupEnabled": false,
             "displayName": "App",
             "overviewPageMetricsId" : "applensoverviewmetrics_appservices",
-            "userAuthorizationEnabled": true
+            "userAuthorizationEnabled": true,
+            "workflowsEnabled": true
         },
         {
             "service": "AseService",
@@ -624,7 +625,8 @@
             "azureCommImpactedServicesList": "appservice",
             "emergingIssuesICMLookupEnabled": false,
             "displayName": "Internal Stamp",
-            "overviewPageMetricsId" : "applensoverviewmetrics_stamps"
+            "overviewPageMetricsId" : "applensoverviewmetrics_stamps",
+            "workflowsEnabled": true
         },
         {
             "service": "ResourceService",

@@ -135,29 +135,34 @@
     </div>
   </ngx-smart-modal>
 
-  <fab-dialog [hidden]="publishDialogHidden || !detectorGraduation || useAutoMergeText" (onDismiss)="publishDialogCancel()" [minWidth]="'80%'">
+  <fab-dialog [hidden]="publishDialogHidden || !detectorGraduation || useAutoMergeText"
+    (onDismiss)="publishDialogCancel()" [minWidth]="'80%'">
     <div class="callout-padding">
-    <fab-dialog-content [title]="dialogTitle" [subText]="dialogSubText" [styles]="publishDialogStyles">
-      <p>Branch Name: </p><p style="text-decoration: underline; font-weight: bold; word-wrap: break-word;">{{Branch}}</p>
-      <input type="text" [placeholder]="PRPlaceholder" [(ngModel)]="PRTitle" style="color: black; width:100%"/>
+      <fab-dialog-content [title]="dialogTitle" [subText]="dialogSubText" [styles]="publishDialogStyles">
+        <p>Branch Name: </p>
+        <p style="text-decoration: underline; font-weight: bold; word-wrap: break-word;">{{Branch}}</p>
+        <input type="text" [placeholder]="PRPlaceholder" [(ngModel)]="PRTitle" style="color: black; width:100%" />
         <search-term-addition [allUtterances]="allUtterances" [recommendedUtterances]="recommendedUtterances"
-        [utteranceInput]="utteranceInput" [detectorId]="id"></search-term-addition>
-      <div style="border-top: 1px solid gray;" class="pt-3 pb-3 callout-padding">
-        <fab-primary-button [text]="publishButtonText" (onClick)="publish()"></fab-primary-button>
-        <fab-default-button [text]="cancelButtonText" (onClick)="publishDialogCancel()"></fab-default-button>
-      </div>
-    </fab-dialog-content>
+          [utteranceInput]="utteranceInput" [detectorId]="id"></search-term-addition>
+        <div style="border-top: 1px solid gray;" class="pt-3 pb-3 callout-padding">
+          <fab-primary-button [text]="publishButtonText" (onClick)="publish()"></fab-primary-button>
+          <fab-default-button [text]="cancelButtonText" (onClick)="publishDialogCancel()"></fab-default-button>
+        </div>
+      </fab-dialog-content>
     </div>
     <fab-dialog-footer>
 
     </fab-dialog-footer>
   </fab-dialog>
 
-  <fab-dialog [hidden]="publishDialogHidden || !detectorGraduation || !useAutoMergeText" (onDismiss)="publishDialogCancel()"  [minWidth]="'80%'">
+  <fab-dialog [hidden]="publishDialogHidden || !detectorGraduation || !useAutoMergeText"
+    (onDismiss)="publishDialogCancel()" [minWidth]="'80%'">
     <div>
-      <fab-dialog-content [title]="'Publish'" [subText]="'This detector will be pushed directly to main and no pull request will be created'" [styles]="publishDialogStyles">
+      <fab-dialog-content [title]="'Publish'"
+        [subText]="'This detector will be pushed directly to main and no pull request will be created'"
+        [styles]="publishDialogStyles">
         <search-term-addition [allUtterances]="allUtterances" [recommendedUtterances]="recommendedUtterances"
-        [utteranceInput]="utteranceInput" [detectorId]="id"></search-term-addition>
+          [utteranceInput]="utteranceInput" [detectorId]="id"></search-term-addition>
         <div class="pt-3 pb-3 callout-padding" style="padding-left: 0px">
           <fab-primary-button [text]="'Publish'" (onClick)="publish()"></fab-primary-button>
           <fab-default-button [text]="cancelButtonText" (onClick)="publishDialogCancel()"></fab-default-button>
@@ -202,19 +207,19 @@
     </fab-dialog-content>
   </fab-dialog>
 
-  <fab-dialog *ngIf="gists.length > 0" [hidden]="gistDialogHidden"
-    (onDismiss)="dismissGistDialog()" [minWidth]="'80%'">
+  <fab-dialog *ngIf="gists.length > 0" [hidden]="gistDialogHidden" (onDismiss)="dismissGistDialog()" [minWidth]="'80%'">
     <fab-dialog-content title="Gist Version">
       <div>
         <div style="display: flex;">
-            <fab-dropdown label="Gist name" placeholder="Field value" [options]="gistsDropdownOptions"
-              (onChange)="updateGistVersionOptions($event)" [styles]="gistDropdownWidth"></fab-dropdown>
+          <fab-dropdown label="Gist name" placeholder="Field value" [options]="gistsDropdownOptions"
+            (onChange)="updateGistVersionOptions($event)" [styles]="gistDropdownWidth"></fab-dropdown>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: end;">
           <div style="display: flex;">
             <fab-dropdown [disabled]="!gistName" label="Gist version" (onChange)="gistVersionOnChange($event)"
-              placeholder="Field value" [options]="gistVersionOptions" [styles]="gistDropdownWidth" notifyOnReselect="true" [defaultSelectedKey]="selectedKey">
-            </fab-dropdown>             
+              placeholder="Field value" [options]="gistVersionOptions" [styles]="gistDropdownWidth"
+              notifyOnReselect="true" [defaultSelectedKey]="selectedKey">
+            </fab-dropdown>
             <div *ngIf="!loadingGistVersions else loading">
               <span style="padding-left:25px"></span>
             </div>
@@ -222,40 +227,46 @@
               <div class="home-spinner" style="padding-top: 32px; padding-left: 5px">
                 <fab-spinner [ariaLabel]="'Loading Gist versions'"></fab-spinner>
               </div>
-            </ng-template>    
+            </ng-template>
             <div style="padding-top: 27px; padding-left: 20px;">
-            <fab-primary-button [disabled]="applyGistButtonDisabled" text="Apply Gist version" (onClick)="gistVersionChange()" [contentClass]="'mr-3'" >
-            </fab-primary-button>
-           </div>
+              <fab-primary-button [disabled]="applyGistButtonDisabled" text="Apply Gist version"
+                (onClick)="gistVersionChange()" [contentClass]="'mr-3'">
+              </fab-primary-button>
+            </div>
           </div>
           <div>
-            <fab-action-button [contentStyle]="'padding-top: 27px;'" type="button" [disabled]="refreshGistButtonDisabled" [iconProps]="refreshGistListButtonIcon" (click)="updateGistVersionOptions(pastGistEvent)">
+            <fab-action-button [contentStyle]="'padding-top: 27px;'" type="button"
+              [disabled]="refreshGistButtonDisabled" [iconProps]="refreshGistListButtonIcon"
+              (click)="updateGistVersionOptions(pastGistEvent)">
               Refresh gist version list
-              </fab-action-button>
+            </fab-action-button>
           </div>
         </div>
       </div>
       <div class="onboarding-container">
-        <ngx-monaco-editor *ngIf="showGistCode" [options]="editorOptions" [ngModel]="displayGistCode" style="height:600px">
+        <ngx-monaco-editor *ngIf="showGistCode" [options]="editorOptions" [ngModel]="displayGistCode"
+          style="height:600px">
         </ngx-monaco-editor>
       </div>
     </fab-dialog-content>
   </fab-dialog>
-  
-  <fab-panel [isOpen]="publishSuccess || publishFailed || saveSuccess || saveFailed || deleteSuccess || deleteFailed" [isLightDismiss]="true" [type]="PanelType.custom"
-    [customWidth]="'400px'" [isHiddenOnDismiss]="true" [hasCloseButton]="false" [closeButtonAriaLabel]="'close'"
-    [styles]="submittedPanelStyles" [isBlocking]="false" (onDismissed)="dismissPublishSuccessHandler()"
-    (onOpened)="onOpenPublishSuccessPanel()" >
+
+  <fab-panel [isOpen]="publishSuccess || publishFailed || saveSuccess || saveFailed || deleteSuccess || deleteFailed"
+    [isLightDismiss]="true" [type]="PanelType.custom" [customWidth]="'400px'" [isHiddenOnDismiss]="true"
+    [hasCloseButton]="false" [closeButtonAriaLabel]="'close'" [styles]="submittedPanelStyles" [isBlocking]="false"
+    (onDismissed)="dismissPublishSuccessHandler()" (onOpened)="onOpenPublishSuccessPanel()">
     <div class="submitted-panel-text panel-text">
       <div style="display: flex;align-items: center; margin-left: 4px; margin-right: 8px;">
-        <div *ngIf="publishSuccess && (!detectorGraduation || useAutoMergeText) || saveSuccess" style="display: flex; align-items: center; padding: 0px 10px;">
+        <div *ngIf="publishSuccess && (!detectorGraduation || useAutoMergeText) || saveSuccess"
+          style="display: flex; align-items: center; padding: 0px 10px;">
           <status-icon [status]="HealthStatus.Success" class="mr-3"></status-icon>
           <div>
             <h5 style="font-weight: 600;">Your detector {{detectorName}} was saved</h5>
           </div>
         </div>
 
-        <div *ngIf="publishFailed && (!detectorGraduation || useAutoMergeText)" style="display: flex; align-items: center; padding: 0px 10px;">
+        <div *ngIf="publishFailed && (!detectorGraduation || useAutoMergeText)"
+          style="display: flex; align-items: center; padding: 0px 10px;">
           <status-icon [status]="HealthStatus.Critical" class="mr-3"></status-icon>
           <div style="font-weight: 600;">Your detector {{detectorName}} publish failed </div>
         </div>
@@ -270,14 +281,16 @@
           <div style="font-weight: 600;">Failed to delete your detector </div>
         </div>
 
-        <div *ngIf="publishSuccess && detectorGraduation && !useAutoMergeText" style="display: flex; align-items: center; padding: 0px 10px;">
+        <div *ngIf="publishSuccess && detectorGraduation && !useAutoMergeText"
+          style="display: flex; align-items: center; padding: 0px 10px;">
           <status-icon [status]="HealthStatus.Success" class="mr-3"></status-icon>
           <div>
             <h5 style="font-weight: 600;">Pull request sent successfully</h5>
           </div>
         </div>
 
-        <div *ngIf="publishFailed && detectorGraduation && !useAutoMergeText" style="display: flex; align-items: center; padding: 0px 10px;">
+        <div *ngIf="publishFailed && detectorGraduation && !useAutoMergeText"
+          style="display: flex; align-items: center; padding: 0px 10px;">
           <status-icon [status]="HealthStatus.Critical" class="mr-3"></status-icon>
           <div style="font-weight: 600;">Pull request failed to send</div>
         </div>
@@ -301,10 +314,14 @@
         <h5>{{currentTime}}</h5>
       </div>
     </div>
-    <div *ngIf="publishSuccess && (!detectorGraduation || useAutoMergeText)" style="margin-left: 4px;">You can find it in "Your detectors" later.</div>
-    <div *ngIf="publishSuccess && detectorGraduation && !useAutoMergeText" style="margin-left: 4px;">You can view your PR <a target="_blank" rel="noopener noreferrer" [href]="PRLink">here</a>.</div>
-    <div *ngIf="saveSuccess" style="margin-left: 4px;">You can view your code <a target="_blank" rel="noopener noreferrer" [href]="PRLink">here</a>.</div>
-    <div *ngIf="saveFailed && saveIdFailure" style="margin-left: 4px;">This detector ID is already in use. Please try a new one</div>
+    <div *ngIf="publishSuccess && (!detectorGraduation || useAutoMergeText)" style="margin-left: 4px;">You can find it
+      in "Your detectors" later.</div>
+    <div *ngIf="publishSuccess && detectorGraduation && !useAutoMergeText" style="margin-left: 4px;">You can view your
+      PR <a target="_blank" rel="noopener noreferrer" [href]="PRLink">here</a>.</div>
+    <div *ngIf="saveSuccess" style="margin-left: 4px;">You can view your code <a target="_blank"
+        rel="noopener noreferrer" [href]="PRLink">here</a>.</div>
+    <div *ngIf="saveFailed && saveIdFailure" style="margin-left: 4px;">This detector ID is already in use. Please try a
+      new one</div>
   </fab-panel>
 
 
@@ -316,8 +333,9 @@
   </div>
 
   <ng-container *ngIf="showBranchInfo">
-    <fab-message-bar [messageBarType]="notificationStatusType"  dismissButtonAriaLabel="Close" [styles]="branchMessageStyle">
-        Code is loaded from {{displayBranch}} branch for development.
+    <fab-message-bar [messageBarType]="notificationStatusType" dismissButtonAriaLabel="Close"
+      [styles]="branchMessageStyle">
+      Code is loaded from {{displayBranch}} branch for development.
     </fab-message-bar>
   </ng-container>
 
@@ -325,12 +343,12 @@
     <items>
       <!-- do not use *ngIf on these buttons  -->
       <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"
-      [disabled]="runButtonDisabled"></fab-command-bar-item>
-      <fab-command-bar-item [style]="saveButtonVisibilityStyle" key="save" [text]="saveButtonText" [iconProps]="saveIcon"
-        (click)="saveDetectorCode()"></fab-command-bar-item>
+        [disabled]="runButtonDisabled"></fab-command-bar-item>
+      <fab-command-bar-item [style]="saveButtonVisibilityStyle" key="save" [text]="saveButtonText"
+        [iconProps]="saveIcon" (click)="saveDetectorCode()"></fab-command-bar-item>
       <fab-command-bar-item key="publishGrad" [text]="modalPublishingButtonText" [iconProps]="publishIcon"
-          (click)="publishButtonOnClick()" [disabled]="publishButtonDisabled">
-        </fab-command-bar-item>
+        (click)="publishButtonOnClick()" [disabled]="publishButtonDisabled">
+      </fab-command-bar-item>
 
       <!-- <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"
         [buttonStyles]="runButtonStyle"></fab-command-bar-item>
@@ -340,18 +358,22 @@
 
       <!-- <fab-command-bar-item key="download" text="Download" [iconProps]="{ iconName: 'Download' }"
         (click)="getDevOptions()"></fab-command-bar-item> -->
-      <fab-command-bar-item key="gistVersion" text="Gist version" [iconProps]="{ iconName: 'BackToWindow' }"
-        (click)="showGistDialog()"></fab-command-bar-item>
-      <fab-command-bar-item [style]="commitHistoryVisibilityStyle" key="commitHistory" text="Commit History" [iconProps]="{iconName: 'ReadingMode'}"
-      (click)="openCommitHistory()"></fab-command-bar-item>
-      <fab-command-bar-item [style]="deleteVisibilityStyle" key="delete" text="Delete" [iconProps]="{iconName: 'Delete'}"
-        (click)="showDeleteDialog()"></fab-command-bar-item>
+      <fab-command-bar-item *ngIf="isWorkflowDetector" text="Download" [iconProps]="{ iconName: 'Installation' }"
+        (click)="downloadWorkflow()"></fab-command-bar-item>
+      <fab-command-bar-item *ngIf="isWorkflowDetector" text="Upload" [iconProps]="{ iconName: 'PublishContent' }"
+        (click)="uploader.click()"></fab-command-bar-item>
+      <fab-command-bar-item *ngIf="!isWorkflowDetector" key="gistVersion" text="Gist version"
+        [iconProps]="{ iconName: 'BackToWindow' }" (click)="showGistDialog()"></fab-command-bar-item>
+      <fab-command-bar-item [style]="commitHistoryVisibilityStyle" key="commitHistory" text="Commit History"
+        [iconProps]="{iconName: 'ReadingMode'}" (click)="openCommitHistory()"></fab-command-bar-item>
+      <fab-command-bar-item [style]="deleteVisibilityStyle" key="delete" text="Delete"
+        [iconProps]="{iconName: 'Delete'}" (click)="showDeleteDialog()"></fab-command-bar-item>
       <fab-command-bar-item *ngIf = "gistMode" [style]="detectorReferences" key="detectorRefs" text="Update Detector References" [iconProps]="{iconName: 'BackToWindow'}"
       (click)="showUpdateDetectorReferencesDialog()">
       </fab-command-bar-item>
       <!-- <fab-command-bar-item key="internal" [text]="internalExternalText" [iconProps]="{ iconName: 'View' }"
         (click)="internalExternalToggle()"></fab-command-bar-item> -->
-      <far-items>        
+      <far-items>
         <fab-command-bar-item *ngIf="detectorGraduation" key="brachSelectorPill" text="custom text">
           <render>
             <ng-template let-item="item">
@@ -368,7 +390,8 @@
                     </div>
                     <div style="border-top: 1px solid gray;" class="pt-3 pb-3 callout-padding">
                       <fab-primary-button (onClick)="updateBranch()" (keyup.enter)="updateTableWithOptions()"
-                        [ariaLabel]="'Apply'" [contentClass]="'mr-3 callout-button'" [contentStyle]="'border-radius: 2px;'">
+                        [ariaLabel]="'Apply'" [contentClass]="'mr-3 callout-button'"
+                        [contentStyle]="'border-radius: 2px;'">
                         Apply
                       </fab-primary-button>
                       <fab-default-button (onClick)="closeCallout()" (keyup.enter)="closeCallout()"
@@ -402,12 +425,13 @@
             </ng-template>
           </render-icon>
         </fab-command-bar-item>
-      </far-items>    
+      </far-items>
     </items>
   </fab-command-bar>
-  <loader-view *ngIf="!codeLoaded" message="Starting onboarding flow ..."></loader-view>
 
-  <div *ngIf="codeLoaded" class="onboarding-container">
+  <loader-view *ngIf="!codeLoaded && !isWorkflowDetector" message="Starting onboarding flow ..."></loader-view>
+
+  <div *ngIf="codeLoaded && !isWorkflowDetector" class=" onboarding-container">
     <split [direction]="horizontal" gutterSize="8" gutterColor="#dff0ff">
       <split-area size="60">
         <split direction="vertical" gutterSize="8" gutterColor="rgb(249, 233, 212)">
@@ -503,13 +527,13 @@
         </div> -->
 
         <!-- <div style="padding:10px"> -->
-          <!-- <detector-view *ngIf="queryResponse && !showDataSources" [detectorResponse]="queryResponse.invocationOutput"
+        <!-- <detector-view *ngIf="queryResponse && !showDataSources" [detectorResponse]="queryResponse.invocationOutput"
             [startTime]="startTime" [endTime]="endTime" [error]="errorState" [showEdit]="false" [developmentMode]="true" [script]="code" [compilationPackage]="compilationPackage"></detector-view> -->
 
-          <!-- <tab-data-sources *ngIf="queryResponse && showDataSources" [onboardingMode]="true"
+        <!-- <tab-data-sources *ngIf="queryResponse && showDataSources" [onboardingMode]="true"
             [detectorResponse]="queryResponse.invocationOutput">
           </tab-data-sources> -->
-          <!-- <nav class="dev-options">
+        <!-- <nav class="dev-options">
             <a (click)="getDevOptions()" tooltip="Local VS Development" class="buttons">
               <span>
                 <span class="rotate"></span>
@@ -520,15 +544,25 @@
       </split-area>
     </split>
   </div>
+  <div *ngIf="isWorkflowDetector" class="onboarding-container">
+    <create-workflow [id]="id"></create-workflow>
+  </div>
+
 </div>
 <ng-template #redirectBlock>
   <div *ngIf="isProd && detectorGraduation" style="display: flex;">
     <status-icon [status]="HealthStatus.Warning" class="mr-3"></status-icon>
     <div>
-      <p>To ensure the quality, accuracy, and security of detectors, the <b>{{resourceService.searchSuffix}}</b> team is now utilizing the AppLens PPE Environment for detector development.</p>
-      <p>To learn more about this new experience, click <a target="_blank" href="https://applensdiagnostics.azurewebsites.net/?p=715">here</a>.</p>
+      <p>To ensure the quality, accuracy, and security of detectors, the <b>{{resourceService.searchSuffix}}</b> team is
+        now utilizing the AppLens PPE Environment for detector development.</p>
+      <p>To learn more about this new experience, click <a target="_blank"
+          href="https://applensdiagnostics.azurewebsites.net/?p=715">here</a>.</p>
       <a target="_blank" [href]="PPELink">Click here to develop in PPE [Opens in New tab]</a>
     </div>
   </div>
 </ng-template>
 
+<!-- This element is used to upload files to workflow -->
+<div [hidden]="true">
+  <input type="file" #uploader (change)="uploadWorkflow($event)" />
+</div>

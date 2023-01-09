@@ -1,6 +1,6 @@
 import { NgModule, Injectable, SecurityContext, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent, FormatResourceNamePipe } from './dashboard/dashboard.component';
 import { SharedModule } from '../../shared/shared.module';
 import { RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
@@ -92,6 +92,39 @@ import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/ser
 import { ClientScriptService } from './services/client-script.service';
 import { UpdateDetectorReferencesComponent } from './update-detector-references/update-detector-references.component';
 import { ApplensDocumentationService } from './services/applens-documentation.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { AngularMarkdownEditorModule } from 'angular-markdown-editor';
+import { WorkflowService } from './workflow/services/workflow.service';
+import { IfElseConditionStepComponent } from './workflow/ifelse-condition-step/ifelse-condition-step.component';
+import { ConditionIftrueStepComponent } from './workflow/condition-iftrue-step/condition-iftrue-step.component';
+import { ConditionIffalseStepComponent } from './workflow/condition-iffalse-step/condition-iffalse-step.component';
+import { SwitchStepComponent } from './workflow/switch-step/switch-step.component';
+import { SwitchCaseStepComponent } from './workflow/switch-case-step/switch-case-step.component';
+import { NodeActionsComponent } from './workflow/node-actions/node-actions.component';
+import { MarkdownNodeComponent } from './workflow/markdown-node/markdown-node.component';
+import { KustoNodeComponent } from './workflow/kusto-node/kusto-node.component';
+import { DetectorNodeComponent } from './workflow/detector-node/detector-node.component';
+import { KustoQueryDialogComponent } from './workflow/kusto-query-dialog/kusto-query-dialog.component';
+import { NodeTitleComponent } from './workflow/node-title/node-title.component';
+import { ErrorMessageComponent } from './workflow/error-message/error-message.component';
+import { SwitchCaseDefaultStepComponent } from './workflow/switch-case-default-step/switch-case-default-step.component';
+import { CommonNodePropertiesComponent } from './workflow/common-node-properties/common-node-properties.component';
+import { ConfigureVariablesComponent } from './workflow/configure-variables/configure-variables.component';
+import { MarkdownQueryDialogComponent } from './workflow/markdown-query-dialog/markdown-query-dialog.component';
+import { WorkflowComponent } from './workflow/workflow/workflow.component';
+import { WorkflowRunDialogComponent } from './workflow/workflow-run-dialog/workflow-run-dialog.component';
+import { WorkflowRootNodeComponent } from './workflow/workflow-root-node/workflow-root-node.component';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -192,7 +225,7 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
             },
             {
                 path: 'createWorkflow',
-                component: CreateWorkflowComponent,
+                component: WorkflowComponent,
                 canDeactivate: [DevelopNavigationGuardService]
             },
             {
@@ -402,6 +435,35 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
                 ]
             },
             {
+                path: 'workflows/:workflowId',
+                component: TabCommonComponent,
+                data: {
+                    cacheComponent: true,
+                    isWorkflow: true
+                },
+                children: [
+                    {
+                        path: '',
+                        component: TabDataComponent,
+                        data: {
+                            tabKey: TabKey.Data
+                        }
+                    },
+                    {
+                        path: 'data',
+                        redirectTo: ''
+                    },
+                    {
+                        path: 'edit',
+                        component: TabDevelopComponent,
+                        canDeactivate: [DevelopNavigationGuardService],
+                        data: {
+                            tabKey: TabKey.Develop
+                        }
+                    }
+                ]
+            },
+            {
                 path: 'search',
                 component: SearchResultsComponent
             },
@@ -453,7 +515,28 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         FabDropdownModule,
         FabBreadcrumbModule,
         FabMessageBarModule,
-        NgFlowchartModule
+        NgFlowchartModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatExpansionModule,
+        MatCardModule,
+        MatDividerModule,
+        MatSelectModule,
+        MatMenuModule,
+        MatButtonToggleModule,
+        MatTableModule,
+        MatAutocompleteModule,
+        AngularMarkdownEditorModule.forRoot({
+            // add any Global Options/Config you might want
+            // to avoid passing the same options over and over in each components of your App
+            iconlibrary: 'glyph'
+        }),
+        MarkdownModule.forRoot(),
+        MonacoEditorModule.forRoot() // use forRoot() in main app module only.
     ],
     providers: [
         ApplensDiagnosticService,
@@ -467,6 +550,7 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         ApplensGlobals,
         BreadcrumbService,
         ClientScriptService,
+        WorkflowService,
         {
             provide: ResourceService,
             useFactory: ResourceServiceFactory,
@@ -490,6 +574,9 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         TabMonitoringDevelopComponent, TabAnalyticsDevelopComponent, TabAnalyticsDashboardComponent, GistComponent, TabGistCommonComponent,
         TabGistDevelopComponent, TabChangelistComponent, GistChangelistComponent, TabAnalysisComponent, CategoryPageComponent, SupportTopicPageComponent,
         SelfHelpContentComponent, UserDetectorsComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent,
-        L2SideNavComponent, UserActivePullrequestsComponent, FavoriteDetectorsComponent, ApplensDocsComponent, ApplensDocSectionComponent,CreateWorkflowComponent, UpdateDetectorReferencesComponent]
+        L2SideNavComponent, UserActivePullrequestsComponent, FavoriteDetectorsComponent, ApplensDocsComponent, ApplensDocSectionComponent, CreateWorkflowComponent,
+        IfElseConditionStepComponent, ConditionIftrueStepComponent, ConditionIffalseStepComponent, SwitchStepComponent, SwitchCaseStepComponent, SwitchCaseDefaultStepComponent,
+        KustoQueryDialogComponent, DetectorNodeComponent, KustoNodeComponent, MarkdownNodeComponent, NodeActionsComponent, ConfigureVariablesComponent, CommonNodePropertiesComponent,
+        NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent]
 })
 export class DashboardModule { }

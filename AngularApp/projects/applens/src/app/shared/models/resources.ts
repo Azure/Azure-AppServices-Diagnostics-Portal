@@ -69,6 +69,7 @@ export interface ResourceServiceInputs {
     displayName?: string;
     overviewPageMetricsId?: string;
     userAuthorizationEnabled: boolean;
+    workflowsEnabled: boolean;
 }
 
 export const RESOURCE_SERVICE_INPUTS = new InjectionToken<ResourceServiceInputs>('ResourceServiceInputs');
@@ -85,5 +86,6 @@ export const DEFAULT_RESOURCE_SERVICE_INPUTS: ResourceServiceInputs = {
     sapProductId:'',
     staticSelfHelpContent: '',
     searchSuffix: 'AZURE',
-    userAuthorizationEnabled: false
+    userAuthorizationEnabled: false,
+    workflowsEnabled: false
 };

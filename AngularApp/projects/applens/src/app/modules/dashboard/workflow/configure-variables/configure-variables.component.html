@@ -1,0 +1,58 @@
+<table *ngIf="variables && variables.length > 0" class="table table-bordered table-responsive">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>DataType</th>
+      <th>Sample Usage</th>
+      <th>Value</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let v of variables; let idx = index">
+      <td>{{ v.name }}</td>
+      <td>{{ v.type }}</td>
+      <td>{{ getKustoSampleUsage(v) }}</td>
+      <td>{{ v.runtimeValue }}</td>
+      <td><a href="javascript:void(0)" (click)="delete(idx)">Delete</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Commenting out the Edit Variables experience for now  -->
+<!-- <div class="mb-3">
+  <button class="btn btn-primary btn-sm" (click)="addNew()" [disabled]="true">Add new variable</button>
+</div> -->
+
+<form *ngIf="isEditing">
+  <div class="mb-3">
+    <label for="varName" class="form-label">Enter Variable name</label>
+    <input type="text" name="taVarName" class="form-control form-control-sm" id="varName"
+      aria-label="Enter variable name" [(ngModel)]="currentVariable.name" placeholder="Enter variable name"
+      [disabled]="editIndex != -1">
+    <div id="variableHelp" class="form-text">Create custom variables that can be used either in current step or child
+      steps</div>
+  </div>
+
+  <div class="mb-3">
+    <label for="varValue" class="form-label">Choose Variable data type</label>
+    <select name="chooseType" class="form-select form-select-sm" id="chooseType" aria-label="Choose data type"
+      [(ngModel)]="currentVariable.type">
+      <option *ngFor="let type of dataTypes" [value]="type">{{ type }}</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label for="varValue" class="form-label">Enter Variable value</label>
+    <input type="text" name="varValue" class="form-control form-control-sm" id="varValue"
+      (keyup)="onVariableChange($event)" aria-label="Enter variable name" [(ngModel)]="currentVariable.value"
+      placeholder="Enter variable name">
+    <div *ngIf="variableHasError">
+      <error-message [error]="errorMessage"></error-message>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <button class="btn btn-primary btn-sm" (click)="save()">Save variable</button>
+  </div>
+</form>

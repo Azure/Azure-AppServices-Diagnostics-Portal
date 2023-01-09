@@ -1,0 +1,11 @@
+<div *ngIf="isLoading" class="mt-5 mb-2">
+    <fab-spinner [label]="'Loading...'"></fab-spinner>
+</div>
+<div *ngIf="error">
+    <strong>An error occurred </strong>
+    <pre>{{ error }}</pre>
+</div>
+
+<div *ngIf="!error" [hidden]="isLoading" class="mt-4">
+    <div id="canvas" ngFlowchartCanvas [ngFlowchartOptions]="options"></div>
+</div>

@@ -1,0 +1,30 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+mat-dialog-content {
+    max-height: unset !important;
+    flex: 1 0 0;
+}
+
+.table {
+    font-size: small;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.table td:hover {
+    border: 1px solid rgb(151, 173, 230);
+}
+
+.form-label {
+    font-size: smaller;
+}
+
+.query-output {
+    min-height: 300px;
+    border: 1px solid rgb(39, 86, 206);
+    max-height: 300px;
+    overflow-y: scroll;
+}

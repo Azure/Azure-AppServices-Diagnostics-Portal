@@ -1,0 +1,11 @@
+<h2 mat-dialog-title> {{ workflowPublishBody.WorkflowName }}</h2>
+<h6>{{ workflowPublishBody.Description }}</h6>
+<mat-dialog-content>
+    <workflow-view [workflowPublishBody]="workflowPublishBody" [onboardingFlow]="true" [workflowId]="workflowId"
+        (onError)="onError($event)">
+    </workflow-view>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button class="ml-2" mat-raised-button color="primary" (click)="save()" [disabled]="error != null">Save</button>
+    <button class="ml-2" mat-raised-button color="warn" (click)="close()">Cancel</button>
+</mat-dialog-actions>

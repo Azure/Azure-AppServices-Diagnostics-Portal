@@ -26,7 +26,9 @@ export class TabDataComponent implements OnInit {
   detectorResponse: DetectorResponse;
 
   detector: string;
+  workflowId: string;
   detectorMetaData: DetectorMetaData;
+  isWorkflowDetector: boolean = false;
 
   analysisMode: boolean = false;
 
@@ -158,8 +160,14 @@ export class TabDataComponent implements OnInit {
   }
 
   refresh() {
-    this.detector = this._route.snapshot.params['detector'];
-    this._diagnosticApiService.getDetectorMetaDataById(this.detector).subscribe(metaData => {
+    if (this._route.snapshot.params['workflowId'] != null) {
+      this.detector = this._route.snapshot.params['workflowId'];
+      this.isWorkflowDetector = true;
+    } else {
+      this.detector = this._route.snapshot.params['detector'];
+    }
+
+    this._diagnosticApiService.getDetectorMetaDataById(this.detector, this.isWorkflowDetector).subscribe(metaData => {
       if (metaData) {
         this._applensGlobal.updateHeader(metaData.name);
         this.detectorMetaData = metaData;
@@ -198,7 +206,7 @@ export class TabDataComponent implements OnInit {
   }
 
   emailToAuthor() {
-    this._applensCommandBarService.getDetectorMeatData(this.detector).subscribe(metaData => {
+    this._applensCommandBarService.getDetectorMeatData(this.detector, this.isWorkflowDetector).subscribe(metaData => {
       this._applensCommandBarService.emailToAuthor(metaData);
     });
   }

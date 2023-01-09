@@ -11,17 +11,25 @@ export class TabDevelopComponent implements OnInit {
 
   DevelopMode = DevelopMode;
   id: string;
+  isWorkflow: boolean = false;
 
   constructor(private _route: ActivatedRoute) {
   }
 
-  @ViewChild("onboardingFlow",{static: true}) onboardingFlowComponent: OnboardingFlowComponent;
+  @ViewChild("onboardingFlow", { static: true }) onboardingFlowComponent: OnboardingFlowComponent;
 
   canExit(): boolean {
     return this.onboardingFlowComponent.canExit();
   };
 
   ngOnInit() {
-    this.id = this._route.parent.snapshot.params['detector'];
+    if (this._route.parent.snapshot.params['detector']) {
+      this.id = this._route.parent.snapshot.params['detector'];
+      this.isWorkflow = false;
+    } else if (this._route.parent.snapshot.params['workflowId']) {
+      this.id = this._route.parent.snapshot.params['workflowId'];
+      this.isWorkflow = true;
+    }
+
   }
 }

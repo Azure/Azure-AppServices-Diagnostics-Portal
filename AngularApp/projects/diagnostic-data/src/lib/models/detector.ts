@@ -93,7 +93,9 @@ export enum DetectorType {
     Detector = "Detector",
     Analysis = "Analysis",
     CategoryOverview = "CategoryOverview",
-    DiagnosticTool = "DiagnosticTool"
+    DiagnosticTool = "DiagnosticTool",
+    Workflow = "Workflow",
+    WorkflowNode = "WorkflowNode"
 }
 export enum RenderingType {
     NoGraph = 0,
@@ -127,7 +129,8 @@ export enum RenderingType {
     Section,
     StepViews,
     Report,
-    ClientScriptComponent
+    ClientScriptComponent,
+    WorkflowResult
 }
 
 export enum TimeSeriesType {

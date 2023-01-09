@@ -19,12 +19,19 @@ export class TabCommonComponent implements OnInit {
   enabledDetectorDevelopment: boolean = true;
   graduationEnabled: boolean = false;
   TabKey = TabKey;
+  isWorkflow: boolean = false;
 
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _diagnosticApiService: DiagnosticApiService, private resourceService: ResourceService,) {
     this._activatedRoute.firstChild.data.subscribe(data => {
-      const key:string = data["tabKey"];
+      const key: string = data["tabKey"];
       this.selectedTabKey = key;
-    }); 
+    });
+
+    this._activatedRoute.data.subscribe(data => {
+      if (data["isWorkflow"] && data["isWorkflow"] === true) {
+        this.isWorkflow = true;
+      }
+    })
   }
 
   ngOnInit() {
@@ -36,9 +43,9 @@ export class TabCommonComponent implements OnInit {
       this.graduationEnabled = (config.graduationEnabled);// ? {display: "none"} : {};
     });
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(e => {
-      const key:string = this._activatedRoute.firstChild.snapshot.data["tabKey"];
+      const key: string = this._activatedRoute.firstChild.snapshot.data["tabKey"];
       this.selectedTabKey = key;
-    }); 
+    });
   }
 
   navigateToData(ev: any) {
@@ -48,39 +55,39 @@ export class TabCommonComponent implements OnInit {
       case TabKey.Data:
         this._router.navigate(["./"], {
           relativeTo: this._activatedRoute,
-          queryParamsHandling:"preserve"
+          queryParamsHandling: "preserve"
         });
         break;
       case TabKey.Develop:
         this._router.navigate(["edit"], {
           relativeTo: this._activatedRoute,
-          queryParamsHandling:"preserve"
+          queryParamsHandling: "preserve"
         });
         break;
       case TabKey.DataSources:
         this._router.navigate(["datasource"], {
           relativeTo: this._activatedRoute,
-          queryParamsHandling:"preserve"
+          queryParamsHandling: "preserve"
         });
         break;
       case TabKey.CommitHistory:
         this._router.navigate(["changelist"], {
           relativeTo: this._activatedRoute,
-          queryParamsHandling:"preserve"
+          queryParamsHandling: "preserve"
         });
         break;
       case TabKey.Monitoring:
-          this._router.navigate(["monitoring"], {
-            relativeTo: this._activatedRoute,
-            queryParamsHandling:"preserve"
-          });
-          break;
+        this._router.navigate(["monitoring"], {
+          relativeTo: this._activatedRoute,
+          queryParamsHandling: "preserve"
+        });
+        break;
       case TabKey.Analytics:
-          this._router.navigate(["analytics"], {
-            relativeTo: this._activatedRoute,
-            queryParamsHandling:"preserve"
-          });
-          break;
+        this._router.navigate(["analytics"], {
+          relativeTo: this._activatedRoute,
+          queryParamsHandling: "preserve"
+        });
+        break;
     }
   }
 }
