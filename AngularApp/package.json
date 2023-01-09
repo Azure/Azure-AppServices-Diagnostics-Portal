@@ -52,7 +52,7 @@
     "@types/react-dom": "^16.8.6",
     "@uifabric/azure-themes": "7.3.0",
     "adal-angular4": "^3.0.16",
-    "admin-lte": "^2.4.3",
+    "admin-lte": "^3.2.0",
     "angular-markdown-editor": "^2.0.2",
     "angular-split-ng6": "^1.0.0-rc.5",
     "bootstrap": "^3.4.1",
