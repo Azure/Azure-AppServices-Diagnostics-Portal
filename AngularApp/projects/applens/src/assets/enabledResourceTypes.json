@@ -712,7 +712,7 @@
         },
         {
             "service": "ResourceService",
-            "resourceType": "Microsoft.WindowsPushNotificationServices/Registrations",
+            "resourceType": "Microsoft.WindowsPushNotificationServices/registrations",
             "templateFileName": "WNS",
             "imgSrc": "assets/img/WNS-Logo.svg",
             "versionPrefix": "",
