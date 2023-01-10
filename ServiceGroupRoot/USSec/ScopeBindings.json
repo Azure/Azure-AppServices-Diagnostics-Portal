@@ -19,11 +19,31 @@
         },
         {
           "find": "__RUNTIMEHOST_SITENAME__",
-          "replaceWith": "diag-runtimehost"
+          "replaceWith": "diag-runtimehost-ussecwest"
         },
         {
           "find": "__KEYVAULTNAME__",
           "replaceWith": "runtimehost-kv"
+        },
+        {
+          "find": "__APPSERVICE_DNS_SUFFIX__",
+          "replaceWith": "appservice.microsoft.scloud"
+        },
+        {
+          "find": "__DSTS_REALM__",
+          "replaceWith": "svc://applens@appservice.microsoft.scloud/"
+        },
+        {
+          "find": "__DSTS_METADATA_ADDRESS__",
+          "replaceWith": "https://prod-dsts.dsts.core.microsoft.scloud/dsts/api/federationmetadata"
+        },
+        {
+          "find": "__DSTS_ISSUER__",
+          "replaceWith": "https://prod-passive-dsts.dsts.core.microsoft.scloud/v2/wsfederation"
+        },
+        {
+          "find": "__AZURE_PORTAL_DOMAIN__",
+          "replaceWith": "portal.azure.microsoft.scloud"
         }
       ]
     },
@@ -67,31 +87,6 @@
         {
           "find": "__LOCATION__",
           "replaceWith": "USSec West"
-        }
-      ]
-    },
-    {
-      "scopeTagName": "USSEC",
-      "bindings": [
-        {
-          "find": "__APPSERVICE_DNS_SUFFIX__",
-          "replaceWith": "appservice.microsoft.scloud"
-        },
-        {
-          "find": "__DSTS_REALM__",
-          "replaceWith": "svc://applens@appservice.microsoft.scloud/"
-        },
-        {
-          "find": "__DSTS_METADATA_ADDRESS__",
-          "replaceWith": "https://prod-dsts.dsts.core.microsoft.scloud/dsts/api/federationmetadata"
-        },
-        {
-          "find": "__DSTS_ISSUER__",
-          "replaceWith": "https://prod-passive-dsts.dsts.core.microsoft.scloud/v2/wsfederation"
-        },
-        {
-          "find": "__AZURE_PORTAL_DOMAIN__",
-          "replaceWith": "portal.azure.microsoft.scloud"
         }
       ]
     }

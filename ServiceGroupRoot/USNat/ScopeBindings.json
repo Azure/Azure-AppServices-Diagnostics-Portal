@@ -24,6 +24,22 @@
         {
           "find": "__KEYVAULTNAME__",
           "replaceWith": "runtimehost-kv"
+        },
+        {
+          "find": "__DSTS_METADATA_ADDRESS__",
+          "replaceWith": "https://prod-dsts.dsts.core.microsoft.scloud/dsts/api/federationmetadata"
+        },
+        {
+          "find": "__DSTS_ISSUER__",
+          "replaceWith": "https://prod-passive-dsts.dsts.core.microsoft.scloud/v2/wsfederation"
+        },
+        {
+          "find": "__DSTS_REALM__",
+          "replaceWith": "svc://applens@appservice.microsoft.scloud/"
+        },
+        {
+          "find": "__APPSERVICE_DNS_SUFFIX__",
+          "replaceWith": "appservice.microsoft.scloud"
         }
       ]
     },
@@ -143,16 +159,8 @@
           "replaceWith": "adfedc6b-efb2-4222-97a6-6509ff068ccb"
         },
         {
-          "find": "__APPSERVICE_DNS_SUFFIX__",
-          "replaceWith": "appservice.microsoft.scloud"
-        },
-        {
           "find": "__STORAGE_DNS_SUFFIX__",
           "replaceWith": "core.microsoft.scloud"
-        },
-        {
-          "find": "__DSTS_REALM__",
-          "replaceWith": "svc://applens@appservice.microsoft.scloud/"
         },
         {
           "find": "__RUNTIMEHOST_AZUREAD_RESOURCE__",
@@ -165,14 +173,6 @@
         {
           "find": "__OBSERVER_AAD_RESOURCE__",
           "replaceWith": "adfedc6b-efb2-4222-97a6-6509ff068ccb"
-        },
-        {
-          "find": "__DSTS_METADATA_ADDRESS__",
-          "replaceWith": "https://prod-dsts.dsts.core.microsoft.scloud/dsts/api/federationmetadata"
-        },
-        {
-          "find": "__DSTS_ISSUER__",
-          "replaceWith": "https://prod-passive-dsts.dsts.core.microsoft.scloud/v2/wsfederation"
         },
         {
           "find": "__RUNTIMEHOST_AZUREAD_KEY__",

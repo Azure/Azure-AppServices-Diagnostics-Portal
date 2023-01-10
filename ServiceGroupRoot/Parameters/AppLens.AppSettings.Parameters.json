@@ -10,6 +10,24 @@
         },
         "cloudEnvironment": {
             "value": "__CLOUD_ENVIRONMENT__"
+        },
+        "dstsRealm": {
+            "value": "svc://applens@__APPSERVICE_DNS_SUFFIX__/"
+        },
+        "dstsRealmStaging": {
+            "value": "svc://applens-staging@__APPSERVICE_DNS_SUFFIX__/"
+        },
+        "dstsMetadataAddress": {
+            "value": "__DSTS_METADATA_ADDRESS__"
+        },
+        "dstsIssuer": {
+            "value": "__DSTS_ISSUER__"
+        },
+        "runtimeHostEndpoint": {
+            "value": "https://__RUNTIMEHOST_SITENAME__.__APPSERVICE_DNS_SUFFIX__"
+        },
+        "runtimeHostEndpointStaging": {
+            "value": "https://__RUNTIMEHOST_SITENAME__-staging.__APPSERVICE_DNS_SUFFIX__"
         }
     }
 }
