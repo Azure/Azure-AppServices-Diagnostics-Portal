@@ -33,10 +33,10 @@
     <fab-pivot (onLinkClick)="navigateToData($event)" [selectedKey]="selectedTabKey">
       <fab-pivot-item headerText="Data" [itemKey]="TabKey.Data"></fab-pivot-item>
       <fab-pivot-item headerText="Develop" [itemKey]="TabKey.Develop"></fab-pivot-item>
-      <fab-pivot-item headerText="Data Sources" [itemKey]="TabKey.DataSources"></fab-pivot-item>
-      <fab-pivot-item headerText="Commits History" [itemKey]="TabKey.CommitHistory"></fab-pivot-item>
-      <fab-pivot-item headerText="Monitoring" [itemKey]="TabKey.Monitoring"></fab-pivot-item>
-      <fab-pivot-item headerText="Analytics" [itemKey]="TabKey.Analytics"></fab-pivot-item>
+      <fab-pivot-item *ngIf="!isWorkflow" headerText="Data Sources" [itemKey]="TabKey.DataSources"></fab-pivot-item>
+      <fab-pivot-item *ngIf="!isWorkflow" headerText="Commits History" [itemKey]="TabKey.CommitHistory"></fab-pivot-item>
+      <fab-pivot-item *ngIf="!isWorkflow" headerText="Monitoring" [itemKey]="TabKey.Monitoring"></fab-pivot-item>
+      <fab-pivot-item *ngIf="!isWorkflow" headerText="Analytics" [itemKey]="TabKey.Analytics"></fab-pivot-item>
     </fab-pivot>
   </ng-container>
 
@@ -45,9 +45,9 @@
       <fab-pivot (onLinkClick)="navigateToData($event)" [selectedKey]="selectedTabKey">
         <fab-pivot-item headerText="Data" [itemKey]="TabKey.Data"></fab-pivot-item>
         <fab-pivot-item headerText="Develop" [itemKey]="TabKey.Develop"></fab-pivot-item>
-        <fab-pivot-item headerText="Data Sources" [itemKey]="TabKey.DataSources"></fab-pivot-item>
-        <fab-pivot-item headerText="Monitoring" [itemKey]="TabKey.Monitoring"></fab-pivot-item>
-        <fab-pivot-item headerText="Analytics" [itemKey]="TabKey.Analytics"></fab-pivot-item>
+        <fab-pivot-item *ngIf="!isWorkflow" headerText="Data Sources" [itemKey]="TabKey.DataSources"></fab-pivot-item>
+        <fab-pivot-item *ngIf="!isWorkflow" headerText="Monitoring" [itemKey]="TabKey.Monitoring"></fab-pivot-item>
+        <fab-pivot-item *ngIf="!isWorkflow" headerText="Analytics" [itemKey]="TabKey.Analytics"></fab-pivot-item>
       </fab-pivot>
     </ng-container>
   </ng-template>

@@ -1,0 +1,33 @@
+<div [attr.name]="data.name" #canvasContent>
+    <div class="panel panel-default">
+        <div class="panel-heading panel-title-detector">
+            <node-title [data]="data" [customClass]="'background-blue'" [customClassIcon]="'fa-solid fa-bolt'">
+            </node-title>
+        </div>
+        <div class="panel-body">
+            <h5 class="mb-2 text-muted">{{ data.name }}</h5>
+            <form>
+                <div class="mb-3">
+                    <i *ngIf="loadingDetectors" class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                    <div *ngIf="!loadingDetectors">
+                        <label for="chooseDetector" class="form-label">Choose detector</label>
+                        <select name="chooseDetectorSelect" class="form-select form-select-sm ml-2" id="chooseDetector"
+                            aria-label="Choose Detector" (change)="changeDetector($event)"
+                            [(ngModel)]="data.detectorId">
+                            <option *ngFor="let detector of workflowNodeDetectors" [value]="detector.id">{{
+                                detector.name }}</option>
+                        </select>
+                    </div>
+
+                </div>
+            </form>
+            <div class="detector-container">
+                <i *ngIf="loadingDetector" class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                <common-node-properties *ngIf="!loadingDetector" [data]="data" [readonly]="true"></common-node-properties>
+            </div>
+            <node-actions (onNodeAdded)="addNode($event)" (onConditionAdded)="addCondition($event)"
+                (onDeleted)="deleteNode()" [isDisabled]="isDisabled()" [isRootNode]="isRootNode()">
+            </node-actions>
+        </div>
+    </div>
+</div>

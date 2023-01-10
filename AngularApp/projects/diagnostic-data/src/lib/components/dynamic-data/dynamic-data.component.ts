@@ -46,6 +46,7 @@ import { DropDownStepComponent } from '../step-views/dropdown-step-view/dropdown
 import { CheckStepComponent } from '../step-views/check-step-view/check-step.component';
 import { ButtonStepComponent } from '../step-views/button-step-view/button-step.component';
 import { ClientScriptViewComponent } from '../client-script-view/client-script-view.component';
+import { WorkflowResultComponent } from '../workflow-result/workflow-result.component';
 
 @Component({
   selector: 'dynamic-data',
@@ -201,6 +202,8 @@ export class DynamicDataComponent implements OnInit {
         return StepViewsRendererComponent;
       case RenderingType.ClientScriptComponent:
         return ClientScriptViewComponent;
+      case RenderingType.WorkflowResult:
+        return WorkflowResultComponent;
       default:
         return null;
     }

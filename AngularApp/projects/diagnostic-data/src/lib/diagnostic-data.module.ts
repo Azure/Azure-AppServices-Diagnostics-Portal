@@ -148,6 +148,10 @@ import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-fi
 import { ClientScriptViewComponent } from './components/client-script-view/client-script-view.component';
 import { GenericFeatureService } from './services/generic-feature-service';
 import { GanttChartTaskbarColorsComponent } from './components/gantt-chart-taskbar-colors/gantt-chart-taskbar-colors.component';
+import { WorkflowResultComponent } from './components/workflow-result/workflow-result.component';
+import { WorkflowViewComponent } from './components/workflow-view/workflow-view.component';
+import { WorkflowNodeComponent } from './components/workflow-node/workflow-node.component';
+import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
 
 @NgModule({
     imports: [
@@ -182,7 +186,8 @@ import { GanttChartTaskbarColorsComponent } from './components/gantt-chart-taskb
         FabBreadcrumbModule,
         RouterModule,
         FabDatePickerModule,
-        FabCalendarModule
+        FabCalendarModule,
+        NgFlowchartModule
     ],
     providers: [
         ClipboardService
@@ -245,7 +250,10 @@ import { GanttChartTaskbarColorsComponent } from './components/gantt-chart-taskb
         FabricFeedbackComponent,
         FormStepComponent,
         ClientScriptViewComponent,
-        GanttChartTaskbarColorsComponent
+        GanttChartTaskbarColorsComponent,
+        WorkflowResultComponent,
+        WorkflowViewComponent,
+        WorkflowNodeComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -286,7 +294,8 @@ import { GanttChartTaskbarColorsComponent } from './components/gantt-chart-taskb
         DetectorTimePickerComponent,
         FabCardComponent,
         FormStepComponent,
-        GanttChartTaskbarColorsComponent
+        GanttChartTaskbarColorsComponent,
+        WorkflowViewComponent
     ]
 })
 export class DiagnosticDataModule {

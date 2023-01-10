@@ -184,6 +184,28 @@ namespace AppLensV3
         }
 
         /// <summary>
+        /// Get Workflow file.
+        /// </summary>
+        /// <param name="id">The id.</param>
+        /// <returns>Task for getting workflow file.</returns>
+        public async Task<string> GetWorkflow(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            var gistFileUrl = string.Format(
+                GithubConstants.WorkflowPathFormat,
+                UserName,
+                RepoName,
+                id,
+                Branch);
+
+            return await GetRawFile(gistFileUrl);
+        }
+
+        /// <summary>
         /// Get commit content.
         /// </summary>
         /// <param name="filePath">The file path.</param>

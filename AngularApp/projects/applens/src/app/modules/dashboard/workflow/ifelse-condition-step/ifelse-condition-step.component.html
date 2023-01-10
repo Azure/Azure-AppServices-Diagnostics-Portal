@@ -1,0 +1,77 @@
+<div [attr.name]="data.name" #canvasContent>
+  <div class="panel panel-default">
+    <div class="panel-heading panel-title-condition">
+      <node-title [data]="data" [disableEdit]="true" [customClass]="'background-gray'"
+        [customClassIcon]="'fa-code'"></node-title>
+    </div>
+    <div class="panel-body">
+      <form>
+        <div class="form-group row">
+          <div class="col-sm-12">
+            <input class="form-control" type="text" name="ifelsecondtion-{{uniqueId}}" id="ifelsecondtion-{{uniqueId}}"
+              [(ngModel)]="data.description" placeholder="Enter some description for the If-Condition">
+          </div>
+        </div>
+      </form>
+
+      <div style="display:flex">
+
+        <form class="example-form">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Variable</mat-label>
+            <input type="text" placeholder="Choose a variable" aria-label="Number" id="leftControl" matInput
+              [formControl]="leftControl" [matAutocomplete]="autoLeft"
+              (input)="updateVariable($event.target.value, 'ifconditionLeftValue')">
+            <mat-autocomplete autoActiveFirstOption #autoLeft="matAutocomplete"
+              (optionSelected)="updateVariable($event.option.value, 'ifconditionLeftValue')">
+              <mat-option *ngFor="let option of filteredOptionsLeft | async" [value]="option">
+                {{option}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </form>
+
+        <select [(ngModel)]="data.ifconditionExpression" class="ml-2 form-select" *ngIf="dataType === 'number'">
+          <option>lt</option>
+          <option>lte</option>
+          <option>gt</option>
+          <option>gte</option>
+          <option>eq</option>
+          <option>ne</option>
+        </select>
+
+        <select [(ngModel)]="data.ifconditionExpression" class="ml-2 form-select" *ngIf="dataType === 'string'">
+          <option>eq</option>
+          <option>ieq</option>
+          <option>ne</option>
+          <option>ine</option>
+          <option>contains</option>
+          <option>icontains</option>
+        </select>
+
+        <select class="ml-2 form-select" *ngIf="dataType === 'sbyte'">
+          <option selected>is true</option>
+        </select>
+
+        <form *ngIf="dataType !=='sbyte'" class="example-form">
+          <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Variable</mat-label>
+            <input type="text" placeholder="Choose a variable" aria-label="Number" id="rightControl" matInput
+              [formControl]="rightControl" [matAutocomplete]="autoRight"
+              (input)="updateVariable($event.target.value, 'ifconditionRightValue')">
+            <mat-autocomplete autoActiveFirstOption #autoRight="matAutocomplete"
+              (optionSelected)="updateVariable($event.option.value, 'ifconditionRightValue')">
+              <mat-option *ngFor="let option of filteredOptionsRight | async" [value]="option">
+                {{option}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </form>
+
+      </div>
+      <div>
+        <button type="button" class="btn btn-danger btn-sm" (click)="deleteNode()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -37,13 +37,14 @@ export class DetectorContainerComponent implements OnInit {
   @Input() hideDetectorControl: boolean = false;
   @Input() hideDetectorHeader: boolean = false;
   @Input() isKeystoneSolution: boolean = false;
+  @Input() isWorkflowDetector: boolean = false;
   hideTimerPicker: boolean = false;
 
   detectorName: string;
   detectorRefreshSubscription: any;
   refreshInstanceIdSubscription: any;
   isPublic: boolean = true;
-
+  workflowLastRefreshed: string = '';
 
   @Input() detectorSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
@@ -224,12 +225,11 @@ export class DetectorContainerComponent implements OnInit {
     let additionalQueryString = '';
     // Keeping knownQueryParams in case we need to append query parameters in the future
     let knownQueryParams = [];
-    let queryParamsToSkipForAnalysis = ['startTime','endTime','startTimeChildDetector', 'endTimeChildDetector'];
+    let queryParamsToSkipForAnalysis = ['startTime', 'endTime', 'startTimeChildDetector', 'endTimeChildDetector'];
 
     Object.keys(allRouteQueryParams).forEach(key => {
-      if (knownQueryParams.indexOf(key) >= 0 || this.isAnalysisDetector() && queryParamsToSkipForAnalysis.indexOf(key) < 0)
-      {
-         additionalQueryString += `&${key}=${encodeURIComponent(allRouteQueryParams[key])}`;
+      if (knownQueryParams.indexOf(key) >= 0 || this.isAnalysisDetector() && queryParamsToSkipForAnalysis.indexOf(key) < 0) {
+        additionalQueryString += `&${key}=${encodeURIComponent(allRouteQueryParams[key])}`;
       }
     });
 
@@ -246,14 +246,24 @@ export class DetectorContainerComponent implements OnInit {
     //   }
     // }
 
-    this._diagnosticService.getDetector(this.detectorName, startTime, endTime,
-      invalidateCache, this.detectorControlService.isInternalView, additionalQueryString)
-      .subscribe((response: DetectorResponse) => {
-        this.shouldHideTimePicker(response);
-        this.detectorResponse = response;
-      }, (error: any) => {
-        this.error = error;
-      });
+    if (this.isWorkflowDetector) {
+
+      //
+      // workflowLastRefreshed is assigned to the lastRefreshed property of the workflow-view component, changing
+      // this triggers the ngOnChanges for the WorkflowViewComponent and that causes the component to reload
+      //
+
+      this.workflowLastRefreshed = Date.now().toString();
+    } else {
+      this._diagnosticService.getDetector(this.detectorName, startTime, endTime,
+        invalidateCache, this.detectorControlService.isInternalView, additionalQueryString)
+        .subscribe((response: DetectorResponse) => {
+          this.shouldHideTimePicker(response);
+          this.detectorResponse = response;
+        }, (error: any) => {
+          this.error = error;
+        });
+    }
   }
 
   // TODO: Right now this is hardcoded to hide for cards, but make this configurable from backend

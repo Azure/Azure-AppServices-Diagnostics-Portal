@@ -50,6 +50,7 @@ export * from './lib/models/styles';
 export * from './lib/models/resiliencyReportData';
 export * from './lib/models/data-table';
 export * from './lib/models/theme';
+export * from './lib/models/workflow';
 
 export * from './lib/components/detector-list-analysis/detector-list-analysis.component'
 
@@ -138,6 +139,7 @@ export * from './lib/components/time-series-instance-graph/time-series-instance-
 export * from './lib/components/vertical-display-list/vertical-display-list.component'
 export * from './lib/components/vertical-display-list/vertical-display-list-item/vertical-display-list-item.component'
 export * from './lib/components/web-search/web-search.component'
+export * from './lib/components/workflow-view/workflow-view.component'
 export * from './lib/modules/fab-coachmark/coachmark.component'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.component'
 export * from './lib/components/gantt-chart-taskbar-colors/gantt-chart-taskbar-colors.component'

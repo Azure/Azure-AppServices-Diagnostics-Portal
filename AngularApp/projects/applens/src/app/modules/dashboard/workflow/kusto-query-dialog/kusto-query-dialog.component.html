@@ -1,0 +1,103 @@
+<h3 mat-dialog-title>Specify Kusto Query</h3>
+<mat-dialog-content>
+  <form>
+    <div class="row">
+      <div class="col-sm-2">
+        <label for="idQueryLabel" class="form-label">Enter label for the Kusto Query</label>
+      </div>
+      <div class="col-sm-10">
+        <input class="form-control form-control-sm" [(ngModel)]="kustoQueryLabel" name="queryLabel" id="idQueryLabel"
+          placeholder="Enter label for the Kusto Query">
+      </div>
+    </div>
+    <div class="row mb-2 mt-2"
+      *ngIf="inputKustoQueryDialogParams.completionOptions && inputKustoQueryDialogParams.completionOptions.length > 0">
+      <div class="col-sm-2">
+        <label class="form-label">Other Step variables</label>
+      </div>
+      <div class="col-sm-10">
+        <table class="table table-bordered table-responsive">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>DataType</th>
+              <th>Sample Usage</th>
+              <th>Current Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of inputKustoQueryDialogParams.completionOptions">
+              <td>{{ v.name }}</td>
+              <td>{{ v.type }}</td>
+              <td>{{ getKustoSampleUsage(v) }}</td>
+              <td>{{ v.runtimeValue }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="row mb-2 mt-2">
+      <div class="col-sm-2">
+        <label for="idQueryLabel" class="form-label">Enter query text</label>
+      </div>
+      <div class="col-sm-10">
+        <ngx-monaco-editor class="form-control form-control-sm" [options]="editorOptions" name="monacoEditor"
+          [(ngModel)]="code">
+        </ngx-monaco-editor>
+        <div class="mt-2 mb-2">
+          <button class="btn btn-primary btn-sm" (click)="executeQuery()">Execute</button>
+          <i *ngIf="isExecutingQuery" class="ml-2 fa fa-gear fa-spin fa-1x"></i>
+          <div *ngIf="error">
+            <error-message [error]="error"></error-message>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-2 mt-2">
+      <div class="col-sm-2">
+        <label class="form-label">Kusto Query Output</label>
+      </div>
+      <div class="col-sm-10 border border-primary">
+        <div class="query-output">
+          <table *ngIf="dataSource.length > 0" class="mt-3 table table-bordered table-responsive">
+            <thead>
+              <tr>
+                <th *ngFor="let disCol of kustoQueryColumns; let colIndex = index">{{disCol.columnName}}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let element of dataSource; let elementIndex = index">
+                <td (click)="clickCell(elementIndex, disCol, element)"
+                  *ngFor="let disCol of kustoQueryColumns; let colIndex = index">
+                  {{ element[disCol.columnName] }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-2 mt-5">
+      <div class="col-sm-2">
+        <label class="form-label">Configure Variables</label>
+      </div>
+      <div class="col-sm-10">
+        <span> After executing the Kusto query, click
+          on any of the cells in the query output to create a variable. Variables allow you to set conditions
+          in subsequent steps.
+        </span>
+        <div class="mt-3 mb-3">
+          <configure-variables [variables]="variablesInMemoryCopy"
+            (onVariablesSaved)="updateVariables($event)" [currentNode]="currentNode" >
+          </configure-variables>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <button class="ml-2" mat-raised-button color="primary" (click)="save()"
+    [disabled]="!(dataSource.length > 0 || variablesChanged)">Save</button>
+  <button class="ml-2" mat-raised-button color="warn" (click)="close()">Cancel</button>
+
+</mat-dialog-content>

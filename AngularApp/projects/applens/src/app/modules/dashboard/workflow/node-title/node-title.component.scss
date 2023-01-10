@@ -1,0 +1,54 @@
+.flex-div {
+    display: flex;
+}
+
+.filler {
+    flex-grow: 1;
+}
+
+.node-title {
+    font-weight: lighter;
+    font-size: medium;
+}
+
+.node-img {
+    min-width: 2em;
+    min-height: 2em;
+    color: whitesmoke;
+}
+
+.center {
+    min-height: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.background-green {
+    background-color: #1C9BA4;
+}
+
+.background-purple {
+    background-color: #824696;
+}
+
+.background-blue {
+    background-color: #427CFC;
+}
+
+.background-gray {
+    background-color: #494F58;
+}
+
+.background-light-green {
+    background-color: #86DB90;
+}
+
+.background-red {
+    background-color: #F88D83;
+}
+
+i {
+    font-size: 16px;
+}
+

@@ -44,7 +44,7 @@ namespace AppLensV3.Controllers
         private readonly string forbiddenDiagAscHeaderValue;
         private readonly bool detectorDevelopmentEnabled;
         private readonly IList<string> apiEndpointsForDetectorDevelopment;
-
+        private readonly string[] allowedUsers;
         private readonly string[] AllowedSections = new string[] { "ContentSearch", "DeepSearch", "ApplicationInsights", "AcceptOriginSuffix:Origins", "CodeCompletion", "DetectorDevelopmentEnabled", "DetectorDevelopmentEnv", "PPEHostname", "APPLENS_ENVIRONMENT", "APPLENS_HOST", "SystemInvokers:ResourceIDString", "SystemInvokers:DocumentationStagingBranch", "SystemInvokers:DocumentationRoot", "SystemInvokers:DiagnosticsMainBranch" };
 
         private class InvokeHeaders
@@ -86,6 +86,8 @@ namespace AppLensV3.Controllers
             }
 
             apiEndpointsForDetectorDevelopment = new List<string>() { "/diagnostics/query?", "/diagnostics/publish" };
+
+            allowedUsers = configuration.GetValue("Workflow:Users", string.Empty).Split(';').Select(x => x.ToLower()).ToArray();
         }
 
         private IDiagnosticClientService DiagnosticClient { get; }
@@ -120,6 +122,17 @@ namespace AppLensV3.Controllers
             {
                 return NotFound($"App setting with the name '{name}' is not found");
             }
+        }
+
+        [HttpGet("workflows/isuserallowed/{userAlias}")]
+        public IActionResult IsUserAllowed(string userAlias)
+        {
+            if (string.IsNullOrWhiteSpace(userAlias))
+            {
+                return BadRequest("userAlias must be specified");
+            }
+
+            return Ok(allowedUsers.Contains(userAlias.ToLower()));
         }
 
         [HttpGet("invoke")]

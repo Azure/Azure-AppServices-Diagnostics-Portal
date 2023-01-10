@@ -13,6 +13,8 @@ import { Router } from '@angular/router';
 import { TelemetryPayload } from 'diagnostic-data';
 import { FavoriteDetectorProp, FavoriteDetectors, LandingInfo, RecentResource, UserPanelSetting, UserSetting } from '../models/user-setting';
 import { List } from 'office-ui-fabric-react';
+import { dynamicExpressionBody } from '../../modules/dashboard/workflow/models/kusto';
+import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 
 
 @Injectable()
@@ -71,6 +73,21 @@ export class DiagnosticApiService {
     return this.invoke<DetectorResponse>(path, HttpMethod.POST, body, true, refresh, true, internalView);
   }
 
+  public getWorkflowNode(version: string, resourceId: string, workflowId: string, workflowExecutionId: string, nodeId: string, startTime?: string, endTime?: string,
+    internalView: boolean = true, additionalQueryParams?: string):
+    Observable<workflowNodeResult> {
+    let timeParameters = this._getTimeQueryParameters(startTime, endTime);
+    let path = `${version}${resourceId}/workflows/${workflowId}?${timeParameters}`;
+    if (workflowExecutionId && nodeId) {
+      path = `${version}${resourceId}/workflows/${workflowId}/${workflowExecutionId}/${nodeId}?${timeParameters}`;
+    }
+
+    if (additionalQueryParams != undefined) {
+      path += additionalQueryParams;
+    }
+    return this.invoke<workflowNodeResult>(path, HttpMethod.POST, null, false, true, true, internalView);
+  }
+
   public getSystemInvoker(resourceId: string, detector: string, systemInvokerId: string = '', dataSource: string,
     timeRange: string, body?: any): Observable<DetectorResponse> {
     let invokerParameters = this._getSystemInvokerParameters(dataSource, timeRange);
@@ -81,6 +98,14 @@ export class DiagnosticApiService {
 
   public getDetectors(version: string, resourceId: string, body?: any, queryParams?: any[], internalClient: boolean = true): Observable<DetectorMetaData[]> {
     let path = `${version}${resourceId}/detectors`;
+    if (queryParams) {
+      path = path + "?" + queryParams.map(qp => qp.key + "=" + qp.value).join("&");
+    }
+    return this.invoke<DetectorResponse[]>(path, HttpMethod.POST, body, true, false, internalClient).pipe(retry(1), map(response => response.map(detector => detector.metadata)));
+  }
+
+  public getWorkflows(version: string, resourceId: string, body?: any, queryParams?: any[], internalClient: boolean = true): Observable<DetectorMetaData[]> {
+    let path = `${version}${resourceId}/workflows`;
     if (queryParams) {
       path = path + "?" + queryParams.map(qp => qp.key + "=" + qp.value).join("&");
     }
@@ -170,6 +195,30 @@ export class DiagnosticApiService {
     }
 
     return this._getCompilerResponseInternal(path, body, additionalParams, publishingDetectorId);
+  }
+
+  public getWorkflowCompilerResponse(version: string, resourceId: string, body: any, startTime: string, endTime: string,
+    additionalParams: any, publishingDetectorId: string, workflowExecutionId: string, nodeId: string): Observable<QueryResponse<workflowNodeResult>> {
+    let timeParameters = this._getTimeQueryParameters(startTime, endTime);
+    let path = `${version}${resourceId}/diagnostics/compileworkflow?${timeParameters}`;
+
+    if (workflowExecutionId && nodeId) {
+      path = `${version}${resourceId}/diagnostics/compileworkflow/${workflowExecutionId}/${nodeId}?${timeParameters}`;
+    }
+
+    let additionalHeaders = new Map<string, string>();
+    if (additionalParams && additionalParams.scriptETag) {
+      additionalHeaders = additionalHeaders.set('diag-script-etag', additionalParams.scriptETag);
+    }
+
+    if (additionalParams && additionalParams.assemblyName) {
+      additionalHeaders = additionalHeaders.set('diag-assembly-name', encodeURI(additionalParams.assemblyName));
+    }
+
+    additionalHeaders = additionalHeaders.set('diag-publishing-detector-id', publishingDetectorId);
+
+    return this.invoke<QueryResponse<workflowNodeResult>>(path, HttpMethod.POST, body, false, undefined, undefined, undefined,
+      additionalParams.getFullResponse, additionalHeaders);
   }
 
   public getSystemCompilerResponse(resourceId: string, body: any, detectorId: string = '', dataSource: string = '',
@@ -270,6 +319,17 @@ export class DiagnosticApiService {
   public getKustoMappings(resourceId: string): Observable<any> {
     let path = `${resourceId}/configurations/kustoclustermappings`;
     return this.invoke<string>(path, HttpMethod.GET);
+  }
+
+  public evaluateDynamicExpression(resourceId: string, body: dynamicExpressionBody, startTime: string, endTime: string): Observable<any> {
+    let timeParameters = this._getTimeQueryParameters(startTime, endTime);
+    let path = `${resourceId}/evaluateexpression?${timeParameters}`;
+    return this.invoke<string>(path, HttpMethod.POST, body, false);
+  }
+
+  public publishWorkflow(resourceId: string, publishBody: workflowPublishBody): Observable<any> {
+    let path = `${resourceId}/diagnostics/publishworkflow`;
+    return this.invoke<string>(path, HttpMethod.POST, publishBody, false);
   }
 
   public invoke<T>(path: string, method: HttpMethod = HttpMethod.GET, body: any = {}, useCache: boolean = true,
@@ -439,9 +499,9 @@ export class DiagnosticApiService {
     });
   }
 
-  updateUserLandingInfo(landingInfo : LandingInfo, userId: string): Observable<UserSetting> {
+  updateUserLandingInfo(landingInfo: LandingInfo, userId: string): Observable<UserSetting> {
     const url: string = `${this.diagnosticApi}api/usersetting/${userId}/landingInfo`;
-    return this._httpClient.post<UserSetting>(url,landingInfo,{
+    return this._httpClient.post<UserSetting>(url, landingInfo, {
       headers: this._getHeaders()
     });
   }
@@ -455,18 +515,18 @@ export class DiagnosticApiService {
 
   addFavoriteDetector(detectorId: string, detectorProp: FavoriteDetectorProp, userId: string): Observable<UserSetting> {
     const url = `${this.diagnosticApi}api/usersetting/${userId}/favoriteDetectors/${detectorId}`;
-    return this._httpClient.post<UserSetting>(url, detectorProp,{
+    return this._httpClient.post<UserSetting>(url, detectorProp, {
       headers: this._getHeaders()
     })
   }
 
   public getDetectorCode(detectorPath: string, branch: string, resourceUri: string): Observable<string> {
-    let path = branch === null ? `devops/getCode?filePathInRepo=${detectorPath}&resourceUri=${resourceUri}` :`devops/getCode?filePathInRepo=${detectorPath}&branch=${branch}&resourceUri=${resourceUri}`;
+    let path = branch === null ? `devops/getCode?filePathInRepo=${detectorPath}&resourceUri=${resourceUri}` : `devops/getCode?filePathInRepo=${detectorPath}&branch=${branch}&resourceUri=${resourceUri}`;
     return this.invoke(path, HttpMethod.GET, null, false);
   }
 
   public getDevOpsTree(devOpsPath: string, branch: string, resourceUri: string): Observable<any> {
-    let path = branch === null ? `devops/getTree?filePathInRepo=${devOpsPath}&resourceUri=${resourceUri}` :`devops/getTree?filePathInRepo=${devOpsPath}&branch=${branch}&resourceUri=${resourceUri}`;
+    let path = branch === null ? `devops/getTree?filePathInRepo=${devOpsPath}&resourceUri=${resourceUri}` : `devops/getTree?filePathInRepo=${devOpsPath}&branch=${branch}&resourceUri=${resourceUri}`;
     return this.invoke(path, HttpMethod.GET, null, false);
   }
 
@@ -509,7 +569,7 @@ export class DiagnosticApiService {
     return this.invoke(path, HttpMethod.POST, body, false);
   }
 
-  public deleteBranch(branch: string, resourceUri: string){
+  public deleteBranch(branch: string, resourceUri: string) {
     var body = {};
     body['branch'] = branch;
     body['resourceUri'] = resourceUri;
@@ -577,6 +637,13 @@ export class DiagnosticApiService {
   public getAppSetting(appSettingName: string): Observable<string> {
     const path = `api/appsettings/${appSettingName}`;
     return this.get(path).pipe(map((res: string) => {
+      return res;
+    }));
+  }
+
+  public isUserAllowedForWorkflow(userAlias:string):Observable<boolean>{
+    const path = `api/workflows/isuserallowed/${userAlias}`;
+    return this.get(path).pipe(map((res: boolean) => {
       return res;
     }));
   }
