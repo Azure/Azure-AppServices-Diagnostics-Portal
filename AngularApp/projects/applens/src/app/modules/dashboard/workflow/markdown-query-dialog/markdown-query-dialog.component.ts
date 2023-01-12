@@ -69,10 +69,12 @@ export class MarkdownQueryDialogComponent implements OnInit {
   }
 
   evaluateExpression() {
+    let status = this.evaluateStatus && this.chooseStatusType === 'dynamic' ? "{(" + this.statusExpression + ")}" : '';
+
     let dynamicExpression: dynamicExpressionBody = {
       WorkflowId: 'Workflow1',
       OperationName: '',
-      Text: "{(" + this.statusExpression + ")}",
+      Text: this.evaluateStatus ? status : this.input,
       Variables: this.inputParams.completionOptions.concat(this.inputParams.variables),
       IsKustoQuery: false
     };
