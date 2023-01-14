@@ -37,6 +37,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   // Had to add this to make the people picker work.
   // People picker component has a bug. https://github.com/microsoft/angular-react/issues/213
   public static applensDiagnosticApiService: ApplensDiagnosticService;
+  public static applensResourceService:ResourceService;
 
   detectorName:string = 'Auto Generated Detector Name';
 
@@ -223,6 +224,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
 
     isInternalOnly:boolean = true;
     isDetectorPrivate:boolean = false;
+    isOnDemandRenderEnabled:boolean = false;
 
     //#region Analysis picker settings
       detectorAnalysisPickerInputProps: IBasePickerProps<ITagPickerProps>["inputProps"] = {
@@ -460,6 +462,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     private _applensCommandBarService: ApplensCommandBarService, private _router: Router, private _themeService: GenericThemeService, private _applensGlobal: ApplensGlobal ) {
     this._applensGlobal.updateHeader('');
     DetectorDesigner.applensDiagnosticApiService = this.diagnosticApiService;
+    DetectorDesigner.applensResourceService = this.resourceService;
     
     this.resetGlobals();
   }
@@ -506,7 +509,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   }
 
   public getDetectorId():string {
-    return this.resourceService.ArmResource.provider + '_' + this.resourceService.ArmResource.resourceTypeName + '_' + this.detectorName.replace(/\s/g,'_',);
+    return this.resourceService.ArmResource.provider + '_' + this.resourceService.ArmResource.resourceTypeName + '_' + this.detectorName.replace(/\s/g,'_',).replace(/\./g, '_');
   }
 
   public onBlurDetectorName(event:any):boolean {
@@ -558,11 +561,18 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     return false;
   }
 
-  public detectorAuthorPickerInputChanged (data: any): IPersonaProps[] | Promise<IPersonaProps[]>{
-    //Issue: https://github.com/microsoft/angular-react/issues/213
+  public detectorAuthorPickerInputChanged():any {
+    const _this = this;
+    return (data) => {
+      return _this.detectorAuthorPickerInputChangedClosureImpl(data, _this);
+    }
+  }
 
+  public detectorAuthorPickerInputChangedClosureImpl(data: any, thisPointer?:any):IPersonaProps[] | Promise<IPersonaProps[]> {
+    //Issue: https://github.com/microsoft/angular-react/issues/213
     if(data) {
-       return DetectorDesigner.applensDiagnosticApiService.getSuggestionForAlias(data).map(response => {
+        //return thisPointer.diagnosticApiService.getSuggestionForAlias(data).map(response => {
+        return DetectorDesigner.applensDiagnosticApiService.getSuggestionForAlias(data).map(response => {  
         let suggestions: IPersonaProps[] = [];
         response.forEach(suggestion => {
           if(suggestion && suggestion.userPrincipalName)
@@ -574,7 +584,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
             showInitialsUntilImageLoads: true
           });
         });
-        return suggestions;
+        return suggestions.slice(0, 5);
       }).toPromise();
     }
     else {
@@ -606,8 +616,16 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     return false;
   }
 
-  public detectorCategoryPickerInputChanged(data: any): ITagItemProps[] | Promise<ITagItemProps[]>{
+  public detectorCategoryPickerInputChanged():any {
+    const _this = this;
+    return (data): ITagItemProps[] | Promise<ITagItemProps[]> => {
+      return _this.detectorCategoryPickerInputChangedClosureImpl(data, _this);
+    }
+  }
+
+  public detectorCategoryPickerInputChangedClosureImpl(data: any, thisPointer?:DetectorDesigner): ITagItemProps[] | Promise<ITagItemProps[]>{
     return DetectorDesigner.applensDiagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {
+    //return thisPointer.diagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {
       const categories:string[] = Array.from(new Set(response.filter(detector=> detector.category && detector.category.toLowerCase().indexOf(data.toLowerCase()) > -1)
       .map(detectorsWithCategory => detectorsWithCategory.category)));
       
@@ -633,7 +651,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
           }
         });
       }
-      return tagSuggestions;
+      return tagSuggestions.slice(0, 5);
     }).toPromise();
   }
 
@@ -673,6 +691,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     else {
       this.effectiveResourceAppType = [];
     }
+
   }
 
   public onChangeResourceAppType(event: any):void {
@@ -764,6 +783,16 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   }
   //#endregion getPrivateCheckStatus Methods
 
+  //#region getOnDemandRenderCheckStatus Methods
+  public getOnDemandRenderCheckStatus(): boolean {
+    return this.isOnDemandRenderEnabled;
+  }
+
+  public toggleOnDemandRenderState(checked: boolean) {
+    this.isOnDemandRenderEnabled = checked;
+  }
+  //#endregion getPrivateCheckStatus Methods
+
   //#region Detector Analysis Picker Methods  
 
   public updateDetectorAnalysisSelectedItems(event:any):boolean {    
@@ -772,9 +801,161 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     this.detectorAnalysisPickerSelectedItems = event.items.filter(item => keys.has(item.key)? false: !!keys.add(item.key));
     return false;
   }
+  
+  public detectorAnalysisPickerInputChanged():any {
+    const _this = this;
+    return (data): ITagItemProps[] | Promise<ITagItemProps[]> => {
+      return _this.detectorAnalysisPickerInputChangedClosureImpl(data, _this);
+    }
+  }
 
-  public detectorAnalysisPickerInputChanged(data: any): ITagItemProps[] | Promise<ITagItemProps[]>{
-    return DetectorDesigner.applensDiagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {      
+  public detectorAnalysisPickerInputChangedClosureImpl(data: any, thisPointer?:DetectorDesigner): ITagItemProps[] | Promise<ITagItemProps[]>{
+    return DetectorDesigner.applensDiagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {
+    //return thisPointer.diagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {      
+      const analysisPickerOptions:AnalysisPickerModel[] = response.filter(detector=> detector.type === DetectorType.Analysis && (detector.id.toLowerCase().indexOf(data.toLowerCase()) > -1 || detector.name.toLowerCase().indexOf(data.toLowerCase()) > -1 )   )
+      .map(analysisDetectors => <AnalysisPickerModel>{
+        AnalysisId: analysisDetectors.id,
+        AnalysisName: analysisDetectors.name
+      } );
+      
+      analysisPickerOptions.sort((a:AnalysisPickerModel, b:AnalysisPickerModel):number =>{
+        if(a.AnalysisName < b.AnalysisName) return -1;
+        if(a.AnalysisName > b.AnalysisName) return 1;
+        return 0;
+      });
+
+      let tagSuggestions:ITagItemProps[] = [];
+      let tagIndex = 0;
+      tagSuggestions = analysisPickerOptions.map<ITagItemProps>(option => <ITagItemProps>{
+        index:tagIndex++,
+        item:{
+          key:option.AnalysisId,
+          name:option.AnalysisName
+        }
+      });
+      
+      return tagSuggestions.slice(0, 5);
+    }).toPromise();
+  }
+  
+  //#endregion Detector Analysis Picker Methods
+
+  //#region Support Topic Picker Methods
+  public updateSupportTopicSelectedItems(event:any):boolean {
+    //Add unique items to the selected items list, discard duplicates.
+    let keys = new Set();
+    this.supportTopicPickerSelectedItems = event.items.filter(item => keys.has(item.key)? false: !!keys.add(item.key));
+    return false;    
+  }
+
+  public detectorSupportTopicPickerInputChanged():any {
+    const _this = this;
+    return (data): ITagItemProps[] | Promise<ITagItemProps[]> => {
+      return _this.detectorSupportTopicPickerInputChangedClosureImpl(data, _this);
+    }
+  }
+
+  public detectorSupportTopicPickerInputChangedClosureImpl(data: any, thisPointer?:DetectorDesigner): ITagItemProps[] | Promise<ITagItemProps[]> {
+    return Promise.resolve(DetectorDesigner.applensResourceService.getPesId().map<string, Promise<ITagItemProps[]>>(pesId => {
+      if(pesId) {
+        return Promise.resolve(
+          DetectorDesigner.applensDiagnosticApiService.getSupportTopics(pesId).map<supportTopicResponseModel[], ITagItemProps[]>(supportTopicList =>{
+          const supportTopicPickerOptions:SupportTopicPickerModel[] = supportTopicList.filter(supportTopic=> supportTopic.supportTopicPath.toLowerCase().indexOf(data.toLowerCase()) > -1 || 
+            supportTopic.supportTopicId.toString().startsWith(data) || supportTopic.sapSupportTopicId.toString().startsWith(data)
+          )
+          .map(supportTopic => <SupportTopicPickerModel>{
+            PesId: pesId,
+            SupportTopicId: supportTopic.supportTopicId,
+            SapProductId: supportTopic.sapProductId,
+            SapSupportTopicId: supportTopic.sapSupportTopicId,
+            ProductName: supportTopic.productName,
+            SupportTopicL2Name:supportTopic.supportTopicL2Name,
+            SupportTopicL3Name:supportTopic.supportTopicL3Name,
+            SupportTopicPath: supportTopic.supportTopicPath
+          });
+
+          supportTopicPickerOptions.sort((a:SupportTopicPickerModel, b:SupportTopicPickerModel):number =>{
+            if(a.SupportTopicPath < b.SupportTopicPath) return -1;
+              if(a.SupportTopicPath > b.SupportTopicPath) return 1;
+              return 0;
+          });
+
+          let tagSuggestions:ITagItemProps[] = [];
+          let tagIndex = 0;
+          tagSuggestions = supportTopicPickerOptions.map<ITagItemProps>(option => <ITagItemProps>{
+            index:tagIndex++,
+            item:{
+              key:option.SapSupportTopicId,
+              name:option.SupportTopicPath
+            }
+          });
+
+          return tagSuggestions.slice(0, 5);
+        }).toPromise()
+        ).then((tagSuggestions:ITagItemProps[]) => tagSuggestions);
+      }
+      else 
+      {
+        return Promise.resolve([]);
+      }
+    }).toPromise()).then((value:ITagItemProps[] | Promise<ITagItemProps[]>) => value);
+
+    
+
+    // let promise = DetectorDesigner.applensResourceService.getPesId().map<string, ITagItemProps[]>(pesId => {
+    //   let dummy: ITagItemProps[] = [];
+    //   if(pesId) {
+    //     dummy = DetectorDesigner.applensDiagnosticApiService.getSupportTopics(pesId).map(supportTopics => { return [];}).pip
+    //   }
+    //   else {
+    //     return [];
+    //   }
+    // }).toPromise();
+    // return DetectorDesigner.applensResourceService.getPesId().map<string, ITagItemProps[]>(pesId => {
+    //   let returnValue:ITagItemProps[] = [];
+    //   if(pesId) {
+    //     DetectorDesigner.applensDiagnosticApiService.getSupportTopics(pesId).map<supportTopicResponseModel[], ITagItemProps[]>(supportTopicList =>{
+    //       const supportTopicPickerOptions:SupportTopicPickerModel[] = supportTopicList.filter(supportTopic=> supportTopic.supportTopicPath.toLowerCase().indexOf(data.toLowerCase()) > -1 || 
+    //         supportTopic.supportTopicId.toString().startsWith(data) || supportTopic.sapSupportTopicId.toString().startsWith(data)
+    //       )
+    //       .map(supportTopic => <SupportTopicPickerModel>{
+    //         PesId: pesId,
+    //         SupportTopicId: supportTopic.supportTopicId,
+    //         SapProductId: supportTopic.sapProductId,
+    //         SapSupportTopicId: supportTopic.sapSupportTopicId,
+    //         ProductName: supportTopic.productName,
+    //         SupportTopicL2Name:supportTopic.supportTopicL2Name,
+    //         SupportTopicL3Name:supportTopic.supportTopicL3Name,
+    //         SupportTopicPath: supportTopic.supportTopicPath
+    //       });
+    //       supportTopicPickerOptions.sort((a:SupportTopicPickerModel, b:SupportTopicPickerModel):number =>{
+    //         if(a.SupportTopicPath < b.SupportTopicPath) return -1;
+    //           if(a.SupportTopicPath > b.SupportTopicPath) return 1;
+    //           return 0;
+    //       });
+
+    //       let tagSuggestions:ITagItemProps[] = [];
+    //       let tagIndex = 0;
+    //       tagSuggestions = supportTopicPickerOptions.map<ITagItemProps>(option => <ITagItemProps>{
+    //         index:tagIndex++,
+    //         item:{
+    //           key:option.SapSupportTopicId,
+    //           name:option.SupportTopicPath
+    //         }
+    //       });
+
+    //       return tagSuggestions;
+    //     });
+        
+    //   }
+    //   else {
+    //     return returnValue;
+    //   }
+      
+    // }).toPromise();
+    
+    return DetectorDesigner.applensDiagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {
+    //return thisPointer.diagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {      
       const analysisPickerOptions:AnalysisPickerModel[] = response.filter(detector=> detector.type === DetectorType.Analysis && (detector.id.toLowerCase().indexOf(data.toLowerCase()) > -1 || detector.name.toLowerCase().indexOf(data.toLowerCase()) > -1 )   )
       .map(analysisDetectors => <AnalysisPickerModel>{
         AnalysisId: analysisDetectors.id,
@@ -800,8 +981,8 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
       return tagSuggestions;
     }).toPromise();
   }
-  
-  //#endregion Detector Analysis Picker Methods
+
+  //#endregion Support Topic Picker Methods
   
 
   //#endregion Detector Settings Panel Methods
@@ -860,13 +1041,23 @@ export interface AnalysisPickerModel {
   AnalysisName: string;
 }
 
+export interface supportTopicResponseModel {
+  supportTopicId: string;
+  sapSupportTopicId: string;
+  sapProductId: string;
+  supportTopicPath: string;
+  productName: string;
+  supportTopicL2Name: string;
+  supportTopicL3Name:string
+}
+
 export interface SupportTopicPickerModel {
   SupportTopicId: string;
   PesId: string;
   SapSupportTopicId: string;
-  SapProducId: string;
-  SupportTopicFullName: string;
-  SupportTopicL1Name: string;
+  SapProductId: string;
+  SupportTopicPath: string;
+  ProductName: string;
   SupportTopicL2Name: string;
   SupportTopicL3Name:string
 }

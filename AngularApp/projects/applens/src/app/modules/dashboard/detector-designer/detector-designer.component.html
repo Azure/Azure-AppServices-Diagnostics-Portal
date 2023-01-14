@@ -99,7 +99,7 @@
                             <div style="width:75%">
                                 <fab-people-picker [inputProps]="detectorAuthorPickerInputProps" [pickerSuggestionsOptions]="{noResultsFoundText: 'No suggestions found', loadingText: 'Loading'}"
                                 [selectedItems]="detectorAuthorPickerSelectedItems"  (onChange)="updateDetectorAuthorSelectedItems($event)"
-                                [resolveSuggestions]="detectorAuthorPickerInputChanged" [resolveDelay]=500                            
+                                [resolveSuggestions]="detectorAuthorPickerInputChangedClosureImpl" [resolveDelay]=500
                                 ></fab-people-picker>
                             </div>
                         </div>
@@ -121,8 +121,7 @@
                                 <fab-tag-picker [inputProps]="detectorCategoryPickerInputProps"
                                 [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching category found', loadingText: 'Loading'}"
                                 [selectedItems]="detectorCategoryPickerSelectedItems"  (onChange)="updateDetectorCategorySelectedItems($event)"
-                                [resolveSuggestions]="detectorCategoryPickerInputChanged" [resolveDelay]=500 [itemLimit]=1
-                                
+                                [resolveSuggestions]="detectorCategoryPickerInputChangedClosureImpl" [resolveDelay]=500 [itemLimit]=1
                                 ></fab-tag-picker>
                             </div>
                         </div>
@@ -165,6 +164,9 @@
                             <fab-checkbox [label]="'Internal only'" [ariaLabel]="'Internal only'" [checked]="getInternalOnlyCheckStatus()" [styles]="fabCheckboxStyle"
                             (checkedChange)="toggleInternalOnlyState($event)" [boxSide] = "'end'"></fab-checkbox>
 
+                            <fab-checkbox [label]="'OnDemand rendering'" [ariaLabel]="'Render UI elements on demand'" [checked]="getOnDemandRenderCheckStatus()" [styles]="fabCheckboxStyle"
+                            (checkedChange)="toggleOnDemandRenderState($event)" [boxSide] = "'end'"></fab-checkbox>
+
                             <fab-checkbox [label]="'Mark private'" [ariaLabel]="'Mark private'" [checked]="getDetectorPrivateCheckStatus()" [styles]="fabCheckboxStyle"
                             (checkedChange)="toggleDetectorPrivateState($event)" [boxSide] = "'end'"></fab-checkbox>
                         </div>
@@ -178,7 +180,7 @@
                                 <fab-tag-picker [inputProps]="detectorAnalysisPickerInputProps"
                                 [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching analysis found', loadingText: 'Loading'}"
                                 [selectedItems]="detectorAnalysisPickerSelectedItems"  (onChange)="updateDetectorAnalysisSelectedItems($event)"
-                                [resolveSuggestions]="detectorAnalysisPickerInputChanged" [resolveDelay]=500                                
+                                [resolveSuggestions]="detectorAnalysisPickerInputChangedClosureImpl" [resolveDelay]=500                                
                                 ></fab-tag-picker>
                             </div>
                         </div>
@@ -191,10 +193,10 @@
                                 Link to support topic
                             </div>
                             <div style="width:80%">
-                                <fab-tag-picker [inputProps]="detectorAnalysisPickerInputProps"
-                                [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching analysis found', loadingText: 'Loading'}"
-                                [selectedItems]="detectorAnalysisPickerSelectedItems"  (onChange)="updateDetectorAnalysisSelectedItems($event)"
-                                [resolveSuggestions]="detectorAnalysisPickerInputChanged" [resolveDelay]=500                                
+                                <fab-tag-picker [inputProps]="supportTopicPickerInputProps"
+                                [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching support topic found', loadingText: 'Loading'}"
+                                [selectedItems]="supportTopicPickerSelectedItems"  (onChange)="updateSupportTopicSelectedItems($event)"
+                                [resolveSuggestions]="detectorSupportTopicPickerInputChangedClosureImpl" [resolveDelay]=500                                
                                 ></fab-tag-picker>
                             </div>
                         </div>
