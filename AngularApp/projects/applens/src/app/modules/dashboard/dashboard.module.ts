@@ -535,7 +535,6 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
             // to avoid passing the same options over and over in each components of your App
             iconlibrary: 'glyph'
         }),
-        MarkdownModule.forRoot(),
         MonacoEditorModule.forRoot() // use forRoot() in main app module only.
     ],
     providers: [
