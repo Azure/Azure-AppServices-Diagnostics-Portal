@@ -1278,12 +1278,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.matDialog.open(WorkflowRunDialogComponent, dialogConfig).afterClosed().subscribe(modelData => {
       if (modelData != null) {
         if (modelData.workflowSucceeded === true) {
-
-          //
-          // disabling publish for workflows temporarily till the RuntimeHost production deployment finishes
-          // else production deployment may break if a Workflow DLL gets copied to storage account
-          //
-          // this.enablePublishButton();
+          this.enablePublishButton();
         }
       }
     });
