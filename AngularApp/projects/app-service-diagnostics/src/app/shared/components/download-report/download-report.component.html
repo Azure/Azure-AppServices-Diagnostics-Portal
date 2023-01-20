@@ -1,6 +1,5 @@
 <div >
-    <p>{{downloadReportText}}</p>
-    <p *ngIf="isDownloaded else loading"></p>
+    <loader-detector-view style="margin-top:300px" [LoadingMessage4]="'Generating Downloadable Report'" *ngIf="!isDownloaded"></loader-detector-view>
 </div>
 
 <ng-template #loading>
