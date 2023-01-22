@@ -41,8 +41,11 @@
             "apiVersion": "2018-11-01",
             "properties": {
                 "ASPNETCORE_ENVIRONMENT": "Production",
+                "CloudDomain": "[if(or(equals(parameters('cloudEnvironment'), 'Prod'), equals(parameters('cloudEnvironment'), 'Test')), 'PublicAzure', parameters('cloudEnvironment'))]",
                 "DatacenterFederationConfiguration:Realm": "[parameters('dstsRealm')]",
-                "DiagnosticRole:AppServiceEndpoint": "[parameters('runtimeHostEndpoint')]"
+                "DiagnosticRole:AppServiceEndpoint": "[parameters('runtimeHostEndpoint')]",
+                "WEBSITE_ADD_SITENAME_BINDINGS_IN_APPHOST_CONFIG": "1",
+                "WEBSITE_LOAD_CERTIFICATES": "*"
             }
         },
         {
@@ -50,14 +53,12 @@
             "type": "Microsoft.Web/sites/slots/config",
             "apiVersion": "2018-11-01",
             "properties": {
-                "WEBSITE_ADD_SITENAME_BINDINGS_IN_APPHOST_CONFIG": "1",
-                "WEBSITE_LOAD_CERTIFICATES": "*",
-                "ASPNETCORE_ENVIRONMENT": "Production",
+                "ASPNETCORE_ENVIRONMENT": "Staging",
                 "CloudDomain": "[if(or(equals(parameters('cloudEnvironment'), 'Prod'), equals(parameters('cloudEnvironment'), 'Test')), 'PublicAzure', parameters('cloudEnvironment'))]",
                 "DatacenterFederationConfiguration:Realm": "[parameters('dstsRealmStaging')]",
-                "DatacenterFederationConfiguration:MetadataAddress": "[parameters('dstsMetadataAddress')]",
-                "DatacenterFederationConfiguration:Issuer": "[parameters('dstsIssuer')]",
-                "DiagnosticRole:AppServiceEndpoint": "[parameters('runtimeHostEndpointStaging')]"
+                "DiagnosticRole:AppServiceEndpoint": "[parameters('runtimeHostEndpointStaging')]",
+                "WEBSITE_ADD_SITENAME_BINDINGS_IN_APPHOST_CONFIG": "1",
+                "WEBSITE_LOAD_CERTIFICATES": "*"
             }
         },
         {
@@ -69,7 +70,8 @@
                 "appSettingNames": [
                     "ASPNETCORE_ENVIRONMENT",
                     "DatacenterFederationConfiguration:Realm",
-                    "DiagnosticRole:AppServiceEndpoint"
+                    "DiagnosticRole:AppServiceEndpoint",
+                    "CloudDomain"
                 ]
             }
         }
