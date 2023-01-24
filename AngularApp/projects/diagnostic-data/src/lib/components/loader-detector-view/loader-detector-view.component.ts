@@ -97,6 +97,7 @@ export class LoaderDetectorViewComponent implements OnInit {
         this.startLoadingTimeInMilliSeconds = Date.now();
     }
 
+    // Assigning custom messages
     customLoadingMessages() {
         this.loadingStages[0].loadingString = this.LoadingMessage1 != undefined ? this.LoadingMessage1 : this.loadingStages[0].loadingString;
         this.loadingStages[1].loadingString = this.LoadingMessage2 != undefined ? this.LoadingMessage2 : this.loadingStages[1].loadingString;

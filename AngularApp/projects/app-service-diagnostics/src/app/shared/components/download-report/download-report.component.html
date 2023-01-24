@@ -1,11 +1,10 @@
 <div >
-    <loader-detector-view style="margin-top:300px" [LoadingMessage4]="'Generating Downloadable Report'" *ngIf="!isDownloaded"></loader-detector-view>
+  <ng-container *ngIf="isDownloaded else loaderView">
+    <span [innerHTML]="downloadReportText"></span><span> {{countDownTimer}} seconds</span>
+  </ng-container>
 </div>
 
-<ng-template #loading>
-    <div class="home-spinner">
-      <fab-spinner label={{downloadReportText}} [ariaLabel]="'Downloading Report'"></fab-spinner>
-    </div>
-  </ng-template>
-
+<ng-template #loaderView>
+  <loader-detector-view style="margin-top:300px" [LoadingMessage4]="'Generating Downloadable Report'"></loader-detector-view>    
+</ng-template>
 

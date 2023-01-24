@@ -33,47 +33,148 @@ export class DownloadReportComponent implements OnInit {
   resourceAppType: AppType = AppType.WebApp;
   resourceSku: Sku = Sku.All;
   vfsFonts: any;
-  
+  timer: any = 0;
+  countDownTimer: any = 10;
+
 
   constructor(private _resourceService: ResourceService, private _route: ActivatedRoute, private telemetryService: TelemetryService,
     private http: HttpClient, private _diagnosticService: DiagnosticService, private _detectorControlService: DetectorControlService,
     private _router: Router, private _authService: AuthService) { }
 
   ngOnInit(): void {
-    let _isSubIdInPercentageToRelease: boolean = false;
-    let _isBetaSubscription: boolean = false;
     this.subscriptionId = this._route.parent.parent.snapshot.params['subscriptionid'];
     this.resourceGroup = this._route.parent.parent.snapshot.params['resourcegroup'];
     this.resourceType = this._route.parent.parent.snapshot.data.data.type;
     this.resourceName = this._route.parent.parent.snapshot.params['resourcename'];
     this.detectorName = this._route.snapshot.params['detectorName'];
 
-    // allowlisting beta subscriptions for testing purposes
-    _isBetaSubscription = DemoSubscriptions.betaSubscriptions.indexOf(this.subscriptionId) >= 0;
-    // allowing 0% of subscriptions to use new feature
-    _isSubIdInPercentageToRelease = this._percentageOfSubscriptions(this.subscriptionId, 0);
+    this.generateReportPDF();
+  }
 
-    // Releasing to only Beta Subscriptions for Web App (Linux) in standard or higher and all Web App (Windows) in standard or higher
-    if (this._checkIsWebAppProdSku(OperatingSystem.linux) && (_isSubIdInPercentageToRelease || _isBetaSubscription) || this._checkIsWebAppProdSku(OperatingSystem.windows)) {
-      const rSBDEventProperties = {
-        'Subscription': this.subscriptionId,
-        'Platform': this.resourcePlatform != undefined ? this.resourcePlatform.toString() : "",
-        'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString() : "",
-        'resourceSku': this.resourceSku != undefined ? this.resourceSku.toString() : "",
-        'DetectorName': this.detectorName,
-      };
-      this.telemetryService.logEvent(TelemetryEventNames.DownloadReportDirectLinkUsed, rSBDEventProperties);
+  private generateReportPDF() {
+    // Taking starting time
+    let sT = new Date();
+    const eventProperties = {
+      'Subscription': this.subscriptionId,
+      'Platform': this.resourcePlatform != undefined ? this.resourcePlatform.toString() : "",
+      'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString() : "",
+      'resourceSku': this.resourceSku != undefined ? this.resourceSku.toString() : "",
+      'DetectorName': this.detectorName,
+    };
+    const loggingError = new Error();
+    // Checking if the detector is ResiliencyScore
+    if (this.detectorName.toLocaleLowerCase() === "resiliencyscore") {
+      if (this._ResiliencyReportSupported()) {
+        this.telemetryService.logEvent(TelemetryEventNames.DownloadReportDirectLinkUsed, eventProperties);
+        //
+        // Retrieving custom fonts from assets/vfs_fonts.json in each project, to be passed to 
+        // PDFMake to generate ResiliencyScoreReport. 
+        // Using this as an alternative to using the vfs_fonts.js build with PDFMake's build-vfs.js
+        // as this file caused problems when being compiled in a library project like diagnostic-data
+        //
+        this.http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => { this.vfsFonts = data });
+        // Getting the detector response
+        this._diagnosticService.getDetector(this.detectorName, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString)
+          .subscribe((httpResponse: DetectorResponse) => {
+            //If the page hasn't been refreshed this will use a cached request, so changing File Name to use the same name + "(cached)" to let them know they are seeing a cached version.
+            let eT = new Date();
+            let detectorTimeTaken = eT.getTime() - sT.getTime();
+
+            if (this.downloadReportFileName == undefined) {
+              this.generatedOn = ResiliencyScoreReportHelper.generatedOn();
+              this.downloadReportFileName = `${this.detectorName}-${JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName}-${this.generatedOn.replace(":", "-")}`;
+              ResiliencyScoreReportHelper.generateResiliencyReport(httpResponse.dataset[0].table, `${this.downloadReportFileName}`, this.generatedOn, this.vfsFonts);
+            }
+            else {
+              this.downloadReportFileName = `${this.downloadReportFileName}`;
+              ResiliencyScoreReportHelper.generateResiliencyReport(httpResponse.dataset[0].table, `${this.downloadReportFileName}_(cached)`, this.generatedOn, this.vfsFonts);
+            }
+            // Time after downloading report
+            eT = new Date();
+            // Estimate total time it took to download report
+            let totalTimeTaken = eT.getTime() - sT.getTime();
+            // log telemetry for interaction
+            let eventProperties = {
+              'Subscription': this.subscriptionId,
+              'CustomerName': JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName,
+              'NameSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].Name,
+              'ScoreSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].OverallScore,
+              'DetectorTimeTaken': detectorTimeTaken.toString(),
+              'TotalTimeTaken': totalTimeTaken.toString()
+            };
+            this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportDownloaded, eventProperties);
+            this.downloadReportText = "Report downloaded";
+            this.isDownloaded = true;
+            this.redirectToAvailabilityAndPerformance();
+          }, error => {
+            loggingError.message = 'Error calling ResiliencyScore detector';
+            loggingError.stack = error;
+            this.telemetryService.logException(loggingError);
+          });
+      }
+      else {
+        window.clearInterval(this.timer);
+        this.isDownloaded = true;
+        this.downloadReportText = "Resource not supported by Resiliency Score Report. Only Web Apps in Standard plans or higher are supported. </br> Redirecting in";
+        // log telemetry for interaction        
+        this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportResourceNotSupported, eventProperties);
+        this.timer = window.setInterval(() => {
+          this.countDownTimer--;
+          if (this.countDownTimer == 0) {
+            window.clearInterval(this.timer);
+            this.redirectToAvailabilityAndPerformance();
+          }
+        }, 1000);
+      }
+    }
+    else {
+      this.telemetryService.logEvent(TelemetryEventNames.DownloadReportDirectLinkUsed, eventProperties);
       //
       // Retrieving custom fonts from assets/vfs_fonts.json in each project, to be passed to 
-      // PDFMake to generate ResiliencyScoreReport. 
+      // PDFMake to generate DownloadableReport. 
       // Using this as an alternative to using the vfs_fonts.js build with PDFMake's build-vfs.js
       // as this file caused problems when being compiled in a library project like diagnostic-data
       //
       this.http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => { this.vfsFonts = data });
-      this.generateReportPDF();
-    }
-    else {
-      this.downloadReportText = "Resource not supported for Download Report";
+      // Getting the detector response
+      this._diagnosticService.getDetector(this.detectorName, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString)
+        .subscribe((httpResponse: DetectorResponse) => {
+          //If the page hasn't been refreshed this will use a cached request, so changing File Name to use the same name + "(cached)" to let them know they are seeing a cached version.
+          let eT = new Date();
+          let detectorTimeTaken = eT.getTime() - sT.getTime();
+
+          if (this.downloadReportFileName == undefined) {
+            this.generatedOn = ResiliencyScoreReportHelper.generatedOn();
+            this.downloadReportFileName = `${this.detectorName}-${JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName}-${this.generatedOn.replace(":", "-")}`;
+            // ResiliencyScoreReportHelper.generateDownloadableReport method not implemented yet
+            //ResiliencyScoreReportHelper.generateDownloadableReport(httpResponse.dataset[0].table, `${this.downloadReportFileName}`, this.generatedOn, this.vfsFonts);
+          }
+          else {
+            this.downloadReportFileName = `${this.downloadReportFileName}`;
+            // ResiliencyScoreReportHelper.generateDownloadableReport method not implemented yet
+            // ResiliencyScoreReportHelper.generateDownloadableReport(httpResponse.dataset[0].table, `${this.downloadReportFileName}_(cached)`, this.generatedOn, this.vfsFonts);
+          }
+          // Time after downloading report
+          eT = new Date();
+          // Estimate total time it took to download report
+          let totalTimeTaken = eT.getTime() - sT.getTime();
+          // log telemetry for interaction
+          let eventProperties = {
+            'Subscription': this.subscriptionId,
+            'DetectorName': this.detectorName,
+            'ResourceName': this.resourceName,
+            'DetectorTimeTaken': detectorTimeTaken.toString(),
+            'TotalTimeTaken': totalTimeTaken.toString()
+          };
+          this.telemetryService.logEvent(TelemetryEventNames.DownloadReportDirectLinkDownloaded, eventProperties);
+          this.downloadReportText = "Report downloaded";
+          this.isDownloaded = true;
+          this.redirectToAvailabilityAndPerformance();
+        }, error => {
+          loggingError.message = `Error calling ${this.detectorName} detector`;
+          loggingError.stack = error;
+          this.telemetryService.logException(loggingError);
+        });
     }
   }
 
@@ -93,77 +194,27 @@ export class DownloadReportComponent implements OnInit {
     return ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease);
   }
 
-  private generateReportPDF() {
-    // Taking starting time
-    let sT = new Date();
-    const loggingError = new Error();
-    // Getting the detector response
-    this._diagnosticService.getDetector(this.detectorName, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString)
-      .subscribe((httpResponse: DetectorResponse) => {
-        //If the page hasn't been refreshed this will use a cached request, so changing File Name to use the same name + "(cached)" to let them know they are seeing a cached version.
-        let eT = new Date();
-        let detectorTimeTaken = eT.getTime() - sT.getTime();
+  private _ResiliencyReportSupported(): boolean {
+    let _isSubIdInPercentageToRelease: boolean = false;
+    let _isBetaSubscription: boolean = false;
+    // allowlisting beta subscriptions for testing purposes
+    _isBetaSubscription = DemoSubscriptions.betaSubscriptions.indexOf(this.subscriptionId) >= 0;
+    // allowing 0% of subscriptions to use new feature
+    _isSubIdInPercentageToRelease = this._percentageOfSubscriptions(this.subscriptionId, 0);
 
-
-        if (this.downloadReportFileName == undefined) {
-          this.generatedOn = ResiliencyScoreReportHelper.generatedOn();
-          this.downloadReportFileName = `${this.detectorName}-${JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName}-${this.generatedOn.replace(":", "-")}`;
-          ResiliencyScoreReportHelper.generateResiliencyReport(httpResponse.dataset[0].table, `${this.downloadReportFileName}`, this.generatedOn, this.vfsFonts);
-        }
-        else {
-          this.downloadReportFileName = `${this.downloadReportFileName}`;
-          ResiliencyScoreReportHelper.generateResiliencyReport(httpResponse.dataset[0].table, `${this.downloadReportFileName}_(cached)`, this.generatedOn, this.vfsFonts);
-        }
-        // Time after downloading report
-        eT = new Date();
-        // Estimate total time it took to download report
-        let totalTimeTaken = eT.getTime() - sT.getTime();
-        // log telemetry for interaction
-        let eventProperties = {};
-        if (this.detectorName === "ResiliencyScore") {
-          eventProperties = {
-            'Subscription': this.subscriptionId,
-            'CustomerName': JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName,
-            'NameSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].Name,
-            'ScoreSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].OverallScore,
-            'DetectorTimeTaken': detectorTimeTaken.toString(),
-            'TotalTimeTaken': totalTimeTaken.toString()
-          };
-        }
-        else {
-          eventProperties = {
-            'Subscription': this.subscriptionId,
-            'DetectorName': this.detectorName,
-            'ResourceName': this.resourceName,
-            'DetectorTimeTaken': detectorTimeTaken.toString(),
-            'TotalTimeTaken': totalTimeTaken.toString()
-          };
-        }
-        this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportDownloaded, eventProperties);
-        this.downloadReportText = "Report downloaded";
-        this.isDownloaded = true;
-        // Redirecting to AvailabilityandPerformance category
-        
-        this._router.navigate([`../../`], {
-                relativeTo: this._route,                
-                queryParamsHandling: 'merge',
-                replaceUrl: true
-              });             
-      }, error => {
-        loggingError.message = 'Error calling ResiliencyScore detector';
-        loggingError.stack = error;
-        this.telemetryService.logException(loggingError);
-      });
+    // Releasing to only Beta Subscriptions for Web App (Linux) in standard or higher and all Web App (Windows) in standard or higher
+    if (this._checkIsWebAppProdSku(OperatingSystem.linux) && (_isSubIdInPercentageToRelease || _isBetaSubscription) || this._checkIsWebAppProdSku(OperatingSystem.windows)) {
+      return true;
+    }
   }
 
-  private _updateRouteBasedOnAdditionalParameters(route: string, additionalParameters: any): string {
-    if (additionalParameters.featurePath) {
-      let featurePath: string = additionalParameters.featurePath;
-      featurePath = featurePath.startsWith('/') ? featurePath.replace('/', '') : featurePath;
 
-      return `${route}/${featurePath}`;
-    }
-
-    return null;
+  // Redirecting to AvailabilityandPerformance category
+  private redirectToAvailabilityAndPerformance() {
+    this._router.navigate([`../../`], {
+      relativeTo: this._route,
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
   }
 }
