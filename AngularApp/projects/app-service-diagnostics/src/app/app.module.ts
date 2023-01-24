@@ -71,7 +71,7 @@ import { GenericThemeService } from 'diagnostic-data';
         path: 'resource',
         loadChildren: () => import('./resources/resources.module').then(m => m.ResourcesModule),
     }
-], { relativeLinkResolution: 'legacy'}),
+], { relativeLinkResolution: 'legacy' }),
     CustomMaterialModule,
     HighchartsChartModule,
     FabricModule
