@@ -15,6 +15,10 @@ export class GenericSupportTopicService {
         return null;
     }
 
+    public getMatchingDetectors(): Observable<any[]> {
+        return null;
+    }
+
     public getPathForSupportTopic(supportTopicId: string, pesId: string, searchTerm: string, sapSupportTopicId: string, sapProductId: string): Observable<any> {
         return null;
     }

@@ -1,0 +1,42 @@
+<button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-toggle="dropdown"
+  aria-expanded="false">
+  Add <span class="caret"></span>
+</button>
+<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+  <li *ngIf="!isConditionNode">
+    <h6 class="dropdown-header">Conditions</h6>
+  </li>
+  <li *ngIf="!isConditionNode"><a class="dropdown-item" [class.disabled]="isDisabled" (click)="addCondition('ifelse')"
+      href="javascript:void(0)">If Else</a>
+  </li>
+  <li *ngIf="!isConditionNode"><a class="dropdown-item" [class.disabled]="isDisabled" (click)="addCondition('switch')"
+      href="javascript:void(0)">Switch
+    </a>
+  </li>
+  <li *ngIf="isSwitchCase"><a class="dropdown-item" [class.disabled]="isDisabled" (click)="addSwitchCase()"
+      href="javascript:void(0)">Switch Case
+    </a>
+  </li>
+  <li>
+    <h6 class="dropdown-header">Actions</h6>
+  </li>
+  <li class="dropdown-item" [class.disabled]="isDisabled"><a (click)="addNode(nodeType.detector, false)"
+      href="javascript:void(0)">Detector</a>
+  </li>
+  <li class="dropdown-item" [class.disabled]="isDisabled"><a (click)="addNode(nodeType.kustoQuery, false)"
+      href="javascript:void(0)">Kusto Query</a>
+  </li>
+  <li class="dropdown-item" [class.disabled]="isDisabled"><a class="dropdown-item"
+      (click)="addNode(nodeType.markdown, false)" href="javascript:void(0)">Markdown</a>
+  </li>
+  <li class="dropdown-item" *ngIf="!isRootNode && !isConditionNode"><a class="dropdown-item"
+      (click)="addNode(nodeType.detector, true)" href="javascript:void(0)">Detector
+      (parallel)</a>
+  </li>
+  <li class="dropdown-item" *ngIf="!isRootNode && !isConditionNode"><a class="dropdown-item"
+      (click)="addNode(nodeType.kustoQuery, true)" href="javascript:void(0)">Kusto Query
+      (parallel)</a>
+  </li>
+</ul>
+<button *ngIf="!isConditionNode" type="button" class="ml-2 btn btn-danger btn-sm" (click)="deleteNode()"
+  [disabled]="isDisabled">Delete</button>

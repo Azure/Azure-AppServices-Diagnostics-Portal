@@ -1,6 +1,6 @@
 import { NgModule, Injectable, SecurityContext, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent, FormatResourceNamePipe } from './dashboard/dashboard.component';
 import { SharedModule } from '../../shared/shared.module';
 import { RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
@@ -43,7 +43,6 @@ import { GistChangelistComponent } from './gist-changelist/gist-changelist.compo
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TabAnalysisComponent } from './tabs/tab-analysis/tab-analysis.component';
 import { CategoryPageComponent } from './category-page/category-page.component';
-import { AvatarModule } from 'ngx-avatars';
 import { SupportTopicPageComponent } from './support-topic-page/support-topic-page.component';
 import { SelfHelpContentComponent } from './self-help-content/self-help-content.component';
 import { UserDetectorsComponent } from './user-detectors/user-detectors.component';
@@ -59,7 +58,7 @@ import { L2SideNavComponent } from './l2-side-nav/l2-side-nav.component';
 import { ApplensCommandBarService } from './services/applens-command-bar.service';
 import { ApplensGlobal as ApplensGlobals } from '../../applens-global';
 import { ResourceInfo } from '../../shared/models/resources';
-import { catchError, flatMap, map, take } from 'rxjs/operators';
+import { catchError, map, mergeMap, take } from 'rxjs/operators';
 import { RecentResource } from '../../shared/models/user-setting';
 import { UserSettingService } from './services/user-setting.service';
 import { ApplensDocsComponent } from './applens-docs/applens-docs.component';
@@ -89,6 +88,43 @@ import { FabBreadcrumbModule } from '@angular-react/fabric/lib/components/breadc
 import { FabMessageBarModule } from '@angular-react/fabric/lib/components/message-bar';
 import { CreateWorkflowComponent } from './workflow/create-workflow/create-workflow.component';
 import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
+import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
+import { ClientScriptService } from './services/client-script.service';
+import { UpdateDetectorReferencesComponent } from './update-detector-references/update-detector-references.component';
+import { ApplensDocumentationService } from './services/applens-documentation.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { AngularMarkdownEditorModule } from 'angular-markdown-editor';
+import { WorkflowService } from './workflow/services/workflow.service';
+import { IfElseConditionStepComponent } from './workflow/ifelse-condition-step/ifelse-condition-step.component';
+import { ConditionIftrueStepComponent } from './workflow/condition-iftrue-step/condition-iftrue-step.component';
+import { ConditionIffalseStepComponent } from './workflow/condition-iffalse-step/condition-iffalse-step.component';
+import { SwitchStepComponent } from './workflow/switch-step/switch-step.component';
+import { SwitchCaseStepComponent } from './workflow/switch-case-step/switch-case-step.component';
+import { NodeActionsComponent } from './workflow/node-actions/node-actions.component';
+import { MarkdownNodeComponent } from './workflow/markdown-node/markdown-node.component';
+import { KustoNodeComponent } from './workflow/kusto-node/kusto-node.component';
+import { DetectorNodeComponent } from './workflow/detector-node/detector-node.component';
+import { KustoQueryDialogComponent } from './workflow/kusto-query-dialog/kusto-query-dialog.component';
+import { NodeTitleComponent } from './workflow/node-title/node-title.component';
+import { ErrorMessageComponent } from './workflow/error-message/error-message.component';
+import { SwitchCaseDefaultStepComponent } from './workflow/switch-case-default-step/switch-case-default-step.component';
+import { CommonNodePropertiesComponent } from './workflow/common-node-properties/common-node-properties.component';
+import { ConfigureVariablesComponent } from './workflow/configure-variables/configure-variables.component';
+import { MarkdownQueryDialogComponent } from './workflow/markdown-query-dialog/markdown-query-dialog.component';
+import { WorkflowComponent } from './workflow/workflow/workflow.component';
+import { WorkflowRunDialogComponent } from './workflow/workflow-run-dialog/workflow-run-dialog.component';
+import { WorkflowRootNodeComponent } from './workflow/workflow-root-node/workflow-root-node.component';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -101,8 +137,8 @@ export class InitResolver implements Resolve<Observable<ResourceInfo>>{
         this._detectorControlService.updateTimePickerInfo({
             selectedKey: TimePickerOptions.Custom,
             selectedText: TimePickerOptions.Custom,
-            startDate: new Date(startTime),
-            endDate: new Date(endTime)
+            startDate: new Date(this._detectorControlService.startTimeString),
+            endDate: new Date(this._detectorControlService.endTimeString)
         });
 
         //Wait for getting UserSetting and update landingPage info before going to dashboard/detector page
@@ -115,9 +151,9 @@ export class InitResolver implements Resolve<Observable<ResourceInfo>>{
                 queryParams: queryParams
             };
             return resourceInfo;
-        }), flatMap(resourceInfo => {
+        }), mergeMap(resourceInfo => {
             return this._userSettingService.getUserSetting().pipe(take(1), catchError(_ => of(null)), map(_ => resourceInfo));
-        }), flatMap(resourceInfo => {
+        }), mergeMap(resourceInfo => {
             return this._userSettingService.updateLandingInfo(recentResource).pipe(catchError(_ => of(null)), map(_ => resourceInfo));
         }));
     }
@@ -189,7 +225,7 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
             },
             {
                 path: 'createWorkflow',
-                component: CreateWorkflowComponent,
+                component: WorkflowComponent,
                 canDeactivate: [DevelopNavigationGuardService]
             },
             {
@@ -399,6 +435,35 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
                 ]
             },
             {
+                path: 'workflows/:workflowId',
+                component: TabCommonComponent,
+                data: {
+                    cacheComponent: true,
+                    isWorkflow: true
+                },
+                children: [
+                    {
+                        path: '',
+                        component: TabDataComponent,
+                        data: {
+                            tabKey: TabKey.Data
+                        }
+                    },
+                    {
+                        path: 'data',
+                        redirectTo: ''
+                    },
+                    {
+                        path: 'edit',
+                        component: TabDevelopComponent,
+                        canDeactivate: [DevelopNavigationGuardService],
+                        data: {
+                            tabKey: TabKey.Develop
+                        }
+                    }
+                ]
+            },
+            {
                 path: 'search',
                 component: SearchResultsComponent
             },
@@ -417,7 +482,6 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
 
 @NgModule({
     imports: [
-        AvatarModule,
         CommonModule,
         FormsModule,
         DashboardModuleRoutes,
@@ -451,7 +515,27 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         FabDropdownModule,
         FabBreadcrumbModule,
         FabMessageBarModule,
-        NgFlowchartModule
+        NgFlowchartModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatDialogModule,
+        MatButtonModule,
+        MatExpansionModule,
+        MatCardModule,
+        MatDividerModule,
+        MatSelectModule,
+        MatMenuModule,
+        MatButtonToggleModule,
+        MatTableModule,
+        MatAutocompleteModule,
+        AngularMarkdownEditorModule.forRoot({
+            // add any Global Options/Config you might want
+            // to avoid passing the same options over and over in each components of your App
+            iconlibrary: 'glyph'
+        }),
+        MonacoEditorModule.forRoot() // use forRoot() in main app module only.
     ],
     providers: [
         ApplensDiagnosticService,
@@ -460,9 +544,12 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         ApplensSupportTopicService,
         ApplensContentService,
         ApplensCommandBarService,
+        ApplensDocumentationService,
         InitResolver,
         ApplensGlobals,
         BreadcrumbService,
+        ClientScriptService,
+        WorkflowService,
         {
             provide: ResourceService,
             useFactory: ResourceServiceFactory,
@@ -478,13 +565,17 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         { provide: SolutionService, useExisting: GenericSolutionService },
         { provide: GenieGlobals, useExisting: ApplensGlobals },
         { provide: GenericBreadcrumbService, useExisting: BreadcrumbService },
-        { provide: GenericUserSettingService, useExisting: UserSettingService }
+        { provide: GenericUserSettingService, useExisting: UserSettingService },
+        { provide: GenericClientScriptService, useExisting: ClientScriptService}
     ],
     declarations: [DashboardComponent, SideNavComponent, ResourceMenuItemComponent, ResourceHomeComponent, OnboardingFlowComponent, SearchTermAdditionComponent,
         SearchMenuPipe, TabDataComponent, TabDevelopComponent, TabCommonComponent, TabDataSourcesComponent, TabMonitoringComponent,
         TabMonitoringDevelopComponent, TabAnalyticsDevelopComponent, TabAnalyticsDashboardComponent, GistComponent, TabGistCommonComponent,
         TabGistDevelopComponent, TabChangelistComponent, GistChangelistComponent, TabAnalysisComponent, CategoryPageComponent, SupportTopicPageComponent,
         SelfHelpContentComponent, UserDetectorsComponent, FormatResourceNamePipe, Sort, SearchResultsComponent, ConfigurationComponent, DashboardContainerComponent,
-        L2SideNavComponent, UserActivePullrequestsComponent, FavoriteDetectorsComponent, ApplensDocsComponent, ApplensDocSectionComponent,CreateWorkflowComponent]
+        L2SideNavComponent, UserActivePullrequestsComponent, FavoriteDetectorsComponent, ApplensDocsComponent, ApplensDocSectionComponent, CreateWorkflowComponent,
+        IfElseConditionStepComponent, ConditionIftrueStepComponent, ConditionIffalseStepComponent, SwitchStepComponent, SwitchCaseStepComponent, SwitchCaseDefaultStepComponent,
+        KustoQueryDialogComponent, DetectorNodeComponent, KustoNodeComponent, MarkdownNodeComponent, NodeActionsComponent, ConfigureVariablesComponent, CommonNodePropertiesComponent,
+        NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent]
 })
 export class DashboardModule { }

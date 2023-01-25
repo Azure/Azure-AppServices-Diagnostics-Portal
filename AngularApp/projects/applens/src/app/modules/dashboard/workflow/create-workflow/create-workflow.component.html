@@ -1,9 +1,53 @@
-<main>
-  <div id="canvas" ngFlowchartCanvas [ngFlowchartOptions]="options" [disabled]="disabled"></div>
-</main>
+<div class="form-group row" [hidden]="true">
+  <button class="btn btn-sm btn-primary ml-2" (click)="showFlowData()">View Json</button>
+</div>
 
-<ng-template #normalStep let-data>
-  <div class="card" [attr.name]="data.data.name" #card>
-    <span>{{ data.data.name }}</span>
+<form>
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label for="workflowId">Id</label>
+      <input name="workflowId" class="form-control" placeholder="Workflow Id" [(ngModel)]="publishBody.Id">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="workflowName">Name</label>
+      <input class="form-control" name="workflowName" placeholder="Workflow Name"
+        [(ngModel)]="publishBody.WorkflowName">
+    </div>
+    <div class="form-group col-md-3">
+      <label for="description">Description</label>
+      <input class="form-control" name="description" placeholder="Workflow description"
+        [(ngModel)]="publishBody.Description">
+    </div>
+
+    <div class="form-group col-md-3">
+      <label for="workflowAuthor">Author</label>
+      <input class="form-control" name="workflowAuthor" placeholder="Enter your alias" [(ngModel)]="publishBody.Author">
+    </div>
+
   </div>
-</ng-template>
+  <div class="form-row">
+    <ng-container *ngIf="service === 'SiteService'">
+      <div class="form-group col-md-3">
+        <label for="appType">App Type</label>
+        <ng-select #selectAppType [items]="appTypes" [multiple]="true" (change)="onAppTypeChange($event)"
+          placeholder="Select App type">
+        </ng-select>
+      </div>
+      <div class="form-group col-md-3">
+        <label for="platformType">Platform Type</label>
+        <ng-select #selectPlatformType [items]="platformTypes" [multiple]="true" (change)="onPlatformTypeChange($event)"
+          placeholder="Select Platform type">
+        </ng-select>
+      </div>
+      <div class="form-group col-md-3">
+        <label for="stackType">Stack Type</label>
+        <ng-select #selectStackType [items]="stackTypes" [multiple]="true" (change)="onStackTypeChange($event)"
+          placeholder="Select Stack type">
+        </ng-select>
+      </div>
+    </ng-container>
+  </div>
+</form>
+
+<div id="canvas" ngFlowchartCanvas [ngFlowchartOptions]="options" [disabled]="disabled"
+  [ngFlowchartCallbacks]="callbacks"></div>

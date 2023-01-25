@@ -22,6 +22,7 @@ export class TelemetryService {
     private isPublic: boolean;
     private ticketBladeWorkflowId: string = "";
     private enabledResourceTypes: { resourceType: string, searchSuffix: string }[] = [];
+    private commonProperties: { [name: string]: string } = {};
     constructor(private _appInsightsService: AppInsightsTelemetryService, private _kustoService: KustoTelemetryService,
         @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _versionService: VersionService, private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticSiteService: DiagnosticSiteService, private _http: HttpClient, private _genericPortalService: GenericPortalService) {
         if (config.useKustoForTelemetry) {
@@ -64,8 +65,9 @@ export class TelemetryService {
                 }
             }
         }
-        this.addCommonLoggingProperties(properties);
-
+        this.addProperties();
+        properties = properties || {};
+        properties = { ...properties, ...this.commonProperties };
         for (const telemetryProvider of this.telemetryProviders) {
             if (telemetryProvider) {
                 telemetryProvider.logEvent(eventMessage, properties, measurements);
@@ -74,7 +76,9 @@ export class TelemetryService {
     }
 
     public logPageView(name: string, properties?: any, measurements?: any, url?: string, duration?: number) {
-        this.addCommonLoggingProperties(properties);
+        this.addProperties();
+        properties = properties || {};
+        properties = { ...properties, ...this.commonProperties };
         for (const telemetryProvider of this.telemetryProviders) {
             if (!url) {
                 url = window.location.href;
@@ -87,7 +91,9 @@ export class TelemetryService {
 
     public logException(exception: Error, handledAt?: string, properties?: any, severityLevel?: SeverityLevel) {
         try {
-            this.addCommonLoggingProperties(properties);
+            this.addProperties();
+            properties = properties || {};
+            properties = { ...properties, ...this.commonProperties };
         } catch (e) {
         }
         for (const telemetryProvider of this.telemetryProviders) {
@@ -98,7 +104,9 @@ export class TelemetryService {
     }
 
     public logTrace(message: string, properties?: any, severityLevel?: any) {
-        this.addCommonLoggingProperties(properties);
+        this.addProperties();
+        properties = properties || {};
+        properties = { ...properties, ...this.commonProperties };
         for (const telemetryProvider of this.telemetryProviders) {
             if (telemetryProvider) {
                 telemetryProvider.logTrace(message, properties, severityLevel);
@@ -107,7 +115,9 @@ export class TelemetryService {
     }
 
     public logMetric(name: string, average: number, sampleCount?: number, min?: number, max?: number, properties?: any) {
-        this.addCommonLoggingProperties(properties);
+        this.addProperties();
+        properties = properties || {};
+        properties = { ...properties, ...this.commonProperties };
         for (const telemetryProvider of this.telemetryProviders) {
             if (telemetryProvider) {
                 telemetryProvider.logMetric(name, average, sampleCount, min, max, properties);
@@ -161,22 +171,26 @@ export class TelemetryService {
         return productName;
     }
 
-    private addCommonLoggingProperties(properties: { [name: string]: string }): void {
-        properties = properties || {};
-        properties["portalVersion"] = this.isLegacy ? 'v2' : 'v3';
-        properties["slot"] = this.slot;
-        if (!(properties["url"] || properties["Url"])) {
-            properties["url"] = this._router.url;
+    private addProperties(): void {
+        this.commonProperties["portalVersion"] = this.isLegacy ? 'v2' : 'v3';
+        this.commonProperties["slot"] = this.slot;
+        if (!(this.commonProperties["url"] || this.commonProperties["Url"])) {
+            this.commonProperties["url"] = this._router.url;
         }
 
         let productName = "";
         productName = this.findProductName(this._router.url);
         if (productName !== "") {
-            properties["productName"] = productName;
+            this.commonProperties["ProductName"] = productName;
+            this.commonProperties["productName"] = productName;
         }
 
         if (this.ticketBladeWorkflowId !== "") {
-            properties["ticketBladeWorkflowId"] = this.ticketBladeWorkflowId;
+            this.commonProperties["ticketBladeWorkflowId"] = this.ticketBladeWorkflowId;
         }
+    }
+
+    public updateCommonProperties(properties: { [name: string]: string }) {
+        this.commonProperties = {...this.commonProperties, ...properties};
     }
 }

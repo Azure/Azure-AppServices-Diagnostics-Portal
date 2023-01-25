@@ -1,0 +1,17 @@
+<div [attr.name]="data.name" #canvasContent>
+  <div class="panel panel-default">
+    <div class="panel-heading panel-title-switch">
+      <node-title [data]="data" [disableEdit]="true" [customClass]="'background-gray'"
+        [customClassIcon]="'fa-check'">
+      </node-title>
+    </div>
+    <div class="panel-body">
+      <div>If no case contains a matching value</div>
+      <div class="mb-5"></div>
+      <node-actions [isConditionNode]="true" (onNodeAdded)="addNode($event)"
+        (onConditionAdded)="addCondition($event)" (onDeleted)="deleteNode()" [isDisabled]="isDisabled()"
+        [isRootNode]="isRootNode()">
+      </node-actions>
+    </div>
+  </div>
+</div>

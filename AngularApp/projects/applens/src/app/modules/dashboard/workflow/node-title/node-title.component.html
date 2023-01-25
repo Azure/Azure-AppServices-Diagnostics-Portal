@@ -1,0 +1,20 @@
+<div class="flex-div">
+  <div class="node-img" [ngClass]="customClass">
+    <div class="center">
+      <i class="fa" [ngClass]="customClassIcon"></i>
+    </div>
+  </div>
+  <div class="ml-2 node-title center">
+    <span *ngIf="!data.isEditingTitle">{{data.title }}</span>
+    <input *ngIf="data.isEditingTitle" type="text" [(ngModel)]="data.title" name="cardTitle">
+  </div>
+
+  <ng-container *ngIf="!disableEdit">
+    <div class="filler"></div>
+    <div class="center">
+      <i [ngClass]="data.isEditingTitle ? 'fa-save' : 'fa-pencil'" class="fa mr-2" aria-hidden="true"
+        (click)="data.isEditingTitle = !data.isEditingTitle"></i>
+    </div>
+  </ng-container>
+
+</div>

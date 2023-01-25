@@ -46,7 +46,8 @@
               "node_modules/admin-lte/dist/css/skins/skin-blue.css",
               "projects/applens/src/styles.scss",
               "node_modules/vis/dist/vis.min.css",
-              "node_modules/vis/dist/vis-timeline-graph2d.min.css"
+              "node_modules/vis/dist/vis-timeline-graph2d.min.css",
+              "node_modules/bootstrap-markdown/css/bootstrap-markdown.min.css"
             ],
             "scripts": [
               "node_modules/moment/min/moment.min.js",
@@ -57,7 +58,8 @@
               "node_modules/prismjs/components/prism-clike.min.js",
               "node_modules/prismjs/components/prism-csharp.min.js",
               "node_modules/prismjs/components/prism-css.min.js",
-              "node_modules/bootstrap/dist/js/bootstrap.min.js"
+              "node_modules/bootstrap/dist/js/bootstrap.min.js",
+              "node_modules/bootstrap-markdown/js/bootstrap-markdown.js"
             ],
             "vendorChunk": true,
             "extractLicenses": false,

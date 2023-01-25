@@ -60,7 +60,7 @@ export class GenericAnalysisComponent extends GenericDetectorComponent implement
         }
 
         this._activatedRouteLocal.paramMap.subscribe(params => {
-            this.analysisId = (this.analysisId != 'searchResultsAnalysis' && !!params.get('analysisId')) ? params.get('analysisId') : this.analysisId;
+            this.analysisId = (this.analysisId != 'searchResultsAnalysis' && this.analysisId != 'supportTopicAnalysis' && !!params.get('analysisId')) ? params.get('analysisId') : this.analysisId;
             this.analysisDetector = this.analysisId;
             this.detectorId = params.get('detectorName') === null ? "" : params.get('detectorName');
             this._activatedRouteLocal.queryParamMap.subscribe(qParams => {
@@ -70,6 +70,9 @@ export class GenericAnalysisComponent extends GenericDetectorComponent implement
                     this.displayDetectorContainer = false;
                 }
                 else {
+                    if (this.analysisId === 'supportTopicAnalysis' && this.searchTerm && this.searchTerm.length > 0) {
+                        this.displayDetectorContainer = false;
+                    }
                     this.showSearchBar = false;
                 }
 
@@ -114,8 +117,8 @@ export class GenericAnalysisComponent extends GenericDetectorComponent implement
     }
 
     renderCXPChatButton() {
-        if (this.cxpChatTrackingId === '' && this.cxpChatUrl === '') {            
-            let effectiveSupportTopicId:string = '';
+        if (this.cxpChatTrackingId === '' && this.cxpChatUrl === '') {
+            let effectiveSupportTopicId: string = '';
             effectiveSupportTopicId = (this._supportTopicService && this._supportTopicService.sapSupportTopicId) ? this._supportTopicService.sapSupportTopicId : this._supportTopicService.supportTopicId;
             if (this._supportTopicService && this._cxpChatService && this._cxpChatService.isSupportTopicEnabledForLiveChat(effectiveSupportTopicId)) {
                 this.cxpChatTrackingId = this._cxpChatService.generateTrackingId(effectiveSupportTopicId);

@@ -14,6 +14,9 @@ import { BreadcrumbService } from '../services/breadcrumb.service';
 import { forkJoin } from 'rxjs';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { element } from 'protractor';
+import { ApplensDocumentationService } from '../services/applens-documentation.service';
+import { DocumentationRepoSettings } from '../../../shared/models/documentationRepoSettings';
+import { DocumentationFilesList } from './documentationFilesList';
 
 @Component({
   selector: 'side-nav',
@@ -25,22 +28,25 @@ export class SideNavComponent implements OnInit {
   userId: string = "";
 
   detectorsLoading: boolean = true;
+  workflowsLoading: boolean = true;
 
   currentRoutePath: string[];
 
   categories: CollapsibleMenuItem[] = [];
   categoriesCopy: CollapsibleMenuItem[] = [];
 
+  workflowCategories: CollapsibleMenuItem[] = [];
+  workflowCategoriesCopy: CollapsibleMenuItem[] = [];
+
   gists: CollapsibleMenuItem[] = [];
   gistsCopy: CollapsibleMenuItem[] = [];
 
   docs: CollapsibleMenuItem[] = [];
   docsCopy: CollapsibleMenuItem[] = [];
-  docsRepoRoot: string = `AppLensDocumentation`;
+  documentationRepoSettings: DocumentationRepoSettings;
   docsBranch = null;
-  docsResource: string = `AppServiceDiagnostics`;
-  docStagingBranch: string = 'DocumentationStagingBranch';
-  
+  documentList: DocumentationFilesList = new DocumentationFilesList();
+
   favoriteDetectors: CollapsibleMenuItem[] = [];
   favoriteDetectorsCopy: CollapsibleMenuItem[] = [];
 
@@ -50,9 +56,13 @@ export class SideNavComponent implements OnInit {
   contentHeight: string;
 
   getDetectorsRouteNotFound: boolean = false;
+  getWorkflowsRouteNotFound: boolean = false;
+
   isGraduation: boolean = false;
   isProd: boolean = false;
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService, private _userSettingService: UserSettingService, private breadcrumbService: BreadcrumbService,  private _diagnosticApi: DiagnosticApiService) {
+  workflowsEnabled: boolean = false;
+
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService, private _userSettingService: UserSettingService, private breadcrumbService: BreadcrumbService, private _diagnosticApi: DiagnosticApiService, private _documentationService: ApplensDocumentationService) {
     this.contentHeight = (window.innerHeight - 139) + 'px';
     if (environment.adal.enabled) {
       let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
@@ -124,19 +134,6 @@ export class SideNavComponent implements OnInit {
         return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `createGist`.toLowerCase();
       },
       icon: null
-    },
-    {
-      label: 'New Workflow',
-      id: "",
-      onClick: () => {
-        this.navigateTo('createWorkflow');
-      },
-      expanded: false,
-      subItems: null,
-      isSelected: () => {
-        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `createWorkflow`.toLowerCase();
-      },
-      icon: null
     }
   ];
 
@@ -175,7 +172,10 @@ export class SideNavComponent implements OnInit {
     }];
 
   ngOnInit() {
-    this.initializeDetectors();
+    this._documentationService.getDocsRepoSettings().subscribe(settings => {
+      this.documentationRepoSettings = settings;
+      this.initializeDetectors();
+    });
     this.getCurrentRoutePath();
 
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
@@ -183,6 +183,31 @@ export class SideNavComponent implements OnInit {
     });
     this.initializeActivePullRequestTab();
     this.initializeFavoriteDetectors();
+
+    this._diagnosticApiService.isUserAllowedForWorkflow(this.userId).subscribe(resp => {
+      if (resp) {
+        this.workflowsEnabled = this.resourceService.workflowsEnabled;
+        if (this.workflowsEnabled) {
+          this.initializeWorkflows();
+          this.createNew.push(
+            {
+              label: 'New Workflow',
+              id: "",
+              onClick: () => {
+                this.navigateTo('createWorkflow');
+              },
+              expanded: false,
+              subItems: null,
+              isSelected: () => {
+                return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `createWorkflow`.toLowerCase();
+              },
+              icon: null
+            }
+          );
+        }
+      }
+    });
+
   }
 
   navigateToOverview() {
@@ -217,13 +242,37 @@ export class SideNavComponent implements OnInit {
     this.navigateTo(`users/${this.userId}/detectors`);
   }
 
-  getDocCategories(){
-    const categoriesObservable = this._diagnosticApiService.getDevOpsTree(`${this.docsRepoRoot}`, this.docsBranch, this.docsResource);
+  getDocCategories() {
+    const categoriesObservable = this._diagnosticApiService.getDevOpsTree(`${this.documentationRepoSettings.root}`, this.docsBranch, this.documentationRepoSettings.resourceId);
     return categoriesObservable;
   }
-  getDocFiles(category: string){
-    const fileObservalbe = this._diagnosticApiService.getDevOpsTree(`${this.docsRepoRoot}/${category}`, this.docsBranch, this.docsResource);
+  getDocFiles(category: string) {
+    const fileObservalbe = this._diagnosticApiService.getDevOpsTree(`${this.documentationRepoSettings.root}/${category}`, this.docsBranch, this.documentationRepoSettings.resourceId);
     return fileObservalbe;
+  }
+
+  initializeWorkflows() {
+    this.workflowsLoading = true;
+    this._diagnosticApiService.getWorkflows().subscribe(workflowList => {
+      this.workflowsLoading = false;
+      if (workflowList) {
+        workflowList.forEach(element => {
+          this.createWorkflowMenuItem(element, this.workflowCategories);
+        });
+
+        // this.workflowCategories.push(new CollapsibleMenuItem("All workflows", "", () => { this.navigateTo("allworkflows"); }, () => { return this.currentRoutePath && this.currentRoutePath.join('/') === `allworkflows`; }, null, false, null));
+        this.workflowCategories = this.workflowCategories.sort((a, b) => a.label === 'Uncategorized' ? 1 : (a.label > b.label ? 1 : -1));
+        this.workflowCategoriesCopy = this.deepCopyArray(this.workflowCategories);
+      }
+
+    },
+      error => {
+        this.workflowsLoading = false;
+        // TODO: handle workflow route not found
+        if (error && error.status === 404) {
+          this.getWorkflowsRouteNotFound = true;
+        }
+      });
   }
 
   initializeDetectors() {
@@ -251,8 +300,6 @@ export class SideNavComponent implements OnInit {
           this.getDetectorsRouteNotFound = true;
         }
       });
-
-
 
     this._diagnosticApiService.getGists().subscribe(gistList => {
       if (gistList) {
@@ -286,54 +333,79 @@ export class SideNavComponent implements OnInit {
         if (error && error.status === 404) {
         }
       });
-    
-      this._diagnosticApi.isStaging().subscribe(isStaging => {
-        if (isStaging){this.docsBranch = this.docStagingBranch;}
-        this.getDocCategories().subscribe(content => {
-          let categories = [];
-          content.folders.forEach(element => {
-            let cn = element.split('/').at(-1);
-            if ( cn != this.docsRepoRoot && cn.at(0) != "_")
-                  categories.push(cn)
-          })
-          let fileNamesObservables = [];
-          categories.forEach(cat => {
-            fileNamesObservables.push(this.getDocFiles(cat));
-            let catItem = new CollapsibleMenuItem(cat, "", null, null, null, false);
-            this.docs.push(catItem);
+
+    if (this.documentationRepoSettings.isStaging) { this.docsBranch = this.documentationRepoSettings.stagingBranch; }
+    this.getDocCategories().subscribe(content => {
+      let categories = [];
+      content.folders.forEach(element => {
+        let cn = element.split('/').at(-1);
+        if (cn != this.documentationRepoSettings.root && cn.at(0) != "_")
+          categories.push(cn)
+      });
+      let fileNamesObservables = [];
+      categories.forEach(cat => {
+        fileNamesObservables.push(this.getDocFiles(cat));
+        let catItem = new CollapsibleMenuItem(cat, "", null, null, null, false);
+        this.docs.push(catItem);
+      });
+      forkJoin(fileNamesObservables).subscribe(files => {
+        let fileNames = []
+        files.forEach((f: any, filesIndex) => {
+          let folderList = [];
+          f.folders.forEach(element => {
+            let fn = element.split('/').at(-1);
+            let parent = element.split('/').at(-2);
+            if ((fn != categories[filesIndex] || fn === parent) && fn.at(0) != "_")
+              folderList.push(fn);
           });
-          forkJoin(fileNamesObservables).subscribe(files => {
-            let fileNames = []
-            files.forEach((f:any, filesIndex) => {
-              let folderList = [];
-              f.folders.forEach(element => {
-                let fn = element.split('/').at(-1);
-                let parent = element.split('/').at(-2);
-                if ( (fn != categories[filesIndex] || fn === parent) && fn.at(0) != "_")
-                  folderList.push(fn);
-              });
-              fileNames.push(folderList);
-              fileNames[filesIndex].forEach(d => {
-                let docItem: CollapsibleMenuItem = {
-                  label: d,
-                  id: "",
-                  onClick: () => {
-                    this.navigateTo(`docs/${categories[filesIndex]}/${d}`);
-                  },
-                  expanded: false,
-                  subItems: null,
-                  isSelected: () => {
-                    return this.currentRoutePath && this.currentRoutePath.join('/') === `docs/${categories[filesIndex]}/${d}`;
-                  },
-                  icon: null
-                }
-                this.docs[this.docs.findIndex(x => {return x.label === categories[filesIndex]})].subItems.push(docItem)
-              });
-            });
-            this.docsCopy = this.deepCopyArray(this.docs);
+          fileNames.push(folderList);
+          fileNames[filesIndex].forEach(d => {
+            let docItem: CollapsibleMenuItem = {
+              label: d,
+              id: "",
+              onClick: () => {
+                this.navigateTo(`docs/${categories[filesIndex]}/${d}`);
+              },
+              expanded: false,
+              subItems: null,
+              isSelected: () => {
+                return this.currentRoutePath && this.currentRoutePath.join('/') === `docs/${categories[filesIndex]}/${d}`;
+              },
+              icon: null
+            };
+            this.docs[this.docs.findIndex(x => { return x.label === categories[filesIndex] })].subItems.push(docItem)
           });
         });
+        this.docsCopy = this.deepCopyArray(this.docs);
       });
+    });
+  }
+
+  private createWorkflowMenuItem(element: DetectorMetaData, categories: CollapsibleMenuItem[]) {
+    const onClick = () => {
+      this._telemetryService.logEvent(TelemetryEventNames.SideNavigationItemClicked, { "elementId": element.id });
+      const path = `workflows/${element.id}`;
+      this.navigateTo(path);
+    };
+
+    const isSelected = () => {
+      return this.currentRoutePath && this.currentRoutePath.join('/') === `workflows/${element.id}`;
+    };
+
+    let category = "Uncategorized";
+    if (element.category) {
+      category = element.category;
+    }
+
+    const menuItem = new CollapsibleMenuItem(element.name, element.id, onClick, isSelected, null, false, [], element.supportTopicList && element.supportTopicList.length > 0 ? element.supportTopicList.map(x => x.id).join(",") : null);
+    let categoryMenuItem = this.workflowCategories.find((cat: CollapsibleMenuItem) => cat.label === category);
+
+    //Expand for analysis or pinned detectors section
+    if (!categoryMenuItem) {
+      categoryMenuItem = new CollapsibleMenuItem(category, "", null, null, null, false);
+      categories.push(categoryMenuItem);
+    }
+    categoryMenuItem.subItems.push(menuItem);
   }
 
   private createDetectorMenuItem(element: DetectorMetaData, categories: CollapsibleMenuItem[], isAnalysis: boolean = false, isFavoriteDetector: boolean = false) {
@@ -422,8 +494,8 @@ export class SideNavComponent implements OnInit {
 
 
   updateSearch(searchTerm: string) {
-    if(searchTerm === null || searchTerm === undefined) return;
-    if(searchTerm.length < 3 && searchTerm.length > 0) return;
+    if (searchTerm === null || searchTerm === undefined) return;
+    if (searchTerm.length < 3 && searchTerm.length > 0) return;
     this.searchValue = searchTerm;
     this.categories = this.updateMenuItems(this.categoriesCopy, searchTerm);
     this.gists = this.updateMenuItems(this.gistsCopy, searchTerm);

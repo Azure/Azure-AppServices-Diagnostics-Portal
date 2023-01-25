@@ -18,20 +18,23 @@
     "AppLensV3": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CloudDomain": "PublicAzure"
       }
     },
-    "AppLensV3NationalCloud": {
+    "AppLensV3NationalClouds": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CloudDomain": "Fairfax"
+      }
+    },
+    "AppLensV3NationalCloudProduction": {
       "commandName": "Project",
       "commandLineArgs": "--useHttps=true",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "NationalCloud"
-      }
-    },
-    "AppLensV3NationalCloudDevelopment": {
-      "commandName": "Project",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "NationalCloudDevelopment"
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "CloudDomain": "Fairfax"
       }
     }
   }

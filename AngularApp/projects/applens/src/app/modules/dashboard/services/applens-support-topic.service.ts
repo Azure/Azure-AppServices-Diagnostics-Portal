@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ResourceService } from '../../../shared/services/resource.service';
-import { DetectorMetaData, SupportTopic } from 'diagnostic-data';
+import { DetectorMetaData, DetectorType, SupportTopic } from 'diagnostic-data';
 import { ApplensDiagnosticService } from './applens-diagnostic.service';
 import { CacheService } from '../../../shared/services/cache.service';
 import { HttpClient } from '@angular/common/http';
@@ -162,10 +162,11 @@ export class ApplensSupportTopicService {
 
     public supportTopicId: string;
     public sapSupportTopicId: string;
+    public pesId: string;
 
     public getSupportTopics(): Observable<any> {
-        let pesId = this._resourceService.pesId;
-        return this._diagnosticApiService.getSupportTopics(pesId);
+        this.pesId = this._resourceService.pesId;
+        return this._diagnosticApiService.getSupportTopics(this.pesId);
     }
 
     getCategoryImagePath(supportTopicL2Name: string): string {
@@ -213,9 +214,9 @@ export class ApplensSupportTopicService {
 
     public getSelfHelpPath(): string {
         let selfHelpPath = this._resourceService.staticSelfHelpContent;
-        let pesId = this._resourceService.pesId;
+        this.pesId = this._resourceService.pesId;
         let resource = this._resourceService.getResourceByObserver();
-        if (pesId === '14748') {
+        if (this.pesId === '14748') {
             if (resource.Kind === "functionapp") {
                 selfHelpPath = "microsoft.function";
             }
@@ -223,32 +224,46 @@ export class ApplensSupportTopicService {
         return selfHelpPath;
     }
 
-    getSelfHelpContentDocument(): Observable<any>{
+    getSelfHelpContentDocument(): Observable<any> {
         return of(null);
     }
 
+    public getMatchingDetectors(): Observable<any[]> {
+        if (this.supportTopicId || this.sapSupportTopicId) {
+            return this._diagnosticApiService.getDetectors().pipe(map(detectors => {
+                return detectors.filter(detector =>
+                    detector.supportTopicList &&
+                    detector.supportTopicList.findIndex(supportTopicId =>
+                        supportTopicId.sapSupportTopicId === this.sapSupportTopicId || supportTopicId.id === this.supportTopicId) >= 0);
+            }));
+        }
+        else {
+            return Observable.of(null);
+        }
+    }
+
     getPathForSupportTopic(supportTopicId: string, pesId: string, searchTerm: string, sapSupportTopicId: string = "", sapProductId: string = ""): Observable<string> {
+        this.supportTopicId = supportTopicId;
+        this.sapSupportTopicId = sapSupportTopicId;
         return this._diagnosticApiService.getDetectors().pipe(map(detectors => {
             let detectorPath = '';
 
             if (detectors) {
-                var matchingDetector = null;
-                if (sapSupportTopicId != "")
-                {
-                    matchingDetector = detectors.find(detector =>
+                var matchingDetectors: DetectorMetaData[] = [];
+                if (sapSupportTopicId != "") {
+                    matchingDetectors = detectors.filter(detector =>
                         detector.supportTopicList &&
-                        detector.supportTopicList.findIndex(supportTopic => supportTopic.sapSupportTopicId === sapSupportTopicId) >= 0);
+                        detector.supportTopicList.findIndex(supportTopic => supportTopic.sapSupportTopicId === sapSupportTopicId || supportTopic.id === supportTopicId) >= 0);
                 }
 
-                if (matchingDetector == null)
-                {
-                    matchingDetector = detectors.find(detector =>
-                        detector.supportTopicList &&
-                        detector.supportTopicList.findIndex(supportTopic => supportTopic.id === supportTopicId) >= 0);
-                }
-
-                if (matchingDetector) {
-                    detectorPath = `/detectors/${matchingDetector.id}`;
+                if (matchingDetectors) {
+                    if (matchingDetectors.length == 1 && matchingDetectors[0] && matchingDetectors[0].id) {
+                        if (matchingDetectors[0].type == DetectorType.Analysis) {
+                            detectorPath = `/analysis/${matchingDetectors[0].id}`;
+                        } else {
+                            detectorPath = `/detectors/${matchingDetectors[0].id}`;
+                        }
+                    }
                 }
             }
             return detectorPath;

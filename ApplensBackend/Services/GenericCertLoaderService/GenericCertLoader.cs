@@ -3,21 +3,20 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
+using AppLensV3.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace AppLensV3
 {
     public class GenericCertLoader
     {
-        private static readonly Lazy<GenericCertLoader> _instance = new Lazy<GenericCertLoader>(() => new GenericCertLoader());
-
-        public static GenericCertLoader Instance => _instance.Value;
+        private readonly ILogger _logger;
 
         private ConcurrentDictionary<string, X509Certificate2> _certCollection = new ConcurrentDictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
 
-        public void Initialize()
+        public GenericCertLoader(ILogger<GenericCertLoader> logger)
         {
-            DateTime invocationStartTime = DateTime.UtcNow;
+            _logger = logger;
             LoadCertsFromFromUserStore();
         }
 
@@ -33,8 +32,9 @@ namespace AppLensV3
                 // Look up only valid certificates that have not expired.
                 ProcessCertCollection(certStore.Certificates.Find(X509FindType.FindByTimeValid, DateTime.UtcNow, true));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError($"Error: {ex.Message} occurred while trying to load certs. Stack Trace: {ex.StackTrace} ");
                 throw;
             }
             finally
@@ -66,6 +66,11 @@ namespace AppLensV3
                 if (_certCollection.TryGetValue(subjectName, out X509Certificate2 requestedCert))
                 {
                     return requestedCert;
+                }
+                else
+                {
+                    _logger.LogWarning($"Could not find cert {subjectName} in cert collection");
+                    _logger.LogInformation($"Available certs in cert collection {string.Join(",", _certCollection.Keys)}");
                 }
 
                 RetryLoadRequestedCertBySubjectName(subjectName);
@@ -120,15 +125,23 @@ namespace AppLensV3
 
         private void ProcessCertCollection(X509Certificate2Collection certCollection, bool isRetry = false)
         {
-            if (certCollection != null)
+            if (certCollection == null)
             {
-                foreach (X509Certificate2 currCert in certCollection)
+                throw new ArgumentNullException(nameof(certCollection));
+            }
+
+            if (!certCollection.Any())
+            {
+                _logger.LogWarning($"Cert collection is empty");
+            }
+
+            foreach (X509Certificate2 currCert in certCollection)
+            {
+                var subjectCommonName = currCert.GetSubjectCommonName();
+                if (!_certCollection.ContainsKey(subjectCommonName))
                 {
-                    if (!_certCollection.ContainsKey(currCert.Subject))
-                    {
-                        // TODO: Log a message indicating which certificate was sucessfully loaded.
-                        _certCollection.TryAdd(currCert.Subject, currCert);
-                    }
+                    _certCollection.TryAdd(currCert.GetSubjectCommonName(), currCert);
+                    _logger.LogInformation($"Successfully loaded cert SubjectName:{subjectCommonName} CertType:{(currCert.HasPrivateKey ? "PFX" : "CER")} isRetry:{isRetry}");
                 }
             }
         }
@@ -137,6 +150,7 @@ namespace AppLensV3
         {
             if (!string.IsNullOrWhiteSpace(subjectName))
             {
+                _logger.LogInformation($"Retry looking for cert {subjectName}. Attempting to search the cert store.");
                 using (X509Store certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser))
                 {
                     certStore.Open(OpenFlags.ReadOnly);

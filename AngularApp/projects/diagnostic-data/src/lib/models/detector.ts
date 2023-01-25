@@ -65,12 +65,13 @@ interface DetectorMetaDataBase {
 
 export interface ExtendDetectorMetaData extends DetectorMetaDataBase {
     internalOnly: boolean;
+    commitSha: string;
+    gitCommitDate: Date;
 }
 
 export interface DataProviderMetadata {
     providerName: string;
     propertyBag: PropertyBag[];
-
 }
 
 export interface PropertyBag {
@@ -94,7 +95,9 @@ export enum DetectorType {
     Detector = "Detector",
     Analysis = "Analysis",
     CategoryOverview = "CategoryOverview",
-    DiagnosticTool = "DiagnosticTool"
+    DiagnosticTool = "DiagnosticTool",
+    Workflow = "Workflow",
+    WorkflowNode = "WorkflowNode"
 }
 export enum RenderingType {
     NoGraph = 0,
@@ -127,14 +130,17 @@ export enum RenderingType {
     Tab,
     Section,
     StepViews,
-    Report
+    Report,
+    ClientScriptComponent,
+    WorkflowResult
 }
 
 export enum TimeSeriesType {
     LineGraph = 0,
     BarGraph,
     StackedAreaGraph,
-    StackedBarGraph
+    StackedBarGraph,
+    GanttChart
 }
 
 export class DataTableDataType {
@@ -168,7 +174,6 @@ export interface DataTableRendering extends Rendering {
     searchPlaceholder: string;
 }
 
-
 export interface TimeSeriesRendering extends Rendering {
     defaultValue: number;
     graphType: TimeSeriesType;
@@ -177,6 +182,9 @@ export interface TimeSeriesRendering extends Rendering {
     counterColumnName: string;
     seriesColumns: string[];
     metricType: MetricType;
+    eventStatusColumnName: string;
+    startTimestampColumnName: string;
+    endTimestampColumnName: string;
 }
 
 export interface TimeSeriesPerInstanceRendering extends Rendering {
@@ -260,3 +268,8 @@ export const DowntimeInteractionSource = {
     DefaultFromQueryParams: 'DefaultFromQueryParams',
     DefaultFromUI: 'DefaultFromUI'
 };
+
+export enum GanttChartInnerMarkdownPosition {
+    BelowChart = 0,
+    AboveChart,
+}

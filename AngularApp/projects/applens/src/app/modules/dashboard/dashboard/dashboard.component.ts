@@ -24,7 +24,9 @@ import {AlertInfo, ConfirmationOption} from '../../../shared/models/alerts';
 import { TelemetryService } from 'diagnostic-data';
 import { TelemetryEventNames } from 'diagnostic-data';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Title } from '@angular/platform-browser';
 import { UserAccessStatus } from "../../../shared/models/alerts";
+import { defaultResourceTypes } from '../../../shared/utilities/main-page-menu-options';
 
 @Component({
   selector: 'dashboard',
@@ -108,11 +110,12 @@ export class DashboardComponent implements OnDestroy {
   alertDialogProps = {isBlocking: true}
   dialogType: DialogType = DialogType.normal;
   crossSubJustification: string = '';
+  defaultResourceTypes = defaultResourceTypes;
 
   constructor(public resourceService: ResourceService, private startupService: StartupService,  private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
     private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, public _applensGlobal: ApplensGlobal, private _startupService: StartupService, private _resourceService: ResourceService, private _breadcrumbService: BreadcrumbService, private _userSettingsService: UserSettingService, private _themeService: GenericThemeService,
-    private _alertService: AlertService, private _telemetryService: TelemetryService) {
+    private _alertService: AlertService, private _telemetryService: TelemetryService, private _titleService: Title) {
     this.contentHeight = (window.innerHeight - 50) + 'px';
 
     this.navigateSub = this._navigator.OnDetectorNavigate.subscribe((detector: string) => {
@@ -189,10 +192,12 @@ export class DashboardComponent implements OnDestroy {
 
   navigateBackToHomePage() {
     let resourceInfo = this._startupService.getResourceInfo();
+    let resourceProviderFull = `${resourceInfo.provider}/${resourceInfo.resourceTypeName}`.toLowerCase();
+    let mainPageResourceType = this.defaultResourceTypes.find(x => x.resourceType && x.resourceType.toLowerCase() === resourceProviderFull);
     let queryParams = {
       caseNumber: this._diagnosticApiService.CustomerCaseNumber,
       errorMessage: this.accessError,
-      resourceType: `${resourceInfo.provider}/${resourceInfo.resourceTypeName}`,
+      resourceType: mainPageResourceType? mainPageResourceType.resourceType: "armresourceid",
       resourceName: resourceInfo.resourceName,
       resourceId: this._resourceService.getCurrentResourceId()
     };
@@ -288,7 +293,12 @@ export class DashboardComponent implements OnDestroy {
 
     this.title="";
     this._applensGlobal.headerTitleSubject.subscribe(title => {
+      const { resourceName } = this._activatedRoute.snapshot.data["info"] || {};
       this.title = title;
+
+      if (title?.length > 0 && resourceName?.length > 0) {
+        this._titleService.setTitle(`Applens - ${resourceName} (${title})`);
+      }
     });
 
     this._applensGlobal.openL2SideNavSubject.subscribe(type => {

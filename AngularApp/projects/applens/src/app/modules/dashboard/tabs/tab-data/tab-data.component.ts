@@ -12,7 +12,7 @@ import { ObserverService } from '../../../../shared/services/observer.service';
 import { SeverityLevel } from '@microsoft/applicationinsights-web';
 import { DirectionalHint } from 'office-ui-fabric-react';
 import { HttpClient } from '@angular/common/http';
-import { Sku } from 'projects/app-service-diagnostics/src/app/shared/models/server-farm';
+import { ObserverSiteSku, ObserverSkuType } from '../../../../shared/models/observer';
 
 @Component({
   selector: 'tab-data',
@@ -21,12 +21,14 @@ import { Sku } from 'projects/app-service-diagnostics/src/app/shared/models/serv
 })
 export class TabDataComponent implements OnInit {
 
-  constructor(private _route: ActivatedRoute, public resourceService: ResourceService, private _observerService: ObserverService, private _diagnosticApiService: ApplensDiagnosticService, private _detectorControlService: DetectorControlService, private _applensCommandBarService: ApplensCommandBarService, private _applensGlobal: ApplensGlobal, private _telemetryService: TelemetryService, private _http:HttpClient) { }
+  constructor(private _route: ActivatedRoute, public resourceService: ResourceService, private _observerService: ObserverService, private _diagnosticApiService: ApplensDiagnosticService, private _detectorControlService: DetectorControlService, private _applensCommandBarService: ApplensCommandBarService, private _applensGlobal: ApplensGlobal, private _telemetryService: TelemetryService, private _http: HttpClient) { }
 
   detectorResponse: DetectorResponse;
 
   detector: string;
+  workflowId: string;
   detectorMetaData: DetectorMetaData;
+  isWorkflowDetector: boolean = false;
 
   analysisMode: boolean = false;
 
@@ -58,37 +60,33 @@ export class TabDataComponent implements OnInit {
   showPanel: boolean = false;
   panelMessage: string = "";
 
-// Variables used by Download Report button
-resourceReady: Observable<any>;
-resource: any;  
-siteSku: Observer.ObserverSiteSku;
-subscriptionId: string;
-displayDownloadReportButton: boolean = false;
-displayDownloadReportButtonStyle: any = {};
-downloadReportId: string;
-downloadReportText: string = "Download report";
-downloadReportIcon: any = { iconName: 'Download' };
-downloadReportButtonDisabled: boolean;
-downloadReportFileName: string;  
-coachmarkId: string;  
-showCoachmark: boolean = true;
-showTeachingBubble: boolean = false;
-generatedOn: string;
-coachmarkPositioningContainerProps = {
-  directionalHint: DirectionalHint.bottomLeftEdge,
-  doNotLayer: true
-};
-teachingBubbleCalloutProps = {
-  directionalHint: DirectionalHint.bottomLeftEdge
-};
-vfsFonts: any;
+  // Variables used by Download Report button
+  resourceReady: Observable<any>;
+  resource: any;
+  siteSku: ObserverSiteSku;
+  subscriptionId: string;
+  displayDownloadReportButton: boolean = false;
+  displayDownloadReportButtonStyle: any = {};
+  downloadReportId: string;
+  downloadReportText: string = "Download report";
+  downloadReportIcon: any = { iconName: 'Download' };
+  downloadReportButtonDisabled: boolean = false;
+  downloadReportFileName: string;
+  coachmarkId: string;
+  showCoachmark: boolean = true;
+  showTeachingBubble: boolean = false;
+  generatedOn: string;
+  coachmarkPositioningContainerProps = {
+    directionalHint: DirectionalHint.bottomLeftEdge,
+    doNotLayer: true
+  };
+  teachingBubbleCalloutProps = {
+    directionalHint: DirectionalHint.bottomLeftEdge
+  };
+  vfsFonts: any;
 
 
-ngOnInit() {
-    this._route.params.subscribe((params: Params) => {
-      this.subscriptionId = params["subscriptionId"];
-      this.refresh();
-    });
+  ngOnInit() {
     // If route query params contains detectorQueryParams, setting the values in shared service so it is accessible in all components
     this._route.queryParams.subscribe((queryParams: Params) => {
       if (queryParams.detectorQueryParams != undefined) {
@@ -97,7 +95,7 @@ ngOnInit() {
         this._detectorControlService.setDetectorQueryParams("");
       }
       this.analysisMode = this._route.snapshot.data['analysisMode'];
-      this.detector = this._route.snapshot.params['detector']? this._route.snapshot.params['detector']: null;
+      this.detector = this._route.snapshot.params['detector'] ? this._route.snapshot.params['detector'] : null;
       this._telemetryService.logEvent(TelemetryEventNames.DownloadReportButtonDisplayed, { 'DownloadReportButtonDisplayed': this.displayDownloadReportButton.toString(), 'Detector:': this.detector, 'SubscriptionId': this._route.parent.snapshot.params['subscriptionid'], 'Resource': this.resource.SiteName });
     });
 
@@ -109,7 +107,7 @@ ngOnInit() {
     }
     this.resourceReady = this.resourceService.getCurrentResource();
     this.resourceReady.subscribe(resource => {
-      if (resource) {  
+      if (resource) {
         this.resource = resource;
       }
     });
@@ -119,28 +117,16 @@ ngOnInit() {
       if (siteSku) {
         this.siteSku = siteSku;
       }
-      });
-    // Detecting whether Download Report button should be displayed or not
-    this.displayDownloadReportButton = this.detector === "ResiliencyScore" && (this.checkIsWindowsApp() || this.checkIsLinuxApp());
+    });
 
-    // Logging telemetry for Download Report button
-    const dRBDEventProperties = {
-      'ResiliencyScoreButtonDisplayed': this.displayDownloadReportButton.toString(),
-      'Subscription': this._route.parent.snapshot.params['subscriptionid'],
-      'Platform': this.siteSku.is_linux != undefined ? !this.siteSku.is_linux ? "Windows" : "Linux" : "",
-      'AppType': this.siteSku.kind != undefined ? this.siteSku.kind.toLowerCase() === "app" ? "WebApp" : this.siteSku.kind.toString() : "",
-      'resourceSku': this.siteSku.sku != undefined ? this.siteSku.sku.toString(): "",
-      'ReportType': 'ResiliencyScore',      
-    };
-    this._telemetryService.logEvent(TelemetryEventNames.DownloadReportButtonDisplayed, dRBDEventProperties);
-    const loggingError = new Error();
-
-    // Enabling Download Report button
-    this.downloadReportButtonDisabled = false;
+    this._route.params.subscribe((params: Params) => {
+      this.subscriptionId = params["subscriptionId"];
+      this.refresh();
+    });
 
     //Get showCoachMark value(string) from local storage (if exists), then convert to boolean
     try {
-      if (this.displayDownloadReportButton){
+      if (this.displayDownloadReportButton) {
         if (localStorage.getItem("showCoachmark") != undefined) {
           this.showCoachmark = localStorage.getItem("showCoachmark") === "true";
         }
@@ -156,9 +142,10 @@ ngOnInit() {
         'Subscription': this._route.parent.snapshot.params['subscriptionid'],
         'Platform': this.siteSku.is_linux != undefined ? !this.siteSku.is_linux ? "Windows" : "Linux" : "",
         'AppType': this.siteSku.kind != undefined ? this.siteSku.kind.toLowerCase() === "app" ? "WebApp" : this.siteSku.kind.toString() : "",
-        'resourceSku': this.siteSku.sku != undefined ? this.siteSku.sku.toString(): "",
-        'ReportType': 'ResiliencyScore',  
-        'Error': error
+        'resourceSku': this.siteSku.sku != undefined ? this.siteSku.sku.toString() : "",
+        'ReportType': 'ResiliencyScore',
+        'Error': error,
+        'Message': 'Error trying to retrieve showCoachmark from localStorage'
       }
       this._telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
@@ -169,12 +156,18 @@ ngOnInit() {
     // Using this as an alternative to using the vfs_fonts.js build with PDFMake's build-vfs.js
     // as this file caused problems when being compiled in a library project like diagnostic-data
     //
-    this._http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => {this.vfsFonts=data});
+    this._http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => { this.vfsFonts = data });
   }
 
   refresh() {
-    this.detector = this._route.snapshot.params['detector'];
-    this._diagnosticApiService.getDetectorMetaDataById(this.detector).subscribe(metaData => {
+    if (this._route.snapshot.params['workflowId'] != null) {
+      this.detector = this._route.snapshot.params['workflowId'];
+      this.isWorkflowDetector = true;
+    } else {
+      this.detector = this._route.snapshot.params['detector'];
+    }
+
+    this._diagnosticApiService.getDetectorMetaDataById(this.detector, this.isWorkflowDetector).subscribe(metaData => {
       if (metaData) {
         this._applensGlobal.updateHeader(metaData.name);
         this.detectorMetaData = metaData;
@@ -187,6 +180,25 @@ ngOnInit() {
         this.pinnedDetector = favoriteDetectorIds.findIndex(d => d.toLowerCase() === this.detector.toLowerCase()) > -1;
       }
     });
+
+    // Detecting whether Download Report button should be displayed or not
+    this.displayDownloadReportButton = this.detector === "ResiliencyScore" && (this.checkIsWindowsApp() || this.checkIsLinuxApp());
+
+    // Detecting whether Download Report button should be displayed or not
+    this.displayDownloadReportButton = this.detector === "ResiliencyScore" && (this.checkIsWindowsApp() || this.checkIsLinuxApp());
+
+    // Logging telemetry for Download Report button
+    const dRBDEventProperties = {
+      'ResiliencyScoreButtonDisplayed': this.displayDownloadReportButton.toString(),
+      'Subscription': this._route.parent.snapshot.params['subscriptionid'],
+      'Platform': this.siteSku.is_linux != undefined ? !this.siteSku.is_linux ? "Windows" : "Linux" : "",
+      'AppType': this.siteSku.kind != undefined ? this.siteSku.kind.toLowerCase() === "app" ? "WebApp" : this.siteSku.kind.toString() : "",
+      'resourceSku': this.siteSku.sku != undefined ? this.siteSku.sku.toString() : "",
+      'ReportType': 'ResiliencyScore',
+    };
+    this._telemetryService.logEvent(TelemetryEventNames.DownloadReportButtonDisplayed, dRBDEventProperties);
+    const loggingError = new Error();
+
   }
 
   refreshPage() {
@@ -194,7 +206,7 @@ ngOnInit() {
   }
 
   emailToAuthor() {
-    this._applensCommandBarService.getDetectorMeatData(this.detector).subscribe(metaData => {
+    this._applensCommandBarService.getDetectorMeatData(this.detector, this.isWorkflowDetector).subscribe(metaData => {
       this._applensCommandBarService.emailToAuthor(metaData);
     });
   }
@@ -275,15 +287,15 @@ ngOnInit() {
 
   // Check if the app is an App Service Windows Standard or higher SKU
   private checkIsWindowsApp() {
-    let _sku: Sku = Sku.All;      
-    _sku = Sku[this.siteSku.sku];
+    let _sku: ObserverSkuType = ObserverSkuType.All;
+    _sku = ObserverSkuType[this.siteSku.sku];
     return this.siteSku && this.getAppType(this.siteSku.kind.toLowerCase()) === "WebApp" && !this.siteSku.is_linux && _sku > 8; //Only for Web App (Windows) in Standard or higher SKU     
   }
 
   // Check if the app is an App Service Linux Standard or higher SKU
   private checkIsLinuxApp() {
-    let _sku: Sku = Sku.All;  
-    _sku = Sku[this.siteSku.sku];
+    let _sku: ObserverSkuType = ObserverSkuType.All;
+    _sku = ObserverSkuType[this.siteSku.sku];
     return this.siteSku && this.getAppType(this.siteSku.kind.toLowerCase()) === "LinuxApp" && this.siteSku.is_linux && _sku > 8; //Only for Web App (Windows) in Standard or higher SKU 
   }
 
@@ -292,26 +304,26 @@ ngOnInit() {
     if (kind && kind.toLowerCase().indexOf("workflowapp") !== -1) {
       return "WorkflowApp";
     } else if (kind && kind.toLowerCase().indexOf("functionapp") !== -1) {
-      return "FunctionApp";	
+      return "FunctionApp";
     } else if (kind && kind.toLowerCase().indexOf("linux") !== -1) {
-      return "LinuxApp";      
+      return "LinuxApp";
     } else return "WebApp";
   }
-  
 
-updateDownloadReportId() {
+
+  updateDownloadReportId() {
     const btns = document.querySelectorAll("button");
     const downloadButtonId = "downloadReportId";
     const coachMarkId = "fab-coachmark";
     let downloadButtonIndex = -1;
     if (btns && btns.length > 0) {
-      btns.forEach((btn,i) => {
-        if(btn.textContent.includes(this.downloadReportText)) {
+      btns.forEach((btn, i) => {
+        if (btn.textContent.includes(this.downloadReportText)) {
           downloadButtonIndex = i;
         }
       });
 
-      if(downloadButtonIndex >= 0 && downloadButtonIndex < btns.length && btns[downloadButtonIndex]) {
+      if (downloadButtonIndex >= 0 && downloadButtonIndex < btns.length && btns[downloadButtonIndex]) {
         const downloadButton = btns[downloadButtonIndex];
         downloadButton.setAttribute("id", downloadButtonId);
       }
@@ -322,7 +334,7 @@ updateDownloadReportId() {
   }
 
 
-  downloadReport() {   
+  downloadReport() {
     // Start time when download report button is clicked
     let sT = new Date();
 
@@ -350,7 +362,8 @@ updateDownloadReportId() {
         'Subscription': this.subscriptionId,
         'TimeClicked': sT.toUTCString(),
         'ReportType': 'ResiliencyScore',
-        'Error': error
+        'Error': error,
+        'Message': 'Error trying to retrieve showCoachmark from localStorage',
       }
       this._telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
@@ -364,7 +377,7 @@ updateDownloadReportId() {
         }
       }
     };
-    this.downloadReportButtonDisabled = true;    
+    this.downloadReportButtonDisabled = true;
 
     if (this._route.snapshot.params['detector']) {
       this.detector = this._route.snapshot.params['detector'];
@@ -383,7 +396,7 @@ updateDownloadReportId() {
 
 
     this._diagnosticApiService.getDetector("ResiliencyScore", this._detectorControlService.startTimeString, this._detectorControlService.endTimeString, this._detectorControlService.shouldRefresh, this._detectorControlService.isInternalView, additionalQueryString)
-      .subscribe((httpResponse: DetectorResponse) => {            
+      .subscribe((httpResponse: DetectorResponse) => {
         //If the page hasn't been refreshed this will use a cached request, so changing File Name to use the same name + "(cached)" to let them know they are seeing a cached version.
         let eT = new Date();
         let detectorTimeTaken = eT.getTime() - sT.getTime();
@@ -418,13 +431,13 @@ updateDownloadReportId() {
         loggingError.message = `Error calling ${this.detector} detector`;
         loggingError.stack = error;
         this._telemetryService.logException(loggingError);
-      });    
-  }  
+      });
+  }
 
 
   coachMarkViewed() {
-    if (!this.showTeachingBubble){
-      
+    if (!this.showTeachingBubble) {
+
       //
       // TeachingBubbles inherit from Callout react component and they have a 
       // some issue in the current version of the libaray with *ngIf and they are
@@ -454,7 +467,7 @@ updateDownloadReportId() {
     this.removeTeachingBubbleFromDom();
   }
 
-  showingTeachingBubble(){
+  showingTeachingBubble() {
     this.showTeachingBubble = true;
   }
 

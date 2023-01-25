@@ -531,38 +531,40 @@ export function extractHostPortFromConnectionString(connectionString) {
     var hostName = undefined;
     var port = undefined;
 
-    var connectionStringTokens = connectionString.split(";");
-    var connectionStringKVMap = connectionStringTokens.reduce(
-        (dict, element) => {
-            var kvpair = element.split("=");
-            if (kvpair.length == 2) {
-                (dict[kvpair[0]] = kvpair[1])
-            }
-            return dict;
-        },
-        {}
-    );
+    if (connectionString != undefined && connectionString != null) {
+        var connectionStringTokens = connectionString.split(";");
+        var connectionStringKVMap = connectionStringTokens.reduce(
+            (dict, element) => {
+                var kvpair = element.split("=");
+                if (kvpair.length == 2) {
+                    (dict[kvpair[0]] = kvpair[1])
+                }
+                return dict;
+            },
+            {}
+        );
 
-    if (connectionStringKVMap["AccountName"] != undefined) {
-        // Storage account: DefaultEndpointsProtocol=https;AccountName=<account_name>;AccountKey=<key>;EndpointSuffix=core.windows.net;
-        var storageAccountName = connectionStringKVMap["AccountName"];
-        hostName = connectionStringKVMap["EndpointSuffix"] != undefined ?
-            storageAccountName + ".blob." + connectionStringKVMap["EndpointSuffix"] :
-            storageAccountName + ".blob.core.windows.net";
-        port = connectionStringKVMap["DefaultEndpointsProtocol"] == "http" ? 80 : 443;
-    } else if (connectionStringKVMap["Endpoint"] != undefined) {
-        // Event hubs: Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=<key>;EntityPath=<event_hub_name>
-        // Service bus: Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=<key>
-        hostName = connectionStringKVMap["Endpoint"].split("sb://")[1].split("/")[0];
-        port = 443;
-    } else if (connectionStringKVMap["AccountEndpoint"] != undefined) {
-        // Cosmos DB: AccountEndpoint=https://<account_name>.documents.azure.com:443/;AccountKey=<key>;"
-        hostName = connectionStringKVMap["AccountEndpoint"].split("https://")[1].split(":")[0];
-        port = connectionStringKVMap["AccountEndpoint"].split("https://")[1].split(":")[1].split("/")[0];
-    } else if (connectionStringKVMap["IngestionEndpoint"] != undefined) {
-        // Application Insights: InstrumentationKey=0b7c83b0-add4-4025-939f-4e67ccb1ad19;IngestionEndpoint=https://westus2-1.in.applicationinsights.azure.com/
-        hostName = connectionStringKVMap["IngestionEndpoint"].split("https://")[1].split("/")[0];
-        port = 443;
+        if (connectionStringKVMap["AccountName"] != undefined) {
+            // Storage account: DefaultEndpointsProtocol=https;AccountName=<account_name>;AccountKey=<key>;EndpointSuffix=core.windows.net;
+            var storageAccountName = connectionStringKVMap["AccountName"];
+            hostName = connectionStringKVMap["EndpointSuffix"] != undefined ?
+                storageAccountName + ".blob." + connectionStringKVMap["EndpointSuffix"] :
+                storageAccountName + ".blob.core.windows.net";
+            port = connectionStringKVMap["DefaultEndpointsProtocol"] == "http" ? 80 : 443;
+        } else if (connectionStringKVMap["Endpoint"] != undefined) {
+            // Event hubs: Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=<key>;EntityPath=<event_hub_name>
+            // Service bus: Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=<key>
+            hostName = connectionStringKVMap["Endpoint"].split("sb://")[1].split("/")[0];
+            port = 443;
+        } else if (connectionStringKVMap["AccountEndpoint"] != undefined) {
+            // Cosmos DB: AccountEndpoint=https://<account_name>.documents.azure.com:443/;AccountKey=<key>;"
+            hostName = connectionStringKVMap["AccountEndpoint"].split("https://")[1].split(":")[0];
+            port = connectionStringKVMap["AccountEndpoint"].split("https://")[1].split(":")[1].split("/")[0];
+        } else if (connectionStringKVMap["IngestionEndpoint"] != undefined) {
+            // Application Insights: InstrumentationKey=0b7c83b0-add4-4025-939f-4e67ccb1ad19;IngestionEndpoint=https://westus2-1.in.applicationinsights.azure.com/
+            hostName = connectionStringKVMap["IngestionEndpoint"].split("https://")[1].split("/")[0];
+            port = 443;
+        }
     }
 
     return { "HostName": hostName, "Port": port }
@@ -678,4 +680,41 @@ export function addSubnetSelectionDropDownView(siteInfo, diagProvider, flowMgr, 
             dropdownView.dropdowns.length = 0;
             dropdownView.dropdowns.push(subscriptionDropdown);
         });
+}
+
+export async function checkNetworkTroubleshooterApiAsync(diagProvider) {
+    var params = [];
+    params.push("api-version=2015-08-01");
+
+    // TODO :: Use the GET endpoint for the Network Troubleshooter to return version/status for health.
+    // This is currently not accessible through management plane. Possible to use SCM or to open route
+    // Temp - Use TCPPing to cover the functionality
+    var healthyTarget  = "www.microsoft.com";
+    var healthyPort = 80;
+    var tcpPingPromise = diagProvider.tcpPingNetworkTroubleshooterAsync(healthyTarget, healthyPort).catch(e => {
+        logDebugMessage(e);
+        return {};
+    });
+    var response = await tcpPingPromise;
+    var isAccessible = false;
+    if (response == null) {
+        throw new Error("Unexpected Null response in CheckNetworkTroubleShooterApiAsync for Tcppingpromise");
+    }
+    else
+    {
+        // ConnectionCheckStatus is a Enum defined in Diag-Provider.ts but, not exported that represents states all other than 0 is fail
+        isAccessible = response.status == 0;
+    }
+
+   // TODO: determine/create an api that tells us if the backend is available to handle requests
+    //var versionInfo = await diagProvider.getDaaSExtApiAsync("Version",params);
+    var isAccessible = true;
+    /*if(versionInfo.status == "200") {
+        isAccessible = true;
+    }
+    else {
+        isAccessible = false;
+    }*/
+
+    return { "IsAccessible": isAccessible,  }
 }

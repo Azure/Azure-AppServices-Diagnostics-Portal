@@ -27,6 +27,7 @@ export * from './lib/services/portal-action.service';
 export * from './lib/services/generic-breadcrumb.service';
 export * from './lib/services/generic-user-setting.service';
 export * from './lib/services/generic-portal.service';
+export * from './lib/services/generic-feature-service';
 export * from './lib/config/diagnostic-data-config';
 export * from './lib/diagnostic-data.module';
 
@@ -49,6 +50,7 @@ export * from './lib/models/styles';
 export * from './lib/models/resiliencyReportData';
 export * from './lib/models/data-table';
 export * from './lib/models/theme';
+export * from './lib/models/workflow';
 
 export * from './lib/components/detector-list-analysis/detector-list-analysis.component'
 
@@ -91,6 +93,7 @@ export * from './lib/components/dropdown-v4/dropdown-v4.component'
 export * from './lib/components/dynamic-data/dynamic-data.component'
 export * from './lib/components/dynamic-insight/dynamic-insight.component'
 export * from './lib/components/dynamic-insight-v4/dynamic-insight-v4.component'
+export * from './lib/components/client-script-view/client-script-view.component'
 export * from './lib/components/email/email.component'
 export * from './lib/components/fab-card/fab-card.component'
 export * from './lib/components/fab-data-table/fab-data-table.component'
@@ -127,6 +130,7 @@ export * from './lib/components/step-views/check-step-view/check-step.component'
 export * from './lib/components/step-views/check-step-view/check.component'
 export * from './lib/components/step-views/dropdown-step-view/dropdown-step.component'
 export * from './lib/components/step-views/info-step-view/info-step.component'
+export * from './lib/components/step-views/form-step-view/form-step.component'
 export * from './lib/components/step-views/input-step-view/input-step.component'
 export * from './lib/components/step-views/step-view-renderer/step-views-renderer.component'
 export * from './lib/components/summary-cards/summary-cards.component'
@@ -135,8 +139,10 @@ export * from './lib/components/time-series-instance-graph/time-series-instance-
 export * from './lib/components/vertical-display-list/vertical-display-list.component'
 export * from './lib/components/vertical-display-list/vertical-display-list-item/vertical-display-list-item.component'
 export * from './lib/components/web-search/web-search.component'
+export * from './lib/components/workflow-view/workflow-view.component'
 export * from './lib/modules/fab-coachmark/coachmark.component'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.component'
+export * from './lib/components/gantt-chart-taskbar-colors/gantt-chart-taskbar-colors.component'
 
 export * from './lib/modules/fab-coachmark/coachmark.module'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.module'

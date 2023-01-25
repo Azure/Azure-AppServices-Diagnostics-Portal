@@ -5,7 +5,6 @@ import { Feature, FeatureAction } from '../models/features';
 import { ContentService } from './content.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../startup/services/auth.service';
-import { LoggingV2Service } from './logging-v2.service';
 import { SiteService } from '../../shared/services/site.service';
 import { CategoryService } from '../../shared-v2/services/category.service';
 import { PortalActionService } from '../../shared/services/portal-action.service';
@@ -13,6 +12,7 @@ import { StartupInfo } from '../../shared/models/portal';
 import { VersionTestService } from '../../fabric-ui/version-test.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ToolIds, ToolNames } from '../../shared/models/tools-constants';
 
 const exclusiveDetectorTypes: DetectorType[] = [
   DetectorType.CategoryOverview
@@ -23,10 +23,11 @@ export class FeatureService {
 
   private _detectors: DetectorMetaData[];
   protected _features: Feature[] = [];
-  private categories: Category[] = [];
+  protected categories: Category[] = [];
   public featureSub: BehaviorSubject<Feature[]> = new BehaviorSubject<Feature[]>([]);
   protected isLegacy: boolean;
   protected _featureDisplayOrderSub: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
+  public diagnosticToolsForNonWeb: any[] = [];
   protected set _featureDisplayOrder(order: any[]) {
     this._featureDisplayOrderSub.next(order);
   }
@@ -35,13 +36,18 @@ export class FeatureService {
     this.versionTestService.isLegacySub.subscribe(isLegacy => {
       this.isLegacy = isLegacy;
       this._authService.getStartupInfo().subscribe(startupInfo => {
+        this.addDiagnosticToolsForNonWeb(startupInfo.resourceId);
         this._diagnosticApiService.getDetectors().subscribe(detectors => {
           this._categoryService.categories.subscribe(categories => {
             this._detectors = detectors;
-            this.categories = categories;
+            if(categories.length > 0) {
+              this.categories = categories;
+            }
             detectors.forEach(detector => {
               if (this.validateDetectorMetadata(detector)) {
                 this._rewriteCategory(detector);
+                const categoryId = this.getCategoryIdByCategoryName(detector.category);
+                const categoryName = this.getCategoryNameByCategoryId(categoryId);
                 if (detector.type === DetectorType.Detector) {
                   this._features.push(<Feature>{
                     id: detector.id,
@@ -49,7 +55,7 @@ export class FeatureService {
                     category: detector.category,
                     featureType: DetectorType.Detector,
                     name: detector.name,
-                    clickAction: this._createFeatureAction(detector.name, detector.category, () => {
+                    clickAction: this._createFeatureAction(detector.name, categoryName, () => {
                       //Remove after A/B test
                       if (this.isLegacy) {
                         if (detector.id === 'appchanges') {
@@ -58,7 +64,6 @@ export class FeatureService {
                           this._router.navigateByUrl(`resource${startupInfo.resourceId}/detectors/${detector.id}`);
                         }
                       } else {
-                        const categoryId = this.getCategoryIdByCategoryName(detector.category);
                         this.navigatTo(startupInfo, categoryId, detector.id, DetectorType.Detector);
                       }
                     })
@@ -67,14 +72,13 @@ export class FeatureService {
                   this._features.push(<Feature>{
                     id: detector.id,
                     description: detector.description,
-                    category: detector.category,
+                    category: categoryName,
                     featureType: DetectorType.Analysis,
                     name: detector.name,
-                    clickAction: this._createFeatureAction(detector.name, detector.category, () => {
+                    clickAction: this._createFeatureAction(detector.name, categoryName, () => {
                       if (this.isLegacy) {
                         this._router.navigateByUrl(`resource${startupInfo.resourceId}/analysis/${detector.id}`);
                       } else {
-                        const categoryId = this.getCategoryIdByCategoryName(detector.category);
                         this.navigatTo(startupInfo, categoryId, detector.id, DetectorType.Analysis);
                       }
                     })
@@ -123,7 +127,7 @@ export class FeatureService {
     return () => {
       const eventProperties = {
         'Name': name,
-        'Category': category
+        'CategoryName': category
       }
       this._logger.logEvent('FeatureClicked', eventProperties);
       func();
@@ -178,10 +182,14 @@ export class FeatureService {
     return this.getCategoryIdByCategoryName(detector.category);
   }
 
-  private getCategoryIdByCategoryName(name: string): string {
+  private getCategoryIdByCategoryName(categoryId: string) {
+    const currentCategoryId = this._activatedRoute.root?.firstChild?.firstChild?.firstChild?.firstChild?.firstChild?.snapshot.params["category"];
+    return this.getCategoryIdByNameAndCurrentCategory(categoryId,currentCategoryId);
+  }
+
+  getCategoryIdByNameAndCurrentCategory(name: string, currentCategoryId?: string): string {
     //Default set to "*",so it will still route to category-summary
     let categoryId: string = this.categories.length > 0 ? this.categories[0].id : "*";
-    const currentCategoryId = this._activatedRoute.root.firstChild.firstChild.firstChild.firstChild.firstChild.snapshot.params["category"];
     //If category name is "XXX Tools" and has Diagnostic Tools category,then should belong to Diagnostic Tool Category.For now this should be working in Windows Web App
     if ((name === "Diagnostic Tools" || name === "Support Tools" || name === "Proactive Tools") && this.categories.find(category => category.name === "Diagnostic Tools")) {
       const category = this.categories.find(category => category.name === "Diagnostic Tools");
@@ -201,7 +209,11 @@ export class FeatureService {
       categoryId = category.id;
     }
     return categoryId;
+  }
 
+  getCategoryNameByCategoryId(id: string): string {
+    const category = this.categories.find(c => c.id.toLowerCase() === id.toLowerCase());
+    return category ? category.name : "";
   }
 
   private navigatTo(startupInfo: StartupInfo, category: string, detector: string, type: DetectorType) {
@@ -240,5 +252,32 @@ export class FeatureService {
     if (this._features.findIndex(f => f.id === detector.id) > -1) return false;
 
     return (detector.category && detector.category.length > 0) || (detector.description && detector.description.length > 0)
+  }
+
+  protected navigateToTool(resourceId: string, toolId: string, category: string = "DiagnosticTools") {
+    const isHomepage = this._router.url.endsWith(resourceId);
+    //If in homepage then open second blade for Diagnostic Tool and second blade will continue to open third blade for
+    if (isHomepage) {
+      this._portalActionService.openBladeDiagnosticToolId(toolId, category);
+    } else {
+      this._router.navigateByUrl(`resource${resourceId}/categories/DiagnosticTools/tools/${toolId}`);
+    }
+  }
+  private addDiagnosticToolsForNonWeb(resourceId: string) {
+    this.diagnosticToolsForNonWeb = [
+      {
+        type: "microsoft.apimanagement/service",
+        item: {
+          id: ToolIds.NetworkChecks,
+          name: ToolNames.NetworkChecks,
+          category: 'Diagnostic Tools',
+          description: '',
+          featureType: DetectorType.DiagnosticTool,
+          clickAction: this._createFeatureAction(ToolNames.NetworkChecks, 'Diagnostic Tools', () => {
+            this.navigateToTool(resourceId, ToolIds.NetworkChecks);
+          })
+        }
+      }
+    ];
   }
 }

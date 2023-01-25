@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { DetectorResponse, HealthStatus, LoadingStatus, Rendering, TelemetryService } from "diagnostic-data";
-import { DiagnosticService, DetectorControlService, TelemetryEventNames, TelemetrySource } from 'diagnostic-data';
+import { DiagnosticService, DetectorControlService } from 'diagnostic-data';
 import { BehaviorSubject, forkJoin, Observable, observable } from "rxjs";
 import { RiskHelper, RiskInfo, RiskTile } from "../../../home/models/risk";
 import { NotificationConfig, RiskAlertConfig } from "../../../shared/models/arm/armResourceConfig";
@@ -35,7 +35,11 @@ export class SiteRiskAlertService extends RiskAlertService {
         }
     ];
 
-    private _linuxFunctionAppRiskAlertConfigs = [];
+    private _linuxFunctionAppRiskAlertConfigs = [{
+        title: "Availability",
+        riskAlertDetectorId: "funcAvailablityRiskAlert",
+        enableForCaseSubmissionFlow: true,
+    }];
 
     private _windowsFunctionAppRiskAlertConfigs = [{
         title: "Availability",
@@ -119,7 +123,7 @@ export class SiteRiskAlertService extends RiskAlertService {
     ];
 
     constructor(private _websiteFilter: WebSiteFilter, protected _featureService: FeatureService, protected _diagnosticService: DiagnosticService, protected _detectorControlService: DetectorControlService, protected _telemetryService: TelemetryService, protected globals: Globals, protected _genericArmConfigService?: GenericArmConfigService) {
-        super(_featureService, _diagnosticService, _detectorControlService, _telemetryService, globals, _genericArmConfigService);
+        super(_diagnosticService, _detectorControlService, _telemetryService, globals, _genericArmConfigService);
         const riskAlertConfigs = this._websiteFilter.transform(this._siteRiskAlertConfigs);
         const notificationConfigs = this._websiteFilter.transform(this._siteRiskNotificationMessageConfig);
         let siteRiskAlertConfigs: RiskAlertConfig[] = [];

@@ -30,14 +30,17 @@ export class ApplensGlobal {
 
     getSideNavWidth() {
         const isL2NavShowSub = this.openL2SideNavSubject.pipe(map(type => type !== L2SideNavType.None));
-        const mergeSideNavSub = combineLatest(this.expandL1SideNavSubject,isL2NavShowSub).pipe(map(input => {
-            return this.calcSideNavOverallWidth(input[0],input[1]);
+        const mergeSideNavSub = combineLatest(this.expandL1SideNavSubject, isL2NavShowSub).pipe(map(input => {
+            return this.calcSideNavOverallWidth(input[0], input[1]);
         }));
         return mergeSideNavSub;
     }
 
     getDetectorName(): string {
-        const detectorId = this._route.firstChild.firstChild.firstChild.firstChild.firstChild.snapshot.params["detector"];
+        let detectorId = this._route.firstChild.firstChild.firstChild.firstChild.firstChild.snapshot.params["detector"];
+        if (detectorId == null) {
+            detectorId = this._route.firstChild.firstChild.firstChild.firstChild.firstChild.snapshot.params["workflowId"];
+        }
         return detectorId;
     }
 
@@ -46,7 +49,7 @@ export class ApplensGlobal {
         return alias;
     }
 
-    updateHeader(title:string) {
+    updateHeader(title: string) {
         this.headerTitleSubject.next(title);
     }
 }

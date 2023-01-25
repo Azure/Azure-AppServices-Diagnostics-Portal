@@ -61,6 +61,8 @@ import { FabSearchBoxModule } from '@angular-react/fabric/lib/components/search-
 import { FabCommandBarModule } from '@angular-react/fabric/lib/components/command-bar';
 import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
 import { DownloadReportComponent } from '../shared/components/download-report/download-report.component';
+import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
+import { ClientScriptService } from '../shared-v2/services/client-script.service';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -532,6 +534,52 @@ export const HomeRoutes = RouterModule.forChild([
                         }
                     },
                     {
+                        path: 'analysis/:analysisId/dynamic',
+                        component: GenericAnalysisComponent,
+                        data: {
+                            cacheComponent: true
+                        },
+                        children: [
+                            {
+                                path: 'detectors/:detectorName',
+                                component: GenericDetectorComponent,
+                                data: {
+                                    analysisMode: true,
+                                    cacheComponent: false
+                                },
+                                resolve: {
+                                    time: TimeControlResolver,
+                                    navigationTitle: TabTitleResolver,
+                                }
+                            }
+                        ],
+                        resolve: {
+                            time: TimeControlResolver,
+                            navigationTitle: TabTitleResolver,
+                        }
+                    },
+                    {
+                        path: 'analysis/:analysisId/dynamic/detectors',
+                        component: GenericAnalysisComponent,
+                        data: {
+                            cacheComponent: true
+                        },
+                        children: [
+                            {
+                                path: '',
+                                component: GenericDetectorComponent,
+                                data: {
+                                    analysisMode: true,
+                                    cacheComponent: true
+                                }
+                            }
+                        ],
+                        resolve: {
+                            time: TimeControlResolver,
+                            navigationTitle: TabTitleResolver,
+                        }
+                    },
+                    {
                         path: 'analysis/:analysisId/detectors',
                         component: GenericAnalysisComponent,
                         data: {
@@ -691,7 +739,7 @@ export const HomeRoutes = RouterModule.forChild([
         FormsModule,
         MarkdownModule.forRoot({
             sanitize: SecurityContext.STYLE
-          }),
+        }),
         FabSearchBoxModule,
         FabCommandBarModule,
         FabSpinnerModule
@@ -713,7 +761,8 @@ export const HomeRoutes = RouterModule.forChild([
             { provide: GenericContentService, useExisting: ContentService },
             { provide: GenericDocumentsSearchService, useExisting: DocumentSearchService },
             { provide: CXPChatService, useExisting: CXPChatCallerService },
-            { provide: GenericResourceService, useExisting: ResourceService }
+            { provide: GenericResourceService, useExisting: ResourceService },
+            { provide: GenericClientScriptService, useExisting: ClientScriptService}
         ],
 })
 export class HomeModule { }

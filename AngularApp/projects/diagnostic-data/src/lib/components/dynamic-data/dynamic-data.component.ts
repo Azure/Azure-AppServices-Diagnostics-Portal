@@ -25,7 +25,6 @@ import { CompilationProperties } from '../../models/compilation-properties';
 import { ChangeAnalysisOnboardingComponent } from '../changeanalysis-onboarding/changeanalysis-onboarding.component';
 import { ChangesetsViewComponent } from '../changesets-view/changesets-view.component';
 import { AppDependenciesComponent } from '../app-dependencies/app-dependencies.component';
-import { DetectorListAnalysisComponent } from '../detector-list-analysis/detector-list-analysis.component';
 import { SummaryCardsComponent } from '../summary-cards/summary-cards.component';
 import { InsightsV4Component } from '../insights-v4/insights-v4.component';
 import { DropdownV4Component } from '../dropdown-v4/dropdown-v4.component';
@@ -46,6 +45,8 @@ import { InfoStepComponent } from '../step-views/info-step-view/info-step.compon
 import { DropDownStepComponent } from '../step-views/dropdown-step-view/dropdown-step.component';
 import { CheckStepComponent } from '../step-views/check-step-view/check-step.component';
 import { ButtonStepComponent } from '../step-views/button-step-view/button-step.component';
+import { ClientScriptViewComponent } from '../client-script-view/client-script-view.component';
+import { WorkflowResultComponent } from '../workflow-result/workflow-result.component';
 
 @Component({
   selector: 'dynamic-data',
@@ -106,7 +107,7 @@ export class DynamicDataComponent implements OnInit {
   ngOnInit(): void {
     this.versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
     this.dataBehaviorSubject.subscribe((diagnosticData: DiagnosticData) => {
-      const isVisible = (<Rendering>diagnosticData.renderingProperties).isVisible;
+      const isVisible = (<Rendering>diagnosticData?.renderingProperties)?.isVisible;
       if (isVisible !== undefined && !isVisible) {
         return;
       }
@@ -199,6 +200,10 @@ export class DynamicDataComponent implements OnInit {
         return SectionsComponent;
       case RenderingType.StepViews:
         return StepViewsRendererComponent;
+      case RenderingType.ClientScriptComponent:
+        return ClientScriptViewComponent;
+      case RenderingType.WorkflowResult:
+        return WorkflowResultComponent;
       default:
         return null;
     }

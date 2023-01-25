@@ -1,5 +1,5 @@
 <div class="network-troubleshooter" #networkCheckingTool>
-    <div class="container">
+    <div class="container" [ngClass]="{'apim-container': !!siteInfo && siteInfo.kind == 'apimanagement'}">
         <div *ngFor="let viewModel of stepViews" >
             <div class="step-container" *ngIf="!viewModel.stepView.hidden" [ngSwitch]="viewModel.stepView.type">
                 <dropdown-step *ngSwitchCase="0" [viewModel]="viewModel"></dropdown-step>
@@ -7,6 +7,7 @@
                 <input-step *ngSwitchCase="2" [viewModel]="viewModel"></input-step>
                 <info-step *ngSwitchCase="3" [viewModel]="viewModel"></info-step>
                 <button-step *ngSwitchCase="4" [viewModel]="viewModel"></button-step>
+                <form-step *ngSwitchCase="5" [viewModel]="viewModel"></form-step>
             </div>
         </div>
         <div class="loading-spin" *ngIf="stepFlowManager.loadingView && stepFlowManager.loadingView.loadingText != null">

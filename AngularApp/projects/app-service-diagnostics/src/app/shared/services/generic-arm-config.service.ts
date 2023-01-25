@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { ArmApiConfig, ArmResourceConfig, LiveChatConfig } from '../models/arm/armResourceConfig'
 import { HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
@@ -91,7 +91,7 @@ export class GenericArmConfigService {
   }
 
 
-  constructor(private _http: HttpClient, private _telemetryService?: PortalKustoTelemetryService) { }
+  constructor(private _http: HttpClient, @Optional() private _telemetryService?: PortalKustoTelemetryService) { }
 
   public initArmConfig(resourceUri: string): Observable<ArmResourceConfig> {
     if (!resourceUri.startsWith('/')) {

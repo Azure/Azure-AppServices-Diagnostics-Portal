@@ -1,0 +1,83 @@
+.panel {
+  width: 400px;
+  height: 220px;
+  border-radius: 0px;
+  border: 0px;
+  border-radius: 0px;
+  border: 1px solid lightgrey;
+  margin-bottom: 0px;
+}
+
+.panel-body {
+  padding: 0px;
+  padding-left: 10px;
+}
+
+.panel-heading {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  padding: 2px;
+  padding-left: 10px;
+}
+
+.description-text {
+  padding: 5px;
+}
+
+.markdown-text {
+  inline-size: 380px;
+  overflow-wrap: break-word;
+  padding: 5px;
+}
+
+.run-button {
+  position: absolute;
+  bottom: 5px;
+}
+
+.tool-tip-icon {
+  margin-left: auto;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  position: absolute;
+  z-index: 1;
+  width: 400px;
+  border-radius: 2px;
+  padding: 2px;
+  border: 1px solid gray;
+  background-color: white;
+}
+
+.hover-text:hover .tooltip-text {
+  visibility: visible;
+}
+
+#right {
+  top: -8px;
+  left: 120%;
+}
+
+.hover-text {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+}
+
+.trace-message {
+  font-size: x-small;
+}
+
+.Informational {
+  color: rgb(110, 110, 232);
+}
+
+.Warning {
+  color: orange;
+}
+
+.Critical,
+.Error {
+  color: red;
+}

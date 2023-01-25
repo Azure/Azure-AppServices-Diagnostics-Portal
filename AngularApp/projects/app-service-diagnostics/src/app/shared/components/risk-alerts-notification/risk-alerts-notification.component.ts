@@ -1,7 +1,7 @@
 import { JsonPipe } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { HealthStatus, TelemetryEventNames, TelemetryService, TelemetrySource } from 'diagnostic-data';
+import { HealthStatus, TelemetryEventNames, TelemetryService } from 'diagnostic-data';
 import { MessageBarType, IMessageBarProps, IMessageBarStyles } from 'office-ui-fabric-react';
 import { throwError } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
@@ -75,7 +75,6 @@ export class RiskAlertsNotificationComponent implements OnInit {
         if (this.showNotification) {
             this.telemetryService.logEvent(TelemetryEventNames.RiskAlertNotificationLoaded,
                 {
-                    'Location': TelemetrySource.CaseSubmissionFlow,
                     'NotificationType': "Notification",
                     'Status': this.notificationStatusType.toString(),
                     "NotificationDetectorId": this._riskAlertService.notificationMessageBar.id,
@@ -85,7 +84,6 @@ export class RiskAlertsNotificationComponent implements OnInit {
         if (this.showRiskAlertsNotification) {
             this.telemetryService.logEvent(TelemetryEventNames.RiskAlertNotificationLoaded,
                 {
-                    'Location': TelemetrySource.CaseSubmissionFlow,
                     'NotificationType': "RiskAlert",
                     'Status': this.riskAlertNotificationStatusType.toString(),
                     "NotificationDetectorId": this.riskAlertDetectorId,
@@ -98,7 +96,6 @@ export class RiskAlertsNotificationComponent implements OnInit {
         this.globals.openRiskAlertsPanel = true;
         this._riskAlertService.currentRiskPanelContentIdSub.next(id);
         this.telemetryService.logEvent(TelemetryEventNames.OpenRiskAlertPanel, {
-            'Location': TelemetrySource.CaseSubmissionFlow,
             "notificationDetectorId": id
         });
     }

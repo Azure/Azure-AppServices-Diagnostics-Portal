@@ -1,0 +1,62 @@
+<div class="mt-4 mb-2 ml-2 mr-2 ">
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="active" role="presentation">
+      <a id="description-tab" data-toggle="tab" [attr.href]="'#description-' + uniqueId" type="button" role="tab"
+        aria-controls="description" aria-selected="false">Description</a>
+    </li>
+    <li *ngIf="showMarkdown" role="presentation">
+      <a id="markdown-tab" data-toggle="tab" [attr.href]="'#markdown-' + uniqueId" type="button" role="tab"
+        aria-controls="markdown" aria-selected="true">Markdown</a>
+    </li>
+    <li role="presentation">
+      <a id="status-tab" data-toggle="tab" [attr.href]="'#status-' + uniqueId" type="button" role="tab"
+        aria-controls="status" aria-selected="false">Status</a>
+    </li>
+    <li role="presentation">
+      <a id="nextstep-tab" data-toggle="tab" [attr.href]="'#nextstep-' + uniqueId" type="button" role="tab"
+        aria-controls="nexstep" aria-selected="false">Next Step</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade in active" id="description-{{uniqueId}}" role="tabpanel"
+      aria-labelledby="description-tab">
+      <div class="tab-inner-content">
+        <label for="provideDescription" class="form-label">Enter description</label>
+        <textarea rows="5" name="provideDescription" class="form-control form-control-sm" id="provideDescription"
+          aria-label="Enter description" [(ngModel)]="data.description" [disabled]="readonly"
+          placeholder="Enter some description for this node"></textarea>
+      </div>
+    </div>
+    <div *ngIf="showMarkdown" class="tab-pane fade" id="markdown-{{uniqueId}}" role="tabpanel"
+      aria-labelledby="markdown-tab">
+      <div class="tab-inner-content">
+        <div style="width:320px">
+          <button class="btn btn-primary btn-sm" [disabled]="readonly" (click)="configureMarkdown()">Configure
+            markdown</button>
+          <div class="markdown-text mt-2" [ngClass]="{'disabled': readonly}">{{ data.markdownText }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="status-{{uniqueId}}" role="tabpanel" aria-labelledby="status-tab">
+      <div class="tab-inner-content">
+        <div style="width:320px">
+          <button class="btn btn-primary btn-sm" [disabled]="readonly" (click)="configureStatus()">Configure
+            Status</button>
+          <div class="markdown-text mt-2" [ngClass]="{'disabled': readonly}">{{ data.status }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="nextstep-{{uniqueId}}" role="tabpanel" aria-labelledby="nextstep-tab">
+      <div class="tab-inner-content">
+        <label for="choosePromptType" class="form-label">Choose Prompt type</label>
+        <select name="choosePromptType" class="ml-2 form-select form-select-sm" id="choosePromptType"
+          aria-describedby="promptTypeHelpBlock" aria-label="Choose prompt type" [(ngModel)]="data.promptType">
+          <option *ngFor="let type of promptTypes" [value]="type">{{ type }}</option>
+        </select>
+        <div id="promptTypeHelpBlock" class="fixed-label">
+          This setting decides whether the workflow moves to the next mode automatically or on user-click.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

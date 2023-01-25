@@ -2,6 +2,7 @@
 using AppLensV3.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,12 @@ namespace AppLensV3.Controllers
     public class UserSettingsController : Controller
     {
         private ICosmosDBUserSettingHandler _cosmosDBHandler;
-        public UserSettingsController(ICosmosDBUserSettingHandler cosmosDBUserSettingHandler)
+        private readonly bool _isEnabled;
+
+        public UserSettingsController(ICosmosDBUserSettingHandler cosmosDBUserSettingHandler, IConfiguration configuration)
         {
             _cosmosDBHandler = cosmosDBUserSettingHandler;
+            _isEnabled = configuration.GetValue("UserSetting:Enabled", false);
         }
 
         [HttpGet("{userId}")]

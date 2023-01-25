@@ -112,14 +112,13 @@ export const TelemetryEventNames = {
     ICMTemplateManagementPage: 'ICMTemplateManagementPage',
     ICMTeamTemplateLoaded: 'ICMTeamTemplateLoaded',
     ICMTeamTemplateUpdate: 'ICMTeamTemplateUpdate',
+    HomePageLogUser: 'HomePageLogUser',
 };
 
 export const TelemetrySource = {
-    LandingPage: 'LandingPage',
-    CategoryPage: 'CategoryPage',
     CaseSubmissionFlow: 'CaseSubmissionFlow',
-    OverviewPage:'OverviewPage',
-    DetectorPage: 'DetectorPage'
+    DiagAndSolveBlade: 'DiagAndSolveBlade',
+    PortalReferral: 'PortalReferral',
 }
 
 export interface TelemetryPayload {
