@@ -194,7 +194,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
 
     //#region Category picker settings
       detectorCategoryPickerInputProps: IBasePickerProps<ITagPickerProps>["inputProps"] = {
-        "aria-label": "Assign category picker",
+        "aria-label": "picker for assign category ",
         spellCheck: true,
         autoComplete: "off"      
       }
@@ -228,7 +228,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
 
     //#region Analysis picker settings
       detectorAnalysisPickerInputProps: IBasePickerProps<ITagPickerProps>["inputProps"] = {
-        "aria-label": "Link to analysis picker",
+        "aria-label": "Picker for link to analysis",
         spellCheck: true,
         autoComplete: "off"      
       }
@@ -237,7 +237,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
 
     //#region SupportTopic picker settings
       supportTopicPickerInputProps: IBasePickerProps<ITagPickerProps>["inputProps"] = {
-        "aria-label": "Link to support topic picker",
+        "aria-label": "Picker for link to support topic",
         spellCheck: true,
         autoComplete: "off"      
       }
@@ -899,92 +899,10 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
         return Promise.resolve([]);
       }
     }).toPromise()).then((value:ITagItemProps[] | Promise<ITagItemProps[]>) => value);
-
-    
-
-    // let promise = DetectorDesigner.applensResourceService.getPesId().map<string, ITagItemProps[]>(pesId => {
-    //   let dummy: ITagItemProps[] = [];
-    //   if(pesId) {
-    //     dummy = DetectorDesigner.applensDiagnosticApiService.getSupportTopics(pesId).map(supportTopics => { return [];}).pip
-    //   }
-    //   else {
-    //     return [];
-    //   }
-    // }).toPromise();
-    // return DetectorDesigner.applensResourceService.getPesId().map<string, ITagItemProps[]>(pesId => {
-    //   let returnValue:ITagItemProps[] = [];
-    //   if(pesId) {
-    //     DetectorDesigner.applensDiagnosticApiService.getSupportTopics(pesId).map<supportTopicResponseModel[], ITagItemProps[]>(supportTopicList =>{
-    //       const supportTopicPickerOptions:SupportTopicPickerModel[] = supportTopicList.filter(supportTopic=> supportTopic.supportTopicPath.toLowerCase().indexOf(data.toLowerCase()) > -1 || 
-    //         supportTopic.supportTopicId.toString().startsWith(data) || supportTopic.sapSupportTopicId.toString().startsWith(data)
-    //       )
-    //       .map(supportTopic => <SupportTopicPickerModel>{
-    //         PesId: pesId,
-    //         SupportTopicId: supportTopic.supportTopicId,
-    //         SapProductId: supportTopic.sapProductId,
-    //         SapSupportTopicId: supportTopic.sapSupportTopicId,
-    //         ProductName: supportTopic.productName,
-    //         SupportTopicL2Name:supportTopic.supportTopicL2Name,
-    //         SupportTopicL3Name:supportTopic.supportTopicL3Name,
-    //         SupportTopicPath: supportTopic.supportTopicPath
-    //       });
-    //       supportTopicPickerOptions.sort((a:SupportTopicPickerModel, b:SupportTopicPickerModel):number =>{
-    //         if(a.SupportTopicPath < b.SupportTopicPath) return -1;
-    //           if(a.SupportTopicPath > b.SupportTopicPath) return 1;
-    //           return 0;
-    //       });
-
-    //       let tagSuggestions:ITagItemProps[] = [];
-    //       let tagIndex = 0;
-    //       tagSuggestions = supportTopicPickerOptions.map<ITagItemProps>(option => <ITagItemProps>{
-    //         index:tagIndex++,
-    //         item:{
-    //           key:option.SapSupportTopicId,
-    //           name:option.SupportTopicPath
-    //         }
-    //       });
-
-    //       return tagSuggestions;
-    //     });
-        
-    //   }
-    //   else {
-    //     return returnValue;
-    //   }
-      
-    // }).toPromise();
-    
-    return DetectorDesigner.applensDiagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {
-    //return thisPointer.diagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {      
-      const analysisPickerOptions:AnalysisPickerModel[] = response.filter(detector=> detector.type === DetectorType.Analysis && (detector.id.toLowerCase().indexOf(data.toLowerCase()) > -1 || detector.name.toLowerCase().indexOf(data.toLowerCase()) > -1 )   )
-      .map(analysisDetectors => <AnalysisPickerModel>{
-        AnalysisId: analysisDetectors.id,
-        AnalysisName: analysisDetectors.name
-      } );
-      
-      analysisPickerOptions.sort((a:AnalysisPickerModel, b:AnalysisPickerModel):number =>{
-        if(a.AnalysisName < b.AnalysisName) return -1;
-        if(a.AnalysisName > b.AnalysisName) return 1;
-        return 0;
-      });
-
-      let tagSuggestions:ITagItemProps[] = [];
-      let tagIndex = 0;
-      tagSuggestions = analysisPickerOptions.map<ITagItemProps>(option => <ITagItemProps>{
-        index:tagIndex++,
-        item:{
-          key:option.AnalysisId,
-          name:option.AnalysisName
-        }
-      });
-      
-      return tagSuggestions;
-    }).toPromise();
   }
 
   //#endregion Support Topic Picker Methods
   
-
   //#endregion Detector Settings Panel Methods
 
   public detectorSettingsPanelOnOpened():void {
