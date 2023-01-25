@@ -21,16 +21,16 @@
         "dstsRealmStaging": {
           "type": "string"
         },
-        "dstsMetadataAddress": {
-          "type": "string"
-        },
-        "dstsIssuer": {
-          "type": "string"
-        },
         "runtimeHostEndpoint": {
             "type": "string"
         },
         "runtimeHostEndpointStaging": {
+            "type": "string"
+        },
+        "runtimeHostKeyVaultAppKey": {
+            "type": "string"
+        },
+        "observerKeyVaultAppKey": {
             "type": "string"
         }
     },
@@ -45,7 +45,12 @@
                 "DatacenterFederationConfiguration:Realm": "[parameters('dstsRealm')]",
                 "DiagnosticRole:AppServiceEndpoint": "[parameters('runtimeHostEndpoint')]",
                 "WEBSITE_ADD_SITENAME_BINDINGS_IN_APPHOST_CONFIG": "1",
-                "WEBSITE_LOAD_CERTIFICATES": "*"
+                "WEBSITE_LOAD_CERTIFICATES": "*",
+                "DiagnosticRole:AppKey": "[parameters('runtimeHostKeyVaultAppKey')]",
+                "DiagnosticRole:clientCertEnabled": "false",
+                "DiagnosticRole:UseAppService": "true",
+                "Observer:clientCertEnabled": "false",
+                "Observer:clientSecret": "[parameters('observerKeyVaultAppKey')]"
             }
         },
         {
@@ -58,7 +63,12 @@
                 "DatacenterFederationConfiguration:Realm": "[parameters('dstsRealmStaging')]",
                 "DiagnosticRole:AppServiceEndpoint": "[parameters('runtimeHostEndpointStaging')]",
                 "WEBSITE_ADD_SITENAME_BINDINGS_IN_APPHOST_CONFIG": "1",
-                "WEBSITE_LOAD_CERTIFICATES": "*"
+                "WEBSITE_LOAD_CERTIFICATES": "*",
+                "DiagnosticRole:AppKey": "[parameters('runtimeHostKeyVaultAppKey')]",
+                "DiagnosticRole:clientCertEnabled": "true",
+                "DiagnosticRole:UseAppService": "true",
+                "Observer:clientCertEnabled": "true",
+                "Observer:clientSecret": "[parameters('observerKeyVaultAppKey')]"
             }
         },
         {

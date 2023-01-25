@@ -19,7 +19,7 @@
         },
         {
           "find": "__RUNTIMEHOST_SITENAME__",
-          "replaceWith": "diag-runtimehost"
+          "replaceWith": "diag-runtimehost-bjb"
         },
         {
           "find": "__KEYVAULTNAME__",
@@ -70,6 +70,14 @@
         {
           "find": "__ZIP_PACKAGE__",
           "replaceWith": "ApplensNationalCloud.zip"
+        },
+        {
+          "find": "__OBSERVER_AAD_APPKEY__",
+          "replaceWith": "@Microsoft.KeyVault(SecretUri=https://runtimehost-kv-bjb.vault.azure.cn/secrets/SupportObserver--AppKey)"
+        },
+        {
+          "find": "__RUNTIMEHOST_AAD_APPKEY__",
+          "replaceWith": "@Microsoft.KeyVault(SecretUri=https://runtimehost-kv-bjb.vault.azure.cn/secrets/RuntimeHost--AppKey)"
         }
       ]
     },
