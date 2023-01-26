@@ -212,7 +212,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   deleteButtonText: string = "Delete";
   deleteDialogTitle: string = "Delete Detector";
   deleteDialogHidden: boolean = true;
-  detectorReferencesTitle : string = "Detector References";
+  detectorReferencesTitle: string = "Detector References";
   deleteAvailable: boolean = false;
   deletingDetector: boolean = false;
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -220,8 +220,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   PPERedirectTimer: number = 10;
   DevopsConfig: DevopsConfig;
   useAutoMergeText: boolean = false;
-  detectorReferencesDialogHidden : boolean = true; 
-  gistCommitVersion : string = ""; 
+  detectorReferencesDialogHidden: boolean = true;
+  gistCommitVersion: string = "";
 
   runButtonStyle: any = {
     root: { cursor: "default" }
@@ -446,7 +446,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   dismissDeleteDialog() {
     this.deleteDialogHidden = true;
   }
-  
+
 
   updateTempBranch(event: any) {
     this.tempBranch = event.option.key;
@@ -762,12 +762,13 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   addCodePrefix(codeString) {
     if (this.codeCompletionEnabled) {
       try {
+        // Index of #load
         var isLoadIndex = codeString.indexOf("#load");
         // If gist is being loaded in the code
         if (isLoadIndex >= 0) {
           codeString = StringUtilities.ReplaceAll(codeString, codePrefix, "");
           var splitted = codeString.split("\n");
-          var lastIndex = splitted.slice().reverse().findIndex(x => x.startsWith("#load"));
+          var lastIndex = splitted.slice().reverse().findIndex(x => x.startsWith("#load") || x.trim().startsWith("#load"));
           lastIndex = lastIndex > 0 ? splitted.length - 1 - lastIndex : lastIndex;
           if (lastIndex >= 0) {
             var finalJoin = [...splitted.slice(0, lastIndex + 1), codePrefix, ...splitted.slice(lastIndex + 1,)].join("\n");
@@ -816,11 +817,11 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     });
   }
 
-  loadExamples(){
+  loadExamples() {
     this.examplesDropdownOptions = this.documentsList.getDocumentListOptions();
   }
 
-  changeExampleDoc(event){
+  changeExampleDoc(event) {
     this.showExample = false;
     let selectedDoc = event.option.key.split(":");
 
@@ -898,14 +899,14 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
 
   showUpdateDetectorReferencesDialog() {
-    this.detectorReferencesDialogHidden = false; 
+    this.detectorReferencesDialogHidden = false;
   }
 
 
   dismissDetectorRefDialog() {
-    this.detectorReferencesDialogHidden = true;    
+    this.detectorReferencesDialogHidden = true;
   }
-  
+
 
 
 
