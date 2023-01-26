@@ -12,6 +12,7 @@ import { InputRendererOptions } from '@angular-react/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { AppType, PlatformType, SitePropertiesParser, StackType } from '../../../shared/utilities/applens-site-properties-parsing-utilities';
+import { DevelopMode } from '../onboarding-flow/onboarding-flow.component';
 
 @Component({
   selector: 'detector-settings-panel',
@@ -20,6 +21,8 @@ import { AppType, PlatformType, SitePropertiesParser, StackType } from '../../..
 })
 
 export class DetectorSettingsPanel {
+  @Input() mode?: DevelopMode = DevelopMode.Create;
+  
   @Input('id') rootId?: string = 'detectorSettingsPanel';
   @Input() headerText?: string = 'Configure';
 
@@ -176,7 +179,7 @@ export class DetectorSettingsPanel {
   resetSettingsPanel(): void {
     this.detectorId = this.getDetectorId();
 
-    //#region DetectorId dropdown options
+    //#region DetectorType dropdown options
     this.detectorTypeOptions = [
       {
         key: 'Analysis',
@@ -194,7 +197,7 @@ export class DetectorSettingsPanel {
       }
     ];
     this.detectorType = 'Detector';
-    //#endregion DetectorId dropdown options
+    //#endregion DetectorType dropdown options
 
     //#region Detector Author and logged in users details    
     let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : this._adalService.userInfo.userName;

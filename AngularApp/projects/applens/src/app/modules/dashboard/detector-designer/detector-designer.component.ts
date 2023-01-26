@@ -34,11 +34,6 @@ import { Options } from 'ng5-slider';
 export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   @Input() mode: DevelopMode = DevelopMode.Create;
 
-  // Had to add this to make the people picker work.
-  // People picker component has a bug. https://github.com/microsoft/angular-react/issues/213
-  public static applensDiagnosticApiService: ApplensDiagnosticService;
-  public static applensResourceService:ResourceService;
-
   detectorName:string = 'Auto Generated Detector Name';
 
   PanelType = PanelType;
@@ -132,15 +127,15 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   //#endregion Panel Footer variables
 
   //#region Detector settings variables
-  detectorSettingsButtonText:string = 'Settings';
-  settingsIcon: any = { iconName: 'Settings' };
-  detectorSettingsPanelOpenState: boolean = false;
+  // detectorSettingsButtonText:string = 'Settings';
+  // settingsIcon: any = { iconName: 'Settings' };
+  // detectorSettingsPanelOpenState: boolean = false;
   //#endregion Detector settings variables
 
   //#region Detector settings variables
-  detectorSettings1ButtonText:string = 'Settings-1';
-  settings1Icon: any = { iconName: 'Settings' };
-  detectorSettings1PanelOpenState: boolean = false;
+  detectorSettingsButtonText:string = 'Settings';
+  settingsIcon: any = { iconName: 'Settings' };
+  detectorSettingsPanelOpenState: boolean = false;
   //#endregion Detector settings variables
 
 
@@ -181,278 +176,21 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   //#region Time picker variables
 
   //#region Detector settings panel variables
-  detectorId:string = '';
-
-  detectorType: string = '';
-  detectorTypeOptions: IDropdownOption[] = [];
-
-    //#region DetectorAuthor settings
-      detectorAuthorPickerInputProps: IBasePickerProps<IPersona>["inputProps"] = {
-        "aria-label": "Detector author picker",
-        spellCheck: false
-      };
-      loggedInUserId: string = '';
-
-      detectorAuthorIds: IPersonaProps[] = [];
-      detectorAuthorPickerSelectedItems: IPersonaProps[] = [];
-    //#endregion DetectorAuthor settings
-    
-    detectorDescription: string = '';
-
-    //#region Category picker settings
-      detectorCategoryPickerInputProps: IBasePickerProps<ITagPickerProps>["inputProps"] = {
-        "aria-label": "picker for assign category ",
-        spellCheck: true,
-        autoComplete: "off"      
-      }
-      detectorCategoryPickerSelectedItems: IBasePickerProps<ITagItemProps>[];
-    //#endregion Category picker settings
-
-    //#region AppType dropdown settings
-      effectiveResourceAppType:AppType[] = [];
-      resourceAppTypeRequiredErrorMessage:string = '';
-      resourceAppTypeOptions: IDropdownOption[] = [];
-      resourceAppTypeOptionsDefaultSelectedKeys: string[] = [];
-    //#endregion AppType dropdown settings
-
-    //#region PlatformType dropdown settings
-      effectiveResourcePlatformType:PlatformType[] = [];
-      resourcePlatformTypeRequiredErrorMessage:string = '';
-      resourcePlatformTypeOptions: IDropdownOption[] = [];
-      resourcePlatformTypeOptionsDefaultSelectedKeys: string[] = [];
-    //#endregion PlatformType dropdown settings
-
-    //#region StackType dropdown settings
-      effectiveResourceStackType:StackType[] = [];
-      resourceStackTypeRequiredErrorMessage:string = '';
-      resourceStackTypeOptions: IDropdownOption[] = [];
-      resourceStackTypeOptionsDefaultSelectedKeys: string[] = [];
-    //#endregion StackType dropdown settings
-
-    isInternalOnly:boolean = true;
-    isDetectorPrivate:boolean = false;
-    isOnDemandRenderEnabled:boolean = false;
-
-    //#region Analysis picker settings
-      detectorAnalysisPickerInputProps: IBasePickerProps<ITagPickerProps>["inputProps"] = {
-        "aria-label": "Picker for link to analysis",
-        spellCheck: true,
-        autoComplete: "off"      
-      }
-      detectorAnalysisPickerSelectedItems: IBasePickerProps<ITagItemProps>[];
-    //#endregion Analysis picker settings
-
-    //#region SupportTopic picker settings
-      supportTopicPickerInputProps: IBasePickerProps<ITagPickerProps>["inputProps"] = {
-        "aria-label": "Picker for link to support topic",
-        spellCheck: true,
-        autoComplete: "off"      
-      }
-      supportTopicPickerSelectedItems: IBasePickerProps<ITagItemProps>[];
-    //#endregion SupportTopic picker settings
-  
+  detectorId:string = '';  
   //#endregion Detector settings panel variables
 
-  initialized: boolean = false;
-
-
-  public getUserPersonaInfoFromAlias(alias:string):Observable<IPersonaProps> {
-    let userInfo = this.diagnosticApiService.getUserInfo(alias).map(userInfo => {return (userInfo && userInfo.displayName)? userInfo.displayName : ''});
-    let userImage = this.diagnosticApiService.getUserPhoto(alias).map(image => {return image});
-
-    return forkJoin([userInfo, userImage]).pipe(mergeMap(results =>{
-      return of(<IPersonaProps>{
-        text: alias,
-        secondaryText:results[0]? results[0] : alias,
-        imageUrl: results[1],
-        showSecondaryText:false,
-        showInitialsUntilImageLoads: true
-      });
-    }));
-  }
-
-  public updateDetectorAuthorIdsWithNewState(newItemsState:IPersonaProps[]): void {
-    if(newItemsState.length > 0) {
-      newItemsState.forEach(item => {
-        item.text = item.text.toLowerCase();
-      });
-
-      // Remove items not present in the new state
-      this.detectorAuthorIds = this.detectorAuthorIds.filter(existingAuthor => newItemsState.some(newAuthor => newAuthor.text == existingAuthor.text));
-
-      // Do not add the items that are already present in the list, only add the new ones.
-      this.detectorAuthorIds.push(...newItemsState.filter(item => !this.detectorAuthorIds.some(detectorAuthor => detectorAuthor.text == item.text)));
-
-      // Update the selected items even though we do not have image and user name.
-      // Those details will be fetched in the background.
-      this.detectorAuthorPickerSelectedItems = [];
-      this.detectorAuthorPickerSelectedItems.push(...this.detectorAuthorIds);
-
-      // Start fetching the user persona info in the background
-      let userPersonaTasks:Observable<IPersonaProps>[] = [];
-      this.detectorAuthorIds.forEach(detectorAuthor => {
-        if(!detectorAuthor.imageUrl || detectorAuthor.text == detectorAuthor.secondaryText) {
-          userPersonaTasks.push(this.getUserPersonaInfoFromAlias(detectorAuthor.text));
-        }
-      });
-
-      //Wait for all the user persona info to be fetched and update the detectorAuthorIds
-      forkJoin(userPersonaTasks).subscribe(userPersonaInfos => {
-        userPersonaInfos.forEach(userPersonaInfo => {
-          let itemToUpdate = this.detectorAuthorIds.findIndex(detectorAuthor => detectorAuthor.text === userPersonaInfo.text);
-          if(itemToUpdate > -1) {
-            this.detectorAuthorIds[itemToUpdate] = userPersonaInfo;
-          }
-        });
-      },
-      ()=> {/* Ignore errors*/},
-      () => {
-        //ForkJoin complete. Update the detectorAuthorPickerSelectedItems now that we have the user persona info in detectorAuthorIds
-        this.detectorAuthorPickerSelectedItems = this.detectorAuthorIds;
-      });
-    }
-  }
+  initialized: boolean = false;  
 
   resetSettingsPanel(): void {
     this.detectorId = this.getDetectorId();
 
-    //#region DetectorId dropdown options
-    this.detectorTypeOptions = [
-      {
-        key: 'Analysis',
-        text: 'Analysis',
-        selected: false,
-        index: 0,
-        itemType:SelectableOptionMenuItemType.Normal
-      },
-      {
-        key: 'Detector',
-        text: 'Detector',
-        selected: true,
-        index: 1,
-        itemType:SelectableOptionMenuItemType.Normal
-      }
-    ];
-    this.detectorType = 'Detector';
-    //#endregion DetectorId dropdown options
-
-    //#region Detector Author and logged in users details
     
-    let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : this._adalService.userInfo.userName;
-    this.loggedInUserId = alias.replace('@microsoft.com', '');
 
-    this.detectorAuthorIds = [];
-    //TODO: This is temporary. Initialize author id from detector metadata.
-    //User ids can be comma or semi-colon separated.
-    let authorIds:IPersonaProps[] = [];
-
-
-    //Push logged-in user's detail
-    this.detectorAuthorIds.push({
-      text: `${this.loggedInUserId}`,
-      secondaryText: `${(this._adalService.userInfo.profile ? this._adalService.userInfo.profile.name : this._adalService.userInfo.userName)}`,
-      showSecondaryText:false,
-      imageUrl: undefined,
-      showInitialsUntilImageLoads: true
-    });
-    // this.detectorAuthorIds.push({
-    //   text: `puneetg`,
-    //   secondaryText: `Punet Gupta`,
-    //   showSecondaryText:false,
-    //   imageUrl: undefined,
-    //   showInitialsUntilImageLoads: true
-    // });
     
-    // This will initialize the detector author picker so that the user experience is smooth.
-    // We will update author details in the background.
-    this.updateDetectorAuthorIdsWithNewState(this.detectorAuthorIds);
-
-
-    //#endregion Detector Author and logged in users details
     if(this.isAppService) {
       //TODO: Initialize this with whatever the detector is currently set to.
-      //#region resourceAppTypeOptions, resourcePlatformTypeOptions and resourceStackTypeOptions dropdown options
-      this.resourceAppTypeOptionsDefaultSelectedKeys = [SitePropertiesParser.getDisplayForAppType(AppType.All) ];      
-
-      let optionIndex = 0;
-
-      this.resourceAppTypeOptions = [<IDropdownOption>{
-        key: SitePropertiesParser.getDisplayForAppType(AppType.All),
-        text: SitePropertiesParser.getDisplayForAppType(AppType.All),
-        selected: this.resourceAppTypeOptionsDefaultSelectedKeys.some(key => key === SitePropertiesParser.getDisplayForAppType(AppType.All)),
-        index: optionIndex++
-      }];
-
-      // Iterate through the enum and add the options
-      for (let appType in AppType) {
-        if(isNaN(Number(appType)) && !this.resourceAppTypeOptions.some(option => option.key === appType) ) {
-          this.resourceAppTypeOptions.push(<IDropdownOption>{
-            key: appType,
-            text: appType,
-            selected: this.resourceAppTypeOptionsDefaultSelectedKeys.some(key => key === appType),
-            index: optionIndex++
-          });
-        }
-      }
-      //#endregion resourceAppTypeOptions dropdown options
-
-      //#region resourcePlatformTypeOptions dropdown options
-      this.resourcePlatformTypeOptionsDefaultSelectedKeys = [SitePropertiesParser.getDisplayForPlatformType(PlatformType.All) ];
-      optionIndex = 0;
-      this.resourcePlatformTypeOptions = [<IDropdownOption>{
-        key: SitePropertiesParser.getDisplayForPlatformType(PlatformType.All),
-        text: SitePropertiesParser.getDisplayForPlatformType(PlatformType.All),
-        selected: this.resourcePlatformTypeOptionsDefaultSelectedKeys.some(key => key === SitePropertiesParser.getDisplayForPlatformType(PlatformType.All)),
-        index: optionIndex++
-      }];
-
-      // Iterate through the enum and add the options
-      for (let platformType in PlatformType) {
-        if(isNaN(Number(platformType)) && !this.resourcePlatformTypeOptions.some(option => option.key === platformType) ) {
-          this.resourcePlatformTypeOptions.push(<IDropdownOption>{
-            key: platformType,
-            text: platformType,
-            selected: this.resourcePlatformTypeOptionsDefaultSelectedKeys.some(key => key === platformType),
-            index: optionIndex++
-          });
-        }
-      }
-      //#endregion resourcePlatformTypeOptions dropdown options
-
-      //#region resourceStackTypeOptions dropdown options
-      this.resourceStackTypeOptionsDefaultSelectedKeys = [SitePropertiesParser.getDisplayForStackType(StackType.All) ];
-      optionIndex = 0;
-      this.resourceStackTypeOptions = [<IDropdownOption>{
-        key: SitePropertiesParser.getDisplayForStackType(StackType.All),
-        text: SitePropertiesParser.getDisplayForStackType(StackType.All),
-        selected: this.resourceStackTypeOptionsDefaultSelectedKeys.some(key => key === SitePropertiesParser.getDisplayForStackType(StackType.All)),
-        index: optionIndex++
-      }];
-
-      // Iterate through the enum and add the options
-      for (let stackType in StackType) {
-        if(isNaN(Number(stackType)) && !this.resourceStackTypeOptions.some(option => option.key === stackType) ) {
-          this.resourceStackTypeOptions.push(<IDropdownOption>{
-            key: stackType,
-            text: stackType,
-            selected: this.resourceStackTypeOptionsDefaultSelectedKeys.some(key => key === stackType),
-            index: optionIndex++
-          });
-        }
-      }
-      //#endregion resourceStackTypeOptions dropdown options
-
     } else {
-      this.resourceAppTypeOptions = [];
-      this.resourcePlatformTypeOptions = [];
-      this.resourceStackTypeOptions = [];
     }
-
-    this.handleResourceAppTypeOptions();
-    this.handleResourcePlatformTypeOptions();
-    this.handleResourceStackTypeOptions();
-
-    this.isInternalOnly = true;
 
   }
 
@@ -467,9 +205,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     private _detectorControlService: DetectorControlService, private _adalService: AdalService,
     public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute,
     private _applensCommandBarService: ApplensCommandBarService, private _router: Router, private _themeService: GenericThemeService, private _applensGlobal: ApplensGlobal ) {
-    this._applensGlobal.updateHeader('');
-    DetectorDesigner.applensDiagnosticApiService = this.diagnosticApiService;
-    DetectorDesigner.applensResourceService = this.resourceService;
+    this._applensGlobal.updateHeader('');    
     
     this.resetGlobals();
   }
@@ -524,12 +260,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     return false;
   }
 
-  public getRequiredErrorMessageOnTextField(value: string): string {
-    if(value == null || value == undefined || value == '') {
-      return 'Value cannot be empty';
-    };
-  }
-
+  
   public runCompilation():void {
     console.log('Run Compilation');
   }
@@ -542,378 +273,33 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     console.log('Publish Button On Click');
   }
 
+  public getRequiredErrorMessageOnTextField(value: string): string {
+    if (!value) {
+      return 'Value cannot be empty';
+    };
+  }
+
   //#region Detector Settings Panel Methods
+
+  // public detectorSettingsButtonOnClick():void {
+  //   this.detectorSettingsPanelOpenState = true;
+  //   console.log('Detector Settings Button On Click');
+  // }
 
   public detectorSettingsButtonOnClick():void {
     this.detectorSettingsPanelOpenState = true;
-    console.log('Detector Settings Button On Click');
-  }
-
-  public detectorSettings1ButtonOnClick():void {
-    this.detectorSettings1PanelOpenState = true;
     console.log('Detector Settings-1 Button On Click');
   }
 
   public detectorSettingsPanelOnDismiss(dismissAction:string):void {
-    if(this.detectorSettingsPanelOpenState) {
-      this.detectorSettingsPanelOpenState = false;
+    //if(this.detectorSettingsPanelOpenState) {
+//      this.detectorSettingsPanelOpenState = false;
       console.log('Detector Settings Panel On Dismiss : ' + dismissAction  + ' ' + window.performance.now().toString());
-    }
-  }
+   // }
+  }  
 
-  public onChangeDetectorType(event: any):void {
-    this.detectorType = event.option.key.toString();
-  }
-
-  //#region Detector Author Picker Methods
-
-  public updateDetectorAuthorSelectedItems(event:any):boolean {
-    //this.detectorAuthorIds = event.items;    
-    this.updateDetectorAuthorIdsWithNewState(event.items);
-    return false;
-  }
-
-  public detectorAuthorPickerInputChanged():any {
-    const _this = this;
-    return (data) => {
-      return _this.detectorAuthorPickerInputChangedClosureImpl(data, _this);
-    }
-  }
-
-  public detectorAuthorPickerInputChangedClosureImpl(data: any, thisPointer?:any):IPersonaProps[] | Promise<IPersonaProps[]> {
-    //Issue: https://github.com/microsoft/angular-react/issues/213
-    if(data) {
-        //return thisPointer.diagnosticApiService.getSuggestionForAlias(data).map(response => {
-        return DetectorDesigner.applensDiagnosticApiService.getSuggestionForAlias(data).map(response => {  
-        let suggestions: IPersonaProps[] = [];
-        response.forEach(suggestion => {
-          if(suggestion && suggestion.userPrincipalName)
-          suggestions.push({
-            text: `${suggestion.userPrincipalName.toLowerCase().replace('@microsoft.com', '')}`,
-            secondaryText: `${suggestion.userPrincipalName.toLowerCase().replace('@microsoft.com', '')}`,
-            showSecondaryText:false,
-            imageUrl: undefined,
-            showInitialsUntilImageLoads: true
-          });
-        });
-        return suggestions.slice(0, 5);
-      }).toPromise();
-    }
-    else {
-      return [];
-    }
-
-        
-    // Testing with static values and delaying the rendering by 250 ms
-    // const results:IPersonaProps[] = [{
-    //   text:data,
-    //   secondaryText:data,
-    //   showSecondaryText:false,
-    //   imageUrl: undefined,
-    //   showInitialsUntilImageLoads: false
-    // }];
-    
-    // return new Promise<IPersonaProps[]>((resolve, reject) => setTimeout(
-    //   () => resolve(results)
-    //   , 250));
-
-  }
-  //#endregion Detector Author Picker Methods
-
-  //#region Detector Category Picker Methods
-  public updateDetectorCategorySelectedItems(event:any):boolean {
-    console.log('updateDetectorCategorySelectedItems');
-    console.log(event);    
-    this.detectorCategoryPickerSelectedItems = event.items;
-    return false;
-  }
-
-  public detectorCategoryPickerInputChanged():any {
-    const _this = this;
-    return (data): ITagItemProps[] | Promise<ITagItemProps[]> => {
-      return _this.detectorCategoryPickerInputChangedClosureImpl(data, _this);
-    }
-  }
-
-  public detectorCategoryPickerInputChangedClosureImpl(data: any, thisPointer?:DetectorDesigner): ITagItemProps[] | Promise<ITagItemProps[]>{
-    return DetectorDesigner.applensDiagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {
-    //return thisPointer.diagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {
-      const categories:string[] = Array.from(new Set(response.filter(detector=> detector.category && detector.category.toLowerCase().indexOf(data.toLowerCase()) > -1)
-      .map(detectorsWithCategory => detectorsWithCategory.category)));
-      
-      categories.sort();
-
-      let tagSuggestions:ITagItemProps[] = [];
-      let tagIndex = 0;
-      tagSuggestions = categories.map<ITagItemProps>(category => <ITagItemProps>{
-        index:tagIndex++,
-        item:{
-          key:category,
-          name:category
-        }
-      });
-
-      //Adds the current input string as a suggestion if it is not already present in the list
-      if(data && !tagSuggestions.some(item=>item.item.key.toString().toLowerCase() == data.toString().toLowerCase())) {
-        tagSuggestions.push(<ITagItemProps>{
-          index:tagIndex++,
-          item:{
-            key:data,
-            name:data
-          }
-        });
-      }
-      return tagSuggestions.slice(0, 5);
-    }).toPromise();
-  }
-
-  // public detectorCategoryPickerValidateInput(input: string): ValidationState {
-  //   if(input) {
-  //     return ValidationState.valid;
-  //   }
-  //   else {
-  //     return ValidationState.invalid;
-  //   }
-  // }
   
-  //#endregion Detector Category Picker Methods
   
-  //#region Detector App Type dropdown Methods
-  public handleResourceAppTypeOptions(selectedOption?: any):void {
-    //Due to a bug in multiselect mode for dropdowns where the changes in model is not passed on to the callout that displays the optionson UI, we cannot have the UI reflect the same state as the model.
-    //Do not try to uncheck/check stuff based on AppType.All, merely maintain the state of the model as reflected in the UI.
-
-    this.resourceAppTypeRequiredErrorMessage = '';
-    
-    if(this.resourceAppTypeOptions.length > 0) {
-      if(selectedOption) {
-        // This ensures that the model is updated with the latest state of the UI
-        this.resourceAppTypeOptions[this.resourceAppTypeOptions.findIndex(option=> option.key === selectedOption.key)].selected = selectedOption.selected;
-      }
-      
-      //Determine the effective resource app type
-      if(this.resourceAppTypeOptions.find(option=> option.key === SitePropertiesParser.getDisplayForAppType(AppType.All)).selected === true) {
-        this.effectiveResourceAppType = [AppType.All];
-      }
-      else {
-        this.effectiveResourceAppType = this.resourceAppTypeOptions.filter(option=> option.selected).map(option=> AppType[option.key] as AppType);
-      }
-
-      this.resourceAppTypeRequiredErrorMessage = this.effectiveResourceAppType.length === 0 && this.resourceAppTypeOptions.length > 0 ? 'At least one App type is required' : '';    }
-    else {
-      this.effectiveResourceAppType = [];
-    }
-
-  }
-
-  public onChangeResourceAppType(event: any):void {
-    this.handleResourceAppTypeOptions(event.option);    
-  }
-  //#endregion Detector App Type dropdown Methods
-
-  //#region Detector Platform Type dropdown Methods
-  public handleResourcePlatformTypeOptions(selectedOption?: any):void {
-    //Due to a bug in multiselect mode for dropdowns where the changes in model is not passed on to the callout that displays the optionson UI, we cannot have the UI reflect the same state as the model.
-    //Do not try to uncheck/check stuff based on AppType.All, merely maintain the state of the model as reflected in the UI.
-
-    this.resourcePlatformTypeRequiredErrorMessage = '';
-    
-    if(this.resourcePlatformTypeOptions.length > 0) {
-      if(selectedOption) {
-        // This ensures that the model is updated with the latest state of the UI
-        this.resourcePlatformTypeOptions[this.resourcePlatformTypeOptions.findIndex(option=> option.key === selectedOption.key)].selected = selectedOption.selected;
-      }
-      
-      //Determine the effective resource app type
-      if(this.resourcePlatformTypeOptions.find(option=> option.key === SitePropertiesParser.getDisplayForPlatformType(PlatformType.All)).selected === true) {
-        this.effectiveResourcePlatformType = [PlatformType.All];
-      }
-      else {
-        this.effectiveResourcePlatformType = this.resourcePlatformTypeOptions.filter(option=> option.selected).map(option=> PlatformType[option.key] as PlatformType);
-      }
-
-      this.resourcePlatformTypeRequiredErrorMessage = this.effectiveResourcePlatformType.length === 0 && this.resourcePlatformTypeOptions.length > 0 ? 'At least one Platform type is required' : '';    }
-    else {
-      this.effectiveResourcePlatformType = [];
-    }
-  }
-
-  public onChangeResourcePlatformType(event: any):void {
-    this.handleResourcePlatformTypeOptions(event.option);    
-  }
-  //#endregion Detector Platform Type dropdown Methods
-
-  //#region Detector Stack Type dropdown Methods
-  public handleResourceStackTypeOptions(selectedOption?: any):void {
-    //Due to a bug in multiselect mode for dropdowns where the changes in model is not passed on to the callout that displays the optionson UI, we cannot have the UI reflect the same state as the model.
-    //Do not try to uncheck/check stuff based on AppType.All, merely maintain the state of the model as reflected in the UI.
-
-    this.resourceStackTypeRequiredErrorMessage = '';
-    
-    if(this.resourceStackTypeOptions.length > 0) {
-      if(selectedOption) {
-        // This ensures that the model is updated with the latest state of the UI
-        this.resourceStackTypeOptions[this.resourceStackTypeOptions.findIndex(option=> option.key === selectedOption.key)].selected = selectedOption.selected;
-      }
-      
-      //Determine the effective resource app type
-      if(this.resourceStackTypeOptions.find(option=> option.key === SitePropertiesParser.getDisplayForStackType(StackType.All)).selected === true) {
-        this.effectiveResourceStackType = [StackType.All];
-      }
-      else {
-        this.effectiveResourceStackType = this.resourceStackTypeOptions.filter(option=> option.selected).map(option=> StackType[option.key] as StackType);
-      }
-
-      this.resourceStackTypeRequiredErrorMessage = this.effectiveResourceStackType.length === 0 && this.resourceStackTypeOptions.length > 0 ? 'At least one Stack type is required' : '';    }
-    else {
-      this.effectiveResourceStackType = [];
-    }
-  }
-
-  public onChangeResourceStackType(event: any):void {
-    this.handleResourceStackTypeOptions(event.option);    
-  }
-  //#endregion Detector Stack Type dropdown Methods
-
-  //#region isInternalOnly Methods
-  public getInternalOnlyCheckStatus(): boolean {
-    return this.isInternalOnly;
-  }
-
-  public toggleInternalOnlyState(checked: boolean) {
-    this.isInternalOnly = checked;
-  }
-  //#endregion isInternalOnly Methods
-
-  //#region getPrivateCheckStatus Methods
-  public getDetectorPrivateCheckStatus(): boolean {
-    return this.isDetectorPrivate;
-  }
-
-  public toggleDetectorPrivateState(checked: boolean) {
-    this.isDetectorPrivate = checked;
-  }
-  //#endregion getPrivateCheckStatus Methods
-
-  //#region getOnDemandRenderCheckStatus Methods
-  public getOnDemandRenderCheckStatus(): boolean {
-    return this.isOnDemandRenderEnabled;
-  }
-
-  public toggleOnDemandRenderState(checked: boolean) {
-    this.isOnDemandRenderEnabled = checked;
-  }
-  //#endregion getPrivateCheckStatus Methods
-
-  //#region Detector Analysis Picker Methods  
-
-  public updateDetectorAnalysisSelectedItems(event:any):boolean {    
-    //Add unique items to the selected items list, discard duplicates.
-    let keys = new Set();
-    this.detectorAnalysisPickerSelectedItems = event.items.filter(item => keys.has(item.key)? false: !!keys.add(item.key));
-    return false;
-  }
-  
-  public detectorAnalysisPickerInputChanged():any {
-    const _this = this;
-    return (data): ITagItemProps[] | Promise<ITagItemProps[]> => {
-      return _this.detectorAnalysisPickerInputChangedClosureImpl(data, _this);
-    }
-  }
-
-  public detectorAnalysisPickerInputChangedClosureImpl(data: any, thisPointer?:DetectorDesigner): ITagItemProps[] | Promise<ITagItemProps[]>{
-    return DetectorDesigner.applensDiagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {
-    //return thisPointer.diagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {      
-      const analysisPickerOptions:AnalysisPickerModel[] = response.filter(detector=> detector.type === DetectorType.Analysis && (detector.id.toLowerCase().indexOf(data.toLowerCase()) > -1 || detector.name.toLowerCase().indexOf(data.toLowerCase()) > -1 )   )
-      .map(analysisDetectors => <AnalysisPickerModel>{
-        AnalysisId: analysisDetectors.id,
-        AnalysisName: analysisDetectors.name
-      } );
-      
-      analysisPickerOptions.sort((a:AnalysisPickerModel, b:AnalysisPickerModel):number =>{
-        if(a.AnalysisName < b.AnalysisName) return -1;
-        if(a.AnalysisName > b.AnalysisName) return 1;
-        return 0;
-      });
-
-      let tagSuggestions:ITagItemProps[] = [];
-      let tagIndex = 0;
-      tagSuggestions = analysisPickerOptions.map<ITagItemProps>(option => <ITagItemProps>{
-        index:tagIndex++,
-        item:{
-          key:option.AnalysisId,
-          name:option.AnalysisName
-        }
-      });
-      
-      return tagSuggestions.slice(0, 5);
-    }).toPromise();
-  }
-  
-  //#endregion Detector Analysis Picker Methods
-
-  //#region Support Topic Picker Methods
-  public updateSupportTopicSelectedItems(event:any):boolean {
-    //Add unique items to the selected items list, discard duplicates.
-    let keys = new Set();
-    this.supportTopicPickerSelectedItems = event.items.filter(item => keys.has(item.key)? false: !!keys.add(item.key));
-    return false;    
-  }
-
-  public detectorSupportTopicPickerInputChanged():any {
-    const _this = this;
-    return (data): ITagItemProps[] | Promise<ITagItemProps[]> => {
-      return _this.detectorSupportTopicPickerInputChangedClosureImpl(data, _this);
-    }
-  }
-
-  public detectorSupportTopicPickerInputChangedClosureImpl(data: any, thisPointer?:DetectorDesigner): ITagItemProps[] | Promise<ITagItemProps[]> {
-    return Promise.resolve(DetectorDesigner.applensResourceService.getPesId().map<string, Promise<ITagItemProps[]>>(pesId => {
-      if(pesId) {
-        return Promise.resolve(
-          DetectorDesigner.applensDiagnosticApiService.getSupportTopics(pesId).map<supportTopicResponseModel[], ITagItemProps[]>(supportTopicList =>{
-          const supportTopicPickerOptions:SupportTopicPickerModel[] = supportTopicList.filter(supportTopic=> supportTopic.supportTopicPath.toLowerCase().indexOf(data.toLowerCase()) > -1 || 
-            supportTopic.supportTopicId.toString().startsWith(data) || supportTopic.sapSupportTopicId.toString().startsWith(data)
-          )
-          .map(supportTopic => <SupportTopicPickerModel>{
-            PesId: pesId,
-            SupportTopicId: supportTopic.supportTopicId,
-            SapProductId: supportTopic.sapProductId,
-            SapSupportTopicId: supportTopic.sapSupportTopicId,
-            ProductName: supportTopic.productName,
-            SupportTopicL2Name:supportTopic.supportTopicL2Name,
-            SupportTopicL3Name:supportTopic.supportTopicL3Name,
-            SupportTopicPath: supportTopic.supportTopicPath
-          });
-
-          supportTopicPickerOptions.sort((a:SupportTopicPickerModel, b:SupportTopicPickerModel):number =>{
-            if(a.SupportTopicPath < b.SupportTopicPath) return -1;
-              if(a.SupportTopicPath > b.SupportTopicPath) return 1;
-              return 0;
-          });
-
-          let tagSuggestions:ITagItemProps[] = [];
-          let tagIndex = 0;
-          tagSuggestions = supportTopicPickerOptions.map<ITagItemProps>(option => <ITagItemProps>{
-            index:tagIndex++,
-            item:{
-              key:option.SapSupportTopicId,
-              name:option.SupportTopicPath
-            }
-          });
-
-          return tagSuggestions.slice(0, 5);
-        }).toPromise()
-        ).then((tagSuggestions:ITagItemProps[]) => tagSuggestions);
-      }
-      else 
-      {
-        return Promise.resolve([]);
-      }
-    }).toPromise()).then((value:ITagItemProps[] | Promise<ITagItemProps[]>) => value);
-  }
-
-  //#endregion Support Topic Picker Methods
   
   //#endregion Detector Settings Panel Methods
 
@@ -924,13 +310,13 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     });
   }
 
-  public onOpenedDetectorSettings1Panel():void {
+  public onOpenedDetectorSettingsPanel():void {
     //console.log('Parent : Detector Settings1 Panel OnOpened: ' + window.performance.now().toString());
   }
 
-  public onDismissDetectorSettings1Panel(source:string) {
+  public onDismissDetectorSettingsPanel(source:string) {
     //console.log('Parent : Detector Settings1 Panel OnClosed: Source=' + source + ' ' + window.performance.now().toString());
-    console.log(this.detectorSettings1PanelOpenState);
+    console.log(this.detectorSettingsPanelOpenState);
   }
 
   branchToggleCallout() {
