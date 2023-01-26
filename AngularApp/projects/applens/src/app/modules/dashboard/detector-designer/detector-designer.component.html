@@ -16,12 +16,12 @@
                 (click)="publishButtonOnClick()" [disabled]="publishButtonDisabled">
             </fab-command-bar-item>
 
+            <!-- <fab-command-bar-item key="detectorSettings" [text]="detectorSettingsButtonText" [iconProps]="settingsIcon"
+                (click)="detectorSettingsButtonOnClick()" >
+            </fab-command-bar-item> -->
+
             <fab-command-bar-item key="detectorSettings" [text]="detectorSettingsButtonText" [iconProps]="settingsIcon"
                 (click)="detectorSettingsButtonOnClick()" >
-            </fab-command-bar-item>
-
-            <fab-command-bar-item key="detectorSettings1" [text]="detectorSettings1ButtonText" [iconProps]="settings1Icon"
-                (click)="detectorSettings1ButtonOnClick()" >
             </fab-command-bar-item>
 
             <far-items>
@@ -83,131 +83,7 @@
 
     <fab-panel [isOpen]="detectorSettingsPanelOpenState" [type]="PanelType.custom"  [customWidth]="'60vw'" 
         [isFooterAtBottom] = "true" [headerText]="'Configure Detector'" (onOpened)="detectorSettingsPanelOnOpened()" (onDismiss)="detectorSettingsPanelOnDismiss('Close')"  [renderFooterContent]='PanelFooter' >
-        <div style="margin: 1em;">
-            <div>
-                <div class="row" style="padding-bottom: 1em;">
-                    <div class="col-md-7">
-                        <div style="display:flex; justify-content:space-between;width: 90%;">
-                            <fab-text-field [ariaLabel]="'Detector Id'"  [styles]="fabTextFieldStyleNoStretch" [label]="'Id'" [required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" 
-                            [(value)]="detectorId" [autoComplete]="'off'" ></fab-text-field>
-
-                            <fab-dropdown role="combobox" [label]="'Type'" [required]="true" [styles]="fabDropdownStyle" [ariaLabel]="'Type of detector'" id="detectorType"
-                            [options]="detectorTypeOptions" (onChange)="onChangeDetectorType($event)"></fab-dropdown>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div style="display: flex; align-items: baseline;">
-                            <div style="width:25%; font-weight: 600">
-                                <span class="detectordesigner-required">Author</span>
-                            </div>
-                            <div style="width:75%">
-                                <fab-people-picker [inputProps]="detectorAuthorPickerInputProps" [pickerSuggestionsOptions]="{noResultsFoundText: 'No suggestions found', loadingText: 'Loading'}"
-                                [selectedItems]="detectorAuthorPickerSelectedItems"  (onChange)="updateDetectorAuthorSelectedItems($event)"
-                                [resolveSuggestions]="detectorAuthorPickerInputChangedClosureImpl" [resolveDelay]=500
-                                ></fab-people-picker>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="padding-bottom: 1em;">
-                    <div class="col-md-7">
-                        <div style="width: 90%;">
-                            <fab-text-field [ariaLabel]="'Description for the detector'"  [styles]="fabTextFieldStyleNoStretchWide" [label]="'Description&nbsp;'"  
-                [(value)]="detectorDescription" [autoComplete]="'off'" ></fab-text-field>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div style="display: flex; align-items: baseline;">
-                            <div style="width:25%; font-weight: 600">
-                                <span>Category</span>
-                            </div>
-                            <div style="width:75%">
-                                <fab-tag-picker [inputProps]="detectorCategoryPickerInputProps"
-                                [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching category found', loadingText: 'Loading'}"
-                                [selectedItems]="detectorCategoryPickerSelectedItems"  (onChange)="updateDetectorCategorySelectedItems($event)"
-                                [resolveSuggestions]="detectorCategoryPickerInputChangedClosureImpl" [resolveDelay]=500 [itemLimit]=1
-                                ></fab-tag-picker>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div *ngIf = "isAppService" style="padding-bottom: 1em;">
-                    <div style="display: flex;justify-content: space-between;">
-                        <fab-dropdown role="combobox" [label]="'App type'" [required]="true" [ariaLabel]="'Apps this detector is applicable to'" id="resourceAppType"
-                            [styles]="fabDropdownStyle" [calloutProps]="fabDropdownMultiselectCalloutProps"
-                            [errorMessage] = "resourceAppTypeRequiredErrorMessage"
-                            [multiSelect]=true [defaultSelectedKeys] = "resourceAppTypeOptionsDefaultSelectedKeys"
-                            [options]="resourceAppTypeOptions" (onChange)="onChangeResourceAppType($event)"></fab-dropdown>
-                    </div>
-                </div>
-                <div *ngIf = "isAppService" style="padding-bottom: 1em;">
-                    <div style="display: flex;justify-content: space-between;">
-                        <div style="display: flex;justify-content: space-between;">
-                            <fab-dropdown role="combobox" [label]="'Platform type'" [required]="true" [ariaLabel]="'Platforms this detector is applicable to'" id="resourcePlatformType"
-                                [styles]="fabDropdownStyle" [calloutProps]="fabDropdownMultiselectCalloutProps"
-                                [errorMessage] = "resourcePlatformTypeRequiredErrorMessage"
-                                [multiSelect]=true [defaultSelectedKeys] = "resourcePlatformTypeOptionsDefaultSelectedKeys"
-                                [options]="resourcePlatformTypeOptions" (onChange)="onChangeResourcePlatformType($event)"></fab-dropdown>
-                        </div>
-                    </div>
-                </div>
-                <div *ngIf = "isAppService" style="padding-bottom: 1em;">
-                    <div style="display: flex;justify-content: space-between;">
-                        <div style="display: flex;justify-content: space-between;">
-                            <fab-dropdown role="combobox" [label]="'Stack type'" [required]="true" [ariaLabel]="'Application stacks this detector is applicable to'" id="resourceStackType"
-                                [styles]="fabDropdownStyle" [calloutProps]="fabDropdownMultiselectCalloutProps"
-                                [errorMessage] = "resourceStackTypeRequiredErrorMessage"
-                                [multiSelect]=true [defaultSelectedKeys] = "resourceStackTypeOptionsDefaultSelectedKeys"
-                                [options]="resourceStackTypeOptions" (onChange)="onChangeResourceStackType($event)"></fab-dropdown>
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="padding-bottom: 1em;">
-                    <div class="col-md-7">
-                        <div style="display:flex; justify-content:space-between;width: 90%;">
-                            <fab-checkbox [label]="'Internal only'" [ariaLabel]="'Internal only'" [checked]="getInternalOnlyCheckStatus()" [styles]="fabCheckboxStyle"
-                            (checkedChange)="toggleInternalOnlyState($event)" [boxSide] = "'end'"></fab-checkbox>
-
-                            <fab-checkbox [label]="'OnDemand rendering'" [ariaLabel]="'Render UI elements on demand'" [checked]="getOnDemandRenderCheckStatus()" [styles]="fabCheckboxStyle"
-                            (checkedChange)="toggleOnDemandRenderState($event)" [boxSide] = "'end'"></fab-checkbox>
-
-                            <fab-checkbox [label]="'Mark private'" [ariaLabel]="'Mark private'" [checked]="getDetectorPrivateCheckStatus()" [styles]="fabCheckboxStyle"
-                            (checkedChange)="toggleDetectorPrivateState($event)" [boxSide] = "'end'"></fab-checkbox>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div style="display: flex; align-items: baseline;">
-                            <div style="width:25%; font-weight: 600">
-                                <span>Link to analysis</span>
-                            </div>
-                            <div style="width:75%">
-                                <fab-tag-picker [inputProps]="detectorAnalysisPickerInputProps"
-                                [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching analysis found', loadingText: 'Loading'}"
-                                [selectedItems]="detectorAnalysisPickerSelectedItems"  (onChange)="updateDetectorAnalysisSelectedItems($event)"
-                                [resolveSuggestions]="detectorAnalysisPickerInputChangedClosureImpl" [resolveDelay]=500                                
-                                ></fab-tag-picker>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="padding-bottom: 1em;">
-                    <div class="col-md-7">
-                        <div style="display: flex; align-items: baseline;justify-content: space-between;">
-                            <div style="font-weight: 600;">
-                                Link to support topic
-                            </div>
-                            <div style="width:80%">
-                                <fab-tag-picker [inputProps]="supportTopicPickerInputProps"
-                                [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching support topic found', loadingText: 'Loading'}"
-                                [selectedItems]="supportTopicPickerSelectedItems"  (onChange)="updateSupportTopicSelectedItems($event)"
-                                [resolveSuggestions]="detectorSupportTopicPickerInputChangedClosureImpl" [resolveDelay]=500                                
-                                ></fab-tag-picker>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4"></div>
-                </div>
-            </div>
+        <div style="margin: 1em;">            
         </div>
     </fab-panel>
     <ng-template #PanelFooter>
@@ -217,7 +93,7 @@
             <fab-default-button (onClick)="notifyPanelCloseSubject.next('Cancel')" [contentStyle]="'margin-left:10px;margin-right:10px'" >Cancel</fab-default-button>
         </div>
     </ng-template>
-    <detector-settings-panel [id] = '"detectorSettings1Panel"' [(isOpen)] = "detectorSettings1PanelOpenState" 
-    (onOpened) = "onOpenedDetectorSettings1Panel()" (onDismiss) = "onDismissDetectorSettings1Panel($event)"
+    <detector-settings-panel [id] = '"detectorSettingsPanel"' [(isOpen)] = "detectorSettingsPanelOpenState" 
+    (onOpened) = "onOpenedDetectorSettingsPanel()" (onDismiss) = "onDismissDetectorSettingsPanel($event)"
      ></detector-settings-panel>
 </div>
