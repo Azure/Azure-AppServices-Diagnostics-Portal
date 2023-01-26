@@ -137,6 +137,13 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   detectorSettingsPanelOpenState: boolean = false;
   //#endregion Detector settings variables
 
+  //#region Detector settings variables
+  detectorSettings1ButtonText:string = 'Settings-1';
+  settings1Icon: any = { iconName: 'Settings' };
+  detectorSettings1PanelOpenState: boolean = false;
+  //#endregion Detector settings variables
+
+
   //#region Graduation branch picker variables
   detectorGraduation: boolean = false;
   isBranchCallOutVisible: boolean = false;
@@ -542,6 +549,11 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     console.log('Detector Settings Button On Click');
   }
 
+  public detectorSettings1ButtonOnClick():void {
+    this.detectorSettings1PanelOpenState = true;
+    console.log('Detector Settings-1 Button On Click');
+  }
+
   public detectorSettingsPanelOnDismiss(dismissAction:string):void {
     if(this.detectorSettingsPanelOpenState) {
       this.detectorSettingsPanelOpenState = false;
@@ -906,10 +918,19 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   //#endregion Detector Settings Panel Methods
 
   public detectorSettingsPanelOnOpened():void {
-    console.log('Detector Settings Panel On Opened');    
+    console.log('Detector Settings Panel On Opened');
     this.notifyPanelCloseSubject.take(1).subscribe((dismissAction) => {
       this.detectorSettingsPanelOnDismiss(dismissAction);
     });
+  }
+
+  public onOpenedDetectorSettings1Panel():void {
+    //console.log('Parent : Detector Settings1 Panel OnOpened: ' + window.performance.now().toString());
+  }
+
+  public onDismissDetectorSettings1Panel(source:string) {
+    //console.log('Parent : Detector Settings1 Panel OnClosed: Source=' + source + ' ' + window.performance.now().toString());
+    console.log(this.detectorSettings1PanelOpenState);
   }
 
   branchToggleCallout() {
