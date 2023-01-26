@@ -20,6 +20,10 @@
                 (click)="detectorSettingsButtonOnClick()" >
             </fab-command-bar-item>
 
+            <fab-command-bar-item key="detectorSettings1" [text]="detectorSettings1ButtonText" [iconProps]="settings1Icon"
+                (click)="detectorSettings1ButtonOnClick()" >
+            </fab-command-bar-item>
+
             <far-items>
                 <fab-command-bar-item *ngIf="detectorGraduation" key="brachSelectorPill" text="custom text">
                     <render>
@@ -213,4 +217,7 @@
             <fab-default-button (onClick)="notifyPanelCloseSubject.next('Cancel')" [contentStyle]="'margin-left:10px;margin-right:10px'" >Cancel</fab-default-button>
         </div>
     </ng-template>
+    <detector-settings-panel [id] = '"detectorSettings1Panel"' [(isOpen)] = "detectorSettings1PanelOpenState" 
+    (onOpened) = "onOpenedDetectorSettings1Panel()" (onDismiss) = "onDismissDetectorSettings1Panel($event)"
+     ></detector-settings-panel>
 </div>
