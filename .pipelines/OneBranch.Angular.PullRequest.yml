@@ -148,3 +148,35 @@ extends:
               includeRootFolder: false
               archiveType: 'zip'
               archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/ApplensNationalCloud.zip'
+
+          - script: |
+              cd AngularApp
+              npm run build-asd
+            displayName: 'build applens national clouds'
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'restore'
+              projects: 'Backend/Backend.csproj'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'build appservice diagnostics backend'
+            inputs:
+              projects: Backend/Backend.csproj
+              arguments: '--configuration $(BuildConfiguration)'            
+
+          - task: DotNetCoreCLI@2
+            displayName: 'publish appservice diagnostics backend'
+            inputs:
+              command: publish
+              publishWebProjects: false
+              projects: Backend/Backend.csproj
+              arguments: '--configuration $(BuildConfiguration) --output $(System.ArtifactsDirectory)/AppServiceDiagnostics'
+              zipAfterPublish: false
+
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: '$(System.ArtifactsDirectory)/AppServiceDiagnostics/Backend'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/AppServiceDiagnostics.zip'              
