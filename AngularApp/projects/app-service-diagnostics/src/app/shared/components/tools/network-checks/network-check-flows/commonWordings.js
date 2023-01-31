@@ -49,9 +49,14 @@ export class CommonWordings{
 
         this.connectivityCheckUnsupported = {
             get(){
-                return new CheckStepView({
-                    title: "Connectivity checks don't support Linux or Container based App yet.",
-                    level: 3
+                return new InfoStepView({
+                        infoType: 1,
+                        title: `Connectivity checks don't support Linux or Container based App yet.`,
+                        markdown: `If you have set up VNet integration successfully, but connectivity to resource in the VNet is still failing, follow the troubleshooting steps below to diagnose the problem.
+- If your app is trying to connect to a resource over its private endpoint, you should check if Azure DNS has the private DNS zone that is associated with this private link.
+- Once DNS resolution is working and the app is able to resolve the remote endpoint correctly, check if there are any outbound NSG rules on the VNet that could block connectivity. 
+- Firewall rules configured on destination resource (function binding) could be blocking access. Refer to this [troubleshooting guide](https://docs.microsoft.com/azure/azure-functions/functions-networking-options#debug-access-to-virtual-network-hosted-resources) to further debug the issue.
+- There were authentication issues and the credentials involved have expired or are invalid.  Enable logging and check application logs for errors.`
                 });
             }
         }

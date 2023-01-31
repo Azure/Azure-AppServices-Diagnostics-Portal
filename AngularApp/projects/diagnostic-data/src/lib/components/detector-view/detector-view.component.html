@@ -47,7 +47,7 @@
 </div>
 
 <div *ngIf="timePickerErrorStr !==''" class="error-time-picker-message">{{timePickerErrorStr}}</div>
-<div>
+<div *ngIf="detectorDataLocalCopy && detectorDataLocalCopy.metadata">
   <p>{{detectorDataLocalCopy.metadata.description}}</p>
 </div>
 

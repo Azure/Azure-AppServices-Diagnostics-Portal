@@ -42,6 +42,7 @@ export class MainComponent implements OnInit {
   displayLoader: boolean = false;
   loaderSize = SpinnerSize.large;
   caseNumberNeededForUser: boolean = false;
+  caseNumberNeededForProduct: boolean = false;
   caseNumber: string = '';
   caseNumberValidationError: string = null;
   accessErrorMessage: string = '';
@@ -104,7 +105,7 @@ export class MainComponent implements OnInit {
       this.resourceTypes = this.resourceTypes.filter(resourceType => !resourceType.caseId);
     }
 
-    if (this._activatedRoute.snapshot.queryParams['caseNumber'] && this._activatedRoute.snapshot.queryParams['caseNumber'] !== "undefined") {
+    if (this._activatedRoute.snapshot.queryParams['caseNumber']) {
       this.caseNumber = this._activatedRoute.snapshot.queryParams['caseNumber'];
     }
     if (this._activatedRoute.snapshot.queryParams['resourceName']) {
@@ -112,6 +113,9 @@ export class MainComponent implements OnInit {
     }
     if (this._activatedRoute.snapshot.queryParams['errorMessage']) {
       this.accessErrorMessage = this._activatedRoute.snapshot.queryParams['errorMessage'];
+    }
+    if (this._activatedRoute.snapshot.queryParams['caseNumberNeeded']) {
+      this.caseNumberNeededForProduct = true;
     }
     if (this._activatedRoute.snapshot.queryParams['resourceType']) {
       let foundResourceType = this.defaultResourceTypes.find(resourceType => resourceType.resourceType.toLowerCase() === this._activatedRoute.snapshot.queryParams['resourceType'].toLowerCase());
