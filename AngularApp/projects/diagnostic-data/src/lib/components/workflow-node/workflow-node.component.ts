@@ -27,8 +27,6 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
 
   ngOnInit(): void {
     this.updateStatus();
-    this.updateMarkdown();
-
     if (this.data.promptType && this.data.promptType === 'automatic' && this.data.type !== "IfElseCondition" && this.data.type !== "SwitchCondition") {
       this.runNext(this.data.children);
     }
@@ -53,12 +51,6 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
         break;
       default:
         break;
-    }
-  }
-
-  updateMarkdown() {
-    if (this.data.markdownText) {
-      this.markdownHtml = this._markdownService.compile(this.data.markdownText);
     }
   }
 

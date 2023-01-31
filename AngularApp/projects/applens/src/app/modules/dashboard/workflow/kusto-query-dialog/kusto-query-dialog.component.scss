@@ -14,8 +14,14 @@ mat-dialog-content {
     font-family: 'Courier New', Courier, monospace;
 }
 
-.table td:hover {
+.table td {
+    padding: 5px;
+}
+
+.table-hovering td:hover {
     border: 1px solid rgb(151, 173, 230);
+    padding: 4px;
+    display: block;
 }
 
 .form-label {
@@ -26,5 +32,10 @@ mat-dialog-content {
     min-height: 300px;
     border: 1px solid rgb(39, 86, 206);
     max-height: 300px;
+    overflow-y: scroll;
+}
+
+.variables-table {
+    max-height: 230px;
     overflow-y: scroll;
 }

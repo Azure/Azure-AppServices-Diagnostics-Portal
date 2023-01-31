@@ -15,8 +15,8 @@
       <div class="col-sm-2">
         <label class="form-label">Other Step variables</label>
       </div>
-      <div class="col-sm-10">
-        <table class="table table-bordered table-responsive">
+      <div class="col-sm-10 variables-table">
+        <table class="table table-bordered">
           <thead>
             <tr>
               <th>Name</th>
@@ -59,7 +59,7 @@
       </div>
       <div class="col-sm-10 border border-primary">
         <div class="query-output">
-          <table *ngIf="dataSource.length > 0" class="mt-3 table table-bordered table-responsive">
+          <table *ngIf="dataSource.length > 0" class="mt-3 table-hovering table table-bordered">
             <thead>
               <tr>
                 <th *ngFor="let disCol of kustoQueryColumns; let colIndex = index">{{disCol.columnName}}

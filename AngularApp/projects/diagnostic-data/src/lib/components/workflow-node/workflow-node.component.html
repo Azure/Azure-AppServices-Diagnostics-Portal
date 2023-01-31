@@ -33,7 +33,9 @@
 
     <div class="panel-body">
       <div class="description-text">{{ data.description }}</div>
-      <div class="markdown-text" [innerHTML]="markdownHtml"></div>
+      <div class="markdown-text">
+        <markdown [data]="data.markdownText"></markdown>
+      </div>
       <div class="run-button">
         <button *ngIf="showNextButton()" [disabled]="runButtonClicked" class="btn btn-primary btn-sm mb-2"
           (click)="runNext(data.children)">{{ isLoading ? 'Running...' : 'Next' }}</button>

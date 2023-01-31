@@ -63,6 +63,11 @@ export class KustoQueryDialogComponent implements OnInit {
       return;
     }
 
+    if (!this.code.startsWith('$@"') || !this.code.endsWith('"')){
+      this._workflowService.showMessageBox("Error", "Invalid query text. The query text should start with $@ and end with a double quote");
+      return;
+    }
+
     let dialogResult: kustoQueryDialogParams = {
       queryText: this.encodeString(this.getQueryText()),
       variables: this.variablesInMemoryCopy,
@@ -76,6 +81,12 @@ export class KustoQueryDialogComponent implements OnInit {
   }
 
   executeQuery() {
+
+    if (!this.code.startsWith('$@"') || !this.code.endsWith('"')){
+      this._workflowService.showMessageBox("Error", "Invalid query text. The query text should start with $@ and end with a double quote");
+      return;
+    }
+
     let dynamicExpression: dynamicExpressionBody = {
       WorkflowId: 'Workflow1',
       OperationName: this.kustoQueryLabel,

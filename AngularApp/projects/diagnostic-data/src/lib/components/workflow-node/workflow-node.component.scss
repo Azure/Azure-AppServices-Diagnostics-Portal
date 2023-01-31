@@ -1,6 +1,6 @@
 .panel {
   width: 400px;
-  height: 220px;
+  min-height: 220px;
   border-radius: 0px;
   border: 0px;
   border-radius: 0px;
@@ -31,8 +31,7 @@
 }
 
 .run-button {
-  position: absolute;
-  bottom: 5px;
+  margin-bottom: 8px;
 }
 
 .tool-tip-icon {
