@@ -1,8 +1,8 @@
 
 import { map, mergeMap, catchError } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
 import { SiteDaasInfo } from '../models/solution-metadata';
 import { ArmService } from './arm.service';
 import { AuthService } from '../../startup/services/auth.service';
@@ -79,7 +79,29 @@ export class DaasService {
 
     getDatabaseTest(site: SiteInfoMetaData): Observable<DatabaseTestConnectionResult[]> {
         const resourceUri: string = this._uriElementsService.getDatabaseTestUrl(site);
-        return <Observable<DatabaseTestConnectionResult[]>>this._armClient.getResourceWithoutEnvelope<DatabaseTestConnectionResult[]>(resourceUri, null, true);
+        return <Observable<DatabaseTestConnectionResult[]>>this._armClient.requestResource<HttpResponse<DatabaseTestConnectionResult[]>, any>("GET", resourceUri, null, null).pipe(
+            map((response: HttpResponse<DatabaseTestConnectionResult[]>) => {
+                return response.body;
+            }),
+            catchError(err => {
+
+                //
+                // DaaS site extension is changing the method for /databasetest to POST instead of GET
+                // Handle any error that we get while making the get call and if we get any failure, then
+                // try making a POST call till the site extension is updated globally
+                //
+
+                if (err.status && err.status === 405) {
+                    return <Observable<DatabaseTestConnectionResult[]>>this._armClient.postResourceWithoutEnvelope<DatabaseTestConnectionResult[], any>(resourceUri, null, null, true)
+                } else {
+                    let actualError: string = JSON.stringify(err);
+                    if (err.error && err.error.Message) {
+                        actualError = err.error.Message;
+                    }
+                    throwError(actualError)
+                }
+            })
+        )
     }
 
     getDaasWebjobState(site: SiteDaasInfo): Observable<string> {
@@ -184,7 +206,7 @@ export class DaasService {
 
                     this._siteService.updateSiteAppSettings(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot, settingsResponse).subscribe(updateResponse => {
                         if (useDiagServerForLinux) {
-                            
+
                             //
                             // Reset this flag so that the daas-sessions component can
                             // get the current value of the storage account and then

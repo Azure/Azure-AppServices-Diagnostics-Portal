@@ -174,7 +174,6 @@ export class KustoQueryDialogComponent implements OnInit {
   getQueryText(): string {
     let code = this.code.substring(3);
     code = code.substring(0, code.length - 1);
-    console.log(code);
     return code;
   }
 
