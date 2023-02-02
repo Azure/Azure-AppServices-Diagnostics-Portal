@@ -41,19 +41,18 @@ export class DetectorSettingsPanel {
   @Output() onOpened = new EventEmitter<void>();
   @Output() onDismiss = new EventEmitter<string>();
 
-  private _value:DetectorSettingsModel;
-  @Input() set value(val:DetectorSettingsModel) {
+  _value:DetectorSettingsModel;
+  @Input() set settingsValue(val:DetectorSettingsModel) {
     // Note: Setter will not trigger if the value is set from within the same component.
     if(val) {
       this._value = val;
       this.resetSettingsPanel();
     }
   }
-  public get value(): DetectorSettingsModel {
+  public get settingsValue(): DetectorSettingsModel {
     return this._value;
   }
-
-  @Output() valueChange = new EventEmitter<DetectorSettingsModel>();
+  @Output() settingsValueChange = new EventEmitter<DetectorSettingsModel>();
 
 
   PanelType = PanelType;
@@ -202,15 +201,15 @@ export class DetectorSettingsPanel {
   }
 
   resetSettingsPanel(): void {
-    this.detectorName = this.value && this.value.name ?  this.value.name :  'Auto Generated Detector Name';
-    this.detectorId =   this.value && this.value.id ? this.value.id: this.getDetectorId();
-    this.detectorDescription = this.value && this.value.description ? this.value.description : '';
+    this.detectorName = this.settingsValue && this.settingsValue.name ?  this.settingsValue.name :  'Auto Generated Detector Name';
+    this.detectorId =   this.settingsValue && this.settingsValue.id ? this.settingsValue.id: this.getDetectorId();
+    this.detectorDescription = this.settingsValue && this.settingsValue.description ? this.settingsValue.description : '';
 
     //#region Detector Category initialization
     this.detectorCategoryPickerSelectedItems = [];
-    if(this.value && this.value.category ) {      
+    if(this.settingsValue && this.settingsValue.category ) {      
       this.diagnosticApiService.getDetectors().map<DetectorMetaData[], ITag>(response =>{
-        const matchingCategoryEntry:DetectorMetaData = response.find(detector => detector.category && detector.category.toLowerCase() === this.value.category.toLowerCase());
+        const matchingCategoryEntry:DetectorMetaData = response.find(detector => detector.category && detector.category.toLowerCase() === this.settingsValue.category.toLowerCase());
         if(matchingCategoryEntry) {
           return <ITag>{
             key: matchingCategoryEntry.category,
@@ -237,14 +236,14 @@ export class DetectorSettingsPanel {
         this.detectorTypeOptions.push(<IDropdownOption>{
           key: entity,
           text: entity,
-          selected: this.value && this.value.type? entity === EntityType[this.value.type] : entity === EntityType[EntityType.Detector],
+          selected: this.settingsValue && this.settingsValue.type? entity === EntityType[this.settingsValue.type] : entity === EntityType[EntityType.Detector],
           index: index++,
           itemType: SelectableOptionMenuItemType.Normal
         });
       }
     }    
        
-    this.detectorType = this.value && this.value.type? this.value.type : EntityType.Detector;
+    this.detectorType = this.settingsValue && this.settingsValue.type? this.settingsValue.type : EntityType.Detector;
     //#endregion DetectorType dropdown options
 
     //#region Detector Author and logged in users details
@@ -254,9 +253,9 @@ export class DetectorSettingsPanel {
     this.detectorAuthorIds = [];
     
     // At least one non empty author is suplied.
-    if(this.value && this.value.authors && this.value.authors.some(author => author) ) {
+    if(this.settingsValue && this.settingsValue.authors && this.settingsValue.authors.some(author => author) ) {
       // If authors are specified in the detector metadata, use them. Make sure we add unique authors only.    
-      this.value.authors.forEach(author => {
+      this.settingsValue.authors.forEach(author => {
         if(author) {
           if(!this.detectorAuthorIds.some(existingAuthor => existingAuthor.text.toLowerCase() === author.toLowerCase().replace('@microsoft.com', ''))) {
             this.detectorAuthorIds.push({
@@ -295,11 +294,11 @@ export class DetectorSettingsPanel {
 
     if (this.isAppService) {      
       //#region resourceAppTypeOptions, resourcePlatformTypeOptions and resourceStackTypeOptions dropdown options
-      if(!this.value || !this.value.appTypes || !this.value.appTypes.some(appType => appType) || this.value.appTypes.some(appType => appType === AppType.All)) {
+      if(!this.settingsValue || !this.settingsValue.appTypes || !this.settingsValue.appTypes.some(appType => appType) || this.settingsValue.appTypes.some(appType => appType === AppType.All)) {
         this.resourceAppTypeOptionsDefaultSelectedKeys = [SitePropertiesParser.getDisplayForAppType(AppType.All)];
       }
       else {
-        this.value.appTypes.forEach(appType => {
+        this.settingsValue.appTypes.forEach(appType => {
           if(appType && !this.resourceAppTypeOptionsDefaultSelectedKeys.some(existingAppType=> existingAppType === SitePropertiesParser.getDisplayForAppType(appType) ) ) {
             this.resourceAppTypeOptionsDefaultSelectedKeys.push(SitePropertiesParser.getDisplayForAppType(appType));
           }
@@ -329,11 +328,11 @@ export class DetectorSettingsPanel {
       //#endregion resourceAppTypeOptions dropdown options
 
       //#region resourcePlatformTypeOptions dropdown options
-      if(!this.value || !this.value.platformTypes || !this.value.platformTypes.some(platformType => platformType) || this.value.platformTypes.some(platformType => platformType === PlatformType.All)) {
+      if(!this.settingsValue || !this.settingsValue.platformTypes || !this.settingsValue.platformTypes.some(platformType => platformType) || this.settingsValue.platformTypes.some(platformType => platformType === PlatformType.All)) {
         this.resourcePlatformTypeOptionsDefaultSelectedKeys = [SitePropertiesParser.getDisplayForPlatformType(PlatformType.All)];
       }
       else {
-        this.value.platformTypes.forEach(platformType => {
+        this.settingsValue.platformTypes.forEach(platformType => {
           if(platformType && !this.resourcePlatformTypeOptionsDefaultSelectedKeys.some(existingPlatformType=> existingPlatformType === SitePropertiesParser.getDisplayForPlatformType(platformType) ) ) {
             this.resourcePlatformTypeOptionsDefaultSelectedKeys.push(SitePropertiesParser.getDisplayForPlatformType(platformType));
           }
@@ -362,11 +361,11 @@ export class DetectorSettingsPanel {
       //#endregion resourcePlatformTypeOptions dropdown options
 
       //#region resourceStackTypeOptions dropdown options
-      if(!this.value || !this.value.stackTypes || !this.value.stackTypes.some(stackType => stackType) || this.value.stackTypes.some(stackType => stackType === StackType.All)) {
+      if(!this.settingsValue || !this.settingsValue.stackTypes || !this.settingsValue.stackTypes.some(stackType => stackType) || this.settingsValue.stackTypes.some(stackType => stackType === StackType.All)) {
         this.resourceStackTypeOptionsDefaultSelectedKeys = [SitePropertiesParser.getDisplayForStackType(StackType.All)];
       }
       else {
-        this.value.stackTypes.forEach(stackType => {
+        this.settingsValue.stackTypes.forEach(stackType => {
           if(stackType && !this.resourceStackTypeOptionsDefaultSelectedKeys.some(existingStackType=> existingStackType === SitePropertiesParser.getDisplayForStackType(stackType) ) ) {
             this.resourceStackTypeOptionsDefaultSelectedKeys.push(SitePropertiesParser.getDisplayForStackType(stackType));
           }
@@ -404,21 +403,21 @@ export class DetectorSettingsPanel {
     this.handleResourcePlatformTypeOptions();
     this.handleResourceStackTypeOptions();
 
-    this.isInternalOnly = this.value ? this.value.isInternalOnly : true;
+    this.isInternalOnly = this.settingsValue ? this.settingsValue.isInternalOnly : true;
 
     this.isDetectorPrivate = false;
-    if(this.value && this.isDetectorPrivate) {
+    if(this.settingsValue && this.isDetectorPrivate) {
         this.isInternalOnly = true;
         this.isDetectorPrivate = true;
     }
     
-    this.isOnDemandRenderEnabled = this.value ? this.value.isOnDemandRenderEnabled : false;
+    this.isOnDemandRenderEnabled = this.settingsValue ? this.settingsValue.isOnDemandRenderEnabled : false;
 
     //#region Update Analysis picker initialization
     this.detectorAnalysisPickerSelectedItems = [];
-    if(this.value && this.value.analysisList && this.value.analysisList.some(analysis => analysis.id)) {
+    if(this.settingsValue && this.settingsValue.analysisList && this.settingsValue.analysisList.some(analysis => analysis.id)) {
       this.diagnosticApiService.getDetectors().map<DetectorMetaData[], ITag[]>( response => {
-        return response.filter(detector => detector.type === DetectorType.Analysis && this.value.analysisList.some(analysis => analysis.id.toUpperCase() === detector.id.toUpperCase()))
+        return response.filter(detector => detector.type === DetectorType.Analysis && this.settingsValue.analysisList.some(analysis => analysis.id.toUpperCase() === detector.id.toUpperCase()))
         .map(matchingAnalysisDetector => <ITag>{
           key: matchingAnalysisDetector.id,
           name: matchingAnalysisDetector.name,
@@ -433,16 +432,16 @@ export class DetectorSettingsPanel {
 
     //#region Update Support Topic picker initialization
     this.supportTopicPickerSelectedItems = [];   
-    if(this.value && this.value.supportTopicList && this.value.supportTopicList.some(st => st.pesId && st.supportTopicId && st.sapProductId && st.sapSupportTopicId)) {
+    if(this.settingsValue && this.settingsValue.supportTopicList && this.settingsValue.supportTopicList.some(st => st.pesId && st.supportTopicId && st.sapProductId && st.sapSupportTopicId)) {
       this.resourceService.getPesId().subscribe(pesId => {
         if(pesId) {
           // Before making a network call, make sure that the support topics being initialized are for the current product.
-          if(this.value.supportTopicList.some(st => st.pesId === pesId)) {
+          if(this.settingsValue.supportTopicList.some(st => st.pesId === pesId)) {
             this.diagnosticApiService.getSupportTopics(pesId).subscribe((supportTopicList:SupportTopicResponseModel[]) => {
               if(supportTopicList) {
                 let keys = new Set();
                 this.supportTopicPickerSelectedItems = supportTopicList.filter(supportTopic => 
-                  this.value.supportTopicList.some(st => st.pesId === pesId && st.supportTopicId === supportTopic.supportTopicId && st.sapProductId === supportTopic.sapProductId && st.sapSupportTopicId === supportTopic.sapSupportTopicId)
+                  this.settingsValue.supportTopicList.some(st => st.pesId === pesId && st.supportTopicId === supportTopic.supportTopicId && st.sapProductId === supportTopic.sapProductId && st.sapSupportTopicId === supportTopic.sapSupportTopicId)
                   && (keys.has(`${pesId}|${supportTopic.supportTopicId}|${supportTopic.sapProductId}|${supportTopic.sapSupportTopicId}`) ? false : !!keys.add(`${pesId}|${supportTopic.supportTopicId}|${supportTopic.sapProductId}|${supportTopic.sapSupportTopicId}`))
                 ).map<ITag>(matchingSupportTopic=>{
                   return <ITag> {
@@ -480,31 +479,31 @@ export class DetectorSettingsPanel {
   }
 
   private saveDetectorSettings():void {
-    if(this.value) {
-      this.value.id = this.getDetectorId();
-      this.value.type = this.detectorType;
-      this.value.description = this.detectorDescription;
-      this.value.authors = this.detectorAuthorIds && this.detectorAuthorIds.some(author => author.text) ? this.detectorAuthorIds.map<string>(authorPersona => authorPersona.text) : [];
-      this.value.category = this.detectorCategoryPickerSelectedItems && this.detectorCategoryPickerSelectedItems.some(category => category.key) ? this.detectorCategoryPickerSelectedItems.find(category => category.key).name : '';
-      if(this.value.isAppService)
+    if(this.settingsValue) {
+      this.settingsValue.id = this.getDetectorId();
+      this.settingsValue.type = this.detectorType;
+      this.settingsValue.description = this.detectorDescription;
+      this.settingsValue.authors = this.detectorAuthorIds && this.detectorAuthorIds.some(author => author.text) ? this.detectorAuthorIds.map<string>(authorPersona => authorPersona.text) : [];
+      this.settingsValue.category = this.detectorCategoryPickerSelectedItems && this.detectorCategoryPickerSelectedItems.some(category => category.key) ? this.detectorCategoryPickerSelectedItems.find(category => category.key).name : '';
+      if(this.settingsValue.isAppService)
       {
-        this.value.appTypes = this.effectiveResourceAppType;
-        this.value.platformTypes = this.effectiveResourcePlatformType;
-        this.value.stackTypes = this.effectiveResourceStackType;
+        this.settingsValue.appTypes = this.effectiveResourceAppType;
+        this.settingsValue.platformTypes = this.effectiveResourcePlatformType;
+        this.settingsValue.stackTypes = this.effectiveResourceStackType;
       }
-      this.value.isInternalOnly = this.isInternalOnly;
-      this.value.isOnDemandRenderEnabled = this.isOnDemandRenderEnabled;
-      this.value.isPrivate = this.isDetectorPrivate;
+      this.settingsValue.isInternalOnly = this.isInternalOnly;
+      this.settingsValue.isOnDemandRenderEnabled = this.isOnDemandRenderEnabled;
+      this.settingsValue.isPrivate = this.isDetectorPrivate;
 
 
-      this.value.analysisList =this.detectorAnalysisPickerSelectedItems && this.detectorAnalysisPickerSelectedItems.some(analysis => analysis.key && analysis.name) ?  this.detectorAnalysisPickerSelectedItems.map<AnalysisPickerModel>(analysis => <AnalysisPickerModel>{id: analysis.key.toString(), name:analysis.name}) : [];
+      this.settingsValue.analysisList =this.detectorAnalysisPickerSelectedItems && this.detectorAnalysisPickerSelectedItems.some(analysis => analysis.key && analysis.name) ?  this.detectorAnalysisPickerSelectedItems.map<AnalysisPickerModel>(analysis => <AnalysisPickerModel>{id: analysis.key.toString(), name:analysis.name}) : [];
       
       if(this.supportTopicPickerSelectedItems && this.supportTopicPickerSelectedItems.some(st => st.key && st.name)) {
         this.resourceService.getPesId().subscribe(pesId => {
           if(pesId) {
             this.diagnosticApiService.getSupportTopics(pesId).subscribe((supportTopicList:SupportTopicResponseModel[]) => {
               if(supportTopicList) {                
-                this.value.supportTopicList = supportTopicList.filter(supportTopic => this.supportTopicPickerSelectedItems.some(st => st.key === supportTopic.sapSupportTopicId))
+                this.settingsValue.supportTopicList = supportTopicList.filter(supportTopic => this.supportTopicPickerSelectedItems.some(st => st.key === supportTopic.sapSupportTopicId))
                 .map<SupportTopicPickerModel>(matchingSupportTopic => {
                   return <SupportTopicPickerModel> {
                     pesId: pesId,
@@ -523,7 +522,7 @@ export class DetectorSettingsPanel {
         });
       }
       else {
-        this.value.supportTopicList = [];
+        this.settingsValue.supportTopicList = [];
       }
     }
     this.saveButtonDisabledStatus = true;
