@@ -35,9 +35,7 @@ import { DetectorSettingsModel } from '../models/detector-designer-models/detect
 export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   @Input() mode: DevelopMode = DevelopMode.Create;
 
-  detectorSettingsPanelValue: DetectorSettingsModel;
-
-  detectorName:string = 'Auto Generated Detector Name';
+  detectorName:string = 'Settings Panel Name';//'Auto Generated Detector Name';
 
   PanelType = PanelType;
 
@@ -139,6 +137,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   detectorSettingsButtonText:string = 'Settings';
   settingsIcon: any = { iconName: 'Settings' };
   detectorSettingsPanelOpenState: boolean = false;
+  detectorSettingsPanelValue: DetectorSettingsModel;
   //#endregion Detector settings variables
 
 
@@ -188,6 +187,10 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     this.detectorSettingsPanelValue = new DetectorSettingsModel(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName);
     this.detectorSettingsPanelValue.name = this.detectorName;
     this.detectorId = this.detectorSettingsPanelValue.id;
+
+    //Take this out, this is for testing
+    this.detectorSettingsPanelValue.isPrivate = true;
+    this.detectorSettingsPanelValue.description = 'This is a test description';
   
     if(this.detectorSettingsPanelValue.isAppService) {
       //TODO: Initialize this with whatever the detector is currently set to.
@@ -197,7 +200,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   }
 
   resetGlobals(): void {
-    this.detectorName = 'Auto Generated Detector Name';
+    this.detectorName = 'detectorName';//'Auto Generated Detector Name';
     this.resetSettingsPanel();
   }
 
