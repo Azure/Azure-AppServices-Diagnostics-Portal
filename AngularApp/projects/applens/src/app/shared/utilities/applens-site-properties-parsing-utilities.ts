@@ -1,30 +1,22 @@
-export class SitePropertiesParser {
+export class SitePropertiesParser {    
     public static getAppType(kind: string):AppType {
-        if (kind && kind.toLowerCase().indexOf("workflowapp") !== -1) {
-          return AppType.WorkflowApp;
-        } else if (kind && kind.toLowerCase().indexOf("function") !== -1) {
-          return AppType.FunctionApp;
-        } else if (kind && kind.toLowerCase().indexOf("mobile") !== -1) {
-          return AppType.MobileApp;
-        } else if (kind && kind.toLowerCase().indexOf("gateway") !== -1) {
-            return AppType.GatewayApp;
-        } else if (kind && kind.toLowerCase().indexOf("api") !== -1) {
-            return AppType.ApiApp;
-        } else return AppType.WebApp;
+        return kind? AppType[kind] : AppType.WebApp;
     }
 
     public static getDisplayForAppType(appType: AppType): string {
         return AppType[appType];
-    } 
+    }
 
-    public static getPlatform(kind: string) {
-        if (kind && kind.toLowerCase().indexOf("linux") !== -1) {
-          return "Linux";
-        } else return "Windows";
+    public static getPlatformType(platform: string) {
+        return platform ? PlatformType[platform] : PlatformType.Windows;
     }
 
     public static getDisplayForPlatformType(platform: PlatformType): string {
         return PlatformType[platform];
+    }
+
+    public static getStackType(stackType: string) {
+        return stackType ? StackType[stackType] : StackType.All;
     }
 
     public static getDisplayForStackType(stack: StackType): string {

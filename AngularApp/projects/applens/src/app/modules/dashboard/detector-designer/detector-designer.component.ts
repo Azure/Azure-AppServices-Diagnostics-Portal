@@ -358,31 +358,4 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     console.log("Update Branch");
     this.closeBranchCallout();
   }
-
-}
-
-export interface AnalysisPickerModel {
-  AnalysisId: string;
-  AnalysisName: string;
-}
-
-export interface supportTopicResponseModel {
-  supportTopicId: string;
-  sapSupportTopicId: string;
-  sapProductId: string;
-  supportTopicPath: string;
-  productName: string;
-  supportTopicL2Name: string;
-  supportTopicL3Name:string
-}
-
-export interface SupportTopicPickerModel {
-  SupportTopicId: string;
-  PesId: string;
-  SapSupportTopicId: string;
-  SapProductId: string;
-  SupportTopicPath: string;
-  ProductName: string;
-  SupportTopicL2Name: string;
-  SupportTopicL3Name:string
 }
