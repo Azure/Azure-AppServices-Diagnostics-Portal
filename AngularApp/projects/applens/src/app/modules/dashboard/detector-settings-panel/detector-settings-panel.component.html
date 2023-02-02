@@ -7,12 +7,12 @@
                 <div class="col-md-4">
                     <fab-text-field [ariaLabel]="'Detector Id'" [styles]="fabTextFieldStyleNoStretch" [label]="'Id'"
                         [required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" [(value)]="detectorId"
-                        [autoComplete]="'off'"></fab-text-field>
+                        [autoComplete]="'off'" (onChange)="saveButtonDisabledStatus = false"></fab-text-field>
                 </div>
                 <div class="col-md-4">
                     <fab-dropdown role="combobox" [label]="'Type'" [required]="true" [styles]="fabDropdownStyle"
                         [ariaLabel]="'Type of detector'" [id]="rootId + '_detectorType'" [options]="detectorTypeOptions"
-                        (onChange)="onChangeDetectorType($event)"></fab-dropdown>
+                        (onChange)="onChangeDetectorType($event);saveButtonDisabledStatus = false"></fab-dropdown>
                 </div>
                 <div class="col-md-4">
                     <div>
@@ -23,7 +23,7 @@
                             <fab-people-picker [inputProps]="detectorAuthorPickerInputProps"
                                 [pickerSuggestionsOptions]="{noResultsFoundText: 'No suggestions found', loadingText: 'Loading'}"
                                 [selectedItems]="detectorAuthorPickerSelectedItems"
-                                (onChange)="updateDetectorAuthorSelectedItems($event)"
+                                (onChange)="updateDetectorAuthorSelectedItems($event);saveButtonDisabledStatus = false"
                                 [resolveSuggestions]="detectorAuthorPickerSuggestionsResolver"
                                 [resolveDelay]=500></fab-people-picker>
                         </div>
@@ -34,7 +34,7 @@
                 <div class="col-md-8">
                     <fab-text-field [ariaLabel]="'Description for the detector'"
                         [styles]="fabTextFieldStyleNoStretchWide" [label]="'Description'"
-                        [(value)]="detectorDescription" [autoComplete]="'off'"></fab-text-field>
+                        [(value)]="detectorDescription" [autoComplete]="'off'" (onChange)="saveButtonDisabledStatus = false"></fab-text-field>
                 </div>
                 <div class="col-md-4">
                     <div>
@@ -45,7 +45,7 @@
                             <fab-tag-picker [inputProps]="detectorCategoryPickerInputProps"
                                 [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching category found', loadingText: 'Loading'}"
                                 [selectedItems]="detectorCategoryPickerSelectedItems"
-                                (onChange)="updateDetectorCategorySelectedItems($event)"
+                                (onChange)="updateDetectorCategorySelectedItems($event);saveButtonDisabledStatus = false"
                                 [resolveSuggestions]="detectorCategoryPickerSuggestionsResolver" [resolveDelay]=500
                                 [itemLimit]=1></fab-tag-picker>
                         </div>
@@ -59,7 +59,7 @@
                         [styles]="fabDropdownStyle" [calloutProps]="fabDropdownMultiselectCalloutProps"
                         [errorMessage]="resourceAppTypeRequiredErrorMessage" [multiSelect]=true
                         [defaultSelectedKeys]="resourceAppTypeOptionsDefaultSelectedKeys"
-                        [options]="resourceAppTypeOptions" (onChange)="onChangeResourceAppType($event)"></fab-dropdown>
+                        [options]="resourceAppTypeOptions" (onChange)="onChangeResourceAppType($event);saveButtonDisabledStatus = false"></fab-dropdown>
                 </div>
                 <div class="col-md-4">
                     <fab-dropdown role="combobox" [label]="'Platform type'" [required]="true"
@@ -68,7 +68,7 @@
                         [errorMessage]="resourcePlatformTypeRequiredErrorMessage" [multiSelect]=true
                         [defaultSelectedKeys]="resourcePlatformTypeOptionsDefaultSelectedKeys"
                         [options]="resourcePlatformTypeOptions"
-                        (onChange)="onChangeResourcePlatformType($event)"></fab-dropdown>
+                        (onChange)="onChangeResourcePlatformType($event);saveButtonDisabledStatus = false"></fab-dropdown>
                 </div>
                 <div class="col-md-4">
                     <fab-dropdown role="combobox" [label]="'Stack type'" [required]="true"
@@ -77,24 +77,24 @@
                         [errorMessage]="resourceStackTypeRequiredErrorMessage" [multiSelect]=true
                         [defaultSelectedKeys]="resourceStackTypeOptionsDefaultSelectedKeys"
                         [options]="resourceStackTypeOptions"
-                        (onChange)="onChangeResourceStackType($event)"></fab-dropdown>
+                        (onChange)="onChangeResourceStackType($event);saveButtonDisabledStatus = false"></fab-dropdown>
                 </div>
             </div>
             <div class="row" style="padding: 2px; display: flex; align-items: center;">
                 <div class="col-md-3">
                     <fab-checkbox [label]="'Internal only'" [ariaLabel]="'Internal only'"
                         [checked]="getInternalOnlyCheckStatus()" [styles]="fabCheckboxStyle"
-                        (checkedChange)="toggleInternalOnlyState($event)" [boxSide]="'end'"></fab-checkbox>
+                        (checkedChange)="toggleInternalOnlyState($event);saveButtonDisabledStatus = false" [boxSide]="'end'"></fab-checkbox>
                 </div>
                 <div class="col-md-3">
                     <fab-checkbox [label]="'OnDemand rendering'" [ariaLabel]="'Render UI elements on demand'"
                         [checked]="getOnDemandRenderCheckStatus()" [styles]="fabCheckboxStyle"
-                        (checkedChange)="toggleOnDemandRenderState($event)" [boxSide]="'end'"></fab-checkbox>
+                        (checkedChange)="toggleOnDemandRenderState($event);saveButtonDisabledStatus = false" [boxSide]="'end'"></fab-checkbox>
                 </div>
                 <div class="col-md-2">
                     <fab-checkbox [label]="'Mark private'" [ariaLabel]="'Mark private'"
                         [checked]="getDetectorPrivateCheckStatus()" [styles]="fabCheckboxStyle"
-                        (checkedChange)="toggleDetectorPrivateState($event)" [boxSide]="'end'"></fab-checkbox>
+                        (checkedChange)="toggleDetectorPrivateState($event);saveButtonDisabledStatus = false" [boxSide]="'end'"></fab-checkbox>
                 </div>
                 <div class="col-md-4">
                     <div>
@@ -105,7 +105,7 @@
                             <fab-tag-picker [inputProps]="detectorAnalysisPickerInputProps"
                                 [selectedItems]="detectorAnalysisPickerSelectedItems"
                                 [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching analysis found', loadingText: 'Loading'}"
-                                (onChange)="updateDetectorAnalysisSelectedItems($event)"
+                                (onChange)="updateDetectorAnalysisSelectedItems($event);saveButtonDisabledStatus = false"
                                 [resolveSuggestions]="detectorAnalysisPickerSuggestionsResolver"
                                 [resolveDelay]=500></fab-tag-picker>
                         </div>
@@ -122,9 +122,9 @@
                             <fab-tag-picker [inputProps]="supportTopicPickerInputProps"
                                 [selectedItems]="supportTopicPickerSelectedItems"
                                 [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching support topic found', loadingText: 'Loading'}"
-                                (onChange)="updateSupportTopicSelectedItems($event)"
+                                (onChange)="updateSupportTopicSelectedItems($event);saveButtonDisabledStatus = false"
                                 [resolveSuggestions]="detectorSupportTopicPickerSuggestionsResolver"
-                                [resolveDelay]=500></fab-tag-picker>
+                                [resolveDelay]=500 ></fab-tag-picker>
                         </div>
                     </div>
                 </div>
@@ -134,7 +134,7 @@
     <ng-template #PanelFooter>
         <div>
             <hr />
-            <fab-primary-button (onClick)="detectorSettingsPanelOnDismiss('Save')"
+            <fab-primary-button (onClick)="detectorSettingsPanelOnDismiss('Save')" [disabled] = "saveButtonDisabledStatus"
                 [contentStyle]="'margin-left:10px;margin-right:10px'">Save</fab-primary-button>
             <fab-default-button (onClick)="detectorSettingsPanelOnDismiss('Cancel')"
                 [contentStyle]="'margin-left:10px;margin-right:10px'">Cancel</fab-default-button>
