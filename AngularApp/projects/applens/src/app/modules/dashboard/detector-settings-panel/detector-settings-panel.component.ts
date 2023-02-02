@@ -27,8 +27,17 @@ export class DetectorSettingsPanel {
   @Input('id') rootId?: string = 'detectorSettingsPanel';
   @Input() headerText?: string = 'Configure';
 
-  @Input() isOpen: boolean = false;
+  _isOpen:boolean = false;
+  @Input() set isOpen(val:boolean) {
+    this.resetSettingsPanel();
+    this._isOpen = val;
+  }
+  public get isOpen(): boolean 
+  {
+    return this._isOpen;
+  }
   @Output() isOpenChange = new EventEmitter<boolean>();
+
   @Output() onOpened = new EventEmitter<void>();
   @Output() onDismiss = new EventEmitter<string>();
 
