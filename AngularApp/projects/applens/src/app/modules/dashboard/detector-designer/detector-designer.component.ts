@@ -23,6 +23,7 @@ import { SiteService } from '../../../shared/services/site.service';
 import { ObserverSiteInfo } from '../../../shared/models/observer';
 import { AppType, PlatformType, SitePropertiesParser, StackType } from '../../../shared/utilities/applens-site-properties-parsing-utilities';
 import { Options } from 'ng5-slider';
+import { DetectorSettingsModel } from '../models/detector-designer-models/detector-settings-models';
 
 
 @Component({
@@ -33,6 +34,8 @@ import { Options } from 'ng5-slider';
 
 export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   @Input() mode: DevelopMode = DevelopMode.Create;
+
+  detectorSettingsPanelValue: DetectorSettingsModel;
 
   detectorName:string = 'Auto Generated Detector Name';
 
@@ -182,12 +185,11 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   initialized: boolean = false;  
 
   resetSettingsPanel(): void {
-    this.detectorId = this.getDetectorId();
-
-    
-
-    
-    if(this.isAppService) {
+    this.detectorSettingsPanelValue = new DetectorSettingsModel(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName);
+    this.detectorSettingsPanelValue.name = this.detectorName;
+    this.detectorId = this.detectorSettingsPanelValue.id;
+  
+    if(this.detectorSettingsPanelValue.isAppService) {
       //TODO: Initialize this with whatever the detector is currently set to.
     } else {
     }
@@ -205,7 +207,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     private _detectorControlService: DetectorControlService, private _adalService: AdalService,
     public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute,
     private _applensCommandBarService: ApplensCommandBarService, private _router: Router, private _themeService: GenericThemeService, private _applensGlobal: ApplensGlobal ) {
-    this._applensGlobal.updateHeader('');    
+    this._applensGlobal.updateHeader('');
     
     this.resetGlobals();
   }
@@ -247,17 +249,10 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     return true;
   }
 
-  public get isAppService():boolean {
-    return this.resourceService.ArmResource.provider.toLowerCase() === 'microsoft.web' && this.resourceService.ArmResource.resourceTypeName.toLowerCase() === 'sites';
-  }
-
-  public getDetectorId():string {
-    return this.resourceService.ArmResource.provider + '_' + this.resourceService.ArmResource.resourceTypeName + '_' + this.detectorName.replace(/\s/g,'_',).replace(/\./g, '_');
-  }
-
   public onBlurDetectorName(event:any):boolean {
-    this.detectorId = this.getDetectorId();
-    return false;
+    this.detectorSettingsPanelValue.name = this.detectorName;
+    this.detectorId = this.detectorSettingsPanelValue.id;
+    return true;
   }
 
   

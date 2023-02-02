@@ -93,7 +93,7 @@
             <fab-default-button (onClick)="notifyPanelCloseSubject.next('Cancel')" [contentStyle]="'margin-left:10px;margin-right:10px'" >Cancel</fab-default-button>
         </div>
     </ng-template>
-    <detector-settings-panel [id] = '"detectorSettingsPanel"' [(isOpen)] = "detectorSettingsPanelOpenState" 
-    (onOpened) = "onOpenedDetectorSettingsPanel()" (onDismiss) = "onDismissDetectorSettingsPanel($event)"
+    <detector-settings-panel [id] = '"detectorSettingsPanel"' [mode] = "mode" [(isOpen)] = "detectorSettingsPanelOpenState" 
+    (onOpened) = "onOpenedDetectorSettingsPanel()"  (onDismiss) = "onDismissDetectorSettingsPanel($event)" [(value)] = "detectorSettingsPanelValue"
      ></detector-settings-panel>
 </div>
