@@ -37,6 +37,9 @@
       (click)="addNode(nodeType.kustoQuery, true)" href="javascript:void(0)">Kusto Query
       (parallel)</a>
   </li>
+  <li class="dropdown-item" *ngIf="!isRootNode && !isConditionNode"><a class="dropdown-item"
+    (click)="addNode(nodeType.markdown, true)" href="javascript:void(0)">Markdown (parallel)</a>
+</li>
 </ul>
 <button *ngIf="!isConditionNode" type="button" class="ml-2 btn btn-danger btn-sm" (click)="deleteNode()"
   [disabled]="isDisabled">Delete</button>

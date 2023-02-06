@@ -2,7 +2,7 @@
   <div class="panel panel-default">
     <div class="panel-heading">
 
-      <div style="display: flex;align-items: center;min-height: 40px;">
+      <div class="node-heading">
         <status-icon class="mr-3" [status]="status"></status-icon>
         <div class="mr-3"><strong>{{ data.title }}</strong></div>
         <div *ngIf="data.executionTraces && data.executionTraces.length > 0" class="tool-tip-icon">

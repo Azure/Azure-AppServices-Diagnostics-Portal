@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { nodeType, workflow, workflowNode, workflowNodeData } from 'diagnostic-data';
+import { DetectorMetaData, DetectorType, nodeType, workflow, workflowNode, workflowNodeData } from 'diagnostic-data';
 import { NgFlowchart, NgFlowchartStepComponent } from 'projects/ng-flowchart/dist';
+import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
 import { WorkflowService } from '../services/workflow.service';
 
 @Component({
@@ -11,9 +12,16 @@ import { WorkflowService } from '../services/workflow.service';
 export class WorkflowRootNodeComponent extends NgFlowchartStepComponent<any> implements OnInit {
 
   nodeType = nodeType;
+  workflowNodeDetectors: DetectorMetaData[] = [];
+  showDetectorNode: boolean = false;
 
-  constructor(private _workflowService: WorkflowService) {
+  constructor(private _workflowService: WorkflowService, private _applensDiagnosticService: ApplensDiagnosticService) {
     super();
+
+    this._applensDiagnosticService.getDetectors().subscribe(detectors => {
+      let workflowNodeDetectors = detectors.filter(x => x.type === DetectorType.WorkflowNode);
+      this.showDetectorNode = workflowNodeDetectors.length > 0;
+    });
   }
 
   ngOnInit(): void {
@@ -26,8 +34,8 @@ export class WorkflowRootNodeComponent extends NgFlowchartStepComponent<any> imp
 
     if (type === nodeType.detector) {
       wfNode.type = "detector";
-      wfNode.data.name = this._workflowService.newDetectorId + "1";
-      wfNode.data.detectorId = this._workflowService.newDetectorId;
+      wfNode.data.name = this._workflowService.workflowNodeDetectors[0].id + "1";
+      wfNode.data.detectorId = this._workflowService.workflowNodeDetectors[0].id;
       wfNode.data.title = "Execute a detector";
 
     } else if (type === nodeType.kustoQuery) {
