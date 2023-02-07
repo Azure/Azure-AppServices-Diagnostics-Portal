@@ -22,7 +22,9 @@
                 </div>
             </form>
             <div class="detector-container">
-                <i *ngIf="loadingDetector" class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                <div *ngIf="loadingDetector" class="loading-detector">
+                    <i class="mt-2 fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                </div>
                 <common-node-properties *ngIf="!loadingDetector" [data]="data" [readonly]="true"></common-node-properties>
             </div>
             <node-actions (onNodeAdded)="addNode($event)" (onConditionAdded)="addCondition($event)"

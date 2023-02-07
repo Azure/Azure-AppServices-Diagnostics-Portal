@@ -6,8 +6,8 @@
         </div>
         <div class="panel-body">
             <div class="markdown-editor">
-                <button class="btn btn-primary btn-sm" (click)="configureMarkdown()">Configure markdown</button>
                 <div class="markdown-text mt-2">{{ data.markdownText }}</div>
+                <button class="btn btn-primary btn-sm" (click)="configureMarkdown()">Configure markdown</button>
             </div>
             <common-node-properties [showMarkdown]="false" [data]="data"></common-node-properties>
             <node-actions (onNodeAdded)="addNode($event)" (onConditionAdded)="addCondition($event)"
