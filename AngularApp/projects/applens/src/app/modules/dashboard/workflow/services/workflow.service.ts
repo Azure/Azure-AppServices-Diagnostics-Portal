@@ -29,6 +29,8 @@ export class WorkflowService {
     return node.children.length > 0;
   }
 
+  titleKustoNode: string = "Execute Kusto Query";
+
   //
   // Code to handle updation of variables on child nodes
   //
@@ -37,7 +39,7 @@ export class WorkflowService {
   variablesChangeEmitted$ = this.emitChangeVariables.asObservable();
   workflowNodeDetectors: DetectorMetaData[] = [];
 
-  constructor(private _applensDiagnosticService: ApplensDiagnosticService){
+  constructor(private _applensDiagnosticService: ApplensDiagnosticService) {
     this._applensDiagnosticService.getDetectors().subscribe(detectors => {
       this.workflowNodeDetectors = detectors.filter(x => x.type === DetectorType.WorkflowNode);
     });
@@ -99,7 +101,7 @@ export class WorkflowService {
         break;
 
       case nodeType.kustoQuery:
-        let dataNodeKustoQuery = this.getNewNode(currentNode, 'kustoQuery', "Execute Kusto Query");
+        let dataNodeKustoQuery = this.getNewNode(currentNode, 'kustoQuery', this.titleKustoNode);
         currentNode.addChild({
           template: KustoNodeComponent,
           type: 'kustoQuery',

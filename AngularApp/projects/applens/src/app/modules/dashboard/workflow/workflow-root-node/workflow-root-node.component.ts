@@ -41,7 +41,7 @@ export class WorkflowRootNodeComponent extends NgFlowchartStepComponent<any> imp
     } else if (type === nodeType.kustoQuery) {
       wfNode.type = "kustoQuery";
       wfNode.data.name = "kustoQuery1";
-      wfNode.data.title = "Execute Kusto Query";
+      wfNode.data.title = this._workflowService.titleKustoNode;
     } else if (type === nodeType.markdown) {
       wfNode.type = "markdown";
       wfNode.data.name = "markdown1";

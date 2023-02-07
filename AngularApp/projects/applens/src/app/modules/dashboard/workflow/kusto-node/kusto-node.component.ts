@@ -53,6 +53,9 @@ export class KustoNodeComponent extends WorkflowNodeBaseClass implements OnInit 
         this.data.variables = this.variables;
         this.data.kustoQueryColumns = modelData.kustoQueryColumns;
         this._workflowServicePrivate.emitVariablesChange(true);
+        if (this.data.title === this._workflowServicePrivate.titleKustoNode) {
+          this.data.title = this.data.name;
+        }
       }
     });
   }
