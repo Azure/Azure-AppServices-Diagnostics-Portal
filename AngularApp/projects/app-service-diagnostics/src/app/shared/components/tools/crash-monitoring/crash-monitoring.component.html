@@ -33,12 +33,12 @@
 
               </div>
               <div class="col-md-2">
-                <span> {{ monitoringEnabled || storageConfiguredAsAppSetting ? chosenStorageAccount : ""}}
+                <span> {{ chosenStorageAccount }}
                 </span>
                 <div class="mt-1 mb-4" (click)="toggleStorageAccountPanel()"
                   (keyup.enter)="toggleStorageAccountPanel()">
                   <a tabindex="0" role="button" name="Change storage account" aria-label="Change storage account">
-                    {{ chosenStorageAccount && (monitoringEnabled || storageConfiguredAsAppSetting) ? 'Change' : 'Select' }}</a>
+                    {{ chosenStorageAccount != null && chosenStorageAccount.length > 0  ? 'Change' : 'Select' }}</a>
                 </div>
               </div>
             </div>

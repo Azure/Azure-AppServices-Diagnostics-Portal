@@ -220,7 +220,7 @@ export class SiteService {
         return { start: returnStartDate, end: returnEndDate };
     }
 
-    saveCrashMonitoringSettings(site: SiteDaasInfo, crashMonitoringSettings: CrashMonitoringSettings, blobSasUri: string = ''): Observable<any> {
+    saveCrashMonitoringSettings(site: SiteDaasInfo, crashMonitoringSettings: CrashMonitoringSettings, storageConnectionString: string = ''): Observable<any> {
         return this.getSiteAppSettings(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot).pipe(
             map(settingsResponse => {
                 if (settingsResponse && settingsResponse.properties) {
@@ -252,8 +252,8 @@ export class SiteService {
                         }
                         settingsResponse.properties['WEBSITE_CRASHMONITORING_ENABLED'] = true;
                         settingsResponse.properties['WEBSITE_CRASHMONITORING_SETTINGS'] = JSON.stringify(crashMonitoringSettings);
-                        if (blobSasUri) {
-                            settingsResponse.properties['WEBSITE_DAAS_STORAGE_SASURI'] = blobSasUri;
+                        if (storageConnectionString) {
+                            settingsResponse.properties['WEBSITE_DAAS_STORAGE_CONNECTIONSTRING'] = storageConnectionString;
                         }
                         settingsResponse.properties['WEBSITE_CRASHMONITORING_USE_DEBUGDIAG'] = true;
 

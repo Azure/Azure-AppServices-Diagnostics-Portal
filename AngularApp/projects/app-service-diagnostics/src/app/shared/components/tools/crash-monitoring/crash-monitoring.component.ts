@@ -29,10 +29,9 @@ export class CrashMonitoringComponent implements OnInit {
     private _sharedStorageAccountService: SharedStorageAccountService) {
     this._sharedStorageAccountService.changeEmitted$.subscribe(newStorageAccount => {
       this.chosenStorageAccount = newStorageAccount.name;
-      this.blobSasUriEnvironmentVariable = newStorageAccount.sasUri;
+      this.storageConnectionStringEnvironmentVariable = newStorageAccount.connectionString;
       if (this.chosenStorageAccount) {
         this.validationError = "";
-        this.storageConfiguredAsAppSetting = true;
       }
     })
   }
@@ -55,7 +54,6 @@ export class CrashMonitoringComponent implements OnInit {
   validationError: string = "";
   updatingStorageAccounts: boolean = false;
   chosenStorageAccount: string = "";
-  storageConfiguredAsAppSetting: boolean = false;
 
   chosenStartDateTime: Date;
   chosenEndDateTime: Date;
@@ -63,7 +61,7 @@ export class CrashMonitoringComponent implements OnInit {
   monitoringEnabled: boolean = false;
   crashMonitoringSettings: CrashMonitoringSettings = null;
   collapsed: boolean = false;
-  blobSasUriEnvironmentVariable: string = "";
+  storageConnectionStringEnvironmentVariable: string = "";
 
   // For tooltip display
   directionalHint = DirectionalHint.rightTopEdge;
@@ -120,8 +118,11 @@ export class CrashMonitoringComponent implements OnInit {
   getStorageAccountName(): Observable<string> {
     return this._daasService.getStorageConfiguration(this.siteToBeDiagnosed, false).pipe(
       map(storageConfig => {
-        this.storageConfiguredAsAppSetting = storageConfig.IsAppSetting;
-        return this.getStorageAccountNameFromSasUri(storageConfig.SasUri);
+        if (storageConfig.SasUri) {
+          return this._daasService.getStorageAccountNameFromSasUri(storageConfig.SasUri);
+        } else {
+          return this._daasService.getStorageAccountNameFromConnectionString(storageConfig.ConnectionString);
+        }
       }));
   }
 
@@ -153,14 +154,6 @@ export class CrashMonitoringComponent implements OnInit {
 
     // Reset the minDate to avoid the UI displaying an error
     this.minDate = this.startDate;
-  }
-
-  getStorageAccountNameFromSasUri(blobSasUri: string): string {
-    if (!blobSasUri) {
-      return blobSasUri;
-    }
-    let blobUrl = new URL(blobSasUri);
-    return blobUrl.host.split('.')[0];
   }
 
   initDumpOptions() {
@@ -198,7 +191,7 @@ export class CrashMonitoringComponent implements OnInit {
   validateSettings(): boolean {
     this.validationError = ""
     let isValid: boolean = true;
-    if (!this.chosenStorageAccount || !this.storageConfiguredAsAppSetting) {
+    if (!this.chosenStorageAccount) {
       this.validationError = "Please choose a storage account to save the memory dumps";
       return false;
     }
@@ -265,7 +258,7 @@ export class CrashMonitoringComponent implements OnInit {
     this.status = toolStatus.SavingCrashMonitoringSettings;
     let crashMonitoringSettings = this.getCrashMonitoringSetting();
     this.logCrashMonitoringEnabled(crashMonitoringSettings);
-    this._siteService.saveCrashMonitoringSettings(this.siteToBeDiagnosed, crashMonitoringSettings, this.blobSasUriEnvironmentVariable)
+    this._siteService.saveCrashMonitoringSettings(this.siteToBeDiagnosed, crashMonitoringSettings, this.storageConnectionStringEnvironmentVariable)
       .subscribe(resp => {
         this.crashMonitoringSettings = crashMonitoringSettings;
         this.status = toolStatus.SettingsSaved;
