@@ -57,14 +57,14 @@ export class ConfigureStorageAccountComponent implements OnInit {
     this.checkingBlobSasUriConfigured = true;
 
     this._daasService.getStorageConfiguration(this.siteToBeDiagnosed, this.useDiagServerForLinux).subscribe(daasStorageConfiguration => {
-      if (!this.useDiagServerForLinux) {
+      if (!this.useDiagServerForLinux && (daasStorageConfiguration.ConnectionString || daasStorageConfiguration.SasUri)) {
         this._daasService.validateSasUri(this.siteToBeDiagnosed).subscribe(resp => {
           this.checkingBlobSasUriConfigured = false;
           if (resp.IsValid) {
             this.validateStorageConfigurationResponse = null;
-            if (daasStorageConfiguration.SasUri){
+            if (daasStorageConfiguration.SasUri) {
               this.chosenStorageAccount = this._daasService.getStorageAccountNameFromSasUri(daasStorageConfiguration.SasUri);
-            } else if (daasStorageConfiguration.ConnectionString){
+            } else if (daasStorageConfiguration.ConnectionString) {
               this.chosenStorageAccount = this._daasService.getStorageAccountNameFromConnectionString(daasStorageConfiguration.ConnectionString);
             }
 
