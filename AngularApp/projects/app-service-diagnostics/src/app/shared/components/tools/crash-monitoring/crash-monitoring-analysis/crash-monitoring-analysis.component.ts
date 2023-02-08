@@ -265,10 +265,6 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
   }
 
   getLinkToDumpFile(dumpFileName: string): string {
-    if (this.daasBlobSasUri === '') {
-      return "";
-    }
-
     if (this.daasStorageConfiguration !== null) {
       let blobUrl: URL;
       if (this.daasStorageConfiguration.SasUri) {
