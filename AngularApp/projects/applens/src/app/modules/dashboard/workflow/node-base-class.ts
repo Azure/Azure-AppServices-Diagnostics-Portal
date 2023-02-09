@@ -63,14 +63,14 @@ export class WorkflowNodeBaseClass extends NgFlowchartStepComponent<workflowNode
         let currentNodeType = this.type;
         let destinationNodeType = dropEvent.step.type;
 
-        if (this._workflowService.allowedDropNodeTypes.indexOf(currentNodeType) === -1
-            && (this._workflowService.allowedConditionRootNodeDropTypes.indexOf(this.type) === -1
+        if (this._workflowService.nodeTypesAllowedForDragDrop.indexOf(currentNodeType) === -1
+            && (this._workflowService.nodeTypesAllowedForDrag.indexOf(this.type) === -1
                 || dropEvent.position !== 'BELOW')) {
             return false;
         }
 
-        if (this._workflowService.allowedDropNodeTypes.indexOf(destinationNodeType) > -1
-            || (dropEvent.position === 'BELOW' && this._workflowService.allowedConditionDropNodeTypes.indexOf(destinationNodeType) > -1)) {
+        if (this._workflowService.nodeTypesAllowedForDragDrop.indexOf(destinationNodeType) > -1
+            || (dropEvent.position === 'BELOW' && this._workflowService.nodeTypesAllowedForDropBelow.indexOf(destinationNodeType) > -1)) {
             return true;
         }
 
