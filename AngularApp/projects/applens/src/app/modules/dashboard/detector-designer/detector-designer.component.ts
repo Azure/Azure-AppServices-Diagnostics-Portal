@@ -204,6 +204,10 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     this.resetSettingsPanel();
   }
 
+  //#region Element composer
+  elements:string[] = ["First", "Second", "Third"];
+  //#endregion Element composer
+
 
   constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService, private detectorGistApiService: DetectorGistApiService,
     public diagnosticApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService, private resourceService: ResourceService,
@@ -290,10 +294,10 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   }
 
   public detectorSettingsPanelOnDismiss(dismissAction:string):void {
-    //if(this.detectorSettingsPanelOpenState) {
-//      this.detectorSettingsPanelOpenState = false;
+    if(!this.detectorSettingsPanelOpenState) {
+      //this.detectorSettingsPanelOpenState = false;
       console.log('Detector Settings Panel On Dismiss : ' + dismissAction  + ' ' + window.performance.now().toString());
-   // }
+    }
   }  
 
   
@@ -313,8 +317,19 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   }
 
   public onDismissDetectorSettingsPanel(source:string) {
-    //console.log('Parent : Detector Settings1 Panel OnClosed: Source=' + source + ' ' + window.performance.now().toString());
-    console.log(this.detectorSettingsPanelOpenState);
+    console.log('Parent : Detector Settings1 Panel OnClosed: Source=' + source + ' ' + window.performance.now().toString());    
+    console.log(this.detectorSettingsPanelValue);
+    //console.log(this.detectorSettingsPanelOpenState);
+  }
+
+  public moveElementUp(currentElement:any, currentIndex:any, event:any) {
+    this.elements.splice(currentIndex-1, 0, currentElement); //Add the element to its new position
+    this.elements.splice(currentIndex+1, 1); //Remove the element from its current position
+  }
+
+  public moveElementDown(currentElement:any, currentIndex:any, event:any) {
+    this.elements.splice(currentIndex+2, 0, currentElement); //Add the element to its new position
+    this.elements.splice(currentIndex, 1); //Remove the element from its current position
   }
 
   branchToggleCallout() {

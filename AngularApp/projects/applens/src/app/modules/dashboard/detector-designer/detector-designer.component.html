@@ -81,7 +81,7 @@
         </items>
     </fab-command-bar>
 
-    <fab-panel [isOpen]="detectorSettingsPanelOpenState" [type]="PanelType.custom"  [customWidth]="'60vw'" 
+    <!-- <fab-panel [isOpen]="detectorSettingsPanelOpenState" [type]="PanelType.custom"  [customWidth]="'60vw'" 
         [isFooterAtBottom] = "true" [headerText]="'Configure Detector'" (onOpened)="detectorSettingsPanelOnOpened()" (onDismiss)="detectorSettingsPanelOnDismiss('Close')"  [renderFooterContent]='PanelFooter' >
         <div style="margin: 1em;">            
         </div>
@@ -92,8 +92,41 @@
             <fab-primary-button (onClick)="notifyPanelCloseSubject.next('Save')" [contentStyle]="'margin-left:10px;margin-right:10px'" >Save</fab-primary-button>
             <fab-default-button (onClick)="notifyPanelCloseSubject.next('Cancel')" [contentStyle]="'margin-left:10px;margin-right:10px'" >Cancel</fab-default-button>
         </div>
-    </ng-template>
+    </ng-template> -->
     <detector-settings-panel [id] = '"detectorSettingsPanel"' [mode] = "mode" [(isOpen)] = "detectorSettingsPanelOpenState" 
     (onOpened) = "onOpenedDetectorSettingsPanel()"  (onDismiss) = "onDismissDetectorSettingsPanel($event)" [(settingsValue)] = "detectorSettingsPanelValue"
      ></detector-settings-panel>
+
+     <!-- <div class = "" style="width: 100%; height: 25em;">
+      <div class = "drawBorder row" style="display: flex;justify-content: center;">
+        <div class="" style="display:flex; flex-direction:column;justify-content:space-evenly;padding: 4px;">
+          <div>/\</div>
+          <div>\/</div>
+        </div>
+        <div class="drawBorder col-md-9">Something</div>
+      </div>
+     </div> -->
+
+     
+
+     <ng-container *ngFor="let element of elements; let i = index">
+      <div class="" style="width: 80%;margin:2em auto 2em auto;display: flex;">
+        <div class="composerElement-divider"  style="display: flex;width: 4%;flex-direction: column;justify-content: space-evenly;align-items: center;">
+            <div>
+              <fab-link [disabled]="i==0" (onClick)="moveElementUp(element, i, $event)">
+                <fab-icon [iconName]="'CaretSolidUp'" ></fab-icon>
+              </fab-link>
+            </div>
+            <div>
+              <fab-link [disabled] = "i == elements.length-1" (onClick)="moveElementDown(element, i, $event)">
+                <fab-icon [iconName]="'CaretSolidDown'" ></fab-icon>
+            </fab-link></div>
+        </div>
+        <div class="composerElement-divider"  style="width: 96%;">
+            <div>
+              {{i}} - {{element}} <br/> <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+            </div>
+        </div>
+    </div>
+     </ng-container>
 </div>
