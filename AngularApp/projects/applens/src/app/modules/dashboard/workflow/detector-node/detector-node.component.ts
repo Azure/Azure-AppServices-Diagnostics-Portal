@@ -5,6 +5,7 @@ import { ApplensDiagnosticService } from '../../services/applens-diagnostic.serv
 import { promptType, workflowNodeData, stepVariable } from "diagnostic-data";
 import { WorkflowNodeBaseClass } from '../node-base-class';
 import { WorkflowService } from '../services/workflow.service';
+import { NgFlowchart } from 'projects/ng-flowchart/dist';
 
 @Component({
   selector: 'detector-node',
@@ -100,5 +101,13 @@ export class DetectorNodeComponent extends WorkflowNodeBaseClass implements OnIn
         this.data.variables.push(element);
       });
     }
+  }
+
+  canDrop(dropEvent: NgFlowchart.DropTarget): boolean {
+    if (this._workflowServicePrivate.allowedDropNodeTypes.indexOf(dropEvent.step.type) > -1) {
+      return true;
+    }
+
+    return false;
   }
 }

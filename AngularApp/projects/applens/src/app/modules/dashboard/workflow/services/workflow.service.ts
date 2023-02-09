@@ -30,6 +30,7 @@ export class WorkflowService {
   }
 
   titleKustoNode: string = "Execute Kusto Query";
+  allowedDropNodeTypes: string[] = ['detector', 'kustoQuery', 'markdown'];
 
   //
   // Code to handle updation of variables on child nodes

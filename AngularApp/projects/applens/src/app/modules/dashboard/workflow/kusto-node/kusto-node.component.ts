@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { promptType, stepVariable, workflowNodeData } from 'projects/diagnostic-data/src/lib/models/workflow';
-import { NgFlowchartStepComponent } from 'projects/ng-flowchart/dist';
+import { NgFlowchart, NgFlowchartStepComponent } from 'projects/ng-flowchart/dist';
 import { ConfigureVariablesComponent } from '../configure-variables/configure-variables.component';
 import { KustoQueryDialogComponent } from '../kusto-query-dialog/kusto-query-dialog.component';
 import { kustoQueryDialogParams } from '../models/kusto';
@@ -107,6 +107,14 @@ export class KustoNodeComponent extends WorkflowNodeBaseClass implements OnInit 
     }
     let queryTextPlain = this._workflowServicePrivate.decodeBase64String(queryText);
     return queryTextPlain.length > 100 ? queryTextPlain.substring(0, 90) + '...' : queryTextPlain;
+  }
+
+  canDrop(dropEvent: NgFlowchart.DropTarget): boolean {
+    if (this._workflowServicePrivate.allowedDropNodeTypes.indexOf(dropEvent.step.type) > -1) {
+      return true;
+    }
+
+    return false;
   }
 
 }

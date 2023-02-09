@@ -50,7 +50,7 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit {
   @ViewChild(NgFlowchartCanvasDirective)
   canvas: NgFlowchartCanvasDirective;
 
-  disabled = true;
+  disabled = false;
   nodeType = nodeType;
   chosenNodeType: nodeType = nodeType.kustoQuery;
 
