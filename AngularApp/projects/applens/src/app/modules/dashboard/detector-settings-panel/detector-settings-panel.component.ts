@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { KeyValuePair } from 'projects/app-service-diagnostics/src/app/shared/models/portal';
 import { ApplensGlobal } from '../../../applens-global';
@@ -21,7 +21,7 @@ import { AnalysisPickerModel, DetectorSettingsModel, EntityType, SupportTopicPic
   styleUrls: ['./detector-settings-panel.component.scss']
 })
 
-export class DetectorSettingsPanel {
+export class DetectorSettingsPanel implements OnInit, OnDestroy {
   @Input() mode?: DevelopMode = DevelopMode.Create;
   
   @Input('id') rootId?: string = 'detectorSettingsPanel';
@@ -29,8 +29,8 @@ export class DetectorSettingsPanel {
 
   _isOpen:boolean = false;
   @Input() set isOpen(val:boolean) {
-    this.resetSettingsPanel();
     this._isOpen = val;
+    this.resetSettingsPanel();
   }
   public get isOpen(): boolean 
   {
@@ -188,9 +188,33 @@ export class DetectorSettingsPanel {
     this._applensGlobal.updateHeader('');
     DetectorSettingsPanel.applensDiagnosticApiService = this.diagnosticApiService;
     DetectorSettingsPanel.applensResourceService = this.resourceService;
-    this._value = new DetectorSettingsModel(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName);
+    //this._value = new DetectorSettingsModel(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName);
+    
+  }
+
+  ngOnInit() {
     this.resetGlobals();
   }
+
+  ngOnDestroy(): void {
+    this.isOpen = false;
+    this.removePanelFromDom();
+  }
+
+  //
+  // Workaround as the Solutions Panel is not getting closed on
+  // router.navigateByUrl() call. solutionPanelComponentClass is
+  // just a bogus CSS class added to the <fab-panel> template to
+  // ensure we don't end up deleting other open fab-panel in DOM
+  //
+  
+  removePanelFromDom() {
+    const htmlElement = document.querySelectorAll<HTMLElement>('.ms-Panel.is-open.settingsPanelComponentClass');
+    if (htmlElement.length > 0) {
+      htmlElement[0].parentElement.remove();
+    }
+  }
+
 
   public get isAppService(): boolean {
     return this.resourceService.ArmResource.provider.toLowerCase() === 'microsoft.web' && this.resourceService.ArmResource.resourceTypeName.toLowerCase() === 'sites';
@@ -524,12 +548,13 @@ export class DetectorSettingsPanel {
       else {
         this.settingsValue.supportTopicList = [];
       }
+      this.settingsValueChange.emit(this.settingsValue);
     }
     this.saveButtonDisabledStatus = true;
   }
 
   public detectorSettingsPanelOnDismiss(dismissAction: string): void {
-    //console.log('Component : Detector Settings Panel component OnDismiss fired : ' + dismissAction  + ' ' + window.performance.now().toString());
+    console.log('Component : Detector Settings Panel component OnDismiss fired : ' + dismissAction  + ' ' + window.performance.now().toString());
     if (dismissAction === 'Save') {
       // Save the state here.
       this.saveDetectorSettings();
@@ -538,7 +563,7 @@ export class DetectorSettingsPanel {
       //Ensure that the state is reset.
       this.resetSettingsPanel();
     }
-    this.isOpen = false;
+    this._isOpen = false;
     this.isOpenChange.emit(this.isOpen);
     this.onDismiss.emit(dismissAction);
   }

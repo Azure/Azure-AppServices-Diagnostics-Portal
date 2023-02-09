@@ -14,3 +14,13 @@
     display: 'flex';
     justify-content: 'space-between';
 }
+
+.drawDebugBorder {
+    border: 1px solid black;
+}
+
+.composerElement-divider {
+    border: 1px;
+    border-color: lightgray;
+    border-style:dotted;
+}

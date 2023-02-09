@@ -1,7 +1,7 @@
-<div [id]='rootId'>
+<div [id]='rootId' >
     <fab-panel [isOpen]="isOpen" [type]="PanelType.custom" [customWidth]="'60vw'" [isFooterAtBottom]="true"
         [renderFooterContent]='PanelFooter' [headerText]="headerText" (onOpened)="detectorSettingsPanelOnOpened()"
-        (onDismiss)="detectorSettingsPanelOnDismiss('Close')">
+        (onDismiss)="detectorSettingsPanelOnDismiss('Close')" [className]="'settingsPanelComponentClass'">
         <div style="margin: 1em;" class="">
             <div class="row" style="padding: 2px; display: flex; align-items: center;">
                 <div class="col-md-4">
