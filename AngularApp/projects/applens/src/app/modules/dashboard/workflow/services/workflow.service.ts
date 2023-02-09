@@ -31,6 +31,8 @@ export class WorkflowService {
 
   titleKustoNode: string = "Execute Kusto Query";
   allowedDropNodeTypes: string[] = ['detector', 'kustoQuery', 'markdown'];
+  allowedConditionRootNodeDropTypes: string[] = ['ifelsecondition', 'switchCondition'];
+  allowedConditionDropNodeTypes: string[] = ['iffalse', 'iftrue', 'switchCaseDefault', 'switchCase'];
 
   //
   // Code to handle updation of variables on child nodes

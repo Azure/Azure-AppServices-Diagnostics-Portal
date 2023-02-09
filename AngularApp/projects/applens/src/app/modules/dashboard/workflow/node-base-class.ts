@@ -60,19 +60,20 @@ export class WorkflowNodeBaseClass extends NgFlowchartStepComponent<workflowNode
     }
 
     canDrop(dropEvent: NgFlowchart.DropTarget): boolean {
-        
-        //
-        // Allow drop only if the current node is in the allowed list
-        //
+        let currentNodeType = this.type;
+        let destinationNodeType = dropEvent.step.type;
 
-        if (this._workflowService.allowedDropNodeTypes.indexOf(this.type) === -1) {
+        if (this._workflowService.allowedDropNodeTypes.indexOf(currentNodeType) === -1
+            && (this._workflowService.allowedConditionRootNodeDropTypes.indexOf(this.type) === -1
+                || dropEvent.position !== 'BELOW')) {
             return false;
         }
 
-        //
-        // Allow drop only if the destination node is in the allowed list
-        //
+        if (this._workflowService.allowedDropNodeTypes.indexOf(destinationNodeType) > -1
+            || (dropEvent.position === 'BELOW' && this._workflowService.allowedConditionDropNodeTypes.indexOf(destinationNodeType) > -1)) {
+            return true;
+        }
 
-        return this._workflowService.allowedDropNodeTypes.indexOf(dropEvent.step.type) > -1;
+        return false;
     }
 }
