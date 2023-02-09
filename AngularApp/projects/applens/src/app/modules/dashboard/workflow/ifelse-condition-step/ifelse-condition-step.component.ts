@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { WorkflowNodeBaseClass } from '../node-base-class';
 import { map, startWith } from 'rxjs/operators';
 import { WorkflowService } from '../services/workflow.service';
-import { NgFlowchart } from 'projects/ng-flowchart/dist';
 
 @Component({
   selector: 'condition-step',
@@ -94,10 +93,6 @@ export class IfElseConditionStepComponent extends WorkflowNodeBaseClass implemen
         this.data.ifconditionExpression = 'eq';
       }
     }
-  }
-
-  canDrop(dropEvent: NgFlowchart.DropTarget): boolean {
-    return false;
   }
 
 }

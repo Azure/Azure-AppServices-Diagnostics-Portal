@@ -1,13 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { EditorInstance, EditorOption } from 'angular-markdown-editor';
 import { MarkdownService } from 'ngx-markdown';
 import { MarkdownQueryDialogComponent } from '../markdown-query-dialog/markdown-query-dialog.component';
 import { markdownDialogParams } from '../models/markdown';
-import { promptType, workflowNodeData } from "projects/diagnostic-data/src/lib/models/workflow";
+import {  workflowNodeData } from "projects/diagnostic-data/src/lib/models/workflow";
 import { WorkflowNodeBaseClass } from '../node-base-class';
 import { WorkflowService } from '../services/workflow.service';
-import { NgFlowchart } from 'projects/ng-flowchart/dist';
 
 @Component({
   selector: 'markdown-node',
@@ -49,14 +47,6 @@ export class MarkdownNodeComponent extends WorkflowNodeBaseClass implements OnIn
     dialogConfig.maxHeight = "100%";
     dialogConfig.disableClose = true;
     return dialogConfig;
-  }
-
-  canDrop(dropEvent: NgFlowchart.DropTarget): boolean {
-    if (this._workflowServicePrivate.allowedDropNodeTypes.indexOf(dropEvent.step.type) > -1) {
-      return true;
-    }
-
-    return false;
   }
 
 }

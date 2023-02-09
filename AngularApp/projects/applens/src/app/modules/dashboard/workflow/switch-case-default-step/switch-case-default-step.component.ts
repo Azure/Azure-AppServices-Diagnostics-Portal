@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NgFlowchart } from 'projects/ng-flowchart/dist';
 import { WorkflowNodeBaseClass } from '../node-base-class';
 import { WorkflowService } from '../services/workflow.service';
 
@@ -16,9 +15,5 @@ export class SwitchCaseDefaultStepComponent extends WorkflowNodeBaseClass implem
   }
 
   ngOnInit(): void {
-  }
-
-  canDrop(dropEvent: NgFlowchart.DropTarget): boolean {
-    return false;
   }
 }

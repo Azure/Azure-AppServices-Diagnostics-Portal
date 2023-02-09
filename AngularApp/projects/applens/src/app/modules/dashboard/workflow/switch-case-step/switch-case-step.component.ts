@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { stepVariable } from "projects/diagnostic-data/src/lib/models/workflow";
-import { NgFlowchart } from 'projects/ng-flowchart/dist';
 import { WorkflowNodeBaseClass } from '../node-base-class';
 import { WorkflowService } from '../services/workflow.service';
 
@@ -66,10 +65,6 @@ export class SwitchCaseStepComponent extends WorkflowNodeBaseClass implements On
   //https://stackoverflow.com/a/1421988/1900166
   isNumber(n): boolean {
     return !isNaN(parseFloat(n)) && !isNaN(n - 0)
-  }
-
-  canDrop(dropEvent: NgFlowchart.DropTarget): boolean {
-    return false;
   }
 
 }

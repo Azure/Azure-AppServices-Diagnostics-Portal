@@ -1,6 +1,6 @@
 import { newNodeProperties } from "./node-actions/node-actions.component";
 import { WorkflowService } from "./services/workflow.service";
-import { NgFlowchartStepComponent } from "projects/ng-flowchart/dist";
+import { NgFlowchart, NgFlowchartStepComponent } from "projects/ng-flowchart/dist";
 import { nodeType, stepVariable, workflowNodeData } from "projects/diagnostic-data/src/lib/models/workflow";
 
 export class WorkflowNodeBaseClass extends NgFlowchartStepComponent<workflowNodeData> {
@@ -57,5 +57,22 @@ export class WorkflowNodeBaseClass extends NgFlowchartStepComponent<workflowNode
         }
 
         this._workflowService.addSwitchCase(this);
+    }
+
+    canDrop(dropEvent: NgFlowchart.DropTarget): boolean {
+        
+        //
+        // Allow drop only if the current node is in the allowed list
+        //
+
+        if (this._workflowService.allowedDropNodeTypes.indexOf(this.type) === -1) {
+            return false;
+        }
+
+        //
+        // Allow drop only if the destination node is in the allowed list
+        //
+
+        return this._workflowService.allowedDropNodeTypes.indexOf(dropEvent.step.type) > -1;
     }
 }

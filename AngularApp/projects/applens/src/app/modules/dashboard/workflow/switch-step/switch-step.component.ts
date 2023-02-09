@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { NgFlowchart } from 'projects/ng-flowchart/dist';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { WorkflowNodeBaseClass } from '../node-base-class';
@@ -54,10 +53,6 @@ export class SwitchStepComponent extends WorkflowNodeBaseClass implements OnInit
     if (idx > -1) {
       this.dataType = this.data.completionOptions[idx].type;
     }
-  }
-
-  canDrop(dropEvent: NgFlowchart.DropTarget): boolean {
-    return false;
   }
 
 }
