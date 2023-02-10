@@ -110,8 +110,8 @@
      
 
      <ng-container *ngFor="let element of elements; let i = index">
-      <div class="" style="width: 80%;margin:2em auto 2em auto;display: flex;">
-        <div class="composerElement-divider"  style="display: flex;width: 4%;flex-direction: column;justify-content: space-evenly;align-items: center;">
+      <div [id]="element.id + '_rowContainer'" class="" style="width: 80%;margin:2em auto 2em auto;display: flex;">
+        <div style="display: flex;width: 4%;flex-direction: column;justify-content: space-evenly;align-items: center;">
             <div>
               <fab-link [disabled]="i==0" (onClick)="moveElementUp(element, i, $event)">
                 <fab-icon [iconName]="'CaretSolidUp'" ></fab-icon>
@@ -122,11 +122,60 @@
                 <fab-icon [iconName]="'CaretSolidDown'" ></fab-icon>
             </fab-link></div>
         </div>
-        <div class="composerElement-divider"  style="width: 96%;">
+        <div class="composerEleBorder"  style="width: 96%;">
+            <div style="width: 100%; display: flex;justify-content:space-between">
+              <div>
+                <fab-text-field [ariaLabel]="'Name'" [styles]="fabTextFieldStyleNoStretch" 
+                        [required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" [(value)]="element.queryName"
+                        [autoComplete]="'off'"  (onBlur)="removeSpacesFromQueryName(element, $event)"></fab-text-field>
+              </div>
+              <div style="display:flex;font-size:large;">
+                <div style="padding-left: 2px;padding-right: 15px;">
+                  <fab-dropdown [ariaLabel]="'Render as'" [options]="renderingTypeOptions" (onChange)="onRenderingTypeChange(element, i, $event)"
+                  [id]="element.id + '_renderingType'" [styles]="fabDropdownStyle" [selectedKey] = "element.renderingType"
+                  >
+                  </fab-dropdown>
+                </div>
+                <div style="padding-left: 2px;padding-right: 15px;">
+                  <fab-link [ariaLabel]="'Preview'" (onClick)="previewResults(element, i, $event)">
+                    <fab-icon [iconName]="'Play'" ></fab-icon>
+                  </fab-link>
+                </div>
+                <div style="padding-left: 2px;padding-right: 15px;">
+                  <fab-link [ariaLabel]="'Duplicate'" (onClick)="duplicateElement(element, i, $event)">
+                    <fab-icon [iconName]="'Copy'" ></fab-icon>
+                  </fab-link>
+                </div>
+                <div style="padding-left: 2px;padding-right: 15px;">
+                  <fab-link [ariaLabel]="'Delete'" (onClick)="deleteElement(element, i, $event)">
+                    <fab-icon [iconName]="'Delete'" ></fab-icon>
+                  </fab-link>
+                </div>
+              </div>              
+            </div>
             <div>
-              {{i}} - {{element}} <br/> <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+              <fab-pivot [styles]="pivotStyle">
+                <fab-pivot-item [headerText]="'Query'" [itemKey]="'Query'">
+                  <div class = "pivotItemContainer">
+                    <ngx-monaco-editor (onInit)="setMocanoReference(element, i, $event)" style="height:calc(98%)" [options]="editorOptions"
+                      [(ngModel)]="element.code">
+                    </ngx-monaco-editor>
+                  </div>
+                </fab-pivot-item>
+                <fab-pivot-item [headerText]="'Settings'" [itemKey]="'Settings'">
+                  <div class = "pivotItemContainer">
+                    Settings for {{RenderingType[element.renderingType]}}
+                  </div>
+                </fab-pivot-item>
+                <fab-pivot-item [headerText]="'Result'" [itemKey]="'Result'">
+                  <div class = "pivotItemContainer">
+                    Render result/error here
+                  </div>
+                </fab-pivot-item>
+              </fab-pivot>
+              <!-- {{i}} - {{element.queryName}} <br/> <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/> -->
             </div>
         </div>
-    </div>
-     </ng-container>
+      </div>
+    </ng-container>
 </div>

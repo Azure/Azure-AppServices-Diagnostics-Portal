@@ -8,7 +8,7 @@ import { DetectorGistApiService } from '../../../shared/services/detectorgist-te
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ResourceService } from '../../../shared/services/resource.service';
-import { DetectorControlService, DetectorMetaData, DetectorType, GenericThemeService, TelemetryService } from 'diagnostic-data';
+import { DetectorControlService, DetectorMetaData, DetectorType, GenericThemeService, RenderingType, TelemetryService } from 'diagnostic-data';
 import { AdalService } from 'adal-angular4';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import { ApplensCommandBarService } from '../services/applens-command-bar.service';
@@ -24,6 +24,8 @@ import { ObserverSiteInfo } from '../../../shared/models/observer';
 import { AppType, PlatformType, SitePropertiesParser, StackType } from '../../../shared/utilities/applens-site-properties-parsing-utilities';
 import { Options } from 'ng5-slider';
 import { DetectorSettingsModel } from '../models/detector-designer-models/detector-settings-models';
+import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
+import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 
 
 @Component({
@@ -38,6 +40,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   detectorName:string = 'Settings Panel Name';//'Auto Generated Detector Name';
 
   PanelType = PanelType;
+  RenderingType = RenderingType;
 
   fabTextFieldStyle: ITextFieldProps["styles"] = {
     wrapper: {
@@ -58,9 +61,9 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   };
 
   fabTextFieldStyleNoStretch: ITextFieldProps["styles"] = {
-    wrapper: {
-      display: 'flex',
-    },
+    //wrapper: {
+      //display: 'flex',
+    //},
     field: {
       width: '300px'
     }
@@ -79,6 +82,9 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     root: {
       display: 'flex',
       minWidth:'100px'
+    },
+    label: {
+      paddingRight: '1em'
     },
     dropdownItem:{
       width:'200px'
@@ -202,10 +208,118 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   resetGlobals(): void {
     this.detectorName = 'detectorName';//'Auto Generated Detector Name';
     this.resetSettingsPanel();
+    this.initMonacoEditorOptions();
+    this.resetComposerNodes();
+  }
+  public resetComposerNodes(): void {
+    this.renderingTypeOptions = [
+      {
+        key: RenderingType.Table,
+        text:'Table',
+        selected: false,
+        index: 0,
+        itemType: SelectableOptionMenuItemType.Normal
+      },
+      {
+        key: RenderingType.Insights,
+        text:'Insight',
+        selected: false,
+        index: 1,
+        itemType: SelectableOptionMenuItemType.Normal
+      },
+      {
+        key:RenderingType.TimeSeries,
+        text:'Graph',
+        selected: false,
+        index: 2,
+        itemType: SelectableOptionMenuItemType.Normal
+      },
+      {
+        key: RenderingType.Markdown,
+        text:'Markdown',
+        selected: false,
+        index: 3,
+        itemType: SelectableOptionMenuItemType.Normal
+      }
+    ];    
+  }
+
+  initMonacoEditorOptions(): void {
+    this.lightOptions = {
+      theme: 'vs',
+      language: 'csharp',
+      fontSize: 14,
+      automaticLayout: true,
+      scrollBeyondLastLine: false,
+      minimap: {
+        enabled: false
+      },
+      folding: true
+    };
+
+    this.darkOptions = {
+      theme: 'vs-dark',
+      language: 'csharp',
+      fontSize: 14,
+      automaticLayout: true,
+      scrollBeyondLastLine: false,
+      minimap: {
+        enabled: false
+      },
+      folding: true
+    };
+
+    this.editorOptions = this.lightOptions;
   }
 
   //#region Element composer
-  elements:string[] = ["First", "Second", "Third"];
+  elements:ComposerNodeModel[] = [
+    {
+      id: Guid.newGuid(),
+      queryName: 'firstQuery',
+      code:'',
+      renderingType:RenderingType.Table
+    },
+    {
+      id: Guid.newGuid(),
+      queryName: 'secondQuery',
+      code:'',
+      renderingType:RenderingType.Table
+    },
+    {
+      id: Guid.newGuid(),
+      queryName: 'thirdQuery',
+      code:'',
+      renderingType:RenderingType.Table
+    }];
+
+    // fabDropdownStyle: IDropdownProps["styles"] = {
+    //   root: {
+    //     minWidth: '100px'
+    //   },
+    //   dropdownItem: {
+    //     width: '200px'
+    //   },
+    //   errorMessage: {
+    //     paddingLeft: '0em'
+    //   },
+    //   dropdown: {
+    //     minWidth: '100px'
+    //   }
+    // };
+    renderingTypeOptions:IDropdownOption[] = [];
+
+    //#region Pivot variables
+    pivotStyle: IPivotProps['styles'] = {      
+    }
+
+    //#region Monaco editor variables
+    editorOptions: any;
+    lightOptions: any;
+    darkOptions: any;
+    //#endregion Monaco editor variables
+
+    //#endregion Pivot variables
   //#endregion Element composer
 
 
@@ -277,7 +391,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
 
   public getRequiredErrorMessageOnTextField(value: string): string {
     if (!value) {
-      return 'Value cannot be empty';
+      return ' Value cannot be empty';
     };
   }
 
@@ -319,18 +433,63 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   public onDismissDetectorSettingsPanel(source:string) {
     console.log('Parent : Detector Settings1 Panel OnClosed: Source=' + source + ' ' + window.performance.now().toString());    
     console.log(this.detectorSettingsPanelValue);
-    //console.log(this.detectorSettingsPanelOpenState);
   }
 
-  public moveElementUp(currentElement:any, currentIndex:any, event:any) {
+  public removeSpacesFromQueryName(currentElement:ComposerNodeModel, event:any):void {
+    currentElement.queryName = currentElement.queryName.replace(/(\b|_|-)\s?(\w)/g, (c) => {return c.replace(/[\s|_|-]/g, '').toUpperCase();} )
+  }
+
+  public getAttention(elementId:string):void {
+    setTimeout(() => {
+      document.getElementById(elementId).scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+      let originalClasses:string = document.getElementById(elementId).className;
+      document.getElementById(elementId).className = originalClasses + ' ripple';
+      setTimeout(() => {
+        document.getElementById(elementId).className = originalClasses;
+      }, 1000);
+    }, 100);
+  }
+
+  public moveElementUp(currentElement:ComposerNodeModel, currentIndex:number, event:any) {
     this.elements.splice(currentIndex-1, 0, currentElement); //Add the element to its new position
     this.elements.splice(currentIndex+1, 1); //Remove the element from its current position
+    this.getAttention(currentElement.id + '_rowContainer');
   }
 
-  public moveElementDown(currentElement:any, currentIndex:any, event:any) {
+  public moveElementDown(currentElement:ComposerNodeModel, currentIndex:number, event:any) {
     this.elements.splice(currentIndex+2, 0, currentElement); //Add the element to its new position
     this.elements.splice(currentIndex, 1); //Remove the element from its current position
+    this.getAttention(currentElement.id + '_rowContainer');
   }
+
+  public previewResults(currentElement:ComposerNodeModel, currentIndex:number, event:any):void {
+    console.log('Preview Results');
+    console.log(event);
+  }
+
+  public deleteElement(currentElement:ComposerNodeModel, currentIndex:number, event:any) {
+    this.elements.splice(currentIndex, 1);
+  }
+
+  public duplicateElement(currentElement:ComposerNodeModel, currentIndex:number, event:any) {
+    let newElement:ComposerNodeModel = ComposerNodeModel.CreateFrom(currentElement);
+    this.elements.splice(currentIndex+1, 0, newElement);
+    this.getAttention(newElement.id + '_rowContainer');
+  }
+
+  public onRenderingTypeChange(currentElement:ComposerNodeModel, currentIndex:number, event:any) {
+    console.log('Rendering Type Changed');
+    console.log(event);
+    //let key:string = event.option.key.toString();
+    currentElement.renderingType = event.option.key;
+  }
+
+  public setMocanoReference(currentElement:ComposerNodeModel, currentIndex:number, editor:any) {
+    currentElement.editorRef = editor;
+  }
+
+
+
 
   branchToggleCallout() {
     if (!this.branchButtonDisabled) {
@@ -372,3 +531,5 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     this.closeBranchCallout();
   }
 }
+
+
