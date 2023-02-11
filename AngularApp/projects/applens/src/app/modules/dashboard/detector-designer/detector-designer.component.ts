@@ -26,6 +26,7 @@ import { Options } from 'ng5-slider';
 import { DetectorSettingsModel } from '../models/detector-designer-models/detector-settings-models';
 import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
+import { INodeModelChangeEventProps } from '../node-composer/node-composer.component';
 
 
 @Component({
@@ -208,69 +209,12 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
   resetGlobals(): void {
     this.detectorName = 'detectorName';//'Auto Generated Detector Name';
     this.resetSettingsPanel();
-    this.initMonacoEditorOptions();
-    this.resetComposerNodes();
+     this.resetComposerNodes();
   }
-  public resetComposerNodes(): void {
-    this.renderingTypeOptions = [
-      {
-        key: RenderingType.Table,
-        text:'Table',
-        selected: false,
-        index: 0,
-        itemType: SelectableOptionMenuItemType.Normal
-      },
-      {
-        key: RenderingType.Insights,
-        text:'Insight',
-        selected: false,
-        index: 1,
-        itemType: SelectableOptionMenuItemType.Normal
-      },
-      {
-        key:RenderingType.TimeSeries,
-        text:'Graph',
-        selected: false,
-        index: 2,
-        itemType: SelectableOptionMenuItemType.Normal
-      },
-      {
-        key: RenderingType.Markdown,
-        text:'Markdown',
-        selected: false,
-        index: 3,
-        itemType: SelectableOptionMenuItemType.Normal
-      }
-    ];    
+  public resetComposerNodes(): void {       
   }
 
-  initMonacoEditorOptions(): void {
-    this.lightOptions = {
-      theme: 'vs',
-      language: 'csharp',
-      fontSize: 14,
-      automaticLayout: true,
-      scrollBeyondLastLine: false,
-      minimap: {
-        enabled: false
-      },
-      folding: true
-    };
-
-    this.darkOptions = {
-      theme: 'vs-dark',
-      language: 'csharp',
-      fontSize: 14,
-      automaticLayout: true,
-      scrollBeyondLastLine: false,
-      minimap: {
-        enabled: false
-      },
-      folding: true
-    };
-
-    this.editorOptions = this.lightOptions;
-  }
+  
 
   //#region Element composer
   elements:ComposerNodeModel[] = [
@@ -307,19 +251,7 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     //     minWidth: '100px'
     //   }
     // };
-    renderingTypeOptions:IDropdownOption[] = [];
 
-    //#region Pivot variables
-    pivotStyle: IPivotProps['styles'] = {      
-    }
-
-    //#region Monaco editor variables
-    editorOptions: any;
-    lightOptions: any;
-    darkOptions: any;
-    //#endregion Monaco editor variables
-
-    //#endregion Pivot variables
   //#endregion Element composer
 
 
@@ -435,15 +367,12 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     console.log(this.detectorSettingsPanelValue);
   }
 
-  public removeSpacesFromQueryName(currentElement:ComposerNodeModel, event:any):void {
-    currentElement.queryName = currentElement.queryName.replace(/(\b|_|-)\s?(\w)/g, (c) => {return c.replace(/[\s|_|-]/g, '').toUpperCase();} )
-  }
 
   public getAttention(elementId:string):void {
     setTimeout(() => {
       document.getElementById(elementId).scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
       let originalClasses:string = document.getElementById(elementId).className;
-      document.getElementById(elementId).className = originalClasses + ' ripple';
+      document.getElementById(elementId).className = originalClasses + ' ripplePrimary';
       setTimeout(() => {
         document.getElementById(elementId).className = originalClasses;
       }, 1000);
@@ -462,32 +391,23 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     this.getAttention(currentElement.id + '_rowContainer');
   }
 
-  public previewResults(currentElement:ComposerNodeModel, currentIndex:number, event:any):void {
-    console.log('Preview Results');
-    console.log(event);
-  }
-
+  
   public deleteElement(currentElement:ComposerNodeModel, currentIndex:number, event:any) {
     this.elements.splice(currentIndex, 1);
   }
 
   public duplicateElement(currentElement:ComposerNodeModel, currentIndex:number, event:any) {
-    let newElement:ComposerNodeModel = ComposerNodeModel.CreateFrom(currentElement);
+    let newElement:ComposerNodeModel = ComposerNodeModel.CreateNewFrom(currentElement);
     this.elements.splice(currentIndex+1, 0, newElement);
     this.getAttention(newElement.id + '_rowContainer');
   }
 
-  public onRenderingTypeChange(currentElement:ComposerNodeModel, currentIndex:number, event:any) {
-    console.log('Rendering Type Changed');
-    console.log(event);
-    //let key:string = event.option.key.toString();
-    currentElement.renderingType = event.option.key;
+  public reflectModelChanges(currentElement:ComposerNodeModel, currentIndex:number, event:any) {
+    currentElement = event;
   }
 
-  public setMocanoReference(currentElement:ComposerNodeModel, currentIndex:number, editor:any) {
-    currentElement.editorRef = editor;
+  public onComposerElementChange(currentElement:ComposerNodeModel, currentIndex:number, event:INodeModelChangeEventProps) { 
   }
-
 
 
 
