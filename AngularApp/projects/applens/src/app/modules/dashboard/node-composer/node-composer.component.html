@@ -1,0 +1,54 @@
+<div [id]="nodeModel.id + '_composerContainer'"  >
+	<div [id]="nodeModel.id + '_composerheaderRow'" style="width: 100%; display: flex;justify-content:space-between">
+		<div>
+			<fab-text-field [ariaLabel]="'Name'" [styles]="fabTextFieldStyleNoStretch" 
+					[required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" [(value)]="nodeModel.queryName"
+					[autoComplete]="'off'"  (onBlur)="removeSpacesFromQueryName($event)"></fab-text-field>
+		</div>
+		<div style="display:flex;font-size:large;">
+			<div style="padding-left: 2px;padding-right: 15px;">
+				<fab-dropdown [ariaLabel]="'Render as'" [options]="renderingTypeOptions" (onChange)="onRenderingTypeChange($event)"
+				[id]="nodeModel.id + '_renderingType'" [styles]="fabDropdownStyle" [selectedKey] = "nodeModel.renderingType"
+				>
+				</fab-dropdown>
+			</div>
+			<div style="padding-left: 2px;padding-right: 15px;">
+				<fab-link (onClick)="previewResults($event)">
+					<fab-icon [iconName]="'Play'" ></fab-icon>
+				</fab-link>
+			</div>
+			<div style="padding-left: 2px;padding-right: 15px;">
+				<fab-link (onClick)="duplicateNode($event)">
+					<fab-icon [iconName]="'Copy'" ></fab-icon>
+				</fab-link>
+			</div>
+			<div style="padding-left: 2px;padding-right: 15px;">
+				<fab-link (onClick)="deleteNode($event)">
+					<fab-icon [iconName]="'Delete'" ></fab-icon>
+				</fab-link>
+			</div>
+		</div>              
+	</div>
+	<div>
+		<fab-pivot [styles]="pivotStyle">
+			<fab-pivot-item [headerText]="'Query'" [itemKey]="nodeModel.id + '_Query'">
+				<div class = "pivotItemContainer">
+					<ngx-monaco-editor (onInit)="setMocanoReference($event)" style="height:calc(98%)" [options]="editorOptions"
+						[(ngModel)]="nodeModel.code">
+					</ngx-monaco-editor>
+				</div>
+			</fab-pivot-item>
+			<fab-pivot-item [headerText]="'Settings'" [itemKey]="nodeModel.id + '_Settings'">
+				<div class = "pivotItemContainer">
+					Settings for {{RenderingType[nodeModel.renderingType]}}
+				</div>
+			</fab-pivot-item>
+			<fab-pivot-item [headerText]="'Result'" [itemKey]="nodeModel.id + '_Result'">
+				<div class = "pivotItemContainer">
+					Show results here
+				</div>
+			</fab-pivot-item>
+		</fab-pivot>
+		<!-- {{i}} - {{nodeModel.queryName}} <br/> <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/> -->
+	</div>
+</div>
