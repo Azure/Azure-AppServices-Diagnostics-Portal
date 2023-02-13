@@ -61,7 +61,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     // allowlisting beta subscriptions for testing purposes
     _isBetaSubscription = DemoSubscriptions.betaSubscriptions.indexOf(this.subscriptionId) >= 0;
     // allowing 0% of subscriptions to use new feature
-    _isSubIdInPercentageToRelease = this._percentageOfSubscriptions(this.subscriptionId, 0.5);
+    _isSubIdInPercentageToRelease = this._percentageOfSubscriptions(this.subscriptionId, 1);
 
     // Releasing to only Beta Subscriptions for Web App (Linux) in standard or higher and all Web App (Windows) in standard or higher
     this.displayRPDFButton = ((this._checkIsWebAppProdSku(OperatingSystem.linux) && (_isSubIdInPercentageToRelease || _isBetaSubscription)) || this._checkIsWebAppProdSku(OperatingSystem.windows));
