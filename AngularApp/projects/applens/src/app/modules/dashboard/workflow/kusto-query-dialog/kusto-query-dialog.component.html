@@ -47,6 +47,8 @@
         <div class="mt-2 mb-2">
           <button class="btn btn-primary btn-sm" (click)="executeQuery()">Execute</button>
           <i *ngIf="isExecutingQuery" class="ml-2 fa fa-gear fa-spin fa-1x"></i>
+          <a class="ml-2 kusto-link" *ngIf="kustoQueryUrl && !isExecutingQuery" [href]="kustoQueryUrl" target="_blank">Kusto Web</a>
+          <a class="ml-2 kusto-link" *ngIf="kustoDesktopUrl && !isExecutingQuery" [href]="kustoDesktopUrl">Kusto Desktop</a>
           <div *ngIf="error">
             <error-message [error]="error"></error-message>
           </div>

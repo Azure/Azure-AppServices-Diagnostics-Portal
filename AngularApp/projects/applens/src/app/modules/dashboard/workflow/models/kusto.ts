@@ -17,3 +17,10 @@ export interface dynamicExpressionBody {
   Variables: any;
   IsKustoQuery: boolean;
 }
+
+export interface dynamicExpressionResponse {
+  response: string;
+  kustoQueryText: string;
+  kustoQueryUrl: string;
+  kustoDesktopUrl: string;
+}

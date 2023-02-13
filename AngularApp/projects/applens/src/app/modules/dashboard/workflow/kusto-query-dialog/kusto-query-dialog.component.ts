@@ -4,7 +4,7 @@ import { DataTableResponseColumn, DetectorControlService, stepVariable, workflow
 import { NgFlowchartStepComponent } from 'projects/ng-flowchart/dist';
 import { CanvasFlow } from 'projects/ng-flowchart/dist/lib/ng-flowchart-canvas.service';
 import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
-import { kustoQueryDialogParams } from '../models/kusto';
+import { dynamicExpressionResponse, kustoQueryDialogParams } from '../models/kusto';
 import { dynamicExpressionBody } from '../models/kusto';
 import { WorkflowService } from '../services/workflow.service';
 
@@ -30,6 +30,8 @@ export class KustoQueryDialogComponent implements OnInit {
   inputKustoQueryDialogParams: kustoQueryDialogParams;
   flow: CanvasFlow = null;
   currentNode: NgFlowchartStepComponent<workflowNodeData>;
+  kustoQueryUrl: string = '';
+  kustoDesktopUrl: string = '';
 
   constructor(@Inject(MAT_DIALOG_DATA) data: kustoQueryDialogParams, public dialogRef: MatDialogRef<KustoQueryDialogComponent>,
     private _diagnosticService: ApplensDiagnosticService, private _detectorControlService: DetectorControlService,
@@ -63,7 +65,7 @@ export class KustoQueryDialogComponent implements OnInit {
       return;
     }
 
-    if (!this.code.startsWith('$@"') || !this.code.endsWith('"')){
+    if (!this.code.startsWith('$@"') || !this.code.endsWith('"')) {
       this._workflowService.showMessageBox("Error", "Invalid query text. The query text should start with $@ and end with a double quote");
       return;
     }
@@ -82,7 +84,7 @@ export class KustoQueryDialogComponent implements OnInit {
 
   executeQuery() {
 
-    if (!this.code.startsWith('$@"') || !this.code.endsWith('"')){
+    if (!this.code.startsWith('$@"') || !this.code.endsWith('"')) {
       this._workflowService.showMessageBox("Error", "Invalid query text. The query text should start with $@ and end with a double quote");
       return;
     }
@@ -97,9 +99,20 @@ export class KustoQueryDialogComponent implements OnInit {
 
     this.error = '';
     this.isExecutingQuery = true;
-    this._diagnosticService.evaluateDynamicExpression(dynamicExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe(resp => {
+    this._diagnosticService.evaluateDynamicExpression(dynamicExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe(dynamicResponse => {
       this.isExecutingQuery = false;
       this.kustoQueryColumns = [];
+
+      let resp: any;
+      if (dynamicResponse.columns) {
+        resp = dynamicResponse;
+      } else {
+        let response: dynamicExpressionResponse = dynamicResponse
+        resp = response.response;
+        this.kustoQueryUrl = response.kustoQueryUrl;
+        this.kustoDesktopUrl = response.kustoDesktopUrl;
+      }
+
       resp.columns.forEach(entry => {
         this.kustoQueryColumns.push(entry);
       })
