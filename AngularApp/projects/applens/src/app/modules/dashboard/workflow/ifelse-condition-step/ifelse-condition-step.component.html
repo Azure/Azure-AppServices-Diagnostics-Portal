@@ -49,11 +49,11 @@
           <option>icontains</option>
         </select>
 
-        <select class="ml-2 form-select" *ngIf="dataType === 'sbyte'">
+        <select class="ml-2 form-select" *ngIf="dataType === 'sbyte' || dataType === 'boolean'">
           <option selected>is true</option>
         </select>
 
-        <form *ngIf="dataType !=='sbyte'" class="example-form">
+        <form *ngIf="dataType !=='sbyte' && dataType !=='boolean'" class="example-form">
           <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>Variable</mat-label>
             <input type="text" placeholder="Choose a variable" aria-label="Number" id="rightControl" matInput

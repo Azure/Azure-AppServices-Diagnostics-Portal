@@ -30,7 +30,8 @@
             "staticSelfHelpContent": "microsoft.ase",
             "searchSuffix": "AZURE APP SERVICE ENVIRONMENT",
             "emergingIssuesICMLookupEnabled": false,
-            "displayName": "App Service Environment"
+            "displayName": "App Service Environment",
+            "workflowsEnabled": true
         },
         {
             "service": "ResourceService",
