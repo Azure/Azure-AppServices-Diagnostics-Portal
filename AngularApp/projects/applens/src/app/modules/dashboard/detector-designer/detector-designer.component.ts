@@ -229,13 +229,14 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
       queryName: 'secondQuery',
       code:'',
       renderingType:RenderingType.Table
-    },
+    }/*,
     {
       id: Guid.newGuid(),
       queryName: 'thirdQuery',
       code:'',
       renderingType:RenderingType.Table
-    }];
+    }*/
+  ];
 
     // fabDropdownStyle: IDropdownProps["styles"] = {
     //   root: {
