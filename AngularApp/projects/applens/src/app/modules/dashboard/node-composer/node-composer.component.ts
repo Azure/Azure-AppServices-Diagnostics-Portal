@@ -50,7 +50,10 @@ export class NodeComposer {
     }
   };
 
-  pivotStyle: IPivotProps['styles'] = {      
+  pivotStyle: IPivotProps['styles'] = {
+    root:{
+      borderTop: '1px solid'
+    }
   }
   //#endregion Fabric element styles
 

@@ -1,5 +1,5 @@
 <div [id]="nodeModel.id + '_composerContainer'"  >
-	<div [id]="nodeModel.id + '_composerheaderRow'" style="width: 100%; display: flex;justify-content:space-between">
+	<div [id]="nodeModel.id + '_composerheaderRow'" style="width: 100%; display: flex;justify-content:space-between; padding: 0.25em;background-color: lightsteelblue;">
 		<div>
 			<fab-text-field [ariaLabel]="'Name'" [styles]="fabTextFieldStyleNoStretch" 
 					[required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" [(value)]="nodeModel.queryName"
