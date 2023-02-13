@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RenderingType } from 'diagnostic-data';
 import { IBasePickerProps, ITagPickerProps, ITagItemProps, ISuggestionModel, ITag, TagItem, IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IIconProps, IPanelProps, IPersona, IPersonaProps, IPickerItemProps, IPivotProps, ITextFieldProps, MessageBarType, PanelType, SelectableOptionMenuItemType, TagItemSuggestion, IDropdown, ICalloutProps, ICheckboxStyleProps, ICheckboxProps } from 'office-ui-fabric-react';
@@ -13,7 +13,7 @@ import { DevelopMode } from '../onboarding-flow/onboarding-flow.component';
   styleUrls: ['./node-composer.component.scss']
 })
 
-export class NodeComposer {
+export class NodeComposer implements OnInit, OnDestroy {
   
   RenderingType = RenderingType;
   
@@ -121,7 +121,13 @@ export class NodeComposer {
 
   constructor(private _applensGlobal: ApplensGlobal, private _activatedRoute: ActivatedRoute, private _router: Router ) {
     this._applensGlobal.updateHeader('');
+  }
+
+  ngOnInit() {
     this.initComponent();
+  }
+
+  ngOnDestroy(): void {
   }
 
   public getRequiredErrorMessageOnTextField(value: string): string {
@@ -155,7 +161,7 @@ export class NodeComposer {
     this.onDeleteClick.emit(this.nodeModel);
   }
 
-  public setMocanoReference(editor:any) {
+  public setMocanoReference(editor:monaco.editor.ICodeEditor) {
     this.nodeModel.editorRef = editor;
   }
 

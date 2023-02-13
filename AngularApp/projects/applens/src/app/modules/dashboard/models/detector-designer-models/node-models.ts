@@ -5,7 +5,7 @@ export class ComposerNodeModel {
     id: string = Guid.newGuid();
     public queryName:string; //Use a property here to replace space with underscore
     public code:string;
-    public editorRef?: any = null;
+    public editorRef?: monaco.editor.ICodeEditor = null;
     public renderingType:NoCodeSupportedRenderingTypes = RenderingType.Table;
     public constructor() {
         this.id = Guid.newGuid();
