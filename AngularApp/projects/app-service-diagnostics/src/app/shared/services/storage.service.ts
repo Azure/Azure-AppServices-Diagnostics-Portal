@@ -86,7 +86,7 @@ export class StorageService {
     postBody.signedServices = "bqt";
     postBody.signedResourceTypes = "co";
     postBody.signedPermission = "acdlpruw";
-    postBody.signedProtocol = "http,https";
+    postBody.signedProtocol = "https";
     postBody.signedExpiry = moment.utc().add(10, 'years').toISOString();
     postBody.signedStart = moment.utc().toISOString();
     let url = this._uriElementsService.createSasUri(storageAccountResourceUri);

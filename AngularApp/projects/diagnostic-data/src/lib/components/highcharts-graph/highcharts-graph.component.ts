@@ -704,7 +704,7 @@ export class HighchartsGraphComponent implements OnInit {
             },
             chart: {
                 reflow: true,
-                height: 300,
+                height: this.isGanttChart && this.HighchartData?.[0].dataLength > 10 ? this.HighchartData?.[0].dataLength * 30 : 300,
                 display: 'block!important',
                 type: 'line',
                 zoomType: 'x',

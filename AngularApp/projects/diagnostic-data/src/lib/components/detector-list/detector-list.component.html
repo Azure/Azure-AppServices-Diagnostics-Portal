@@ -88,7 +88,7 @@
 
 <br />
 <div *ngIf="successfulViewModels.length > 0">
-  <collapsible-list-fabric [collapsed]="issueDetectedViewModels.length > 0 || loading === LoadingStatus.Loading"
+  <collapsible-list-fabric [collapsed]="isCaseSubmissionFlow ? true : (issueDetectedViewModels.length > 0 || loading === LoadingStatus.Loading)"
     [title]="'Successful Checks (' + successfulViewModels.length + ')'">
     <collapsible-list-item body>
       <div class="list-text">

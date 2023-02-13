@@ -281,7 +281,7 @@ export class SupportTopicService {
                                 let keystoneSolutionApplied: boolean = false;
                                 keywordsList = JSON.parse(keystoneInsight["Title"]);
 
-                                if (keywordsList && keywordsList.findIndex((keyword) => searchTerm.toLowerCase().indexOf(keyword) !== -1) !== -1) {
+                                if (keywordsList && keywordsList.findIndex((keyword) => searchTerm.toLowerCase().indexOf(keyword.toLowerCase()) !== -1) !== -1) {
                                     queryParamsDic["keystoneDetectorId"] = keystoneDetectorId;
                                     keystoneSolutionApplied = true;
                                 }

@@ -698,10 +698,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.resourceId = this.resourceId == undefined || this.resourceId == '' ? this.resourceService.getCurrentResourceId() : this.resourceId;
     this.diagnosticApiService.getBranches(this.resourceId).subscribe(branches => {
       this.diagnosticApiService.getDetectors().subscribe(listDetectors => {
-        // let idList = [];
-        // listDetectors.forEach(det => {
-        //   idList.push(det.id);
-        // })
 
         if (this.mode != DevelopMode.Create){
           var branchRegEx = this.gistMode ? new RegExp(`^dev\/.*\/gist\/${this.id}$`, "i") : new RegExp(`^dev\/.*\/detector\/${this.id}$`, "i");
@@ -1613,7 +1609,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       this.Branch = targetBranch.replace(/\s/g, "");
       this.displayBranch = `${targetBranch.replace(/\s/g, "")}`;
     }
-    else if (!(this.showBranches.length > 1) || this.Branch === this.defaultBranch) {
+    else if (!(this.showBranches.length > 1) || this.Branch === this.defaultBranch || this.mode === DevelopMode.Create) {
       this.displayBranch = `${targetBranch.replace(/\s/g, "")} (not published)`;
       this.Branch = targetBranch.replace(/\s/g, "");
     }
