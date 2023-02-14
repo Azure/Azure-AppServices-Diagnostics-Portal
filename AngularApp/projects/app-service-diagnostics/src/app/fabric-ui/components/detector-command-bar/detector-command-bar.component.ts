@@ -40,6 +40,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   showCoachmark: boolean = true;
   showTeachingBubble: boolean = false;
   generatedOn: string;
+  coachMarkCookieName: string = "showCoachmark";
   coachmarkPositioningContainerProps = {
     directionalHint: DirectionalHint.bottomLeftEdge,
     doNotLayer: true
@@ -47,6 +48,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   teachingBubbleCalloutProps = {
     directionalHint: DirectionalHint.bottomLeftEdge
   };
+  teachingBubbleText = "Download a report to check how well your Web App scores against our recommended resiliency best practices.";
   resourcePlatform: OperatingSystem = OperatingSystem.any;
   resourceAppType: AppType = AppType.WebApp;
   resourceSku: Sku = Sku.All;
@@ -57,6 +59,10 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     this.resourcePlatform = webSiteService.platform;
     this.resourceAppType = webSiteService.appType;
     this.resourceSku = webSiteService.sku;
+    if (this.resourcePlatform === OperatingSystem.linux){
+      this.coachMarkCookieName = "showCoachmarkLinux";
+      this.teachingBubbleText = "Resiliency Score Report now supports Web App (Linux) in Standard or higher. Download a report to check how well your Web App scores against our recommended resiliency best practices.";
+    }
     return this._resourceService && this._resourceService instanceof WebSitesService
       && ((webSiteService.platform === platform) && (webSiteService.appType === AppType.WebApp) && (webSiteService.sku > 8)); //Only for Web Apps  in Standard or higher
   }
@@ -92,8 +98,8 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     //Get showCoachMark value(string) from local storage (if exists), then convert to boolean
     try {
       if (this.displayRPDFButton){
-        if (localStorage.getItem("showCoachmark") != undefined) {
-          this.showCoachmark = localStorage.getItem("showCoachmark") === "true";
+        if (localStorage.getItem(this.coachMarkCookieName) != undefined) {
+          this.showCoachmark = localStorage.getItem(this.coachMarkCookieName) === "true";
         }
         else {
           this.showCoachmark = true;
@@ -101,7 +107,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       }
     }
     catch (error) {
-      loggingError.message = 'Error trying to retrieve showCoachmark from localStorage';
+      loggingError.message = `Error trying to retrieve ${this.coachMarkCookieName} from localStorage`;
       loggingError.stack = error;
       let _severityLevel: SeverityLevel = SeverityLevel.Warning;
       this.telemetryService.logException(loggingError, null, null, _severityLevel);
@@ -143,12 +149,12 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     // Once the button is clicked no need to show Coachmark anymore:
     const loggingError = new Error();
     try {
-      if (localStorage.getItem("showCoachmark") != undefined) {
-        this.showCoachmark = localStorage.getItem("showCoachmark") === "true";
+      if (localStorage.getItem(this.coachMarkCookieName) != undefined) {
+        this.showCoachmark = localStorage.getItem(this.coachMarkCookieName) === "true";
       }
       else {
         this.showCoachmark = false;
-        localStorage.setItem("showCoachmark", "false");
+        localStorage.setItem(this.coachMarkCookieName, "false");
       }
     }
     catch (error) {
@@ -297,7 +303,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
 
     //Once Coachmark has been seen, disable it by setting boolean value to local storage
     try {
-      localStorage.setItem("showCoachmark", "false");
+      localStorage.setItem(this.coachMarkCookieName, "false");
     }
     catch (error) {
       // Use TelemetryService logEvent when not able to access local storage.
