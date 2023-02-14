@@ -217,6 +217,10 @@ export class ApplensDiagnosticService {
       nodeId);
   }
 
+  getTPromptCodeSuggestions(queryName:string): Observable<any> {
+    return this._diagnosticApi.getTPromptCodeSuggestions(queryName);
+  }
+
   getCompilerResponse(body: any, isSystemInvoker: boolean, detectorId: string = '', startTime: string = '', endTime: string = '', dataSource: string = '', timeRange: string = '', additionalParams: any, publishingDetectorId: string, isDocumentation: boolean = false): Observable<QueryResponse<DetectorResponse>> {
     if (isDocumentation === true) {
       return this._diagnosticApi.getCompilerResponse(

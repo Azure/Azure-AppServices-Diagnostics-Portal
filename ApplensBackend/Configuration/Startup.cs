@@ -161,6 +161,8 @@ namespace AppLensV3
             services.AddSingleton<IRedisService<ArmResourceRedisModel>>(new ArmResourceRedisCache(Configuration, RedisConnection.InitializeAsync(true, connectionString: Configuration["ArmResourceService:RedisConnectionString"].ToString())));
             services.AddSingletonWhenEnabled<IArmResourceService, ArmResourceService, NullableArmResourceService>(Configuration, "ArmResourceService");
 
+            services.AddSingleton<ITPromptClientService, TPromptClientService>();
+
             services.AddMemoryCache();
             services.AddMvc().AddNewtonsoftJson();
 
