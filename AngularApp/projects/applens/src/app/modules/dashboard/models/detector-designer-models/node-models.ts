@@ -34,3 +34,11 @@ export enum NodeTypes {
     GistReferences,
     RenderingElement
 }
+
+export interface ITPromptSuggestionModel {
+    detectorId:string,
+    detectorName:string,
+    description:string,
+    queryName:string,
+    codeText:string
+}

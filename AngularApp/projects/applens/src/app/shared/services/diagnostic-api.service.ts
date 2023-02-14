@@ -206,6 +206,17 @@ export class DiagnosticApiService {
     return this.invoke<any>(path, HttpMethod.POST, body, true);
   }
 
+  public getTPromptCodeSuggestions(queryName:string): Observable<any> {
+    
+    let url: string = `${this.diagnosticApi}api/tprompt/getCodeSuggestions/${queryName}`;
+    let request = this._httpClient.get(url, {
+      headers: this._getHeaders()
+    });
+    return request;
+    
+    //return this.invoke<any>(`${this.diagnosticApi}api/tprompt/getCodeSuggestions/${queryName}`, HttpMethod.GET, null, true);
+  }
+
 
   public getCompilerResponse(version: string, resourceId: string, body: any, startTime?: string, endTime?: string,
     additionalParams?: any, publishingDetectorId: string = ""): Observable<QueryResponse<DetectorResponse>> {
