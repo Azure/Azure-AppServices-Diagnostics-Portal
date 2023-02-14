@@ -208,14 +208,12 @@ export class DaasSettings {
 export class DaasStorageConfiguration {
     SasUri: string = '';
     ConnectionString: string = '';
-    IsAppSetting: boolean = false;
 }
 
 export class DaasValidationResult {
     Validated: boolean = false;
     BlobSasUri: string = "";
     ConnectionString: string = "";
-    ConfiguredAsAppSetting: boolean = false;
     UseDiagServerForLinux: boolean = false;
 }
 
@@ -289,4 +287,9 @@ export interface LinuxCommandOutput {
     Output: string;
     Error: string;
     ExitCode: number;
+}
+
+export interface DaasSettingsResponse {
+    BlobSasUri: string;
+    StorageConnectionString: string;
 }

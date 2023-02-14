@@ -1,0 +1,30 @@
+<div [attr.name]="data.name" #canvasContent>
+  <div class="panel panel-default">
+    <div class="panel-heading panel-title-switch">
+      <node-title [data]="data" [disableEdit]="true" [customClass]="'background-gray'"
+        [customClassIcon]="'fa-list'">
+      </node-title>
+    </div>
+    <div class="panel-body">
+      <form>
+        <div class="form-group row">
+          <div class="col-sm-12">
+            <input class="form-control" type="text" name="switch-{{uniqueId}}" id="switch-{{uniqueId}}"
+              [(ngModel)]="data.description" placeholder="Enter description for switch case">
+          </div>
+        </div>
+      </form>
+      <mat-form-field class="example-full-width" appearance="fill">
+        <mat-label>Variable</mat-label>
+        <input type="text" placeholder="Choose a variable" aria-label="Number" matInput [formControl]="switchInputControl"
+          [matAutocomplete]="auto" (input)="updateVariable($event.target.value)">
+        <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="updateVariable($event.option.value)">
+          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+            {{option}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <button type="button" class="btn btn-danger btn-sm" (click)="deleteNode()">Delete</button>
+    </div>
+  </div>
+</div>

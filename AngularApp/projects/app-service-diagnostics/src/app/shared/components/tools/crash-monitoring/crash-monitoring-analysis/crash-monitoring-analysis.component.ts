@@ -25,7 +25,6 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
   @Output() settingsChanged: EventEmitter<CrashMonitoringSettings> = new EventEmitter<CrashMonitoringSettings>();
 
   loading: boolean = true;
-  blobSasUri: string = "";
   insights: CrashInsight[];
   monitoringEnabled: boolean = false;
   error: any;
@@ -39,7 +38,9 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
   savingSettings: boolean = false;
   crashMonitoringHistory: CrashMonitoringData[] = [];
   refreshingHistory: boolean = true;
-  blobSasUriObservable: Observable<DaasStorageConfiguration>;
+  storageAccountConfigurationObservable: Observable<DaasStorageConfiguration>;
+  daasStorageConfiguration: DaasStorageConfiguration = null;
+  daasBlobSasUri: string = '';
 
   // For tooltip display
   directionalHint = DirectionalHint.rightTopEdge;
@@ -68,12 +69,11 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
 
     this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(site => {
       this.siteToBeDiagnosed = site;
-      this.blobSasUriObservable = this._daasService.getStorageConfiguration(site, false);
+      this.storageAccountConfigurationObservable = this._daasService.getStorageConfiguration(site, false);
 
-      if (!this.blobSasUri) {
-
-        this.blobSasUriObservable.subscribe(daasSasUri => {
-          this.blobSasUri = daasSasUri.SasUri;
+      if (this.daasStorageConfiguration == null) {
+        this.storageAccountConfigurationObservable.subscribe(daasStorageConfiguration => {
+          this.daasStorageConfiguration = daasStorageConfiguration;
         });
       }
     });
@@ -108,18 +108,29 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
 
       this._diagnosticService.getDetector(crashMonitoringDetectorName, _startTime.format(this.stringFormat), _endTime.format(this.stringFormat), true, false, null, null).subscribe(detectorResponse => {
         let rawTable = detectorResponse.dataset.find(x => x.renderingProperties.type === RenderingType.Table) // && x.table.tableName === "CrashMonitoring");
-        if (this.blobSasUri) {
-          this.loadDetectorData(rawTable);
+        if (this.daasStorageConfiguration) {
+          this.updateSasUriAndLoadDetectorData(rawTable);
         } else {
 
-          if (!this.blobSasUri) {
-            this.blobSasUriObservable.subscribe(daasSasUri => {
-                this.blobSasUri = daasSasUri.SasUri;
-                this.loadDetectorData(rawTable);
+          if (!this.daasStorageConfiguration) {
+            this.storageAccountConfigurationObservable.subscribe(daasStorageConfiguration => {
+              this.daasStorageConfiguration = daasStorageConfiguration;
+              this.updateSasUriAndLoadDetectorData(rawTable);
             });
           }
         }
       });
+    }
+  }
+
+  updateSasUriAndLoadDetectorData(rawTable: DiagnosticData) {
+    if (this.daasStorageConfiguration.ConnectionString) {
+      this._daasService.getBlobSasUri(this.siteToBeDiagnosed).subscribe(blobSasUri => {
+        this.daasBlobSasUri = blobSasUri;
+        this.loadDetectorData(rawTable);
+      });
+    } else {
+      this.loadDetectorData(rawTable);
     }
   }
 
@@ -254,10 +265,18 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
   }
 
   getLinkToDumpFile(dumpFileName: string): string {
-    if (this.blobSasUri !== "") {
-      let blobUrl = new URL(this.blobSasUri);
+    if (this.daasStorageConfiguration !== null) {
+      let blobUrl: URL;
+      if (this.daasStorageConfiguration.SasUri) {
+        blobUrl = new URL(this.daasStorageConfiguration.SasUri);
+      }
+      else if (this.daasStorageConfiguration.ConnectionString) {
+        blobUrl = new URL(this.daasBlobSasUri);
+      }
+
       let relativePath = "CrashDumps/" + dumpFileName;
       return `https://${blobUrl.host}${blobUrl.pathname}/${relativePath}?${blobUrl.searchParams}`;
+
     } else {
       return "";
     }

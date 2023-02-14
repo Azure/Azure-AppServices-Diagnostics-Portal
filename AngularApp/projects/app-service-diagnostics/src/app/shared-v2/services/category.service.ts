@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Category } from '../models/category';
-import { DiagnosticService } from 'diagnostic-data';
 import { BehaviorSubject } from 'rxjs';
 import { GenericArmConfigService } from '../../shared/services/generic-arm-config.service';
 import { ArmResourceConfig } from '../../shared/models/arm/armResourceConfig';
 @Injectable()
 export class CategoryService {
 
-  public categories: BehaviorSubject<Category[]> = new BehaviorSubject<Category[]>(null);
+  public categories: BehaviorSubject<Category[]> = new BehaviorSubject<Category[]>([]);
 
   private _categories: Category[] = [];
 
@@ -33,7 +32,9 @@ export class CategoryService {
         this._categories.push(newCategory);
       }
     });
-    this.categories.next(this._categories);
+    if(this._categories.length > 0) {
+      this.categories.next(this._categories);
+    }
   }
 
   public filterCategoriesForSub() {

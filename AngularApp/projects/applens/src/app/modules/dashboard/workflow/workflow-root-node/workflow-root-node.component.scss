@@ -1,0 +1,36 @@
+.connector-icon {
+    display: block;
+    margin: 0 auto;
+    height: 40px;
+    width: 40px;
+    border-radius: 3px;
+}
+
+.panel-title-root {
+    background-color: #cbe1f7;
+}
+
+.connector-title .connector-title-label {
+    margin-top: 4px;
+    font-size: calc(0.9167 * 12px);
+    max-height: 32px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-wrap: break-word;
+    display: block;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.action-button {
+    border: none;
+    margin-left: 5px;
+    background: white;
+}
+
+.action-button:hover {
+    background-color: #f1f3f4;
+    transition: 0.2s;
+}

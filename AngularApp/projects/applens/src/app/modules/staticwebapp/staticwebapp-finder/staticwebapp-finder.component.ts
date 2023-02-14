@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, NavigationExtras, Router } from "@angular/router";
+import { ObserverStaticWebAppInfo } from "../../../shared/models/observer";
 import { ObserverService } from "../../../shared/services/observer.service";
 import { StartupService } from "../../../shared/services/startup.service";
 
@@ -14,7 +15,7 @@ export class StaticWebAppFinderComponent implements OnInit {
   loading: boolean = true;
   error: string;
 
-  matchingSites: Observer.ObserverStaticWebAppInfo[] = [];
+  matchingSites: ObserverStaticWebAppInfo[] = [];
 
   contentHeight: string;
 
@@ -45,7 +46,7 @@ export class StaticWebAppFinderComponent implements OnInit {
     });
   }
 
-  navigateToSite(matchingSite: Observer.ObserverStaticWebAppInfo) {
+  navigateToSite(matchingSite: ObserverStaticWebAppInfo) {
     let resourceArray: string[] = [
       'subscriptions', matchingSite.SubscriptionName,
       'resourceGroups', matchingSite.ResourceGroupName,

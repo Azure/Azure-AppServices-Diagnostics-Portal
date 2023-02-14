@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ObserverSiteInfo } from '../../../shared/models/observer';
 import { ObserverService } from '../../../shared/services/observer.service';
 import { StartupService } from '../../../shared/services/startup.service';
 
@@ -14,7 +15,7 @@ export class SiteFinderComponent implements OnInit {
   loading: boolean = true;
   error: string;
 
-  matchingSites: Observer.ObserverSiteInfo[] = [];
+  matchingSites: ObserverSiteInfo[] = [];
 
   contentHeight: string;
 
@@ -45,7 +46,7 @@ export class SiteFinderComponent implements OnInit {
     });
   }
 
-  navigateToSite(matchingSite: Observer.ObserverSiteInfo) {
+  navigateToSite(matchingSite: ObserverSiteInfo) {
     let resourceArray: string[] = [
       'subscriptions', matchingSite.Subscription,
       'resourceGroups', matchingSite.ResourceGroupName,

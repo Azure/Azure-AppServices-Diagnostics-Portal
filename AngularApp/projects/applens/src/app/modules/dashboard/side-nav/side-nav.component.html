@@ -24,6 +24,14 @@
           <i *ngIf="!categoriesCopy || categoriesCopy.length === 0"
             class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
         </section-divider>
+        <section-divider *ngIf="workflowsEnabled" [label]="'Workflows'"
+          [selected]="isSectionHeaderSelected('allworkflows') || isSectionHeaderSelected('workflows/', false)">
+          <i class="fa fa-stethoscope fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
+          <collapsible-menu-item *ngFor="let category of workflowCategories" [menuItem]="category" [searchValue]="searchValue">
+          </collapsible-menu-item>
+          <i *ngIf="workflowsLoading"
+            class="fa fa-spinner fa-spin fa-3x fa-fw loading-menu"></i>
+        </section-divider>
         <section-divider [label]="'Develop'"
           [selected]="isSectionHeaderSelected('users', false) || isSectionHeaderSelected('create') || isSectionHeaderSelected('creategist') || isSectionHeaderSelected('createworkflow')"
           [initiallyExpanded]="false" [disableExpandIcon]="false">

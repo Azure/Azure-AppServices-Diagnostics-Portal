@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable, throwError } from "rxjs";
 import { FavoriteDetectorProp, FavoriteDetectors, LandingInfo, RecentResource, UserPanelSetting, UserSetting, } from "../../../shared/models/user-setting";
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
 import { Params } from "@angular/router";
+import { environment } from "projects/applens/src/environments/environment";
 
 @Injectable()
 export class UserSettingService {
@@ -24,6 +25,10 @@ export class UserSettingService {
     }
 
     private get _userId() {
+        if (environment.adal.enabled === false){
+            return "default";
+        }
+
         const alias = !!this._adalService.userInfo.profile && !!this._adalService.userInfo.profile.upn ? this._adalService.userInfo.profile.upn : '';
         return alias.replace('@microsoft.com', '');
     }

@@ -64,8 +64,16 @@ export class GithubApiService {
     return this._diagnosticApiService.getCommitConfiguration(id, sha);
   }
 
-  public getConfiguration(id: string): Observable<object> {
+  public getConfiguration(id: string): Observable<any> {
     return this._diagnosticApiService.get<string>(`api/github/package/${id}/configuration`, true).pipe(
+      map(conf =>{
+        if(conf === "") return {};
+        return JSON.parse(conf);
+      }));
+  }
+
+  public getWorkflow(id: string): Observable<any> {
+    return this._diagnosticApiService.get<string>(`api/github/package/${id}/workflow`, true).pipe(
       map(conf =>{
         if(conf === "") return {};
         return JSON.parse(conf);

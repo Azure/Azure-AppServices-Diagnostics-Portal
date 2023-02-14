@@ -11,10 +11,7 @@ export class ContentService {
 
   content: any[] = [];
 
-  private ocpApimKeySubject: Subject<string> = new ReplaySubject<string>(1);
-  private ocpApimKey: string = '';
   private allowedStacks: string[] = ["net", "net core", "asp", "php", "python", "node", "docker", "java", "tomcat", "kube", "ruby", "dotnet", "static"];
-  private authKey: string = "";
   private deepSearchEndpoint : string = "";
   private _config : DocumentSearchConfiguration;
   private featureEnabledForSupportTopic: boolean = false;
@@ -22,11 +19,6 @@ export class ContentService {
 
   
   constructor(private _http: HttpClient, private _resourceService: ResourceService, private _backendApi: BackendCtrlService) { 
-
-    this._backendApi.get<string>(`api/appsettings/ContentSearch:Ocp-Apim-Subscription-Key`).subscribe((value: string) =>{
-      this.ocpApimKey = value;
-      this.ocpApimKeySubject.next(value);
-    });
 
     this._config = new DocumentSearchConfiguration();
     this.fetchAppSettingsNeededForDeepSearch();
@@ -45,17 +37,7 @@ export class ContentService {
   searchWeb(questionString: string, resultsCount: string = '3', useStack: boolean = true, preferredSites: string[] = [], excludedSites: string[] = globalExcludedSites): Observable<any> {
 
     const query = this.constructQueryParameters(questionString, useStack,preferredSites, excludedSites);
-    const url = `https://api.cognitive.microsoft.com/bing/v7.0/search?q='${query}'&count=${resultsCount}`;
-
-    return this.ocpApimKeySubject.pipe(mergeMap((key:string)=>{
-      return this._http.get(url, {
-          headers: {
-            "Content-Type": "application/json",
-            "Ocp-Apim-Subscription-Key": this.ocpApimKey
-          }
-        })
-      })
-    );
+    return this._backendApi.get<string>(`api/bing/search?q=${query}&count=${resultsCount}`);
   }
 
   public constructQueryParameters(questionString: string, useStack: boolean, preferredSites: string[], excludedSites: string[],) : string {
@@ -86,42 +68,11 @@ export class ContentService {
 
   
   private fetchAppSettingsNeededForDeepSearch() {
-    this._backendApi.get<string>(`api/appsettings/DeepSearch:Endpoint`).subscribe((value: string) => {
-      this.deepSearchEndpoint = value;
-    });
-
-    this._backendApi.get<string>(`api/appsettings/DeepSearch:AuthKey`).subscribe((value: string) => {
-      this.authKey = value;
-      this.httpOptions = {
-        headers: new HttpHeaders({
-          "Content-Type": "application/json",
-          "authKey": this.authKey
-        })
-      };
-    });
+    this.deepSearchEndpoint = "";
   }
 
   public IsDeepSearchEnabled(pesId : string, supportTopicId : string) : Observable<boolean> {
-    // featureEnabledForProduct is disabled by default
-    var isPesIdValid = pesId && pesId.length >0 ;
-    var isSupportTopicIdValid = supportTopicId && supportTopicId.length > 0;
-    if( isPesIdValid && isSupportTopicIdValid)
-    {
-      pesId = pesId.trim();
-      supportTopicId = supportTopicId.trim();
-
-      var listOfEnabledSupportTopics =  this._config.documentSearchEnabledSupportTopicIds[pesId];
-    
-      var isDeepSearchEnabledForThisSupportTopic = listOfEnabledSupportTopics && (listOfEnabledSupportTopics.length==0 || listOfEnabledSupportTopics.findIndex( x => x == supportTopicId ) > -1)
-      this.featureEnabledForSupportTopic = isDeepSearchEnabledForThisSupportTopic ;
-    }
-   
-    return this._backendApi.get<string>(`api/appsettings/DeepSearch:isEnabled`)
-                            // Value in App Service Application Settings are returned as strings
-                            // converting this to boolean
-                            .map(status =>  ( status.toLowerCase() == "true" && this.featureEnabledForSupportTopic) );
-
-
+    return Observable.of(false);
   }
 
   public fetchResultsFromDeepSearch(query : Query): Observable<any>

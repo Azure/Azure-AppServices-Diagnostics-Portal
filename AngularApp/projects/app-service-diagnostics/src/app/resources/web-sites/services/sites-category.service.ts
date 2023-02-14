@@ -462,7 +462,7 @@ export class SitesCategoryService extends CategoryService {
           name: 'Diagnostic Tools',
           overviewDetectorId:'LinuxDiagnosticTools',
           description: 'Run proactive tools to automatically mitigate the app.',
-          keywords: ['Auto-Heal'],
+          keywords: ['Auto-Heal', 'Network Troubleshooter'],
           categoryQuickLinks:[{
               type: DetectorType.DiagnosticTool,
               id: ToolIds.AutoHealing,
@@ -484,60 +484,58 @@ export class SitesCategoryService extends CategoryService {
           overridePath: `resource${siteId}/diagnosticTools`
         }
       },
-    // For Function App on Linux, "Diagnostic Tools" is only enabled for Paid Dedicated sku
     {
         appType: AppType.FunctionApp,
         platform: OperatingSystem.linux,
         stack: '',
-        sku: Sku.PaidDedicated,
+        sku: Sku.All,
         hostingEnvironmentKind: HostingEnvironmentKind.All,
         item: {
           id: 'DiagnosticTools',
           name: 'Diagnostic Tools',
           overviewDetectorId:'LinuxDiagnosticTools',
           description: 'Run proactive tools to automatically mitigate the app.',
-          keywords: ['Auto-Heal'],
+          keywords: ['Auto-Heal', 'Network-Troubleshooter'],
           color: 'rgb(170, 192, 208)',
           createFlowForCategory: false,
           overridePath: `resource${siteId}/diagnosticTools`
         }
       },
-      // For dedicated Function Apps on Windows
       {
         appType: AppType.FunctionApp,
         platform: OperatingSystem.windows,
         stack: '',
-        sku: Sku.NotDynamic,
+        sku: Sku.All,
         hostingEnvironmentKind: HostingEnvironmentKind.All,
         item: {
           id: 'DiagnosticTools',
           name: 'Diagnostic Tools',
           overviewDetectorId:'DiagnosticTools',
           description: 'Run proactive tools to automatically mitigate the app.',
-          keywords: ['Auto-Heal'],
+          keywords: ['Auto-Heal', 'Network-Troubleshooter'],
           color: 'rgb(170, 192, 208)',
           createFlowForCategory: false,
           overridePath: `resource${siteId}/diagnosticTools`
         }
-      },
-       // For consumption Function Apps on Windows
-      {
-          appType: AppType.FunctionApp,
+        },
+        // For Workflow app on Windows
+        {
+          appType: AppType.WorkflowApp,
           platform: OperatingSystem.windows,
-          stack: '',
-          sku: Sku.Dynamic,
+          stack: 'ASP.NET Core',
+          sku: Sku.NotDynamic,
           hostingEnvironmentKind: HostingEnvironmentKind.All,
           item: {
             id: 'DiagnosticTools',
             name: 'Diagnostic Tools',
             overviewDetectorId:'DiagnosticTools',
             description: 'Run proactive tools to automatically mitigate the app.',
-            keywords: ['Network-Troubleshooter'],
+            keywords: ['Auto-Heal'],
             color: 'rgb(170, 192, 208)',
             createFlowForCategory: false,
             overridePath: `resource${siteId}/diagnosticTools`
           }
-        }];
+      }];
   }
 
 }

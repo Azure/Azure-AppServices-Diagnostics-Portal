@@ -15,8 +15,8 @@ export class ApplensCommandBarService {
         this._detectorControlService.refresh("V3ControlRefresh");
     }
 
-    public getDetectorMeatData(detectorId: string) {
-        return this._applensDiagnosticService.getDetectorMetaDataById(detectorId);
+    public getDetectorMeatData(detectorId: string, isWorkflow: boolean = false) {
+        return this._applensDiagnosticService.getDetectorMetaDataById(detectorId, isWorkflow);
     }
 
     public emailToAuthor(data: DetectorMetaData): void {
@@ -65,7 +65,7 @@ export class ApplensCommandBarService {
                 }
             }),
             catchError(err => {
-                if(err !== overMaxNumberMessage) return throwError(otherErrorMessage);
+                if (err !== overMaxNumberMessage) return throwError(otherErrorMessage);
                 else return throwError(err);
             }));
     }
@@ -77,10 +77,10 @@ export class ApplensCommandBarService {
     }
 
     public removeFavoriteDetector(detectorId: string): Observable<string> {
-        const successfulMessage =  "Successfully unpinned from overview page";
-        const errorMessage = "Some issue happened while unpinning, Please try again later";    
+        const successfulMessage = "Successfully unpinned from overview page";
+        const errorMessage = "Some issue happened while unpinning, Please try again later";
         return this._userSettingService.removeFavoriteDetector(detectorId).pipe(
-            map(_ => successfulMessage), 
+            map(_ => successfulMessage),
             catchError(err => throwError(errorMessage)));
     }
     public getUserSetting() {

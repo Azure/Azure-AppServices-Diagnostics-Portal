@@ -24,6 +24,8 @@ namespace AppLensV3.Services
 
         private string kustoApiQueryEndpoint = string.Empty;
 
+        private GenericCertLoader certLoader;
+
         private string KustoApiEndpoint
         {
             get
@@ -48,9 +50,10 @@ namespace AppLensV3.Services
             }
         }
 
-        public KustoSDKClientQueryService(IConfiguration configuration, IKustoAuthProvider kustoAuthProvider)
+        public KustoSDKClientQueryService(IConfiguration configuration, IKustoAuthProvider kustoAuthProvider, GenericCertLoader certLoader)
         {
             authProvider = kustoAuthProvider;
+            this.certLoader = certLoader;
 
             aadKustoResource = $"{configuration["Kusto:AADKustoResource"]}";
             if (string.IsNullOrWhiteSpace(aadKustoResource))
@@ -201,8 +204,8 @@ namespace AppLensV3.Services
                     {
                         connectionStringBuilder = connectionStringBuilder.WithAadApplicationSubjectAndIssuerAuthentication(
                             applicationClientId: authProvider.AuthDetails.ClientId,
-                            applicationCertificateSubjectDistinguishedName: GenericCertLoader.Instance.GetCertBySubjectName(authProvider.AuthDetails.TokenRequestorCertSubjectName).Subject,
-                            applicationCertificateIssuerDistinguishedName: GenericCertLoader.Instance.GetCertBySubjectName(authProvider.AuthDetails.TokenRequestorCertSubjectName).IssuerName.Name,
+                            applicationCertificateSubjectDistinguishedName: certLoader.GetCertBySubjectName(authProvider.AuthDetails.TokenRequestorCertSubjectName).Subject,
+                            applicationCertificateIssuerDistinguishedName: certLoader.GetCertBySubjectName(authProvider.AuthDetails.TokenRequestorCertSubjectName).IssuerName.Name,
                             authority: authProvider.AuthDetails.TenantId);
                     }
                     else

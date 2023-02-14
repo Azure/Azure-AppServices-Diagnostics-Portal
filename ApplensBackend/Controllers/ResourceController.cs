@@ -11,12 +11,9 @@ namespace AppLensV3
     {
         IObserverClientService _observerService;
 
-        IKustoQueryService _kustoQueryService;
-
-        public ResourceController(IObserverClientService observerService, IKustoQueryService kustoQueryService)
+        public ResourceController(IObserverClientService observerService)
         {
             _observerService = observerService;
-            _kustoQueryService = kustoQueryService;
         }
 
         [HttpGet("api/sites/{siteName}")]
@@ -181,14 +178,14 @@ namespace AppLensV3
 
         [HttpGet]
         [Route("api/kustogeo/{geoRegionName}")]
-        public async Task<IActionResult> GetKustoByGeo(string geoRegionName)
+        public async Task<IActionResult> GetKustoByGeo([FromServices] IKustoQueryService kustoQueryService, string geoRegionName)
         {
-            return await GetKustoByGeoInternal(geoRegionName);
+            return await GetKustoByGeoInternal(kustoQueryService, geoRegionName);
         }
 
-        private async Task<IActionResult> GetKustoByGeoInternal(string geoRegionName)
+        private async Task<IActionResult> GetKustoByGeoInternal(IKustoQueryService kustoQueryService, string geoRegionName)
         {
-            var kustoClusterName = await _kustoQueryService.GetKustoClusterByGeoRegion(geoRegionName);
+            var kustoClusterName = await kustoQueryService.GetKustoClusterByGeoRegion(geoRegionName);
             if (kustoClusterName == null)
             {
                 return NotFound(new { GeoRegionName = geoRegionName });

@@ -20,6 +20,5 @@ export class SharedStorageAccountService {
 
 export class StorageAccountProperties {
   name: string;
-  sasUri: string;
   connectionString: string;
 }

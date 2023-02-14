@@ -202,5 +202,25 @@ namespace AppLensV3.Controllers
         {
             return Ok(await GithubService.GetCommitContent(filePath, sha));
         }
+
+        /// <summary>
+        /// Get workflow Json file.
+        /// </summary>
+        /// <param name="id">The id.</param>
+        /// <returns>Task for getting configuration.</returns>
+        [HttpGet("package/{id}/workflow")]
+        public async Task<IActionResult> GetWorkflow(string id)
+        {
+            try
+            {
+                var conf = await GithubService.GetWorkflow(id);
+                return Ok(conf);
+            }
+            catch (Exception)
+            {
+                // To be compatible with current package.
+                return Ok(string.Empty);
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { DetectorResponse, HealthStatus, LoadingStatus, Rendering, RenderingType, TelemetryService, NotificationUtils } from "diagnostic-data";
-import { DiagnosticService, DetectorControlService, TelemetryEventNames, TelemetrySource } from 'diagnostic-data';
+import { DiagnosticService, DetectorControlService, TelemetryEventNames } from 'diagnostic-data';
 import { BehaviorSubject, forkJoin, Observable, observable, of } from "rxjs";
 import { NotificationMessageBar, RiskHelper, RiskInfo, RiskTile } from "../../home/models/risk";
 import { ArmResourceConfig, RiskAlertConfig, NotificationConfig } from "../../shared/models/arm/armResourceConfig";
@@ -27,7 +27,7 @@ export class RiskAlertService {
     caseSubmissionRiskNotificationId: string = "";
     notificationMessageBar: NotificationMessageBar = null;
 
-    constructor(protected _featureService: FeatureService, protected _diagnosticService: DiagnosticService, protected _detectorControlService: DetectorControlService, protected _telemetryService: TelemetryService, protected globals: Globals, protected _genericArmConfigService?: GenericArmConfigService) { }
+    constructor(protected _diagnosticService: DiagnosticService, protected _detectorControlService: DetectorControlService, protected _telemetryService: TelemetryService, protected globals: Globals, protected _genericArmConfigService?: GenericArmConfigService) { }
 
     public initRiskAlertsForArmResource(resourceUri: string) {
         if (this._genericArmConfigService) {

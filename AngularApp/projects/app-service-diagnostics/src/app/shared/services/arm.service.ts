@@ -401,14 +401,14 @@ export class ArmService {
         return this._cache.get(url, request, invalidateCache);
     }
 
-    putResource<T, S>(resourceUri: string, body?: S, apiVersion?: string, invalidateCache: boolean = false): Observable<boolean | {} | ResponseMessageEnvelope<T>> {
+    putResource<T, S>(resourceUri: string, body?: S, apiVersion?: string, invalidateCache: boolean = false, additionalHeaders?: Map<string, string>): Observable<boolean | {} | ResponseMessageEnvelope<T>> {
         const url = this.createUrl(resourceUri, apiVersion);
         let bodyString: string = '';
         if (body) {
             bodyString = JSON.stringify(body);
         }
 
-        const request = this._http.put(url, bodyString, { headers: this.getHeaders() }).pipe(
+        const request = this._http.put(url, bodyString, { headers: this.getHeaders(undefined, additionalHeaders) }).pipe(
             catchError(this.handleError.bind(this))
         );
 

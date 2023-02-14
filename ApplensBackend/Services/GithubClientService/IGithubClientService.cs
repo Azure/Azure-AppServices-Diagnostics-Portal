@@ -69,5 +69,12 @@ namespace AppLensV3
         /// </summary>
         /// <returns>Resource Configuration JSON for search api</returns>
         Task<string> GetResourceConfigFile();
+
+        /// <summary>
+        /// Get the workflow json file.
+        /// </summary>
+        /// <param name="id">WorkflowId</param>
+        /// <returns>Workflow client side json</returns>
+        Task<string> GetWorkflow(string id);
     }
 }

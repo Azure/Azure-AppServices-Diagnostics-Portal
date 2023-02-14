@@ -1,0 +1,36 @@
+.color-code-description-container {
+  border-collapse: separate;
+  border-spacing: 0px;
+  padding-right: 25px;
+  width: 100%;
+}
+
+.title {
+  display: inline-block;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.custom-colors-container {
+  display: table-row;
+}
+
+.color-code {
+  display: table-cell;
+  width: 20px;
+
+  > span {
+    border-radius: 50%;
+    display: inline-block;
+    height: 12px;
+    margin: 2px;
+    text-align: center;
+    width: 12px;
+  }
+}
+
+.color-description {
+  display: table-cell;
+  font-size: 12px;
+  vertical-align: top;
+}

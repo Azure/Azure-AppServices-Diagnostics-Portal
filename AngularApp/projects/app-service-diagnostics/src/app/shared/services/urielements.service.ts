@@ -165,7 +165,7 @@ export class UriElementsService {
             .replace('{sessionId}', sessionId);
     }
 
-    getBlobSasUriUrl(site: SiteDaasInfo) {
+    getDaasSettingsUrl(site: SiteDaasInfo) {
         return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasSettingsPath;
     }
 

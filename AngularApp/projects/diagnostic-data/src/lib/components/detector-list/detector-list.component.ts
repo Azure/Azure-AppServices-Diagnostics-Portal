@@ -20,10 +20,12 @@ import { Solution } from '../solution/solution';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PortalActionGenericService } from '../../services/portal-action.service';
 import { UriUtilities } from '../../utilities/uri-utilities';
-import { GenericBreadcrumbService } from '../../services/generic-breadcrumb.service';
+import { BreadcrumbNavigationItem, GenericBreadcrumbService } from '../../services/generic-breadcrumb.service';
 import { ILinkProps } from 'office-ui-fabric-react';
 import { SolutionService } from '../../services/solution.service';
 import { GenericUserSettingService } from '../../services/generic-user-setting.service';
+import { GenieGlobals } from '../../services/genie.service';
+import { GenericSupportTopicService } from '../../services/generic-support-topic.service';
 
 @Component({
   selector: 'detector-list',
@@ -66,12 +68,15 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   loading = LoadingStatus.Loading;
   expandIssuedChecks: boolean = false;
   isWaterfallViewMode: boolean = false;
+  isCaseSubmissionFlow: boolean = false;
 
   constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private _solutionService: SolutionService,
     private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router,
-    private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _breadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService) {
+    private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _breadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService, private _globals: GenieGlobals,
+    private _supportTopicService: GenericSupportTopicService) {
     super(telemetryService);
     this.isPublic = this.config && this.config.isPublic;
+    this.isCaseSubmissionFlow = this._supportTopicService && (!!this._supportTopicService.sapSupportTopicId || !!this._supportTopicService.supportTopicId );
 
     this._genericUserSettingsService.isWaterfallViewSub.subscribe(isWaterfallViewMode => {
       this.isWaterfallViewMode = isWaterfallViewMode;
@@ -416,6 +421,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           else if (this.isPublic) {
             const url = this._router.url.split("?")[0];
             const routeUrl = url.endsWith("/overview") ? `../detectors/${targetDetector}` : `../../detectors/${targetDetector}`;
+            this.updateBreadcrumb(combinedParams);
             this._router.navigate([routeUrl], {
               queryParams: combinedParams,
               relativeTo: this._activatedRoute
@@ -423,14 +429,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           }
           else {
             const resourceId = this._diagnosticService.resourceId;
-            if (!this.isPublic) {
-              this._breadcrumbService.updateBreadCrumbSubject({
-                name: this.detectorName,
-                id: this.detector,
-                isDetector: true,
-                queryParams: combinedParams
-              });
-            }
+            this.updateBreadcrumb(combinedParams);
             this._router.navigate([`${resourceId}/detectors/${targetDetector}`], { queryParams: combinedParams });
           }
         }
@@ -472,6 +471,20 @@ export class DetectorListComponent extends DataRenderBaseComponent {
         DetectorId: detectorId,
         Status: status
       });
+    }
+  }
+
+  private updateBreadcrumb(queryParams: any) {
+    const fullPath = this._router.url.split("?")[0];
+    const breadcrumbItem: BreadcrumbNavigationItem = {
+        name: this.detectorName,
+        queryParams: queryParams,
+        fullPath: fullPath
+    };
+    if (this.isPublic) {
+        this._globals.breadCrumb = breadcrumbItem;
+    } else {
+        this._breadcrumbService.updateBreadCrumbSubject(breadcrumbItem);
     }
   }
 }

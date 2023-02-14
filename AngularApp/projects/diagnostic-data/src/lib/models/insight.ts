@@ -109,6 +109,8 @@ export class InsightUtils {
 export class DynamicInsight extends InsightBase {
     description: string;
     innerDiagnosticData: DiagnosticData;
+    hyperlink?: string = null;
+    hyperlinkText?: string = null;
 }
 
 class DynamicInsightUtils {

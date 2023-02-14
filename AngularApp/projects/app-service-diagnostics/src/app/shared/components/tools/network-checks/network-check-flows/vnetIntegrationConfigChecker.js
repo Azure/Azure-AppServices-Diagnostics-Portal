@@ -193,7 +193,7 @@ export class VnetIntegrationConfigChecker {
                 return false;
             } else {
                 if (ips.length == 1) {
-                    return null;
+                    return true;
                 } else {
                     var promises = [];
                     for (var i = 0; i < ips.length; ++i) {

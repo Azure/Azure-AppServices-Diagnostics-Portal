@@ -13,4 +13,8 @@ export class DetectorGistApiService {
   public getTemplate(name: string): Observable<string> {
     return this._diagnosticApiService.get<string>(`api/templates/${name}`, true);
   }
+
+  public getTemplateWithExtension(name: string, fileExtension: string): Observable<string> {
+    return this._diagnosticApiService.get<string>(`api/templates/${name}/${fileExtension}`, true);
+  }
 }

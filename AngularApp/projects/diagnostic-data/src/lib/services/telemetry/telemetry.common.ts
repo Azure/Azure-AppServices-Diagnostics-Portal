@@ -99,24 +99,26 @@ export const TelemetryEventNames = {
     ResiliencyScoreReportButtonDisplayed: 'ResiliencyScoreReportButtonDisplayed',
     ResiliencyScoreReportButtonClicked: 'ResiliencyScoreReportButtonClicked', 
     ResiliencyScoreReportDownloaded: 'ResiliencyScoreReportDownloaded',
+    ResiliencyScoreReportResourceNotSupported: 'ResiliencyScoreReportResourceNotSupported',
     ResiliencyScoreReportInPrivateAccess: 'ResiliencyScoreReportInPrivateAccess',
     ResourceOutOfScopeUserResponse: 'ResourceOutOfScopeUserResponse',    
     DownloadReportButtonDisplayed: 'DownloadReportButtonDisplayed',
-    DownloadReportButtonClicked: 'DownloadReportButtonClicked',    
+    DownloadReportButtonClicked: 'DownloadReportButtonClicked',
+    DownloadReportDirectLinkUsed: 'DownloadReportDirectLinkUsed',
+    DownloadReportDirectLinkDownloaded: 'DownloadReportDirectLinkDownloaded',
     FavoriteDetectorAdded: 'FavoriteDetectorAdded',
     FavoriteDetectorClicked: 'FavoriteDetectorClicked',
     FavoriteDetectorRemoved: 'FavoriteDetectorRemoved',
     ICMTemplateManagementPage: 'ICMTemplateManagementPage',
     ICMTeamTemplateLoaded: 'ICMTeamTemplateLoaded',
     ICMTeamTemplateUpdate: 'ICMTeamTemplateUpdate',
+    HomePageLogUser: 'HomePageLogUser',
 };
 
 export const TelemetrySource = {
-    LandingPage: 'LandingPage',
-    CategoryPage: 'CategoryPage',
     CaseSubmissionFlow: 'CaseSubmissionFlow',
-    OverviewPage:'OverviewPage',
-    DetectorPage: 'DetectorPage'
+    DiagAndSolveBlade: 'DiagAndSolveBlade',
+    PortalReferral: 'PortalReferral',
 }
 
 export interface TelemetryPayload {

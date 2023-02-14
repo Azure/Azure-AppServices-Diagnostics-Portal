@@ -13,7 +13,8 @@ import { DetectorResponse, TelemetryEventNames, TelemetryService, ResiliencyScor
 import { SeverityLevel } from '@microsoft/applicationinsights-web';
 import { HttpClient } from '@angular/common/http';
 import { DetectorControlService } from 'diagnostic-data';
-import { Sku } from 'projects/app-service-diagnostics/src/app/shared/models/server-farm';
+import { ObserverSiteSku, ObserverSkuType } from '../../../shared/models/observer';
+import { AdalService } from 'adal-angular4';
 
 @Component({
   selector: 'dashboard-container',
@@ -35,7 +36,7 @@ export class DashboardContainerComponent implements OnInit {
 
 // Variables used by Download Report button    
   detector: string = "";
-  siteSku: Observer.ObserverSiteSku;
+  siteSku: ObserverSiteSku;
   subscriptionId: string;
   displayDownloadReportButton: boolean = false;
   displayDownloadReportButtonStyle: any = {};
@@ -57,7 +58,7 @@ export class DashboardContainerComponent implements OnInit {
   };
   vfsFonts: any;
 
-    constructor(public _resourceService: ResourceService, private _startupService: StartupService, private _diagnosticApiService: DiagnosticApiService, private _applensDiagnosticApiService: ApplensDiagnosticService,  private _observerService: ObserverService, private _applensGlobal: ApplensGlobal,  private _activatedRoute: ActivatedRoute, private _telemetryService: TelemetryService, private _http:HttpClient, private _detectorControlService: DetectorControlService) {
+    constructor(public _resourceService: ResourceService, private _startupService: StartupService, private _diagnosticApiService: DiagnosticApiService, private _applensDiagnosticApiService: ApplensDiagnosticService,  private _observerService: ObserverService, private _applensGlobal: ApplensGlobal,  private _activatedRoute: ActivatedRoute, private _telemetryService: TelemetryService, private _http:HttpClient, private _detectorControlService: DetectorControlService, private _adalService: AdalService) {
     let caseNumber = this._activatedRoute.snapshot.queryParams['caseNumber']? this._activatedRoute.snapshot.queryParams['caseNumber']: (this._activatedRoute.snapshot.queryParams['srId']? this._activatedRoute.snapshot.queryParams['srId']: null);
     this.detector = this._activatedRoute.snapshot.queryParams['detector']? this._activatedRoute.snapshot.queryParams['detector']: null;
     if(caseNumber && AppLensCloudRegionUtility.getASCCloudSpecificBaseUri()) {
@@ -70,6 +71,9 @@ export class DashboardContainerComponent implements OnInit {
     this.subscriptionId = this._activatedRoute.snapshot.queryParams['subscriptionId'];
     this.showMetrics = !(this._resourceService.overviewPageMetricsId == undefined || this._resourceService.overviewPageMetricsId == "");
     let serviceInputs = this._startupService.getInputs();
+    let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
+    let userId = alias.replace('@microsoft.com', '').toLowerCase();
+    this._telemetryService.logEvent(TelemetryEventNames.HomePageLogUser, {"userId": userId});
     this.resourceReady = this._resourceService.getCurrentResource();
     this._applensGlobal.updateHeader("");
     this.resourceReady.subscribe(resource => {
@@ -158,7 +162,8 @@ export class DashboardContainerComponent implements OnInit {
         'AppType': this.siteSku.kind != undefined ? this.siteSku.kind.toLowerCase() === "app" ? "WebApp" : this.siteSku.kind.toString() : "",
         'resourceSku': this.siteSku.sku != undefined ? this.siteSku.sku.toString(): "",
         'ReportType': 'ResiliencyScore',  
-        'Error': error
+        'Error': error,
+        'Message': 'Error trying to retrieve showCoachmark from localStorage'
       }
       this._telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
@@ -181,16 +186,16 @@ export class DashboardContainerComponent implements OnInit {
 
   // Check if the app is an App Service Windows Standard or higher SKU
   private checkIsWindowsApp() {
-    let _sku: Sku = Sku.All;      
-    _sku = Sku[this.siteSku.sku];
-    return this.siteSku && this.getAppType(this.siteSku.kind.toLowerCase()) === "WebApp" && !this.siteSku.is_linux && _sku > 8; //Only for Web App (Windows) in Standard or higher SKU     
+    let _sku: ObserverSkuType = ObserverSkuType.All;
+    _sku = ObserverSkuType[this.siteSku.sku];
+    return this.siteSku && this.getAppType(this.siteSku.kind.toLowerCase()) === "WebApp" && !this.siteSku.is_linux && _sku >= 8; //Only for Web App (Windows) in Standard or higher SKU
   }
 
   // Check if the app is an App Service Linux Standard or higher SKU
   private checkIsLinuxApp() {
-    let _sku: Sku = Sku.All;  
-    _sku = Sku[this.siteSku.sku];
-    return this.siteSku && this.getAppType(this.siteSku.kind.toLowerCase()) === "LinuxApp" && this.siteSku.is_linux && _sku > 8; //Only for Web App (Windows) in Standard or higher SKU 
+    let _sku: ObserverSkuType = ObserverSkuType.All;      
+    _sku = ObserverSkuType[this.siteSku.sku];
+    return this.siteSku && this.getAppType(this.siteSku.kind.toLowerCase()) === "LinuxApp" && this.siteSku.is_linux && _sku >= 8; //Only for Web App (Linux) in Standard or higher SKU
   }
 
   //To do, Add a utility method to check kind and use in main.component and site.service
@@ -228,7 +233,10 @@ export class DashboardContainerComponent implements OnInit {
 
   updateAscLink() {
     if(this.ascResourceExplorerLink && this.resource!= null ) {
-          this.resource['ASCLink'] = `<a href="${this.ascResourceExplorerLink}" target="_blank">Resource Explorer<i class="hyper-link-icon ml-1" aria-hidden="true"></i></a>`;
+          this.resource = {
+              ...this.resource,
+              ASCLink: `<a href="${this.ascResourceExplorerLink}" target="_blank">Resource Explorer<i class="hyper-link-icon ml-1" aria-hidden="true"></i></a>`
+          };
           this.keys.push('ASCLink');
     }
   }
@@ -336,7 +344,8 @@ export class DashboardContainerComponent implements OnInit {
         'Subscription': this.subscriptionId,
         'TimeClicked': sT.toUTCString(),
         'ReportType': 'ResiliencyScore',
-        'Error': error
+        'Error': error,
+        'Message': 'Error trying to retrieve showCoachmark from localStorage'
       }
       this._telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }

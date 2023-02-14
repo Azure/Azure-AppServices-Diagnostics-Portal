@@ -1,0 +1,3 @@
+<YOUR_TABLE_NAME>
+| where {Utilities.TimeAndTenantFilterQuery(cxt.StartTime, cxt.EndTime, cxt.Resource)}
+| <YOUR_QUERY>

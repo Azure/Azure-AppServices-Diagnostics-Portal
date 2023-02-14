@@ -280,10 +280,23 @@ export class DetectorSearchComponent extends DataRenderBaseComponent implements 
             }
             this.showPreLoader = false;
             var searchResults: DetectorMetaData[] = results[0];
-            this.logEvent(TelemetryEventNames.SearchQueryResults, { parentDetectorId: this.detector, searchId: this.searchId, query: this.searchTerm, results: JSON.stringify(searchResults.map((det: DetectorMetaData) => new Object({ id: det.id, score: det.score }))), ts: Math.floor((new Date()).getTime() / 1000).toString() });
             var detectorList = results[1];
+            var logDetail = "";
+            // When this happens this means that the RP is not sending the search term parameter to Runtimehost API
+            if (searchResults.length == detectorList.length) {
+                searchResults = [];
+                logDetail = "Search results is same as detector list. This means that the search term is not being sent to Runtimehost API";
+            }
+            this.logEvent(TelemetryEventNames.SearchQueryResults, {
+                parentDetectorId: this.detector,
+                searchId: this.searchId,
+                query: this.searchTerm,
+                results: JSON.stringify(searchResults.map((det: DetectorMetaData) => new Object({ id: det.id, score: det.score }))),
+                ts: Math.floor((new Date()).getTime() / 1000).toString(),
+                logDetail: logDetail
+            });
             var childrenOfParent = results[2];
-            if (detectorList) {
+            if (detectorList && searchResults && searchResults.length>0) {
                 searchResults.forEach(result => {
                     if ((result.id === this.detector) || (childrenOfParent.findIndex((x: string) => x.toLowerCase() == result.id.toLowerCase()) >= 0))
                     {

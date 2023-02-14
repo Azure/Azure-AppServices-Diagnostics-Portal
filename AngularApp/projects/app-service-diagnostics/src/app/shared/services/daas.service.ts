@@ -1,13 +1,13 @@
 
 import { map, mergeMap, catchError } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
 import { SiteDaasInfo } from '../models/solution-metadata';
 import { ArmService } from './arm.service';
 import { AuthService } from '../../startup/services/auth.service';
 import { UriElementsService } from './urielements.service';
-import { DiagnoserDefinition, DatabaseTestConnectionResult, MonitoringSession, MonitoringLogsPerInstance, ActiveMonitoringSession, DaasAppInfo, DaasSettings, ValidateSasUriResponse, Session, LinuxDaasSettings, ValidateStorageAccountResponse, DaasStorageConfiguration, Instance, LinuxCommandOutput, LinuxCommand } from '../models/daas';
+import { DiagnoserDefinition, DatabaseTestConnectionResult, MonitoringSession, MonitoringLogsPerInstance, ActiveMonitoringSession, DaasAppInfo, DaasSettings, ValidateSasUriResponse, Session, LinuxDaasSettings, ValidateStorageAccountResponse, DaasStorageConfiguration, Instance, LinuxCommandOutput, LinuxCommand, DaasSettingsResponse } from '../models/daas';
 import { SiteInfoMetaData } from '../models/site';
 import { SiteService } from './site.service';
 import { StorageAccountProperties } from '../../shared-v2/services/shared-storage-account.service';
@@ -20,6 +20,7 @@ export class DaasService {
 
     linuxDiagServerEnabled: boolean = false;
     linuxDiagServerEnabledChecked: boolean = false;
+    cachedBlobSasUri: string = '';
 
     linuxDiagServerStorageConfigured: boolean = false
     linuxDiagServerStorageConfiguredChecked: boolean = false
@@ -79,7 +80,29 @@ export class DaasService {
 
     getDatabaseTest(site: SiteInfoMetaData): Observable<DatabaseTestConnectionResult[]> {
         const resourceUri: string = this._uriElementsService.getDatabaseTestUrl(site);
-        return <Observable<DatabaseTestConnectionResult[]>>this._armClient.getResourceWithoutEnvelope<DatabaseTestConnectionResult[]>(resourceUri, null, true);
+        return <Observable<DatabaseTestConnectionResult[]>>this._armClient.requestResource<HttpResponse<DatabaseTestConnectionResult[]>, any>("GET", resourceUri, null, null).pipe(
+            map((response: HttpResponse<DatabaseTestConnectionResult[]>) => {
+                return response.body;
+            }),
+            catchError(err => {
+
+                //
+                // DaaS site extension is changing the method for /databasetest to POST instead of GET
+                // Handle any error that we get while making the get call and if we get any failure, then
+                // try making a POST call till the site extension is updated globally
+                //
+
+                if (err.status && err.status === 405) {
+                    return <Observable<DatabaseTestConnectionResult[]>>this._armClient.postResourceWithoutEnvelope<DatabaseTestConnectionResult[], any>(resourceUri, null, null, true)
+                } else {
+                    let actualError: string = JSON.stringify(err);
+                    if (err.error && err.error.Message) {
+                        actualError = err.error.Message;
+                    }
+                    throwError(actualError)
+                }
+            })
+        )
     }
 
     getDaasWebjobState(site: SiteDaasInfo): Observable<string> {
@@ -147,35 +170,25 @@ export class DaasService {
         return <Observable<string>>(this._armClient.deleteResource(resourceUri, null, true));
     }
 
-    setBlobSasUri(site: SiteDaasInfo, blobAccount: string, blobKey: string): Observable<boolean> {
-        const resourceUri: string = this._uriElementsService.getBlobSasUriUrl(site);
-        const settings = new DaasSettings();
-        settings.BlobSasUri = "";
-        settings.BlobContainer = BlobContainerName.toLowerCase();
-        settings.BlobKey = blobKey;
-        settings.BlobAccount = blobAccount;
-        settings.EndpointSuffix = "";
-        if (this._armClient.isNationalCloud) {
-            settings.EndpointSuffix = this._armClient.storageUrl;
-        }
-
-        return <Observable<boolean>>(this._armClient.postResource(resourceUri, settings, null, true));
-    }
-
     setStorageConfiguration(site: SiteDaasInfo, storageAccountProperties: StorageAccountProperties, useDiagServerForLinux: boolean): Observable<any> {
         let settingValue: string = '';
-        let settingName = "WEBSITE_DAAS_STORAGE_SASURI";
-        settingValue = storageAccountProperties.sasUri;
-        if (useDiagServerForLinux) {
-            settingName = "WEBSITE_DAAS_STORAGE_CONNECTIONSTRING";
-            settingValue = storageAccountProperties.connectionString;
-        }
+        let settingName = "WEBSITE_DAAS_STORAGE_CONNECTIONSTRING";
+        let settingSasUriName = "WEBSITE_DAAS_STORAGE_SASURI";
+        settingValue = storageAccountProperties.connectionString;
 
         return this._siteService.getSiteAppSettings(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot).pipe(
             map(settingsResponse => {
                 if (settingsResponse && settingsResponse.properties) {
                     if (settingValue) {
                         settingsResponse.properties[settingName] = settingValue;
+                        if (settingsResponse.properties[settingSasUriName] != null) {
+
+                            //
+                            // Explicitly set it to an empty space because deleting the app setting
+                            // will trigger a site restart
+                            //
+                            settingsResponse.properties[settingSasUriName] = " ";
+                        }
                     } else {
                         if (settingsResponse.properties[settingName]) {
                             delete settingsResponse.properties[settingName];
@@ -184,7 +197,7 @@ export class DaasService {
 
                     this._siteService.updateSiteAppSettings(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot, settingsResponse).subscribe(updateResponse => {
                         if (useDiagServerForLinux) {
-                            
+
                             //
                             // Reset this flag so that the daas-sessions component can
                             // get the current value of the storage account and then
@@ -200,22 +213,21 @@ export class DaasService {
     }
 
     getStorageConfiguration(site: SiteDaasInfo, useDiagServerForLinux: boolean): Observable<DaasStorageConfiguration> {
-        let settingName = "WEBSITE_DAAS_STORAGE_SASURI";
-        if (useDiagServerForLinux) {
-            settingName = "WEBSITE_DAAS_STORAGE_CONNECTIONSTRING";
-        }
+        let settingName = "WEBSITE_DAAS_STORAGE_CONNECTIONSTRING";
+        let settingSasUriName = "WEBSITE_DAAS_STORAGE_SASURI";
 
         return this._siteService.getSiteAppSettings(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot).pipe(
             map(settingsResponse => {
-                if (settingsResponse && settingsResponse.properties && settingsResponse.properties[settingName] != null) {
-                    let daasStorageConfiguration: DaasStorageConfiguration = new DaasStorageConfiguration();
-                    daasStorageConfiguration.IsAppSetting = true;
-                    if (useDiagServerForLinux) {
+                if (settingsResponse && settingsResponse.properties) {
+                    if (settingsResponse.properties[settingName] != null) {
+                        let daasStorageConfiguration: DaasStorageConfiguration = new DaasStorageConfiguration();
                         daasStorageConfiguration.ConnectionString = settingsResponse.properties[settingName];
-                    } else {
-                        daasStorageConfiguration.SasUri = settingsResponse.properties[settingName];
+                        return daasStorageConfiguration;
+                    } else if (settingsResponse.properties[settingSasUriName] != null && !useDiagServerForLinux) {
+                        let daasStorageConfiguration: DaasStorageConfiguration = new DaasStorageConfiguration();
+                        daasStorageConfiguration.SasUri = settingsResponse.properties[settingSasUriName];
+                        return daasStorageConfiguration;
                     }
-                    return daasStorageConfiguration;
                 }
             }),
             mergeMap((daasStorageConfiguration: DaasStorageConfiguration) => {
@@ -326,5 +338,55 @@ export class DaasService {
 
     get defaultContainerName(): string {
         return BlobContainerName;
+    }
+
+    getStorageAccountNameFromSasUri(blobSasUri: string): string {
+        if (!blobSasUri) {
+            return blobSasUri;
+        }
+        let blobUrl = new URL(blobSasUri);
+        return blobUrl.host.split('.')[0];
+    }
+
+    getStorageAccountNameFromConnectionString(storageConnectionString: string): string {
+        const startIndex = storageConnectionString.toLowerCase().indexOf("AccountName=".toLowerCase()) + "AccountName=".length;
+        const endIndex = storageConnectionString.indexOf(";", startIndex);
+        return storageConnectionString.substring(startIndex, endIndex);
+    }
+
+    getBlobSasUri(site: SiteDaasInfo): Observable<string> {
+        if (this.cachedBlobSasUri) {
+            return of(this.cachedBlobSasUri);
+        }
+
+        let resourceUri = this._uriElementsService.getDaasSettingsUrl(site);
+        return <Observable<string>>this._armClient.requestResource<HttpResponse<DaasSettingsResponse>, any>("GET", resourceUri, null, null).pipe(
+            map((response: HttpResponse<DaasSettingsResponse>) => {
+                this.cachedBlobSasUri = response.body.BlobSasUri;
+                return response.body.BlobSasUri;
+            }),
+            catchError(err => {
+
+                //
+                // DaaS site extension is changing the method for /settings to POST instead of GET
+                // Handle any error that we get while making the get call and if we get any failure, then
+                // try making a POST call till the site extension is updated globally
+                //
+
+                if (err.status && err.status === 405) {
+                    return <Observable<string>>this._armClient.postResourceWithoutEnvelope<DaasSettingsResponse, any>(resourceUri, null, null, true).pipe(
+                        map((response: DaasSettingsResponse) => {
+                            this.cachedBlobSasUri = response.BlobSasUri;
+                            return this.cachedBlobSasUri;
+                        }));
+                } else {
+                    let actualError: string = JSON.stringify(err);
+                    if (err.error && err.error.Message) {
+                        actualError = err.error.Message;
+                    }
+                    throwError(actualError)
+                }
+            })
+        )
     }
 }

@@ -18,8 +18,8 @@
       </div>
       <div style="width: 50%;">
         <div class="section"
-          *ngIf="caseNumberNeededForUser && (selectedResourceType && selectedResourceType.userAuthorizationEnabled)">
-          <fab-text-field [ariaLabel]="'Customer case number'" (onChange)="updateCaseNumber($event)"
+        *ngIf="caseNumberNeededForProduct || (caseNumberNeededForUser && (selectedResourceType && selectedResourceType.userAuthorizationEnabled))">
+          <fab-text-field [ariaLabel]="'Customer case number'" [defaultValue]="caseNumber" (onChange)="updateCaseNumber($event)"
             [placeholder]="caseNumberPlaceholder" [label]="'Case Number'" [required]="true"
             [styles]="fabTextFieldStyles">
           </fab-text-field>
@@ -38,8 +38,8 @@
         <div class="view-resource-link"><a tabindex="0" (click)="openResourcePanel()">View all supported resource
             types</a></div>
         <div class="section" style="margin-top: 15px;">
-          <fab-text-field [ariaLabel]="selectedResourceType.resourceTypeLabel" (onChange)="updateResourceName($event)"
-            [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel"
+          <fab-text-field [ariaLabel]="selectedResourceType.resourceTypeLabel" [defaultValue]="resourceName" (onChange)="updateResourceName($event)"
+           [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel"
             (keyup.enter)="onSubmit()" [required]="true" [label]="selectedResourceType.resourceTypeLabel"
             [styles]="fabTextFieldStyles">
           </fab-text-field>
@@ -92,6 +92,16 @@
             </ng-container>
           </tbody>
         </table>
+      </div>
+      <div style="width: 360px;" class="main-card">
+        <div class="main-content-header">
+          <img src="assets/img/applens-skeleton/main/documents.svg" alt="dashboards" class="mr-3">
+          <h3>Dashboards</h3>
+        </div>
+        <div class="mb-3" *ngFor="let dash of applensDashboards">
+          <a class="applens-dashboards" [href]="dash.link" target="_blank">{{dash.name}}<i class="hyper-link-icon ml-1"
+              aria-hidden="true"></i></a>
+        </div>
       </div>
       <div style="width: 360px;" class="main-card">
         <div class="main-content-header">

@@ -1,0 +1,18 @@
+<div [attr.name]="data.name" #canvasContent class="condition">
+  <div class="panel panel-default">
+    <div class="panel-heading panel-title-if">
+      <node-title [data]="data" [disableEdit]="true" [customClass]="'background-light-green'"
+        [customClassIcon]="'fa-check'">
+      </node-title>
+    </div>
+    <div class="panel-body">
+      <div class="mt-3">
+        <div class="mb-5">Executes if condition is true</div>
+        <node-actions [isConditionNode]="true" (onNodeAdded)="addNode($event)"
+          (onConditionAdded)="addCondition($event)" (onDeleted)="deleteNode()" [isDisabled]="isDisabled()"
+          [isRootNode]="isRootNode()">
+        </node-actions>
+      </div>
+    </div>
+  </div>
+</div>

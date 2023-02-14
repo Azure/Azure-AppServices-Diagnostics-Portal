@@ -1,15 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { Guid } from '../../utilities/guid';
 
+
 @Component({
     selector: 'loader-detector-view',
     templateUrl: './loader-detector-view.component.html',
-    styleUrls: ['./loader-detector-view.component.scss']
+    styleUrls: ['./loader-detector-view.component.scss'],
+    template: 'Loading Message 4: {{LoadingMessage4}}'
 })
+
+
 export class LoaderDetectorViewComponent implements OnInit {
 
+    @Input() LoadingMessage1: string;
+    @Input() LoadingMessage2: string;
+    @Input() LoadingMessage3: string;
+    @Input() LoadingMessage4: string;
     message: string = "loading detector view";
     imgSrc: string = "assets/img/loading-detector-view/fetching_logs.svg";
     loadingString: string = "Fetching properties and logs ...";
@@ -47,8 +55,12 @@ export class LoaderDetectorViewComponent implements OnInit {
     constructor(private telemetryService: TelemetryService) {
     }
 
+    
     ngOnInit() {
         this.trackingEventId = Guid.newGuid();
+        if (this.LoadingMessage1 || this.LoadingMessage2 || this.LoadingMessage3 || this.LoadingMessage4){
+            this.customLoadingMessages();
+        }
         this.loading();
     }
 
@@ -83,6 +95,14 @@ export class LoaderDetectorViewComponent implements OnInit {
 
     ngAfterViewInit() {
         this.startLoadingTimeInMilliSeconds = Date.now();
+    }
+
+    // Assigning custom messages
+    customLoadingMessages() {
+        this.loadingStages[0].loadingString = this.LoadingMessage1 != undefined ? this.LoadingMessage1 : this.loadingStages[0].loadingString;
+        this.loadingStages[1].loadingString = this.LoadingMessage2 != undefined ? this.LoadingMessage2 : this.loadingStages[1].loadingString;
+        this.loadingStages[2].loadingString = this.LoadingMessage3 != undefined ? this.LoadingMessage3 : this.loadingStages[2].loadingString;
+        this.loadingStages[3].loadingString = this.LoadingMessage4 != undefined ? this.LoadingMessage4 : this.loadingStages[3].loadingString;
     }
 }
 

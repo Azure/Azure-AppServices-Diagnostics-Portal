@@ -13,8 +13,10 @@ import { UserSettingService } from '../../dashboard/services/user-setting.servic
 import { RecentResource } from '../../../shared/models/user-setting';
 import { ResourceDescriptor } from 'diagnostic-data'
 import { applensDocs } from '../../../shared/utilities/applens-docs-constant';
+import { defaultResourceTypes } from '../../../shared/utilities/main-page-menu-options';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { UserAccessStatus } from '../../../shared/models/alerts';
+import { applensDashboards } from '../../../shared/utilities/applens-dashboards-constant';
 const moment = momentNs;
 
 @Component({
@@ -40,6 +42,7 @@ export class MainComponent implements OnInit {
   displayLoader: boolean = false;
   loaderSize = SpinnerSize.large;
   caseNumberNeededForUser: boolean = false;
+  caseNumberNeededForProduct: boolean = false;
   caseNumber: string = '';
   caseNumberValidationError: string = null;
   accessErrorMessage: string = '';
@@ -47,77 +50,7 @@ export class MainComponent implements OnInit {
   displayUserAccessError: boolean = false;
   caseNumberPlaceholder: string = "Type 'internal' for internal resources"
 
-  defaultResourceTypes: ResourceTypeState[] = [
-    {
-      resourceType: "Microsoft.Web/sites",
-      resourceTypeLabel: 'App name',
-      routeName: (name) => `sites/${name}`,
-      displayName: 'App Service',
-      enabled: true,
-      caseId: false,
-      id: 'App Service',
-      userAuthorizationEnabled: true
-    },
-    {
-      resourceType: "Microsoft.Web/hostingEnvironments",
-      resourceTypeLabel: 'ASE name',
-      routeName: (name) => `hostingEnvironments/${name}`,
-      displayName: 'App Service Environment',
-      enabled: true,
-      caseId: false,
-      id: 'App Service Environment',
-      userAuthorizationEnabled: false
-    },
-    {
-      resourceType: "Microsoft.Web/containerApps",
-      resourceTypeLabel: 'Container App Name',
-      routeName: (name) => `containerapps/${name}`,
-      displayName: 'Container App',
-      enabled: true,
-      caseId: false,
-      id: 'Container App',
-      userAuthorizationEnabled: false
-    }, {
-      resourceType: "Microsoft.Web/staticSites",
-      resourceTypeLabel: 'Static App Name Or Default Host Name',
-      routeName: (name) => `staticwebapps/${name}`,
-      displayName: 'Static Web App',
-      enabled: true,
-      caseId: false,
-      id: 'Static Web App',
-      userAuthorizationEnabled: false
-    },
-    {
-      resourceType: "Microsoft.Compute/virtualMachines",
-      resourceTypeLabel: 'Virtual machine Id',
-      routeName: (name) => this.getFakeArmResource('Microsoft.Compute', 'virtualMachines', name),
-      displayName: 'Virtual Machine',
-      enabled: true,
-      caseId: false,
-      id: 'Virtual Machine',
-      userAuthorizationEnabled: false
-    },
-    {
-      resourceType: "ARMResourceId",
-      resourceTypeLabel: 'ARM Resource ID',
-      routeName: (name) => `${name}`,
-      displayName: 'ARM Resource ID',
-      enabled: true,
-      caseId: false,
-      id: 'ARM Resource ID',
-      userAuthorizationEnabled: false
-    },
-    {
-      resourceType: null,
-      resourceTypeLabel: 'Stamp name',
-      routeName: (name) => `stampfinder/${name}`,
-      displayName: 'Internal Stamp',
-      enabled: true,
-      caseId: false,
-      id: 'Internal Stamp',
-      userAuthorizationEnabled: false
-    }
-  ];
+  defaultResourceTypes: ResourceTypeState[] = defaultResourceTypes;
   resourceTypes: ResourceTypeState[] = [];
   startTime: momentNs.Moment;
   endTime: momentNs.Moment;
@@ -161,6 +94,7 @@ export class MainComponent implements OnInit {
   userGivenName: string = "";
   table: RecentResourceDisplay[];
   applensDocs = applensDocs;
+  applensDashboards = applensDashboards;
 
   constructor(private _router: Router, private _http: HttpClient, private _detectorControlService: DetectorControlService, private _adalService: AdalService, private _userSettingService: UserSettingService, private _themeService: GenericThemeService, private _diagnosticApiService: DiagnosticApiService, private _activatedRoute: ActivatedRoute) {
     this.endTime = moment.utc();
@@ -171,7 +105,7 @@ export class MainComponent implements OnInit {
       this.resourceTypes = this.resourceTypes.filter(resourceType => !resourceType.caseId);
     }
 
-    if (this._activatedRoute.snapshot.queryParams['caseNumber'] && this._activatedRoute.snapshot.queryParams['caseNumber'] !== "undefined") {
+    if (this._activatedRoute.snapshot.queryParams['caseNumber']) {
       this.caseNumber = this._activatedRoute.snapshot.queryParams['caseNumber'];
     }
     if (this._activatedRoute.snapshot.queryParams['resourceName']) {
@@ -180,14 +114,19 @@ export class MainComponent implements OnInit {
     if (this._activatedRoute.snapshot.queryParams['errorMessage']) {
       this.accessErrorMessage = this._activatedRoute.snapshot.queryParams['errorMessage'];
     }
+    if (this._activatedRoute.snapshot.queryParams['caseNumberNeeded']) {
+      this.caseNumberNeededForProduct = true;
+    }
     if (this._activatedRoute.snapshot.queryParams['resourceType']) {
       let foundResourceType = this.defaultResourceTypes.find(resourceType => resourceType.resourceType.toLowerCase() === this._activatedRoute.snapshot.queryParams['resourceType'].toLowerCase());
       if (!foundResourceType) {
         this.selectedResourceType = this.defaultResourceTypes.find(resourceType => resourceType.resourceType.toLowerCase() === "armresourceid");
-        this.resourceName = this._activatedRoute.snapshot.queryParams['resourceId'];
       }
       else {
         this.selectedResourceType = foundResourceType;
+      }
+      if (this.selectedResourceType.resourceType == "ARMResourceId") {
+        this.resourceName = this._activatedRoute.snapshot.queryParams['resourceId'];
       }
     }
   }
@@ -414,11 +353,6 @@ export class MainComponent implements OnInit {
 
   caseCleansingNavigate() {
     this._router.navigate(["caseCleansing"]);
-  }
-
-  private getFakeArmResource(rpName: string, serviceName: string, resourceName: string): string {
-    let fakeRes = `/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/Fake-RG/providers/${rpName}/${serviceName}/${resourceName}`;
-    return fakeRes;
   }
 
   openTimePicker() {

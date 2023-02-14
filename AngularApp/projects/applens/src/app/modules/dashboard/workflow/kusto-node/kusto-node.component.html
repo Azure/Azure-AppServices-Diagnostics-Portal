@@ -1,0 +1,24 @@
+<div [attr.name]="data.name" #canvasContent>
+  <div class="panel panel-default">
+    <div class="panel-heading panel-title-kusto">
+      <node-title [data]="data" [customClass]="'background-purple'" [customClassIcon]="'fa-bar-chart'">
+      </node-title>
+    </div>
+
+    <div class="panel-body">
+      <pre class="kusto-query mt-1">
+{{ getQueryText(data.queryText) }}
+</pre>
+
+      <button class="btn btn-primary btn-sm mr-2" (click)="configureKustoQuery()">Configure
+        Kusto Query
+      </button>
+      <span class="label label-info">{{ data.variables.length }} variables</span>
+      <common-node-properties [data]="data"></common-node-properties>
+      <node-actions (onNodeAdded)="addNode($event)" (onConditionAdded)="addCondition($event)"
+        (onDeleted)="deleteNode()" [isDisabled]="isDisabled()" [isRootNode]="isRootNode()">
+      </node-actions>
+    </div>
+
+  </div>
+</div>
