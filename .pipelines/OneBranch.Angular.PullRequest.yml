@@ -152,7 +152,7 @@ extends:
           - script: |
               cd AngularApp
               npm run build-asd
-            displayName: 'build applens national clouds'
+            displayName: 'build appservice diagnostics'
 
           - task: DotNetCoreCLI@2
             inputs:
