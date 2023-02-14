@@ -31,10 +31,7 @@ export class DetectorNodeComponent extends WorkflowNodeBaseClass implements OnIn
     this.error = null;
     this._applensDiagnosticService.getDetectors().subscribe(detectors => {
       this.workflowNodeDetectors = detectors.filter(x => x.type === DetectorType.WorkflowNode);
-      if (this.workflowNodeDetectors && this.workflowNodeDetectors.length > 0) {
-        this.updateCurrentDetector(this.workflowNodeDetectors[0].id);
-        this.loadingDetectors = false;
-      }
+      this.loadingDetectors = false;
     }, error => {
       this.loadingDetectors = false;
       this.error = error;

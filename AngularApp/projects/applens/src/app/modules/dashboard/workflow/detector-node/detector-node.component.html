@@ -14,6 +14,7 @@
                         <select name="chooseDetectorSelect" class="form-select form-select-sm ml-2" id="chooseDetector"
                             aria-label="Choose Detector" (change)="changeDetector($event)"
                             [(ngModel)]="data.detectorId">
+                            <option value="choosedetector">Choose Detector</option>
                             <option *ngFor="let detector of workflowNodeDetectors" [value]="detector.id">{{
                                 detector.name }}</option>
                         </select>
@@ -25,7 +26,8 @@
                 <div *ngIf="loadingDetector" class="loading-detector">
                     <i class="mt-2 fa fa-spinner fa-spin fa-3x fa-fw"></i>
                 </div>
-                <common-node-properties *ngIf="!loadingDetector" [data]="data" [readonly]="true"></common-node-properties>
+                <common-node-properties *ngIf="!loadingDetector" [data]="data"
+                    [readonly]="true"></common-node-properties>
             </div>
             <node-actions (onNodeAdded)="addNode($event)" (onConditionAdded)="addCondition($event)"
                 (onDeleted)="deleteNode()" [isDisabled]="isDisabled()" [isRootNode]="isRootNode()">

@@ -131,10 +131,9 @@ export class WorkflowService {
   }
 
   getNewDetectorNode(node: NgFlowchartStepComponent<any>, detectorId: string): workflowNodeData {
-    let idNumber = this.getIdNumberForNode(node, detectorId);
     let wfNodeData = new workflowNodeData();
-    wfNodeData.name = detectorId + idNumber;
-    wfNodeData.detectorId = detectorId;
+    wfNodeData.name = "choosedetector";
+    wfNodeData.detectorId = "choosedetector";
     wfNodeData.title = "Execute a detector";
     wfNodeData.completionOptions = this.getVariableCompletionOptions(node);
     return wfNodeData;
