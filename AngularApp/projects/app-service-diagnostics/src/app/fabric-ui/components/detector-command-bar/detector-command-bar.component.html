@@ -41,7 +41,7 @@
   ariaLabelledByText="Coachmark notification">
   <fab-teachingbubble 
     *ngIf="showTeachingBubble==true"
-    headline="New Resiliency Score report!" 
+    headline= {{teachingBubbleHeadline}}
     (onDismiss)="coachMarkViewed()" 
     [target]="gRPDFButtonId"    
     [hasCloseIcon]="true" 

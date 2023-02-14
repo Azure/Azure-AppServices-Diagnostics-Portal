@@ -48,6 +48,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   teachingBubbleCalloutProps = {
     directionalHint: DirectionalHint.bottomLeftEdge
   };
+  teachingBubbleHeadline = "New Resiliency Score report!";
   teachingBubbleText = "Download a report to check how well your Web App scores against our recommended resiliency best practices.";
   resourcePlatform: OperatingSystem = OperatingSystem.any;
   resourceAppType: AppType = AppType.WebApp;
@@ -60,6 +61,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     this.resourceAppType = webSiteService.appType;
     this.resourceSku = webSiteService.sku;
     if (this.resourcePlatform === OperatingSystem.linux){
+      this.teachingBubbleHeadline = "New Resiliency Score report for Web App (Linux)!";
       this.coachMarkCookieName = "showCoachmarkLinux";
       this.teachingBubbleText = "Resiliency Score Report now supports Web App (Linux) in Standard or higher. Download a report to check how well your Web App scores against our recommended resiliency best practices.";
     }
