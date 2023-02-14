@@ -1,11 +1,13 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RenderingType } from 'diagnostic-data';
+import { DetectorMetaData, RenderingType } from 'diagnostic-data';
 import { IBasePickerProps, ITagPickerProps, ITagItemProps, ISuggestionModel, ITag, TagItem, IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IIconProps, IPanelProps, IPersona, IPersonaProps, IPickerItemProps, IPivotProps, ITextFieldProps, MessageBarType, PanelType, SelectableOptionMenuItemType, TagItemSuggestion, IDropdown, ICalloutProps, ICheckboxStyleProps, ICheckboxProps } from 'office-ui-fabric-react';
 import { KeyValuePair } from 'projects/app-service-diagnostics/src/app/shared/models/portal';
 import { ApplensGlobal } from '../../../applens-global';
 import { ComposerNodeModel, NoCodeSupportedRenderingTypes } from '../models/detector-designer-models/node-models';
 import { DevelopMode } from '../onboarding-flow/onboarding-flow.component';
+import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 
 @Component({
   selector: 'node-composer',
@@ -63,6 +65,7 @@ export class NodeComposer implements OnInit, OnDestroy {
     editorOptions: any;
     lightOptions: any;
     darkOptions: any;
+    completionItemProviderDisposable: monaco.IDisposable = null;
   //#endregion Monaco editor variables
 
   public initMonacoEditorOptions(): void {
@@ -119,15 +122,19 @@ export class NodeComposer implements OnInit, OnDestroy {
     this.initMonacoEditorOptions();
   }
 
-  constructor(private _applensGlobal: ApplensGlobal, private _activatedRoute: ActivatedRoute, private _router: Router ) {
-    this._applensGlobal.updateHeader('');
+  constructor(private _applensGlobal: ApplensGlobal, private _activatedRoute: ActivatedRoute, private _router: Router, public diagnosticApiService: ApplensDiagnosticService,private _httpClient: HttpClient ) {
+    this._applensGlobal.updateHeader('');    
   }
 
   ngOnInit() {
     this.initComponent();
+    this.getCodeSuggestionsFromTPrompt();
   }
 
   ngOnDestroy(): void {
+    if(!!this.completionItemProviderDisposable) {
+      this.completionItemProviderDisposable.dispose();
+    }
   }
 
   public getRequiredErrorMessageOnTextField(value: string): string {
@@ -140,6 +147,9 @@ export class NodeComposer implements OnInit, OnDestroy {
     this.nodeModel.queryName = this.nodeModel.queryName.replace(/(\b|_|-)\s?(\w)/g, (c) => {return c.replace(/[\s|_|-]/g, '').toUpperCase();} )
     this.nodeModelChange.emit(this.nodeModel);
     this.onNodeModelChange.emit({fieldChanged:'queryName', nodeModel:this.nodeModel});
+    if(this.nodeModel.editorRef && this.nodeModel.code.replace(/\s/g, '') == '') {
+      this.nodeModel.editorRef.trigger('FetchCodeSample', 'editor.action.triggerSuggest', {additionaArguments: 'some more context'})
+    }
   }
 
   public onRenderingTypeChange(event:any) {
@@ -161,7 +171,77 @@ export class NodeComposer implements OnInit, OnDestroy {
     this.onDeleteClick.emit(this.nodeModel);
   }
 
+
+  public getCodeSuggestionsFromTPrompt() {
+    const queryName = 'GetSlowRequests'; //this.nodeModel.queryName;
+    let spacifiedQueryName = queryName.replace(/([^A-Za-z0-9\.\$]+)|([A-Z])(?=[A-Z][a-z])|([A-Za-z])(?=\$?[0-9]+(?:\.[0-9]+)?)|([0-9])(?=[^\.0-9])|([a-z])(?=[A-Z])/g, '$2$3$4$5 ');
+    let headers = new HttpHeaders();
+    headers.set('Authorization', `Bearer:Ic5uesGrxCyIKzwBH9CwQn860g6W96af`);
+    headers.set('ContentType', 'application/json');
+    headers.set('azureml-model-deployment', 'blue');
+    this._httpClient.post('https://applens-generate-kusto.eastus2.inference.ml.azure.com/score', {
+      inputs: ["Slow requests"],
+      topK: 3
+    }, {
+      headers: headers
+    }).subscribe(tPromptResonse => {
+      console.log(tPromptResonse);
+    })
+  }
+
   public setMocanoReference(editor:monaco.editor.ICodeEditor) {
+    const diagnosticApiService = this.diagnosticApiService;
+    this.completionItemProviderDisposable = monaco.languages.registerCompletionItemProvider('csharp', {
+      provideCompletionItems: function(model, position, completionContext, cancellationToken) {
+        // This check will ensure that evem though the provider is registered at global level, it will return suggestions only for the editor of this component        
+        if(model.id === editor.getModel().id) {
+          return diagnosticApiService.getDetectors().map<DetectorMetaData[], monaco.languages.CompletionList>(detector =>  {
+            if(detector) {
+              return {
+                suggestions:[{
+                  label:'hi',
+                  insertText:'hello',
+                  kind: monaco.languages.CompletionItemKind.Snippet,
+                  range:{
+                    startLineNumber:1,
+                    endLineNumber:1,
+                    startColumn:1,
+                    endColumn:1
+                  },
+                  documentation:'hello'
+                }]
+              }
+            }  
+            else {
+              return {
+                suggestions:[]
+              }
+            }          
+          }).toPromise();
+
+          // return new Promise(resolve => {
+          //   setTimeout(() => { resolve({suggestions: [{
+          //             label: "hi",
+          //             insertText: "hello",
+          //             kind: 0,
+          //             range:{
+          //               startLineNumber:1,
+          //               endLineNumber:1,
+          //               startColumn:1,
+          //               endColumn:1
+          //             }
+          //    }]}) }, 3000);
+          // });
+        }
+        else {
+          return Promise.resolve({
+            suggestions:[]
+          });
+        }
+      }
+    });
+
+
     this.nodeModel.editorRef = editor;
   }
 
