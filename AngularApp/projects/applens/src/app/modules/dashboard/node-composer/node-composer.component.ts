@@ -27,6 +27,8 @@ export class NodeComposer implements OnInit, OnDestroy {
   @Output() onDuplicateClick = new EventEmitter<ComposerNodeModel>();
   @Output() onDeleteClick = new EventEmitter<ComposerNodeModel>();
 
+  private readonly TPROMPT_SUGGESTIONS_ENABLED:boolean = false;
+
   //#region Fabric element styles
   fabTextFieldStyleNoStretch: ITextFieldProps["styles"] = {
     field: {
@@ -129,7 +131,6 @@ export class NodeComposer implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initComponent();
-    //this.getCodeSuggestionsFromTPrompt();
   }
 
   ngOnDestroy(): void {
@@ -148,7 +149,7 @@ export class NodeComposer implements OnInit, OnDestroy {
     this.nodeModel.queryName = this.nodeModel.queryName.replace(/(\b|_|-)\s?(\w)/g, (c) => {return c.replace(/[\s|_|-]/g, '').toUpperCase();} )
     this.nodeModelChange.emit(this.nodeModel);
     this.onNodeModelChange.emit({fieldChanged:'queryName', nodeModel:this.nodeModel});
-    if(this.nodeModel.editorRef && this.nodeModel.code.replace(/\s/g, '') == '') {
+    if(this.TPROMPT_SUGGESTIONS_ENABLED && this.nodeModel.editorRef && this.nodeModel.code.replace(/\s/g, '') == '' ) {
       this.nodeModel.editorRef.trigger('FetchCodeSample', 'editor.action.triggerSuggest', {additionaArguments: 'some more context'})
     }
   }
@@ -196,7 +197,7 @@ export class NodeComposer implements OnInit, OnDestroy {
             label: suggestion.queryName,
             kind: monaco.languages.CompletionItemKind.Text,
             insertText: this.unescapeCodeString(suggestion.codeText),
-            documentation: `${suggestion.detectorName}\r\n--------------------------------\r\n${suggestion.description}`,
+            documentation: `${suggestion.detectorName} (${suggestion.queryName})\r\n--------------------------------\r\n${suggestion.description}`,
             range: {
               startLineNumber:1,
               endLineNumber:1,
@@ -210,21 +211,24 @@ export class NodeComposer implements OnInit, OnDestroy {
   }
 
   public setMocanoReference(editor:monaco.editor.ICodeEditor) {
-    const diagnosticApiService = this.diagnosticApiService;
-    const _this = this;
-    this.completionItemProviderDisposable = monaco.languages.registerCompletionItemProvider('csharp', {
-      provideCompletionItems: function(model, position, completionContext, cancellationToken) {
-        // This check will ensure that evem though the provider is registered at global level, it will return suggestions only for the editor of this component        
-        if(model.id === editor.getModel().id) {
-          return _this.getCodeSuggestionsFromTPrompt().toPromise();
+    // Disable TPrompt integration for now. Will be enabled in future PRs
+    if(this.TPROMPT_SUGGESTIONS_ENABLED) {
+      const diagnosticApiService = this.diagnosticApiService;
+      const _this = this;
+      this.completionItemProviderDisposable = monaco.languages.registerCompletionItemProvider('csharp', {
+        provideCompletionItems: function(model, position, completionContext, cancellationToken) {
+          // This check will ensure that evem though the provider is registered at global level, it will return suggestions only for the editor of this component        
+          if(model.id === editor.getModel().id) {
+            return _this.getCodeSuggestionsFromTPrompt().toPromise();
+          }
+          else {
+            return Promise.resolve({
+              suggestions:[]
+            });
+          }
         }
-        else {
-          return Promise.resolve({
-            suggestions:[]
-          });
-        }
-      }
-    });
+      });
+    }
 
     this.nodeModel.editorRef = editor;
   }
