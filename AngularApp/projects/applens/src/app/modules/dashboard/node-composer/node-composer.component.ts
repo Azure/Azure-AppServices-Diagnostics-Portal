@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DetectorMetaData, RenderingType } from 'diagnostic-data';
-import { IBasePickerProps, ITagPickerProps, ITagItemProps, ISuggestionModel, ITag, TagItem, IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IIconProps, IPanelProps, IPersona, IPersonaProps, IPickerItemProps, IPivotProps, ITextFieldProps, MessageBarType, PanelType, SelectableOptionMenuItemType, TagItemSuggestion, IDropdown, ICalloutProps, ICheckboxStyleProps, ICheckboxProps } from 'office-ui-fabric-react';
+import { IBasePickerProps, ITagPickerProps, ITagItemProps, ISuggestionModel, ITag, TagItem, IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IIconProps, IPanelProps, IPersona, IPersonaProps, IPickerItemProps, IPivotProps, ITextFieldProps, MessageBarType, PanelType, SelectableOptionMenuItemType, TagItemSuggestion, IDropdown, ICalloutProps, ICheckboxStyleProps, ICheckboxProps, PivotItem } from 'office-ui-fabric-react';
 import { KeyValuePair } from 'projects/app-service-diagnostics/src/app/shared/models/portal';
 import { Observable, of } from 'rxjs';
 import { ApplensGlobal } from '../../../applens-global';
@@ -54,6 +54,8 @@ export class NodeComposer implements OnInit, OnDestroy {
       minWidth:'100px'
     }
   };
+
+  pivotSelectedKey:string = '';
 
   pivotStyle: IPivotProps['styles'] = {
     root:{
@@ -122,6 +124,8 @@ export class NodeComposer implements OnInit, OnDestroy {
       });
     }
 
+    this.pivotSelectedKey = this.nodeModel.id + '_Query';
+
     this.initMonacoEditorOptions();
   }
 
@@ -161,8 +165,12 @@ export class NodeComposer implements OnInit, OnDestroy {
     this.onNodeModelChange.emit({fieldChanged:'renderingType', nodeModel:this.nodeModel});
   }
 
+  public changePivotSelectedTab(event:any) {
+    this.pivotSelectedKey = (<PivotItem>event.item).props.itemKey;
+  }
+
   public previewResults(event:any) {
-    console.log('Preview results');
+    this.pivotSelectedKey = this.nodeModel.id + '_Result';
   }
 
   public duplicateNode(event:any) {

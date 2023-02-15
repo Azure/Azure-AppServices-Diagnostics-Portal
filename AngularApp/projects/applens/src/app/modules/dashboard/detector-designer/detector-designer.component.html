@@ -129,4 +129,17 @@
         </div>
       </div>
     </ng-container>
+    <div style="width: 80%;margin:2em auto 2em auto;display: flex;">
+      <div  style="display: flex;width: 4%;flex-direction: column;justify-content: space-evenly;align-items: center;"></div>
+      <div style="width: 96%;display: flex;justify-content: center;">
+        <fab-link (onClick) = "addElement()">
+          <div class="addNode-container">
+            <div  style="display: flex;align-self: center; font-size: medium; color:#0E95E2" class="option-picker-option-icon">
+              <fab-icon [iconName]="'Add'" ></fab-icon>
+            </div>          
+            <div  style="display: flex;align-self: center;padding: 0.5em; font-size: medium;">Add</div>
+          </div>
+        </fab-link>
+      </div>
+    </div>
 </div>

@@ -62,3 +62,16 @@
     height: 25vh;
   }
   
+
+.addNode-container {
+    display: flex;
+    border-style: solid;
+    border-color: lightsteelblue;
+    padding: 0em 2em 0em 2em;
+    border-radius: 5%;
+    border-width:thin;
+    &:hover{
+        border-color: lightskyblue;
+        background: var(--buttonBackgroundHovered);
+    }
+}
