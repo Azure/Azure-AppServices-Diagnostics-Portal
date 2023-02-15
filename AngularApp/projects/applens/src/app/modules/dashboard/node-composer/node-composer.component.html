@@ -30,7 +30,7 @@
 		</div>              
 	</div>
 	<div>
-		<fab-pivot [styles]="pivotStyle">
+		<fab-pivot [styles]="pivotStyle" [selectedKey] = "pivotSelectedKey" (onLinkClick) = "changePivotSelectedTab($event)">
 			<fab-pivot-item [headerText]="'Query'" [itemKey]="nodeModel.id + '_Query'">
 				<div class = "pivotItemContainer">
 					<ngx-monaco-editor (onInit)="setMocanoReference($event)" style="height:calc(98%)" [options]="editorOptions"

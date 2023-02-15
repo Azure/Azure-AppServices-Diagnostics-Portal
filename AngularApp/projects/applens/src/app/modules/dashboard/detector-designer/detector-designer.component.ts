@@ -223,13 +223,13 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
       queryName: 'firstQuery',
       code:'',
       renderingType:RenderingType.Table
-    },
+    }/*,
     {
       id: Guid.newGuid(),
       queryName: 'secondQuery',
       code:'',
       renderingType:RenderingType.Table
-    }/*,
+    },
     {
       id: Guid.newGuid(),
       queryName: 'thirdQuery',
@@ -392,6 +392,10 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     this.getAttention(currentElement.id + '_rowContainer');
   }
 
+  public addElement() {
+    let newElement:ComposerNodeModel = new ComposerNodeModel();
+    this.elements.push(newElement);
+  }
   
   public deleteElement(currentElement:ComposerNodeModel, currentIndex:number, event:any) {
     this.elements.splice(currentIndex, 1);
