@@ -81,8 +81,9 @@ export class MarkdownQueryDialogComponent implements OnInit {
 
     this.error = '';
     this.isExecuting = true;
-    this._diagnosticService.evaluateDynamicExpression(dynamicExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe(resp => {
+    this._diagnosticService.evaluateDynamicExpression(dynamicExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe(dynamicResponse => {
       this.isExecuting = false;
+      let resp = dynamicResponse.response ? dynamicResponse.response : dynamicResponse;
       this.output = this.evaluateStatus ? resp : this.parse(resp);
     }, error => {
       this.isExecuting = false;
