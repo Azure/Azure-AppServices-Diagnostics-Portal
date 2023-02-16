@@ -44,9 +44,10 @@
 				</div>
 			</fab-pivot-item>
 			<fab-pivot-item [headerText]="'Result'" [itemKey]="nodeModel.id + '_Result'">
-				<div class = "pivotItemContainer">
-					<div style = "padding: 0.25em;">
-						Show results here
+				<div>
+					<div style = "padding-top: 0.25em;">
+						<dynamic-data [diagnosticData]="sampleTestDataset[0]" [startTime]="startTime" [endTime]="endTime">
+						</dynamic-data>
 					</div>
 				</div>
 			</fab-pivot-item>
