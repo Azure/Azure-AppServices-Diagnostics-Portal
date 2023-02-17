@@ -58,7 +58,7 @@
                         [ariaLabel]="'App types this detector is applicable to'" [id]="rootId + '_resourceAppType'"
                         [styles]="fabDropdownStyle" [calloutProps]="fabDropdownMultiselectCalloutProps"
                         [errorMessage]="resourceAppTypeRequiredErrorMessage" [multiSelect]=true
-                        [defaultSelectedKeys]="resourceAppTypeOptionsDefaultSelectedKeys"
+                        [selectedKeys]="resourceAppTypeOptionsDefaultSelectedKeys"
                         [options]="resourceAppTypeOptions" (onChange)="onChangeResourceAppType($event);saveButtonDisabledStatus = false"></fab-dropdown>
                 </div>
                 <div class="col-md-4">

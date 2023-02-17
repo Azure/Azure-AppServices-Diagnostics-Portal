@@ -743,6 +743,8 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
       this.effectiveResourceAppType = [];
     }
 
+    this.resourceAppTypeOptionsDefaultSelectedKeys = this.resourceAppTypeOptions.filter(option => option.selected).map(option => option.key.toString());
+
   }
 
   public onChangeResourceAppType(event: any): void {
