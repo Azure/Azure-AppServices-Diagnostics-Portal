@@ -83,6 +83,7 @@
             <div class="row" style="padding: 2px; display: flex; align-items: center;">
                 <div class="col-md-3">
                     <fab-checkbox [label]="'Internal only'" [ariaLabel]="'Internal only'"
+                        [disabled] = "getOnDemandRenderCheckStatus() || getDetectorPrivateCheckStatus()"
                         [checked]="getInternalOnlyCheckStatus()" [styles]="fabCheckboxStyle"
                         (checkedChange)="toggleInternalOnlyState($event);saveButtonDisabledStatus = false" [boxSide]="'end'"></fab-checkbox>
                 </div>
