@@ -194,10 +194,6 @@ export class DetectorDesigner implements OnInit, IDeactivateComponent  {
     this.detectorSettingsPanelValue = new DetectorSettingsModel(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName);
     this.detectorSettingsPanelValue.name = this.detectorName;
     this.detectorId = this.detectorSettingsPanelValue.id;
-
-    //Take this out, this is for testing
-    this.detectorSettingsPanelValue.isPrivate = true;
-    this.detectorSettingsPanelValue.description = 'This is a test description';
   
     if(this.detectorSettingsPanelValue.isAppService) {
       //TODO: Initialize this with whatever the detector is currently set to.

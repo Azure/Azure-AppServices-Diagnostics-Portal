@@ -422,15 +422,12 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
     this.handleResourcePlatformTypeOptions();
     this.handleResourceStackTypeOptions();
 
-    this.isInternalOnly = this.settingsValue ? this.settingsValue.isInternalOnly : true;
-
-    this.isDetectorPrivate = false;
-    if(this.settingsValue && this.isDetectorPrivate) {
-        this.isInternalOnly = true;
-        this.isDetectorPrivate = true;
-    }
+    this.isDetectorPrivate = this.settingsValue ? this.settingsValue.isPrivate : false;
     
     this.isOnDemandRenderEnabled = this.settingsValue ? this.settingsValue.isOnDemandRenderEnabled : false;
+
+    // A detector can be marked public customer facing only if it is not private to the detector author and does not have onDemandRender enabled.
+    this.isInternalOnly = this.settingsValue ? this.isDetectorPrivate || this.isOnDemandRenderEnabled || this.settingsValue.isInternalOnly : true;
 
     //#region Update Analysis picker initialization
     this.detectorAnalysisPickerSelectedItems = [];
@@ -821,7 +818,7 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
 
   //#region isInternalOnly Methods
   public getInternalOnlyCheckStatus(): boolean {
-    return this.isInternalOnly;
+    return this.isInternalOnly || this.isDetectorPrivate || this.isOnDemandRenderEnabled;
   }
 
   public toggleInternalOnlyState(checked: boolean) {
