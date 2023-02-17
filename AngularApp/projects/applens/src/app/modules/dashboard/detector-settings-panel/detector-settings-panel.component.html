@@ -24,7 +24,7 @@
                                 [pickerSuggestionsOptions]="{noResultsFoundText: 'No suggestions found', loadingText: 'Loading'}"
                                 [selectedItems]="detectorAuthorPickerSelectedItems"
                                 (onChange)="updateDetectorAuthorSelectedItems($event);saveButtonDisabledStatus = false"
-                                [resolveSuggestions]="detectorAuthorPickerSuggestionsResolver"
+                                [resolveSuggestions]="detectorAuthorPickerSuggestionResolverClosure"
                                 [resolveDelay]=500></fab-people-picker>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                                 [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching category found', loadingText: 'Loading'}"
                                 [selectedItems]="detectorCategoryPickerSelectedItems"
                                 (onChange)="updateDetectorCategorySelectedItems($event);saveButtonDisabledStatus = false"
-                                [resolveSuggestions]="detectorCategoryPickerSuggestionsResolver" [resolveDelay]=500
+                                [resolveSuggestions]="detectorCategoryPickerSuggestionsResolverClosure" [resolveDelay]=500
                                 [itemLimit]=1></fab-tag-picker>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
                                 [selectedItems]="detectorAnalysisPickerSelectedItems"
                                 [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching analysis found', loadingText: 'Loading'}"
                                 (onChange)="updateDetectorAnalysisSelectedItems($event);saveButtonDisabledStatus = false"
-                                [resolveSuggestions]="detectorAnalysisPickerSuggestionsResolver"
+                                [resolveSuggestions]="detectorAnalysisPickerSuggestionsResolverClosure"
                                 [resolveDelay]=500></fab-tag-picker>
                         </div>
                     </div>
@@ -123,7 +123,7 @@
                                 [selectedItems]="supportTopicPickerSelectedItems"
                                 [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching support topic found', loadingText: 'Loading'}"
                                 (onChange)="updateSupportTopicSelectedItems($event);saveButtonDisabledStatus = false"
-                                [resolveSuggestions]="detectorSupportTopicPickerSuggestionsResolver"
+                                [resolveSuggestions]="detectorSupportTopicPickerSuggestionsResolverClosure"
                                 [resolveDelay]=500 ></fab-tag-picker>
                         </div>
                     </div>

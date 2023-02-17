@@ -176,18 +176,13 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
   saveButtonDisabledStatus:boolean;
 
 
-  // Had to add this to make the people picker work.
-  // People picker component has a bug. https://github.com/microsoft/angular-react/issues/213
-  public static applensDiagnosticApiService: ApplensDiagnosticService;
-  public static applensResourceService: ResourceService;
+
 
   constructor(private _applensGlobal: ApplensGlobal, private _activatedRoute: ActivatedRoute, private _router: Router, public diagnosticApiService: ApplensDiagnosticService,
     private _diagnosticApi: DiagnosticApiService, private resourceService: ResourceService, private _adalService: AdalService, private _telemetryService: TelemetryService,
     private _themeService: GenericThemeService) {
 
-    this._applensGlobal.updateHeader('');
-    DetectorSettingsPanel.applensDiagnosticApiService = this.diagnosticApiService;
-    DetectorSettingsPanel.applensResourceService = this.resourceService;
+    this._applensGlobal.updateHeader('');    
     //this._value = new DetectorSettingsModel(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName);
     
   }
@@ -642,10 +637,15 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
     return false;
   }
 
-  public detectorAuthorPickerSuggestionsResolver(data: any): IPersonaProps[] | Promise<IPersonaProps[]> {
+  public detectorAuthorPickerSuggestionResolverClosure = (data:any):any => {
+    const _this = this;
+    return _this.detectorAuthorPickerSuggestionsResolver(data, _this);
+  }
+
+  public detectorAuthorPickerSuggestionsResolver(data: any, _this:this): IPersonaProps[] | Promise<IPersonaProps[]> {
     //Issue: https://github.com/microsoft/angular-react/issues/213
     if (data) {
-      return DetectorSettingsPanel.applensDiagnosticApiService.getSuggestionForAlias(data).map(response => {
+        return _this.diagnosticApiService.getSuggestionForAlias(data).map(response => {
         let suggestions: IPersonaProps[] = [];
         response.forEach(suggestion => {
           if (suggestion && suggestion.userPrincipalName)
@@ -672,8 +672,13 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
     return false;
   }
 
-  public detectorCategoryPickerSuggestionsResolver(data: any): ITagItemProps[] | Promise<ITagItemProps[]> {
-    return DetectorSettingsPanel.applensDiagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {
+  public detectorCategoryPickerSuggestionsResolverClosure = (data:any):any => {
+    const _this = this;
+    return this.detectorCategoryPickerSuggestionsResolver(data, _this);
+  }
+
+  public detectorCategoryPickerSuggestionsResolver(data: any, _this:this): ITagItemProps[] | Promise<ITagItemProps[]> {
+    return _this.diagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {
       const categories: string[] = Array.from(new Set(response.filter(detector => detector.category && detector.category.toLowerCase().indexOf(data.toLowerCase()) > -1)
         .map(detectorsWithCategory => detectorsWithCategory.category)));
 
@@ -852,8 +857,13 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
     return false;
   }
 
-  public detectorAnalysisPickerSuggestionsResolver(data: any): ITagItemProps[] | Promise<ITagItemProps[]> {
-    return DetectorSettingsPanel.applensDiagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {
+  public detectorAnalysisPickerSuggestionsResolverClosure = (data:any):any => {
+    const _this = this;
+    return _this.detectorAnalysisPickerSuggestionsResolver(data, _this);
+  }
+
+  public detectorAnalysisPickerSuggestionsResolver(data: any, _this:this): ITagItemProps[] | Promise<ITagItemProps[]> {
+    return _this.diagnosticApiService.getDetectors().map<DetectorMetaData[], ITagItemProps[]>(response => {
       const analysisPickerOptions: AnalysisPickerModel[] = response.filter(detector => detector.type === DetectorType.Analysis && (detector.id.toLowerCase().indexOf(data.toLowerCase()) > -1 || detector.name.toLowerCase().indexOf(data.toLowerCase()) > -1))
         .map(analysisDetectors => <AnalysisPickerModel>{
           id: analysisDetectors.id,
@@ -889,11 +899,16 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
     return false;
   }
 
-  public detectorSupportTopicPickerSuggestionsResolver(data: any): ITagItemProps[] | Promise<ITagItemProps[]> {
-    return Promise.resolve(DetectorSettingsPanel.applensResourceService.getPesId().map<string, Promise<ITagItemProps[]>>(pesId => {
+  public detectorSupportTopicPickerSuggestionsResolverClosure = (data:any):any => {
+    const _this = this;
+    return _this.detectorSupportTopicPickerSuggestionsResolver(data, _this);
+  }
+
+  public detectorSupportTopicPickerSuggestionsResolver(data: any, _this:this): ITagItemProps[] | Promise<ITagItemProps[]> {
+      return Promise.resolve(_this.resourceService.getPesId().map<string, Promise<ITagItemProps[]>>(pesId => {
       if (pesId) {
         return Promise.resolve(
-          DetectorSettingsPanel.applensDiagnosticApiService.getSupportTopics(pesId).map<SupportTopicResponseModel[], ITagItemProps[]>(supportTopicList => {
+          _this.diagnosticApiService.getSupportTopics(pesId).map<SupportTopicResponseModel[], ITagItemProps[]>(supportTopicList => {
             const supportTopicPickerOptions: SupportTopicPickerModel[] = supportTopicList.filter(supportTopic => supportTopic.supportTopicPath.toLowerCase().indexOf(data.toLowerCase()) > -1 ||
               supportTopic.supportTopicId.toString().startsWith(data) || supportTopic.sapSupportTopicId.toString().startsWith(data)
             )
