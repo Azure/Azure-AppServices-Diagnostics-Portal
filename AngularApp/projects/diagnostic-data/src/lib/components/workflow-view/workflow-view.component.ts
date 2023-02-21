@@ -6,6 +6,7 @@ import { workflowExecution, workflowNodeExecution, workflowNodeResult, workflowN
 import { DetectorControlService } from '../../services/detector-control.service';
 import { DiagnosticService } from '../../services/diagnostic.service';
 import { WorkflowHelperService } from "../../services/workflow-helper.service";
+import { WorkflowConditionNodeComponent } from '../workflow-condition-node/workflow-condition-node.component';
 import { WorkflowNodeComponent } from '../workflow-node/workflow-node.component';
 
 @Component({
@@ -58,6 +59,7 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
 
   ngAfterViewInit() {
     this.stepRegistry.registerStep('workflowNode', WorkflowNodeComponent);
+    this.stepRegistry.registerStep('workflowConditionNode', WorkflowConditionNodeComponent);
   }
 
   ngOnChanges(changes: SimpleChanges): void {

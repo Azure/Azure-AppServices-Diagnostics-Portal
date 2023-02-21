@@ -7,6 +7,8 @@
         <div class="mr-3"><strong>{{ data.title }}</strong></div>
         <div *ngIf="data.executionTraces && data.executionTraces.length > 0" class="tool-tip-icon">
           <div class="mr-2">
+            <i *ngIf="data.promptType ==='automatic' && isLoading && data.children && data.children.length > 0"
+              class="fa fa-circle-o-notch fa-spin spin-icon mr-2" aria-hidden="true"></i>
             <div class="hover-text"><i class="fa fa-tasks" aria-hidden="true"></i>
               <span class="tooltip-text" id="right">
                 <table class="table table-bordered">
@@ -39,9 +41,6 @@
       <div class="run-button">
         <button *ngIf="showNextButton()" [disabled]="runButtonClicked" class="btn btn-primary btn-sm mb-2"
           (click)="runNext(data.children)">{{ isLoading ? 'Running...' : 'Next' }}</button>
-        <div *ngIf="data.promptType ==='automatic' && isLoading && data.children && data.children.length > 0">
-          <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i> Loading...
-        </div>
       </div>
 
     </div>

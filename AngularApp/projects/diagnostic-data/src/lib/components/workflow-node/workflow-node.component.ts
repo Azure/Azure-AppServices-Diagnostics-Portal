@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
-import { NgFlowchartStepComponent } from 'projects/ng-flowchart/dist';
+import { NgFlowchart, NgFlowchartStepComponent } from 'projects/ng-flowchart/dist';
 import { HealthStatus } from '../../models/detector';
 import { workflowNodeResult, workflowNodeState } from '../../models/workflow';
 import { DetectorControlService } from '../../services/detector-control.service';
 import { DiagnosticService } from '../../services/diagnostic.service';
 import { WorkflowHelperService } from "../../services/workflow-helper.service";
+import { WorkflowConditionNodeComponent } from '../workflow-condition-node/workflow-condition-node.component';
 
 @Component({
   selector: 'workflow-node',
@@ -91,11 +92,7 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
           if (workflowNodeResult.type === "IfElseCondition" || workflowNodeResult.type === "SwitchCondition") {
             this.addAdditionalNodesIfNeeded(workflowNodeResult, workflowNodeResult.description, this);
           } else {
-            this.addChild({
-              template: WorkflowNodeComponent,
-              type: 'workflowNode',
-              data: workflowNodeResult
-            }, {
+            this.addChild(this.getNewNode(workflowNodeResult, workflowNodeResult), {
               sibling: true
             }).then(addedNode => {
               this.addAdditionalNodesIfNeeded(workflowNodeResult, '', addedNode);
@@ -123,11 +120,7 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
         if (nodeResult.type === "IfElseCondition" || nodeResult.type === "SwitchCondition") {
           this.addAdditionalNodesIfNeeded(nodeResult, nodeResult.description, this);
         } else {
-          this.addChild({
-            template: WorkflowNodeComponent,
-            type: 'workflowNode',
-            data: nodeResult
-          }, {
+          this.addChild(this.getNewNode(nodeResult, nodeResult), {
             sibling: true
           }).then(addedNode => {
             this.addAdditionalNodesIfNeeded(nodeResult, '', addedNode);
@@ -166,13 +159,9 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
                 let workflowNodeResult = this._workflowHelperService.getWorkflowNodeResultFromCompilationResponse(response, this.data.workflowPublishBody);
                 if (workflowNodeResult != null) {
                   this._workflowHelperService.emitTraces(workflowNodeResult);
-                  addedNode.addChild({
-                    template: WorkflowNodeComponent,
-                    type: 'workflowNode',
-                    data: this.getDescriptionForConditionNodes(workflowNodeResult, description)
-                  }, {
+                  addedNode.addChild(this.getNewNode(nodeResult, this.getDescriptionForConditionNodes(nodeResult, description)), {
                     sibling: true
-                  }).then(resp =>{
+                  }).then(resp => {
                     this.isLoading = false;
                   })
                 }
@@ -185,13 +174,9 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
                   this._workflowHelperService.emitTraces(nodeResult);
                 }
                 setTimeout(() => {
-                  addedNode.addChild({
-                    template: WorkflowNodeComponent,
-                    type: 'workflowNode',
-                    data: this.getDescriptionForConditionNodes(nodeResult, description)
-                  }, {
+                  addedNode.addChild(this.getNewNode(nodeResult, this.getDescriptionForConditionNodes(nodeResult, description)), {
                     sibling: true
-                  }).then(resp =>{
+                  }).then(resp => {
                     this.isLoading = false;
                   });
                 }, 500);
@@ -211,16 +196,32 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
   }
 
   getDescriptionForConditionNodes(nodeResult: workflowNodeResult, description: string): workflowNodeResult {
-    if (nodeResult.type.toLowerCase() === 'iftrue'){
+    if (nodeResult.type.toLowerCase() === 'iftrue') {
       nodeResult.description = `Because ${description} evaluated to true`;
-    } else if (nodeResult.type.toLowerCase() === 'iffalse'){
+    } else if (nodeResult.type.toLowerCase() === 'iffalse') {
       nodeResult.description = `Because ${description} evaluated to false`;
-    } else if (nodeResult.type.toLowerCase() === 'switchcase'){
+    } else if (nodeResult.type.toLowerCase() === 'switchcase') {
       nodeResult.description = `Because ${description} matched a configured node`;
-    }  else if (nodeResult.type.toLowerCase() === 'switchcasedefault'){
+    } else if (nodeResult.type.toLowerCase() === 'switchcasedefault') {
       nodeResult.description = `Because ${description} matched no configured conditions`;
     }
 
-      return nodeResult;
+    return nodeResult;
+  }
+
+  getNewNode(nodeResult: workflowNodeResult, data: any) : NgFlowchart.PendingStep {
+    let newNode: NgFlowchart.PendingStep = {} as NgFlowchart.PendingStep;
+    newNode.data = data;
+    if (nodeResult.type.toLowerCase() === 'iftrue' || nodeResult.type.toLowerCase() === 'iffalse' || nodeResult.type.toLowerCase() === 'switchcase' || nodeResult.type.toLowerCase() === 'switchcasedefault') {
+      newNode.type = 'workflowConditionNode';
+      newNode.template = WorkflowConditionNodeComponent;
+      newNode.data = data;
+
+    } else {
+      newNode.type = 'workflowNode';
+      newNode.template = WorkflowNodeComponent;
+    }
+
+    return newNode;
   }
 }
