@@ -58,7 +58,7 @@
                         [ariaLabel]="'App types this detector is applicable to'" [id]="rootId + '_resourceAppType'"
                         [styles]="fabDropdownStyle" [calloutProps]="fabDropdownMultiselectCalloutProps"
                         [errorMessage]="resourceAppTypeRequiredErrorMessage" [multiSelect]=true
-                        [selectedKeys]="resourceAppTypeOptionsDefaultSelectedKeys"
+                        [selectedKeys]="resourceAppTypeOptionsSelectedKeys"
                         [options]="resourceAppTypeOptions" (onChange)="onChangeResourceAppType($event);saveButtonDisabledStatus = false"></fab-dropdown>
                 </div>
                 <div class="col-md-4">
@@ -66,7 +66,7 @@
                         [ariaLabel]="'Platforms this detector is applicable to'" id="resourcePlatformType"
                         [styles]="fabDropdownStyle" [calloutProps]="fabDropdownMultiselectCalloutProps"
                         [errorMessage]="resourcePlatformTypeRequiredErrorMessage" [multiSelect]=true
-                        [defaultSelectedKeys]="resourcePlatformTypeOptionsDefaultSelectedKeys"
+                        [selectedKeys]="resourcePlatformTypeOptionsSelectedKeys"
                         [options]="resourcePlatformTypeOptions"
                         (onChange)="onChangeResourcePlatformType($event);saveButtonDisabledStatus = false"></fab-dropdown>
                 </div>
@@ -75,7 +75,7 @@
                         [ariaLabel]="'Application stacks this detector is applicable to'" id="resourceStackType"
                         [styles]="fabDropdownStyle" [calloutProps]="fabDropdownMultiselectCalloutProps"
                         [errorMessage]="resourceStackTypeRequiredErrorMessage" [multiSelect]=true
-                        [defaultSelectedKeys]="resourceStackTypeOptionsDefaultSelectedKeys"
+                        [selectedKeys]="resourceStackTypeOptionsSelectedKeys"
                         [options]="resourceStackTypeOptions"
                         (onChange)="onChangeResourceStackType($event);saveButtonDisabledStatus = false"></fab-dropdown>
                 </div>
