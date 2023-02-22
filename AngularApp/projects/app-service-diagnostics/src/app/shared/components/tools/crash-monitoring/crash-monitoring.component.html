@@ -57,7 +57,7 @@
                   showMonthPickerAsOverlay="true" (onSelectDate)="onSelectStartDateHandler($event)"
                   [formatDate]="formatDate" [value]="startDate">
                 </fab-date-picker>
-                <span *ngIf="monitoringEnabled">{{ formatDateToString(startDate) }}</span>
+                <span *ngIf="monitoringEnabled">{{ startDateString }}</span>
                 <div class="mt-1 mb-4">
                   <span *ngIf="monitoringEnabled">{{ startClock }}</span>
                   <fab-masked-text-field *ngIf="!monitoringEnabled" maxLength="6" [(value)]="startClock"
@@ -86,7 +86,7 @@
                   showMonthPickerAsOverlay="true" (onSelectDate)="onSelectEndDateHandler($event)"
                   [formatDate]="formatDate" [value]="endDate" [disabled]="monitoringEnabled">
                 </fab-date-picker>
-                <span *ngIf="monitoringEnabled">{{ formatDateToString(endDate) }}</span>
+                <span *ngIf="monitoringEnabled">{{ endDateString }}</span>
                 <div class="mt-1 mb-4">
                   <fab-masked-text-field *ngIf="!monitoringEnabled" maxLength="6" [(value)]="endClock"
                     [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"

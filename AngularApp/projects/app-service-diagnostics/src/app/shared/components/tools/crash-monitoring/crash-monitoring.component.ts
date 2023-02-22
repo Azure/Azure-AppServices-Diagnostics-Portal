@@ -42,6 +42,8 @@ export class CrashMonitoringComponent implements OnInit {
   maxDate: Date = this.convertUTCToLocalDate(addMonths(this.today, 3));
   minDate: Date = this.convertUTCToLocalDate(this.today);
   startDate: Date = this.minDate;
+  startDateString = '';
+  endDateString = '';
   endDate: Date = addDays(this.startDate, 15);
   startClock: string;
   endClock: string;
@@ -148,6 +150,9 @@ export class CrashMonitoringComponent implements OnInit {
 
     this.startDate = monitoringDates.start;
     this.endDate = monitoringDates.end;
+
+    this.startDateString = this.formatDateToString(monitoringDates.start);
+    this.endDateString = this.formatDateToString(monitoringDates.end);
 
     this.startClock = momentNs.utc(this.startDate).format('HH:mm');
     this.endClock = momentNs.utc(this.endDate).format('HH:mm');
@@ -264,6 +269,9 @@ export class CrashMonitoringComponent implements OnInit {
         this.status = toolStatus.SettingsSaved;
         this.monitoringEnabled = true;
         this.collapsed = true;
+        let monitoringDates = this._siteService.getCrashMonitoringDates(this.crashMonitoringSettings);
+        this.startDateString = this.formatDateToString(monitoringDates.start);
+        this.endDateString = this.formatDateToString(monitoringDates.end);
       },
         error => {
           this.status = toolStatus.Error;
@@ -297,7 +305,6 @@ export class CrashMonitoringComponent implements OnInit {
   }
 
   getMonitoringSummary(): string {
-
     if (this.crashMonitoringSettings != null) {
       let monitoringDates = this._siteService.getCrashMonitoringDates(this.crashMonitoringSettings);
       return `${this.siteToBeDiagnosed.siteName} | ${this.formatDateToString(monitoringDates.start, true)} to ${this.formatDateToString(monitoringDates.end, true)} | ${this.crashMonitoringSettings.MaxDumpCount} memory dumps`;
@@ -305,7 +312,6 @@ export class CrashMonitoringComponent implements OnInit {
   }
 
   formatDateToString(date: Date, appendTime: boolean = false) {
-
     return appendTime ? momentNs.utc(date).format("YYYY-MM-DD HH:mm") : momentNs.utc(date).format("YYYY-MM-DD");
   }
 
