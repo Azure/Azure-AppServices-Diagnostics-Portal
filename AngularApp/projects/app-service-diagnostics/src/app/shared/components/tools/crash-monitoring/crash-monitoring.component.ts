@@ -146,11 +146,11 @@ export class CrashMonitoringComponent implements OnInit {
 
     let monitoringDates = this._siteService.getCrashMonitoringDates(crashMonitoringSettings);
 
-    this.startDate = this.convertUTCToLocalDate(monitoringDates.start);
-    this.endDate = this.convertUTCToLocalDate(monitoringDates.end);
+    this.startDate = monitoringDates.start;
+    this.endDate = monitoringDates.end;
 
-    this.startClock = this.getHourAndMinute(this.startDate);
-    this.endClock = this.getHourAndMinute(this.endDate);
+    this.startClock = momentNs.utc(this.startDate).format('HH:mm');
+    this.endClock = momentNs.utc(this.endDate).format('HH:mm');
 
     // Reset the minDate to avoid the UI displaying an error
     this.minDate = this.startDate;
