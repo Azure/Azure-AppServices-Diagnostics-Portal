@@ -65,8 +65,9 @@ export class GenericAnalysisComponent extends GenericDetectorComponent implement
             this.detectorId = params.get('detectorName') === null ? "" : params.get('detectorName');
             this._activatedRouteLocal.queryParamMap.subscribe(qParams => {
                 this.searchTerm = qParams.get('searchTerm') === null ? this.searchTerm : qParams.get('searchTerm');
-                if (this.analysisId === "searchResultsAnalysis" && this.searchTerm && this.searchTerm.length > 0) {
-                    this.showSearchBar = this.searchMode === SearchAnalysisMode.CaseSubmission ? true : this.showSearchBar;
+                if (this.analysisId === "searchResultsAnalysis" && ((this.searchTerm && this.searchTerm.length > 0) || this.searchMode !== SearchAnalysisMode.Genie)) {
+                    //Show search bar in case submission or if not passing searchTerm
+                    this.showSearchBar = this.searchMode === SearchAnalysisMode.CaseSubmission || !this.searchTerm ? true : this.showSearchBar;
                     this.displayDetectorContainer = false;
                 }
                 else {
