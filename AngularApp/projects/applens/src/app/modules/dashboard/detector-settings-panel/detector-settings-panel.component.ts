@@ -133,21 +133,21 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
   effectiveResourceAppType: AppType[] = [];
   resourceAppTypeRequiredErrorMessage: string = '';
   resourceAppTypeOptions: IDropdownOption[] = [];
-  resourceAppTypeOptionsDefaultSelectedKeys: string[] = [];
+  resourceAppTypeOptionsSelectedKeys: string[] = [];
   //#endregion AppType dropdown settings
 
   //#region PlatformType dropdown settings
   effectiveResourcePlatformType: PlatformType[] = [];
   resourcePlatformTypeRequiredErrorMessage: string = '';
   resourcePlatformTypeOptions: IDropdownOption[] = [];
-  resourcePlatformTypeOptionsDefaultSelectedKeys: string[] = [];
+  resourcePlatformTypeOptionsSelectedKeys: string[] = [];
   //#endregion PlatformType dropdown settings
 
   //#region StackType dropdown settings
   effectiveResourceStackType: StackType[] = [];
   resourceStackTypeRequiredErrorMessage: string = '';
   resourceStackTypeOptions: IDropdownOption[] = [];
-  resourceStackTypeOptionsDefaultSelectedKeys: string[] = [];
+  resourceStackTypeOptionsSelectedKeys: string[] = [];
   //#endregion StackType dropdown settings
 
   isInternalOnly: boolean = true;
@@ -314,12 +314,12 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
     if (this.isAppService) {      
       //#region resourceAppTypeOptions, resourcePlatformTypeOptions and resourceStackTypeOptions dropdown options
       if(!this.settingsValue || !this.settingsValue.appTypes || !this.settingsValue.appTypes.some(appType => appType) || this.settingsValue.appTypes.some(appType => appType === AppType.All)) {
-        this.resourceAppTypeOptionsDefaultSelectedKeys = [SitePropertiesParser.getDisplayForAppType(AppType.All)];
+        this.resourceAppTypeOptionsSelectedKeys = [SitePropertiesParser.getDisplayForAppType(AppType.All)];
       }
       else {
         this.settingsValue.appTypes.forEach(appType => {
-          if(appType && !this.resourceAppTypeOptionsDefaultSelectedKeys.some(existingAppType=> existingAppType === SitePropertiesParser.getDisplayForAppType(appType) ) ) {
-            this.resourceAppTypeOptionsDefaultSelectedKeys.push(SitePropertiesParser.getDisplayForAppType(appType));
+          if(appType && !this.resourceAppTypeOptionsSelectedKeys.some(existingAppType=> existingAppType === SitePropertiesParser.getDisplayForAppType(appType) ) ) {
+            this.resourceAppTypeOptionsSelectedKeys.push(SitePropertiesParser.getDisplayForAppType(appType));
           }
         });
       }
@@ -329,7 +329,7 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
       this.resourceAppTypeOptions = [<IDropdownOption>{
         key: SitePropertiesParser.getDisplayForAppType(AppType.All),
         text: SitePropertiesParser.getDisplayForAppType(AppType.All),
-        selected: this.resourceAppTypeOptionsDefaultSelectedKeys.some(key => key === SitePropertiesParser.getDisplayForAppType(AppType.All)),
+        selected: this.resourceAppTypeOptionsSelectedKeys.some(key => key === SitePropertiesParser.getDisplayForAppType(AppType.All)),
         index: optionIndex++
       }];
 
@@ -339,7 +339,7 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
           this.resourceAppTypeOptions.push(<IDropdownOption>{
             key: appType,
             text: appType,
-            selected: this.resourceAppTypeOptionsDefaultSelectedKeys.some(key => key === appType),
+            selected: this.resourceAppTypeOptionsSelectedKeys.some(key => key === appType),
             index: optionIndex++
           });
         }
@@ -348,12 +348,12 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
 
       //#region resourcePlatformTypeOptions dropdown options
       if(!this.settingsValue || !this.settingsValue.platformTypes || !this.settingsValue.platformTypes.some(platformType => platformType) || this.settingsValue.platformTypes.some(platformType => platformType === PlatformType.All)) {
-        this.resourcePlatformTypeOptionsDefaultSelectedKeys = [SitePropertiesParser.getDisplayForPlatformType(PlatformType.All)];
+        this.resourcePlatformTypeOptionsSelectedKeys = [SitePropertiesParser.getDisplayForPlatformType(PlatformType.All)];
       }
       else {
         this.settingsValue.platformTypes.forEach(platformType => {
-          if(platformType && !this.resourcePlatformTypeOptionsDefaultSelectedKeys.some(existingPlatformType=> existingPlatformType === SitePropertiesParser.getDisplayForPlatformType(platformType) ) ) {
-            this.resourcePlatformTypeOptionsDefaultSelectedKeys.push(SitePropertiesParser.getDisplayForPlatformType(platformType));
+          if(platformType && !this.resourcePlatformTypeOptionsSelectedKeys.some(existingPlatformType=> existingPlatformType === SitePropertiesParser.getDisplayForPlatformType(platformType) ) ) {
+            this.resourcePlatformTypeOptionsSelectedKeys.push(SitePropertiesParser.getDisplayForPlatformType(platformType));
           }
         });
       }
@@ -362,7 +362,7 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
       this.resourcePlatformTypeOptions = [<IDropdownOption>{
         key: SitePropertiesParser.getDisplayForPlatformType(PlatformType.All),
         text: SitePropertiesParser.getDisplayForPlatformType(PlatformType.All),
-        selected: this.resourcePlatformTypeOptionsDefaultSelectedKeys.some(key => key === SitePropertiesParser.getDisplayForPlatformType(PlatformType.All)),
+        selected: this.resourcePlatformTypeOptionsSelectedKeys.some(key => key === SitePropertiesParser.getDisplayForPlatformType(PlatformType.All)),
         index: optionIndex++
       }];
 
@@ -372,7 +372,7 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
           this.resourcePlatformTypeOptions.push(<IDropdownOption>{
             key: platformType,
             text: platformType,
-            selected: this.resourcePlatformTypeOptionsDefaultSelectedKeys.some(key => key === platformType),
+            selected: this.resourcePlatformTypeOptionsSelectedKeys.some(key => key === platformType),
             index: optionIndex++
           });
         }
@@ -381,12 +381,12 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
 
       //#region resourceStackTypeOptions dropdown options
       if(!this.settingsValue || !this.settingsValue.stackTypes || !this.settingsValue.stackTypes.some(stackType => stackType) || this.settingsValue.stackTypes.some(stackType => stackType === StackType.All)) {
-        this.resourceStackTypeOptionsDefaultSelectedKeys = [SitePropertiesParser.getDisplayForStackType(StackType.All)];
+        this.resourceStackTypeOptionsSelectedKeys = [SitePropertiesParser.getDisplayForStackType(StackType.All)];
       }
       else {
         this.settingsValue.stackTypes.forEach(stackType => {
-          if(stackType && !this.resourceStackTypeOptionsDefaultSelectedKeys.some(existingStackType=> existingStackType === SitePropertiesParser.getDisplayForStackType(stackType) ) ) {
-            this.resourceStackTypeOptionsDefaultSelectedKeys.push(SitePropertiesParser.getDisplayForStackType(stackType));
+          if(stackType && !this.resourceStackTypeOptionsSelectedKeys.some(existingStackType=> existingStackType === SitePropertiesParser.getDisplayForStackType(stackType) ) ) {
+            this.resourceStackTypeOptionsSelectedKeys.push(SitePropertiesParser.getDisplayForStackType(stackType));
           }
         });
       }
@@ -395,7 +395,7 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
       this.resourceStackTypeOptions = [<IDropdownOption>{
         key: SitePropertiesParser.getDisplayForStackType(StackType.All),
         text: SitePropertiesParser.getDisplayForStackType(StackType.All),
-        selected: this.resourceStackTypeOptionsDefaultSelectedKeys.some(key => key === SitePropertiesParser.getDisplayForStackType(StackType.All)),
+        selected: this.resourceStackTypeOptionsSelectedKeys.some(key => key === SitePropertiesParser.getDisplayForStackType(StackType.All)),
         index: optionIndex++
       }];
 
@@ -405,7 +405,7 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
           this.resourceStackTypeOptions.push(<IDropdownOption>{
             key: stackType,
             text: stackType,
-            selected: this.resourceStackTypeOptionsDefaultSelectedKeys.some(key => key === stackType),
+            selected: this.resourceStackTypeOptionsSelectedKeys.some(key => key === stackType),
             index: optionIndex++
           });
         }
@@ -718,15 +718,16 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
 
   //#region Detector App Type dropdown Methods
   public handleResourceAppTypeOptions(selectedOption?: any): void {
-    //Due to a bug in multiselect mode for dropdowns where the changes in model is not passed on to the callout that displays the optionson UI, we cannot have the UI reflect the same state as the model.
-    //Do not try to uncheck/check stuff based on AppType.All, merely maintain the state of the model as reflected in the UI.
-
     this.resourceAppTypeRequiredErrorMessage = '';
-
     if (this.resourceAppTypeOptions.length > 0) {
       if (selectedOption) {
         // This ensures that the model is updated with the latest state of the UI
         this.resourceAppTypeOptions[this.resourceAppTypeOptions.findIndex(option => option.key === selectedOption.key)].selected = selectedOption.selected;
+
+        // If All is currently selected but current selection is not All, unselect All
+        if(selectedOption.key != SitePropertiesParser.getDisplayForAppType(AppType.All) && selectedOption.selected == true) {
+          this.resourceAppTypeOptions[this.resourceAppTypeOptions.findIndex(option => option.key === SitePropertiesParser.getDisplayForAppType(AppType.All))].selected = false;
+        }
       }
 
       //Determine the effective resource app type
@@ -734,17 +735,26 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
         this.effectiveResourceAppType = [AppType.All];
       }
       else {
-        this.effectiveResourceAppType = this.resourceAppTypeOptions.filter(option => option.selected).map(option => AppType[option.key] as AppType);
+        // Check if everything other than AppType.All is selected. If so, set the effectiveResourceAppType to [AppType.All]
+        if (this.resourceAppTypeOptions.filter(option => option.key !== SitePropertiesParser.getDisplayForAppType(AppType.All)).every(option => option.selected === true)) {
+          this.effectiveResourceAppType = [AppType.All];
+        }
+        else {
+          this.effectiveResourceAppType = this.resourceAppTypeOptions.filter(option => option.selected).map(option => AppType[option.key] as AppType);
+        }
       }
 
       this.resourceAppTypeRequiredErrorMessage = this.effectiveResourceAppType.length === 0 && this.resourceAppTypeOptions.length > 0 ? 'At least one App type is required' : '';
+
+      // Match resourceAppTypeOptions with effectiveResourceAppType
+      this.resourceAppTypeOptions.forEach(option => {
+        option.selected = this.effectiveResourceAppType.indexOf(AppType[option.key] as AppType) > -1;
+      });
     }
     else {
       this.effectiveResourceAppType = [];
     }
-
-    this.resourceAppTypeOptionsDefaultSelectedKeys = this.resourceAppTypeOptions.filter(option => option.selected).map(option => option.key.toString());
-
+    this.resourceAppTypeOptionsSelectedKeys = this.resourceAppTypeOptions.filter(option => option.selected).map(option => option.key.toString());
   }
 
   public onChangeResourceAppType(event: any): void {
@@ -754,15 +764,16 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
 
   //#region Detector Platform Type dropdown Methods
   public handleResourcePlatformTypeOptions(selectedOption?: any): void {
-    //Due to a bug in multiselect mode for dropdowns where the changes in model is not passed on to the callout that displays the optionson UI, we cannot have the UI reflect the same state as the model.
-    //Do not try to uncheck/check stuff based on AppType.All, merely maintain the state of the model as reflected in the UI.
-
     this.resourcePlatformTypeRequiredErrorMessage = '';
-
     if (this.resourcePlatformTypeOptions.length > 0) {
       if (selectedOption) {
         // This ensures that the model is updated with the latest state of the UI
         this.resourcePlatformTypeOptions[this.resourcePlatformTypeOptions.findIndex(option => option.key === selectedOption.key)].selected = selectedOption.selected;
+
+         // If All is currently selected but current selection is not All, unselect All
+         if(selectedOption.key != SitePropertiesParser.getDisplayForPlatformType(PlatformType.All) && selectedOption.selected == true) {
+          this.resourcePlatformTypeOptions[this.resourcePlatformTypeOptions.findIndex(option => option.key === SitePropertiesParser.getDisplayForPlatformType(PlatformType.All))].selected = false;
+        }
       }
 
       //Determine the effective resource app type
@@ -770,14 +781,26 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
         this.effectiveResourcePlatformType = [PlatformType.All];
       }
       else {
-        this.effectiveResourcePlatformType = this.resourcePlatformTypeOptions.filter(option => option.selected).map(option => PlatformType[option.key] as PlatformType);
+        // Check if everything other than PlatformType.All is selected. If so, set the effectiveResourcePlatformType to [PlatformType.All]
+        if (this.resourcePlatformTypeOptions.filter(option => option.key !== SitePropertiesParser.getDisplayForPlatformType(PlatformType.All)).every(option => option.selected === true)) {
+          this.effectiveResourcePlatformType = [PlatformType.All];
+        }
+        else {
+          this.effectiveResourcePlatformType = this.resourcePlatformTypeOptions.filter(option => option.selected).map(option => PlatformType[option.key] as PlatformType);
+        }
       }
 
       this.resourcePlatformTypeRequiredErrorMessage = this.effectiveResourcePlatformType.length === 0 && this.resourcePlatformTypeOptions.length > 0 ? 'At least one Platform type is required' : '';
+
+      // Match resourcePlatformTypeOptions with effectiveResourcePlatformType
+      this.resourcePlatformTypeOptions.forEach(option => {
+        option.selected = this.effectiveResourcePlatformType.indexOf(PlatformType[option.key] as PlatformType) > -1;
+      });
     }
     else {
       this.effectiveResourcePlatformType = [];
     }
+    this.resourcePlatformTypeOptionsSelectedKeys = this.resourcePlatformTypeOptions.filter(option => option.selected).map(option => option.key.toString());
   }
 
   public onChangeResourcePlatformType(event: any): void {
@@ -787,15 +810,16 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
 
   //#region Detector Stack Type dropdown Methods
   public handleResourceStackTypeOptions(selectedOption?: any): void {
-    //Due to a bug in multiselect mode for dropdowns where the changes in model is not passed on to the callout that displays the optionson UI, we cannot have the UI reflect the same state as the model.
-    //Do not try to uncheck/check stuff based on AppType.All, merely maintain the state of the model as reflected in the UI.
-
     this.resourceStackTypeRequiredErrorMessage = '';
-
     if (this.resourceStackTypeOptions.length > 0) {
       if (selectedOption) {
         // This ensures that the model is updated with the latest state of the UI
         this.resourceStackTypeOptions[this.resourceStackTypeOptions.findIndex(option => option.key === selectedOption.key)].selected = selectedOption.selected;
+
+        // If All is currently selected but current selection is not All, unselect All
+        if(selectedOption.key != SitePropertiesParser.getDisplayForStackType(StackType.All) && selectedOption.selected == true) {
+          this.resourceStackTypeOptions[this.resourceStackTypeOptions.findIndex(option => option.key === SitePropertiesParser.getDisplayForStackType(StackType.All))].selected = false;
+        }
       }
 
       //Determine the effective resource app type
@@ -803,14 +827,24 @@ export class DetectorSettingsPanel implements OnInit, OnDestroy {
         this.effectiveResourceStackType = [StackType.All];
       }
       else {
-        this.effectiveResourceStackType = this.resourceStackTypeOptions.filter(option => option.selected).map(option => StackType[option.key] as StackType);
+        if (this.resourceStackTypeOptions.filter(option => option.key !== SitePropertiesParser.getDisplayForStackType(StackType.All)).every(option => option.selected === true)) {
+          this.effectiveResourceStackType = [StackType.All];
+        }
+        else {
+          this.effectiveResourceStackType = this.resourceStackTypeOptions.filter(option => option.selected).map(option => StackType[option.key] as StackType);
+        }
       }
 
       this.resourceStackTypeRequiredErrorMessage = this.effectiveResourceStackType.length === 0 && this.resourceStackTypeOptions.length > 0 ? 'At least one Stack type is required' : '';
+      // Match resourceAppTypeOptions with effectiveResourceAppType
+      this.resourceStackTypeOptions.forEach(option => {
+        option.selected = this.effectiveResourceStackType.indexOf(StackType[option.key] as StackType) > -1;
+      });
     }
     else {
       this.effectiveResourceStackType = [];
     }
+    this.resourceStackTypeOptionsSelectedKeys = this.resourceStackTypeOptions.filter(option => option.selected).map(option => option.key.toString());
   }
 
   public onChangeResourceStackType(event: any): void {
