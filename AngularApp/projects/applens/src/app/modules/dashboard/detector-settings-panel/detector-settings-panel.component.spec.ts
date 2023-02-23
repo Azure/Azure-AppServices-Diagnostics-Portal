@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DetectorSettingsPanel } from './detector-settings-panel.component';
 
-describe('CreateWorkflowComponent', () => {
+describe('DetectorSettingsPanelComponent', () => {
   let component: DetectorSettingsPanel;
   let fixture: ComponentFixture<DetectorSettingsPanel>;
 

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DetectorDesigner } from './detector-designer.component';
 
-describe('CreateWorkflowComponent', () => {
+describe('DetectorDesignerComponent', () => {
   let component: DetectorDesigner;
   let fixture: ComponentFixture<DetectorDesigner>;
 
