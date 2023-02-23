@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DetectorDesigner } from './detector-designer.component';
+import { DetectorDesignerComponent } from './detector-designer.component';
 
 describe('DetectorDesignerComponent', () => {
-  let component: DetectorDesigner;
-  let fixture: ComponentFixture<DetectorDesigner>;
+  let component: DetectorDesignerComponent;
+  let fixture: ComponentFixture<DetectorDesignerComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DetectorDesigner ]
+      declarations: [ DetectorDesignerComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DetectorDesigner);
+    fixture = TestBed.createComponent(DetectorDesignerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
