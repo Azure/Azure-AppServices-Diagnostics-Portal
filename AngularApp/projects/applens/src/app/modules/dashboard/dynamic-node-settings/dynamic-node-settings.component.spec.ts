@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NodeComposerComponent } from './node-composer.component';
+import { DynamicNodeSettings } from './dynamic-node-settings.component';
 
-describe('NodeComposerComponent', () => {
-  let component: NodeComposerComponent;
-  let fixture: ComponentFixture<NodeComposerComponent>;
+describe('DynamicNodeSettingsComponent', () => {
+  let component: DynamicNodeSettings;
+  let fixture: ComponentFixture<DynamicNodeSettings>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NodeComposerComponent ]
+      declarations: [ DynamicNodeSettings ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(NodeComposerComponent);
+    fixture = TestBed.createComponent(DynamicNodeSettings);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

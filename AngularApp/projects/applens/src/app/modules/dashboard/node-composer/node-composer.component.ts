@@ -19,7 +19,7 @@ const moment = momentNs;
   styleUrls: ['./node-composer.component.scss']
 })
 
-export class NodeComposer implements OnInit, OnDestroy {
+export class NodeComposerComponent implements OnInit, OnDestroy {
   
   RenderingType = RenderingType;
   

@@ -35,7 +35,7 @@ import { INodeModelChangeEventProps } from '../node-composer/node-composer.compo
   styleUrls: ['./detector-designer.component.scss']
 })
 
-export class DetectorDesigner implements OnInit, IDeactivateComponent  {
+export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  {
   @Input() mode: DevelopMode = DevelopMode.Create;
 
   detectorName:string = 'Settings Panel Name';//'Auto Generated Detector Name';

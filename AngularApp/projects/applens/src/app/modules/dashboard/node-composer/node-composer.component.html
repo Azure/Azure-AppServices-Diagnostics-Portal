@@ -40,7 +40,8 @@
 			</fab-pivot-item>
 			<fab-pivot-item [headerText]="'Settings'" [itemKey]="nodeModel.id + '_Settings'">
 				<div class = "pivotItemContainer">
-					Settings for {{RenderingType[nodeModel.renderingType]}}
+					<!-- Settings for {{RenderingType[nodeModel.renderingType]}} -->
+					<dynamic-node-settings [renderingType]="nodeModel.renderingType" [renderingSettings] = "[]"></dynamic-node-settings>
 				</div>
 			</fab-pivot-item>
 			<fab-pivot-item [headerText]="'Result'" [itemKey]="nodeModel.id + '_Result'">

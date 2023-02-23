@@ -21,7 +21,7 @@ import { AnalysisPickerModel, DetectorSettingsModel, EntityType, SupportTopicPic
   styleUrls: ['./detector-settings-panel.component.scss']
 })
 
-export class DetectorSettingsPanel implements OnInit, OnDestroy {
+export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
   @Input() mode?: DevelopMode = DevelopMode.Create;
   
   @Input('id') rootId?: string = 'detectorSettingsPanel';

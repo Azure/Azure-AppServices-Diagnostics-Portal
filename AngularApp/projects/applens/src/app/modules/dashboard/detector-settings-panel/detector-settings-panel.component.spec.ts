@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DetectorSettingsPanel } from './detector-settings-panel.component';
+import { DetectorSettingsPanelComponent } from './detector-settings-panel.component';
 
 describe('DetectorSettingsPanelComponent', () => {
-  let component: DetectorSettingsPanel;
-  let fixture: ComponentFixture<DetectorSettingsPanel>;
+  let component: DetectorSettingsPanelComponent;
+  let fixture: ComponentFixture<DetectorSettingsPanelComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DetectorSettingsPanel ]
+      declarations: [ DetectorSettingsPanelComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DetectorSettingsPanel);
+    fixture = TestBed.createComponent(DetectorSettingsPanelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
