@@ -157,6 +157,9 @@ import { GenericOpenAIService } from '../public_api';
 import { QueryResponseService } from './services/query-response.service';
 import { WorkflowConditionNodeComponent } from './components/workflow-condition-node/workflow-condition-node.component';
 import { WorkflowAcceptUserinputComponent } from './components/workflow-accept-userinput/workflow-accept-userinput.component';
+import { VideoComponent } from './components/video/video.component';
+import { SafePipe } from './pipe/safe.pipe';
+
 
 @NgModule({
     imports: [
@@ -260,7 +263,9 @@ import { WorkflowAcceptUserinputComponent } from './components/workflow-accept-u
         WorkflowViewComponent,
         WorkflowNodeComponent,
         WorkflowConditionNodeComponent,
-        WorkflowAcceptUserinputComponent
+        WorkflowAcceptUserinputComponent,
+        VideoComponent,
+        SafePipe
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -302,7 +307,8 @@ import { WorkflowAcceptUserinputComponent } from './components/workflow-accept-u
         FabCardComponent,
         FormStepComponent,
         GanttChartTaskbarColorsComponent,
-        WorkflowViewComponent
+        WorkflowViewComponent,
+        SafePipe
     ]
 })
 export class DiagnosticDataModule {
