@@ -3,7 +3,7 @@ import { DataTableResponseObject, DiagnosticData, Rendering } from '../../models
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 
 @Component({
-  selector: 'video',
+  selector: 'embed-video',
   templateUrl: './video.component.html',
   styleUrls: ['./video.component.scss']
 })
@@ -22,14 +22,9 @@ export class VideoComponent extends DataRenderBaseComponent {
     const linkColumn = 1;
     for (const row of table.rows) {
       const altText = row[altTextColumn];
-      try {
-        const link = row[linkColumn];
-        const video: Video = { altText, link };
-        this.videos.push(video);
-      } catch (e) {
-        console.error(e);
-      }
-
+      const link = row[linkColumn];
+      const video: Video = { altText, link };
+      this.videos.push(video);
     }
   }
 
