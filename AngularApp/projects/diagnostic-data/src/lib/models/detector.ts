@@ -132,7 +132,8 @@ export enum RenderingType {
     StepViews,
     Report,
     ClientScriptComponent,
-    WorkflowResult
+    WorkflowResult,
+    Video
 }
 
 export enum TimeSeriesType {

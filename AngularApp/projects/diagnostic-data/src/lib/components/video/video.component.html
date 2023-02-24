@@ -1,0 +1,6 @@
+<p>video works!</p>
+<div *ngFor="let video of videos">
+    <div>{{video.link}}</div>
+    <iframe [src]="video.link | safe:'resourceUrl' " frameborder="0" width="560" height="315" [title]="video.altText" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="true">
+    </iframe>
+</div>
