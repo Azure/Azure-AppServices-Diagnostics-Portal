@@ -18,7 +18,7 @@
 
         <form class="example-form">
           <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>Variable</mat-label>
+            <mat-label class="matlabel">Variable</mat-label>
             <input type="text" placeholder="Choose a variable" aria-label="Number" id="leftControl" matInput
               [formControl]="leftControl" [matAutocomplete]="autoLeft"
               (input)="updateVariable($event.target.value, 'ifconditionLeftValue')">
@@ -55,7 +55,7 @@
 
         <form *ngIf="dataType !=='sbyte' && dataType !=='boolean'" class="example-form">
           <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>Variable</mat-label>
+            <mat-label class="matlabel">Variable</mat-label>
             <input type="text" placeholder="Choose a variable" aria-label="Number" id="rightControl" matInput
               [formControl]="rightControl" [matAutocomplete]="autoRight"
               (input)="updateVariable($event.target.value, 'ifconditionRightValue')">

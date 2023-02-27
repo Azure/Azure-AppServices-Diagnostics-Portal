@@ -6,6 +6,8 @@
   border-radius: 0px;
   border: 1px solid lightgrey;
   margin-bottom: 0px;
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
 }
 
 .panel-body {
@@ -19,6 +21,8 @@
   border-top-right-radius: 0px;
   padding: 2px;
   padding-left: 10px;
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
 }
 
 .node-heading {

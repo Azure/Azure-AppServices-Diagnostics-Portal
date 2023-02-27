@@ -52,6 +52,17 @@
 }
 
 .disabled {
-    background-color:#eee;
     cursor: not-allowed;
+}
+
+input,
+textarea,
+select {
+    background-color: var(--bodyBackground);
+    color: var(--inputText);
+}
+
+.form-control[disabled] {
+    background-color: var(--disabledBackground);
+    color: var(--disabledBodyText);
 }

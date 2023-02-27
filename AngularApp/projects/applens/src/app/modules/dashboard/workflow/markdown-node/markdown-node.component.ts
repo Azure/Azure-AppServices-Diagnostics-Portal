@@ -3,7 +3,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MarkdownService } from 'ngx-markdown';
 import { MarkdownQueryDialogComponent } from '../markdown-query-dialog/markdown-query-dialog.component';
 import { markdownDialogParams } from '../models/markdown';
-import {  workflowNodeData } from "projects/diagnostic-data/src/lib/models/workflow";
+import { workflowNodeData } from "projects/diagnostic-data/src/lib/models/workflow";
 import { WorkflowNodeBaseClass } from '../node-base-class';
 import { WorkflowService } from '../services/workflow.service';
 
@@ -46,6 +46,7 @@ export class MarkdownNodeComponent extends WorkflowNodeBaseClass implements OnIn
     dialogConfig.maxWidth = "100%";
     dialogConfig.maxHeight = "100%";
     dialogConfig.disableClose = true;
+    dialogConfig.panelClass = "matDialogClass";
     return dialogConfig;
   }
 

@@ -98,6 +98,7 @@ export class KustoNodeComponent extends WorkflowNodeBaseClass implements OnInit 
     dialogConfig.maxWidth = "100%";
     dialogConfig.maxHeight = "100%";
     dialogConfig.disableClose = true;
+    dialogConfig.panelClass = "matDialogClass";
     return dialogConfig;
   }
 
