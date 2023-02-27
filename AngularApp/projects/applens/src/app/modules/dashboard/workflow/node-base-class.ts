@@ -37,12 +37,20 @@ export class WorkflowNodeBaseClass extends NgFlowchartStepComponent<workflowNode
             return;
         }
 
+        if (conditionType === 'foreach' && this._workflowService.getVariableCompletionOptions(this).filter(x => x.type === 'Array').length === 0) {
+            this._workflowService.showMessageBox("Error", "You cannot add Foreach node because you have not added any variable of type array. Please first add a variable of type Array and then add a foreach node.");
+            return;
+        }
+
         switch (conditionType) {
             case 'switch':
                 this._workflowService.addSwitchCondition(this);
                 break;
             case 'ifelse':
                 this._workflowService.addCondition(this);
+                break;
+            case 'foreach':
+                this._workflowService.addForEach(this);
                 break;
             default:
                 break;

@@ -69,6 +69,7 @@ export class workflowNodeData {
   ifconditionExpression: string;
   switchOnValue: string;
   switchCaseValue: string;
+  foreachVariable:string;
 }
 
 export class workflowPublishBody {

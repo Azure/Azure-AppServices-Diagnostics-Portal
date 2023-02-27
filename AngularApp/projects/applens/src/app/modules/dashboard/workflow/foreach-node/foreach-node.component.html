@@ -1,0 +1,29 @@
+<div [attr.name]="data.name" #canvasContent>
+    <div class="panel panel-default">
+        <div class="panel-heading panel-title-foreach">
+            <node-title [data]="data" [disableEdit]="true" [customClass]="'background-green'"
+                [customClassIcon]="'fa-list'">
+            </node-title>
+        </div>
+        <div class="panel-body">
+            <mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>Variable</mat-label>
+                <input type="text" placeholder="Choose a variable" aria-label="Number" matInput
+                    [formControl]="foreachInputControl" [matAutocomplete]="auto"
+                    (input)="updateVariable($event.target.value)">
+                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete"
+                    (optionSelected)="updateVariable($event.option.value)">
+                    <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                        {{option}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <node-actions [isConditionNode]="true" (onNodeAdded)="addNode($event)"
+                (onConditionAdded)="addCondition($event)" (onDeleted)="deleteNode()" [isDisabled]="isDisabled()"
+                [isRootNode]="isRootNode()">
+            </node-actions>
+            <button type="button" class="ml-2 btn btn-danger btn-sm" (click)="deleteNode()">Delete</button>
+        </div>
+    </div>
+</div>

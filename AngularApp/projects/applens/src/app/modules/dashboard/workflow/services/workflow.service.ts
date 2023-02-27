@@ -14,6 +14,7 @@ import { SwitchStepComponent } from "../switch-step/switch-step.component";
 import { Subject } from "rxjs";
 import Swal from 'sweetalert2';
 import { ApplensDiagnosticService } from "../../services/applens-diagnostic.service";
+import { ForeachNodeComponent } from "../foreach-node/foreach-node.component";
 
 const swalWithBootstrapButtons = Swal.mixin({
   customClass: {
@@ -334,6 +335,25 @@ export class WorkflowService {
     });
   }
 
+  addForEach(node: NgFlowchartStepComponent<any>) {
+    let currentNode = node;
+    let foreachNode = new workflowNode();
+    foreachNode.type = "foreach";
+
+    let foreachDataNode = new workflowNodeData();
+    foreachDataNode.name = "foreach";
+    foreachDataNode.title = "For Each";
+    foreachDataNode.completionOptions = this.getVariableCompletionOptions(node).filter(x => x.type === 'Array');
+
+    currentNode.addChild({
+      template: ForeachNodeComponent,
+      type: 'foreach',
+      data: foreachDataNode
+    }, {
+      sibling: true
+    });
+  }
+
   isActionNode(node: NgFlowchartStepComponent<any>): boolean {
     if (node.type === 'detector'
       || node.type === 'markdown'
@@ -452,6 +472,8 @@ export class WorkflowService {
       return `| where StringTypeColumn =~ '{${variable.name}}'`;
     } else if (variableType == 'DateTime') {
       return `| where DateTypeColumn > datetime({${variable.name}})`;
+    } else if (variableType == 'Array'){
+      return `| where SomeColumnName in {NormalizeArray(${variable.name}, addQuotes:true)}`;
     }
 
     return `| where NumberTypeColumn == {${variable.name}}`;
