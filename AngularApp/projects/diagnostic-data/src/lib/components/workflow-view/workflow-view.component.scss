@@ -4,6 +4,8 @@
   background: #f0f0f0;
   flex: 1;
   border: 1px solid darkgray;
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
 }
 
 div#canvas[disabled="true"] {

@@ -161,6 +161,9 @@ export class DownloadReportComponent implements OnInit {
           // log telemetry for interaction
           let eventProperties = {
             'Subscription': this.subscriptionId,
+            'Platform': this.resourcePlatform != undefined ? this.resourcePlatform.toString() : "",
+            'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString(): "",
+            'ResourceSku': this.resourceSku != undefined ? this.resourceSku.toString(): "",
             'DetectorName': this.detectorName,
             'ResourceName': this.resourceName,
             'DetectorTimeTaken': detectorTimeTaken.toString(),

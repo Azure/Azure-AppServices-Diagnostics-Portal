@@ -15,7 +15,7 @@
         </div>
       </form>
       <mat-form-field class="example-full-width" appearance="fill">
-        <mat-label>Variable</mat-label>
+        <mat-label class="matlabel">Variable</mat-label>
         <input type="text" placeholder="Choose a variable" aria-label="Number" matInput [formControl]="switchInputControl"
           [matAutocomplete]="auto" (input)="updateVariable($event.target.value)">
         <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="updateVariable($event.option.value)">

@@ -207,11 +207,15 @@ export class DetectorCommandBarComponent implements AfterViewInit {
         // log telemetry for interaction
         const eventProperties = {
           'Subscription': this.subscriptionId,
+          'Platform': this.resourcePlatform != undefined ? this.resourcePlatform.toString() : "",
+          'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString(): "",
+          'ResourceSku': this.resourceSku != undefined ? this.resourceSku.toString(): "",
           'CustomerName': JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName,
           'NameSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].Name,
           'ScoreSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].OverallScore,
           'DetectorTimeTaken': detectorTimeTaken.toString(),
-          'TotalTimeTaken': totalTimeTaken.toString()
+          'TotalTimeTaken': totalTimeTaken.toString(),
+
         };
         this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportDownloaded, eventProperties);
         this.gRPDFButtonText = "Get Resiliency Score report";

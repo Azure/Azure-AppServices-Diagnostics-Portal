@@ -5,7 +5,8 @@
 #canvas {
   height: 80vh;
   width: calc(100%);
-  background: #f0f0f0;
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
   flex: 1;
   border: 1px solid darkgray;
 }
@@ -18,7 +19,12 @@ div#canvas[disabled="true"] ::ng-deep.ngflowchart-step-wrapper {
   opacity: 1;
 }
 
-.inline-li{
+.inline-li {
   display: inline-block;
   margin: 0 10px;
+}
+
+input, textarea {
+  background-color: var(--bodyBackground);
+  color: var(--inputText);
 }
