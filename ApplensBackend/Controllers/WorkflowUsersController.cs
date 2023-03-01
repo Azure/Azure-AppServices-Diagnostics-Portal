@@ -71,18 +71,25 @@ namespace AppLensV3.Controllers
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody] string userAlias)
         {
-            if (string.IsNullOrWhiteSpace(userAlias))
+            try
             {
-                return BadRequest("userAlias cannot be empty");
-            }
+                if (string.IsNullOrWhiteSpace(userAlias))
+                {
+                    return BadRequest("userAlias cannot be empty");
+                }
 
-            if (!IsUserAllowed())
+                if (!IsUserAllowed())
+                {
+                    return Unauthorized("User not allowed to call this method");
+                }
+
+                await workflowUsersHandler.AddUser(new UserAlias(userAlias));
+                return Ok();
+            }
+            catch (Exception ex)
             {
-                return Unauthorized("User not allowed to call this method");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.ToString());
             }
-
-            await workflowUsersHandler.AddUser(new UserAlias(userAlias));
-            return Ok();
         }
 
         // For the time being, only allow users that are part of the app setting to add more users
