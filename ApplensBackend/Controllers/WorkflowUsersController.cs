@@ -50,7 +50,7 @@ namespace AppLensV3.Controllers
 
                 var userAliases = new List<string>();
                 var users = await workflowUsersHandler.GetUsersAsync();
-                if (users.Any())
+                if (users != null && users.Any())
                 {
                     userAliases = users.Select(x => x.Alias.ToLower()).OrderBy(x => x).ToList();
                 }
