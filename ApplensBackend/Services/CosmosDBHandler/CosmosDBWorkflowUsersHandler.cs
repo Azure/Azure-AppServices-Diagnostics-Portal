@@ -31,7 +31,7 @@ namespace AppLensV3.Services
         /// <returns>A task to await upon.</returns>
         public async Task AddUser(UserAlias userAlias)
         {
-            await UpdateItemAsync(userAlias, UserAlias.WorkflowUsersPartitionKey);
+            await CreateItemAsync(userAlias);
         }
 
         /// <summary>
