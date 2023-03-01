@@ -129,6 +129,7 @@ import { ApplensOpenAIService } from '../../shared/services/applens-openai.servi
 import { GenericOpenAIService } from '../../../../../diagnostic-data/src/public_api';
 import { OpenAIChatComponent } from './openai-chat/openai-chat.component';
 import {ChatGPTContextService} from 'diagnostic-data';
+import { WorkflowUserAccessComponent } from './workflow/workflow-user-access/workflow-user-access.component';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -235,6 +236,10 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
                 path: 'createWorkflow',
                 component: WorkflowComponent,
                 canDeactivate: [DevelopNavigationGuardService]
+            },
+            {
+                path: 'addworkflowuser',
+                component: WorkflowUserAccessComponent
             },
             {
                 path: 'solutionOrchestrator',
@@ -587,6 +592,6 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         L2SideNavComponent, UserActivePullrequestsComponent, FavoriteDetectorsComponent, ApplensDocsComponent, ApplensDocSectionComponent, CreateWorkflowComponent,
         IfElseConditionStepComponent, ConditionIftrueStepComponent, ConditionIffalseStepComponent, SwitchStepComponent, SwitchCaseStepComponent, SwitchCaseDefaultStepComponent,
         KustoQueryDialogComponent, DetectorNodeComponent, KustoNodeComponent, MarkdownNodeComponent, NodeActionsComponent, ConfigureVariablesComponent, CommonNodePropertiesComponent,
-        NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent, OpenAIChatComponent]
+        NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent, OpenAIChatComponent, WorkflowUserAccessComponent]
 })
 export class DashboardModule { }
