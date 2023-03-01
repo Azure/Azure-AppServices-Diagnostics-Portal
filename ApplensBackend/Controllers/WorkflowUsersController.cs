@@ -41,19 +41,26 @@ namespace AppLensV3.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
-            if (!IsUserAllowed())
+            try
             {
-                return Unauthorized("User not allowed to call this method");
-            }
+                if (!IsUserAllowed())
+                {
+                    return Unauthorized("User not allowed to call this method");
+                }
 
-            var userAliases = new List<string>();
-            var users = await workflowUsersHandler.GetUsersAsync();
-            if (users.Any())
+                var userAliases = new List<string>();
+                var users = await workflowUsersHandler.GetUsersAsync();
+                if (users.Any())
+                {
+                    userAliases = users.Select(x => x.Alias.ToLower()).OrderBy(x => x).ToList();
+                }
+
+                return Ok(userAliases);
+            }
+            catch (Exception ex)
             {
-                userAliases = users.Select(x => x.Alias.ToLower()).OrderBy(x => x).ToList();
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.ToString());
             }
-
-            return Ok(userAliases);
         }
 
         /// <summary>
