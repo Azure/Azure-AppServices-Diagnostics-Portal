@@ -182,9 +182,9 @@ export class ApplensDiagnosticService {
     }));
   }
 
-  getGistDetailsById(id: string) : Observable<DetectorMetaData[]>{
-    return this._diagnosticApi.getGistId(this._resourceService.versionPrefix, 
-      this._resourceService.getCurrentResourceId(true), id); 
+  getGistDetailsById(id: string): Observable<DetectorMetaData[]> {
+    return this._diagnosticApi.getGistId(this._resourceService.versionPrefix,
+      this._resourceService.getCurrentResourceId(true), id);
   }
 
 
@@ -341,7 +341,15 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getDevopsCommitContent(filePath, commitid, resourceUri);
   }
 
-  isUserAllowedForWorkflow(userAlias:string){
+  isUserAllowedForWorkflow(userAlias: string) {
     return this._diagnosticApi.isUserAllowedForWorkflow(userAlias);
+  }
+
+  getWorkflowUsers(): Observable<string[]> {
+    return this._diagnosticApi.getWorkflowUsers();
+  }
+
+  addWorkflowUser(useralias: string): Observable<any> {
+    return this._diagnosticApi.addWorkflowUser(useralias);
   }
 }

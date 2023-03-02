@@ -63,7 +63,7 @@ namespace AppLensV3.Controllers
         /// <param name="env">The environment.</param>
         /// <param name="diagnosticClient">Diagnostic client.</param>
         /// <param name="emailNotificationService">Email notification service.</param>
-        public DiagnosticController(IWebHostEnvironment env, IDiagnosticClientService diagnosticClient, IEmailNotificationService emailNotificationService, IConfiguration configuration, IResourceConfigService resConfigService, IAppSvcUxDiagnosticDataService appSvcUxDiagnosticDataService)
+        public DiagnosticController(IWebHostEnvironment env, IDiagnosticClientService diagnosticClient, IEmailNotificationService emailNotificationService, IConfiguration configuration, IResourceConfigService resConfigService, IAppSvcUxDiagnosticDataService appSvcUxDiagnosticDataService, IWorkflowUsersCacheService workflowUsersCacheService)
         {
             Env = env;
             DiagnosticClient = diagnosticClient;
@@ -88,6 +88,12 @@ namespace AppLensV3.Controllers
             apiEndpointsForDetectorDevelopment = new List<string>() { "/diagnostics/query?", "/diagnostics/publish" };
 
             allowedUsers = configuration.GetValue("Workflow:Users", string.Empty).Split(';').Select(x => x.ToLower()).ToArray();
+
+            var allowedUsersInDb = workflowUsersCacheService.GetWorkflowUsers();
+            if (allowedUsersInDb.Any())
+            {
+                allowedUsers = allowedUsers.Concat(allowedUsersInDb).ToArray();
+            }
         }
 
         private IDiagnosticClientService DiagnosticClient { get; }

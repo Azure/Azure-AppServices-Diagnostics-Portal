@@ -159,7 +159,7 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
                 let workflowNodeResult = this._workflowHelperService.getWorkflowNodeResultFromCompilationResponse(response, this.data.workflowPublishBody);
                 if (workflowNodeResult != null) {
                   this._workflowHelperService.emitTraces(workflowNodeResult);
-                  addedNode.addChild(this.getNewNode(nodeResult, this.getDescriptionForConditionNodes(nodeResult, description)), {
+                  addedNode.addChild(this.getNewNode(workflowNodeResult, this.getDescriptionForConditionNodes(workflowNodeResult, description)), {
                     sibling: true
                   }).then(resp => {
                     this.isLoading = false;

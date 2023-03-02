@@ -72,6 +72,7 @@ namespace AppLensV3
 
             services.AddSingleton<IObserverClientService, SupportObserverClientService>();
             services.AddSingleton<IDiagnosticClientService, DiagnosticClient>();
+            services.AddSingleton<IWorkflowUsersCacheService, WorkflowUsersCacheService>();
 
             services.AddSingletonWhenEnabled<IGithubClientService, GithubClientService>(Configuration, "Github");
 
@@ -102,6 +103,8 @@ namespace AppLensV3
             services.AddSingletonWhenEnabled<ISurveysService, SurveysService, NullableSurveysService>(Configuration, "Surveys");
 
             services.AddSingletonWhenEnabled<ICosmosDBUserSettingHandler, CosmosDBUserSettingHandler, NullableCosmosDBUserSettingsHandler>(Configuration, "UserSetting");
+
+            services.AddSingletonWhenEnabled<ICosmosDBWorkflowUsersHandler, CosmosDBWorkflowUsersHandler, NullableCosmosDBWorkflowUsersHandler>(Configuration, "Workflow");
 
             services.AddSingletonWhenEnabled<IDetectorGistTemplateService, TemplateService>(Configuration, "DetectorGistTemplateService");
 

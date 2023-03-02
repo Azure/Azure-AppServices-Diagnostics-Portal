@@ -56,7 +56,7 @@ export class BreadcrumbService {
         }
 
         if (item) {
-            this._router.navigate([item.fullPath], { queryParams: routingParams });
+            this._router.navigate([item.fullPath], { queryParams: routingParams,queryParamsHandling:'merge' });
             return;
         }
     }
