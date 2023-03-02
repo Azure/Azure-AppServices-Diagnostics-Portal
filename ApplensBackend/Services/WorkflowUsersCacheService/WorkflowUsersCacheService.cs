@@ -30,10 +30,13 @@ namespace AppLensV3.Services
                 try
                 {
                     var workflowUsers = await workflowUsersHandler.GetUsersAsync();
-                    var usersInDb = workflowUsers.Select(x => x.Alias.ToLower()).OrderBy(x => x);
-                    if (usersInDb.Any())
+                    if (workflowUsers != null && workflowUsers.Any())
                     {
-                        this.workflowUsersList = usersInDb.ToList();
+                        var usersInDb = workflowUsers.Select(x => x.Alias.ToLower()).OrderBy(x => x);
+                        if (usersInDb.Any())
+                        {
+                            this.workflowUsersList = usersInDb.ToList();
+                        }
                     }
                 }
                 catch (Exception)
