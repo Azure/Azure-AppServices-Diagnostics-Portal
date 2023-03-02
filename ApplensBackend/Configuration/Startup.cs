@@ -104,7 +104,7 @@ namespace AppLensV3
 
             services.AddSingletonWhenEnabled<ICosmosDBUserSettingHandler, CosmosDBUserSettingHandler, NullableCosmosDBUserSettingsHandler>(Configuration, "UserSetting");
 
-            services.AddSingletonWhenEnabled<ICosmosDBWorkflowUsersHandler, CosmosDBWorkflowUsersHandler, NullableCosmosDBWorkflowUsersHandler>(Configuration, "WorkflowUsers");
+            services.AddSingletonWhenEnabled<ICosmosDBWorkflowUsersHandler, CosmosDBWorkflowUsersHandler, NullableCosmosDBWorkflowUsersHandler>(Configuration, "Workflow");
 
             services.AddSingletonWhenEnabled<IDetectorGistTemplateService, TemplateService>(Configuration, "DetectorGistTemplateService");
 
