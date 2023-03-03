@@ -9,7 +9,10 @@
           <div class="mr-2">
             <i *ngIf="data.promptType ==='automatic' && isLoading && data.children && data.children.length > 0"
               class="fa fa-circle-o-notch fa-spin spin-icon mr-2" aria-hidden="true"></i>
-            <div class="hover-text"><i class="fa fa-tasks" aria-hidden="true"></i>
+            <img class="kusto-icon mr-2" *ngIf="data.metadataPropertyBag && data.metadataPropertyBag.length > 0"
+              src="assets/img/kusto.png" (click)="showMetadata()" />
+            <div class="hover-text">
+              <i class="fa fa-tasks" aria-hidden="true"></i>
               <span class="tooltip-text" id="right">
                 <table class="table table-bordered">
                   <thead>
@@ -29,7 +32,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
 

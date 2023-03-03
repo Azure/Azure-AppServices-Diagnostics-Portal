@@ -7,6 +7,7 @@ import { DetectorControlService } from '../../services/detector-control.service'
 import { DiagnosticService } from '../../services/diagnostic.service';
 import { WorkflowHelperService } from "../../services/workflow-helper.service";
 import { WorkflowConditionNodeComponent } from '../workflow-condition-node/workflow-condition-node.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'workflow-node',
@@ -209,7 +210,7 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
     return nodeResult;
   }
 
-  getNewNode(nodeResult: workflowNodeResult, data: any) : NgFlowchart.PendingStep {
+  getNewNode(nodeResult: workflowNodeResult, data: any): NgFlowchart.PendingStep {
     let newNode: NgFlowchart.PendingStep = {} as NgFlowchart.PendingStep;
     newNode.data = data;
     if (nodeResult.type.toLowerCase() === 'iftrue' || nodeResult.type.toLowerCase() === 'iffalse' || nodeResult.type.toLowerCase() === 'switchcase' || nodeResult.type.toLowerCase() === 'switchcasedefault') {
@@ -223,5 +224,25 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
     }
 
     return newNode;
+  }
+
+  showMetadata() {
+    let html: string = '';
+    this.data.metadataPropertyBag.forEach(entry => {
+      if (entry.key === 'Query') {
+        html+= "<div>"
+        html+= `<strong style='text-align:left;'>${entry.value.operationName}</strong>`;
+        html += `<pre style='text-align:left;'>${entry.value.text}</pre>`;
+        html += `<div><a href='${entry.value.url}' target='_blank'>Run in Kusto Web Explorer</a> <a class='ml-2' href='${entry.value.kustoDesktopUrl}' target='_blank'>Run in Kusto Desktop</a> </div>`
+        html+= "</div>"
+      }
+    });
+
+    Swal.fire({
+      title: 'Kusto',
+      html: html,
+      width: 1000,
+      showCloseButton: true
+    })
   }
 }
