@@ -97,7 +97,7 @@ namespace Backend.Services
 
             foreach (var expiredCert in _certificateRefreshService.GetExpiredCertificates())
             {
-                apiKey = DecryptUsingCertificate(cert, data);
+                apiKey = DecryptUsingCertificate(expiredCert, data);
                 if (!string.IsNullOrWhiteSpace(apiKey))
                 {
                     response.ApiKey = apiKey;
