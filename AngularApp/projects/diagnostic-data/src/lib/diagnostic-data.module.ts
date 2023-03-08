@@ -156,6 +156,8 @@ import { ChatGPTContextService } from './services/chat-gpt-context-service';
 import { GenericOpenAIService } from '../public_api';
 import { QueryResponseService } from './services/query-response.service';
 import { WorkflowConditionNodeComponent } from './components/workflow-condition-node/workflow-condition-node.component';
+import { OptInsightsEnablementComponent } from './components/opt-insights-enablement/opt-insights-enablement.component';
+import { OptInsightsMarkdownComponent } from './components/opt-insights-markdown/opt-insights-markdown.component';
 
 @NgModule({
     imports: [
@@ -258,7 +260,9 @@ import { WorkflowConditionNodeComponent } from './components/workflow-condition-
         WorkflowResultComponent,
         WorkflowViewComponent,
         WorkflowNodeComponent,
-        WorkflowConditionNodeComponent
+        WorkflowConditionNodeComponent,
+        OptInsightsEnablementComponent,
+        OptInsightsMarkdownComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
