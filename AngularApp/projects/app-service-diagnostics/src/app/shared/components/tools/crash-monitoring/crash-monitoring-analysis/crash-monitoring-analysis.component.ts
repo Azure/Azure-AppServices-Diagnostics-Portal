@@ -266,7 +266,7 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
 
   getLinkToDumpFile(dumpFileName: string): string {
     if (this.daasStorageConfiguration !== null) {
-      let blobUrl: URL;
+      let blobUrl: URL = null;
       if (this.daasStorageConfiguration.SasUri) {
         blobUrl = new URL(this.daasStorageConfiguration.SasUri);
       }
@@ -274,12 +274,13 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
         blobUrl = new URL(this.daasBlobSasUri);
       }
 
-      let relativePath = "CrashDumps/" + dumpFileName;
-      return `https://${blobUrl.host}${blobUrl.pathname}/${relativePath}?${blobUrl.searchParams}`;
-
-    } else {
-      return "";
+      if (blobUrl) {
+        let relativePath = "CrashDumps/" + dumpFileName;
+        return `https://${blobUrl.host}${blobUrl.pathname}/${relativePath}?${blobUrl.searchParams}`;
+      }
     }
+    
+    return "";
   }
 
   stopMonitoring(viaAgent: boolean) {
