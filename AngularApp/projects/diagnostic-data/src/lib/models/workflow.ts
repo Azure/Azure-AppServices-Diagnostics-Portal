@@ -135,9 +135,6 @@ export interface workflowNodeResult {
 export interface inputNodeSettings {
   inputType: inputType;
   variableLabel: string;
-  // variableName: string;
-  // startDateVariableName: string;
-  // endDateVariableName: string;
   variables: Dictionary<string>;
   options: string[];
 }
