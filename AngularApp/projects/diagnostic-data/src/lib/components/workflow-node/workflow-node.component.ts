@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MarkdownService } from 'ngx-markdown';
 import { NgFlowchart, NgFlowchartStepComponent } from 'projects/ng-flowchart/dist';
 import { HealthStatus } from '../../models/detector';
@@ -8,6 +8,7 @@ import { DiagnosticService } from '../../services/diagnostic.service';
 import { WorkflowHelperService } from "../../services/workflow-helper.service";
 import { WorkflowConditionNodeComponent } from '../workflow-condition-node/workflow-condition-node.component';
 import Swal from 'sweetalert2';
+import { WorkflowAcceptUserinputComponent } from '../workflow-accept-userinput/workflow-accept-userinput.component';
 
 @Component({
   selector: 'workflow-node',
@@ -16,6 +17,13 @@ import Swal from 'sweetalert2';
 })
 export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNodeResult> implements OnInit {
 
+  private acceptUserInput: WorkflowAcceptUserinputComponent;
+  @ViewChild('acceptUserInput') set content(content: WorkflowAcceptUserinputComponent) {
+    if (content) {
+      this.acceptUserInput = content;
+    }
+  }
+
   isLoading: boolean = false;
   error: any;
   status: HealthStatus = HealthStatus.Info;
@@ -23,7 +31,7 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
   runButtonClicked: boolean = false;
 
   constructor(private _diagnosticService: DiagnosticService, private _detectorControlService: DetectorControlService,
-    private _workflowHelperService: WorkflowHelperService, private _markdownService: MarkdownService) {
+    private _workflowHelperService: WorkflowHelperService) {
     super();
   }
 
@@ -60,19 +68,32 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
     this.runButtonClicked = true;
     this.isLoading = true;
 
-    children.forEach(child => {
+    if (this.data.type.toLowerCase() === "input") {
+      let userInputs = this.acceptUserInput.getUserInput();
+      let thisNode: workflowNodeState = { id: this.data.id, isActive: true };
+
       if (this.data.isOnboardingMode != null && this.data.isOnboardingMode) {
-        this.executeOnboardingNode(child);
+        this.executeOnboardingNode(thisNode, userInputs);
       } else {
-        this.executeNode(child)
+        this.executeNode(thisNode, userInputs)
       }
-    });
+    }
+    else {
+      children.forEach(child => {
+        if (this.data.isOnboardingMode != null && this.data.isOnboardingMode) {
+          this.executeOnboardingNode(child);
+        } else {
+          this.executeNode(child)
+        }
+      });
+    }
   }
 
-  executeOnboardingNode(child: workflowNodeState) {
+  executeOnboardingNode(child: workflowNodeState, userInputs: any = null) {
     let body = {
       WorkflowPackage: this.data.workflowPublishBody,
-      Resource: null
+      Resource: null,
+      UserInputs: userInputs
     }
     this._diagnosticService.getWorkflowCompilerResponse(body,
       this._detectorControlService.startTimeString,
@@ -93,11 +114,21 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
           if (workflowNodeResult.type === "IfElseCondition" || workflowNodeResult.type === "SwitchCondition") {
             this.addAdditionalNodesIfNeeded(workflowNodeResult, workflowNodeResult.description, this);
           } else {
-            this.addChild(this.getNewNode(workflowNodeResult, workflowNodeResult), {
-              sibling: true
-            }).then(addedNode => {
-              this.addAdditionalNodesIfNeeded(workflowNodeResult, '', addedNode);
-            });
+
+            if (userInputs == null) {
+              this.addChild(this.getNewNode(workflowNodeResult, workflowNodeResult), {
+                sibling: true
+              }).then(addedNode => {
+                this.addAdditionalNodesIfNeeded(workflowNodeResult, '', addedNode);
+              });
+            } else {
+              if (workflowNodeResult.children && workflowNodeResult.children.length > 0) {
+                this.isLoading = true;
+                workflowNodeResult.children.forEach(child => {
+                  this.executeOnboardingNode(child, null);
+                });
+              }
+            }
           }
         }
       }, error => {
@@ -106,12 +137,12 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
       });
   }
 
-  executeNode(child: workflowNodeState) {
+  executeNode(child: workflowNodeState, userInputs: any = null) {
     let startTime = this._detectorControlService.startTimeString;
     let endTime = this._detectorControlService.endTimeString;
 
     this._diagnosticService.getWorkflowNode(this.data.workflowId, this.data.workflowExecutionId, child.id, startTime, endTime,
-      this._detectorControlService.isInternalView, null)
+      this._detectorControlService.isInternalView, null, null, userInputs)
       .subscribe((nodeResult: workflowNodeResult) => {
         this.isLoading = false;
         if (nodeResult != null) {
@@ -121,11 +152,20 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
         if (nodeResult.type === "IfElseCondition" || nodeResult.type === "SwitchCondition") {
           this.addAdditionalNodesIfNeeded(nodeResult, nodeResult.description, this);
         } else {
-          this.addChild(this.getNewNode(nodeResult, nodeResult), {
-            sibling: true
-          }).then(addedNode => {
-            this.addAdditionalNodesIfNeeded(nodeResult, '', addedNode);
-          });
+          if (userInputs == null) {
+            this.addChild(this.getNewNode(nodeResult, nodeResult), {
+              sibling: true
+            }).then(addedNode => {
+              this.addAdditionalNodesIfNeeded(nodeResult, '', addedNode);
+            });
+          } else {
+            if (nodeResult.children && nodeResult.children.length > 0) {
+              this.isLoading = true;
+              nodeResult.children.forEach(child => {
+                this.executeNode(child, null);
+              });
+            }
+          }
 
         }
       }, (error: any) => {
@@ -185,6 +225,8 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
           }
         }
       });
+    } else {
+      this.isLoading = false;
     }
   }
 
@@ -192,8 +234,7 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
     return this.data.promptType != 'automatic'
       && this.data.type.toLowerCase() != 'ifelsecondition'
       && this.data.type.toLowerCase() != 'switchcondition'
-      && this.data.children
-      && this.data.children.length > 0
+      && ((this.data.children && this.data.children.length > 0) || this.data.type.toLowerCase() === "input");
   }
 
   getDescriptionForConditionNodes(nodeResult: workflowNodeResult, description: string): workflowNodeResult {
@@ -230,11 +271,11 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
     let html: string = '';
     this.data.metadataPropertyBag.forEach(entry => {
       if (entry.key === 'Query') {
-        html+= "<div>"
-        html+= `<strong style='text-align:left;'>${entry.value.operationName}</strong>`;
+        html += "<div>"
+        html += `<strong style='text-align:left;'>${entry.value.operationName}</strong>`;
         html += `<pre style='text-align:left;'>${entry.value.text}</pre>`;
         html += `<div><a href='${entry.value.url}' target='_blank'>Run in Kusto Web Explorer</a> <a class='ml-2' href='${entry.value.kustoDesktopUrl}' target='_blank'>Run in Kusto Desktop</a> </div>`
-        html+= "</div>"
+        html += "</div>"
       }
     });
 

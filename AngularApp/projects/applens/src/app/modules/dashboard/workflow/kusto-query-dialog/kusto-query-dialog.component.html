@@ -30,7 +30,12 @@
               <td>{{ v.name }}</td>
               <td>{{ v.type }}</td>
               <td>{{ getKustoSampleUsage(v) }}</td>
-              <td>{{ v.runtimeValue }}</td>
+              <td>
+                <span *ngIf="!v.isUserInput">{{ v.runtimeValue }}</span>
+                <ng-container *ngIf="v.isUserInput">
+                  <input class="form-control" type="text" [name]="v.name" [(ngModel)]="v.runtimeValue" />
+                </ng-container>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -47,8 +52,10 @@
         <div class="mt-2 mb-2">
           <button class="btn btn-primary btn-sm" (click)="executeQuery()">Execute</button>
           <i *ngIf="isExecutingQuery" class="ml-2 fa fa-gear fa-spin fa-1x"></i>
-          <a class="ml-2 kusto-link" *ngIf="kustoQueryUrl && !isExecutingQuery" [href]="kustoQueryUrl" target="_blank">Kusto Web</a>
-          <a class="ml-2 kusto-link" *ngIf="kustoDesktopUrl && !isExecutingQuery" [href]="kustoDesktopUrl">Kusto Desktop</a>
+          <a class="ml-2 kusto-link" *ngIf="kustoQueryUrl && !isExecutingQuery" [href]="kustoQueryUrl"
+            target="_blank">Kusto Web</a>
+          <a class="ml-2 kusto-link" *ngIf="kustoDesktopUrl && !isExecutingQuery" [href]="kustoDesktopUrl">Kusto
+            Desktop</a>
           <div *ngIf="error">
             <error-message [error]="error"></error-message>
           </div>
@@ -90,8 +97,8 @@
           in subsequent steps.
         </span>
         <div class="mt-3 mb-3">
-          <configure-variables [variables]="variablesInMemoryCopy"
-            (onVariablesSaved)="updateVariables($event)" [currentNode]="currentNode" >
+          <configure-variables [variables]="variablesInMemoryCopy" (onVariablesSaved)="updateVariables($event)"
+            [currentNode]="currentNode">
           </configure-variables>
         </div>
       </div>

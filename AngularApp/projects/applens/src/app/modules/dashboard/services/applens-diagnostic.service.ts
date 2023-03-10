@@ -48,7 +48,7 @@ export class ApplensDiagnosticService {
       formQueryParams);
   }
 
-  getWorkflowNode(workflowId: string, workflowExecutionId: string, nodeId: string, startTime: string, endTime: string, internalView: boolean = true, formQueryParams?: string, overrideResourceUri?: string): Observable<workflowNodeResult> {
+  getWorkflowNode(workflowId: string, workflowExecutionId: string, nodeId: string, startTime: string, endTime: string, internalView: boolean = true, formQueryParams?: string, overrideResourceUri?: string, userInputs?: any): Observable<workflowNodeResult> {
     let resourceId = overrideResourceUri ? overrideResourceUri : this._resourceService.getCurrentResourceId(true);
     if (!resourceId.startsWith('/')) resourceId = '/' + resourceId;
 
@@ -63,7 +63,8 @@ export class ApplensDiagnosticService {
       startTime,
       endTime,
       internalView,
-      formQueryParams);
+      formQueryParams,
+      userInputs);
   }
 
   getSystemInvoker(detector: string, systemInvokerId: string = '', dataSource: string, timeRange: string): Observable<DetectorResponse> {

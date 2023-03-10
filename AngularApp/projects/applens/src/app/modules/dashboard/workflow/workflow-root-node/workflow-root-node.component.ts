@@ -46,6 +46,10 @@ export class WorkflowRootNodeComponent extends NgFlowchartStepComponent<any> imp
       wfNode.type = "markdown";
       wfNode.data.name = "markdown1";
       wfNode.data.title = "Display Markdown";
+    } else if (type === nodeType.input) {
+      wfNode.type = "input";
+      wfNode.data.name = "input1";
+      wfNode.data.title = "Take User Input";
     }
 
     wfNode.children = [];

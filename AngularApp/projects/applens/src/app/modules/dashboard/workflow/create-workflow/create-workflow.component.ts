@@ -18,6 +18,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { AdalService } from 'adal-angular4';
 import { WorkflowRootNodeComponent } from '../workflow-root-node/workflow-root-node.component';
 import { ForeachNodeComponent } from '../foreach-node/foreach-node.component';
+import { InputNodeComponent } from '../input-node/input-node.component';
 
 @Component({
   selector: 'create-workflow',
@@ -123,6 +124,7 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit {
     this.stepRegistry.registerStep('switchCaseDefault', SwitchCaseDefaultStepComponent);
     this.stepRegistry.registerStep('switchCase', SwitchCaseStepComponent);
     this.stepRegistry.registerStep('foreach', ForeachNodeComponent);
+    this.stepRegistry.registerStep('input', InputNodeComponent);
     this.stepRegistry.registerStep('rootNode', WorkflowRootNodeComponent);
 
     if (this.id === '') {

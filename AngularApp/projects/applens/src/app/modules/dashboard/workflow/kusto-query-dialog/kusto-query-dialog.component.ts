@@ -150,7 +150,8 @@ export class KustoQueryDialogComponent implements OnInit {
         name: name,
         value: value,
         type: col.dataType,
-        runtimeValue: element[col.columnName]
+        runtimeValue: element[col.columnName],
+        isUserInput: false
       });
     }
 

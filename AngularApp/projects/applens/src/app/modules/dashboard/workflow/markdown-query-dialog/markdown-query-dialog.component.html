@@ -47,11 +47,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr  class="code-text" *ngFor="let v of inputParams.completionOptions">
+            <tr class="code-text" *ngFor="let v of inputParams.completionOptions">
               <td>{{ v.name }}</td>
-              <td >{{ v.type }}</td>
-              <td  *ngIf="evaluateStatus">{{ getExpression(v) }}</td>
-              <td >{{ v.runtimeValue }}</td>
+              <td>{{ v.type }}</td>
+              <td *ngIf="evaluateStatus">{{ getExpression(v) }}</td>
+              <td>
+                <span *ngIf="!v.isUserInput">{{ v.runtimeValue }}</span>
+                <ng-container *ngIf="v.isUserInput">
+                  <input class="form-control" type="text" [name]="v.name" [(ngModel)]="v.runtimeValue" />
+                </ng-container>
+              </td>
             </tr>
           </tbody>
         </table>

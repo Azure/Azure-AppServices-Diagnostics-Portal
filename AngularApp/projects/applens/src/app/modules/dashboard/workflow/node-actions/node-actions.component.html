@@ -32,6 +32,9 @@
   <!-- <li class="dropdown-item" [class.disabled]="isDisabled"><a class="dropdown-item"
       (click)="addCondition('foreach')" href="javascript:void(0)">Foreach</a>
   </li> -->
+  <li class="dropdown-item" [class.disabled]="isDisabled"><a class="dropdown-item"
+      (click)="addNode(nodeType.input, false)" href="javascript:void(0)">User Input</a>
+  </li>
   <li class="dropdown-item" *ngIf="!isRootNode && !isConditionNode"><a class="dropdown-item"
       (click)="addNode(nodeType.detector, true)" href="javascript:void(0)">Detector
       (parallel)</a>

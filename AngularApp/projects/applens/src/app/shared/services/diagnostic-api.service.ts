@@ -75,7 +75,7 @@ export class DiagnosticApiService {
   }
 
   public getWorkflowNode(version: string, resourceId: string, workflowId: string, workflowExecutionId: string, nodeId: string, startTime?: string, endTime?: string,
-    internalView: boolean = true, additionalQueryParams?: string):
+    internalView: boolean = true, additionalQueryParams?: string, userInputs?: any):
     Observable<workflowNodeResult> {
     let timeParameters = this._getTimeQueryParameters(startTime, endTime);
     let path = `${version}${resourceId}/workflows/${workflowId}?${timeParameters}`;
@@ -86,7 +86,13 @@ export class DiagnosticApiService {
     if (additionalQueryParams != undefined) {
       path += additionalQueryParams;
     }
-    return this.invoke<workflowNodeResult>(path, HttpMethod.POST, null, false, true, true, internalView);
+
+    let body = null;
+    if (userInputs != null) {
+      body = { ResourcePostBody: null, UserInputs: userInputs };
+    }
+
+    return this.invoke<workflowNodeResult>(path, HttpMethod.POST, body, false, true, true, internalView);
   }
 
   public getSystemInvoker(resourceId: string, detector: string, systemInvokerId: string = '', dataSource: string,

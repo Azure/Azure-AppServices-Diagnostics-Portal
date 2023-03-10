@@ -156,6 +156,7 @@ import { ChatGPTContextService } from './services/chat-gpt-context-service';
 import { GenericOpenAIService } from '../public_api';
 import { QueryResponseService } from './services/query-response.service';
 import { WorkflowConditionNodeComponent } from './components/workflow-condition-node/workflow-condition-node.component';
+import { WorkflowAcceptUserinputComponent } from './components/workflow-accept-userinput/workflow-accept-userinput.component';
 
 @NgModule({
     imports: [
@@ -258,7 +259,8 @@ import { WorkflowConditionNodeComponent } from './components/workflow-condition-
         WorkflowResultComponent,
         WorkflowViewComponent,
         WorkflowNodeComponent,
-        WorkflowConditionNodeComponent
+        WorkflowConditionNodeComponent,
+        WorkflowAcceptUserinputComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,

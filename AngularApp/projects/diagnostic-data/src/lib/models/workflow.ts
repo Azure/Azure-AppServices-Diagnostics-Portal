@@ -1,6 +1,10 @@
 import { CompilationProperties } from "./compilation-properties";
 import { DataTableResponseColumn, PropertyBag } from "./detector";
 
+export interface Dictionary<T> {
+  [K: string]: T;
+}
+
 export enum nodeStatus {
   Critical = 'Critical',
   Warning = 'Warning',
@@ -12,7 +16,8 @@ export enum nodeStatus {
 export enum nodeType {
   detector = 'detector',
   kustoQuery = 'kustoQuery',
-  markdown = 'markdown'
+  markdown = 'markdown',
+  input = 'input'
 }
 
 export enum promptType {
@@ -47,6 +52,7 @@ export class stepVariable {
   type: string = 'String';
   value: string = '';
   runtimeValue: any;
+  isUserInput: boolean = false;
 }
 
 export class workflowNodeData {
@@ -70,6 +76,24 @@ export class workflowNodeData {
   switchOnValue: string;
   switchCaseValue: string;
   foreachVariable: string;
+  inputNode: inputNode = new inputNode();
+}
+
+export class inputNode {
+  variableName: string = '';
+  variableLabel: string = '';
+  inputType: inputType = inputType.text;
+  startDateVariableName: string = '';
+  endDateVariableName: string = '';
+  options: string = '';
+  variableSelectSource: string = '';
+}
+
+export enum inputType {
+  text = "Text",
+  select = "Select",
+  date = "Date",
+  daterange = "DateRange"
 }
 
 export class workflowPublishBody {
@@ -105,6 +129,17 @@ export interface workflowNodeResult {
   succeeded: boolean;
   promptType: string;
   metadataPropertyBag: PropertyBag[]
+  inputNodeSettings: inputNodeSettings;
+}
+
+export interface inputNodeSettings {
+  inputType: inputType;
+  variableLabel: string;
+  // variableName: string;
+  // startDateVariableName: string;
+  // endDateVariableName: string;
+  variables: Dictionary<string>;
+  options: string[];
 }
 
 export interface workflowExecutionTrace {
