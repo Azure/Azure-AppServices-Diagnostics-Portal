@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { IDatePickerProps } from 'office-ui-fabric-react';
 import { inputType, workflowNodeResult } from '../../models/workflow';
+import * as momentNs from 'moment';
 
 @Component({
   selector: 'workflow-accept-userinput',
@@ -25,6 +27,10 @@ export class WorkflowAcceptUserinputComponent implements OnInit {
   endDateFieldValue: Date = new Date();
   endTimeField: string = '06:00';
   userInputDisabled: boolean = false;
+
+  formatDate: IDatePickerProps['formatDate'] = (date) => {
+    return momentNs(date).format('YYYY-MM-DD');
+  };
 
   ngOnInit(): void {
     if (this.data.inputNodeSettings && this.data.inputNodeSettings.inputType === inputType.select) {
