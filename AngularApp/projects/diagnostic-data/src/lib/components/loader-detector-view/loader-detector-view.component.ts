@@ -124,7 +124,7 @@ export class LoaderDetectorViewComponent implements OnInit {
                 source: this.Source,
                 isPublic: `${this.isPublic}`
             });
-        }, this.timeoutInMS * 1000);
+        }, this.timeoutInMS);
     }
 }
 
