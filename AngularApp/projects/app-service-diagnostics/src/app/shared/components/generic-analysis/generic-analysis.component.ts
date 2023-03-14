@@ -69,8 +69,10 @@ export class GenericAnalysisComponent extends GenericDetectorComponent implement
                     //Show search bar in case submission or if not passing searchTerm
                     this.showSearchBar = this.searchMode === SearchAnalysisMode.CaseSubmission || !this.searchTerm ? true : this.showSearchBar;
 
-                    if(this.searchMode === SearchAnalysisMode.CaseSubmission && !this.searchTerm) {
-                        this._telemetryService.logEvent(TelemetryEventNames.EmptySearchTerm);
+                    if(!this.searchTerm) {
+                        this._telemetryService.logEvent(TelemetryEventNames.EmptySearchTerm, {
+                            searchMode: SearchAnalysisMode[this.searchMode]
+                        });
                     }
 
                     this.displayDetectorContainer = false;
