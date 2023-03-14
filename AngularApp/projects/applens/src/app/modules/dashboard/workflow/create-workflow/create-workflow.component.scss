@@ -3,7 +3,7 @@
 }
 
 #canvas {
-  height: 80vh;
+  height: 640px;
   width: calc(100%);
   background-color: var(--bodyBackground);
   color: var(--bodyText);
@@ -24,7 +24,17 @@ div#canvas[disabled="true"] ::ng-deep.ngflowchart-step-wrapper {
   margin: 0 10px;
 }
 
-input, textarea {
+input,
+textarea {
   background-color: var(--bodyBackground);
   color: var(--inputText);
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+::ng-deep .ng-select .ng-select-container , ::ng-deep .ng-select.ng-select-multiple .ng-select-container{
+  min-height: 6px;
+  font-size: 0.9em;
 }
