@@ -122,7 +122,8 @@ export const TelemetryEventNames = {
     ChatGPTRequestError: 'ChatGPTRequestError',
     ChatGPTUserQuotaExceeded: 'ChatGPTUserQuotaExceeded',
     ChatGPTTooManyRequestsError: 'ChatGPTTooManyRequestsError',
-    LoadingTimeOut: 'LoadingTimeOut'
+    LoadingTimeOut: 'LoadingTimeOut',
+    EmptySearchTerm: 'EmptySearchTerm'
 };
 
 export const TelemetrySource = {
