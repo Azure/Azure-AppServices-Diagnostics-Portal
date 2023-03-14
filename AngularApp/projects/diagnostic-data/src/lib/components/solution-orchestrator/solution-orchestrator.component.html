@@ -68,7 +68,7 @@
         </div>
       </div>
       <div style="width: 60%;margin: 15px 20%;min-width: 300px;background-color: white;" *ngIf="(fetchingDetectors || getPendingDetectorCount() > 0) && !showSolutionsTimedout">
-        <loader-detector-view></loader-detector-view>
+        <loader-detector-view [Source]="'SolutionOrchestrator'"></loader-detector-view>
       </div>
       <div style="width: 60%;margin: 15px 20%;min-width: 300px;background-color: white;" *ngIf="!fetchingDetectors && (((getPendingDetectorCount() === 0) && (!topLevelSolutions || topLevelSolutions.length==0)) || showSolutionsTimedout)">
         <!--<div class="support-doc-section">

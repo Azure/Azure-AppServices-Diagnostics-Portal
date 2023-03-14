@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
+import { DiagnosticDataConfig, DIAGNOSTIC_DATA_CONFIG } from '../../config/diagnostic-data-config';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { Guid } from '../../utilities/guid';
@@ -18,6 +19,7 @@ export class LoaderDetectorViewComponent implements OnInit {
     @Input() LoadingMessage2: string;
     @Input() LoadingMessage3: string;
     @Input() LoadingMessage4: string;
+    @Input() Source: string;
     message: string = "loading detector view";
     imgSrc: string = "assets/img/loading-detector-view/fetching_logs.svg";
     loadingString: string = "Fetching properties and logs ...";
@@ -28,6 +30,7 @@ export class LoaderDetectorViewComponent implements OnInit {
     endLoadingTimeInMilliSeconds: any;
     duration: any;
     trackingEventId: any;
+    isPublic: boolean = false;
 
     isTimeout: boolean = false;
     timeoutTimer: any = null;
@@ -56,7 +59,8 @@ export class LoaderDetectorViewComponent implements OnInit {
         }
     ];
 
-    constructor(private telemetryService: TelemetryService) {
+    constructor(private telemetryService: TelemetryService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
+        this.isPublic = config?.isPublic;
     }
 
 
@@ -117,7 +121,8 @@ export class LoaderDetectorViewComponent implements OnInit {
         this.timeoutTimer = setTimeout(() => {
             this.isTimeout = true;
             this.telemetryService.logEvent(TelemetryEventNames.LoadingTimeOut, {
-                Source: ""
+                source: this.Source,
+                isPublic: `${this.isPublic}`
             });
         }, this.timeoutInMS * 1000);
     }
