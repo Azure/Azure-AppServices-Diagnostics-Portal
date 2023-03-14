@@ -29,6 +29,10 @@ export class LoaderDetectorViewComponent implements OnInit {
     duration: any;
     trackingEventId: any;
 
+    isTimeout: boolean = false;
+    timeoutTimer: any = null;
+    readonly timeoutInMS: number = 120 * 1000;
+
     loadingStages: LoadingStage[] = [
         {
             duration: 2000,
@@ -55,13 +59,14 @@ export class LoaderDetectorViewComponent implements OnInit {
     constructor(private telemetryService: TelemetryService) {
     }
 
-    
+
     ngOnInit() {
         this.trackingEventId = Guid.newGuid();
-        if (this.LoadingMessage1 || this.LoadingMessage2 || this.LoadingMessage3 || this.LoadingMessage4){
+        if (this.LoadingMessage1 || this.LoadingMessage2 || this.LoadingMessage3 || this.LoadingMessage4) {
             this.customLoadingMessages();
         }
         this.loading();
+        this.checkLoadingTimeout();
     }
 
     // This is the loading function for each stage. We set a random time out for each stage.
@@ -91,6 +96,8 @@ export class LoaderDetectorViewComponent implements OnInit {
         let endLoadingTimeISOString = new Date().toISOString();
         this.duration = this.endLoadingTimeInMilliSeconds - this.startLoadingTimeInMilliSeconds;
         this.telemetryService.logEvent(TelemetryEventNames.LoadingDetectorViewEnded, { "TrackingEventId": this.trackingEventId, "EndLoadingTime": endLoadingTimeISOString, "Duration": this.duration });
+
+        window.clearTimeout(this.timeoutTimer);
     }
 
     ngAfterViewInit() {
@@ -103,6 +110,16 @@ export class LoaderDetectorViewComponent implements OnInit {
         this.loadingStages[1].loadingString = this.LoadingMessage2 != undefined ? this.LoadingMessage2 : this.loadingStages[1].loadingString;
         this.loadingStages[2].loadingString = this.LoadingMessage3 != undefined ? this.LoadingMessage3 : this.loadingStages[2].loadingString;
         this.loadingStages[3].loadingString = this.LoadingMessage4 != undefined ? this.LoadingMessage4 : this.loadingStages[3].loadingString;
+    }
+
+    checkLoadingTimeout() {
+        this.isTimeout = false;
+        this.timeoutTimer = setTimeout(() => {
+            this.isTimeout = true;
+            this.telemetryService.logEvent(TelemetryEventNames.LoadingTimeOut, {
+                Source: ""
+            });
+        }, this.timeoutInMS * 1000);
     }
 }
 
