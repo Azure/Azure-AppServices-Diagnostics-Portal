@@ -119,11 +119,13 @@ export class LoaderDetectorViewComponent implements OnInit {
     checkLoadingTimeout() {
         this.isTimeout = false;
         this.timeoutTimer = setTimeout(() => {
-            this.isTimeout = true;
-            this.telemetryService.logEvent(TelemetryEventNames.LoadingTimeOut, {
-                source: this.Source,
-                isPublic: `${this.isPublic}`
-            });
+            if (!this.isTimeout) {
+                this.isTimeout = true;
+                this.telemetryService.logEvent(TelemetryEventNames.LoadingTimeOut, {
+                    source: this.Source,
+                    isPublic: `${this.isPublic}`
+                });
+            }
         }, this.timeoutInMS);
     }
 }
