@@ -151,3 +151,5 @@ export * from './lib/components/gantt-chart-taskbar-colors/gantt-chart-taskbar-c
 
 export * from './lib/modules/fab-coachmark/coachmark.module'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.module'
+
+export * from './lib/pipe/safe.pipe';
