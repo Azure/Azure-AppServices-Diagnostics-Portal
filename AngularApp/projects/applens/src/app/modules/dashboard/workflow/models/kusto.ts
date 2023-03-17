@@ -8,6 +8,7 @@ export class kustoQueryDialogParams {
   kustoQueryColumns: DataTableResponseColumn[];
   completionOptions: stepVariable[] = [];
   currentNode: NgFlowchartStepComponent<workflowNodeData>;
+  addQueryOutputToMarkdown: boolean;
 }
 
 export interface dynamicExpressionBody {

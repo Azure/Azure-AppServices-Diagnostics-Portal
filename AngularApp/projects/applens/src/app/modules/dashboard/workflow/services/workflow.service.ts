@@ -449,6 +449,18 @@ export class WorkflowService {
     return false;
   }
 
+  getQueryText(data: workflowNodeData): string {
+    if (data.queryText) {
+      return data.queryText;
+    }
+
+    if (data.kustoNode && data.kustoNode.queryText) {
+      return data.kustoNode.queryText
+    }
+
+    return '';
+  }
+
   isNodeUsingVariable(stepVariableName: string, node: NgFlowchartStepComponent<workflowNodeData>): boolean {
     if (node.data.markdownText.toLowerCase().indexOf(stepVariableName.toLocaleLowerCase()) > -1) {
       return true;
@@ -457,8 +469,8 @@ export class WorkflowService {
       return true;
     }
 
-    if (node.type === 'kustoQuery' && node.data.queryText) {
-      let queryPlainText = this.decodeBase64String(node.data.queryText);
+    if (node.type === 'kustoQuery' && this.getQueryText(node.data)) {
+      let queryPlainText = this.decodeBase64String(this.getQueryText(node.data));
       if (queryPlainText.indexOf(stepVariableName.toLocaleLowerCase()) > -1) {
         return true;
       }

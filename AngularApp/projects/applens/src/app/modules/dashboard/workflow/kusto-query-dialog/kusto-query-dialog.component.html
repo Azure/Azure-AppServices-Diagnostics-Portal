@@ -87,6 +87,19 @@
         </div>
       </div>
     </div>
+    <div class="row mb-2 mt-2">
+      <div class="col-sm-2">
+        <label class="form-label">Add query output to markdown</label>
+      </div>
+      <div class="col-sm-10">
+        <div>
+          <label class="checkbox-inline">
+            <input [(ngModel)]="inputKustoQueryDialogParams.addQueryOutputToMarkdown" id="addQueryOutputToMarkdown"
+              name="chkaddQueryOutputToMarkdown" type="checkbox" /> (Check this checkbox if you want to append the query
+            output as an HTML table to the markdown) </label>
+        </div>
+      </div>
+    </div>
     <div class="row mb-2 mt-5">
       <div class="col-sm-2">
         <label class="form-label">Configure Variables</label>

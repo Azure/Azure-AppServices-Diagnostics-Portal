@@ -62,7 +62,7 @@ export class workflowNodeData {
   detectorId: string = '';
   isEditing: boolean = false;
   isEditingTitle: boolean = false;
-  queryText: string = '';
+  queryText?: string = '';
   kustoQueryColumns: DataTableResponseColumn[] = [];
   variables: stepVariable[] = [];
   markdownText: string = '';
@@ -77,6 +77,23 @@ export class workflowNodeData {
   switchCaseValue: string;
   foreachVariable: string;
   inputNode: inputNode = new inputNode();
+  kustoNode: kustoNode = new kustoNode();
+}
+
+export class kustoNode {
+  queryText: string = '';
+  kustoClusterName: string = '';
+  kustoClusterDataBase: string = '';
+  addQueryOutputToMarkdown: boolean = false;
+  slotMapConfiguration: slotMapConfiguration = new slotMapConfiguration()
+}
+
+export class slotMapConfiguration {
+  timeStampColumnName: string;
+  siteRuntimeNameColumnName: string;
+  finalColumnName: string;
+  aggregateColumnName: string;
+  runSlotMapOnQueryOutput: boolean = false;
 }
 
 export class inputNode {

@@ -76,7 +76,8 @@ export class KustoQueryDialogComponent implements OnInit {
       queryLabel: this.kustoQueryLabel,
       kustoQueryColumns: this.kustoQueryColumns,
       completionOptions: this.inputKustoQueryDialogParams.completionOptions,
-      currentNode: null
+      currentNode: null,
+      addQueryOutputToMarkdown: this.inputKustoQueryDialogParams.addQueryOutputToMarkdown,
     };
 
     this.dialogRef.close(dialogResult);

@@ -6,7 +6,7 @@ import { NgFlowchart, NgFlowchartCanvasDirective, NgFlowchartStepRegistry } from
 import { DetectorNodeComponent } from '../detector-node/detector-node.component';
 import { KustoNodeComponent } from '../kusto-node/kusto-node.component';
 import { MarkdownNodeComponent } from '../markdown-node/markdown-node.component';
-import { nodeType, workflow, workflowNode, workflowNodeData, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
+import { kustoNode, nodeType, workflow, workflowNode, workflowNodeData, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { IfElseConditionStepComponent } from '../ifelse-condition-step/ifelse-condition-step.component';
 import { ConditionIffalseStepComponent } from '../condition-iffalse-step/condition-iffalse-step.component';
 import { ConditionIftrueStepComponent } from '../condition-iftrue-step/condition-iftrue-step.component';
@@ -189,8 +189,37 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit {
       return null;
     }
 
-    this.publishBody.WorkflowJson = this.canvas.getFlow().toJSON(4);
+    let workflowJson = this.canvas.getFlow().toJSON(4);
+    this.publishBody.WorkflowJson = this.updateJsonToLatestSchema(workflowJson)
     return this.publishBody;
+  }
+
+  //
+  // This is added to ensure that queryText property moves to 
+  // data.kustoNode instead of data.queryText. Will remove this change
+  // after updating all the published workflows.
+  //
+
+  updateJsonToLatestSchema(json: string): string {
+    let workflowObject: workflow = JSON.parse(json);
+    this.updateNode(workflowObject.root);
+    return JSON.stringify(workflowObject, null, 4);
+  }
+
+  updateNode(node: workflowNode) {
+    if (node.type === 'kustoQuery') {
+      if (node.data.kustoNode == null) {
+        node.data.kustoNode = new kustoNode();
+      }
+      if (!node.data.kustoNode.queryText) {
+        node.data.kustoNode.queryText = node.data.queryText;
+        delete node.data['queryText'];
+      }
+    }
+
+    if (node.children && node.children.length > 0) {
+      node.children.forEach(child => this.updateNode(child));
+    }
   }
 
   validateWorkflow(): boolean {
