@@ -44,7 +44,9 @@ export class KustoNodeComponent extends WorkflowNodeBaseClass implements OnInit 
     dialogParams.kustoQueryColumns = this.data.kustoQueryColumns;
     dialogParams.completionOptions = this._workflowServicePrivate.getVariableCompletionOptions(this, false);
     dialogParams.currentNode = this.getCurrentNode();
-    dialogParams.addQueryOutputToMarkdown = this.data.kustoNode.addQueryOutputToMarkdown;
+    if (this.data.kustoNode && this.data.kustoNode.addQueryOutputToMarkdown){
+      dialogParams.addQueryOutputToMarkdown = true;
+    }
 
     dialogConfig.data = dialogParams;
     this.matDialog.open(KustoQueryDialogComponent, dialogConfig).afterClosed().subscribe(modelData => {
