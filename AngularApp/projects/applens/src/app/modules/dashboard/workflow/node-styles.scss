@@ -27,3 +27,7 @@ select {
     background-color: var(--bodyBackground);
     color: var(--inputText);
 }
+
+::ng-deep .mat-form-field-appearance-fill ::ng-deep .mat-form-field-flex {
+    background-color: var(--bodyBackground);
+}
