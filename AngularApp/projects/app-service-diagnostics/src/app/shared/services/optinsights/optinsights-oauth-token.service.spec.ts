@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { OptinsightsOauthTokenService } from './optinsights-oauth-token.service';
+import { OptInsightsOAuthTokenService } from './optinsights-oauth-token.service';
 
 describe('OptinsightsOauthTokenService', () => {
-  let service: OptinsightsOauthTokenService;
+  let service: OptInsightsOAuthTokenService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(OptinsightsOauthTokenService);
+    service = TestBed.inject(OptInsightsOAuthTokenService);
   });
 
   it('should be created', () => {
