@@ -39,6 +39,7 @@ import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-dat
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { WorkflowRunDialogComponent } from '../workflow/workflow-run-dialog/workflow-run-dialog.component';
 import { UserSettingService } from '../services/user-setting.service';
+import { WorkflowService } from '../workflow/services/workflow.service';
 
 const codePrefix = `// *****PLEASE DO NOT MODIFY THIS PART*****
 using Diagnostics.DataProviders;
@@ -222,9 +223,9 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   PPERedirectTimer: number = 10;
   DevopsConfig: DevopsConfig;
   useAutoMergeText: boolean = false;
-  detectorReferencesDialogHidden : boolean = true; 
-  gistCommitVersion : string = ""; 
-  charWarningMessage : string = '';
+  detectorReferencesDialogHidden: boolean = true;
+  gistCommitVersion: string = "";
+  charWarningMessage: string = '';
   detectorLoaded: boolean = false;
 
   runButtonStyle: any = {
@@ -347,6 +348,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
   private publishingPackage: Package;
   private userName: string;
+  private userId: string;
 
   private emailRecipients: string = '';
   private _monacoEditor: monaco.editor.ICodeEditor = null;
@@ -375,7 +377,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     private _detectorControlService: DetectorControlService, private _adalService: AdalService,
     public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute,
     private _applensCommandBarService: ApplensCommandBarService, private _router: Router, private _themeService: GenericThemeService, private _applensGlobal: ApplensGlobal,
-    private matDialog: MatDialog, private _queryResponseService: QueryResponseService, private _userSettingService: UserSettingService) {
+    private matDialog: MatDialog, private _queryResponseService: QueryResponseService, private _userSettingService: UserSettingService,
+    private _workflowService: WorkflowService) {
     this.lightOptions = {
       theme: 'vs',
       language: 'csharp',
@@ -419,6 +422,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
     this.userName = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
     this.emailRecipients = this.userName.replace('@microsoft.com', '');
+    this.userId = this.userName.replace('@microsoft.com', '');
     this.publishAccessControlResponse = {};
   }
 
@@ -510,25 +514,34 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   defaultBranch: string;
 
   publishWorkflow() {
-    this.runButtonDisabled = true;
-    this.publishButtonDisabled = true;
-    this.modalPublishingButtonText = "Publishing...";
+    this._diagnosticApi.isUserAllowedForWorkflow(this.userId).subscribe(resp => {
+      if (resp) {
+        this.runButtonDisabled = true;
+        this.publishButtonDisabled = true;
+        this.modalPublishingButtonText = "Publishing...";
 
-    let publishBody = this.createWorkflow.getWorkflowPublishBody()
-    if (publishBody == null) {
-      return;
-    }
+        let publishBody = this.createWorkflow.getWorkflowPublishBody()
+        if (publishBody == null) {
+          return;
+        }
 
-    publishBody.CommittedByAlias = this.userName;
-    this.diagnosticApiService.publishWorkflow(publishBody).subscribe(resp => {
-      this.runButtonDisabled = false;
-      this.modalPublishingButtonText = "Publish";
-      this.publishSuccess = true;
-    }, error => {
-      this.modalPublishingButtonText = "Publish";
-      this.runButtonDisabled = false;
-      this.showAlertBox('alert-danger', 'Publishing failed. Please try again after some time.');
+        publishBody.CommittedByAlias = this.userName;
+        this.diagnosticApiService.publishWorkflow(publishBody).subscribe(resp => {
+          this.runButtonDisabled = false;
+          this.modalPublishingButtonText = "Publish";
+          this.publishSuccess = true;
+        }, error => {
+          this.modalPublishingButtonText = "Publish";
+          this.runButtonDisabled = false;
+          this.showAlertBox('alert-danger', 'Publishing failed. Please try again after some time.');
+        });
+      } else {
+        this._workflowService.showMessageBoxWithFooter('Error', 
+        `Workflow publishing is not open to everyone yet. The user '${this.userId}' does not have access to publish workflows. Please request access to this feature by clicking below. <br/><br/>Also, <strong>download the workflow</strong> to ensure you don't loose your created workflow.`,
+        "<a target='_blank' href='mailto:applensv2team@microsoft.com?subject=Requesting Workflow Publishing Access&body=Please provide access to &lt;Enter your alias&gt;'>Request Access</a>");
+      }
     });
+
   }
 
   publishButtonOnClick() {
@@ -622,7 +635,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
         this.diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
           this.PPELink = `${this.PPEHostname}${this._router.url}`;
           this.isProd = env === "Prod";
-          if (this.isProd){
+          if (this.isProd) {
             window.open(this.PPELink, '_blank');
             window.open(this._router.url.replace('/edit?', '?'), '_self');
           }
@@ -711,7 +724,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.diagnosticApiService.getBranches(this.resourceId).subscribe(branches => {
       this.diagnosticApiService.getDetectors().subscribe(listDetectors => {
 
-        if (this.mode != DevelopMode.Create){
+        if (this.mode != DevelopMode.Create) {
           var branchRegEx = this.gistMode ? new RegExp(`^dev\/.*\/gist\/${this.id}$`, "i") : new RegExp(`^dev\/.*\/detector\/${this.id}$`, "i");
           branches.forEach(option => {
             this.optionsForSingleChoice.push({
@@ -733,21 +746,21 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
           listDetectors.forEach(det => {
             idList.push(det.id.toLowerCase());
           });
-          branches = branches.filter( bn => {
+          branches = branches.filter(bn => {
             return !idList.includes(bn["branchName"].split("/").length >= 4 ? bn["branchName"].split("/")[3].toLowerCase() : bn["branchName"]);
           })
           branches.forEach(option => {
             if (option["isMainBranch"].toLowerCase() != "true")
-            this.optionsForSingleChoice.push({
-              key: String(option["branchName"]),
-              text: String(option["branchName"])
-            });
+              this.optionsForSingleChoice.push({
+                key: String(option["branchName"]),
+                text: String(option["branchName"])
+              });
             if (option["isMainBranch"].toLowerCase() === "true") {
               this.defaultBranch = String(option["branchName"]);
             }
           })
         }
-        
+
         this.optionsForSingleChoice.forEach(branch => {
           if (branchRegEx.test(branch.text)) {
             this.showBranches.push({
@@ -782,7 +795,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
           else {
             this.displayBranch = "NA (not published)";
           }
-          }
+        }
         if (!this.initialized) {
           this.initialize();
           this.initialized = true;
@@ -839,7 +852,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     try {
       forkJoin([getEnabled, getServerUrl]).subscribe(resList => {
         this._userSettingService.getUserSetting().subscribe(res => {
-          let userCodeCompletionEnabled = res && res.codeCompletion == "off"? false: true;
+          let userCodeCompletionEnabled = res && res.codeCompletion == "off" ? false : true;
           this.codeCompletionEnabled = (resList[0] == true || resList[0].toString().toLowerCase() == "true") && userCodeCompletionEnabled;
           this.languageServerUrl = resList[1];
           if (this.codeCompletionEnabled && this.languageServerUrl && this.languageServerUrl.length > 0) {
@@ -865,9 +878,9 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
           }
         });
       },
-      (err) => {
-        this.codeCompletionEnabled = false;
-      });
+        (err) => {
+          this.codeCompletionEnabled = false;
+        });
     }
     catch (err) {
       this.codeCompletionEnabled = false;
@@ -1828,7 +1841,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
         this._applensCommandBarService.refreshPage();
       }
     }, err => {
-      if (err.error.includes("Branch name cannot contain the following characters:")){
+      if (err.error.includes("Branch name cannot contain the following characters:")) {
         this.charWarningMessage = err.error;
         this.badBranchNameFailure = true;
       }
@@ -1957,7 +1970,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
         this._applensCommandBarService.refreshPage();
       }, err => {
         if (err.error.includes('Detector with this ID already exists. Please use a new ID')) this.saveIdFailure = true;
-        if (err.error.includes("Branch name cannot contain the following characters:")){
+        if (err.error.includes("Branch name cannot contain the following characters:")) {
           this.charWarningMessage = err.error;
           this.badBranchNameFailure = true;
         }
@@ -1975,7 +1988,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
             this.isSaved = true;
             this._applensCommandBarService.refreshPage();
           }, err => {
-            if (err.error.includes("Branch name cannot contain the following characters:")){
+            if (err.error.includes("Branch name cannot contain the following characters:")) {
               this.charWarningMessage = err.error;
               this.badBranchNameFailure = true;
             }

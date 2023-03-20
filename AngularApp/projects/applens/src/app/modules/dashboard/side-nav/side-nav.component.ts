@@ -68,8 +68,7 @@ export class SideNavComponent implements OnInit {
     private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService,
     private _userSettingService: UserSettingService, private breadcrumbService: BreadcrumbService, private _diagnosticApi: DiagnosticApiService,
     private _documentationService: ApplensDocumentationService,
-    private _openAIService: ApplensOpenAIChatService)
-  {
+    private _openAIService: ApplensOpenAIChatService) {
     this.contentHeight = (window.innerHeight - 139) + 'px';
     if (environment.adal.enabled) {
       let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
@@ -101,7 +100,7 @@ export class SideNavComponent implements OnInit {
       isSelected: null,
       icon: null
     }];
-  
+
   chatgpt: CollapsibleMenuItem[] = [
     {
       label: 'ChatGPT',
@@ -164,7 +163,7 @@ export class SideNavComponent implements OnInit {
       expanded: false,
       subItems: null,
       isSelected: () => {
-        return this.currentRoutePath && (this.currentRoutePath.join('/').toLowerCase().indexOf('deployments') > 0 );
+        return this.currentRoutePath && (this.currentRoutePath.join('/').toLowerCase().indexOf('deployments') > 0);
       },
       icon: null
     }
@@ -203,29 +202,25 @@ export class SideNavComponent implements OnInit {
     });
     this.initializeFavoriteDetectors();
 
-    this._diagnosticApiService.isUserAllowedForWorkflow(this.userId).subscribe(resp => {
-      if (resp) {
-        this.workflowsEnabled = this.resourceService.workflowsEnabled;
-        if (this.workflowsEnabled) {
-          this.initializeWorkflows();
-          this.createNew.push(
-            {
-              label: 'New Workflow',
-              id: "",
-              onClick: () => {
-                this.navigateTo('createWorkflow');
-              },
-              expanded: false,
-              subItems: null,
-              isSelected: () => {
-                return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `createWorkflow`.toLowerCase();
-              },
-              icon: null
-            }
-          );
+    this.workflowsEnabled = this.resourceService.workflowsEnabled;
+    if (this.workflowsEnabled) {
+      this.initializeWorkflows();
+      this.createNew.push(
+        {
+          label: 'New Workflow',
+          id: "",
+          onClick: () => {
+            this.navigateTo('createWorkflow');
+          },
+          expanded: false,
+          subItems: null,
+          isSelected: () => {
+            return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `createWorkflow`.toLowerCase();
+          },
+          icon: null
         }
-      }
-    });
+      );
+    }
 
   }
 
@@ -233,7 +228,7 @@ export class SideNavComponent implements OnInit {
     this.navigateTo("overview");
   }
 
-  navigateToChatGPT(){
+  navigateToChatGPT() {
     this.navigateTo("chatgpt");
   }
 

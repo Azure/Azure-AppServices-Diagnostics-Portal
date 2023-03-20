@@ -501,6 +501,16 @@ export class WorkflowService {
     swalWithBootstrapButtons.fire(title, message, 'error');
   }
 
+  showMessageBoxWithFooter(title: string, message: string, footer: string, width?: string) {
+    swalWithBootstrapButtons.fire({
+      icon: 'error',
+      title: title,
+      html: message,
+      footer: footer,
+      width: width
+    });
+  }
+
   isValidVariableName(variableName: string): boolean {
     const regexVarName = new RegExp('^[a-zA-Z_][a-zA-Z_0-9]*$');
     return regexVarName.test(variableName);

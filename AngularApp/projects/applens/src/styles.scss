@@ -312,3 +312,11 @@ markdown, .markdown {
   color: var(--bodyText);
   border: 1px solid;
 }
+
+//
+// For all message boxes launched for workflows
+//
+
+.swal2-html-container, .swal2-footer {
+  font-size: large !important;
+}
