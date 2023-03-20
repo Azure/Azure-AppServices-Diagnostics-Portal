@@ -1,6 +1,7 @@
 .panel {
-  width: 400px;
   min-height: 100px;
+  min-width: 300px;
+  max-width: 550px;
   border-radius: 0px;
   border: 0px;
   border-radius: 0px;
@@ -36,9 +37,9 @@
 }
 
 .markdown-text {
-  inline-size: 380px;
   overflow-wrap: break-word;
   padding: 5px;
+  padding-right: 15px;
 }
 
 .run-button {
