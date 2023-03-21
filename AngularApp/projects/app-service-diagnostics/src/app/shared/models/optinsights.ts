@@ -30,58 +30,55 @@ export interface Insight {
     method: string;
 }
 
-export interface OptInsightsResponse {
-    // tableName: string;
-    columns: IColumn[] = [
-        {
-          key: 'column1',
-          name: 'Type',
-          className: "Type Class",
-          iconClassName: "fileIconHeaderIcon",
-          ariaLabel: 'Column operations for File type, Press to sort on File type',
-          iconName: 'Page',
-          isIconOnly: true,
-          fieldName: 'name',
-          minWidth: 16,
-          maxWidth: 16,
-          onColumnClick: this._onColumnClick
-        },
-        {
-          key: 'column2',
-          name: 'Performance Issue',
-          fieldName: 'name',
-          minWidth: 210,
-          maxWidth: 350,
-          isRowHeader: true,
-          isResizable: true,
-          isSorted: true,
-          isSortedDescending: false,
-          sortAscendingAriaLabel: 'Sorted A to Z',
-          sortDescendingAriaLabel: 'Sorted Z to A',
-          onColumnClick: this._onColumnClick,
-          data: 'string',
-          isPadded: true,
-        },
-        {
-          key: 'column3',
-          name: 'Component',
-          fieldName: 'dateModifiedValue',
-          minWidth: 70,
-          maxWidth: 90,
-          isResizable: true,
-          onColumnClick: this._onColumnClick,
-          data: 'number',
-          onRender: (item: IDocument) => {
-            return <span>{item.dateModified}</span>;
-          },
-          isPadded: true,
-        }
-    ];
-    rows: any[][];
-}
+// export interface OptInsightsResponse {
+//     // tableName: string;
+//     columns: IColumn[] = [
+//         {
+//           key: 'column1',
+//           name: 'Type',
+//           className: "Type Class",
+//           iconClassName: "fileIconHeaderIcon",
+//           ariaLabel: 'Column operations for File type, Press to sort on File type',
+//           iconName: 'Page',
+//           isIconOnly: true,
+//           fieldName: 'name',
+//           minWidth: 16,
+//           maxWidth: 16,
+//           onColumnClick: this._onColumnClick
+//         },
+//         {
+//           key: 'column2',
+//           name: 'Performance Issue',
+//           fieldName: 'name',
+//           minWidth: 210,
+//           maxWidth: 350,
+//           isRowHeader: true,
+//           isResizable: true,
+//           isSorted: true,
+//           isSortedDescending: false,
+//           sortAscendingAriaLabel: 'Sorted A to Z',
+//           sortDescendingAriaLabel: 'Sorted Z to A',
+//           onColumnClick: this._onColumnClick,
+//           data: 'string',
+//           isPadded: true,
+//         },
+//         {
+//           key: 'column3',
+//           name: 'Component',
+//           fieldName: 'dateModifiedValue',
+//           minWidth: 70,
+//           maxWidth: 90,
+//           isResizable: true,
+//           onColumnClick: this._onColumnClick,
+//           data: 'number',
+//           isPadded: true,
+//         }
+//     ];
+//     rows: any[][];
+// }
 
-export interface DataTableResponseColumn {
-    columnName: string;
-    dataType?: string;
-    columnType?: string;
-}
+// export interface DataTableResponseColumn {
+//     columnName: string;
+//     dataType?: string;
+//     columnType?: string;
+// }
