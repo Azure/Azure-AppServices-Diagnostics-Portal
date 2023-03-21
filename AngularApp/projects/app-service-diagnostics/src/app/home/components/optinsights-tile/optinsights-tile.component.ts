@@ -24,10 +24,10 @@ export class OptinsightsTileComponent implements OnInit {
     // this.table.rows[0] = ["Memory", "Excessive allocations due to String.Substring", "DiagService.Runners"];
   }
 
-  renderingProperties: DataTableRendering;
+  //renderingProperties: DataTableRendering;
   table: any = [];
-  columnOptions: TableColumnOption[] = [];
-  columns: DataTableResponseColumn[];
+  //columnOptions: TableColumnOption[] = [];
+  //columns: DataTableResponseColumn[];
   descriptionColumnName: string = "";
   allowColumnSearch: boolean = false;
   tableHeight: string = "";

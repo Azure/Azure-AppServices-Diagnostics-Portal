@@ -77,8 +77,8 @@ export interface Insight {
 //     rows: any[][];
 // }
 
-// export interface DataTableResponseColumn {
-//     columnName: string;
-//     dataType?: string;
-//     columnType?: string;
-// }
+export interface DataTableResponseColumn {
+    columnName: string;
+    dataType?: string;
+    columnType?: string;
+}
