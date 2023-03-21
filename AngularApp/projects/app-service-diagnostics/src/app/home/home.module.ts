@@ -65,6 +65,7 @@ import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/ser
 import { ClientScriptService } from '../shared-v2/services/client-script.service';
 import { GenericOpenAIService } from '../../../../diagnostic-data/src/public_api';
 import { OpenAIService } from '../shared-v2/services/openai.service';
+import { OptinsightsTileComponent } from './components/optinsights-tile/optinsights-tile.component';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -746,7 +747,7 @@ export const HomeRoutes = RouterModule.forChild([
         FabCommandBarModule,
         FabSpinnerModule
     ],
-    declarations: [HomeContainerComponent, HomeComponent, CategoryChatComponent, CategoryTileComponent, SearchResultsComponent, SupportTopicRedirectComponent, DiagnosticsSettingsComponent, CategoryTileV4Component, RiskTileComponent],
+    declarations: [HomeContainerComponent, HomeComponent, CategoryChatComponent, CategoryTileComponent, SearchResultsComponent, SupportTopicRedirectComponent, DiagnosticsSettingsComponent, CategoryTileV4Component, RiskTileComponent, OptinsightsTileComponent],
     providers:
         [
             CategoryTabResolver,

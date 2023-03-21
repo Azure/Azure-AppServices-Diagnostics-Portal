@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OptInsightsTileComponent } from './opt-insights-tile.component';
+import { OptinsightsTileComponent } from './optinsights-tile.component';
 
-describe('OptInsightsTileComponent', () => {
-  let component: OptInsightsTileComponent;
-  let fixture: ComponentFixture<OptInsightsTileComponent>;
+describe('OptinsightsTileComponent', () => {
+  let component: OptinsightsTileComponent;
+  let fixture: ComponentFixture<OptinsightsTileComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ OptInsightsTileComponent ]
+      declarations: [ OptinsightsTileComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(OptInsightsTileComponent);
+    fixture = TestBed.createComponent(OptinsightsTileComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

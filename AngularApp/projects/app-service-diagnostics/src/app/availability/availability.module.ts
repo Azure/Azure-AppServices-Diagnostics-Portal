@@ -26,7 +26,6 @@ import { AppInsightsDependenciesComponent } from './app-insights/dependencies/ap
 import { DetectorLoaderComponent } from './detector-view/detector-loader/detector-loader.component';
 import { AutohealingDetectorComponent } from './detector-view/detectors/autohealing-detector/autohealing-detector.component';
 import { RerouteResolver } from './reroute/reroute.resolver';
-import { OptInsightsTileComponent } from './opt-insights-tile/opt-insights-tile.component';
 
 @NgModule({
     declarations: [
@@ -51,7 +50,6 @@ import { OptInsightsTileComponent } from './opt-insights-tile/opt-insights-tile.
         AppInsightsDependenciesComponent,
         DetectorLoaderComponent,
         AutohealingDetectorComponent,
-        OptInsightsTileComponent,
     ],
     imports: [
         RouterModule.forChild(AvailabilityAndPerformanceCategoryRouteConfig),

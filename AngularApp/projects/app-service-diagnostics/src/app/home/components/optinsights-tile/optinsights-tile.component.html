@@ -1,0 +1,48 @@
+<div style="text-align: center; padding:20px" *ngIf="loading">
+    <i class="fa fa-circle-o-notch fa-2x fa-spin spin-icon" aria-hidden="true"></i>
+</div>
+
+<div *ngIf="!loading && table.length > 0">
+    <table class="table table-hover table-responsive no-border">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Insight </th>
+                <th>Metadata</th>
+                <th>Component</th>
+                <th>Method</th>
+                <th>Count</th>
+                <th>TraceOccurrences</th>
+                <th>MaxImpactPercent</th>
+                <th>MaxBlockingTime</th>
+                <th>maxTimeStamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of table" style="font-size:13px">
+                <td>{{item.key}}</td>
+                <td>{{item.insight}}</td>
+                <td>{{item.metadata}}</td>
+                <td>{{item.count}}</td>
+                <td>{{item.traceOccurrences}}</td>
+                <td>{{item.maxImpactPercent}}</td>
+                <td>{{item.maxBlockingTime}}</td>
+                <td>{{item.maxTimeStamp}}</td>
+            </tr>
+        </tbody>
+
+    </table>
+    <!-- <div style="width:100%;text-align:right;font-size:13px;padding:3px">
+        <a (click)="OpenAppInsights()">
+            View More in App Insights
+            <i class="fa fa-arrow-circle-o-right" style="font-size: 15px"></i>
+        </a>
+    </div> -->
+</div>
+
+
+
+
+<div *ngIf="!loading && dependencies.length === 0" style="font-size:16px;padding:10px">
+    No slow dependencies found during this time.
+</div>
