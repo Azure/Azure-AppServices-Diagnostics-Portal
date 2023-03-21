@@ -47,7 +47,7 @@ export class OptInsightsService {
         return this.appInsightsService.loadAppInsightsResourceObservable.pipe(map(loadStatus => {
           const appInsightsResourceId = this.appInsightsService.appInsightsSettings.resourceUri;
           const appId = this.appInsightsService.appInsightsSettings.appId;
-          return { appInsightsResourceId, appId };
+          return { "appInsightsResourceId": appInsightsResourceId, "appId": appId };
         }));
       }
       else {
@@ -88,10 +88,13 @@ export class OptInsightsService {
 
 
   getInfoForOptInsights(): Observable<AggregatedInsight[] | null> {
-    const requests = forkJoin([this.getARMToken(), this.getAppInsightsInfo()]);
-    return requests.pipe(mergeMap(res => {
-      const armToken = res[0];
-      const appInsightInfo = res[1];
+    //const requests = forkJoin([this.getARMToken(), this.getAppInsightsInfo()]);
+
+    return this.getARMToken().pipe(
+      mergeMap(_ => this.getAppInsightsInfo()),
+      mergeMap(res => {
+      const armToken = this.aRMToken;
+      const appInsightInfo = res;
       if (armToken === null || appInsightInfo === null || appInsightInfo.appInsightsResourceId === null || appInsightInfo.appId === null) return of(null);
       return this.getOAuthAccessToken(armToken, appInsightInfo.appInsightsResourceId).pipe(map(accessToken => {
         return { accessToken, appInsightInfo };
