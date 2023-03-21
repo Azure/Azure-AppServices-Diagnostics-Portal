@@ -80,6 +80,7 @@ class LoggingUtilities {
 function monitoring() {
     const shellSrc = LoggingUtilities.getQueryStringParameter("trustedAuthority");
     const logger = new Logging(shellSrc);
+    logger.postMessage("initializationcomplete",null);
     logger.logEvent(LoggingUtilities.startMonitoringIFrame,{});
     let timer = setTimeout(() => {
         const eles = document.getElementsByTagName("sc-app");
