@@ -3,7 +3,7 @@ import { DiagnosticService } from '../../services/diagnostic.service';
 import { DetectorControlService } from '../../services/detector-control.service';
 import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
 import { DetectorResponse, RenderingType, DownTime } from '../../models/detector';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { VersionService } from '../../services/version.service';
 import { Moment } from 'moment';
 import * as momentNs from 'moment';
@@ -11,6 +11,7 @@ import { XAxisSelection, zoomBehaviors } from '../../models/time-series';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 import { Inject } from '@angular/core';
 import { FeatureNavigationService } from '../../services/feature-navigation.service';
+import { takeUntil, tap } from 'rxjs/operators';
 const moment = momentNs;
 
 const hideTimePickerDetectors: string[] = [
@@ -45,11 +46,21 @@ export class DetectorContainerComponent implements OnInit {
   refreshInstanceIdSubscription: any;
   isPublic: boolean = true;
   workflowLastRefreshed: string = '';
+  detectorResponseObservable:Observable<DetectorResponse>;
+  stopDetectorResponseSubject: Subject<boolean> = new Subject();
 
-  @Input() detectorSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+  //@Input() detectorSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   @Input() set detector(detector: string) {
-    this.detectorSubject.next(detector);
+    //this.detectorSubject.next(detector);
+    if (detector && detector !== "searchResultsAnalysis") {
+      this.detectorName = detector;
+      this.refresh(false);
+    }
+    //For now hard code detectors which are not show time picker, next step is to read it from detector definition
+    if (detector && hideTimePickerDetectors.find(d => d.toLowerCase() === detector.toLowerCase())) {
+      this.hideDetectorControl = true;
+    }
   }
 
   @Input() analysisMode: boolean = false;
@@ -116,18 +127,7 @@ export class DetectorContainerComponent implements OnInit {
       }
     });
 
-    this.detectorSubject.subscribe(detector => {
-      if (detector && detector !== "searchResultsAnalysis") {
-        this.detectorName = detector;
-        this.refresh(false);
-      }
 
-
-      //For now hard code detectors which are not show time picker, next step is to read it from detector definition
-      if (detector && hideTimePickerDetectors.find(d => d.toLowerCase() === detector.toLowerCase())) {
-        this.hideDetectorControl = true;
-      }
-    });
 
     const component: any = this._route.component;
 
@@ -155,6 +155,19 @@ export class DetectorContainerComponent implements OnInit {
       }
       this.featureNavigationService.lastIsAnalysisView = !!param["analysisId"];
     });
+
+    // this.detectorSubject.subscribe(detector => {
+    //   if (detector && detector !== "searchResultsAnalysis") {
+    //     this.detectorName = detector;
+    //     this.refresh(false);
+    //   }
+
+
+    //   //For now hard code detectors which are not show time picker, next step is to read it from detector definition
+    //   if (detector && hideTimePickerDetectors.find(d => d.toLowerCase() === detector.toLowerCase())) {
+    //     this.hideDetectorControl = true;
+    //   }
+    // });
   }
 
   refresh(hardRefresh: boolean) {
@@ -255,13 +268,20 @@ export class DetectorContainerComponent implements OnInit {
 
       this.workflowLastRefreshed = Date.now().toString();
     } else {
-      this._diagnosticService.getDetector(this.detectorName, startTime, endTime,
-        invalidateCache, this.detectorControlService.isInternalView, additionalQueryString)
-        .subscribe((response: DetectorResponse) => {
+      if(this.detectorResponseObservable) {
+        //Stop previous subscribe
+        this.stopDetectorResponseSubject.next(true);
+      }
+
+      this.stopDetectorResponseSubject = new Subject<boolean>();
+      this.detectorResponseObservable = this._diagnosticService.getDetector(this.detectorName, startTime, endTime,invalidateCache, this.detectorControlService.isInternalView, additionalQueryString).pipe(takeUntil(this.stopDetectorResponseSubject));
+      this.detectorResponseObservable.subscribe((response: DetectorResponse) => {
           this.shouldHideTimePicker(response);
           this.detectorResponse = response;
         }, (error: any) => {
           this.error = error;
+        },() => {
+          // console.log(`Complete, ${this.detectorName}. Detector Response is ${this.detectorResponse === null && this.error === null ? "cancelled" : "have content"}`);
         });
     }
   }
