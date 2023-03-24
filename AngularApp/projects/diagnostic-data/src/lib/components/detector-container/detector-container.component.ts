@@ -49,8 +49,6 @@ export class DetectorContainerComponent implements OnInit {
   detectorResponseObservable:Observable<DetectorResponse>;
   stopDetectorResponseSubject: Subject<boolean> = new Subject();
 
-  //@Input() detectorSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
-
   @Input() set detector(detector: string) {
     //this.detectorSubject.next(detector);
     if (detector && detector !== "searchResultsAnalysis") {
@@ -155,19 +153,6 @@ export class DetectorContainerComponent implements OnInit {
       }
       this.featureNavigationService.lastIsAnalysisView = !!param["analysisId"];
     });
-
-    // this.detectorSubject.subscribe(detector => {
-    //   if (detector && detector !== "searchResultsAnalysis") {
-    //     this.detectorName = detector;
-    //     this.refresh(false);
-    //   }
-
-
-    //   //For now hard code detectors which are not show time picker, next step is to read it from detector definition
-    //   if (detector && hideTimePickerDetectors.find(d => d.toLowerCase() === detector.toLowerCase())) {
-    //     this.hideDetectorControl = true;
-    //   }
-    // });
   }
 
   refresh(hardRefresh: boolean) {
@@ -269,7 +254,7 @@ export class DetectorContainerComponent implements OnInit {
       this.workflowLastRefreshed = Date.now().toString();
     } else {
       if(this.detectorResponseObservable) {
-        //Stop previous subscribe
+        //Stop previous subscribe by emitting any value
         this.stopDetectorResponseSubject.next(true);
       }
 
@@ -280,8 +265,6 @@ export class DetectorContainerComponent implements OnInit {
           this.detectorResponse = response;
         }, (error: any) => {
           this.error = error;
-        },() => {
-          // console.log(`Complete, ${this.detectorName}. Detector Response is ${this.detectorResponse === null && this.error === null ? "cancelled" : "have content"}`);
         });
     }
   }

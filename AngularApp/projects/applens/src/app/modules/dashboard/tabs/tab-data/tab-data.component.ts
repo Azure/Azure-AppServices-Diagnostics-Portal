@@ -167,6 +167,7 @@ export class TabDataComponent implements OnInit {
       this.detector = this._route.snapshot.params['detector'];
     }
 
+
     this._diagnosticApiService.getDetectorMetaDataById(this.detector, this.isWorkflowDetector).subscribe(metaData => {
       if (metaData) {
         this._applensGlobal.updateHeader(metaData.name);
@@ -184,21 +185,16 @@ export class TabDataComponent implements OnInit {
     // Detecting whether Download Report button should be displayed or not
     this.displayDownloadReportButton = this.detector === "ResiliencyScore" && (this.checkIsWindowsApp() || this.checkIsLinuxApp());
 
-    // Detecting whether Download Report button should be displayed or not
-    this.displayDownloadReportButton = this.detector === "ResiliencyScore" && (this.checkIsWindowsApp() || this.checkIsLinuxApp());
-
     // Logging telemetry for Download Report button
     const dRBDEventProperties = {
-      'ResiliencyScoreButtonDisplayed': this.displayDownloadReportButton.toString(),
+      'ResiliencyScoreButtonDisplayed': `${this.displayDownloadReportButton}`,
       'Subscription': this._route.parent.snapshot.params['subscriptionid'],
-      'Platform': this.siteSku.is_linux != undefined ? !this.siteSku.is_linux ? "Windows" : "Linux" : "",
-      'AppType': this.siteSku.kind != undefined ? this.siteSku.kind.toLowerCase() === "app" ? "WebApp" : this.siteSku.kind.toString() : "",
-      'resourceSku': this.siteSku.sku != undefined ? this.siteSku.sku.toString() : "",
+      'Platform': this.siteSku?.is_linux != undefined ? !this.siteSku.is_linux ? "Windows" : "Linux" : "",
+      'AppType': this.siteSku?.kind != undefined ? `${this.siteSku.kind}`.toLowerCase() === "app" ? "WebApp" : `${this.siteSku.kind}` : "",
+      'resourceSku': this.siteSku?.sku != undefined ? `${this.siteSku.sku}` : "",
       'ReportType': 'ResiliencyScore',
     };
     this._telemetryService.logEvent(TelemetryEventNames.DownloadReportButtonDisplayed, dRBDEventProperties);
-    const loggingError = new Error();
-
   }
 
   refreshPage() {
