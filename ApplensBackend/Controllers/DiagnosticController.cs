@@ -130,7 +130,6 @@ namespace AppLensV3.Controllers
             }
         }
 
-
         [HttpGet("workflows/isuserallowed/{userAlias}")]
         public IActionResult IsUserAllowed(string userAlias)
         {

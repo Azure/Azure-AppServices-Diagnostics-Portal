@@ -533,14 +533,6 @@ export class SideNavComponent implements OnInit {
     this.searchAriaLabel = `${detectorAriaLabel} And ${gistAriaLabel} Found for ${this.searchValue}`;
   }
 
-  openNetworkTraceAnalysisApp(event: Event) {
-    event.preventDefault(); // Prevent default behavior of the link
-    const iframe = document.getElementById('my-iframe') as HTMLIFrameElement;
-    console.log("called")
-    iframe.src = 'http//localhost:8000';
-    // iframe.src = 'https://ntwk-trace-analysis-tool-app.purpleground-97896349.eastus.azurecontainerapps.io/';
-  }
-
   //Only support filtering for two layer menu-item
   private updateMenuItems(items: CollapsibleMenuItem[], searchValue: string): CollapsibleMenuItem[] {
     const categories = [];
