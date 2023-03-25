@@ -45,7 +45,7 @@ namespace AppLensV3.Controllers
         private readonly bool detectorDevelopmentEnabled;
         private readonly IList<string> apiEndpointsForDetectorDevelopment;
         private readonly string[] allowedUsers;
-        private readonly string[] AllowedSections = new string[] { "ApplicationInsights", "AcceptOriginSuffix:Origins", "CodeCompletion", "DetectorDevelopmentEnabled", "DetectorDevelopmentEnv", "PPEHostname", "APPLENS_ENVIRONMENT", "APPLENS_HOST", "SystemInvokers:ResourceIDString", "SystemInvokers:DocumentationStagingBranch", "SystemInvokers:DocumentationRoot", "SystemInvokers:DiagnosticsMainBranch" };
+        private readonly string[] AllowedSections = new string[] { "ApplicationInsights", "AcceptOriginSuffix:Origins", "CodeCompletion", "DetectorDevelopmentEnabled", "DetectorDevelopmentEnv", "PPEHostname", "APPLENS_ENVIRONMENT", "APPLENS_HOST", "SystemInvokers:ResourceIDString", "SystemInvokers:DocumentationStagingBranch", "SystemInvokers:DocumentationRoot", "SystemInvokers:DiagnosticsMainBranch", "NetworkTraceAnalysisTool" };
 
         private class InvokeHeaders
         {
@@ -129,6 +129,7 @@ namespace AppLensV3.Controllers
                 return NotFound($"App setting with the name '{name}' is not found");
             }
         }
+
 
         [HttpGet("workflows/isuserallowed/{userAlias}")]
         public IActionResult IsUserAllowed(string userAlias)
