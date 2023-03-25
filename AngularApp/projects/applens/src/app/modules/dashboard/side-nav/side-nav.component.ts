@@ -185,6 +185,20 @@ export class SideNavComponent implements OnInit {
     }
   ];
 
+  tools: CollapsibleMenuItem[] = [
+    {
+      label: 'Network Trace Analysis',
+      id: "",
+      onClick: () => {
+        this.navigateTo("networkTraceAnalysis");
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `networkTraceAnalysis`.toLowerCase();
+      },
+      icon: null
+    }];
 
 
   ngOnInit() {
@@ -519,6 +533,13 @@ export class SideNavComponent implements OnInit {
     this.searchAriaLabel = `${detectorAriaLabel} And ${gistAriaLabel} Found for ${this.searchValue}`;
   }
 
+  openNetworkTraceAnalysisApp(event: Event) {
+    event.preventDefault(); // Prevent default behavior of the link
+    const iframe = document.getElementById('my-iframe') as HTMLIFrameElement;
+    console.log("called")
+    iframe.src = 'http//localhost:8000';
+    // iframe.src = 'https://ntwk-trace-analysis-tool-app.purpleground-97896349.eastus.azurecontainerapps.io/';
+  }
 
   //Only support filtering for two layer menu-item
   private updateMenuItems(items: CollapsibleMenuItem[], searchValue: string): CollapsibleMenuItem[] {
