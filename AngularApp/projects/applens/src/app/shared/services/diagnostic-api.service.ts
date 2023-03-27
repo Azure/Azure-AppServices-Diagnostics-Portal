@@ -79,7 +79,7 @@ export class DiagnosticApiService {
     Observable<workflowNodeResult> {
     let timeParameters = this._getTimeQueryParameters(startTime, endTime);
     let path = `${version}${resourceId}/detectors/${workflowId}?${timeParameters}&diagnosticEntityType=workflow&workflowNodeId=${nodeId}&workflowExecutionId=${workflowExecutionId}`;
-    
+
     if (additionalQueryParams != undefined) {
       path += additionalQueryParams;
     }
@@ -113,7 +113,13 @@ export class DiagnosticApiService {
       queryParams = [];
     }
 
-    queryParams.push({ key: 'diagnosticEntityType', value: 'workflow' });
+    let idx = queryParams.findIndex(x => x.key === 'diagnosticEntityType');
+    if (idx > -1) {
+      queryParams[idx].value = 'workflow';
+    } else {
+      queryParams.push({ key: 'diagnosticEntityType', value: 'workflow' });
+    }
+
     path = path + "?" + queryParams.map(qp => qp.key + "=" + qp.value).join("&");
     return this.invoke<DetectorResponse[]>(path, HttpMethod.POST, body, true, false, internalClient).pipe(retry(1), map(response => response.map(detector => detector.metadata)));
   }
