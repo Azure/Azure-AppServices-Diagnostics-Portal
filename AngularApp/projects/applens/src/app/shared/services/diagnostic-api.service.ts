@@ -78,21 +78,17 @@ export class DiagnosticApiService {
     internalView: boolean = true, additionalQueryParams?: string, userInputs?: any):
     Observable<workflowNodeResult> {
     let timeParameters = this._getTimeQueryParameters(startTime, endTime);
-    let path = `${version}${resourceId}/workflows/${workflowId}?${timeParameters}`;
-    if (workflowExecutionId && nodeId) {
-      path = `${version}${resourceId}/workflows/${workflowId}/${workflowExecutionId}/${nodeId}?${timeParameters}`;
-    }
-
+    let path = `${version}${resourceId}/detectors/${workflowId}?${timeParameters}&diagnosticEntityType=workflow&workflowNodeId=${nodeId}&workflowExecutionId=${workflowExecutionId}`;
+    
     if (additionalQueryParams != undefined) {
       path += additionalQueryParams;
     }
 
-    let body = null;
     if (userInputs != null) {
-      body = { ResourcePostBody: null, UserInputs: userInputs };
+      path += `&userInputs=${JSON.stringify(userInputs)}`;
     }
 
-    return this.invoke<workflowNodeResult>(path, HttpMethod.POST, body, false, true, true, internalView);
+    return this.invoke<workflowNodeResult>(path, HttpMethod.POST, null, false, true, true, internalView);
   }
 
   public getSystemInvoker(resourceId: string, detector: string, systemInvokerId: string = '', dataSource: string,
@@ -112,10 +108,13 @@ export class DiagnosticApiService {
   }
 
   public getWorkflows(version: string, resourceId: string, body?: any, queryParams?: any[], internalClient: boolean = true): Observable<DetectorMetaData[]> {
-    let path = `${version}${resourceId}/workflows`;
-    if (queryParams) {
-      path = path + "?" + queryParams.map(qp => qp.key + "=" + qp.value).join("&");
+    let path = `${version}${resourceId}/detectors`;
+    if (queryParams == null) {
+      queryParams = [];
     }
+
+    queryParams.push({ key: 'diagnosticEntityType', value: 'workflow' });
+    path = path + "?" + queryParams.map(qp => qp.key + "=" + qp.value).join("&");
     return this.invoke<DetectorResponse[]>(path, HttpMethod.POST, body, true, false, internalClient).pipe(retry(1), map(response => response.map(detector => detector.metadata)));
   }
 
@@ -689,11 +688,11 @@ export class DiagnosticApiService {
     }));
   }
 
-  public getDevopsCommitStatus(commitid: string, resourceUri:string):Observable<CommitStatus[]> {
+  public getDevopsCommitStatus(commitid: string, resourceUri: string): Observable<CommitStatus[]> {
     let path = `devops/getCommitStatus?commitid=${commitid}&resourceUri=${resourceUri}`;
     return this.invoke(path, HttpMethod.GET, null, false);
   }
-  
+
   public getWorkflowUsers(): Observable<string[]> {
     const path = `api/workflowusers`;
     return this.get(path, true).pipe(map((res: string[]) => {

@@ -44,18 +44,18 @@ export class WorkflowAcceptUserinputComponent implements OnInit {
     let keyName = Object.keys(this.data.inputNodeSettings.variables)[0];
     switch (this.data.inputNodeSettings.inputType) {
       case inputType.text:
-        userInputs[keyName] = this.inputFieldValue;
+        userInputs[keyName] = encodeURIComponent(this.inputFieldValue);
         break;
       case inputType.date:
-        userInputs[keyName] = this.getDateTime(this.dateFieldValue, this.dateTimeField);
+        userInputs[keyName] = encodeURIComponent(this.getDateTime(this.dateFieldValue, this.dateTimeField));
         break;
       case inputType.select:
-        userInputs[keyName] = this.selectFieldValue;
+        userInputs[keyName] = encodeURIComponent(this.selectFieldValue);
         break;
       case inputType.daterange:
         let keyNameEndDate = Object.keys(this.data.inputNodeSettings.variables)[1];
-        userInputs[keyName] = this.getDateTime(this.startDateFieldValue, this.startTimeField);
-        userInputs[keyNameEndDate] = this.getDateTime(this.endDateFieldValue, this.endTimeField);
+        userInputs[keyName] = encodeURIComponent(this.getDateTime(this.startDateFieldValue, this.startTimeField));
+        userInputs[keyNameEndDate] = encodeURIComponent(this.getDateTime(this.endDateFieldValue, this.endTimeField));
         break;
 
       default:
@@ -88,10 +88,10 @@ export class WorkflowAcceptUserinputComponent implements OnInit {
     }
   }
 
-  getDateTime(date: Date, time: string) {
+  getDateTime(date: Date, time: string): string {
     let timeValues = time.split(":");
     let dateTime = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), parseInt(timeValues[0]), parseInt(timeValues[1]), 0, 0));
-    return dateTime
+    return dateTime.toISOString();
   }
 
   getErrorMessageOnTextField(value: string): string {
