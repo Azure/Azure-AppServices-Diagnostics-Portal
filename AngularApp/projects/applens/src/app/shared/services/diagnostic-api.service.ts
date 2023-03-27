@@ -75,7 +75,7 @@ export class DiagnosticApiService {
   }
 
   public getWorkflowNode(version: string, resourceId: string, workflowId: string, workflowExecutionId: string, nodeId: string, startTime?: string, endTime?: string,
-    internalView: boolean = true, additionalQueryParams?: string, userInputs?: any):
+    internalView: boolean = true, additionalQueryParams?: string, workflowUserInputs?: any):
     Observable<workflowNodeResult> {
     let timeParameters = this._getTimeQueryParameters(startTime, endTime);
     let path = `${version}${resourceId}/detectors/${workflowId}?${timeParameters}&diagnosticEntityType=workflow&workflowNodeId=${nodeId}&workflowExecutionId=${workflowExecutionId}`;
@@ -84,8 +84,8 @@ export class DiagnosticApiService {
       path += additionalQueryParams;
     }
 
-    if (userInputs != null) {
-      path += `&userInputs=${JSON.stringify(userInputs)}`;
+    if (workflowUserInputs != null) {
+      path += `&workflowUserInputs=${JSON.stringify(workflowUserInputs)}`;
     }
 
     return this.invoke<workflowNodeResult>(path, HttpMethod.POST, null, false, true, true, internalView);
