@@ -559,6 +559,7 @@ export class ArmService {
             loggingProps['url'] = error.url;
             loggingProps['status'] = `${error.status}`;
             loggingProps['statusText'] = error.statusText;
+            loggingProps['rawError'] = JSON.stringify(error);
         }
 
         if (!loggingError.message) {
@@ -566,7 +567,7 @@ export class ArmService {
         }
 
         if (this.telemetryService) {
-            this.telemetryService.logException(loggingError, null, loggingProps);
+            this.telemetryService.logException(loggingError, "arm.service", loggingProps);
         }
         return observableThrowError(actualError);
     }
