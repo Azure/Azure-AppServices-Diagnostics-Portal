@@ -1,5 +1,4 @@
 import { DiffEditorModel } from 'ngx-monaco-editor';
-import { isBoolean, isString, isNumber, isObject } from 'util';
 
 export class ChangeAnalysisUtilities {
 
@@ -45,18 +44,18 @@ export class ChangeAnalysisUtilities {
                     "language": 'text/plain'
                 }
             }
-            if(isBoolean(diffvalue) || isNumber(diffvalue)) {
+            if(typeof diffvalue === "boolean" || typeof diffvalue === "number") {
                 return {
                     "code": diffvalue.toString(),
                     "language": 'text/plain'
                 };
             }
-            if(isString(diffvalue)) {
+            if(typeof diffvalue === "string") {
                 diffvalue = diffvalue.replace("mtime", "Modified Time");
                 diffvalue = diffvalue.replace("crtime", "Created Time");
                 jsonObject = JSON.parse(diffvalue);
                 if(jsonObject.hasOwnProperty('content') && jsonObject['content'] != null) {
-                    if (isObject(jsonObject['content'])) {
+                    if (jsonObject['content'] !== null && typeof jsonObject['content'] === "object") {
                         return {
                             "code": JSON.stringify(jsonObject['content'], null, 2),
                             'language': 'json'

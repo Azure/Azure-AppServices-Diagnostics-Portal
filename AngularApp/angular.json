@@ -42,8 +42,6 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/prismjs/themes/prism-okaidia.css",
               "node_modules/ngx-smart-modal/ngx-smart-modal.css",
-              "node_modules/admin-lte/dist/css/AdminLTE.min.css",
-              "node_modules/admin-lte/dist/css/skins/skin-blue.css",
               "projects/applens/src/styles.scss",
               "node_modules/vis/dist/vis.min.css",
               "node_modules/vis/dist/vis-timeline-graph2d.min.css",
@@ -52,7 +50,6 @@
             "scripts": [
               "node_modules/moment/min/moment.min.js",
               "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/admin-lte/dist/js/adminlte.js",
               "node_modules/marked/marked.min.js",
               "node_modules/prismjs/prism.js",
               "node_modules/prismjs/components/prism-clike.min.js",

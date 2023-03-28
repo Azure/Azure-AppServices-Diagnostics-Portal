@@ -1,7 +1,6 @@
 import { HttpResponse } from '@angular/common/http';
 import { TelemetryService } from 'diagnostic-data';
 import { Globals } from 'projects/app-service-diagnostics/src/app/globals';
-import { stringify } from 'querystring';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, mergeMap } from 'rxjs/operators';
 import { ResponseMessageEnvelope } from '../../../models/responsemessageenvelope';
@@ -428,10 +427,10 @@ export class DiagProvider {
                     ip = "";
                 }
                 else {
-                    throw new Error("DaaS nameresolver failed, result: " + stringify(result));
+                    throw new Error("DaaS nameresolver failed, result: " + JSON.stringify(result));
                 }
             } else {
-                throw new Error("DaaS nameresolver response is null, response: " + stringify(resp));
+                throw new Error("DaaS nameresolver response is null, response: " + JSON.stringify(resp));
             }
         }
         return { ip, aliases };
