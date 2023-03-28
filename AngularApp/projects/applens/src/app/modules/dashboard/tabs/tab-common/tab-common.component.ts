@@ -50,10 +50,12 @@ export class TabCommonComponent implements OnInit {
     this._diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
       this.detectorDevelopmentEnvironment = env;
     });
-    this._diagnosticApiService.getPPEHostname().subscribe(host => {
-      this.PPEHostname = host;
-      this.PPELink = `${this.PPEHostname}${this._router.url.replace('?', '/edit?')}`;
-    });
+    this._activatedRoute.params.subscribe(param => {
+      this._diagnosticApiService.getPPEHostname().subscribe(host => {
+        this.PPEHostname = host;
+        this.PPELink = `${this.PPEHostname}${this._router.url.replace('?', '/edit?')}`;
+      });
+    })
     this._diagnosticApiService.getEnableDetectorDevelopment().subscribe(enabledDetectorDevelopment => {
       this.enabledDetectorDevelopment = enabledDetectorDevelopment;
     });
