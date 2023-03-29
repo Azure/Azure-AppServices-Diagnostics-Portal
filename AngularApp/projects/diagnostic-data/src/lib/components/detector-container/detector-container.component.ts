@@ -46,19 +46,12 @@ export class DetectorContainerComponent implements OnInit {
   refreshInstanceIdSubscription: any;
   isPublic: boolean = true;
   workflowLastRefreshed: string = '';
+  detectorSubject = new BehaviorSubject<string>(null);
   detectorResponseObservable:Observable<DetectorResponse>;
   stopDetectorResponseSubject: Subject<boolean> = new Subject();
 
   @Input() set detector(detector: string) {
-    //this.detectorSubject.next(detector);
-    if (detector && detector !== "searchResultsAnalysis") {
-      this.detectorName = detector;
-      this.refresh(false);
-    }
-    //For now hard code detectors which are not show time picker, next step is to read it from detector definition
-    if (detector && hideTimePickerDetectors.find(d => d.toLowerCase() === detector.toLowerCase())) {
-      this.hideDetectorControl = true;
-    }
+    this.detectorSubject.next(detector);
   }
 
   @Input() analysisMode: boolean = false;
@@ -125,6 +118,18 @@ export class DetectorContainerComponent implements OnInit {
       }
     });
 
+    this.detectorSubject.subscribe(detector => {
+      if (detector && detector !== "searchResultsAnalysis") {
+        this.detectorName = detector;
+        this.refresh(false);
+      }
+
+
+      //For now hard code detectors which are not show time picker, next step is to read it from detector definition
+      if (detector && hideTimePickerDetectors.find(d => d.toLowerCase() === detector.toLowerCase())) {
+        this.hideDetectorControl = true;
+      }
+    });
 
 
     const component: any = this._route.component;
