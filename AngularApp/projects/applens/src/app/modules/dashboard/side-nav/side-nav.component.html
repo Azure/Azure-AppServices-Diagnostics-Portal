@@ -43,9 +43,9 @@
           <i class="fa fa-code fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let item of createNew" [menuItem]="item"></collapsible-menu-item>
         </section-divider>
-        <section-divider [label]="'Tools'" [selected]="isSectionHeaderSelected('networkTraceAnalysis')" [initiallyExpanded]="false">
+        <section-divider [label]="'Tools'" [selected]="isSectionHeaderSelected('networkTraceAnalysis')" [initiallyExpanded]="true">
           <i class="fa fa-wrench fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
-          <collapsible-menu-item *ngFor="let tool of tools" [menuItem]="tool"></collapsible-menu-item>
+          <collapsible-menu-item *ngFor="let tool of tools" [menuItem]="tool" [searchValue]="searchValue"></collapsible-menu-item>
         </section-divider>
         <section-divider *ngIf="gists.length > 0" [selected]="isSectionHeaderSelected('gists/', false)"
           [label]="'Gists'" [initiallyExpanded]="false">

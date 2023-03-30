@@ -54,6 +54,8 @@ export class SideNavComponent implements OnInit {
   searchValue: string = undefined;
   searchAriaLabel: string = "Filter by name or id";
 
+  toolsCopy: CollapsibleMenuItem[] = [];
+
   contentHeight: string;
 
   getDetectorsRouteNotFound: boolean = false;
@@ -71,8 +73,7 @@ export class SideNavComponent implements OnInit {
     private _openAIService: ApplensOpenAIChatService) {
     this.contentHeight = (window.innerHeight - 139) + 'px';
     if (environment.adal.enabled) {
-      let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
-      this.userId = alias.replace('@microsoft.com', '');
+      this.userId = this.getUserId();
     }
   }
 
@@ -200,7 +201,6 @@ export class SideNavComponent implements OnInit {
       icon: null
     }];
 
-
   ngOnInit() {
     this._openAIService.CheckEnabled().subscribe(enabled => {
       this.showChatGPT = this._openAIService.isEnabled;
@@ -236,6 +236,7 @@ export class SideNavComponent implements OnInit {
       );
     }
 
+    this.toolsCopy = this.deepCopyArray(this.tools);
   }
 
   navigateToOverview() {
@@ -251,13 +252,18 @@ export class SideNavComponent implements OnInit {
   }
 
   navigateToActivePRs() {
-    let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
-    const userId: string = alias.replace('@microsoft.com', '');
+    const userId: string = this.getUserId();
     this.navigateTo(`users/${userId}/activepullrequests`);
   }
 
   private getCurrentRoutePath() {
     this.currentRoutePath = this._activatedRoute.firstChild.snapshot.url.map(urlSegment => urlSegment.path);
+  }
+
+  private getUserId() {
+    let alias: string = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
+    const userId: string = alias.replace('@microsoft.com', '');
+    return userId;
   }
 
   navigateTo(path: string) {
@@ -525,12 +531,15 @@ export class SideNavComponent implements OnInit {
     this.categories = this.updateMenuItems(this.categoriesCopy, searchTerm);
     this.gists = this.updateMenuItems(this.gistsCopy, searchTerm);
     this.favoriteDetectors = this.updateMenuItems(this.favoriteDetectorsCopy, searchTerm);
+    this.tools = this.updateMenuItems(this.toolsCopy, searchTerm);
 
     const subDetectorCount = this.contSubMenuItems(this.categories);
     const subGistCount = this.contSubMenuItems(this.gists);
+    const foundToolsCount = this.tools.length;
     const detectorAriaLabel = `${subDetectorCount > 0 ? subDetectorCount : 'No'} ${subDetectorCount > 1 ? 'Detectors' : 'Detector'}`;
     const gistAriaLabel = `${subGistCount > 0 ? subGistCount : 'No'} ${subGistCount > 1 ? 'Gists' : 'Gist'}`;
-    this.searchAriaLabel = `${detectorAriaLabel} And ${gistAriaLabel} Found for ${this.searchValue}`;
+    const toolsAriaLabel = `${foundToolsCount > 0 ? foundToolsCount : 'No'} ${foundToolsCount > 1 ? 'Tools' : 'Tool'}`;
+    this.searchAriaLabel = `${detectorAriaLabel}, ${gistAriaLabel} And ${toolsAriaLabel} Found for ${this.searchValue}`;
   }
 
   //Only support filtering for two layer menu-item
