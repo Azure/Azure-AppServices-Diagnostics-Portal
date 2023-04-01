@@ -537,8 +537,8 @@ export class ArmService {
         let actualError = "";
         const loggingError = new Error();
         const loggingProps = {};
-
         if (error) {
+            loggingProps['rawError'] = JSON.stringify(error);
             if (error.error) {
                 if (error.error.error) {
                     actualError = ArmService.prettifyError(error.error.error);
@@ -556,10 +556,9 @@ export class ArmService {
             } else {
                 actualError = 'Server Error';
             }
-            loggingProps['url'] = error.url;
+            loggingProps['url'] = `${error.url}`;
             loggingProps['status'] = `${error.status}`;
-            loggingProps['statusText'] = error.statusText;
-            loggingProps['rawError'] = JSON.stringify(error);
+            loggingProps['statusText'] = `${error.statusText}`; 
         }
 
         if (!loggingError.message) {

@@ -18,7 +18,7 @@ import { CategoryService } from '../../../shared-v2/services/category.service';
 import { VersionTestService } from '../../../fabric-ui/version-test.service';
 import { ArmService } from '../../../shared/services/arm.service';
 import { SubscriptionPropertiesService } from '../../../shared/services/subscription-properties.service';
-import { catchError, map, mergeMap, mergeMapTo } from 'rxjs/operators';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 
