@@ -49,6 +49,7 @@ export class UriElementsService {
     private _daasDatabaseTestPath = this._daasApiPath + 'databasetest';
     private _daasAppInfoPath = this._daasApiPath + 'appinfo';
     private _daasCpuMonitoringPath = this._daasApiPath + "CpuMonitoring";
+    private _daasCpuMonitoringListSessionsPath = this._daasCpuMonitoringPath + "/list";
     private _daasStdoutSettingPath = this._daasApiPath + 'settings/stdout';
     private _daasCpuMonitoringSessionActivePath = this._daasCpuMonitoringPath + "/active"
     private _daasCpuMonitoringSessionActivePathDetails = this._daasCpuMonitoringPath + "/activesessiondetails"
@@ -63,6 +64,7 @@ export class UriElementsService {
 
     private _daasPath = '/extensions/daas';
     private _daasSessionsPath = this._daasPath + '/sessions';
+    private _daasListSessionsPath = this._daasSessionsPath + '/list';
     private _daasDiagnosersPath = this._daasPath + '/diagnosers';
     private _daasActiveSessionPath = this._daasSessionsPath + '/active';
     private _daasSingleSessionPath = this._daasSessionsPath + '/{sessionId}';
@@ -70,6 +72,7 @@ export class UriElementsService {
     // Linux DiagServer paths
     private _daasDiagServerPath = this._daasPath + "/v2";
     private _daasDiagServerSessionsPath = this._daasDiagServerPath + '/sessions';
+    private _daasDiagServerListSessionsPath = this._daasDiagServerSessionsPath + '/list';
     private _daasDiagServerSessionsPathForInstance = this._daasDiagServerSessionsPath + '?instance={instanceId}';
     private _daasDiagServerActiveSessionPath = this._daasDiagServerSessionsPath + '/active';
     private _daasDiagServerSingleSessionPath = this._daasDiagServerSessionsPath + '/{sessionId}';
@@ -83,6 +86,13 @@ export class UriElementsService {
             return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagServerSessionsPath;
         }
         return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasSessionsPath;
+    }
+
+    getListSessionsUrl(site: SiteDaasInfo, useDiagnosticServerForLinux: boolean) {
+        if (useDiagnosticServerForLinux) {
+            return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasDiagServerListSessionsPath;
+        }
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasListSessionsPath;
     }
 
     getSessionUrl(site: SiteDaasInfo, sessionId: string, useDiagServerForLinux: boolean) {
@@ -142,6 +152,10 @@ export class UriElementsService {
 
     getMonitoringSessionsUrl(site: SiteDaasInfo) {
         return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasCpuMonitoringPath;
+    }
+    
+    getMonitoringSessionsListUrl(site: SiteDaasInfo) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasCpuMonitoringListSessionsPath;
     }
 
     getActiveMonitoringSessionUrl(site: SiteDaasInfo) {

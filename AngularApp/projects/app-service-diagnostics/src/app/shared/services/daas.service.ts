@@ -44,18 +44,19 @@ export class DaasService {
         let resourceUri: string = this._uriElementsService.getActiveSessionUrl(site);
         if (!isWindowsApp) {
             resourceUri = this._uriElementsService.getActiveSessionLinuxUrl(site, useDiagnosticServerForLinux);
+            return <Observable<Session>>this._armClient.getResourceWithoutEnvelope<Session>(resourceUri, null, true);
         }
-        return <Observable<Session>>this._armClient.getResourceWithoutEnvelope<Session>(resourceUri, null, true);
+        return <Observable<Session>>this._armClient.retryWithPostOnGetFailure<Session, any>(resourceUri, null, null, true);
     }
 
     getSessions(site: SiteDaasInfo, useDiagnosticServerForLinux: boolean): Observable<Session[]> {
-        const resourceUri: string = this._uriElementsService.getSessionsUrl(site, useDiagnosticServerForLinux);
-        return <Observable<Session[]>>this._armClient.getResourceWithoutEnvelope<Session>(resourceUri, null, true);
+        const resourceUri: string = this._uriElementsService.getListSessionsUrl(site, useDiagnosticServerForLinux);
+        return <Observable<Session[]>>this._armClient.postResourceWithoutEnvelope<Session, any>(resourceUri, null, null, true);
     }
 
     getSession(site: SiteDaasInfo, sessionId: string, useDiagServerForLinux: boolean): Observable<Session> {
         const resourceUri: string = this._uriElementsService.getSessionUrl(site, sessionId, useDiagServerForLinux);
-        return <Observable<Session>>this._armClient.getResourceWithoutEnvelope<Session>(resourceUri, null, true);
+        return <Observable<Session>>this._armClient.retryWithPostOnGetFailure<Session, any>(resourceUri, null, null, true);
     }
 
     getInstances(site: SiteDaasInfo, isWindowsApp: boolean = true): Observable<Instance[]> {
@@ -132,12 +133,13 @@ export class DaasService {
 
     getAllMonitoringSessions(site: SiteDaasInfo): Observable<MonitoringSession[]> {
         const resourceUri: string = this._uriElementsService.getMonitoringSessionsUrl(site);
-        return <Observable<MonitoringSession[]>>(this._armClient.getResourceWithoutEnvelope<MonitoringSession[]>(resourceUri, null, true));
+        const resourceUriListSessions: string = this._uriElementsService.getMonitoringSessionsListUrl(site);
+        return <Observable<MonitoringSession[]>>(this._armClient.retryWithPostOnGetFailure<MonitoringSession[], any>(resourceUri, null, null, true, resourceUriListSessions));
     }
 
     getMonitoringSession(site: SiteDaasInfo, sessionId: string): Observable<MonitoringSession> {
         const resourceUri: string = this._uriElementsService.getMonitoringSessionUrl(site, sessionId);
-        return <Observable<MonitoringSession>>(this._armClient.getResourceWithoutEnvelope<MonitoringSession>(resourceUri, null, true));
+        return <Observable<MonitoringSession>>(this._armClient.retryWithPostOnGetFailure<MonitoringSession, any>(resourceUri, null, null, true));
     }
 
     analyzeMonitoringSession(site: SiteDaasInfo, sessionId: string): Observable<any> {
@@ -147,12 +149,12 @@ export class DaasService {
 
     getActiveMonitoringSession(site: SiteDaasInfo): Observable<MonitoringSession> {
         const resourceUri: string = this._uriElementsService.getActiveMonitoringSessionUrl(site);
-        return <Observable<MonitoringSession>>(this._armClient.getResourceWithoutEnvelope<MonitoringSession>(resourceUri, null, true));
+        return <Observable<MonitoringSession>>(this._armClient.retryWithPostOnGetFailure<MonitoringSession, any>(resourceUri, null, null, true));
     }
 
     getActiveMonitoringSessionDetails(site: SiteDaasInfo): Observable<ActiveMonitoringSession> {
         const resourceUri: string = this._uriElementsService.getActiveMonitoringSessionDetailsUrl(site);
-        return <Observable<ActiveMonitoringSession>>(this._armClient.getResourceWithoutEnvelope<ActiveMonitoringSession>(resourceUri, null, true));
+        return <Observable<ActiveMonitoringSession>>(this._armClient.retryWithPostOnGetFailure<ActiveMonitoringSession, any>(resourceUri, null, null, true));
     }
 
     stopMonitoringSession(site: SiteDaasInfo): Observable<string> {
@@ -324,16 +326,6 @@ export class DaasService {
 
     get isNationalCloud() {
         return this._armClient.isNationalCloud;
-    }
-
-    private _getHeaders(): HttpHeaders {
-
-        const headers = new HttpHeaders();
-        headers.append('Content-Type', 'application/json');
-        headers.append('Accept', 'application/json');
-        headers.append('Authorization', `Bearer ${this._authService.getAuthToken()}`);
-
-        return headers;
     }
 
     get defaultContainerName(): string {
