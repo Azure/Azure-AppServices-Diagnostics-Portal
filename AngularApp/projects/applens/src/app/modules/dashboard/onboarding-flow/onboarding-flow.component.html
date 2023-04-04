@@ -348,7 +348,7 @@
       <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"
         [disabled]="runButtonDisabled"></fab-command-bar-item>
       <fab-command-bar-item [style]="saveButtonVisibilityStyle" key="save" [text]="saveButtonText"
-        [iconProps]="saveIcon" (click)="saveDetectorCode()"></fab-command-bar-item>
+        [iconProps]="saveIcon" (click)="saveDetectorCode()" [disabled]="saveButtonDisabled && isWorkflowDetector"></fab-command-bar-item>
       <fab-command-bar-item key="publishGrad" [text]="modalPublishingButtonText" [iconProps]="publishIcon"
         (click)="publishButtonOnClick()" [disabled]="publishButtonDisabled">
       </fab-command-bar-item>
@@ -548,7 +548,7 @@
     </split>
   </div>
   <div *ngIf="isWorkflowDetector" class="onboarding-container">
-    <create-workflow [id]="id"></create-workflow>
+    <create-workflow [id]="id" [Branch]="Branch"></create-workflow>
   </div>
 
 </div>

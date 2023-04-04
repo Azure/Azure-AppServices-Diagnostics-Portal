@@ -147,6 +147,7 @@ export interface workflowNodeResult {
   promptType: string;
   metadataPropertyBag: PropertyBag[]
   inputNodeSettings: inputNodeSettings;
+  workflowPackage: any;
 }
 
 export interface inputNodeSettings {
