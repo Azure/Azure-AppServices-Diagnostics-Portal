@@ -76,6 +76,12 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
       return;
     }
 
+    let branchNameArray = this.Branch.split("/");
+    if (branchNameArray.length < 4) {
+      return;
+    }
+
+    this.id = this.Branch.split("/")[3];
     this.initialize();
   }
 

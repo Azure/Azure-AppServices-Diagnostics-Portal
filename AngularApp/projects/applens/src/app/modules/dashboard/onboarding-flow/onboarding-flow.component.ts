@@ -732,6 +732,9 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
         if (this.mode != DevelopMode.Create) {
           var branchRegEx = this.gistMode ? new RegExp(`^dev\/.*\/gist\/${this.id}$`, "i") : new RegExp(`^dev\/.*\/detector\/${this.id}$`, "i");
+          if (this.isWorkflowDetector){
+            branchRegEx = new RegExp(`^dev\/.*\/workflow\/${this.id}$`, "i")
+          }
           branches.forEach(option => {
             this.optionsForSingleChoice.push({
               key: String(option["branchName"]),
@@ -748,6 +751,10 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
         }
         else {
           var branchRegEx = this.gistMode ? new RegExp(`^dev\/.*\/gist\/.*$`, "i") : new RegExp(`^dev\/.*\/detector\/.*$`, "i");
+          if (this.isWorkflowDetector){
+            branchRegEx = new RegExp(`^dev\/.*\/workflow\/.*$`, "i")
+          }
+
           let idList = [];
           listDetectors.forEach(det => {
             idList.push(det.id.toLowerCase());
