@@ -49,7 +49,7 @@ export class SwitchCaseStepComponent extends WorkflowNodeBaseClass implements On
   save() {
     this.error = '';
     this.populateCurrentVariable();
-    if (this.currentVariable.type === 'String') {
+    if (this.currentVariable.type === 'String' || this.currentVariable.type === 'System.String') {
       this.data.switchCaseValue = this.switchCaseValue;
       this.editMode = false;
     } else if (this.integerDataTypes.indexOf(this.currentVariable.type) > -1) {
