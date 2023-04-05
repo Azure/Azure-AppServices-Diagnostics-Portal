@@ -48,6 +48,10 @@ export class SwitchCaseStepComponent extends WorkflowNodeBaseClass implements On
 
   save() {
     this.error = '';
+    if (!this.switchCaseValue) {
+      this.error = "Please specify a value for switch case";
+      return;
+    }
     this.populateCurrentVariable();
     if (this.currentVariable.type === 'String' || this.currentVariable.type === 'System.String') {
       this.data.switchCaseValue = this.switchCaseValue;

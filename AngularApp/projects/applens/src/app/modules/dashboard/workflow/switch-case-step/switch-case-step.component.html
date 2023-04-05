@@ -9,14 +9,16 @@
       <input type="text" [disabled]="!editMode" class="form-control form-control-sm" [(ngModel)]="switchCaseValue"
         name="switchCaseControl">
       <div class="mt-2 mb-2">
-        <div *ngIf="editMode" style="display: flex">
-          <i tabindex="0" (click)="save()" class="ml-1 fa fa-save text-primary"></i>
-          <div *ngIf="error" class="error-message" role="alert">
+        <div *ngIf="editMode">
+          <button (click)="save()" class="ml-1 fa fa-save text-primary">
+          </button>
+          <span *ngIf="error" class="error-message" role="alert">
             {{ error }}
-          </div>
+          </span>
         </div>
         <div *ngIf="!editMode">
-          <i tabindex="0" (click)="editMode = true" class="ml-1 fa fa-pencil text-primary"></i>
+          <button (click)="editMode = true" class="ml-1 fa fa-pencil text-primary">
+          </button>
         </div>
       </div>
       <node-actions [isConditionNode]="true" [isSwitchCase]="true" (onNodeAdded)="addNode($event)"
