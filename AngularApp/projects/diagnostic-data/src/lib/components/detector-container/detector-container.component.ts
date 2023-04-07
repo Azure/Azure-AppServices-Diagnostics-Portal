@@ -47,7 +47,6 @@ export class DetectorContainerComponent implements OnInit {
   isPublic: boolean = true;
   workflowLastRefreshed: string = '';
   detectorSubject = new BehaviorSubject<string>(null);
-  switchDetectorResponseSubject: Subject<boolean> = new Subject();
 
   @Input() set detector(detector: string) {
     this.detectorSubject.next(detector);
@@ -257,14 +256,12 @@ export class DetectorContainerComponent implements OnInit {
 
       this.workflowLastRefreshed = Date.now().toString();
     } else {
-      this.switchDetectorResponseSubject.next(true);
-
-      this.switchDetectorResponseSubject.pipe(switchMap(_ => this._diagnosticService.getDetector(this.detectorName, startTime, endTime,invalidateCache, this.detectorControlService.isInternalView, additionalQueryString))).subscribe((response: DetectorResponse) => {
-          this.shouldHideTimePicker(response);
-          this.detectorResponse = response;
-        }, (error: any) => {
-          this.error = error;
-        });
+      this._diagnosticService.getDetector(this.detectorName, startTime, endTime, invalidateCache, this.detectorControlService.isInternalView, additionalQueryString).subscribe((response: DetectorResponse) => {
+        this.shouldHideTimePicker(response);
+        this.detectorResponse = response;
+      }, (error: any) => {
+        this.error = error;
+      });
     }
   }
 

@@ -21,7 +21,6 @@ import { IIconProps } from 'office-ui-fabric-react/lib/components/Icon';
 import { GenericUserSettingService } from '../../services/generic-user-setting.service';
 import { GenieGlobals } from '../../services/genie.service';
 import { BreadcrumbNavigationItem } from '../../services/generic-breadcrumb.service';
-import { DetectorMetadataService } from '../../services/detector-metadata.service';
 
 const moment = momentNs;
 const minSupportedDowntimeDuration: number = 10;
@@ -182,7 +181,7 @@ export class DetectorViewComponent implements OnInit {
   public breadCrumb: BreadcrumbNavigationItem;
 
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private telemetryService: TelemetryService,
-    private detectorControlService: DetectorControlService, private _supportTopicService: GenericSupportTopicService, private _cxpChatService: CXPChatService, protected _route: ActivatedRoute, private versionService: VersionService, private _router: Router, private _genericUserSettingsService: GenericUserSettingService, private _global: GenieGlobals, private _detectorMetadataService: DetectorMetadataService) {
+    private detectorControlService: DetectorControlService, private _supportTopicService: GenericSupportTopicService, private _cxpChatService: CXPChatService, protected _route: ActivatedRoute, private versionService: VersionService, private _router: Router, private _genericUserSettingsService: GenericUserSettingService, private _global: GenieGlobals) {
     this.isPublic = config && config.isPublic;
     this.feedbackButtonLabel = this.isPublic ? 'Send Feedback' : 'Rate Detector';
   }
@@ -238,13 +237,9 @@ export class DetectorViewComponent implements OnInit {
         this._genericUserSettingsService.isWaterfallViewMode().subscribe(isWaterfallViewMode => {
           if (isWaterfallViewMode) {
             this.detectorDataLocalCopy = data;
-            this._detectorMetadataService.setAuthor(this.detectorDataLocalCopy.metadata.author);
-            this._detectorMetadataService.setDescription(this.detectorDataLocalCopy.metadata.description);
           }
           else {
             this.detectorDataLocalCopy = this.mergeDetectorListResponse(data);
-            this._detectorMetadataService.setAuthor(this.detectorDataLocalCopy.metadata.author);
-            this._detectorMetadataService.setDescription(this.detectorDataLocalCopy.metadata.description);
           }
         });
       }

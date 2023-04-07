@@ -19,6 +19,8 @@ export class ApplensGlobal {
 
     showCommAlertSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
+    detectorAuthorAndDescriptionSubject: BehaviorSubject<{author: string, description: string}> = new BehaviorSubject({author: "", description: ""});
+
 
     openFeedback: boolean = false;
     openResourceInfoPanel: boolean = false;
@@ -51,5 +53,9 @@ export class ApplensGlobal {
 
     updateHeader(title: string) {
         this.headerTitleSubject.next(title);
+    }
+
+    updateAuthorAndDescription(author: string, description: string) {
+        this.detectorAuthorAndDescriptionSubject.next({author: author, description: description});
     }
 }

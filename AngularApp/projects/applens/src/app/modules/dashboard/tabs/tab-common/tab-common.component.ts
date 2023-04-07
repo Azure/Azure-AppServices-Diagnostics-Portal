@@ -1,14 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ChildActivationEnd, NavigationEnd, Router } from '@angular/router';
-import { IButtonProps, IDialogContentProps } from 'office-ui-fabric-react';
 import { DiagnosticApiService } from 'projects/applens/src/app/shared/services/diagnostic-api.service';
 import { ResourceService } from 'projects/applens/src/app/shared/services/resource.service';
-import { DetectorMetadataService } from 'projects/diagnostic-data/src/lib/services/detector-metadata.service';
-import { combineLatest } from 'rxjs';
-import { distinct } from 'rxjs-compat/operator/distinct';
-import { mergeMap } from 'rxjs-compat/operator/mergeMap';
 import { filter, merge } from 'rxjs/operators';
 import { Tab, TabKey } from '../tab-key';
+import { ApplensGlobal } from '../../../../applens-global';
 
 @Component({
   selector: 'tab-common',
@@ -27,7 +23,7 @@ export class TabCommonComponent implements OnInit {
   PPEHostname: string = '';
   PPELink: string = '';
 
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _diagnosticApiService: DiagnosticApiService, private resourceService: ResourceService, private _detectorMetadataService: DetectorMetadataService) {
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _diagnosticApiService: DiagnosticApiService, private resourceService: ResourceService, private _applensGlobal:ApplensGlobal) {
     this._activatedRoute.firstChild.data.subscribe(data => {
       const key: string = data["tabKey"];
       this.selectedTabKey = key;
@@ -37,12 +33,6 @@ export class TabCommonComponent implements OnInit {
       if (data["isWorkflow"] && data["isWorkflow"] === true) {
         this.isWorkflow = true;
       }
-    });
-    _detectorMetadataService.getAuthor().subscribe(auth => {
-      this.detectorAuthor = auth;
-    });
-    _detectorMetadataService.getDescription().subscribe(desc => {
-      this.detectorDescription = desc;
     });
   }
 
@@ -67,6 +57,11 @@ export class TabCommonComponent implements OnInit {
       const key: string = this._activatedRoute.firstChild.snapshot.data["tabKey"];
       this.selectedTabKey = key;
     });
+
+    this._applensGlobal.detectorAuthorAndDescriptionSubject.subscribe(res => {
+      this.detectorAuthor = res.author;
+      this.detectorDescription = res.description;
+    })
   }
 
   navigateToData(ev: any) {
