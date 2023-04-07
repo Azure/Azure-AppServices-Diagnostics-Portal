@@ -1,0 +1,12 @@
+<fab-panel [isOpen]="showDevopsStatusMessage" [isLightDismiss]="true" [type]="PanelType.smallFixedFar"  [isHiddenOnDismiss]="true"
+[hasCloseButton]="false"  [isBlocking]="false" [styles]="devopsPanelStyles"  (onDismissed)="closeNotification()" (onOpened)="onOpenNotification()">
+
+  <div class="d-flex align-items-center submitted-panel-text" style="padding: 0px 10px;">
+  
+   <p>   <i class="fa fa-info-circle" aria-hidden="true"></i> {{scenarioMessage}}
+    <a (click)="goToPendingDeployments()" target="_blank"> More details here.   </a> 
+   </p> 
+
+  </div>
+
+</fab-panel>

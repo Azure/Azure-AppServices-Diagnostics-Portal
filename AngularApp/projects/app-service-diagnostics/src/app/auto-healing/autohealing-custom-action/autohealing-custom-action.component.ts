@@ -168,12 +168,7 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
   updateDaasAction(emitEvent: boolean) {
     if (this.validationResult.Validated) {
       this.updatedCustomAction.exe = daasConsolePath;
-      if (this.validationResult.ConfiguredAsAppSetting) {
-        this.updatedCustomAction.parameters = `-${this.diagnoserOption.option} "${this.diagnoser.Name}"`;
-      } else {
-        this.updatedCustomAction.parameters = this.validationResult.BlobSasUri.length > 0 ? `-${this.diagnoserOption.option} "${this.diagnoser.Name}" -BlobSasUri:"${this.validationResult.BlobSasUri}"` : `-${this.diagnoserOption.option} "${this.diagnoser.Name}"`;
-      }
-
+      this.updatedCustomAction.parameters = `-${this.diagnoserOption.option} "${this.diagnoser.Name}"`;
     } else {
       this.updatedCustomAction.exe = '';
       this.updatedCustomAction.parameters = '';

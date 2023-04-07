@@ -1,0 +1,18 @@
+<div [attr.name]="data.name" #canvasContent>
+    <div class="panel panel-default">
+        <div class="panel-heading panel-title-markdown">
+            <node-title [data]="data" [customClass]="'background-green'" [customClassIcon]="'fa-html5'">
+            </node-title>
+        </div>
+        <div class="panel-body">
+            <div class="markdown-editor">
+                <div class="markdown-text mt-2">{{ data.markdownText }}</div>
+                <button class="btn btn-primary btn-sm" (click)="configureMarkdown()">Configure markdown</button>
+            </div>
+            <common-node-properties [showMarkdown]="false" [data]="data"></common-node-properties>
+            <node-actions (onNodeAdded)="addNode($event)" (onConditionAdded)="addCondition($event)"
+                (onDeleted)="deleteNode()" [isDisabled]="isDisabled()" [isRootNode]="isRootNode()">
+            </node-actions>
+        </div>
+    </div>
+</div>

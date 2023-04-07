@@ -251,7 +251,7 @@ export class CategoryNavComponent implements OnInit {
 
                 // Get all the detector list under this category
                 this.siteFeatureService.getFeaturesForCategorySub(this.category).subscribe(features => {
-                    if (!this.isDiagnosticTools) {
+                    if (!this.isDiagnosticTools && Array.isArray(features)) {
                         features.forEach(feature => {
                             let onClick = () => {
                                 this.logCategoryNavClicked(feature.name, feature.category);
@@ -261,8 +261,9 @@ export class CategoryNavComponent implements OnInit {
                                 this.getCurrentItemId();
                                 return this.currentDetectorId === feature.id;
                             }
-                            let icon = this.getIconImagePath(feature.id);
-                            let menuItem = new CollapsibleMenuItem(feature.name, onClick, isSelected, icon);
+                            let icon = this.getIconImagePath(feature.id);                            
+                            let desc = this.detectorDataLocalCopy?.find(x => {return x.name === feature.name})?.description ?? "";
+                            let menuItem = new CollapsibleMenuItem(feature.name, onClick, isSelected, icon, desc);
                             this.detectorList.push(menuItem);
                         });
                     }

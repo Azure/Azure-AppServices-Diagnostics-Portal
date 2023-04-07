@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, Input, Output, EventEmitter, Inject } fro
 import { GenericDetectorComponent } from '../generic-detector/generic-detector.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ResourceService } from '../../../shared-v2/services/resource.service';
-import { FeatureNavigationService, TelemetryService, DiagnosticService, DownTime, DiagnosticDataConfig, DIAGNOSTIC_DATA_CONFIG } from 'diagnostic-data';
+import { FeatureNavigationService, TelemetryService, DiagnosticService, DownTime, DiagnosticDataConfig, DIAGNOSTIC_DATA_CONFIG, TelemetryEventNames } from 'diagnostic-data';
 import { AuthService } from '../../../startup/services/auth.service';
 import { DetectorListAnalysisComponent } from 'diagnostic-data';
 import { SearchAnalysisMode } from 'projects/diagnostic-data/src/lib/models/search-mode';
@@ -65,8 +65,16 @@ export class GenericAnalysisComponent extends GenericDetectorComponent implement
             this.detectorId = params.get('detectorName') === null ? "" : params.get('detectorName');
             this._activatedRouteLocal.queryParamMap.subscribe(qParams => {
                 this.searchTerm = qParams.get('searchTerm') === null ? this.searchTerm : qParams.get('searchTerm');
-                if (this.analysisId === "searchResultsAnalysis" && this.searchTerm && this.searchTerm.length > 0) {
-                    this.showSearchBar = this.searchMode === SearchAnalysisMode.CaseSubmission ? true : this.showSearchBar;
+                if (this.analysisId === "searchResultsAnalysis" && ((this.searchTerm && this.searchTerm.length > 0) || this.searchMode !== SearchAnalysisMode.Genie)) {
+                    //Show search bar in case submission or if not passing searchTerm
+                    this.showSearchBar = this.searchMode === SearchAnalysisMode.CaseSubmission || !this.searchTerm ? true : this.showSearchBar;
+
+                    if(!this.searchTerm) {
+                        this._telemetryService.logEvent(TelemetryEventNames.EmptySearchTerm, {
+                            searchMode: SearchAnalysisMode[this.searchMode]
+                        });
+                    }
+
                     this.displayDetectorContainer = false;
                 }
                 else {

@@ -4,10 +4,9 @@ import { TimeSeriesType } from '../../models/detector';
 import HC_exporting from 'highcharts/modules/exporting';
 import AccessibilityModule from 'highcharts/modules/accessibility';
 import { DetectorControlService } from '../../services/detector-control.service';
-import { HighChartTimeSeries } from '../../models/time-series';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection } from '../../models/time-series';
 import { KeyValue } from '@angular/common';
-import { PointerEventObject } from 'highcharts';
+import { PointerEventObject, SelectEventObject } from 'highcharts';
 import { interval, Subscription } from 'rxjs';
 import { GenericThemeService } from '../../services/generic-theme.service';
 import { HighChartsHoverService } from '../../services/highcharts-hover.service';
@@ -355,7 +354,7 @@ export class HighchartsGraphComponent implements OnInit {
         });
     };
 
-    private customChartSelectionCallbackFunction: Highcharts.ChartSelectionCallbackFunction = (event: Highcharts.ChartSelectionContextObject) => {
+    private customChartSelectionCallbackFunction: Highcharts.ChartSelectionCallbackFunction = (event: SelectEventObject) => {
         if (this._zoomBehavior & zoomBehaviors.FireXAxisSelectionEvent) {
             if (!!event.xAxis) {
                 let fromSelection = moment.utc(Highcharts.dateFormat('%Y-%m-%d %H:%M:00', event.xAxis[0].min));
@@ -704,12 +703,15 @@ export class HighchartsGraphComponent implements OnInit {
             },
             chart: {
                 reflow: true,
-                height: 300,
+                height: this.isGanttChart && this.HighchartData?.[0].dataLength > 10 ? this.HighchartData?.[0].dataLength * 30 : 300,
                 display: 'block!important',
                 type: 'line',
                 zoomType: 'x',
                 panKey: 'shift',
-                panning: true,
+                panning: {
+                    enabled: true,
+                    
+                },
                 resetZoomButton: {
                     position: {
                         ...(!this.isGanttChart && {

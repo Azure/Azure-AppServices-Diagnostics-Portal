@@ -303,3 +303,20 @@ markdown, .markdown {
       border-left: 0.25em solid rgba(0, 0, 0, 0.11);
   }
 }
+
+//
+// For all Mat Dialogs launched for Workflows
+//
+.matDialogClass .mat-dialog-container {
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
+  border: 1px solid;
+}
+
+//
+// For all message boxes launched for workflows
+//
+
+.swal2-html-container, .swal2-footer {
+  font-size: large !important;
+}

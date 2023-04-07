@@ -1,0 +1,17 @@
+#canvas {
+  height: 70vh;
+  width: calc(100%);
+  background: #f0f0f0;
+  flex: 1;
+  border: 1px solid darkgray;
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
+}
+
+div#canvas[disabled="true"] {
+  opacity: 1;
+}
+
+div#canvas[disabled="true"] ::ng-deep.ngflowchart-step-wrapper {
+  opacity: 1;
+}

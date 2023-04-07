@@ -1,0 +1,111 @@
+/** The drop icon outer circle */
+.ngflowchart-step-wrapper[ngflowchart-drop-hover]::after {
+    background: #a3e798 !important;
+  }
+  
+  /** The drop icon inner circle */
+  .ngflowchart-step-wrapper[ngflowchart-drop-hover]::before {
+    background: #4cd137 !important;
+  }
+  
+  /** The arrow paths and arrow head */
+  .ngflowchart-arrow {
+    & #arrowhead {
+      fill: black;
+    }
+  
+    & #arrowpath {
+      stroke: black;
+    }
+  }
+
+  
+::ng-deep .step-container{
+  border: 1px solid #000000;
+  overflow: hidden;
+}
+  
+.example-card{
+  width:280px;
+  height:150px;
+  display: flex;
+  align-items: center;
+}
+
+.example-card-default-outline{
+  border: 2px solid #000000;
+}
+
+
+.example-card-critical-outline{
+  border: 2px solid #ff0000;
+}
+
+.example-card-success-outline{
+  border: 2px solid #3da907;
+}
+
+
+.example-card-warning-outline{
+  border: 2px solid #ff9104;
+}
+
+
+.card-image{
+  width: 60px;
+  height: 60px;
+  margin: 0px 10px;
+}
+
+.fa-border-icon{
+  color: #4B98E9;
+  stroke: white;
+  stroke-width: 30px;
+  margin:10px 10px 10px 10px; 
+}
+
+.fa-default-icon{
+  height: 50px;
+  width: 50px;
+  background-color: white;
+  margin: 0px 10px;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 95%;
+  width: 200px;
+}
+
+.card-content-title {
+  font-size:16px; 
+  flex-basis: 28px;
+  text-overflow:ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 95%;
+  margin: 10px 0px -5px 0px;
+}
+
+.card-content-subtitle {
+  flex-basis: 25px;
+  margin-top: 0px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  flex-shrink: 1.5;
+  margin: 0px 0px 0px 0px;
+  width: 95%;
+}
+
+.card-content-description {
+  flex-basis: 50%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 95%;
+  flex-grow: 1.5;
+  margin-top: 10px;
+}

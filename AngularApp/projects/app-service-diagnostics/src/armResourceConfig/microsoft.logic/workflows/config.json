@@ -11,7 +11,7 @@
 		"armApiVersion": "2016-06-01"
 	},
 	"isSearchEnabled": true,
-	"keystoneDetectorId": "",
+	"keystoneDetectorId": "la_consumption_keystone",
 	"liveChatConfig": {
 		"isApplicableForLiveChat": false,
 		"supportTopicIds": []

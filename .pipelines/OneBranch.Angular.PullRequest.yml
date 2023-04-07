@@ -158,6 +158,8 @@ extends:
             inputs:
               command: 'restore'
               projects: 'Backend/Backend.csproj'
+              feedsToUse: 'config'
+              nugetConfigPath: 'Backend/nuget.config'               
 
           - task: DotNetCoreCLI@2
             displayName: 'build appservice diagnostics backend'

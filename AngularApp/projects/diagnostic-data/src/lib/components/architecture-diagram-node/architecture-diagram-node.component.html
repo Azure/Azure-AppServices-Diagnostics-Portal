@@ -1,0 +1,29 @@
+<div [attr.name]="data.name" #canvasContent>
+
+<div class="example-card" [ngClass]="{
+  'example-card-critical-outline': data.status == 'critical',
+  'example-card-success-outline':  data.status == 'success',
+  'example-card-warning-outline':  data.status == 'warning',
+  'example-card-default-outline':  data.status == '' || data.status == null
+}">
+
+      <div *ngIf = "nodeIconType == 'image'">
+        <img class="card-image" [src]="imageTypeList.get(this.data.icon)"/>
+      </div>
+      <div *ngIf = "nodeIconType == 'icon'" >
+        <i [class]="iconTypeList.get(this.data.icon)" aria-hidden="true"></i>
+      </div>
+      
+      <div class="card-content">
+        <h3 [title]="data.title" class="card-content-title">{{data.title}}</h3>
+        <div *ngIf = "data.subtitlelink !== undefined">
+          <p [title]="data.subtitle" class="card-content-subtitle"><a target="_blank" [href]="data.subtitlelink">{{data.subtitle}}</a></p>
+        </div>
+        <div *ngIf = "data.subtitlelink === undefined">
+          <p [title]="data.subtitle" class="card-content-subtitle">{{data.subtitle}}</p>
+        </div>
+        <p [title]="data.content" class="card-content-description">{{data.content}}</p>
+      </div>
+</div>
+
+  </div>

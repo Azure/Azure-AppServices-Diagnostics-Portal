@@ -13,6 +13,9 @@ import { Router } from '@angular/router';
 import { TelemetryPayload } from 'diagnostic-data';
 import { FavoriteDetectorProp, FavoriteDetectors, LandingInfo, RecentResource, UserPanelSetting, UserSetting } from '../models/user-setting';
 import { List } from 'office-ui-fabric-react';
+import { dynamicExpressionBody } from '../../modules/dashboard/workflow/models/kusto';
+import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
+import { CommitStatus } from '../models/devopsCommitStatus';
 
 
 @Injectable()
@@ -50,6 +53,11 @@ export class DiagnosticApiService {
     return this.invoke<any>(path, HttpMethod.GET, null, true, false, true, false);
   }
 
+  public FetchCaseEnabledResourceProviders() {
+    let path = "internal/FetchCaseEnabledResourceProviders";
+    return this.invoke<any>(path, HttpMethod.GET, null, true, false, true, false);
+  }
+
   public unrelatedResourceConfirmation(resourceId: string) {
     let body = {
       caseNumber: this.CustomerCaseNumber,
@@ -71,6 +79,23 @@ export class DiagnosticApiService {
     return this.invoke<DetectorResponse>(path, HttpMethod.POST, body, true, refresh, true, internalView);
   }
 
+  public getWorkflowNode(version: string, resourceId: string, workflowId: string, workflowExecutionId: string, nodeId: string, startTime?: string, endTime?: string,
+    internalView: boolean = true, additionalQueryParams?: string, workflowUserInputs?: any):
+    Observable<workflowNodeResult> {
+    let timeParameters = this._getTimeQueryParameters(startTime, endTime);
+    let path = `${version}${resourceId}/detectors/${workflowId}?${timeParameters}&diagnosticEntityType=workflow&workflowNodeId=${nodeId}&workflowExecutionId=${workflowExecutionId}`;
+
+    if (additionalQueryParams != undefined) {
+      path += additionalQueryParams;
+    }
+
+    if (workflowUserInputs != null) {
+      path += `&workflowUserInputs=${JSON.stringify(workflowUserInputs)}`;
+    }
+
+    return this.invoke<workflowNodeResult>(path, HttpMethod.POST, null, false, true, true, internalView);
+  }
+
   public getSystemInvoker(resourceId: string, detector: string, systemInvokerId: string = '', dataSource: string,
     timeRange: string, body?: any): Observable<DetectorResponse> {
     let invokerParameters = this._getSystemInvokerParameters(dataSource, timeRange);
@@ -84,6 +109,23 @@ export class DiagnosticApiService {
     if (queryParams) {
       path = path + "?" + queryParams.map(qp => qp.key + "=" + qp.value).join("&");
     }
+    return this.invoke<DetectorResponse[]>(path, HttpMethod.POST, body, true, false, internalClient).pipe(retry(1), map(response => response.map(detector => detector.metadata)));
+  }
+
+  public getWorkflows(version: string, resourceId: string, body?: any, queryParams?: any[], internalClient: boolean = true): Observable<DetectorMetaData[]> {
+    let path = `${version}${resourceId}/detectors`;
+    if (queryParams == null) {
+      queryParams = [];
+    }
+
+    let idx = queryParams.findIndex(x => x.key === 'diagnosticEntityType');
+    if (idx > -1) {
+      queryParams[idx].value = 'workflow';
+    } else {
+      queryParams.push({ key: 'diagnosticEntityType', value: 'workflow' });
+    }
+
+    path = path + "?" + queryParams.map(qp => qp.key + "=" + qp.value).join("&");
     return this.invoke<DetectorResponse[]>(path, HttpMethod.POST, body, true, false, internalClient).pipe(retry(1), map(response => response.map(detector => detector.metadata)));
   }
 
@@ -148,11 +190,11 @@ export class DiagnosticApiService {
     return this.invoke<DetectorResponse[]>(path, HttpMethod.POST, body).pipe(retry(1), map(response => response.map(gist => gist.metadata)));
   }
 
-  
-  public getGistId(version: string, resourceId: string, gistId: string, body?: any): Observable<any>{
-    
+
+  public getGistId(version: string, resourceId: string, gistId: string, body?: any): Observable<any> {
+
     let path = `${version}${resourceId}/gists/${gistId}`;
-    return this.invoke<any>(path, HttpMethod.POST, body, true); 
+    return this.invoke<any>(path, HttpMethod.POST, body, true);
   }
 
 
@@ -170,6 +212,30 @@ export class DiagnosticApiService {
     }
 
     return this._getCompilerResponseInternal(path, body, additionalParams, publishingDetectorId);
+  }
+
+  public getWorkflowCompilerResponse(version: string, resourceId: string, body: any, startTime: string, endTime: string,
+    additionalParams: any, publishingDetectorId: string, workflowExecutionId: string, nodeId: string): Observable<QueryResponse<workflowNodeResult>> {
+    let timeParameters = this._getTimeQueryParameters(startTime, endTime);
+    let path = `${version}${resourceId}/diagnostics/compileworkflow?${timeParameters}`;
+
+    if (workflowExecutionId && nodeId) {
+      path = `${version}${resourceId}/diagnostics/compileworkflow/${workflowExecutionId}/${nodeId}?${timeParameters}`;
+    }
+
+    let additionalHeaders = new Map<string, string>();
+    if (additionalParams && additionalParams.scriptETag) {
+      additionalHeaders = additionalHeaders.set('diag-script-etag', additionalParams.scriptETag);
+    }
+
+    if (additionalParams && additionalParams.assemblyName) {
+      additionalHeaders = additionalHeaders.set('diag-assembly-name', encodeURI(additionalParams.assemblyName));
+    }
+
+    additionalHeaders = additionalHeaders.set('diag-publishing-detector-id', publishingDetectorId);
+
+    return this.invoke<QueryResponse<workflowNodeResult>>(path, HttpMethod.POST, body, false, undefined, undefined, undefined,
+      additionalParams.getFullResponse, additionalHeaders);
   }
 
   public getSystemCompilerResponse(resourceId: string, body: any, detectorId: string = '', dataSource: string = '',
@@ -272,6 +338,17 @@ export class DiagnosticApiService {
     return this.invoke<string>(path, HttpMethod.GET);
   }
 
+  public evaluateDynamicExpression(resourceId: string, body: dynamicExpressionBody, startTime: string, endTime: string): Observable<any> {
+    let timeParameters = this._getTimeQueryParameters(startTime, endTime);
+    let path = `${resourceId}/evaluateexpression?${timeParameters}`;
+    return this.invoke<string>(path, HttpMethod.POST, body, false);
+  }
+
+  public publishWorkflow(resourceId: string, publishBody: workflowPublishBody): Observable<any> {
+    let path = `${resourceId}/diagnostics/publishworkflow`;
+    return this.invoke<string>(path, HttpMethod.POST, publishBody, false);
+  }
+
   public invoke<T>(path: string, method: HttpMethod = HttpMethod.GET, body: any = {}, useCache: boolean = true,
     invalidateCache: boolean = false, internalClient: boolean = true, internalView: boolean = true, getFullResponse?: boolean,
     additionalHeaders?: Map<string, string>): Observable<T> {
@@ -330,6 +407,29 @@ export class DiagnosticApiService {
     });
 
     return this._cacheService.get(path, request, invalidateCache);
+  }
+
+  public post<T, S>(path: string, body?: S, additionalHeaders: HttpHeaders = null): Observable<T> {
+    const url = `${this.diagnosticApi}${path}`;
+    let bodyString: string = '';
+    if (body) {
+      bodyString = JSON.stringify(body);
+    }
+
+    var requestHeaders = this._getHeaders();
+    if (additionalHeaders) {
+      additionalHeaders.keys().forEach(key => {
+        if (!requestHeaders.has(key)) {
+          requestHeaders = requestHeaders.set(key, additionalHeaders.get(key));
+        }
+      });
+    }
+
+    const request = this._httpClient.post(url, bodyString, {
+      headers: requestHeaders,
+    });
+
+    return this._cacheService.get(path, request, true);
   }
 
   public hasApplensAccess(): Observable<any> {
@@ -439,9 +539,20 @@ export class DiagnosticApiService {
     });
   }
 
-  updateUserLandingInfo(landingInfo : LandingInfo, userId: string): Observable<UserSetting> {
+  public getUserSettingChatGPT(userId: string, invalidateCache: boolean): Observable<UserSetting> {
+    return this.get<UserSetting>(`api/usersetting/${userId}/userChatGPTSetting`, invalidateCache);
+  }
+
+  updateUserChatGPTSetting(chatGPTSetting: any, userId: string): Observable<UserSetting> {
+    const url: string = `${this.diagnosticApi}api/usersetting/${userId}/userChatGPTSetting`;
+    return this._httpClient.post<UserSetting>(url, chatGPTSetting, {
+      headers: this._getHeaders()
+    });
+  }
+
+  updateUserLandingInfo(landingInfo: LandingInfo, userId: string): Observable<UserSetting> {
     const url: string = `${this.diagnosticApi}api/usersetting/${userId}/landingInfo`;
-    return this._httpClient.post<UserSetting>(url,landingInfo,{
+    return this._httpClient.post<UserSetting>(url, landingInfo, {
       headers: this._getHeaders()
     });
   }
@@ -455,18 +566,18 @@ export class DiagnosticApiService {
 
   addFavoriteDetector(detectorId: string, detectorProp: FavoriteDetectorProp, userId: string): Observable<UserSetting> {
     const url = `${this.diagnosticApi}api/usersetting/${userId}/favoriteDetectors/${detectorId}`;
-    return this._httpClient.post<UserSetting>(url, detectorProp,{
+    return this._httpClient.post<UserSetting>(url, detectorProp, {
       headers: this._getHeaders()
     })
   }
 
   public getDetectorCode(detectorPath: string, branch: string, resourceUri: string): Observable<string> {
-    let path = branch === null ? `devops/getCode?filePathInRepo=${detectorPath}&resourceUri=${resourceUri}` :`devops/getCode?filePathInRepo=${detectorPath}&branch=${branch}&resourceUri=${resourceUri}`;
+    let path = branch === null ? `devops/getCode?filePathInRepo=${detectorPath}&resourceUri=${resourceUri}` : `devops/getCode?filePathInRepo=${detectorPath}&branch=${branch}&resourceUri=${resourceUri}`;
     return this.invoke(path, HttpMethod.GET, null, false);
   }
 
   public getDevOpsTree(devOpsPath: string, branch: string, resourceUri: string): Observable<any> {
-    let path = branch === null ? `devops/getTree?filePathInRepo=${devOpsPath}&resourceUri=${resourceUri}` :`devops/getTree?filePathInRepo=${devOpsPath}&branch=${branch}&resourceUri=${resourceUri}`;
+    let path = branch === null ? `devops/getTree?filePathInRepo=${devOpsPath}&resourceUri=${resourceUri}` : `devops/getTree?filePathInRepo=${devOpsPath}&branch=${branch}&resourceUri=${resourceUri}`;
     return this.invoke(path, HttpMethod.GET, null, false);
   }
 
@@ -509,7 +620,7 @@ export class DiagnosticApiService {
     return this.invoke(path, HttpMethod.POST, body, false);
   }
 
-  public deleteBranch(branch: string, resourceUri: string){
+  public deleteBranch(branch: string, resourceUri: string) {
     var body = {};
     body['branch'] = branch;
     body['resourceUri'] = resourceUri;
@@ -577,6 +688,32 @@ export class DiagnosticApiService {
   public getAppSetting(appSettingName: string): Observable<string> {
     const path = `api/appsettings/${appSettingName}`;
     return this.get(path).pipe(map((res: string) => {
+      return res;
+    }));
+  }
+
+  public isUserAllowedForWorkflow(userAlias: string): Observable<boolean> {
+    const path = `api/workflows/isuserallowed/${userAlias}`;
+    return this.get(path).pipe(map((res: boolean) => {
+      return res;
+    }));
+  }
+
+  public getDevopsCommitStatus(commitid: string, resourceUri: string): Observable<CommitStatus[]> {
+    let path = `devops/getCommitStatus?commitid=${commitid}&resourceUri=${resourceUri}`;
+    return this.invoke(path, HttpMethod.GET, null, false);
+  }
+
+  public getWorkflowUsers(): Observable<string[]> {
+    const path = `api/workflowusers`;
+    return this.get(path, true).pipe(map((res: string[]) => {
+      return res;
+    }));
+  }
+
+  public addWorkflowUser(useralias: string): Observable<any> {
+    const path = `api/workflowusers`;
+    return this.post(path, useralias).pipe(map(res => {
       return res;
     }));
   }

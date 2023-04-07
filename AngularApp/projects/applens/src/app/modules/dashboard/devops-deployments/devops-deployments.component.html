@@ -1,0 +1,9 @@
+
+
+
+  <loader-view *ngIf="loadingTable" message = "Loading deployment statuses..."></loader-view>
+
+  <div *ngIf="table" class="detector-list">
+      <fab-data-table [table]="table" [allowColumnSearch]="true" [columnOptions]="columnOptions" [tableHeight]="'100%'" ></fab-data-table>
+    </div>
+

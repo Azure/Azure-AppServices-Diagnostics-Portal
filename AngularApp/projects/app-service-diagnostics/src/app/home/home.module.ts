@@ -60,8 +60,10 @@ import { LinuxPythonCpuProfilerComponent } from '../shared/components/tools/linu
 import { FabSearchBoxModule } from '@angular-react/fabric/lib/components/search-box';
 import { FabCommandBarModule } from '@angular-react/fabric/lib/components/command-bar';
 import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
+import { DownloadReportComponent } from '../shared/components/download-report/download-report.component';
 import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
 import { ClientScriptService } from '../shared-v2/services/client-script.service';
+import { OpenAIArmService } from '../../../../diagnostic-data/src/public_api';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -189,6 +191,18 @@ export const HomeRoutes = RouterModule.forChild([
                     {
                         path: 'detectors/:detectorName',
                         component: GenericDetectorComponent,
+                        data: {
+                            cacheComponent: true
+                        },
+                        resolve: {
+                            time: TimeControlResolver,
+                            navigationTitle: TabTitleResolver,
+                            uncategorizedDetector: UncategorizedDetectorsResolver,
+                        }
+                    },
+                    {
+                        path: 'downloadReport/:detectorName',
+                        component: DownloadReportComponent,
                         data: {
                             cacheComponent: true
                         },
@@ -738,6 +752,7 @@ export const HomeRoutes = RouterModule.forChild([
             CategoryChatResolver,
             TimeControlResolver,
             ContentService,
+            OpenAIArmService,
             UncategorizedDetectorsResolver,
             DetectorCategorizationService,
             MetricsPerInstanceAppsResolver,

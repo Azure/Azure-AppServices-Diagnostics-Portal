@@ -1,0 +1,68 @@
+.markdown-editor {
+    max-width: 450px;
+}
+
+.navbar {
+    min-height: 20px;
+}
+
+.form-label {
+    font-size: smaller;
+}
+
+.nav-tabs .nav-link {
+    font-size: small;
+}
+
+.tab-content {
+    border: 1px solid #ddd;
+    border-width: 0 1px 1px;
+    /* Removes the top border */
+    padding: 1px;
+}
+
+.nav-tabs>li {
+    float: left;
+}
+
+.nav-tabs>li>a {
+    margin-left: 0;
+    margin-right: 2px;
+}
+
+.tab-inner-content {
+    padding: 10px;
+    height: 90px;
+}
+
+.fixed-label {
+    margin-top: 5px;
+    font-size: small;
+    inline-size: 300px;
+    color: gray;
+}
+
+.markdown-text {
+    height: 40px;
+    padding: 5px;
+    width: 100%;
+    overflow: auto;
+    word-wrap: break-word;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.disabled {
+    cursor: not-allowed;
+}
+
+input,
+textarea,
+select {
+    background-color: var(--bodyBackground);
+    color: var(--inputText);
+}
+
+.form-control[disabled] {
+    background-color: var(--disabledBackground);
+    color: var(--disabledBodyText);
+}

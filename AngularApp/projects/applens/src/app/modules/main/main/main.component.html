@@ -18,7 +18,7 @@
       </div>
       <div style="width: 50%;">
         <div class="section"
-          *ngIf="caseNumberNeededForUser && (selectedResourceType && selectedResourceType.userAuthorizationEnabled)">
+        *ngIf="caseNumberNeededForProduct || (caseNumberNeededForUser && caseNumberNeededForRP)">
           <fab-text-field [ariaLabel]="'Customer case number'" [defaultValue]="caseNumber" (onChange)="updateCaseNumber($event)"
             [placeholder]="caseNumberPlaceholder" [label]="'Case Number'" [required]="true"
             [styles]="fabTextFieldStyles">
@@ -131,7 +131,7 @@
 </ng-template>
 
 
-<fab-panel [isOpen]="openResourceTypePanel == true" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
+<fab-panel [isOpen]="openResourceTypePanel == true" [type]="type" [customWidth]="width" 
   [styles]="panelStyles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
   (onDismiss)="dismissedHandler()" [headerText]="'Supported Resource Types'">
   <div>

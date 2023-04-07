@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ContentChildren, QueryList } from '@angular/core';
+import { Component, OnInit, Input, ContentChildren, QueryList, EventEmitter, Output } from '@angular/core';
 import { TelemetryService } from '../../../services/telemetry/telemetry.service';
 import { CollapsibleListItemComponent } from '../collapsible-list-item.component';
 
@@ -14,6 +14,8 @@ export class CollapsibleListFabricComponent {
   @Input() lessMargin: boolean = false;
   @Input() iconProps: any = null;
 
+  @Output() collapsedChange = new EventEmitter<any>();
+
   @ContentChildren(CollapsibleListItemComponent) listItemComponents: QueryList<CollapsibleListItemComponent>;
 
   constructor(private telemetryService:TelemetryService) {
@@ -25,5 +27,6 @@ export class CollapsibleListFabricComponent {
       "Title": this.title
     });
     this.collapsed = !this.collapsed;
+    this.collapsedChange.emit(this.collapsed);
   }
 }

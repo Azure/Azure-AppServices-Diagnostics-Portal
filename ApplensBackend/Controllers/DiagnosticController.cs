@@ -44,8 +44,8 @@ namespace AppLensV3.Controllers
         private readonly string forbiddenDiagAscHeaderValue;
         private readonly bool detectorDevelopmentEnabled;
         private readonly IList<string> apiEndpointsForDetectorDevelopment;
-
-        private readonly string[] AllowedSections = new string[] { "ContentSearch", "DeepSearch", "ApplicationInsights", "AcceptOriginSuffix:Origins", "CodeCompletion", "DetectorDevelopmentEnabled", "DetectorDevelopmentEnv", "PPEHostname", "APPLENS_ENVIRONMENT", "APPLENS_HOST", "SystemInvokers:ResourceIDString", "SystemInvokers:DocumentationStagingBranch", "SystemInvokers:DocumentationRoot", "SystemInvokers:DiagnosticsMainBranch" };
+        private readonly string[] allowedUsers;
+        private readonly string[] AllowedSections = new string[] { "ApplicationInsights", "AcceptOriginSuffix:Origins", "CodeCompletion", "DetectorDevelopmentEnabled", "DetectorDevelopmentEnv", "PPEHostname", "APPLENS_ENVIRONMENT", "APPLENS_HOST", "SystemInvokers:ResourceIDString", "SystemInvokers:DocumentationStagingBranch", "SystemInvokers:DocumentationRoot", "SystemInvokers:DiagnosticsMainBranch", "NetworkTraceAnalysisTool" };
 
         private class InvokeHeaders
         {
@@ -63,7 +63,7 @@ namespace AppLensV3.Controllers
         /// <param name="env">The environment.</param>
         /// <param name="diagnosticClient">Diagnostic client.</param>
         /// <param name="emailNotificationService">Email notification service.</param>
-        public DiagnosticController(IWebHostEnvironment env, IDiagnosticClientService diagnosticClient, IEmailNotificationService emailNotificationService, IConfiguration configuration, IResourceConfigService resConfigService, IAppSvcUxDiagnosticDataService appSvcUxDiagnosticDataService)
+        public DiagnosticController(IWebHostEnvironment env, IDiagnosticClientService diagnosticClient, IEmailNotificationService emailNotificationService, IConfiguration configuration, IResourceConfigService resConfigService, IAppSvcUxDiagnosticDataService appSvcUxDiagnosticDataService, IWorkflowUsersCacheService workflowUsersCacheService)
         {
             Env = env;
             DiagnosticClient = diagnosticClient;
@@ -86,6 +86,14 @@ namespace AppLensV3.Controllers
             }
 
             apiEndpointsForDetectorDevelopment = new List<string>() { "/diagnostics/query?", "/diagnostics/publish" };
+
+            allowedUsers = configuration.GetValue("Workflow:Users", string.Empty).Split(';').Select(x => x.ToLower()).ToArray();
+
+            var allowedUsersInDb = workflowUsersCacheService.GetWorkflowUsers();
+            if (allowedUsersInDb.Any())
+            {
+                allowedUsers = allowedUsers.Concat(allowedUsersInDb).ToArray();
+            }
         }
 
         private IDiagnosticClientService DiagnosticClient { get; }
@@ -120,6 +128,17 @@ namespace AppLensV3.Controllers
             {
                 return NotFound($"App setting with the name '{name}' is not found");
             }
+        }
+
+        [HttpGet("workflows/isuserallowed/{userAlias}")]
+        public IActionResult IsUserAllowed(string userAlias)
+        {
+            if (string.IsNullOrWhiteSpace(userAlias))
+            {
+                return BadRequest("userAlias must be specified");
+            }
+
+            return Ok(allowedUsers.Contains(userAlias.ToLower()));
         }
 
         [HttpGet("invoke")]

@@ -26,7 +26,9 @@ export class TabDataComponent implements OnInit {
   detectorResponse: DetectorResponse;
 
   detector: string;
+  workflowId: string;
   detectorMetaData: DetectorMetaData;
+  isWorkflowDetector: boolean = false;
 
   analysisMode: boolean = false;
 
@@ -158,8 +160,15 @@ export class TabDataComponent implements OnInit {
   }
 
   refresh() {
-    this.detector = this._route.snapshot.params['detector'];
-    this._diagnosticApiService.getDetectorMetaDataById(this.detector).subscribe(metaData => {
+    if (this._route.snapshot.params['workflowId'] != null) {
+      this.detector = this._route.snapshot.params['workflowId'];
+      this.isWorkflowDetector = true;
+    } else {
+      this.detector = this._route.snapshot.params['detector'];
+    }
+
+
+    this._diagnosticApiService.getDetectorMetaDataById(this.detector, this.isWorkflowDetector).subscribe(metaData => {
       if (metaData) {
         this._applensGlobal.updateHeader(metaData.name);
         this.detectorMetaData = metaData;
@@ -176,21 +185,16 @@ export class TabDataComponent implements OnInit {
     // Detecting whether Download Report button should be displayed or not
     this.displayDownloadReportButton = this.detector === "ResiliencyScore" && (this.checkIsWindowsApp() || this.checkIsLinuxApp());
 
-    // Detecting whether Download Report button should be displayed or not
-    this.displayDownloadReportButton = this.detector === "ResiliencyScore" && (this.checkIsWindowsApp() || this.checkIsLinuxApp());
-
     // Logging telemetry for Download Report button
     const dRBDEventProperties = {
-      'ResiliencyScoreButtonDisplayed': this.displayDownloadReportButton.toString(),
+      'ResiliencyScoreButtonDisplayed': `${this.displayDownloadReportButton}`,
       'Subscription': this._route.parent.snapshot.params['subscriptionid'],
-      'Platform': this.siteSku.is_linux != undefined ? !this.siteSku.is_linux ? "Windows" : "Linux" : "",
-      'AppType': this.siteSku.kind != undefined ? this.siteSku.kind.toLowerCase() === "app" ? "WebApp" : this.siteSku.kind.toString() : "",
-      'resourceSku': this.siteSku.sku != undefined ? this.siteSku.sku.toString() : "",
+      'Platform': this.siteSku?.is_linux != undefined ? !this.siteSku.is_linux ? "Windows" : "Linux" : "",
+      'AppType': this.siteSku?.kind != undefined ? `${this.siteSku.kind}`.toLowerCase() === "app" ? "WebApp" : `${this.siteSku.kind}` : "",
+      'resourceSku': this.siteSku?.sku != undefined ? `${this.siteSku.sku}` : "",
       'ReportType': 'ResiliencyScore',
     };
     this._telemetryService.logEvent(TelemetryEventNames.DownloadReportButtonDisplayed, dRBDEventProperties);
-    const loggingError = new Error();
-
   }
 
   refreshPage() {
@@ -198,7 +202,7 @@ export class TabDataComponent implements OnInit {
   }
 
   emailToAuthor() {
-    this._applensCommandBarService.getDetectorMeatData(this.detector).subscribe(metaData => {
+    this._applensCommandBarService.getDetectorMeatData(this.detector, this.isWorkflowDetector).subscribe(metaData => {
       this._applensCommandBarService.emailToAuthor(metaData);
     });
   }

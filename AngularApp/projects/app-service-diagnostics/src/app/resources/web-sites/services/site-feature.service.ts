@@ -18,6 +18,9 @@ import { CategoryService } from '../../../shared-v2/services/category.service';
 import { VersionTestService } from '../../../fabric-ui/version-test.service';
 import { ArmService } from '../../../shared/services/arm.service';
 import { SubscriptionPropertiesService } from '../../../shared/services/subscription-properties.service';
+import { catchError, map, mergeMap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { HttpResponse } from '@angular/common/http';
 
 @Injectable()
 export class SiteFeatureService extends FeatureService {
@@ -25,7 +28,6 @@ export class SiteFeatureService extends FeatureService {
   public diagnosticTools: SiteFilteredItem<Feature>[];
   public proactiveTools: SiteFilteredItem<Feature>[];
   public supportTools: SiteFilteredItem<Feature>[];
-  public subscriptionId: string;
   constructor(protected _diagnosticApiService: DiagnosticService, protected _resourceService: WebSitesService, protected _contentService: ContentService, protected _router: Router,
     protected _authService: AuthService, protected _portalActionService: PortalActionService, private _websiteFilter: WebSiteFilter, protected _logger: TelemetryService, protected armService: ArmService,
     protected subscriptionPropertiesService: SubscriptionPropertiesService, protected _siteService: SiteService, protected _categoryService: CategoryService, protected _activedRoute: ActivatedRoute, protected _versionTestService: VersionTestService) {
@@ -38,76 +40,82 @@ export class SiteFeatureService extends FeatureService {
       order: ['appdownanalysis', 'perfanalysis', 'webappcpu', 'memoryusage', 'webapprestart']
     }];
     this._authService.getStartupInfo().subscribe(startupInfo => {
-      this.subscriptionId = startupInfo.resourceId.split("subscriptions/")[1].split("/")[0];
       this.addDiagnosticTools(startupInfo.resourceId);
       this.addProactiveTools(startupInfo.resourceId);
     });
   }
 
   sortFeatures() {
-    this._featureDisplayOrderSub.subscribe(featureOrder => {
-      this._sortFeaturesHelper(featureOrder);
+    this._featureDisplayOrderSub.pipe(mergeMap(featureOrder => {
+      return this._authService.getStartupInfo().pipe(map(startupInfo => {
+        const subscriptionId = startupInfo.resourceId.split("subscriptions/")[1].split("/")[0];
+        return { "subscriptionId": subscriptionId, "featureOrder": featureOrder };
+      }));
+    })).subscribe(res => {
+      this._sortFeaturesHelper(res.featureOrder, res.subscriptionId);
     });
   }
 
-  private _sortFeaturesHelper(displayOrder: any[]) {
+  private _sortFeaturesHelper(displayOrder: any[], subscriptionId: string) {
     let featureDisplayOrder = displayOrder;
     let locationPlacementId = '';
-    if (this.subscriptionPropertiesService) {
-      this.subscriptionPropertiesService.getSubscriptionProperties(this.subscriptionId).subscribe(response => {
-        locationPlacementId = response.body['subscriptionPolicies']['locationPlacementId'];
-      });
-    }
-    // remove features not applicable
-    if (locationPlacementId && locationPlacementId.toLowerCase() === 'geos_2020-01-01') {
-      this._features = this._features.filter(x => {
-        return x.id !== 'appchanges';
-      })
-    }
+    if (this.subscriptionPropertiesService && subscriptionId) {
+      this.subscriptionPropertiesService.getSubscriptionProperties(subscriptionId).pipe(catchError(error => of({}))).subscribe(response => {
+        locationPlacementId = (<HttpResponse<any>>response)?.body['subscriptionPolicies']['locationPlacementId'];
 
-    featureDisplayOrder.forEach(displayOrder => {
+        // remove features not applicable
+        if (locationPlacementId && locationPlacementId.toLowerCase() === 'geos_2020-01-01') {
+          this._features = this._features.filter(x => {
+            return x.id !== 'appchanges';
+          })
+        }
 
-      if (displayOrder.platform === this._resourceService.platform && this._resourceService.appType === displayOrder.appType) {
-        // Add all the features for this category to a temporary array
-        let categoryFeatures: Feature[] = [];
-        this._features.forEach(x => {
-          if (x.category != null && x.category.indexOf(displayOrder.category) > -1) {
-            categoryFeatures.push(x);
+        featureDisplayOrder.forEach(displayOrder => {
+
+          if (displayOrder.platform === this._resourceService.platform && this._resourceService.appType === displayOrder.appType) {
+            // Add all the features for this category to a temporary array
+            let categoryFeatures: Feature[] = [];
+            this._features.forEach(x => {
+              if (x.category != null && x.category.indexOf(displayOrder.category) > -1) {
+                categoryFeatures.push(x);
+              }
+            });
+
+            // Remove all the features for the sorted category
+            this._features = this._features.filter(x => {
+              return x.category !== displayOrder.category;
+            });
+
+
+            const categoryOrder = featureDisplayOrder.find(x => x.category.toLowerCase().startsWith(displayOrder.category.toLowerCase()));
+            let preOrderedFeatures: Feature[] = [];
+            let unOrderedFeatures: Feature[] = [];
+
+            //Follow order array in _featureDisplayOrder.order for preordered features
+            if (categoryOrder && categoryOrder.order.length > 0) {
+              categoryOrder.order.forEach((id: string) => {
+                const index = categoryFeatures.findIndex(f => f.id.toLowerCase() === id.toLowerCase());
+                if (index > -1) {
+                  preOrderedFeatures.push(categoryFeatures[index]);
+                }
+              });
+            }
+
+            unOrderedFeatures = categoryFeatures.filter(feature => preOrderedFeatures.findIndex(preFeature => preFeature.id === feature.id) === -1);
+
+            this.sortFeaturesBase(unOrderedFeatures);
+
+            // add the sorted features for this category back to the array, with pre-ordered then rest features
+            this._features = this._features.concat([...preOrderedFeatures, ...unOrderedFeatures]);
           }
         });
 
-        // Remove all the features for the sorted category
-        this._features = this._features.filter(x => {
-          return x.category !== displayOrder.category;
-        });
-
-
-        const categoryOrder = featureDisplayOrder.find(x => x.category.toLowerCase().startsWith(displayOrder.category.toLowerCase()));
-        let preOrderedFeatures: Feature[] = [];
-        let unOrderedFeatures: Feature[] = [];
-
-        //Follow order array in _featureDisplayOrder.order for preordered features
-        if(categoryOrder && categoryOrder.order.length > 0) {
-          categoryOrder.order.forEach((id:string) => {
-            const index = categoryFeatures.findIndex(f => f.id.toLowerCase() === id.toLowerCase());
-            if(index > -1) {
-              preOrderedFeatures.push(categoryFeatures[index]);
-            }
-          });
+        //For resource have no pre-defined order
+        if (featureDisplayOrder.findIndex(d => d.platform === this._resourceService.platform && this._resourceService.appType === d.appType) === -1) {
+          this.sortFeaturesBase(this._features);
         }
 
-        unOrderedFeatures = categoryFeatures.filter(feature => preOrderedFeatures.findIndex(preFeature => preFeature.id === feature.id) === -1);
-
-        this.sortFeaturesBase(unOrderedFeatures);
-
-        // add the sorted features for this category back to the array, with pre-ordered then rest features
-        this._features = this._features.concat([...preOrderedFeatures,...unOrderedFeatures]);
-      }
-    });
-
-    //For resource have no pre-defined order
-    if (featureDisplayOrder.findIndex(d => d.platform === this._resourceService.platform && this._resourceService.appType === d.appType) === -1) {
-      this.sortFeaturesBase(this._features);
+      });
     }
 
   }

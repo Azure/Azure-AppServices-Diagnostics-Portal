@@ -10,7 +10,6 @@ import { IncidentAssistanceService } from "./services/incident-assistance.servic
 import { HttpClientModule } from '@angular/common/http';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { DiagnosticDataModule } from 'diagnostic-data';
-import { SafeHtmlPipe } from './pipes/safe-html.pipe';
 import { FabButtonModule } from '@angular-react/fabric/lib/components/button';
 import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
 import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown';
@@ -46,6 +45,6 @@ export const IncidentAssistModuleRoutes: ModuleWithProviders<IncidentAssistModul
     DiagnosticDataModule
   ],
   providers: [IncidentAssistanceService],
-  declarations: [IncidentValidationComponent, TemplateManagementComponent, SafeHtmlPipe]
+  declarations: [IncidentValidationComponent, TemplateManagementComponent]
 })
 export class IncidentAssistModule { }

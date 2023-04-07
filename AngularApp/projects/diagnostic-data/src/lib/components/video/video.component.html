@@ -1,0 +1,15 @@
+<fab-card [isExpandable]="false">
+    <div header *ngIf="title">
+        <h4>{{title}}</h4>
+    </div>
+    <div body style="display: flex;">
+        <div *ngFor="let video of videos" class="mr-5 video-container">
+            <iframe [src]="video.link | safe:'resourceUrl' " frameborder="0" width="100%" height="250px"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen="true">
+            </iframe>
+            <markdown-text [markdownData]="video.altText"></markdown-text>
+        </div>
+    </div>
+</fab-card>

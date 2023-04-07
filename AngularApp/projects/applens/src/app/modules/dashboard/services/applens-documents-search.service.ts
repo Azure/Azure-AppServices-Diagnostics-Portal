@@ -8,7 +8,6 @@ import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.se
   providedIn:"root"
 })
 export class ApplensDocumentsSearchService {
-  private authKey: string = "";
   private url : string = "";
   private _config : DocumentSearchConfiguration;
   private featureEnabledForProduct : boolean = false; 
@@ -19,35 +18,12 @@ export class ApplensDocumentsSearchService {
                 private _backendApi : DiagnosticApiService                 
               ) { 
     
-    this._config = new DocumentSearchConfiguration();
-    this._backendApi.get<string>(`api/appsettings/DeepSearch:Endpoint`).subscribe((value: string) =>{
-      this.url = value;
-    });
-
-    this._backendApi.get<string>(`api/appsettings/DeepSearch:AuthKey`).subscribe((value: string) =>{
-      this.authKey = value;
-      this.httpOptions = {
-        headers: new HttpHeaders({
-          "Content-Type" : "application/json",
-          "authKey" : this.authKey
-        })
-      };
-    });
-    
+    this._config = new DocumentSearchConfiguration();    
   }
 
   public IsEnabled(pesId : string) : Observable<boolean> {
     // featureEnabledForProduct is disabled by default
-    if ( pesId.length >0 && this._config.documentSearchEnabledPesIdsInternal.findIndex(x => x==pesId)>=0){
-          this.featureEnabledForProduct = true;
-    }
-
-    return this._backendApi.get<string>(`api/appsettings/DeepSearch:isEnabled`)
-                            // Value in App Service Application Settings are returned as strings 
-                            // converting this to boolean
-                            .map(status =>  ( status.toLowerCase() == "true" && this.featureEnabledForProduct) );    
-    
-    
+    return Observable.of(false);    
   }
 
   private constructUrl(query: Query) : string{

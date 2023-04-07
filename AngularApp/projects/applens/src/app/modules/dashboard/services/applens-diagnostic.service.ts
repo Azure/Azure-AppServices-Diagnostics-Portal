@@ -7,6 +7,10 @@ import { QueryResponse } from 'diagnostic-data';
 import { Package } from '../../../shared/models/package';
 import { filter } from 'rxjs-compat/operator/filter';
 import { map } from 'rxjs/operators';
+import { dynamicExpressionBody } from '../workflow/models/kusto';
+import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
+import { CommitStatus } from '../../../shared/models/devopsCommitStatus';
+
 
 @Injectable()
 export class ApplensDiagnosticService {
@@ -44,6 +48,25 @@ export class ApplensDiagnosticService {
       formQueryParams);
   }
 
+  getWorkflowNode(workflowId: string, workflowExecutionId: string, nodeId: string, startTime: string, endTime: string, internalView: boolean = true, formQueryParams?: string, overrideResourceUri?: string, userInputs?: any): Observable<workflowNodeResult> {
+    let resourceId = overrideResourceUri ? overrideResourceUri : this._resourceService.getCurrentResourceId(true);
+    if (!resourceId.startsWith('/')) resourceId = '/' + resourceId;
+
+    let versionPrefix = this._resourceService.versionPrefix;
+    if (versionPrefix.endsWith('/')) versionPrefix = versionPrefix.substring(versionPrefix.length - 1);
+    return this._diagnosticApi.getWorkflowNode(
+      versionPrefix,
+      resourceId,
+      workflowId,
+      workflowExecutionId,
+      nodeId,
+      startTime,
+      endTime,
+      internalView,
+      formQueryParams,
+      userInputs);
+  }
+
   getSystemInvoker(detector: string, systemInvokerId: string = '', dataSource: string, timeRange: string): Observable<DetectorResponse> {
     return this._diagnosticApi.getSystemInvoker(
       this._resourceService.getCurrentResourceId(true),
@@ -65,6 +88,24 @@ export class ApplensDiagnosticService {
     if (query != null)
       queryParams = [{ "key": "text", "value": encodeURIComponent(query) }];
     return this._diagnosticApi.getDetectors(
+      versionPrefix,
+      resourceId,
+      null,
+      queryParams,
+      internalClient);
+  }
+
+  getWorkflows(overrideResourceUri: string = "", internalClient: boolean = true, query?: string): Observable<DetectorMetaData[]> {
+    var queryParams: any[] = null;
+
+    let resourceId = overrideResourceUri ? overrideResourceUri : this._resourceService.getCurrentResourceId(true);
+    if (!resourceId.startsWith('/')) resourceId = '/' + resourceId;
+
+    let versionPrefix = this._resourceService.versionPrefix;
+    if (versionPrefix.endsWith('/')) versionPrefix = versionPrefix.substring(0, versionPrefix.length - 1);
+    if (query != null)
+      queryParams = [{ "key": "text", "value": encodeURIComponent(query) }];
+    return this._diagnosticApi.getWorkflows(
       versionPrefix,
       resourceId,
       null,
@@ -101,7 +142,12 @@ export class ApplensDiagnosticService {
       internalClient);
   }
 
-  getDetectorMetaDataById(id: string): Observable<DetectorMetaData> {
+  getDetectorMetaDataById(id: string, isWorkflowDetector: boolean = false): Observable<DetectorMetaData> {
+    if (isWorkflowDetector) {
+      return this.getWorkflows().pipe(map(datas => {
+        return datas.find(d => d.id === id);
+      }));
+    }
     return this.getDetectors().pipe(map(datas => {
       return datas.find(d => d.id === id);
     }));
@@ -138,9 +184,9 @@ export class ApplensDiagnosticService {
     }));
   }
 
-  getGistDetailsById(id: string) : Observable<DetectorMetaData[]>{
-    return this._diagnosticApi.getGistId(this._resourceService.versionPrefix, 
-      this._resourceService.getCurrentResourceId(true), id); 
+  getGistDetailsById(id: string): Observable<DetectorMetaData[]> {
+    return this._diagnosticApi.getGistId(this._resourceService.versionPrefix,
+      this._resourceService.getCurrentResourceId(true), id);
   }
 
 
@@ -152,8 +198,21 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getUserInfo(userId);
   }
 
+  getWorkflowCompilerResponse(body: any, startTime: string, endTime: string, additionalParams: any, publishingDetectorId: string, workflowExecutionId: string = '', nodeId: string = ''): Observable<QueryResponse<workflowNodeResult>> {
+    return this._diagnosticApi.getWorkflowCompilerResponse(
+      this._resourceService.versionPrefix,
+      this._resourceService.getCurrentResourceId(true),
+      body,
+      startTime,
+      endTime,
+      additionalParams,
+      publishingDetectorId,
+      workflowExecutionId,
+      nodeId);
+  }
+
   getCompilerResponse(body: any, isSystemInvoker: boolean, detectorId: string = '', startTime: string = '', endTime: string = '', dataSource: string = '', timeRange: string = '', additionalParams: any, publishingDetectorId: string, isDocumentation: boolean = false): Observable<QueryResponse<DetectorResponse>> {
-    if (isDocumentation === true){
+    if (isDocumentation === true) {
       return this._diagnosticApi.getCompilerResponse(
         this._resourceService.versionPrefix,
         //this._resourceService.getCurrentResourceId(true),
@@ -223,6 +282,15 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getKustoMappings(this._resourceService.getCurrentResourceId(true));
   }
 
+  evaluateDynamicExpression(dynamicExpression: dynamicExpressionBody, startTime: string, endTime: string): Observable<any> {
+    return this._diagnosticApi.evaluateDynamicExpression(this._resourceService.getCurrentResourceId(true), dynamicExpression, startTime, endTime);
+  }
+
+  publishWorkflow(publishBody: workflowPublishBody) {
+    this._resourceService.getCurrentResourceId(true)
+    return this._diagnosticApi.publishWorkflow(this._resourceService.getCurrentResourceId(true), publishBody);
+  }
+
   getDetectorCode(detectorPath: string, branch: string, resourceUri: string): Observable<string> {
     return this._diagnosticApi.getDetectorCode(detectorPath, branch, resourceUri);
   }
@@ -239,7 +307,7 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.makePullRequest(sourceBranch, targetBranch, title, resourceUri, reviewers, description);
   }
 
-  deleteBranches(branch: string, resourceUri: string){
+  deleteBranches(branch: string, resourceUri: string) {
     return this._diagnosticApi.deleteBranch(branch, resourceUri);
   }
 
@@ -267,11 +335,35 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getDevopsPullRequest(resourceProviderType);
   }
 
-  getDevopsChangeList(filepath:string, resourceUri:string):Observable<any> {
+  getDevopsChangeList(filepath: string, resourceUri: string): Observable<any> {
     return this._diagnosticApi.getDevopsChangeList(filepath, resourceUri);
   }
 
-  getDevopsCommitContent(filePath:string, commitid:string, resourceUri:string) {
+  getDevopsCommitContent(filePath: string, commitid: string, resourceUri: string) {
     return this._diagnosticApi.getDevopsCommitContent(filePath, commitid, resourceUri);
+  }
+
+  isUserAllowedForWorkflow(userAlias: string) {
+    return this._diagnosticApi.isUserAllowedForWorkflow(userAlias);
+  }
+
+  getDevopsCommitStatus(commitid: string, resourceUri:string):Observable<CommitStatus[]> {
+    return this._diagnosticApi.getDevopsCommitStatus(commitid, resourceUri).pipe(map((res:CommitStatus[]) =>   
+    {
+      let currStatus= res;
+      currStatus.forEach(status => {
+        status.commitId = commitid;
+      });
+      return currStatus;
+    }));
+
+  }
+  
+  getWorkflowUsers(): Observable<string[]> {
+    return this._diagnosticApi.getWorkflowUsers();
+  }
+
+  addWorkflowUser(useralias: string): Observable<any> {
+    return this._diagnosticApi.addWorkflowUser(useralias);
   }
 }

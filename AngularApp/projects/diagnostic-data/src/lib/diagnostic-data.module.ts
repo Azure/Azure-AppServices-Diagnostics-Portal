@@ -148,6 +148,20 @@ import { FabTextFieldModule } from '@angular-react/fabric/lib/components/text-fi
 import { ClientScriptViewComponent } from './components/client-script-view/client-script-view.component';
 import { GenericFeatureService } from './services/generic-feature-service';
 import { GanttChartTaskbarColorsComponent } from './components/gantt-chart-taskbar-colors/gantt-chart-taskbar-colors.component';
+import { WorkflowResultComponent } from './components/workflow-result/workflow-result.component';
+import { WorkflowViewComponent } from './components/workflow-view/workflow-view.component';
+import { WorkflowNodeComponent } from './components/workflow-node/workflow-node.component';
+import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
+import { ArchitectureDiagramComponent } from './components/architecture-diagram/architecture-diagram.component';
+import { ArchitectureDiagramNodeComponent } from './components/architecture-diagram-node/architecture-diagram-node.component';
+import { ChatGPTContextService } from './services/chat-gpt-context-service';
+import { GenericOpenAIChatService, OpenAIArmService } from '../public_api';
+import { QueryResponseService } from './services/query-response.service';
+import { WorkflowConditionNodeComponent } from './components/workflow-condition-node/workflow-condition-node.component';
+import { WorkflowAcceptUserinputComponent } from './components/workflow-accept-userinput/workflow-accept-userinput.component';
+import { VideoComponent } from './components/video/video.component';
+import { SafePipe } from './pipe/safe.pipe';
+
 
 @NgModule({
     imports: [
@@ -182,7 +196,9 @@ import { GanttChartTaskbarColorsComponent } from './components/gantt-chart-taskb
         FabBreadcrumbModule,
         RouterModule,
         FabDatePickerModule,
-        FabCalendarModule
+        FabCalendarModule,
+        NgFlowchartModule
+        
     ],
     providers: [
         ClipboardService
@@ -245,7 +261,16 @@ import { GanttChartTaskbarColorsComponent } from './components/gantt-chart-taskb
         FabricFeedbackComponent,
         FormStepComponent,
         ClientScriptViewComponent,
-        GanttChartTaskbarColorsComponent
+        GanttChartTaskbarColorsComponent,
+        WorkflowResultComponent,
+        WorkflowViewComponent,
+        WorkflowNodeComponent,
+        ArchitectureDiagramComponent,
+        ArchitectureDiagramNodeComponent,
+        WorkflowConditionNodeComponent,
+        WorkflowAcceptUserinputComponent,
+        VideoComponent,
+        SafePipe
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -286,7 +311,9 @@ import { GanttChartTaskbarColorsComponent } from './components/gantt-chart-taskb
         DetectorTimePickerComponent,
         FabCardComponent,
         FormStepComponent,
-        GanttChartTaskbarColorsComponent
+        GanttChartTaskbarColorsComponent,
+        WorkflowViewComponent,
+        SafePipe
     ]
 })
 export class DiagnosticDataModule {
@@ -314,7 +341,11 @@ export class DiagnosticDataModule {
                 AppInsightsQueryService,
                 ParseResourceService,
                 HighChartsHoverService,
-                GenericFeatureService
+                GenericFeatureService,
+                GenericOpenAIChatService,
+                OpenAIArmService,
+                ChatGPTContextService,
+                QueryResponseService
             ]
         };
     }

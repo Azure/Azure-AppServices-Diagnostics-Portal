@@ -29,10 +29,9 @@ export class CrashMonitoringComponent implements OnInit {
     private _sharedStorageAccountService: SharedStorageAccountService) {
     this._sharedStorageAccountService.changeEmitted$.subscribe(newStorageAccount => {
       this.chosenStorageAccount = newStorageAccount.name;
-      this.blobSasUriEnvironmentVariable = newStorageAccount.sasUri;
+      this.storageConnectionStringEnvironmentVariable = newStorageAccount.connectionString;
       if (this.chosenStorageAccount) {
         this.validationError = "";
-        this.storageConfiguredAsAppSetting = true;
       }
     })
   }
@@ -43,6 +42,8 @@ export class CrashMonitoringComponent implements OnInit {
   maxDate: Date = this.convertUTCToLocalDate(addMonths(this.today, 3));
   minDate: Date = this.convertUTCToLocalDate(this.today);
   startDate: Date = this.minDate;
+  startDateString = '';
+  endDateString = '';
   endDate: Date = addDays(this.startDate, 15);
   startClock: string;
   endClock: string;
@@ -55,7 +56,6 @@ export class CrashMonitoringComponent implements OnInit {
   validationError: string = "";
   updatingStorageAccounts: boolean = false;
   chosenStorageAccount: string = "";
-  storageConfiguredAsAppSetting: boolean = false;
 
   chosenStartDateTime: Date;
   chosenEndDateTime: Date;
@@ -63,7 +63,7 @@ export class CrashMonitoringComponent implements OnInit {
   monitoringEnabled: boolean = false;
   crashMonitoringSettings: CrashMonitoringSettings = null;
   collapsed: boolean = false;
-  blobSasUriEnvironmentVariable: string = "";
+  storageConnectionStringEnvironmentVariable: string = "";
 
   // For tooltip display
   directionalHint = DirectionalHint.rightTopEdge;
@@ -120,8 +120,11 @@ export class CrashMonitoringComponent implements OnInit {
   getStorageAccountName(): Observable<string> {
     return this._daasService.getStorageConfiguration(this.siteToBeDiagnosed, false).pipe(
       map(storageConfig => {
-        this.storageConfiguredAsAppSetting = storageConfig.IsAppSetting;
-        return this.getStorageAccountNameFromSasUri(storageConfig.SasUri);
+        if (storageConfig.SasUri) {
+          return this._daasService.getStorageAccountNameFromSasUri(storageConfig.SasUri);
+        } else {
+          return this._daasService.getStorageAccountNameFromConnectionString(storageConfig.ConnectionString);
+        }
       }));
   }
 
@@ -145,22 +148,17 @@ export class CrashMonitoringComponent implements OnInit {
 
     let monitoringDates = this._siteService.getCrashMonitoringDates(crashMonitoringSettings);
 
-    this.startDate = this.convertUTCToLocalDate(monitoringDates.start);
-    this.endDate = this.convertUTCToLocalDate(monitoringDates.end);
+    this.startDate = monitoringDates.start;
+    this.endDate = monitoringDates.end;
 
-    this.startClock = this.getHourAndMinute(this.startDate);
-    this.endClock = this.getHourAndMinute(this.endDate);
+    this.startDateString = this.formatDateToString(monitoringDates.start);
+    this.endDateString = this.formatDateToString(monitoringDates.end);
+
+    this.startClock = momentNs.utc(this.startDate).format('HH:mm');
+    this.endClock = momentNs.utc(this.endDate).format('HH:mm');
 
     // Reset the minDate to avoid the UI displaying an error
     this.minDate = this.startDate;
-  }
-
-  getStorageAccountNameFromSasUri(blobSasUri: string): string {
-    if (!blobSasUri) {
-      return blobSasUri;
-    }
-    let blobUrl = new URL(blobSasUri);
-    return blobUrl.host.split('.')[0];
   }
 
   initDumpOptions() {
@@ -198,7 +196,7 @@ export class CrashMonitoringComponent implements OnInit {
   validateSettings(): boolean {
     this.validationError = ""
     let isValid: boolean = true;
-    if (!this.chosenStorageAccount || !this.storageConfiguredAsAppSetting) {
+    if (!this.chosenStorageAccount) {
       this.validationError = "Please choose a storage account to save the memory dumps";
       return false;
     }
@@ -265,12 +263,15 @@ export class CrashMonitoringComponent implements OnInit {
     this.status = toolStatus.SavingCrashMonitoringSettings;
     let crashMonitoringSettings = this.getCrashMonitoringSetting();
     this.logCrashMonitoringEnabled(crashMonitoringSettings);
-    this._siteService.saveCrashMonitoringSettings(this.siteToBeDiagnosed, crashMonitoringSettings, this.blobSasUriEnvironmentVariable)
+    this._siteService.saveCrashMonitoringSettings(this.siteToBeDiagnosed, crashMonitoringSettings, this.storageConnectionStringEnvironmentVariable)
       .subscribe(resp => {
         this.crashMonitoringSettings = crashMonitoringSettings;
         this.status = toolStatus.SettingsSaved;
         this.monitoringEnabled = true;
         this.collapsed = true;
+        let monitoringDates = this._siteService.getCrashMonitoringDates(this.crashMonitoringSettings);
+        this.startDateString = this.formatDateToString(monitoringDates.start);
+        this.endDateString = this.formatDateToString(monitoringDates.end);
       },
         error => {
           this.status = toolStatus.Error;
@@ -304,7 +305,6 @@ export class CrashMonitoringComponent implements OnInit {
   }
 
   getMonitoringSummary(): string {
-
     if (this.crashMonitoringSettings != null) {
       let monitoringDates = this._siteService.getCrashMonitoringDates(this.crashMonitoringSettings);
       return `${this.siteToBeDiagnosed.siteName} | ${this.formatDateToString(monitoringDates.start, true)} to ${this.formatDateToString(monitoringDates.end, true)} | ${this.crashMonitoringSettings.MaxDumpCount} memory dumps`;
@@ -312,7 +312,6 @@ export class CrashMonitoringComponent implements OnInit {
   }
 
   formatDateToString(date: Date, appendTime: boolean = false) {
-
     return appendTime ? momentNs.utc(date).format("YYYY-MM-DD HH:mm") : momentNs.utc(date).format("YYYY-MM-DD");
   }
 

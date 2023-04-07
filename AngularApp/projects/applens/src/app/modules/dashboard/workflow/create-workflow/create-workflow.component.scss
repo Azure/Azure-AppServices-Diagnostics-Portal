@@ -1,12 +1,12 @@
-main {
-  height: 60vh;
-  width: 70vw;
+* {
+  box-sizing: border-box;
 }
 
 #canvas {
-  height: calc(100% - 50px);
-  background: #f0f0f0;
-  background: #f0f0f0;
+  height: calc(70%);
+  width: calc(100%);
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
   flex: 1;
   border: 1px solid darkgray;
 }
@@ -19,11 +19,22 @@ div#canvas[disabled="true"] ::ng-deep.ngflowchart-step-wrapper {
   opacity: 1;
 }
 
-.card {
-  width: 160px;
-  height: 80px;
-  padding: 20px;
-  border: 2px solid lightgray;
-  background: whitesmoke;
-  border-radius: 20px;
+.inline-li {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+input,
+textarea {
+  background-color: var(--bodyBackground);
+  color: var(--inputText);
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+::ng-deep .ng-select .ng-select-container , ::ng-deep .ng-select.ng-select-multiple .ng-select-container{
+  min-height: 6px;
+  font-size: 0.9em;
 }

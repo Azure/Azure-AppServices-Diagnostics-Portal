@@ -1,0 +1,100 @@
+.panel {
+  min-height: 100px;
+  min-width: 300px;
+  max-width: 550px;
+  border-radius: 0px;
+  border: 0px;
+  border-radius: 0px;
+  border: 1px solid lightgrey;
+  margin-bottom: 0px;
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
+}
+
+.panel-body {
+  padding: 0px;
+  padding-left: 10px;
+  font-size: small;
+}
+
+.panel-heading {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  padding: 2px;
+  padding-left: 10px;
+  background-color: var(--bodyBackground);
+  color: var(--bodyText);
+}
+
+.node-heading {
+  display: flex;
+  align-items: center;
+  min-height: 15px;
+}
+
+.description-text {
+  padding: 5px;
+}
+
+.markdown-text {
+  overflow-wrap: break-word;
+  padding: 5px;
+  padding-right: 15px;
+}
+
+.run-button {
+  margin-bottom: 8px;
+}
+
+.tool-tip-icon {
+  margin-left: auto;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  position: absolute;
+  z-index: 1;
+  width: 400px;
+  border-radius: 2px;
+  padding: 2px;
+  border: 1px solid gray;
+  background-color: white;
+}
+
+.hover-text:hover .tooltip-text {
+  visibility: visible;
+}
+
+#right {
+  top: -8px;
+  left: 120%;
+}
+
+.hover-text {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+}
+
+.trace-message {
+  font-size: x-small;
+}
+
+.Informational {
+  color: rgb(110, 110, 232);
+}
+
+.Warning {
+  color: orange;
+}
+
+.Critical,
+.Error {
+  color: red;
+}
+
+.kusto-icon {
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+}

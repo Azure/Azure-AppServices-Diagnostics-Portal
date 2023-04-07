@@ -3,7 +3,7 @@ import { DiagnosticService } from '../../services/diagnostic.service';
 import { DetectorControlService } from '../../services/detector-control.service';
 import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
 import { DetectorResponse, RenderingType, DownTime } from '../../models/detector';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { VersionService } from '../../services/version.service';
 import { Moment } from 'moment';
 import * as momentNs from 'moment';
@@ -11,6 +11,7 @@ import { XAxisSelection, zoomBehaviors } from '../../models/time-series';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 import { Inject } from '@angular/core';
 import { FeatureNavigationService } from '../../services/feature-navigation.service';
+import { takeUntil, tap } from 'rxjs/operators';
 const moment = momentNs;
 
 const hideTimePickerDetectors: string[] = [
@@ -37,15 +38,17 @@ export class DetectorContainerComponent implements OnInit {
   @Input() hideDetectorControl: boolean = false;
   @Input() hideDetectorHeader: boolean = false;
   @Input() isKeystoneSolution: boolean = false;
+  @Input() isWorkflowDetector: boolean = false;
   hideTimerPicker: boolean = false;
 
   detectorName: string;
   detectorRefreshSubscription: any;
   refreshInstanceIdSubscription: any;
   isPublic: boolean = true;
-
-
-  @Input() detectorSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+  workflowLastRefreshed: string = '';
+  detectorSubject = new BehaviorSubject<string>(null);
+  detectorResponseObservable:Observable<DetectorResponse>;
+  stopDetectorResponseSubject: Subject<boolean> = new Subject();
 
   @Input() set detector(detector: string) {
     this.detectorSubject.next(detector);
@@ -127,6 +130,7 @@ export class DetectorContainerComponent implements OnInit {
         this.hideDetectorControl = true;
       }
     });
+
 
     const component: any = this._route.component;
 
@@ -224,12 +228,11 @@ export class DetectorContainerComponent implements OnInit {
     let additionalQueryString = '';
     // Keeping knownQueryParams in case we need to append query parameters in the future
     let knownQueryParams = [];
-    let queryParamsToSkipForAnalysis = ['startTime','endTime','startTimeChildDetector', 'endTimeChildDetector'];
+    let queryParamsToSkipForAnalysis = ['startTime', 'endTime', 'startTimeChildDetector', 'endTimeChildDetector'];
 
     Object.keys(allRouteQueryParams).forEach(key => {
-      if (knownQueryParams.indexOf(key) >= 0 || this.isAnalysisDetector() && queryParamsToSkipForAnalysis.indexOf(key) < 0)
-      {
-         additionalQueryString += `&${key}=${encodeURIComponent(allRouteQueryParams[key])}`;
+      if (knownQueryParams.indexOf(key) >= 0 || this.isAnalysisDetector() && queryParamsToSkipForAnalysis.indexOf(key) < 0) {
+        additionalQueryString += `&${key}=${encodeURIComponent(allRouteQueryParams[key])}`;
       }
     });
 
@@ -246,14 +249,29 @@ export class DetectorContainerComponent implements OnInit {
     //   }
     // }
 
-    this._diagnosticService.getDetector(this.detectorName, startTime, endTime,
-      invalidateCache, this.detectorControlService.isInternalView, additionalQueryString)
-      .subscribe((response: DetectorResponse) => {
-        this.shouldHideTimePicker(response);
-        this.detectorResponse = response;
-      }, (error: any) => {
-        this.error = error;
-      });
+    if (this.isWorkflowDetector) {
+
+      //
+      // workflowLastRefreshed is assigned to the lastRefreshed property of the workflow-view component, changing
+      // this triggers the ngOnChanges for the WorkflowViewComponent and that causes the component to reload
+      //
+
+      this.workflowLastRefreshed = Date.now().toString();
+    } else {
+      if(this.detectorResponseObservable) {
+        //Stop previous subscribe by emitting any value
+        this.stopDetectorResponseSubject.next(true);
+      }
+
+      this.stopDetectorResponseSubject = new Subject<boolean>();
+      this.detectorResponseObservable = this._diagnosticService.getDetector(this.detectorName, startTime, endTime,invalidateCache, this.detectorControlService.isInternalView, additionalQueryString).pipe(takeUntil(this.stopDetectorResponseSubject));
+      this.detectorResponseObservable.subscribe((response: DetectorResponse) => {
+          this.shouldHideTimePicker(response);
+          this.detectorResponse = response;
+        }, (error: any) => {
+          this.error = error;
+        });
+    }
   }
 
   // TODO: Right now this is hardcoded to hide for cards, but make this configurable from backend

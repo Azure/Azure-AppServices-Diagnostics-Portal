@@ -1,3 +1,4 @@
+<devops-notification></devops-notification>
 <fabric-feedback *ngIf="!stillLoading && showDashboardContent"></fabric-feedback>
 <div *ngIf="!stillLoading && displayAlertDialog">
   <fab-dialog [hidden]="!displayAlertDialog" [styles]="alertDialogStyles" [modalProps]="alertDialogProps" [forceFocusInsideTrap]="true">
@@ -30,6 +31,14 @@
   <fab-spinner [size]="loaderSize" [label]="'Loading...'"></fab-spinner>
 </div>
 <side-nav *ngIf="!stillLoading && showDashboardContent"></side-nav>
+<div *ngIf="!stillLoading && showGPTComponent" class="dashboard-container content-under-header" [ngStyle]="getContainerStyle()">
+  <div class="dashboard-content">
+    <openai-chat></openai-chat>
+    <div [class.content-with-side-nav]="showL2SideNav" style="padding: 0px 20px;">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
 <!-- <l1-side-nav></l1-side-nav> -->
 <!-- <header class="main-header">
   <nav class="navbar navbar-fixed-top" role="navigation">
@@ -65,7 +74,7 @@
     </div>
   </nav>
 </header> -->
-<div *ngIf="!stillLoading && showDashboardContent" class="dashboard-container content-under-header" [ngStyle]="getContainerStyle()">
+<div *ngIf="!stillLoading && showDashboardContent && !showGPTComponent" class="dashboard-container content-under-header" [ngStyle]="getContainerStyle()">
   <div class="dashboard-content">
     <applens-preview-banner></applens-preview-banner>
     <comm-alert></comm-alert>
@@ -81,7 +90,7 @@
   </div>
 </div>
 
-<fab-panel *ngIf="!stillLoading && showDashboardContent" [isOpen]="_applensGlobal.openResourceInfoPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
+<fab-panel *ngIf="!stillLoading && showDashboardContent && !showGPTComponent" [isOpen]="_applensGlobal.openResourceInfoPanel" [type]="type" [customWidth]="width"
 [styles]="panelStyles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"
 (onDismiss)="dismissedHandler()" [headerText]="'Resource Information'">
 <div>

@@ -16,6 +16,10 @@
 
 <a *ngIf="breadCrumb &&breadCrumb.name && isPublic" (click)="navigateForBreadCrumb()" (keyup.enter)="navigateForBreadCrumb()">Go Back to {{breadCrumb.name}}</a>
 
+<!-- <div *ngIf="detectorDataLocalCopy && detectorDataLocalCopy.metadata && !isPublic && !isInCaseSubmission()">
+  <p><b>Author</b>: {{detectorDataLocalCopy.metadata.author}}</p>
+  <p><b>Description</b>: {{detectorDataLocalCopy.metadata.description}}</p>
+</div> -->
 <div *ngIf="detectorDataLocalCopy" class="detector-control">
   <div *ngIf="!hideDetectorControl && !insideDetectorList">
     <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>
@@ -65,7 +69,7 @@
 
 <cxp-chat-launcher *ngIf="showChatButton()" [trackingId]="cxpChatTrackingId" [chatUrl]="cxpChatUrl"
   [supportTopicId]="supportTopicId"></cxp-chat-launcher>
-<loader-detector-view style="margin-top:300px" *ngIf="!detectorDataLocalCopy && !errorState"></loader-detector-view>
+<loader-detector-view style="margin-top:300px" *ngIf="!detectorDataLocalCopy && !errorState" [Source]="'DetectorView'"></loader-detector-view>
 
 <ng-container *ngIf="!detectorDataLocalCopy && errorState">
   <div class="mt-3">

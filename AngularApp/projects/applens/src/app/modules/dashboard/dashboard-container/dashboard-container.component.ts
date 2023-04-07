@@ -233,7 +233,10 @@ export class DashboardContainerComponent implements OnInit {
 
   updateAscLink() {
     if(this.ascResourceExplorerLink && this.resource!= null ) {
-          this.resource['ASCLink'] = `<a href="${this.ascResourceExplorerLink}" target="_blank">Resource Explorer<i class="hyper-link-icon ml-1" aria-hidden="true"></i></a>`;
+          this.resource = {
+              ...this.resource,
+              ASCLink: `<a href="${this.ascResourceExplorerLink}" target="_blank">Resource Explorer<i class="hyper-link-icon ml-1" aria-hidden="true"></i></a>`
+          };
           this.keys.push('ASCLink');
     }
   }

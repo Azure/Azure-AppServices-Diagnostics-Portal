@@ -147,6 +147,11 @@ export class ResourceRedirectComponent implements OnInit {
                 {
                     navigationExtras.queryParams = {...navigationExtras.queryParams, startTime: startTime.value, endTime: endTime.value};
                 }
+                // To download Report
+                let downloadReportType = info.optionalParameters.find(param => param.key === "downloadReport");
+                if (downloadReportType && downloadReportType.value) {
+                  path += `/downloadReport/${downloadReportType.value}`;
+                }
 
                 this._router.navigateByUrl(
                   this._router.createUrlTree([path], navigationExtras)

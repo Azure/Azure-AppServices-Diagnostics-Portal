@@ -143,7 +143,9 @@ export class ApplensDocsComponent implements OnInit {
     
     var folders = [];
 
-    markdown.match(this.codeRegEx).forEach(x => {
+    let matches = markdown.match(this.codeRegEx)
+    
+    if(!!matches) matches.forEach(x => {
       folders.push(x.match(this.folderRegEx)[0]);
       var imageList = x.match(this.imageRegEx);
       this.images.push(!!imageList ? imageList[0] : "");

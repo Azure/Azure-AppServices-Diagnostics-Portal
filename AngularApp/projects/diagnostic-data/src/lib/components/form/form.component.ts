@@ -12,6 +12,7 @@ import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagn
 import { DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
 import { IDropdownOption, IDropdown } from 'office-ui-fabric-react';
 import { UriUtilities } from '../../utilities/uri-utilities';
+import { QueryResponseService } from '../../services/query-response.service';
 
 @Component({
   selector: 'custom-form',
@@ -24,11 +25,12 @@ export class FormComponent extends DataRenderBaseComponent {
   detectorForms: Form[] = [];
   isPublic: boolean;
   directionalHint = DirectionalHint.topLeftEdge;
+  datasourcesKey: string = '';
 
 
   @ViewChild('formDropdown') formdropDownRef: ElementRef<IDropdown>;
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _diagnosticService: DiagnosticService, private _router: Router, protected telemetryService: TelemetryService,
-    private detectorControlService: DetectorControlService,
+    private detectorControlService: DetectorControlService, private _queryResponseService: QueryResponseService,
     private activatedRoute: ActivatedRoute,
     private locationService: Location,
   ) {
@@ -166,6 +168,7 @@ export class FormComponent extends DataRenderBaseComponent {
           getFullResponse: true
         })
           .subscribe((response: any) => {
+            this.datasourcesKey = this._queryResponseService.appendDataSources(response.body, this.datasourcesKey);
             formToExecute.loadingFormResponse = false;
             if (response.body != undefined) {
               // If the script etag returned by the server does not match the previous script-etag, update the values in memory

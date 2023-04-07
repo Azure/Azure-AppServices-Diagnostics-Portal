@@ -1,0 +1,34 @@
+.label-radio {
+  font-weight: normal;
+  margin-left: 3px;
+}
+
+.brackets {
+  font-size: x-large;
+}
+
+.status-expression {
+  font-family: 'Courier New', Courier, monospace;
+  width: 100%;
+}
+
+.code-text {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+input,
+textarea,
+select {
+  background-color: var(--bodyBackground);
+  color: var(--inputText);
+}
+
+::ng-deep .md-editor>textarea {
+  background: var(--bodyBackground);
+  color: var(--inputText);
+}
+
+::ng-deep .md-editor>.md-preview {
+  background: var(--bodyBackground);
+  color: var(--inputText);
+}

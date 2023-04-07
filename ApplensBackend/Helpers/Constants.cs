@@ -17,6 +17,7 @@ namespace AppLensV3.Helpers
         internal const string SourceFilePathFormat = "https://api.github.com/repos/{0}/{1}/contents/{2}/{2}.csx?ref={3}";
         internal const string MetadataFilePathFormat = "https://api.github.com/repos/{0}/{1}/contents/{2}/metadata.json?ref={3}";
         internal const string ConfigPathFormat = "https://api.github.com/repos/{0}/{1}/contents/{2}/package.json?ref={3}";
+        internal const string WorkflowPathFormat = "https://api.github.com/repos/{0}/{1}/contents/{2}/workflow.json?ref={3}";
         internal const string ResourceConfigFormat = "https://api.github.com/repos/{0}/{1}/contents/resourceConfig/config.json?ref={2}";
     }
 
@@ -70,6 +71,7 @@ namespace AppLensV3.Helpers
         public const string VerbHeader = "x-ms-verb";
         public const string CustomerCaseNumberHeader = "x-ms-customer-casenumber";
         public const string UserTokenHeader = "x-ms-user-token";
+        public const string OpenAICacheHeader = "x-ms-openai-cache";
     }
 
     public static class DetectorGistTemplateServiceConstants

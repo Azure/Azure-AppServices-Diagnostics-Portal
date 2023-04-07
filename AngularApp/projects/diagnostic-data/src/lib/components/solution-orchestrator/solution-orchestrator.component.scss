@@ -1,3 +1,4 @@
+@import "../../../../../app-service-diagnostics/src/styles/main.scss";
 .article {
     border: 1px solid #bbbbbb;
     cursor: pointer;
@@ -27,6 +28,14 @@ a{
 
 br{
    display : none ;
+}
+
+.wide-view {
+    padding: 0;
+}
+
+.centered-view {
+    padding: 0 10%;
 }
 
 .insight-box {
@@ -75,30 +84,98 @@ br{
     color:  var(--summaryText);
 }
 
-.solutions-small-card-outer{
-    height: 50px;
-    padding: 5px;
-    margin: 10px 0px;
-    white-space: nowrap;
-    display: table;
-    box-shadow: 0px 1.6px 3.6px rgba(0, 0, 0, 0.132), 0px 0.3px 0.9px rgba(0, 0, 0, 0.108);
-}
-
-.solutions-small-card{
-    //border: 1px solid #bbbbbb;
-    text-align: center;
-    font-size: 18px;
-    cursor: pointer;
-    height: 100%;
-    vertical-align: middle;
-    margin: 0 10px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 .sections-loading-title{
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     padding-left: 1rem !important;
+}
+
+.search-box {
+    width: 100%;
+}
+
+.vanilla-search-box {
+    font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    box-shadow: none;
+    margin: 0px;
+    padding: 1px 0px 1px 4px;
+    box-sizing: border-box;
+    color: rgb(48, 41, 40);
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    border-radius: 2px;
+    border: 1px solid rgb(138, 136, 134);
+    height: 45px;
+}
+
+.results-header{
+    font-size: 14px;
+    font-weight: 400;
+    padding: 12px;
+    text-align: center;
+    color: #434242;
+}
+
+.vanilla-search-box-input {
+    box-shadow: none;
+    margin: 0px;
+    padding: 0px 0px 0.5px;
+    box-sizing: border-box;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    font-weight: inherit;
+    font-family: inherit;
+    font-size: 16px;
+    color: #373332;
+    flex: 1 1 0px;
+    min-width: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vanilla-search-icon-container {
+    display: flex;
+    margin-top: 2px;
+    flex-direction: column;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+    width: 32px;
+    text-align: center;
+    color: rgb(0, 120, 212);
+    cursor: text;
+    transition: width 0.167s ease 0s;
+}
+
+.cxp-chat-launcher-container {
+    padding-top: 2em;
+  }
+  
+  .align-width {
+    width:98%;
+  }
+
+  .control-pill-text {
+    font-size: 13px;
+    color: var(--bodyText);
+}
+
+.control-pill-text:hover{
+    color: var(--bodyBackground);
+}
+
+.control-pill-text :first-child {
+    font-weight: 400;
+}
+
+.error-time-picker-message {
+    color: $error-color;
+    padding-bottom: 10px;
+    font-weight: 600;
 }

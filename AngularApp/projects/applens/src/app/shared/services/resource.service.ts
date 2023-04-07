@@ -18,6 +18,8 @@ export class ResourceService {
   public searchSuffix: string;
   public emergingIssuesICMLookupEnabled: boolean;
   public overviewPageMetricsId: string;
+  public workflowsEnabled: boolean;
+  public service:string;
 
   protected _observerResource: any = null;
   protected _armResource: ArmResource;
@@ -37,6 +39,8 @@ export class ResourceService {
     this.searchSuffix = inputs.searchSuffix;
     this.emergingIssuesICMLookupEnabled = (inputs.emergingIssuesICMLookupEnabled !== undefined && inputs.emergingIssuesICMLookupEnabled);
     this.overviewPageMetricsId = inputs.overviewPageMetricsId;
+    this.workflowsEnabled = inputs.workflowsEnabled;
+    this.service = inputs.service;
   }
 
   public startInitializationObservable() {

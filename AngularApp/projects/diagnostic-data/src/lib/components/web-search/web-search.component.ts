@@ -45,7 +45,7 @@ export class WebSearchComponent extends DataRenderBaseComponent implements OnIni
     showSearchTermPractices: boolean = false;
     showPreLoader: boolean = false;
     showPreLoadingError: boolean = false;
-    preLoadingErrorMessage: string = "Some error occurred while fetching web results."
+    preLoadingErrorMessage: string = "An error occurred while fetching web results from the web. We will be fixing this soon. Please try again later."
     subscription: ISubscription;
     deepSearchConfig: DocumentSearchConfiguration;
     
@@ -233,6 +233,7 @@ export class WebSearchComponent extends DataRenderBaseComponent implements OnIni
             searchTaskComplete = true;
             postFinish();
         }, (err)=> {
+            this.showPreLoadingError = true;
             searchTaskResult = null;
             searchTaskComplete = true;
             postFinish();
@@ -243,6 +244,7 @@ export class WebSearchComponent extends DataRenderBaseComponent implements OnIni
                 searchTaskPrefsComplete = true;
                 postFinish();
             }, (err)=> {
+                this.showPreLoadingError = true;
                 searchTaskPrefsResult = null;
                 searchTaskPrefsComplete = true;
                 postFinish();

@@ -1,0 +1,74 @@
+<div [attr.name]="data.name" #canvasContent>
+  <div class="panel panel-default">
+    <div class="panel-heading panel-title-input">
+      <node-title [data]="data" [disableEdit]="true" [customClass]="'background-green'" [customClassIcon]="'fa-list'">
+      </node-title>
+    </div>
+    <div class="panel-body panel-input-body">
+      <form class="form" style="height: 90%;">
+        <div>
+          <label for="chooseInputType">Choose Input type</label>
+          <select class="form-control" id="chooseInputType" (change)="changeInputType($event)">
+            <option *ngFor="let inputType of inputTypes" [value]="inputType"
+              [selected]="inputType === data.inputNode.inputType">
+              {{inputType}}
+            </option>
+          </select>
+          <div class="mt-2 mb-2">
+            <label for="txtInputVariableLabel">Enter variable label</label>
+            <input class="form-control" type="text" id="txtInputVariableLabel" name="variableLabel"
+              [(ngModel)]="data.inputNode.variableLabel" />
+          </div>
+          <div class="mt-2 mb-2" *ngIf="data.inputNode.inputType !== inputType.daterange">
+            <label for="txtInputVariableName">Enter variable name</label>
+            <input class="form-control" type="text" id="txtInputVariableName" name="variableName"
+              [(ngModel)]="data.inputNode.variableName" />
+          </div>
+          <div class="mt-2 mb-2" *ngIf="data.inputNode.inputType === inputType.daterange">
+            <label for="txtStartDate">Enter StartDate variable name</label>
+            <input class="form-control" type="text" id="txtStartDate" name="startDate"
+              [(ngModel)]="data.inputNode.startDateVariableName" />
+
+            <label for="txtEndDate">Enter EndDate variable name</label>
+            <input class="form-control" type="text" id="txtEndDate" name="endDate"
+              [(ngModel)]="data.inputNode.endDateVariableName" />
+          </div>
+          <div *ngIf="data.inputNode.inputType === inputType.select">
+            <input type="radio" id="fixedValue" name="dataSourceType" value="fixed" checked [(ngModel)]="dataSourceType"
+              (change)="changeDataSourceType($event)">
+            <label class="ml-1" for="fixedValue">Fixed</label>
+
+            <input type="radio" class="ml-2" id="dynamicValue" name="dataSourceType" value="dynamic"
+              [(ngModel)]="dataSourceType" (click)="changeDataSourceType($event)">
+            <label class="ml-1" for="dynamicValue">Dynamic</label>
+
+            <div *ngIf="dataSourceType === 'fixed'">
+              <label for="txtEndDate">Enter options separated by semicolon (;)</label>
+              <input class="form-control mb-2" type="text" id="txtOptions" name="txtOptions"
+                [(ngModel)]="data.inputNode.options" />
+            </div>
+            <div *ngIf="dataSourceType === 'dynamic'">
+
+              <mat-form-field class="example-full-width" appearance="fill">
+                <mat-label>Variable</mat-label>
+                <input type="text" placeholder="Choose a variable" aria-label="Number" matInput
+                  [formControl]="selectSourceInputControl" [matAutocomplete]="auto"
+                  (input)="updateVariable($event.target.value)">
+                <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete"
+                  (optionSelected)="updateVariable($event.option.value)">
+                  <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                    {{option}}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </form>
+      <node-actions [isConditionNode]="true" (onNodeAdded)="addNode($event)" (onConditionAdded)="addCondition($event)"
+        (onDeleted)="deleteNode()" [isDisabled]="isDisabled()" [isRootNode]="isRootNode()">
+      </node-actions>
+      <button type="button" class="ml-2 btn btn-danger btn-sm" (click)="deleteNode()">Delete</button>
+    </div>
+  </div>
+</div>

@@ -34,7 +34,7 @@ namespace AppLensV3.Services
             return Task.FromResult(new List<UserSetting>() { nullableUserSetting });
         }
 
-        public Task<UserSetting> GetUserSetting(string id, bool needCreate = true)
+        public Task<UserSetting> GetUserSetting(string id, bool needCreate = true, bool chatGPT = false)
         {
             return Task.FromResult(nullableUserSetting);
         }
@@ -44,7 +44,7 @@ namespace AppLensV3.Services
             return Task.FromResult(nullableUserSetting);
         }
 
-        public Task<UserSetting> PatchUserPanelSetting(string id, string theme, string viewMode, string expandAnalysisCheckCard)
+        public Task<UserSetting> PatchUserPanelSetting(string id, string theme, string viewMode, string expandAnalysisCheckCard, string codeCompletion)
         {
             return Task.FromResult(nullableUserSetting);
         }
@@ -65,6 +65,11 @@ namespace AppLensV3.Services
         }
 
         public Task<UserSetting> UpdateUserSetting(UserSetting userSettings)
+        {
+            return Task.FromResult(nullableUserSetting);
+        }
+
+        public Task<UserSetting> PatchUserChatGPTSetting(string id, object value)
         {
             return Task.FromResult(nullableUserSetting);
         }

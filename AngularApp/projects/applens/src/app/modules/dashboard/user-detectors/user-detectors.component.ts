@@ -8,14 +8,20 @@ import { catchError } from 'rxjs/operators';
 import { of, forkJoin as observableForkJoin } from 'rxjs';
 import { ApplensGlobal } from '../../../applens-global';
 import { SupportTopicResult } from '../resource-home/resource-home.component';
+import { DevopsConfig } from '../../../shared/models/devopsConfig';
+import { ResourceDescriptor } from 'diagnostic-data';
+import * as momentNs from 'moment';
+
+const moment = momentNs;
 
 @Component({
     selector: 'user-detectors',
     templateUrl: './user-detectors.component.html',
     styleUrls: ['./user-detectors.component.scss', '../category-page/category-page.component.scss']
 })
-export class UserDetectorsComponent implements OnInit {
 
+export class UserDetectorsComponent implements OnInit {
+    
     userId: string = "";
     isDetector: boolean = true;
 
@@ -36,6 +42,7 @@ export class UserDetectorsComponent implements OnInit {
             selectionOption: TableFilterSelectionOption.Multiple
         }
     ];
+    currentDevopsConfig: DevopsConfig;
 
     constructor(private _applensGlobal: ApplensGlobal, private _activatedRoute: ActivatedRoute, private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, private _supportTopicService: ApplensSupportTopicService) { }
 
@@ -44,6 +51,12 @@ export class UserDetectorsComponent implements OnInit {
         this.isDetector = this._activatedRoute.snapshot.data["isDetector"];
         this.allItems = this._activatedRoute.snapshot.data["allItems"];
         this.checkIsCurrentUser();
+        let resourceId = this._diagnosticService.resourceId;
+        let provider = ResourceDescriptor.parseResourceUri(resourceId).provider;
+        let type = ResourceDescriptor.parseResourceUri(resourceId).type;
+        this._diagnosticService.getDevopsConfig(`${provider}/${type}`).subscribe(config => {
+            this.currentDevopsConfig = config;
+        });
 
         if (this.isDetector) {
             this._supportTopicService.getSupportTopics().pipe(catchError(err => of([]))).subscribe((supportTopics: SupportTopicResult[]) => {
@@ -54,7 +67,7 @@ export class UserDetectorsComponent implements OnInit {
                         this.internalOnlyMap = this.initialInternalOnlyMap(extendMetadata);
                         const detectorsOfAuthor = allDetectors.filter(detector => detector.author && detector.author.toLowerCase().indexOf(this.userId.toLowerCase()) > -1);
                         const selectedDetectors = this.allItems ? allDetectors : detectorsOfAuthor;
-                        this.table = this.generateDetectorTable(selectedDetectors);
+                        this.table = this.generateDetectorTable(selectedDetectors, extendMetadata);
                     });
                 });
             });
@@ -74,12 +87,14 @@ export class UserDetectorsComponent implements OnInit {
         });
     }
 
-    private generateDetectorTable(detectors: DetectorMetaData[]) {
+    private generateDetectorTable(detectors: DetectorMetaData[], detectorsWithExtendedMetadata: ExtendedDetectorMetaData[]) {
         const columns: DataTableResponseColumn[] = [
             { columnName: "Name" },
             { columnName: "Category" },
             { columnName: "Support Topic" },
-            { columnName: "View" }
+            { columnName: "View" },
+            { columnName: "Commit Version"},
+            { columnName: "Deployed Date (UTC) "}
         ];
 
         let rows: any[][] = [];
@@ -101,7 +116,17 @@ export class UserDetectorsComponent implements OnInit {
                 const internalOnly = this.internalOnlyMap.get(detector.id);
                 view = internalOnly ? "Internal Only" : "Internal & External";
             }
-            return [name, category, supportTopics, view];
+            let gitCommitWithLink = '';
+            let detectorWithExtendedData = detectorsWithExtendedMetadata.find(d => d.id === detector.id);           
+            let Commitsha = detectorWithExtendedData.commitSha;
+            let commitDate = moment(detectorWithExtendedData.gitCommitDate).format('MMM Do YY'); 
+            let displayCommitSha = Commitsha.substring(0,8);
+            gitCommitWithLink = 
+            `<markdown>
+            <a href="https://dev.azure.com/${this.currentDevopsConfig.organization}/${this.currentDevopsConfig.project}/_git/${this.currentDevopsConfig.repository}/commit/${Commitsha}">${displayCommitSha}</a>
+            </markdown>`;
+            
+            return [name, category, supportTopics, view, gitCommitWithLink, commitDate];
         });
         const dataTableObject: DataTableResponseObject = {
             columns: columns,
@@ -147,8 +172,6 @@ export class UserDetectorsComponent implements OnInit {
         });
         return map;
     }
-
-
 
     private checkIsCurrentUser() {
         this.userId = this._activatedRoute.snapshot.params['userId'] ? this._activatedRoute.snapshot.params['userId'] : '';
