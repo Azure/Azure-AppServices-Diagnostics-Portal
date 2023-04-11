@@ -249,8 +249,10 @@ export class SupportTopicService {
                         if (matchingDetectors.length === 1 && matchingDetectors[0] && matchingDetectors[0].id) {
                             if (matchingDetectors[0].type === DetectorType.Analysis) {
                                 detectorPath = `/analysis/${matchingDetectors[0].id}`;
-                            } else {
+                            } else if (matchingDetectors[0].type === DetectorType.Detector) {
                                 detectorPath = `/detectors/${matchingDetectors[0].id}`;
+                            } else if (matchingDetectors[0].type === DetectorType.Workflow) {
+                                detectorPath = `/workflows/${matchingDetectors[0].id}`;
                             }
                         }
                         else {

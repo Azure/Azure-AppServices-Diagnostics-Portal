@@ -35,7 +35,7 @@ export class CategoryTileV4Component implements OnInit {
       'DetectorName': quickLink.displayText
     });
 
-    if(quickLink.type === DetectorType.Detector || quickLink.type === DetectorType.Analysis) {
+    if(quickLink.type === DetectorType.Detector || quickLink.type === DetectorType.Analysis || quickLink.type === DetectorType.Workflow) {
       this._portalService.openBladeDiagnoseDetectorId(this.category.id, quickLink.id, quickLink.type);
     } else if (quickLink.type === DetectorType.CategoryOverview) {
       this._portalService.openBladeDiagnoseCategoryBlade(this.category.id);
@@ -63,7 +63,7 @@ export class CategoryTileV4Component implements OnInit {
       return;
     }
 
-    this._diagnosticService.getDetectors().subscribe(detectors => {
+    this._diagnosticService.getDetectorsAndWorkflows().subscribe(detectors => {
       var currentCategoryDetectors = detectors.filter(detector => detector.category === this.category.id);
       if (currentCategoryDetectors.length === 1) {
         this._notificationService.dismiss();
@@ -72,6 +72,8 @@ export class CategoryTileV4Component implements OnInit {
           this._router.navigateByUrl(`resource${this._resourceService.resourceIdForRouting}/detectors/${currentCategoryDetectors[0].id}`);
         } else if (currentCategoryDetectors[0].type === DetectorType.Analysis) {
           this._router.navigateByUrl(`resource${this._resourceService.resourceIdForRouting}/analysis/${currentCategoryDetectors[0].id}`);
+        } else if (currentCategoryDetectors[0].type === DetectorType.Workflow) {
+          this._router.navigateByUrl(`resource${this._resourceService.resourceIdForRouting}/workflows/${currentCategoryDetectors[0].id}`);
         }
       }
       else {

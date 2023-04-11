@@ -138,6 +138,8 @@ export class ResourceRedirectComponent implements OnInit {
                     path += `/detectors/${detectorIdParam.value}`;
                   } else if (detectorTypeParam.value === DetectorType.Analysis) {
                     path += `/analysis/${detectorIdParam.value}`;
+                  } else if (detectorTypeParam.value === DetectorType.Workflow) {
+                    path += `/workflows/${detectorIdParam.value}`;
                   }
                 } else if (toolIdParam) {
                   path += `/tools/${toolIdParam.value}`;

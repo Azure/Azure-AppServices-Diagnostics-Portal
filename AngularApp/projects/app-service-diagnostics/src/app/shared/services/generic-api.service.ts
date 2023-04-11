@@ -48,6 +48,22 @@ export class GenericApiService {
         }
     }
 
+    public getDetectorsAndWorkflows(overrideResourceUri: string = ""): Observable<DetectorMetaData[]> {
+        let resourceId = overrideResourceUri ? overrideResourceUri : this.resourceId;
+        let queryParams = this.isLocalizationApplicable() ? [{"key":"l", "value": this.effectiveLocale}]: [];
+        if (this.useLocal) {
+            const path = `v4${resourceId}/detectors?stampName=waws-prod-bay-085&hostnames=netpractice.azurewebsites.net`;
+            return this.invoke<DetectorResponse[]>(path, 'POST').pipe(map(response => response.map(detector => detector.metadata)));
+        } else {
+            const path = `${resourceId}/detectors`;
+            return this._armService.getResourceCollection<DetectorResponse[]>(path, null, false, queryParams).pipe(map((response: ResponseMessageEnvelope<DetectorResponse>[]) => {
+
+                this.detectorList = response.map(listItem => listItem.properties.metadata);
+                return this.detectorList;
+            }));
+        }
+    }
+
     public getDetectorsSearch(searchTerm): Observable<DetectorMetaData[]> {
         if (this.useLocal) {
             const path = `v4${this.resourceId}/detectors?stampName=waws-prod-bay-085&hostnames=netpractice.azurewebsites.net&text=` + encodeURIComponent(searchTerm);

@@ -95,6 +95,24 @@ export class ApplensDiagnosticService {
       internalClient);
   }
 
+  getDetectorsAndWorkflows(overrideResourceUri: string = "", internalClient: boolean = true, query?: string): Observable<DetectorMetaData[]> {
+    var queryParams: any[] = null;
+
+    let resourceId = overrideResourceUri ? overrideResourceUri : this._resourceService.getCurrentResourceId(true);
+    if (!resourceId.startsWith('/')) resourceId = '/' + resourceId;
+
+    let versionPrefix = this._resourceService.versionPrefix;
+    if (versionPrefix.endsWith('/')) versionPrefix = versionPrefix.substring(0, versionPrefix.length - 1);
+    if (query != null)
+      queryParams = [{ "key": "text", "value": encodeURIComponent(query) }];
+    return this._diagnosticApi.getDetectors(
+      versionPrefix,
+      resourceId,
+      null,
+      queryParams,
+      internalClient);
+  }
+
   getWorkflows(overrideResourceUri: string = "", internalClient: boolean = true, query?: string): Observable<DetectorMetaData[]> {
     var queryParams: any[] = null;
 

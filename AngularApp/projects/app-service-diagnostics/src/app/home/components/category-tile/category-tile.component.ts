@@ -20,7 +20,7 @@ export class CategoryTileComponent implements OnInit {
   ngOnInit() {
   }
 
-  clickCategoryQuickLink(e:Event, quickLink:CategoryQuickLinkDetails):void {
+  clickCategoryQuickLink(e: Event, quickLink: CategoryQuickLinkDetails): void {
     e.stopPropagation();
     this._telemetryService.logEvent(TelemetryEventNames.QuickLinkOnCategoryTileClicked, {
       'categoryId': this.category.id,
@@ -28,10 +28,12 @@ export class CategoryTileComponent implements OnInit {
       'quickLinkId': quickLink.id,
       'quickLinkDisplayText': quickLink.displayText
     });
-    if(quickLink.type === DetectorType.Detector) {
+    if (quickLink.type === DetectorType.Detector) {
       this._router.navigateByUrl(`resource${this._resourceService.resourceIdForRouting}/detectors/${quickLink.id}`);
     } else if (quickLink.type === DetectorType.Analysis) {
       this._router.navigateByUrl(`resource${this._resourceService.resourceIdForRouting}/analysis/${quickLink.id}`);
+    } else if (quickLink.type === DetectorType.Workflow) {
+      this._router.navigateByUrl(`resource${this._resourceService.resourceIdForRouting}/workflows/${quickLink.id}`);
     }
   }
 
@@ -45,17 +47,19 @@ export class CategoryTileComponent implements OnInit {
       return;
     }
 
-    this._diagnosticService.getDetectors().subscribe(detectors => {
+    this._diagnosticService.getDetectorsAndWorkflows().subscribe(detectors => {
 
       var currentCategoryDetectors = detectors.filter(detector => detector.category === this.category.id);
 
       if (currentCategoryDetectors.length === 1) {
         this._notificationService.dismiss();
         this._logger.LogTopLevelDetector(currentCategoryDetectors[0].id, currentCategoryDetectors[0].name, this.category.id);
-        if(currentCategoryDetectors[0].type === DetectorType.Detector) {
+        if (currentCategoryDetectors[0].type === DetectorType.Detector) {
           this._router.navigateByUrl(`resource${this._resourceService.resourceIdForRouting}/detectors/${currentCategoryDetectors[0].id}`);
-        }  else if (currentCategoryDetectors[0].type === DetectorType.Analysis) {
+        } else if (currentCategoryDetectors[0].type === DetectorType.Analysis) {
           this._router.navigateByUrl(`resource${this._resourceService.resourceIdForRouting}/analysis/${currentCategoryDetectors[0].id}`);
+        } else if (currentCategoryDetectors[0].type === DetectorType.Workflow) {
+          this._router.navigateByUrl(`resource${this._resourceService.resourceIdForRouting}/workflows/${currentCategoryDetectors[0].id}`);
         }
       }
       else {
