@@ -16,10 +16,10 @@ export class SummaryCard {
   status: HealthStatus;
   link: string;
   actionType: ActionType;
-  isDetector: boolean;
+  detectorType: DetectorType;
   isClickable: boolean;
 
-  constructor(title:string,message:string,description:string,status:HealthStatus,link:string,actionType:ActionType) {
+  constructor(title: string, message: string, description: string, status: HealthStatus, link: string, actionType: ActionType) {
     this.title = title;
     this.message = message;
     this.description = description;
@@ -43,11 +43,10 @@ export enum ActionType {
 })
 export class SummaryCardsComponent extends DataRenderBaseComponent {
   summaryCards: SummaryCard[] = [];
-  isDetector: boolean[] = [];
   detectors: DetectorMetaData[] = [];
   SummaryStatus = HealthStatus;
   isPublic: boolean;
-  constructor(protected _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute, private _router: Router, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _navigator: FeatureNavigationService,private _diagnosticService: DiagnosticService) {
+  constructor(protected _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute, private _router: Router, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _navigator: FeatureNavigationService, private _diagnosticService: DiagnosticService) {
     super(_telemetryService);
     this.isPublic = config && config.isPublic;
     this._diagnosticService.getDetectors().subscribe(detectors => {
@@ -77,7 +76,7 @@ export class SummaryCardsComponent extends DataRenderBaseComponent {
         row[linkColumn],
         ActionType[actionType]
       )
-      card.isDetector = this.checkIsDetector(row[linkColumn]);
+      card.detectorType = this.getDetectorType(row[linkColumn]);
       this.summaryCards.push(card);
     });
 
@@ -89,7 +88,7 @@ export class SummaryCardsComponent extends DataRenderBaseComponent {
       'Title': card.title,
       'Detector': card.link
     }
-    this.logEvent(TelemetryEventNames.SummaryCardClicked,eventProperties);
+    this.logEvent(TelemetryEventNames.SummaryCardClicked, eventProperties);
     switch (card.actionType) {
       case ActionType.Detector:
         this.navigate(card);
@@ -107,25 +106,28 @@ export class SummaryCardsComponent extends DataRenderBaseComponent {
     if (this.isPublic) {
       const url = this._router.url.split("?")[0];
       let path = url.endsWith("/overview") ? `../` : `../../`;
-      if (card.isDetector) {
+      if (card.detectorType === DetectorType.Detector) {
         path += `detectors/${card.link}`;
-      } else {
+      } else if (card.detectorType === DetectorType.Analysis) {
         path += `analysis/${card.link}`;
+      } else if (card.detectorType === DetectorType.Workflow) {
+        path += `workflows/${card.link}`;
       }
-      this._router.navigate([path],{relativeTo: this._activatedRoute,queryParamsHandling:'merge'});
+      this._router.navigate([path], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
     } else {
-        if (!card.isDetector) {
-            this._router.navigate([`./analysis/${card.link}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
-          } else {
-            this._navigator.NavigateToDetector(this._activatedRoute.snapshot.params['detector'], card.link);
-          }
-
+      if (card.detectorType === DetectorType.Analysis) {
+        this._router.navigate([`./analysis/${card.link}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
+      } else if (card.detectorType === DetectorType.Workflow) {
+        this._router.navigate([`./workflows/${card.link}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge' });
+      } else if (card.detectorType === DetectorType.Detector) {
+        this._navigator.NavigateToDetector(this._activatedRoute.snapshot.params['detector'], card.link);
+      }
     }
   }
 
-  private checkIsDetector(detectorId:string):boolean {
+  private getDetectorType(detectorId: string): DetectorType {
     const detector = this.detectors.find(detector => detectorId === detector.id);
-    return detector && detector.type === DetectorType.Detector;
+    return detector && detector.type;
   }
 }
 

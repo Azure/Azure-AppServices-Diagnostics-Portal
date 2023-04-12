@@ -63,7 +63,7 @@ export class CategoryTileV4Component implements OnInit {
       return;
     }
 
-    this._diagnosticService.getDetectorsAndWorkflows().subscribe(detectors => {
+    this._diagnosticService.getDetectors().subscribe(detectors => {
       var currentCategoryDetectors = detectors.filter(detector => detector.category === this.category.id);
       if (currentCategoryDetectors.length === 1) {
         this._notificationService.dismiss();

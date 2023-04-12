@@ -45,7 +45,7 @@ export class CategoriesService {
                 });
             }
 
-            this._genericApiService.getDetectorsAndWorkflows().subscribe(resp => {
+            this._genericApiService.getDetectors().subscribe(resp => {
                 this.addGenericDetectors(resp, info.resourceId);
                 this.Categories.next(this._categories);
             });

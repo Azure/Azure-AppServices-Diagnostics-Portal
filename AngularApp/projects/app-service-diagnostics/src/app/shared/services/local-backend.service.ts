@@ -42,22 +42,6 @@ export class LocalBackendService {
     }));
   }
 
-  public getDetectorsAndWorkflows(overrideResourceUri:string = ""): Observable<DetectorMetaData[]> {
-    let resourceId = overrideResourceUri ? overrideResourceUri : this.resourceId;
-    let languageQueryParam = this.isLocalizationApplicable() ? `?l=${this.effectiveLocale}` : "";
-    const path = `v4${resourceId}/detectors${languageQueryParam}`;
-    if (this.detectorList.length > 0 && overrideResourceUri === "") {
-      return of(this.detectorList);
-    }
-
-    return this.invoke<DetectorResponse[]>(path, 'POST').pipe(map(response => {
-      const detectorList = response.map(detector => detector.metadata);
-      if(overrideResourceUri === "") this.detectorList = detectorList;
-      return detectorList;
-    }));
-  }
-
-
   public getDetectorsSearch(searchTerm): Observable<DetectorMetaData[]> {
     const path = `v4${this.resourceId}/detectors?text=` + encodeURIComponent(searchTerm);
 

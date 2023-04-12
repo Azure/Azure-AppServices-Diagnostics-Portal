@@ -47,7 +47,7 @@ export class CategoryTileComponent implements OnInit {
       return;
     }
 
-    this._diagnosticService.getDetectorsAndWorkflows().subscribe(detectors => {
+    this._diagnosticService.getDetectors().subscribe(detectors => {
 
       var currentCategoryDetectors = detectors.filter(detector => detector.category === this.category.id);
 

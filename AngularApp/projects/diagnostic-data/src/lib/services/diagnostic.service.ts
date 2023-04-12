@@ -24,10 +24,6 @@ export class DiagnosticService {
         return null;
     }
 
-    public getDetectorsAndWorkflows(overrideResourceUri: string = "", internalClient: boolean = true): Observable<DetectorMetaData[]> {
-        return null;
-    }
-
     public getDetectorsSearch(searchTerm: string, internalClient: boolean = true): Observable<DetectorMetaData[]> {
         return null;
     }

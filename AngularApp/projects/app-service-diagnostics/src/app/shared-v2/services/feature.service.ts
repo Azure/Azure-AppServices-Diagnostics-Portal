@@ -37,7 +37,7 @@ export class FeatureService {
       this.isLegacy = isLegacy;
       this._authService.getStartupInfo().subscribe(startupInfo => {
         this.addDiagnosticToolsForNonWeb(startupInfo.resourceId);
-        this._diagnosticApiService.getDetectorsAndWorkflows().subscribe(detectors => {
+        this._diagnosticApiService.getDetectors().subscribe(detectors => {
           this._categoryService.categories.subscribe(categories => {
             this._detectors = detectors;
             if (categories.length > 0) {

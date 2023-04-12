@@ -84,7 +84,7 @@ export class CategoryPageComponent implements OnInit {
         }));
 
         // Observable to get all the public detectors
-        const publicDetectors = this._diagnosticService.getDetectorsAndWorkflows("", false).pipe(map((publicDetectors: DetectorMetaData[]) => {
+        const publicDetectors = this._diagnosticService.getDetectors("", false).pipe(map((publicDetectors: DetectorMetaData[]) => {
             this.publicDetectorsList = publicDetectors.filter(detector => detector.category && detector.category.toLowerCase() === this.categoryName.toLowerCase());
         }));
 
