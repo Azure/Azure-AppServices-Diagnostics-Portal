@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NgFlowchart, NgFlowchartCanvasDirective, NgFlowchartStepRegistry } from 'projects/ng-flowchart/dist';
+import { NgFlowchart, NgFlowchartCanvasDirective, NgFlowchartStepRegistry } from '../../../../../ng-flowchart/dist';
 import { QueryResponse } from '../../models/compiler-response';
 import { workflowExecution, workflowNodeExecution, workflowNodeResult, workflowNodeState, workflowPublishBody } from '../../models/workflow';
 import { DetectorControlService } from '../../services/detector-control.service';

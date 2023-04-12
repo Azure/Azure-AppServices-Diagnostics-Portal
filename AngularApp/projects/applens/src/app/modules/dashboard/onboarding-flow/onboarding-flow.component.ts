@@ -2,7 +2,7 @@ import { AdalService } from 'adal-angular4';
 import {
   CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, TableColumnOption, TableFilterSelectionOption, DataTableResponseObject, DataTableResponseColumn, FabDataTableComponent, QueryResponseService
 } from 'diagnostic-data';
-import * as momentNs from 'moment';
+import * as moment from 'moment';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import {
   concat,
@@ -52,7 +52,7 @@ using Kusto.Data;
 //*****END OF DO NOT MODIFY PART*****
 `;
 
-const moment = momentNs;
+//const moment = momentNs;
 const newDetectorId: string = "NEW_DETECTOR";
 
 // const commandbaritems: ICommandBarItemProps[] = [
@@ -117,8 +117,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   @Input() id: string = '';
   @Input() dataSource: string = '';
   @Input() timeRange: string = '';
-  @Input() startTime: momentNs.Moment = moment.utc().subtract(1, 'days');
-  @Input() endTime: momentNs.Moment = moment.utc();
+  @Input() startTime: moment.Moment = moment.utc().subtract(1, 'days');
+  @Input() endTime: moment.Moment = moment.utc();
   @Input() gistMode: boolean = false;
   @Input() branchInput: string = '';
   @Input() isWorkflowDetector: boolean = false;

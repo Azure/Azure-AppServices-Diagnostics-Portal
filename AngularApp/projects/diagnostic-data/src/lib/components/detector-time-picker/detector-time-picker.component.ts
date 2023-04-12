@@ -2,7 +2,8 @@ import { Component, OnInit, Output, Input, EventEmitter, Inject } from '@angular
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICalendarStrings, IDatePickerProps, IChoiceGroupOption, ITextFieldStyles } from 'office-ui-fabric-react';
 import { addMonths, addDays } from 'office-ui-fabric-react/lib/utilities/dateMath/DateMath';
-import * as momentNs from 'moment';
+//import * as momentNs from 'moment';
+import * as moment from 'moment';
 import { DetectorControlService, TimePickerInfo, TimePickerOptions } from '../../services/detector-control.service';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
@@ -10,7 +11,7 @@ import { Observable } from 'rxjs';
 import { UriUtilities } from '../../utilities/uri-utilities';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 
-const moment = momentNs;
+//const moment = momentNs;
 
 @Component({
   selector: 'detector-time-picker',
@@ -26,7 +27,7 @@ export class DetectorTimePickerComponent implements OnInit {
   @Output() updateTimerErrorMessage: EventEmitter<string> = new EventEmitter();
   timePickerButtonStr: string = "";
   showCalendar: boolean = false;
-  showTimePicker: boolean = false;
+  enableDateAndTimePicker: boolean = false;
   defaultSelectedKey: string;
 
   today: Date = new Date(Date.now());
@@ -109,12 +110,12 @@ export class DetectorTimePickerComponent implements OnInit {
       //If it's customized then should default the option
       //If not customized then prefill start date and endDate
       if (timerPickerInfo.selectedKey === TimePickerOptions.Custom) {
-        this.showTimePicker = true;
+        this.enableDateAndTimePicker = true;
         this.startDate = timerPickerInfo.startDate;
         this.endDate = timerPickerInfo.endDate;
 
         //startDate and endDate contains current hour and minute info, only need HH:mm
-        this.startClock = this.getHourAndMinute(timerPickerInfo.startDate);
+        this.startClock = this. getHourAndMinute(timerPickerInfo.startDate);
         this.endClock = this.getHourAndMinute(timerPickerInfo.endDate);
       } else {
         //Trigger setTime function to set this.hourDiff
@@ -151,15 +152,22 @@ export class DetectorTimePickerComponent implements OnInit {
   }
 
   setTime(hourDiff: number) {
-    this.showTimePicker = false;
+    this.enableDateAndTimePicker = false;
     this.timeDiffError = '';
     this.hourDiff = hourDiff;
+
+    //this.startDate = timerPickerInfo.startDate;
+    //this.endDate = timerPickerInfo.endDate;
+
+    //startDate and endDate contains current hour and minute info, only need HH:mm
+    //this.startClock = this.getHourAndMinute(timerPickerInfo.startDate);
+    //this.endClock = this.getHourAndMinute(timerPickerInfo.endDate);
   }
 
   //Click outside or tab to next component
   closeTimePicker() {
     this.openTimePickerCallout = false;
-    this.showTimePicker = this.defaultSelectedKey === TimePickerOptions.Custom;
+    this.enableDateAndTimePicker = this.defaultSelectedKey === TimePickerOptions.Custom;
   }
 
   //Press Escape,Click Cancel
@@ -175,7 +183,7 @@ export class DetectorTimePickerComponent implements OnInit {
     let endDateWithTime: string;
     let timePickerInfo: TimePickerInfo;
     //customize
-    if (this.showTimePicker) {
+    if (this.enableDateAndTimePicker) {
       startDateWithTime = this.convertDateTimeToString(this.startDate, this.startClock);
       endDateWithTime = this.convertDateTimeToString(this.endDate, this.endClock);
       //for timer picker, date and hour,minute
@@ -237,16 +245,16 @@ export class DetectorTimePickerComponent implements OnInit {
 
 
   private convertLocalDateToUTC(date: Date): string {
-    const moment = momentNs.utc(date.getTime());
-    return moment.format(this.detectorControlService.stringFormat);
+    const m = moment.utc(date.getTime());
+    return m.format(this.detectorControlService.stringFormat);
   }
 
-  //convert ISO string(UTC time) to LocalDate with same year,month,date...
+  //convert  to LocalDate with same year,month,date...
   private convertUTCToLocalDate(date: Date): Date {
-    const moment = momentNs.utc(date);
+    const m = moment.utc(date);
     return new Date(
-      moment.year(), moment.month(), moment.date(),
-      moment.hour(), moment.minute()
+      m.year(), m.month(), m.date(),
+      m.hour(), m.minute()
     );
   }
 
@@ -262,15 +270,15 @@ export class DetectorTimePickerComponent implements OnInit {
     return `${dateString} ${hour}:${minute}`;
   }
 
-  private checkParamIsSameAsMoment(param: string, moment: momentNs.Moment): boolean {
-    const m = momentNs.utc(param);
-    return m.isSame(moment);
+  private checkParamIsSameAsMoment(param: string, inputMoment: moment.Moment): boolean {
+    const m = moment.utc(param);
+    return m.isSame(inputMoment);
   }
 
 
   //when click LastXX hours,prefill into custom input, should be UTC time
   selectCustom() {
-    this.showTimePicker = true;
+    this.enableDateAndTimePicker = true;
     this.timeDiffError = "";
     const currentDate = new Date();
     const end = new Date(currentDate.getTime() - 15 * 60 * 1000);

@@ -15,10 +15,10 @@
       "node_modules/@types"
     ],
     "paths": {
-      "moment": [
-        "node_modules/moment/min/moment.min.js",
-        "../node_modules/moment/min/moment.min.js"
-      ],
+      // "moment": [
+      //   "node_modules/moment/min/moment.min.js",
+      //   "../node_modules/moment/min/moment.min.js"
+      // ],
       "diagnostic-data": [
         "projects/diagnostic-data/src/public_api",
         "../projects/diagnostic-data/src/public_api"

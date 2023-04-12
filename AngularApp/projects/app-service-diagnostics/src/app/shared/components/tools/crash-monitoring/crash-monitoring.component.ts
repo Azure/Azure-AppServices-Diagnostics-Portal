@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IDatePickerProps, IDropdownOption, SelectableOptionMenuItemType, ICalloutProps } from 'office-ui-fabric-react';
-import * as momentNs from 'moment';
+import * as moment from 'moment';
 import { addMonths, addDays } from 'office-ui-fabric-react/lib/utilities/dateMath/DateMath';
 import { SiteDaasInfo } from '../../../models/solution-metadata';
 import { SiteService } from '../../../services/site.service';
@@ -85,7 +85,7 @@ export class CrashMonitoringComponent implements OnInit {
   }
 
   formatDate: IDatePickerProps['formatDate'] = (date) => {
-    return momentNs(date).format('YYYY-MM-DD');
+    return moment(date).format('YYYY-MM-DD');
   };
 
   ngOnInit() {
@@ -154,8 +154,8 @@ export class CrashMonitoringComponent implements OnInit {
     this.startDateString = this.formatDateToString(monitoringDates.start);
     this.endDateString = this.formatDateToString(monitoringDates.end);
 
-    this.startClock = momentNs.utc(this.startDate).format('HH:mm');
-    this.endClock = momentNs.utc(this.endDate).format('HH:mm');
+    this.startClock = moment.utc(this.startDate).format('HH:mm');
+    this.endClock = moment.utc(this.endDate).format('HH:mm');
 
     // Reset the minDate to avoid the UI displaying an error
     this.minDate = this.startDate;
@@ -212,7 +212,7 @@ export class CrashMonitoringComponent implements OnInit {
         this.validationError = "Start date and time cannot be greater than or equal to end date and time";
       }
 
-      let durationInHours = momentNs.utc().diff(momentNs.utc(this.chosenStartDateTime), 'hours', true);
+      let durationInHours = moment.utc().diff(moment.utc(this.chosenStartDateTime), 'hours', true);
       if (durationInHours > 1) {
         isValid = false;
         this.validationError = "Start date and time cannot be lesser than current date and time";
@@ -232,15 +232,15 @@ export class CrashMonitoringComponent implements OnInit {
 
   //Get HH:mm from date
   private getHourAndMinute(date: Date): string {
-    return momentNs(date).format('HH:mm');
+    return moment(date).format('HH:mm');
   }
 
   //convert ISO string(UTC time) to LocalDate with same year,month,date...
   private convertUTCToLocalDate(date: Date): Date {
-    const moment = momentNs.utc(date);
+    const m = moment.utc(date);
     return new Date(
-      moment.year(), moment.month(), moment.date(),
-      moment.hour(), moment.minute()
+      m.year(), m.month(), m.date(),
+      m.hour(), m.minute()
     );
   }
 
@@ -293,8 +293,8 @@ export class CrashMonitoringComponent implements OnInit {
 
   getCrashMonitoringSetting(): CrashMonitoringSettings {
     let monitoringSettings: CrashMonitoringSettings = new CrashMonitoringSettings();
-    let durationInHours = momentNs.utc(this.chosenEndDateTime).diff(momentNs.utc(this.chosenStartDateTime), 'hours', true);
-    monitoringSettings.StartTimeUtc = momentNs.utc(this.chosenStartDateTime, momentNs.defaultFormatUtc).toISOString();
+    let durationInHours = moment.utc(this.chosenEndDateTime).diff(moment.utc(this.chosenStartDateTime), 'hours', true);
+    monitoringSettings.StartTimeUtc = moment.utc(this.chosenStartDateTime, moment.defaultFormatUtc).toISOString();
     monitoringSettings.MaxHours = durationInHours;
     monitoringSettings.MaxDumpCount = parseInt(this.selectedDumpCount);
     return monitoringSettings;
@@ -312,7 +312,7 @@ export class CrashMonitoringComponent implements OnInit {
   }
 
   formatDateToString(date: Date, appendTime: boolean = false) {
-    return appendTime ? momentNs.utc(date).format("YYYY-MM-DD HH:mm") : momentNs.utc(date).format("YYYY-MM-DD");
+    return appendTime ? moment.utc(date).format("YYYY-MM-DD HH:mm") : moment.utc(date).format("YYYY-MM-DD");
   }
 
   monitoringSettingsChanged(event: CrashMonitoringSettings) {

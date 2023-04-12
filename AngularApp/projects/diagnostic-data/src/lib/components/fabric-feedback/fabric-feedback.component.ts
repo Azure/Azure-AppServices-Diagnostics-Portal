@@ -1,7 +1,8 @@
 import { Component, AfterViewInit, ViewChild, TemplateRef, AfterContentInit, OnInit, OnDestroy, Inject } from '@angular/core';
 import { DirectionalHint, ICheckProps, IPanelProps, PanelType } from 'office-ui-fabric-react';
 import { ActivatedRoute } from '@angular/router';
-import * as momentNs from 'moment';
+//import * as momentNs from 'moment';
+import * as moment from 'moment';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { PIIUtilities } from '../../utilities/pii-utilities';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
@@ -9,7 +10,7 @@ import { Guid } from '../../utilities/guid';
 import { DiagnosticDataConfig, DIAGNOSTIC_DATA_CONFIG } from '../../config/diagnostic-data-config';
 import { GenieGlobals } from '../../services/genie.service';
 
-const moment = momentNs;
+//const moment = momentNs;
 
 @Component({
   selector: 'fabric-feedback',

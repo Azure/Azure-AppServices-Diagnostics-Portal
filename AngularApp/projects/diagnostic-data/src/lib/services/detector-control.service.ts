@@ -1,45 +1,47 @@
 import { Injectable, Inject } from '@angular/core';
-import * as momentNs from 'moment';
+//import * as momentNs from 'moment';
+import * as moment from 'moment';
 import { BehaviorSubject } from 'rxjs';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../config/diagnostic-data-config';
+import { DataTimeUtilities } from '../utilities/datetime-utilities';
 
-const moment = momentNs;
+//const moment = momentNs;
 
 @Injectable()
 export class DetectorControlService {
 
-  readonly stringFormat: string = 'YYYY-MM-DD HH:mm';
+  readonly stringFormat: string = DataTimeUtilities.stringFormat;
 
   durationSelections: DurationSelector[] = [
     {
       displayName: '1h',
-      duration: momentNs.duration(1, 'hours'),
+      duration: moment.duration(1, 'hours'),
       internalOnly: false,
       ariaLabel: "1 Hour"
     },
     {
       displayName: '6h',
-      duration: momentNs.duration(6, 'hours'),
+      duration: moment.duration(6, 'hours'),
       internalOnly: false,
       ariaLabel: "6 Hours"
     },
     {
       displayName: '1d',
-      duration: momentNs.duration(1, 'days'),
+      duration: moment.duration(1, 'days'),
       internalOnly: false,
       ariaLabel: "1 Day"
     },
     {
       displayName: '3d',
-      duration: momentNs.duration(3, 'days'),
+      duration: moment.duration(3, 'days'),
       internalOnly: true,
       ariaLabel: "3 Days"
     }
   ];
 
   private _duration: DurationSelector;
-  private _startTime: momentNs.Moment;
-  private _endTime: momentNs.Moment;
+  private _startTime: moment.Moment;
+  private _endTime: moment.Moment;
 
   // TODO: allow for this to be changed with dropdown
   private _internalView = true;
@@ -88,8 +90,8 @@ export class DetectorControlService {
     this.selectDuration(this.durationSelections.find(duration => duration.displayName === '1d'));
   }
 
-  public getTimeDurationError(startTime?: string, endTime?: string): string {
-    let start, end: momentNs.Moment;
+  public getTimeDurationError(startTime?: moment.MomentInput, endTime?: moment.MomentInput): string {
+    let start, end: moment.Moment;
     let returnValue: string = '';
     this.timeRangeDefaulted = false;
     this.timeRangeErrorString = '';
@@ -125,7 +127,7 @@ export class DetectorControlService {
         this.allowedDurationInDays = 1;
       }
       if (start && end) {
-        let diff: momentNs.Duration = moment.duration(end.diff(start));
+        let diff: moment.Duration = moment.duration(end.diff(start));
         let dayDiff: number = diff.asDays();
         if (dayDiff > -1) {
           if (dayDiff > this.allowedDurationInDays) {
@@ -178,10 +180,10 @@ export class DetectorControlService {
     return returnValue;
   }
 
-  public setCustomStartEnd(start?: string, end?: string, refreshInstanceId?: string): void {
+  public setCustomStartEnd(start?: moment.MomentInput, end?: moment.MomentInput, refreshInstanceId?: string): void {
     this.timeRangeDefaulted = false;
     this._duration = null;
-    let startTime, endTime: momentNs.Moment;
+    let startTime, endTime: moment.Moment;
     if (start && end) {
       startTime = moment.utc(start);
       if (moment.duration(moment.utc().diff(moment.utc(end))).asMinutes() < 16) {
@@ -301,9 +303,9 @@ export class DetectorControlService {
     return this._error;
   }
 
-  public get startTime(): momentNs.Moment { return (this._startTime ? this._startTime.clone() : this._startTime); }
+  public get startTime(): moment.Moment { return (this._startTime ? this._startTime.clone() : this._startTime); }
 
-  public get endTime(): momentNs.Moment { return (this._endTime ? this._endTime.clone() : this._endTime); }
+  public get endTime(): moment.Moment { return (this._endTime ? this._endTime.clone() : this._endTime); }
 
   public get duration(): DurationSelector { return this._duration; }
 
@@ -341,7 +343,7 @@ export class DetectorControlService {
 
 export interface DurationSelector {
   displayName: string;
-  duration: momentNs.Duration;
+  duration: moment.Duration;
   internalOnly: boolean;
   ariaLabel: string;
 }
