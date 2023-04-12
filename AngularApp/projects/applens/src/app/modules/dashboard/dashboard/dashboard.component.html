@@ -1,4 +1,4 @@
-<devops-notification></devops-notification>
+<devops-notification *ngIf="isPPE"></devops-notification>
 <fabric-feedback *ngIf="!stillLoading && showDashboardContent"></fabric-feedback>
 <div *ngIf="!stillLoading && displayAlertDialog">
   <fab-dialog [hidden]="!displayAlertDialog" [styles]="alertDialogStyles" [modalProps]="alertDialogProps" [forceFocusInsideTrap]="true">

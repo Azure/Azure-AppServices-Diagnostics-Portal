@@ -112,6 +112,7 @@ export class DashboardComponent implements OnDestroy {
   dialogType: DialogType = DialogType.normal;
   crossSubJustification: string = '';
   defaultResourceTypes = defaultResourceTypes;
+  isPPE:boolean = false;
 
   constructor(public resourceService: ResourceService, private startupService: StartupService,  private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
@@ -186,6 +187,11 @@ export class DashboardComponent implements OnDestroy {
         this.navigateBackToHomePage();
       }
     });
+
+    this._diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
+      this.isPPE = env === "PPE";
+    });
+
   }
 
   resetDialogSuccessStatus(){
