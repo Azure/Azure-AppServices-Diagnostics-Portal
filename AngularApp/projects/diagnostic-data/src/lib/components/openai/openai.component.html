@@ -11,10 +11,10 @@
       </span>
     </fab-tooltip-host>
   -->
-    <span [id]="slice.id" style="text-decoration: underline rgb(108, 201, 241) dotted;" (click)="onTooltipToggle(slice)">{{slice.value}}
+    <span [id]="slice.id" style="text-decoration: underline dotted 2px;" (click)="onTooltipToggle(slice)">{{slice.value}}
       <img src="assets/img/tooltip.svg" style="position: relative; top: -0.4em; height: 1em; width: 1em;" />
     </span>
-    <fab-coachmark *ngIf="slice.showCoachmark"
+    <fab-coachmark *ngIf="showCoachmark && slice.showCoachmark"
       [target]="'#' + slice.id"
       (onAnimationOpenEnd)="showTooltip(slice)"
       [positioningContainerProps]="coachmarkPositioningContainerProps"

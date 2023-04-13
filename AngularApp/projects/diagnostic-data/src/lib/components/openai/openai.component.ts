@@ -19,7 +19,7 @@ export class OpenaiComponent implements OnInit {
 
   slices: any[] = [];
   chatResponse: string;
-  footer: string = 'Powered by ChatGPT';
+  footer: string = 'Powered by App Service Diagnostics AI';
   promptPrefix: string = 'Explain this Win32 status code ';
 
   // For tooltip display
@@ -29,6 +29,8 @@ export class OpenaiComponent implements OnInit {
     directionalHint: DirectionalHint.bottomLeftEdge,
     dismissOnTargetClick: true,
   };
+  coachMarkCookieName: string = 'openai-showCoachmark';
+  showCoachmark: boolean = true;
 
   toolTipOptionsValue: ITooltipOptions = {
     calloutProps: {
@@ -53,19 +55,41 @@ export class OpenaiComponent implements OnInit {
   constructor(private chatService: OpenAIArmService, private telemetryService: TelemetryService, private changeDetectorRef: ChangeDetectorRef) { }
 
   ngOnInit() {
+    this.initCoachmarkFlag();
     this.processWithAiService(this.text);
+  }
+
+  initCoachmarkFlag() {
+    try {
+      const cookie: string = localStorage.getItem(this.coachMarkCookieName) || 'true';
+      this.showCoachmark = cookie === 'true';
+    }
+    catch (error) {
+      // Use TelemetryService logEvent when not able to access local storage.
+      // Most likely due to browsing in InPrivate/Incognito mode.
+      const e = new Error(`Error trying to retrieve ${this.coachMarkCookieName} from localStorage: ` + error);
+      this.telemetryService.logException(e);
+    }
   }
 
   onTooltipToggle(slice: any) {
     slice.visible = !slice.visible;
     if (slice.visible && !slice.hasBeenVisible) {
       slice.hasBeenVisible = true;
-      console.log('tooltip made visible');
       const eventProperties = {
         text: slice.value,
         tooltip: slice.tooltip
       };
       this.telemetryService.logEvent(TelemetryEventNames.OpenAiMessageViewed, eventProperties);
+
+      if (slice.showCoachmark) {
+        slice.showCoachmark = false;
+      }
+      if (this.showCoachmark) {
+        // Dismiss coachmarks because we need to show the coachmark only once.
+        this.showCoachmark = false;
+        localStorage.setItem(this.coachMarkCookieName, 'false');
+      }
     }
     else if (!slice.visible) {
       this.removeTeachingBubbleFromDom2(slice);
@@ -75,9 +99,6 @@ export class OpenaiComponent implements OnInit {
   showTooltip(slice: any) {
     if (!slice.visible) {
       this.onTooltipToggle(slice);
-    }
-    if (slice.showCoachmark) {
-      slice.showCoachmark = false;
     }
   }
 
@@ -133,25 +154,28 @@ export class OpenaiComponent implements OnInit {
     let lastIndex = 0;
     let id = 0;
     let r;
+    let isCoachmarkSet = false;
 
     while ((r = match.exec(originalText))) {
       this.slices.push({ id: `slice${id}`, enhance: false, value: r.input.substring(lastIndex, r.index) });
       id++;
       const s: string = r.input.substring(r.index, match.lastIndex);
-      this.slices.push({  id: `slice${id}`, enhance: true, visible: false, value: s });
+      // Only the first enhancing slice will have showCoachMark enabled
+      this.slices.push({ id: `slice${id}`, enhance: true, visible: false, value: s, showCoachmark: !isCoachmarkSet });
+      isCoachmarkSet = true;
       id++;
       lastIndex = match.lastIndex;
     }
     this.slices.push({ id: `slice${id}`, enhance: false, value: originalText.substring(lastIndex) });
 
     // For each slice, call OpenAI service and store the response
-    this.slices.forEach(s => {
+    for(let i = 0; i < this.slices.length; i++) {
+      const s = this.slices[i];
       if (s.enhance) {
         const query: string = this.promptPrefix + s.value;
         this.chatService.getAnswer(query, true).subscribe((resp) => {
           if (resp) {
             s.tooltip = resp;
-            s.showCoachmark = true;
           }
         },
         error => {
@@ -159,6 +183,6 @@ export class OpenaiComponent implements OnInit {
           this.telemetryService.logException(e);
         });
       }
-    });
+    }
   }
 }
