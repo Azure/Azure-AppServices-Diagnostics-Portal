@@ -28,7 +28,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   fullReportPath: string;
   subscriptionId: string;
 
-  displayRPDFButton: boolean = false;  
+  displayRPDFButton: boolean = false;
   gRPDFButtonChild: Element;
   gRPDFButtonId: string;
   gRPDFCoachmarkId: string;
@@ -72,15 +72,15 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       'ResiliencyScoreButtonDisplayed': this.displayRPDFButton.toString(),
       'Subscription': this.subscriptionId,
       'Platform': this.resourcePlatform != undefined ? this.resourcePlatform.toString() : "",
-      'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString(): "",
-      'resourceSku': this.resourceSku != undefined ? this.resourceSku.toString(): "",
+      'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString() : "",
+      'resourceSku': this.resourceSku != undefined ? this.resourceSku.toString() : "",
     };
     this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportButtonDisplayed, rSBDEventProperties);
     const loggingError = new Error();
     this.gRPDFButtonDisabled = false;
     //Get showCoachMark value(string) from local storage (if exists), then convert to boolean
     try {
-      if (this.displayRPDFButton){
+      if (this.displayRPDFButton) {
         if (localStorage.getItem(this.coachMarkCookieName) != undefined) {
           this.showCoachmark = localStorage.getItem(this.coachMarkCookieName) === "true";
         }
@@ -95,7 +95,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       const eventProperties = {
         'Subscription': this.subscriptionId,
         'Error': error,
-        'Message': `Error trying to retrieve ${this.coachMarkCookieName} from localStorage`       
+        'Message': `Error trying to retrieve ${this.coachMarkCookieName} from localStorage`
       }
       this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
@@ -106,7 +106,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     // Using this as an alternative to using the vfs_fonts.js build with PDFMake's build-vfs.js
     // as this file caused problems when being compiled in a library project like diagnostic-data
     //
-    this.http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => {this.vfsFonts=data}); 
+    this.http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => { this.vfsFonts = data });
   }
 
   private _checkIsWebAppProdSku(platform: OperatingSystem): boolean {
@@ -114,7 +114,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     this.resourcePlatform = webSiteService.platform;
     this.resourceAppType = webSiteService.appType;
     this.resourceSku = webSiteService.sku;
-    if (this.resourcePlatform === OperatingSystem.linux){
+    if (this.resourcePlatform === OperatingSystem.linux) {
       this.teachingBubbleHeadline = "New Resiliency Score report for Web App (Linux)!";
       this.coachMarkCookieName = "showCoachmarkLinux";
       this.teachingBubbleText = "Resiliency Score Report now supports Web App (Linux) in Standard or higher. Download a report to check how well your Web App scores against our recommended resiliency best practices.";
@@ -127,7 +127,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   private _percentageOfSubscriptions(subscriptionId: string, percentageToRelease: number): boolean {
     let firstDigit = "0x" + subscriptionId.substring(0, 1);
     // roughly split of percentageToRelease of subscriptions to use new feature.
-     return ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease);
+    return ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease);
   }
 
   toggleOpenState() {
@@ -183,17 +183,17 @@ export class DetectorCommandBarComponent implements AfterViewInit {
         }
       }
     };
-    this.gRPDFButtonDisabled = true;    
+    this.gRPDFButtonDisabled = true;
     this._diagnosticService.getDetector("ResiliencyScore", this._detectorControlService.startTimeString, this._detectorControlService.endTimeString)
       .subscribe((httpResponse: DetectorResponse) => {
         //If the page hasn't been refreshed this will use a cached request, so changing File Name to use the same name + "(cached)" to let them know they are seeing a cached version.
         let eT = new Date();
         let detectorTimeTaken = eT.getTime() - sT.getTime();
-        
-        
+
+
         if (this.gRPDFFileName == undefined) {
           this.generatedOn = ResiliencyScoreReportHelper.generatedOn();
-          this.gRPDFFileName = `ResiliencyReport-${JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName}-${this.generatedOn.replace(":", "-")}`;          
+          this.gRPDFFileName = `ResiliencyReport-${JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName}-${this.generatedOn.replace(":", "-")}`;
           ResiliencyScoreReportHelper.generateResiliencyReport(httpResponse.dataset[0].table, `${this.gRPDFFileName}`, this.generatedOn, this.vfsFonts);
         }
         else {
@@ -208,8 +208,8 @@ export class DetectorCommandBarComponent implements AfterViewInit {
         const eventProperties = {
           'Subscription': this.subscriptionId,
           'Platform': this.resourcePlatform != undefined ? this.resourcePlatform.toString() : "",
-          'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString(): "",
-          'ResourceSku': this.resourceSku != undefined ? this.resourceSku.toString(): "",
+          'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString() : "",
+          'ResourceSku': this.resourceSku != undefined ? this.resourceSku.toString() : "",
           'CustomerName': JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName,
           'NameSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].Name,
           'ScoreSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].OverallScore,
@@ -232,7 +232,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     let childRouteSnapshot = this._route.firstChild.snapshot;
     let childRouteType = childRouteSnapshot.url[0].toString();
 
-    let instanceId = childRouteType === "overview" ? this._route.snapshot.params["category"] : (this._route.snapshot.params["category"] === "DiagnosticTools" ? childRouteSnapshot.url[1].toString() : childRouteType === "detectors" ? childRouteSnapshot.params["detectorName"] : childRouteSnapshot.params["analysisId"]);
+    let instanceId = childRouteType === "overview" ? this._route.snapshot.params["category"] : (this._route.snapshot.params["category"] === "DiagnosticTools" ? childRouteSnapshot.url[1].toString() : childRouteType === "detectors" ? childRouteSnapshot.params["detectorName"] : childRouteType === "workflows" ? childRouteSnapshot.params["workflowId"] : childRouteSnapshot.params["analysisId"]);
     let isDiagnosticToolUIPage = this._route.snapshot.params["category"] === "DiagnosticTools" && childRouteType !== "overview" && instanceId !== "eventviewer" && instanceId !== "freblogs";
 
     const eventProperties = {
@@ -242,7 +242,11 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     if (childRouteType === "detectors") {
       eventProperties['Detector'] = childRouteSnapshot.params['detectorName'];
       eventProperties['Type'] = 'detector';
-    } else if (childRouteType === "analysis") {
+    } else if (childRouteType === "workflows") {
+      eventProperties['Detector'] = childRouteSnapshot.params['workflowId'];
+      eventProperties['Type'] = 'detector';
+    }
+    else if (childRouteType === "analysis") {
       eventProperties['Analysis'] = childRouteSnapshot.params["analysisId"];
       eventProperties['Type'] = 'analysis';
     } else if (childRouteType === "overview") {
@@ -277,13 +281,13 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     const coachMarkId = "fab-coachmark";
     let PDFButtonIndex = -1;
     if (btns && btns.length > 0) {
-      btns.forEach((btn,i) => {
-        if(btn.textContent.includes(this.gRPDFButtonText)) {
+      btns.forEach((btn, i) => {
+        if (btn.textContent.includes(this.gRPDFButtonText)) {
           PDFButtonIndex = i;
         }
       });
 
-      if(PDFButtonIndex >= 0 && PDFButtonIndex < btns.length && btns[PDFButtonIndex]) {
+      if (PDFButtonIndex >= 0 && PDFButtonIndex < btns.length && btns[PDFButtonIndex]) {
         const PDFButton = btns[PDFButtonIndex];
         PDFButton.setAttribute("id", pdfButtonId);
       }
@@ -294,8 +298,8 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   }
 
   coachMarkViewed() {
-    if (!this.showTeachingBubble){
-      
+    if (!this.showTeachingBubble) {
+
       //
       // TeachingBubbles inherit from Callout react component and they have a 
       // some issue in the current version of the libaray with *ngIf and they are
@@ -328,8 +332,8 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     this.removeTeachingBubbleFromDom();
   }
 
-  showingTeachingBubble(){
-    if (this.displayRPDFButton){
+  showingTeachingBubble() {
+    if (this.displayRPDFButton) {
       this.showTeachingBubble = true;
     }
   }

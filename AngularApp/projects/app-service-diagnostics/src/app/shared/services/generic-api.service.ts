@@ -33,27 +33,30 @@ export class GenericApiService {
     }
 
     public getDetectors(overrideResourceUri: string = ""): Observable<DetectorMetaData[]> {
+
+        //
+        // Flag to fetch both Detectors and Workflows. This should stay as
+        //  'false' and should be enabled only when the UI code needs to be
+        // tested against both  detectors and workflows. Enabling this flag
+        // will double the latency of getting the detectors and the side panels
+        // will take too long to load.
+        //
+
+        let fetchDetectorsAndWorkflows = false;
+        if (fetchDetectorsAndWorkflows) {
+            return this.getDetectorsAndWorkflows(overrideResourceUri);
+        }
+
         let resourceId = overrideResourceUri ? overrideResourceUri : this.resourceId;
         let queryParams = this.isLocalizationApplicable() ? [{ "key": "l", "value": this.effectiveLocale }] : [];
         if (this.useLocal) {
             const path = `v4${resourceId}/detectors?stampName=waws-prod-bay-085&hostnames=netpractice.azurewebsites.net`;
             return this.invoke<DetectorResponse[]>(path, 'POST').pipe(map(response => response.map(detector => detector.metadata)));
         } else {
-
             const path = `${resourceId}/detectors`;
-            const allDetectors = this._armService.getResourceCollection<DetectorResponse[]>(path, null, false, queryParams);
+            return this._armService.getResourceCollection<DetectorResponse[]>(path, null, false, queryParams).pipe(map((response: ResponseMessageEnvelope<DetectorResponse>[]) => {
 
-            queryParams.push({key:'diagnosticEntityType', value:'workflow'})
-            const allWorkflows = this._armService.getResourceCollection<DetectorResponse[]>(path, null, false, queryParams);
-
-            return forkJoin([allDetectors, allWorkflows]).pipe(map(responses => {
-                let allEntities: DetectorMetaData[] = [];
-                responses.forEach((response: ResponseMessageEnvelope<DetectorResponse>[]) => {
-                    let list = response.map(listItem => listItem.properties.metadata);
-                    allEntities = allEntities.concat(list);
-                });
-
-                this.detectorList = allEntities;
+                this.detectorList = response.map(listItem => listItem.properties.metadata);
                 return this.detectorList;
             }));
         }
@@ -151,6 +154,33 @@ export class GenericApiService {
             map((response) => <T>(response)));
 
         return request;
+    }
+
+    private getDetectorsAndWorkflows(overrideResourceUri: string = ""): Observable<DetectorMetaData[]> {
+        let resourceId = overrideResourceUri ? overrideResourceUri : this.resourceId;
+        let queryParams = this.isLocalizationApplicable() ? [{ "key": "l", "value": this.effectiveLocale }] : [];
+        if (this.useLocal) {
+            const path = `v4${resourceId}/detectors?stampName=waws-prod-bay-085&hostnames=netpractice.azurewebsites.net`;
+            return this.invoke<DetectorResponse[]>(path, 'POST').pipe(map(response => response.map(detector => detector.metadata)));
+        } else {
+
+            const path = `${resourceId}/detectors`;
+            const allDetectors = this._armService.getResourceCollection<DetectorResponse[]>(path, null, false, queryParams);
+
+            queryParams.push({ key: 'diagnosticEntityType', value: 'workflow' })
+            const allWorkflows = this._armService.getResourceCollection<DetectorResponse[]>(path, null, false, queryParams);
+
+            return forkJoin([allDetectors, allWorkflows]).pipe(map(responses => {
+                let allEntities: DetectorMetaData[] = [];
+                responses.forEach((response: ResponseMessageEnvelope<DetectorResponse>[]) => {
+                    let list = response.map(listItem => listItem.properties.metadata);
+                    allEntities = allEntities.concat(list);
+                });
+
+                this.detectorList = allEntities;
+                return this.detectorList;
+            }));
+        }
     }
 
     private isLocalizationApplicable(): boolean {
