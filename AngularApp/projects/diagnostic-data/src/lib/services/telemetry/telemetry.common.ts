@@ -71,6 +71,7 @@ export const TelemetryEventNames = {
     CrashMonitoringAgentDisabled: 'CrashMonitoringAgentDisabled',
     LoadingDetectorViewStarted: 'LoadingDetectorViewStarted',
     LoadingDetectorViewEnded: 'LoadingDetectorViewEnded',
+    OpenAiMessageViewed: 'OpenAiMessageViewed',
     OpenGenie: 'OpenGenie',
     OpenFeedbackPanel: 'OpenFeedbackPanel',
     RefreshClicked: 'RefreshClicked',

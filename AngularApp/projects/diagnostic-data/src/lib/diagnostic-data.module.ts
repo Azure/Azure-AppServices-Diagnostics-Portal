@@ -156,6 +156,7 @@ import { ArchitectureDiagramComponent } from './components/architecture-diagram/
 import { ArchitectureDiagramNodeComponent } from './components/architecture-diagram-node/architecture-diagram-node.component';
 import { ChatGPTContextService } from './services/chat-gpt-context-service';
 import { GenericOpenAIChatService, OpenAIArmService } from '../public_api';
+import { OpenaiComponent } from './components/openai/openai.component';
 import { QueryResponseService } from './services/query-response.service';
 import { WorkflowConditionNodeComponent } from './components/workflow-condition-node/workflow-condition-node.component';
 import { WorkflowAcceptUserinputComponent } from './components/workflow-accept-userinput/workflow-accept-userinput.component';
@@ -270,7 +271,8 @@ import { SafePipe } from './pipe/safe.pipe';
         WorkflowConditionNodeComponent,
         WorkflowAcceptUserinputComponent,
         VideoComponent,
-        SafePipe
+        SafePipe,
+        OpenaiComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -313,7 +315,8 @@ import { SafePipe } from './pipe/safe.pipe';
         FormStepComponent,
         GanttChartTaskbarColorsComponent,
         WorkflowViewComponent,
-        SafePipe
+        SafePipe,
+        OpenaiComponent
     ]
 })
 export class DiagnosticDataModule {
