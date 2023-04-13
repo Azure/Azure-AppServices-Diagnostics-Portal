@@ -28,7 +28,6 @@ export class OpenaiComponent implements OnInit {
   teachingBubbleCalloutProps: ICalloutProps = {
     directionalHint: DirectionalHint.bottomLeftEdge,
     dismissOnTargetClick: true,
-    //hidden: true // Will be set to false/true
   };
 
   toolTipOptionsValue: ITooltipOptions = {
