@@ -1,7 +1,8 @@
 import { Component, Input, OnInit, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 import { DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
 import { ITooltipOptions } from '@angular-react/fabric/lib/components/tooltip';
-import { FabTeachingBubbleComponent, OpenAIArmService } from './../../../public_api';
+import { FabTeachingBubbleComponent } from './../../modules/fab-teachingbubble/public-api';
+import { OpenAIArmService } from './../../services/openai-arm.service';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { ICalloutProps, ITeachingBubbleProps } from 'office-ui-fabric-react';
@@ -155,7 +156,8 @@ export class OpenaiComponent implements OnInit {
           }
         },
         error => {
-          console.error('failed to retrieve respones from server: ' + error);
+          const e = new Error('failed to retrieve respones from server: ' + error);
+          this.telemetryService.logException(e);
         });
       }
     });
