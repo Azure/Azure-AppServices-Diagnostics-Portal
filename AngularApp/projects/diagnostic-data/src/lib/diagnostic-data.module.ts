@@ -169,7 +169,9 @@ import {OpenAIChatComponent} from './components/openai-chat/openai-chat.componen
 import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.component';
 import {OpenAIChatContainerComponent} from './components/openai-chat-container/openai-chat-container.component';
 import { ChatUIMarkdownWrapperComponent } from './components/chat-ui-markdown-wrapper/chat-ui-markdown-wrapper.component';
-import { GenericDetectorCopilotService } from './services/generic-detector-copilot.service';
+import { GenericDetectorCopilotService } from './services/generic-detector-copilot.service';import { MarkdownRenderingSettingsComponent } from './markdown-rendering-settings/markdown-rendering-settings.component';
+import { GraphRenderingSettingsComponent } from './graph-rendering-settings/graph-rendering-settings.component';
+
 import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
 import { GenericDocumentationCopilotService } from "./services/generic-documentation-copilot.service";
 import { DocumentationCopilotComponent } from './components/documentation-copilot/documentation-copilot.component';
@@ -297,7 +299,9 @@ import { DiagChatContainerComponent } from './components/diag-chat-container/dia
         ChatUIMarkdownWrapperComponent,
         DocumentationCopilotComponent,
         DiagChatContainerComponent,
-        DiagChatSolutionComponent
+        DiagChatSolutionComponent,
+        MarkdownRenderingSettingsComponent,
+        GraphRenderingSettingsComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,

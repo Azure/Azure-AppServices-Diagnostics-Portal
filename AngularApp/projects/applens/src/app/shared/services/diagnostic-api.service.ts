@@ -16,7 +16,11 @@ import { List } from 'office-ui-fabric-react';
 import { dynamicExpressionBody } from '../../modules/dashboard/workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../models/devopsCommitStatus';
+<<<<<<< HEAD
 import { ChatFeedbackPostBody } from '../models/openAIChatFeedbackModel';
+=======
+import { NoCodeExpressionBody } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
+>>>>>>> cddf9f3ef (templatizer, settings, send query to back end)
 
 
 @Injectable()
@@ -361,6 +365,12 @@ export class DiagnosticApiService {
   public evaluateDynamicExpression(resourceId: string, body: dynamicExpressionBody, startTime: string, endTime: string): Observable<any> {
     let timeParameters = this._getTimeQueryParameters(startTime, endTime);
     let path = `${resourceId}/evaluateexpression?${timeParameters}`;
+    return this.invoke<string>(path, HttpMethod.POST, body, false);
+  }
+
+  public evaluateNoCodeExpression(resourceId: string, body: NoCodeExpressionBody, startTime: string, endTime: string): Observable<any> {
+    let timeParameters = this._getTimeQueryParameters(startTime, endTime);
+    let path = `${resourceId}/NoCodeEvaluateExpression?${timeParameters}`;
     return this.invoke<string>(path, HttpMethod.POST, body, false);
   }
 
