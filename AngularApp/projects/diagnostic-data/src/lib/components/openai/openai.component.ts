@@ -174,7 +174,7 @@ export class OpenaiComponent implements OnInit {
       if (s.enhance) {
         const query: string = this.promptPrefix + s.value;
         this.chatService.getAnswer(query, true).subscribe((resp) => {
-          if (resp) {
+          if (resp && resp.length > 2 && !resp.trim().toLowerCase().includes("we could not find any information about that")) {
             s.tooltip = resp;
           }
         },
