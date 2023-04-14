@@ -4,7 +4,7 @@ import { Guid } from "projects/diagnostic-data/src/lib/utilities/guid";
 export class ComposerNodeModel {
     id: string = Guid.newGuid();
     public queryName:string; //Use a property here to replace space with underscore
-    public code:string;
+    public code:string = '<query>\r\n';
     public editorRef?: monaco.editor.ICodeEditor = null;
     public renderingType:NoCodeSupportedRenderingTypes = RenderingType.Table;
     public constructor() {
@@ -16,6 +16,9 @@ export class ComposerNodeModel {
         newElement.queryName = element.queryName + " (Copy)";
         newElement.code = element.code;
         newElement.renderingType = element.renderingType;
+        if(element.renderingType == RenderingType.Markdown){
+            newElement.code += 'you selected markdown';
+        }
         return newElement;
     }
 }

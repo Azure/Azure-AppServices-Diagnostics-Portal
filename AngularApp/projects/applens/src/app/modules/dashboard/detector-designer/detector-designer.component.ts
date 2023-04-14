@@ -217,7 +217,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     {
       id: Guid.newGuid(),
       queryName: 'firstQuery',
-      code:'',
+      code:'<query>\r\n',
       renderingType:RenderingType.Table
     }/*,
     {

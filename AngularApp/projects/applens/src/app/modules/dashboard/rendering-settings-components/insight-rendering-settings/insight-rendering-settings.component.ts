@@ -11,6 +11,7 @@ import { RenderingSettingsBaseComponent } from '../rendering-settings-base/rende
 })
 
 export class InsightRenderingSettingsComponent extends RenderingSettingsBaseComponent {
+  expandedByDefault: boolean = false;
 
   constructor() {
     super();

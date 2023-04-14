@@ -1,9 +1,9 @@
 import { Moment } from 'moment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DetectorControlService, DetectorMetaData, RenderingType } from 'diagnostic-data';
-import { IBasePickerProps, ITagPickerProps, ITagItemProps, ISuggestionModel, ITag, TagItem, IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IIconProps, IPanelProps, IPersona, IPersonaProps, IPickerItemProps, IPivotProps, ITextFieldProps, MessageBarType, PanelType, SelectableOptionMenuItemType, TagItemSuggestion, IDropdown, ICalloutProps, ICheckboxStyleProps, ICheckboxProps, PivotItem } from 'office-ui-fabric-react';
+import { DetectorControlService, DetectorMetaData, RenderingType, ResponseTokensSize, TextModels } from 'diagnostic-data';
+import { IBasePickerProps, ITagPickerProps, ITagItemProps, ISuggestionModel, ITag, TagItem, IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IIconProps, IPanelProps, IPersona, IPersonaProps, IPickerItemProps, IPivotProps, ITextFieldProps, MessageBarType, PanelType, SelectableOptionMenuItemType, TagItemSuggestion, IDropdown, ICalloutProps, ICheckboxStyleProps, ICheckboxProps, PivotItem, List } from 'office-ui-fabric-react';
 import { KeyValuePair } from 'projects/app-service-diagnostics/src/app/shared/models/portal';
 import { Observable, of } from 'rxjs';
 import { ApplensGlobal } from '../../../applens-global';
@@ -11,6 +11,12 @@ import { ComposerNodeModel, ITPromptSuggestionModel, NoCodeSupportedRenderingTyp
 import { DevelopMode } from '../onboarding-flow/onboarding-flow.component';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import * as momentNs from 'moment';
+import { CreateTextCompletionModel } from 'diagnostic-data';
+import { ApplensOpenAIChatService } from '../../../shared/services/applens-openai-chat.service';
+import { ResourceService } from '../../../shared/services/resource.service';
+import { dynamicExpressionBody, kustoQueryDialogParams } from '../workflow/models/kusto';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DataSourceType, InsightRenderingJsonModel, NoCodeExpressionBody } from '../dynamic-node-settings/node-rendering-json-models';
 const moment = momentNs;
 
 @Component({
@@ -33,10 +39,57 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   private readonly TPROMPT_SUGGESTIONS_ENABLED:boolean = false;
   startTime: Moment;
   endTime: Moment;
+  templatized: boolean = false;
+  resourceId: string;
+  kustoQueryLabel: string = '';
+  inputKustoQueryDialogParams: kustoQueryDialogParams;
+
+  microsoftWebPrompt: string = `input: for an app named nmallick1
+
+  StatsDWASWorkerProcessTenMinuteTable
+  | where TIMESTAMP >= datetime('2023-03-15 00:00:00') and TIMESTAMP <= datetime('2023-03-16 00:00:00')  and EventPrimaryStampName == 'SomeStampName'
+  | where ApplicationPool startswith 'nmallick1_' or ApplicationPool == 'nmallick1'
+  | summarize by RoleInstance, Tenant, EventPrimaryStampName
+  | join kind = inner (RoleInstanceHeartbeat
+      | where PreciseTimeStamp >= datetime('2023-03-15 00:00:00') and PreciseTimeStamp <= datetime('2023-03-16 00:00:00') and EventPrimaryStampName == 'SomeStampName'
+      | summarize take_any(MachineName), IP = take_any(Details) by RoleInstance, Tenant
+      ) on RoleInstance, Tenant
+  | project RoleInstance, Tenant, MachineName, IP
+  
+  output:
+  StatsDWASWorkerProcessTenMinuteTable
+  
+  | where {Utilities.TenantAndTimeFilterQuery(cxt.StartTime, cxt.EndTime, "TIMESTAMP")}
+  | where ApplicationPool startswith '{cxt.Resource.Name}_' or ApplicationPool == '{cxt.Resource.Name}'
+  | summarize by RoleInstance, Tenant, EventPrimaryStampName
+  | join kind = inner (RoleInstanceHeartbeat
+      | where {Utilities.TenantAndTimeFilterQuery(cxt.StartTime, cxt.EndTime, "PreciseTimeStamp")}
+      | summarize take_any(MachineName), IP = take_any(Details) by RoleInstance, Tenant
+      ) on RoleInstance, Tenant
+  | project RoleInstance, Tenant, MachineName, IP
+  
+  input: for an app named todoapiv420210108090805
+  AntaresIISLogFrontEndTable | where PreciseTimeStamp >= datetime('2023-02-02 00:00:00') and PreciseTimeStamp <= datetime('2023-02-04 00:00:00')
+      | where Cs_host in~ ("todoapiv420210108090805.azurewebsites.net","todoapiv420210108090805.azurewebsites.net:80","todoapiv420210108090805.azurewebsites.net:443")
+      | where User_agent == 'AlwaysOn'
+      | where Sc_status != 200
+      | summarize count() by Sc_status
+      | order by Sc_status asc
+  
+  output:
+  AntaresIISLogFrontEndTable
+  | where {Utilities.TenantAndTimeFilterQuery(cxt.StartTime, cxt.EndTime, "PreciseTimeStamp")}
+  | where {Utilities.HostNamesFilterQuery(cxt.Resource.Hostnames)}
+  | where User_agent == 'AlwaysOn'
+  | where Sc_status != 200
+  | summarize count() by Sc_status
+  | order by Sc_status asc`
 
   // #region sample hardcoded data
 
-  public sampleTestDataset =  [
+
+
+  public sampleTestDataset:any =  [
     {
       "table": {
           "tableName": "Table_0",
@@ -209,12 +262,18 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   }
 
   constructor(private _applensGlobal: ApplensGlobal, private _activatedRoute: ActivatedRoute, private _router: Router,
-    private _detectorControl: DetectorControlService, public diagnosticApiService: ApplensDiagnosticService,private _httpClient: HttpClient ) {
-    this._applensGlobal.updateHeader('');    
+    private _detectorControl: DetectorControlService, public diagnosticApiService: ApplensDiagnosticService,private _httpClient: HttpClient, private _openAIService: ApplensOpenAIChatService,
+    private resourceService: ResourceService, private _detectorControlService: DetectorControlService ) {
+    this._applensGlobal.updateHeader('');
+    // this.inputKustoQueryDialogParams = data; 
+    // if (data.queryLabel) {
+    //   this.kustoQueryLabel = data.queryLabel;
+    // }  
   }
 
   ngOnInit() {
     this.initComponent();
+    this.resourceId = this.resourceService.getCurrentResourceId();
   }
 
   ngOnDestroy(): void {
@@ -240,9 +299,34 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
 
   public onRenderingTypeChange(event:any) {
     //let key:string = event.option.key.toString();
+    this.removeProjectStatement(this.getProjectStatement(this.nodeModel.renderingType));
     this.nodeModel.renderingType = event.option.key;
+    this.setProjectStatement(this.getProjectStatement(this.nodeModel.renderingType));
     this.nodeModelChange.emit(this.nodeModel);
     this.onNodeModelChange.emit({fieldChanged:'renderingType', nodeModel:this.nodeModel});
+  }
+
+  getProjectStatement(renderingType: NoCodeSupportedRenderingTypes){
+    switch(renderingType){
+      case RenderingType.Insights:
+        return '| project Status, Message, Description, Recommended Action, CustomerReadyContent';
+      case RenderingType.Markdown:
+        return '| project Title, MarkdownString';
+      default:
+        return '';
+    }
+  }
+
+  setProjectStatement(projectStatement: string){
+    if(!this.nodeModel.code.toLowerCase().replace(/\s/g, "").endsWith(projectStatement.toLowerCase().replace(/\s/g, ""))){
+      this.nodeModel.code = this.nodeModel.code.endsWith('\n') || this.nodeModel.code.endsWith('\r') ? this.nodeModel.code.concat(projectStatement) : this.nodeModel.code.concat('\r\n', projectStatement);
+    }
+  }
+
+  removeProjectStatement(projectStatement: string){
+    if(projectStatement != '' && this.nodeModel.code.toLowerCase().replace(/\s/g, "").endsWith(projectStatement.toLowerCase().replace(/\s/g, ""))){
+      this.nodeModel.code = this.nodeModel.code.slice(0, this.nodeModel.code.lastIndexOf('|'));
+    }
   }
 
   public changePivotSelectedTab(event:any) {
@@ -250,7 +334,57 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   }
 
   public previewResults(event:any) {
-    this.pivotSelectedKey = this.nodeModel.id + '_Result';
+    if (this.templatized){
+      //this.pivotSelectedKey = this.nodeModel.id + '_Result';
+      let noCodeExpression: NoCodeExpressionBody = {
+        DetectorId: 'NoCode',
+        OperationName: 'kustoQuery1',
+        Text: this.nodeModel.code,
+        DataSourceType: DataSourceType.Kusto,
+        ConnectionString: "test",
+        RenderingType: this.nodeModel.renderingType,
+        RenderingProperties: {
+          type: this.nodeModel.renderingType
+        }
+      };
+      this.diagnosticApiService.evaluateNoCodeExpression(noCodeExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe( x => {
+        
+        this.sampleTestDataset = x.res;
+        this.pivotSelectedKey = this.nodeModel.id + '_Result';
+      });
+    }
+    else {
+      this.templatized = true;
+      this.templatizeQuery(event);
+    }
+  }
+
+  buildRenderingProps(){
+    //LineGraph, BarGraph, StackedAreaGraph
+    /*
+      "type": this.nodeModel.renderingType,
+      "title": "Sample Table",
+      "description": "Some description here",
+      "isVisible": true,
+      "graphType": 0
+    */
+   // markdown project - Markdown
+   // insight project - Status, Message, Data.Name, Data.Value, Expanded, Solutions
+    return {
+      "type": this.nodeModel.renderingType,
+      "title": "Sample Table",
+      "description": "Some description here",
+      "isVisible": true,
+      "graphType": 0
+    }
+  }
+
+  writeDatasetJson(response){ 
+    let renderingProps = this.buildRenderingProps();
+    return {
+      "table": response,
+      "renderingProperties": renderingProps
+    }
   }
 
   public duplicateNode(event:any) {
@@ -319,6 +453,17 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
     }
 
     this.nodeModel.editorRef = editor;
+  }
+
+  private templatizeQuery(event = null){
+    let isMicrosoftWeb = true;
+    let appName = 'todoapiv420210108090805';
+    let prompt = isMicrosoftWeb ? CreateTextCompletionModel(`${this.microsoftWebPrompt}\n\nfor an app named ${appName}\n\n${this.nodeModel.code}\n\noutput:\n`, TextModels.Default, ResponseTokensSize.Large) : CreateTextCompletionModel(`prompt2`);
+    
+    this._openAIService.generateTextCompletion(prompt, true).subscribe(template => {
+      this.nodeModel.code = template.choices[0].text;
+      this.previewResults(event);
+    });
   }
 }
 

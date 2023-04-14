@@ -1,6 +1,9 @@
 import { Component, Input, OnInit, Output, ViewChild, ViewContainerRef, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RenderingType } from 'diagnostic-data';
+import { ITextFieldProps } from 'office-ui-fabric-react';
+import { GraphRenderingSettingsComponent } from 'projects/diagnostic-data/src/lib/graph-rendering-settings/graph-rendering-settings.component';
+import { MarkdownRenderingSettingsComponent } from 'projects/diagnostic-data/src/lib/markdown-rendering-settings/markdown-rendering-settings.component';
 import { ApplensGlobal } from '../../../applens-global';
 import { InsightRenderingSettingsComponent } from '../rendering-settings-components/insight-rendering-settings/insight-rendering-settings.component';
 import { RenderingSettingsBaseComponent } from '../rendering-settings-components/rendering-settings-base/rendering-settings-base.component';
@@ -15,6 +18,19 @@ import { TableRenderingSettingsComponent } from '../rendering-settings-component
 export class DynamicNodeSettings implements OnInit {
   clusterName: string = '@StampCluster';
   databaseName: string = 'wawsprod';
+  scopeString: string = "";
+
+  textBoxStyle: ITextFieldProps['styles'] = {
+    root: {
+      display: "flex"
+    },
+    wrapper: {
+      display: "flex"
+    },
+    fieldGroup: {
+      marginLeft: "10px"
+    }
+  }
 
   private _instanceRef: RenderingSettingsBaseComponent = null;
 
@@ -79,6 +95,10 @@ export class DynamicNodeSettings implements OnInit {
         return TableRenderingSettingsComponent;
       case RenderingType.Insights:
         return InsightRenderingSettingsComponent;
+      case RenderingType.TimeSeries:
+         return GraphRenderingSettingsComponent;
+      case RenderingType.Markdown:
+        return MarkdownRenderingSettingsComponent;
       default:
         return null;
     }
