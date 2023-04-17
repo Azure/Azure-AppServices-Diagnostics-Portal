@@ -30,9 +30,8 @@ namespace DiagPortalTest
 
     class DiagPortalTestConst
     {
-        public static readonly string DiagPortalTestEmail = "applesuitest@microsoft.com";
-        public static readonly string KeyVaultDevUri = "https://keyvault-test-xiaoxu.vault.azure.net/";
-        public static readonly string FilePathForTestConfig = "./testConfig.json";
+        public static readonly string DiagPortalTestEmail = "DiagPortalTestEmail";
+        public static readonly string KeyVaultDevUri = "KeyVaultDevUri";
 
         //Getting from environment variable
         public static readonly string DiagPortalTestPassword = "DiagPortalTestPassword";
@@ -41,7 +40,5 @@ namespace DiagPortalTest
         //Getting from runsetting file
         public static readonly string Slot = "Slot";
         public static readonly string Region = "Region";
-
-        
     }
 }

@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="appsettings*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="SetEnvironment.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

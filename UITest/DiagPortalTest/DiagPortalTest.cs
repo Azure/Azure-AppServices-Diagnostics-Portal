@@ -11,6 +11,12 @@ using Newtonsoft.Json;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Identity;
 using System.Linq;
+using Microsoft.Extensions.Azure;
+using Newtonsoft.Json.Linq;
+using System.Collections.Immutable;
+using OpenQA.Selenium.Internal;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace DiagPortalTest
 {
@@ -18,13 +24,12 @@ namespace DiagPortalTest
     public class DiagPortalTest
     {
         private static IWebDriver _driver;
-        private static IConfiguration Config { get; }
+        private static IConfiguration _config;
 
-        private static readonly string _keyVaultUri = DiagPortalTestConst.KeyVaultDevUri;
-        private static readonly string _email = DiagPortalTestConst.DiagPortalTestEmail;
+        private static string _keyVaultUri;
+        private static string _email;
         private static string _password = "";
         private static SecretClient _secretClient;
-        private static Dictionary<string, DiagTestData> _testConfig;
         private static bool _isProd;
 
         //Get from runsettings
@@ -36,7 +41,14 @@ namespace DiagPortalTest
         [ClassInitialize]
         public static void InitalizeTestClass(TestContext context)
         {
-            _testConfig = JsonConvert.DeserializeObject<Dictionary<string, DiagTestData>>(File.ReadAllText(Path.GetFullPath(DiagPortalTestConst.FilePathForTestConfig)));
+            var builder = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+               .AddEnvironmentVariables();
+            _config = builder.Build();
+
+            _email = _config[DiagPortalTestConst.DiagPortalTestEmail];
+            _keyVaultUri = _config[DiagPortalTestConst.KeyVaultDevUri];
 
             _isProd = CheckEnvIsProd();
 
@@ -119,22 +131,20 @@ namespace DiagPortalTest
         }
 
         [DataTestMethod]
-        [CustomDataSourceAttribute]
-        public void TestDiagAndSolvePortal(string appType)
+        [JsonFileTestDataAttribute("./testConfig.json")]
+        public void TestDiagAndSolvePortal(string appType, string serilizedTestConfig)
         {
-            var testData = GetTestDataForAppType(appType);
 
-            var diagAndSolveTester = new DiagAndSolveTest(_driver, TestContext, appType, testData.ResourceUri, testData.DiagAndSolve, _slot, _region);
+            var diagAndSolveTester = new DiagAndSolveTest(_driver, TestContext, appType, serilizedTestConfig, _slot, _region);
 
             diagAndSolveTester.TestWithRetry();
         }
 
         [DataTestMethod]
-        [CustomDataSourceAttribute]
-        public void TestCaseSubmission(string appType)
+        [JsonFileTestDataAttribute("./testConfig.json")]
+        public void TestCaseSubmission(string appType,string serilizedTestConfig)
         {
-            var testData = GetTestDataForAppType(appType);
-            var caseSubmissionTester = new CaseSubmissionTest(_driver, TestContext, appType, testData.ResourceUri, testData.CaseSubmission, _slot, _region);
+            var caseSubmissionTester = new CaseSubmissionTest(_driver, TestContext, appType, serilizedTestConfig, _slot, _region);
 
             caseSubmissionTester.TestWithRetry();
 
@@ -185,15 +195,6 @@ namespace DiagPortalTest
             return isProd;
         }
 
-        private DiagTestData GetTestDataForAppType(string appType)
-        {
-            if (!_testConfig.TryGetValue(appType, out DiagTestData data))
-            {
-                throw new Exception($"Cannot get test data for {appType}");
-            }
-            return data;
-        }
-
         private static string GetValueFromEnvironmentVariable(string name)
         {
             string value = Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.User) ?? string.Empty;
@@ -203,17 +204,32 @@ namespace DiagPortalTest
 
 
 
-    public class CustomDataSourceAttribute : Attribute, ITestDataSource
+    public class JsonFileTestDataAttribute: Attribute, ITestDataSource
     {
-        //AppType name matches key in testConfig.json
+        private Dictionary<string, object> _data;
+
+        public JsonFileTestDataAttribute(string filePath)
+        {
+            var path = Path.IsPathRooted(filePath) ? filePath : Path.GetRelativePath(Directory.GetCurrentDirectory(), filePath);
+
+
+            if (!File.Exists(path))
+            {
+                throw new ArgumentException($"Could not find file at path: {path}");
+            }
+
+            var fileData = File.ReadAllText(filePath);
+            _data = JObject.Parse(fileData).ToObject<Dictionary<string, object>>();
+        }
+
+
         public IEnumerable<object[]> GetData(MethodInfo methodInfo)
         {
-            //Read all keys from "testConfig.json" file as test input
-            var dict = JsonConvert.DeserializeObject<Dictionary<string, DiagTestData>>(File.ReadAllText(Path.GetFullPath(DiagPortalTestConst.FilePathForTestConfig)));
-            var keys = dict.Keys;
-            foreach (string key in keys)
+            
+            foreach (var entry in _data)
             {
-                yield return new object[] { key };
+                var serizliedValue = JsonConvert.SerializeObject(entry.Value);
+                yield return new object[] { entry.Key, serizliedValue };
             }
         }
 
@@ -221,7 +237,7 @@ namespace DiagPortalTest
         {
             if (data != null)
             {
-                return string.Format("{0}({1})", methodInfo.Name, string.Join(",", data));
+                return string.Format("{0}({1})", methodInfo.Name, data[0]);
             }
             return null;
         }

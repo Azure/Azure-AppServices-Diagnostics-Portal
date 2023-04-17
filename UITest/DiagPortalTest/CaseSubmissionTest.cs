@@ -11,9 +11,9 @@ namespace DiagPortalTest
     class CaseSubmissionTest : DiagPortalTestBase
     {
         private CaseSubmissionItem _caseSubmissionItem;
-        public CaseSubmissionTest(IWebDriver driver, TestContext testContext, string appType, string resourceUri, CaseSubmissionItem caseSubmissionItem, string slot, string region) : base(driver, testContext, appType, resourceUri, slot, region)
+        public CaseSubmissionTest(IWebDriver driver, TestContext testContext, string appType, string serilizedTestConfig, string slot, string region) : base(driver, testContext, appType, serilizedTestConfig, slot, region)
         {
-            this._caseSubmissionItem = caseSubmissionItem;
+            this._caseSubmissionItem = _testConfig.CaseSubmission;
         }
 
         private string GetCaseSubmissionUrl(string resourceUri, string caseSubject)
@@ -38,7 +38,7 @@ namespace DiagPortalTest
 
         protected override void Run()
         {
-            string url = GetCaseSubmissionUrl(_resourceUri, _caseSubmissionItem.CaseSubject);
+            string url = GetCaseSubmissionUrl(_testConfig.ResourceUri, _caseSubmissionItem.CaseSubject);
             _driver.Navigate().GoToUrl(url);
             Thread.Sleep(1000 * 30);
             var currentIFrame = GetIframeElement(0);

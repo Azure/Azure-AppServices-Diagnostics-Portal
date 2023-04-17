@@ -8,9 +8,9 @@ namespace DiagPortalTest
     class DiagAndSolveTest : DiagPortalTestBase
     {
         private DiagAndSolveItem _diagAndSolveItem;
-        public DiagAndSolveTest(IWebDriver driver, TestContext testContext, string appType, string resourceUri, DiagAndSolveItem diagAndSolveItem, string slot, string region) : base(driver, testContext, appType, resourceUri, slot, region)
+        public DiagAndSolveTest(IWebDriver driver, TestContext testContext, string appType, string serilizedTestConfig, string slot, string region) : base(driver, testContext, appType, serilizedTestConfig, slot, region)
         {
-            this._diagAndSolveItem = diagAndSolveItem;
+            this._diagAndSolveItem = _testConfig.DiagAndSolve;
         }
 
         private void NavigateToHomePage()
@@ -18,11 +18,11 @@ namespace DiagPortalTest
             string url;
             if(string.IsNullOrEmpty(_diagAndSolveItem.DiagPortalPath))
             {
-                url = GetDiagPortallUrl(_resourceUri, "troubleshoot", _slot, _region);
+                url = GetDiagPortallUrl(_testConfig.ResourceUri, "troubleshoot", _slot, _region);
             }
             else
             {
-                url = GetDiagPortallUrl(_resourceUri, _diagAndSolveItem.DiagPortalPath, _slot, _region);
+                url = GetDiagPortallUrl(_testConfig.ResourceUri, _diagAndSolveItem.DiagPortalPath, _slot, _region);
             }
             
             _driver.Navigate().GoToUrl(url);

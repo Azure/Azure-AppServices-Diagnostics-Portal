@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
@@ -9,23 +10,54 @@ using System.Threading;
 namespace DiagPortalTest
 {
 
-    class DiagPortalTestBase
+    class DiagPortalTestBase :UITestBase<DiagTestData>
     {
-        protected string _resourceUri;
         protected string _slot;
-        protected IWebDriver _driver;
         protected string _region;
-        protected TestContext _testContext;
-        protected string _appType;
 
-        public DiagPortalTestBase(IWebDriver driver, TestContext testContext, string appType, string resourceUri, string slot, string region)
+        public DiagPortalTestBase(IWebDriver driver, TestContext testContext, string appType, string testConfig, string slot, string region): base(driver,testContext,appType,testConfig)
         {
-            _resourceUri = resourceUri;
             _slot = slot;
-            _driver = driver;
             _region = region;
+        }
+        protected IWebElement GetIframeElement(int index = 0)
+        {
+            _driver.SwitchTo().ParentFrame();
+            var iframes = _driver.FindElements(By.CssSelector("iframe.fxs-part-frame:not(.fxs-extension-frame)"));
+            var iFrame = iframes.Where((element, i) => i == index).FirstOrDefault();
+            return iFrame;
+        }
+
+        protected string GetWebsitesExtensionPath(string slot, string region)
+        {
+            string path = "websitesextension_ext=";
+            bool isProd = slot.StartsWith("prod", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(slot);
+            bool isDefaultRegion = string.IsNullOrEmpty(region);
+
+            if (isProd == true)
+            {
+                return isDefaultRegion ? "#" : $"{path}asd.region%3D{region}#";
+            }
+            else
+            {
+                return isDefaultRegion ? $"{path}asd.env%3D{slot}#" : $"{path}asd.env%3D{slot}%26asd.region%3D{region}#";
+            }
+        }
+    }
+
+    class UITestBase<T> where T : class
+    {
+        protected IWebDriver _driver;
+        protected TestContext _testContext;
+        protected string _key;
+        protected T _testConfig;
+
+        public UITestBase(IWebDriver driver, TestContext testContext, string key, string serilizedTestConfig)
+        {
+            _driver = driver;
             _testContext = testContext;
-            _appType = appType;
+            _key = key;
+            _testConfig = JsonConvert.DeserializeObject<T>(serilizedTestConfig);
         }
 
         protected virtual void TakeAndSaveScreenshot(string fileName)
@@ -53,6 +85,7 @@ namespace DiagPortalTest
                 }
                 catch (Exception e)
                 {
+                    TakeAndSaveScreenshot($"RetryAttempt{retryCount}_{this.GetType().Name}_{_key}");
                     attemptException = e;
                     exceptions.Add(e);
                 }
@@ -66,7 +99,6 @@ namespace DiagPortalTest
                     {
                         Console.WriteLine($"Retry Attempt {retryCount} is Successful");
                     }
-                    TakeAndSaveScreenshot($"RetryAttempt{retryCount}_{this.GetType().Name}_{_appType}");
                     retryCount++;
                 }
                 if (retryCount < maxRetries)
@@ -79,31 +111,6 @@ namespace DiagPortalTest
             {
                 var aggregateException = new AggregateException($"Failed {maxRetries} retries. Look at inner exceptions", exceptions);
                 Assert.Fail(aggregateException.ToString());
-            }
-        }
-
-
-        protected IWebElement GetIframeElement(int index = 0)
-        {
-            _driver.SwitchTo().ParentFrame();
-            var iframes = _driver.FindElements(By.CssSelector("iframe.fxs-part-frame:not(.fxs-extension-frame)"));
-            var iFrame = iframes.Where((element, i) => i == index).FirstOrDefault();
-            return iFrame;
-        }
-
-        protected string GetWebsitesExtensionPath(string slot, string region)
-        {
-            string path = "websitesextension_ext=";
-            bool isProd = slot.StartsWith("prod", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(slot);
-            bool isDefaultRegion = string.IsNullOrEmpty(region);
-
-            if (isProd == true)
-            {
-                return isDefaultRegion ? "#" : $"{path}asd.region%3D{region}#";
-            }
-            else
-            {
-                return isDefaultRegion ? $"{path}asd.env%3D{slot}#" : $"{path}asd.env%3D{slot}%26asd.region%3D{region}#";
             }
         }
 
