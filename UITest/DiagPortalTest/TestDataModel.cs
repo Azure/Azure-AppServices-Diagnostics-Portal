@@ -30,8 +30,9 @@ namespace DiagPortalTest
 
     class DiagPortalTestConst
     {
-        public static readonly string DiagPortalTestEmail = "DiagPortalTestEmail";
-        public static readonly string KeyVaultDevUri = "KeyVaultDevUri";
+        //Getting from appsettings
+        public static readonly string DiagPortalTestEmail = "diagPortalTestEmail";
+        public static readonly string KeyVaultDevUri = "keyVaultDevUri";
 
         //Getting from environment variable
         public static readonly string DiagPortalTestPassword = "DiagPortalTestPassword";

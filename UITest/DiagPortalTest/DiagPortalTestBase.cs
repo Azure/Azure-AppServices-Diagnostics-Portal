@@ -14,11 +14,13 @@ namespace DiagPortalTest
     {
         protected string _slot;
         protected string _region;
+        protected string _baseUrl;
 
-        public DiagPortalTestBase(IWebDriver driver, TestContext testContext, string appType, string testConfig, string slot, string region): base(driver,testContext,appType,testConfig)
+        public DiagPortalTestBase(IWebDriver driver, TestContext testContext, string appType, string testConfig,string baseUrl, string slot, string region): base(driver,testContext,appType,testConfig)
         {
             _slot = slot;
             _region = region;
+            _baseUrl = baseUrl;
         }
         protected IWebElement GetIframeElement(int index = 0)
         {

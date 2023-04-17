@@ -31,6 +31,7 @@ namespace DiagPortalTest
         private static string _password = "";
         private static SecretClient _secretClient;
         private static bool _isProd;
+        private static string _portalBaseUrl;
 
         //Get from runsettings
         private string _slot = "";
@@ -49,6 +50,7 @@ namespace DiagPortalTest
 
             _email = _config[DiagPortalTestConst.DiagPortalTestEmail];
             _keyVaultUri = _config[DiagPortalTestConst.KeyVaultDevUri];
+            _portalBaseUrl = _config["portalBaseUrl"];
 
             _isProd = CheckEnvIsProd();
 
@@ -134,17 +136,16 @@ namespace DiagPortalTest
         [JsonFileTestDataAttribute("./testConfig.json")]
         public void TestDiagAndSolvePortal(string appType, string serilizedTestConfig)
         {
-
-            var diagAndSolveTester = new DiagAndSolveTest(_driver, TestContext, appType, serilizedTestConfig, _slot, _region);
+            var diagAndSolveTester = new DiagAndSolveTest(_driver, TestContext, appType, serilizedTestConfig, _portalBaseUrl, _slot, _region);
 
             diagAndSolveTester.TestWithRetry();
         }
 
         [DataTestMethod]
         [JsonFileTestDataAttribute("./testConfig.json")]
-        public void TestCaseSubmission(string appType,string serilizedTestConfig)
+        public void TestCaseSubmission(string appType, string serilizedTestConfig)
         {
-            var caseSubmissionTester = new CaseSubmissionTest(_driver, TestContext, appType, serilizedTestConfig, _slot, _region);
+            var caseSubmissionTester = new CaseSubmissionTest(_driver, TestContext, appType, serilizedTestConfig, _portalBaseUrl, _slot, _region);
 
             caseSubmissionTester.TestWithRetry();
 
@@ -204,7 +205,7 @@ namespace DiagPortalTest
 
 
 
-    public class JsonFileTestDataAttribute: Attribute, ITestDataSource
+    public class JsonFileTestDataAttribute : Attribute, ITestDataSource
     {
         private Dictionary<string, object> _data;
 
@@ -225,7 +226,7 @@ namespace DiagPortalTest
 
         public IEnumerable<object[]> GetData(MethodInfo methodInfo)
         {
-            
+
             foreach (var entry in _data)
             {
                 var serizliedValue = JsonConvert.SerializeObject(entry.Value);

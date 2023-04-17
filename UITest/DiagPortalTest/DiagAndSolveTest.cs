@@ -8,7 +8,7 @@ namespace DiagPortalTest
     class DiagAndSolveTest : DiagPortalTestBase
     {
         private DiagAndSolveItem _diagAndSolveItem;
-        public DiagAndSolveTest(IWebDriver driver, TestContext testContext, string appType, string serilizedTestConfig, string slot, string region) : base(driver, testContext, appType, serilizedTestConfig, slot, region)
+        public DiagAndSolveTest(IWebDriver driver, TestContext testContext, string appType, string serilizedTestConfig, string baseUrl, string slot, string region) : base(driver, testContext, appType, serilizedTestConfig, baseUrl, slot, region)
         {
             this._diagAndSolveItem = _testConfig.DiagAndSolve;
         }
@@ -16,7 +16,7 @@ namespace DiagPortalTest
         private void NavigateToHomePage()
         {
             string url;
-            if(string.IsNullOrEmpty(_diagAndSolveItem.DiagPortalPath))
+            if (string.IsNullOrEmpty(_diagAndSolveItem.DiagPortalPath))
             {
                 url = GetDiagPortallUrl(_testConfig.ResourceUri, "troubleshoot", _slot, _region);
             }
@@ -24,7 +24,7 @@ namespace DiagPortalTest
             {
                 url = GetDiagPortallUrl(_testConfig.ResourceUri, _diagAndSolveItem.DiagPortalPath, _slot, _region);
             }
-            
+
             _driver.Navigate().GoToUrl(url);
             Thread.Sleep(1000 * 20);
 
@@ -64,9 +64,8 @@ namespace DiagPortalTest
 
         private string GetDiagPortallUrl(string resourceUri, string diagPortalPath, string slot, string region)
         {
-            string baseUrl = "https://ms.portal.azure.com";
             string websitesExtensionPath = GetWebsitesExtensionPath(slot, region);
-            string url = $"{baseUrl}/?{websitesExtensionPath}@microsoft.onmicrosoft.com/resource{resourceUri}/{diagPortalPath}";
+            string url = $"{_baseUrl}/?{websitesExtensionPath}@microsoft.onmicrosoft.com/resource{resourceUri}/{diagPortalPath}";
 
             return url;
 
