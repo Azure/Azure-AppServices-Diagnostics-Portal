@@ -19,7 +19,7 @@
         },
         {
           "find": "__RUNTIMEHOST_SITENAME__",
-          "replaceWith": "diag-runtimehost"
+          "replaceWith": "diag-runtimehost-prod-bn1-001"
         },
         {
           "find": "__KEYVAULTNAME__",
@@ -35,7 +35,7 @@
         },
         {
           "find": "__APPSERVICE_DNS_SUFFIX__",
-          "replaceWith": "azurewebsites.net"
+          "replaceWith": "azurewebsites.us"
         },
         {
           "find": "__STORAGE_DNS_SUFFIX__",

@@ -18,22 +18,11 @@
     },
     "orchestratedsteps": [
         {
-            "name": "AppSettingsUpdate",
-            "targetType": "ServiceResource",
-            "targetName": "AppSettingsUpdate",
-            "actions": [
-                "Deploy"
-            ]
-        },
-        {
             "name": "ZipDeploy",
             "targetType": "ServiceResource",
             "targetName": "ApplensZipDeploy",
             "actions": [
                 "Deploy"
-            ],
-            "dependsOn": [
-                "AppSettingsUpdate"
             ]
         }
     ]
