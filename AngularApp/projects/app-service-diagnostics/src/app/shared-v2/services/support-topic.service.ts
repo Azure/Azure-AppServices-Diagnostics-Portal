@@ -249,7 +249,7 @@ export class SupportTopicService {
                         if (matchingDetectors.length === 1 && matchingDetectors[0] && matchingDetectors[0].id) {
                             if (matchingDetectors[0].type === DetectorType.Analysis) {
                                 detectorPath = `/analysis/${matchingDetectors[0].id}`;
-                            } else if (matchingDetectors[0].type === DetectorType.Detector) {
+                            } else if (matchingDetectors[0].type === DetectorType.Detector || matchingDetectors[0].type === DetectorType.CategoryOverview) {
                                 detectorPath = `/detectors/${matchingDetectors[0].id}`;
                             } else if (matchingDetectors[0].type === DetectorType.Workflow) {
                                 detectorPath = `/workflows/${matchingDetectors[0].id}`;
