@@ -10,17 +10,19 @@ using System.Threading;
 namespace DiagPortalTest
 {
 
-    class DiagPortalTestBase :UITestBase<DiagTestData>
+    class DiagPortalTestBase : UITestBase
     {
         protected string _slot;
         protected string _region;
         protected string _baseUrl;
+        protected DiagTestData _testConfig;
 
-        public DiagPortalTestBase(IWebDriver driver, TestContext testContext, string appType, string testConfig,string baseUrl, string slot, string region): base(driver,testContext,appType,testConfig)
+        public DiagPortalTestBase(IWebDriver driver, TestContext testContext, string appType, DiagTestData testConfig, string baseUrl, string slot, string region) : base(driver, testContext, appType)
         {
             _slot = slot;
             _region = region;
             _baseUrl = baseUrl;
+            _testConfig = testConfig;
         }
         protected IWebElement GetIframeElement(int index = 0)
         {
@@ -47,19 +49,17 @@ namespace DiagPortalTest
         }
     }
 
-    class UITestBase<T> where T : class
+    class UITestBase
     {
         protected IWebDriver _driver;
         protected TestContext _testContext;
         protected string _key;
-        protected T _testConfig;
 
-        public UITestBase(IWebDriver driver, TestContext testContext, string key, string serilizedTestConfig)
+        public UITestBase(IWebDriver driver, TestContext testContext, string key)
         {
             _driver = driver;
             _testContext = testContext;
             _key = key;
-            _testConfig = JsonConvert.DeserializeObject<T>(serilizedTestConfig);
         }
 
         protected virtual void TakeAndSaveScreenshot(string fileName)

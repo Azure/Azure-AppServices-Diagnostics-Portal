@@ -11,7 +11,7 @@ namespace DiagPortalTest
     class CaseSubmissionTest : DiagPortalTestBase
     {
         private CaseSubmissionItem _caseSubmissionItem;
-        public CaseSubmissionTest(IWebDriver driver, TestContext testContext, string appType, string serilizedTestConfig,string baseUrl, string slot, string region) : base(driver, testContext, appType, serilizedTestConfig,baseUrl, slot, region)
+        public CaseSubmissionTest(IWebDriver driver, TestContext testContext, string appType, DiagTestData testConfig, string baseUrl, string slot, string region) : base(driver, testContext, appType, testConfig, baseUrl, slot, region)
         {
             this._caseSubmissionItem = _testConfig.CaseSubmission;
         }
@@ -21,8 +21,7 @@ namespace DiagPortalTest
             string url;
             string websitesExtensionPath = GetWebsitesExtensionPath(_slot, _region);
             string baseUrl = $"{_baseUrl}/?{websitesExtensionPath}view/WebsitesExtension/SCIFrameBlade/id/";
-            string workFlowId = new Guid().ToString();
-            string path = $"/source/CaseSubmissionV2-NonContext/supportTopicId/{_caseSubmissionItem.SupportTopicId}/sapSupportTopicId/{_caseSubmissionItem.SapSupportTopicId}/sapProductId/{_caseSubmissionItem.SapProductId}/workflowId/{workFlowId}";
+            string path = $"/source/CaseSubmissionV2-NonContext/supportTopicId/{_caseSubmissionItem.SupportTopicId}/sapSupportTopicId/{_caseSubmissionItem.SapSupportTopicId}/sapProductId/{_caseSubmissionItem.SapProductId}/workflowId/{Guid.NewGuid()}";
             var optionalParameters = new List<object>()
             {
                 new { key = "caseSubject",value = caseSubject },

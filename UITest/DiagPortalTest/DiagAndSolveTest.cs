@@ -8,7 +8,7 @@ namespace DiagPortalTest
     class DiagAndSolveTest : DiagPortalTestBase
     {
         private DiagAndSolveItem _diagAndSolveItem;
-        public DiagAndSolveTest(IWebDriver driver, TestContext testContext, string appType, string serilizedTestConfig, string baseUrl, string slot, string region) : base(driver, testContext, appType, serilizedTestConfig, baseUrl, slot, region)
+        public DiagAndSolveTest(IWebDriver driver, TestContext testContext, string appType, DiagTestData testConfig, string baseUrl, string slot, string region) : base(driver, testContext, appType, testConfig, baseUrl, slot, region)
         {
             this._diagAndSolveItem = _testConfig.DiagAndSolve;
         }

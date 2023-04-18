@@ -11,12 +11,7 @@ using Newtonsoft.Json;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Identity;
 using System.Linq;
-using Microsoft.Extensions.Azure;
 using Newtonsoft.Json.Linq;
-using System.Collections.Immutable;
-using OpenQA.Selenium.Internal;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
 
 namespace DiagPortalTest
 {
@@ -133,19 +128,19 @@ namespace DiagPortalTest
         }
 
         [DataTestMethod]
-        [JsonFileTestDataAttribute("./testConfig.json")]
-        public void TestDiagAndSolvePortal(string appType, string serilizedTestConfig)
+        [JsonFileTestDataAttribute<DiagTestData>("./testConfig.json")]
+        public void TestDiagAndSolvePortal(string appType, DiagTestData testConfig)
         {
-            var diagAndSolveTester = new DiagAndSolveTest(_driver, TestContext, appType, serilizedTestConfig, _portalBaseUrl, _slot, _region);
+            var diagAndSolveTester = new DiagAndSolveTest(_driver, TestContext, appType, testConfig, _portalBaseUrl, _slot, _region);
 
             diagAndSolveTester.TestWithRetry();
         }
 
         [DataTestMethod]
-        [JsonFileTestDataAttribute("./testConfig.json")]
-        public void TestCaseSubmission(string appType, string serilizedTestConfig)
+        [JsonFileTestDataAttribute<DiagTestData>("./testConfig.json")]
+        public void TestCaseSubmission(string appType, DiagTestData testConfig)
         {
-            var caseSubmissionTester = new CaseSubmissionTest(_driver, TestContext, appType, serilizedTestConfig, _portalBaseUrl, _slot, _region);
+            var caseSubmissionTester = new CaseSubmissionTest(_driver, TestContext, appType, testConfig, _portalBaseUrl, _slot, _region);
 
             caseSubmissionTester.TestWithRetry();
 
@@ -205,9 +200,9 @@ namespace DiagPortalTest
 
 
 
-    public class JsonFileTestDataAttribute : Attribute, ITestDataSource
+    public class JsonFileTestDataAttribute<T> : Attribute, ITestDataSource where T : class
     {
-        private Dictionary<string, object> _data;
+        private Dictionary<string, T> _data;
 
         public JsonFileTestDataAttribute(string filePath)
         {
@@ -220,7 +215,7 @@ namespace DiagPortalTest
             }
 
             var fileData = File.ReadAllText(filePath);
-            _data = JObject.Parse(fileData).ToObject<Dictionary<string, object>>();
+            _data = JObject.Parse(fileData).ToObject<Dictionary<string, T>>();
         }
 
 
@@ -229,8 +224,7 @@ namespace DiagPortalTest
 
             foreach (var entry in _data)
             {
-                var serizliedValue = JsonConvert.SerializeObject(entry.Value);
-                yield return new object[] { entry.Key, serizliedValue };
+                yield return new object[] { entry.Key, entry.Value };
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿
 namespace DiagPortalTest
 {
-    class CaseSubmissionItem
+    public class CaseSubmissionItem
     {
         public string SupportTopicId { get; set; }
         public string SapSupportTopicId { get; set; }
@@ -11,7 +11,7 @@ namespace DiagPortalTest
     }
 
 
-    class DiagAndSolveItem
+    public class DiagAndSolveItem
     {
         public string CategoryName { get; set; }
         public string DetectorName { get; set; }
@@ -19,7 +19,7 @@ namespace DiagPortalTest
         public string DiagPortalPath { get; set; }
     }
 
-    class DiagTestData
+    public class DiagTestData
     {
         public string ResourceUri { get; set; }
 
