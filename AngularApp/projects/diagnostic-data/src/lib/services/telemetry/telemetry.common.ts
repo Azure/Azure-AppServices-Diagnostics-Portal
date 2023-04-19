@@ -72,6 +72,7 @@ export const TelemetryEventNames = {
     LoadingDetectorViewStarted: 'LoadingDetectorViewStarted',
     LoadingDetectorViewEnded: 'LoadingDetectorViewEnded',
     OpenAiMessageViewed: 'OpenAiMessageViewed',
+    OpenAiInPrivateAccess: 'OpenAiInPrivateAccess',
     OpenGenie: 'OpenGenie',
     OpenFeedbackPanel: 'OpenFeedbackPanel',
     RefreshClicked: 'RefreshClicked',
