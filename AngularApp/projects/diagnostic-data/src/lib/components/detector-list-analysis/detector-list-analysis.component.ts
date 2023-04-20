@@ -1050,8 +1050,8 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                                 this._detectorControl.updateTimePickerInfo({
                                     selectedKey: TimePickerOptions.Custom,
                                     selectedText: TimePickerOptions.Custom,
-                                    startDate: new Date(viewModel.model.startTime),
-                                    endDate: new Date(viewModel.model.endTime)
+                                    startMoment: moment.utc(viewModel.model.startTime),
+                                    endMoment: moment.utc(viewModel.model.endTime)
                                 });
                                 this.updateBreadcrumb(viewModel);
 

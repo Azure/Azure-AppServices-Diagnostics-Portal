@@ -1,42 +1,20 @@
 import { Injectable, Inject } from '@angular/core';
-//import * as momentNs from 'moment';
 import * as moment from 'moment';
 import { BehaviorSubject } from 'rxjs';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../config/diagnostic-data-config';
-import { DataTimeUtilities } from '../utilities/datetime-utilities';
 
-//const moment = momentNs;
 
 @Injectable()
 export class DetectorControlService {
 
-  readonly stringFormat: string = DataTimeUtilities.stringFormat;
+  readonly stringFormat: string = "YYYY-MM-DD HH:mm";
 
   durationSelections: DurationSelector[] = [
-    {
-      displayName: '1h',
-      duration: moment.duration(1, 'hours'),
-      internalOnly: false,
-      ariaLabel: "1 Hour"
-    },
-    {
-      displayName: '6h',
-      duration: moment.duration(6, 'hours'),
-      internalOnly: false,
-      ariaLabel: "6 Hours"
-    },
-    {
-      displayName: '1d',
-      duration: moment.duration(1, 'days'),
-      internalOnly: false,
-      ariaLabel: "1 Day"
-    },
-    {
-      displayName: '3d',
-      duration: moment.duration(3, 'days'),
-      internalOnly: true,
-      ariaLabel: "3 Days"
-    }
+    { displayName: TimePickerOptions.Last1Hour, duration: moment.duration(1, 'hours'), internalOnly: false, ariaLabel: "1 Hour" },
+    { displayName: TimePickerOptions.Last6Hours, duration: moment.duration(6, 'hours'), internalOnly: false, ariaLabel: "6 Hours" },
+    { displayName: TimePickerOptions.Last12Hour, duration: moment.duration(12, 'hours'), internalOnly: false, ariaLabel: "12 Hour" },
+    { displayName: TimePickerOptions.Last24Hours, duration: moment.duration(1, 'day'), internalOnly: false, ariaLabel: "24 Hour" },
+    { displayName: TimePickerOptions.Last3Days, duration: moment.duration(3, 'days'), internalOnly: true, ariaLabel: "3 Days" }
   ];
 
   private _duration: DurationSelector;
@@ -68,7 +46,9 @@ export class DetectorControlService {
 
   public timePickerInfoSub: BehaviorSubject<TimePickerInfo> = new BehaviorSubject<TimePickerInfo>({
     selectedKey: TimePickerOptions.Last24Hours,
-    selectedText: TimePickerOptions.Last24Hours
+    selectedText: TimePickerOptions.Last24Hours,
+    startMoment: moment.utc().subtract(24, 'hour'),
+    endMoment: moment.utc().subtract(16, 'minute')
   });
 
   public changeFromTimePicker: boolean = false;
@@ -77,188 +57,164 @@ export class DetectorControlService {
 
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
     this.internalClient = !config.isPublic;
-    this._duration = this.durationSelections[2];
+    this.allowedDurationInDays = this.internalClient ? 3 : 1;
+    this._duration = this.durationSelections.find(d => d.displayName === TimePickerOptions.Last24Hours);
     this._startTime = moment.utc().subtract(this._duration.duration);
-    this._endTime = moment.utc().subtract(15, 'minute');
+    this._endTime = this.currentUTCMoment;
   }
 
   public get update() {
     return this._refresh;
   }
 
+  public get currentUTCMoment() {
+    return moment.utc().subtract(16, 'minutes');
+  }
+
   public setDefault() {
-    this.selectDuration(this.durationSelections.find(duration => duration.displayName === '1d'));
+    this.selectDuration(this.durationSelections.find(d => d.displayName === TimePickerOptions.Last24Hours));
   }
 
-  public getTimeDurationError(startTime?: moment.MomentInput, endTime?: moment.MomentInput): string {
-    let start, end: moment.Moment;
-    let returnValue: string = '';
-    this.timeRangeDefaulted = false;
-    this.timeRangeErrorString = '';
-    let timeStringFormat = this.internalClient ? "YYYY-MM-DD hh:mm" : "MM/DD/YY hh:mm"
-    if (startTime && endTime) {
-      start = moment.utc(startTime);
-      if (!start.isValid()) {
-        returnValue = `Invalid Start date time specified. Expected format: ${timeStringFormat}`;
-        this.timeRangeErrorString = returnValue;
-        return returnValue;
-      }
-      end = moment.utc(endTime);
-      if (!end.isValid()) {
-        returnValue = `Invalid End date time specified. Expected format: ${timeStringFormat}`;
-        this.timeRangeErrorString = returnValue;
-        return returnValue;
-      }
-      if (moment.duration(moment.utc().diff(start)).asMinutes() < 30) {
-        returnValue = 'Start date time must be 30 minutes less than current date time';
-        this.timeRangeErrorString = returnValue;
-        return returnValue;
-      }
-      if (moment.duration(moment.utc().diff(end)).asMinutes() < 15) {
-        returnValue = 'End date time must be 15 minutes less than current date time';
-        this.timeRangeErrorString = returnValue;
-        return returnValue;
-      }
 
-      if (this.internalClient) {
-        this.allowedDurationInDays = 3;
-      }
-      else {
-        this.allowedDurationInDays = 1;
-      }
-      if (start && end) {
-        let diff: moment.Duration = moment.duration(end.diff(start));
-        let dayDiff: number = diff.asDays();
-        if (dayDiff > -1) {
-          if (dayDiff > this.allowedDurationInDays) {
-            returnValue = `Difference between start and end date times should not be more than ${(this.allowedDurationInDays * 24).toString()} hours.`;
-          }
-          else {
-            //Duration is fine. Just make sure that the start date is not more than the past 30 days
-            if (moment.duration(moment.utc().diff(start)).asDays() > 30) {
-              returnValue = `Start date time cannot be more than 30 days from now.`;
-            }
-            else {
-              if (diff.asMinutes() === 0) {
-                returnValue = 'Start and End date time cannot be the same.';
-              }
-              else {
-                if (diff.asMinutes() < 15) {
-                  returnValue = 'Selected time duration must be at least 15 minutes.';
-                }
-                else {
-                  returnValue = '';
-                }
-              }
-            }
-          }
-        }
-        else {
-          returnValue = 'Start date time should be greater than the End date time.';
-        }
-      }
-      this.timeRangeErrorString = returnValue;
-      return returnValue;
-    }
-    else {
-      if (startTime) {
-        start = moment.utc(startTime);
-        if (!start.isValid()) {
-          returnValue = `Invalid Start date time specified. Expected format: ${timeStringFormat}`;
-          this.timeRangeErrorString = returnValue;
-          return returnValue;
-        }
-        else {
-          returnValue = 'Empty End date time supplied.';
-        }
-      }
-      else {
-        returnValue = 'Empty Start date time supplied.';
-      }
-    }
-    this.timeRangeErrorString = returnValue;
-    return returnValue;
+  public setCustomStartEnd(start?: string, end?: string, refreshInstanceId?: string): void {
+    const { startMoment, endMoment, errorMessage, adjustMessage } = this.getMessageAndAutoAdjust(start, end);
+    this.timeRangeErrorString = `${errorMessage} ${adjustMessage}`;
+    this.setCustomStartEndAfterValidation(startMoment, endMoment, refreshInstanceId);
   }
 
-  public setCustomStartEnd(start?: moment.MomentInput, end?: moment.MomentInput, refreshInstanceId?: string): void {
-    this.timeRangeDefaulted = false;
-    this._duration = null;
-    let startTime, endTime: moment.Moment;
-    if (start && end) {
-      startTime = moment.utc(start);
-      if (moment.duration(moment.utc().diff(moment.utc(end))).asMinutes() < 16) {
-        //The supplied end time > now - 15 minutes. Adjust the end time so that it becomes now()-15 minutes.
-        endTime = moment.utc().subtract(16, 'minutes');
-      }
-      else {
-        endTime = moment.utc(end);
-      }
-
-    } else if (start) {
-      startTime = moment.utc(start);
-      if (moment.duration(moment.utc().diff(startTime.clone().add(1, 'days'))).asMinutes() < 16) {
-        //No endtime was passed. If (start time + 1 day) > (now() - 15 minutes), adjust the end time so that it becomes less than now()-15 minutes.
-        endTime = moment.utc().subtract(16, 'minutes');
-      }
-      else {
-        endTime = startTime.clone().add(1, 'days');
-      }
-    } else if (end) {
-      if (moment.duration(moment.utc().diff(moment.utc(end))).asMinutes() < 16) {
-        //The supplied end time > now - 15 minutes. Adjust the end time so that it becomes now()-15 minutes.
-        endTime = moment.utc().subtract(16, 'minutes');
-      }
-      else {
-        endTime = moment.utc(end);
-      }
-
-      startTime = endTime.clone().subtract(1, 'days');
-    } else {
-      this.selectDuration(this.durationSelections[2]);
-      return;
-    }
-
-    if (this.getTimeDurationError(start, end) === '') {
-      this._startTime = startTime;
-      this._endTime = endTime;
-      if (!refreshInstanceId) {
-        this._refreshData("V3ControlRefresh");
-      }
-    }
-    else {
-      this.timeRangeDefaulted = true;
-      if (this.timeRangeErrorString === 'Selected time duration must be at least 15 minutes.') {
-        this.timeRangeErrorString = 'Time range set to a 15 minutes duration. Selected time duration was less than 15 minutes.';
-        this._endTime = endTime;
-        this._startTime = this._endTime.clone().subtract(15, 'minutes');
-      }
-      else {
-        if (this.timeRangeErrorString === 'Empty End date time supplied.') {
-          this._startTime = moment.utc(start);
-          if (moment.duration(moment.utc().diff(this._startTime)).asMinutes() < 16) {
-            this._startTime = moment.utc().subtract(30, 'minutes');
-            this._endTime = this._startTime.clone().add(15, 'minutes');
-            this.timeRangeErrorString += ' Auto adjusted Start and End date time.';
-          }
-          else {
-            if (moment.duration(moment.utc().diff(this._startTime.clone().add(1, 'days'))).asMinutes() < 16) {
-              this._endTime = moment.utc().subtract(16, 'minutes');
-            }
-            else {
-              this._endTime = this._startTime.clone().add(1, 'days');
-            }
-
-            this.timeRangeErrorString += ' Auto adjusted End date time.';
-          }
-        }
-        else {
-          this.timeRangeErrorString = `Error: The selected time range is not allowed. The start time must be within the past 30 days. The end time must be within ${(this.allowedDurationInDays * 24).toString()} hours of the start time and at least 15 minutes before the current time. Time range has been set to the last 24 hours by default`
-          this._endTime = moment.utc().subtract(16, 'minutes');
-          this._startTime = this._endTime.clone().subtract(1, 'days');
-        }
-      }
+  public setCustomStartEndAfterValidation(startMoment: moment.Moment, endMoment: moment.Moment, refreshInstanceId?: string) {
+    this._startTime = startMoment;
+    this._endTime = endMoment;
+    if (!refreshInstanceId) {
       this._refreshData("V3ControlRefresh");
     }
+  }
+
+  private validateTimeInput(time: string, type: TimeType): TimeErrorType {
+    const m = moment.utc(time);
+
+    if (!time) {
+      return TimeErrorType.EmptyInput;
+    }
+
+    if (!m.isValid()) {
+      return TimeErrorType.InvalidFormat;
+    }
+
+    const { minMoment, maxMoment } = this.getMinAndMaxMoment(type, moment.duration(15, 'minutes'));
+
+    if (!m.isBetween(minMoment, maxMoment)) {
+      return TimeErrorType.TimeOutOfRange;
+    }
+    return TimeErrorType.None;
+  }
+
+  private validateTimeRange(startMoment: moment.Moment, endMoment: moment.Moment): TimeErrorType {
+    const diff = moment.duration(endMoment.diff(startMoment));
+
+    if (diff.asDays() > this.allowedDurationInDays) {
+      return TimeErrorType.TimeRangeTooLong;
+    }
+
+    if (diff.asMinutes() < 15) {
+      return TimeErrorType.TimeRangeTooShort;
+    }
+    return TimeErrorType.None;
+  }
+
+
+  private getErrorMessageByType(errorType: TimeErrorType, timeType?: TimeType) {
+    const timePlaceholder = timeType ? timeType : "time";
+    switch (errorType) {
+      case TimeErrorType.EmptyInput:
+        return `Empty ${timePlaceholder} supplied.`;
+      case TimeErrorType.InvalidFormat:
+        return `Invalid ${timePlaceholder} time specified, expected format: ${this.stringFormat}.`;
+      case TimeErrorType.TimeOutOfRange:
+        const { minMoment, maxMoment } = this.getMinAndMaxMoment(timeType, moment.duration(15, 'minutes'));
+        return`${timePlaceholder} is not allowed, time must within ${minMoment.format(this.stringFormat)} to ${maxMoment.format(this.stringFormat)}.`;
+      case TimeErrorType.TimeRangeTooShort:
+        return "Selected time duration must be at least 15 minutes.";
+      case TimeErrorType.TimeRangeTooLong:
+        return `Selected time duration must be no more than ${this.allowedDurationInDays * 24} hours.`;
+      case TimeErrorType.None:
+      default:
+        return "";
+    }
+  }
+
+  public getMessageAndAutoAdjust(startTime: string, endTime: string): { startMoment: moment.Moment, endMoment: moment.Moment, errorMessage: string, adjustMessage: string } {
+    const defaultDuration = moment.duration(1, 'day');
+    let adjustMessage = "";
+    let errorMessage = "";
+    let startMoment = moment.utc().subtract(1, 'day');
+    let endMoment = moment.utc().subtract(15, 'minutes');
+
+    const startTimeError = this.validateTimeInput(startTime, TimeType.StartTime);
+    const endTimeError = this.validateTimeInput(endTime, TimeType.EndTime);
+
+    const startTimeErrorMessage = this.getErrorMessageByType(startTimeError, TimeType.StartTime);
+    const endTimeErrorMessage = this.getErrorMessageByType(endTimeError, TimeType.EndTime);
+
+    if (startTimeError !== TimeErrorType.None && endTimeError !== TimeErrorType.None) {
+      errorMessage = `${startTimeErrorMessage} ${endTimeErrorMessage}`;
+      adjustMessage = "Adjust to last 24 hours.";
+      return { startMoment: startMoment, endMoment: endMoment, errorMessage, adjustMessage };
+    } else if (startTimeError !== TimeErrorType.None) {
+      const { minMoment } = this.getMinAndMaxMoment(TimeType.EndTime, defaultDuration);
+      const needAdjustEndTime = moment.utc(endTime).isBefore(minMoment);
+      endMoment = needAdjustEndTime ? minMoment : moment.utc(endTime);
+      startMoment = endMoment.clone().subtract(defaultDuration);
+      errorMessage = startTimeErrorMessage;
+      adjustMessage = needAdjustEndTime ? "Adjust start and end time." : "Adjust start time to one day before start time";
+      return { startMoment: startMoment, endMoment: endMoment, errorMessage, adjustMessage };
+    } else if (endTimeError !== TimeErrorType.None) {
+      const { maxMoment } = this.getMinAndMaxMoment(TimeType.StartTime, defaultDuration);
+      const needAdjustStartTime = moment.utc(startTime).isAfter(maxMoment);
+      startMoment = needAdjustStartTime ? maxMoment : moment.utc(startTime);
+      endMoment = startMoment.clone().add(defaultDuration);
+      errorMessage = endTimeErrorMessage;
+      adjustMessage = needAdjustStartTime ? "Adjust start and end time." : "Adjust end time to one day after start time";
+      return { startMoment: startMoment, endMoment: endMoment, errorMessage, adjustMessage };
+    }
+
+    startMoment = moment.utc(startTime);
+    endMoment = moment.utc(endTime);
+
+    const timeRangeError = this.validateTimeRange(startMoment, endMoment);
+    errorMessage = this.getErrorMessageByType(timeRangeError);
+
+    if (timeRangeError === TimeErrorType.None) {
+      return { startMoment: startMoment.clone(), endMoment: endMoment.clone(), errorMessage: "", adjustMessage: "" };
+    }
+
+    let durationToAdjust = moment.duration(24, 'hours');
+    adjustMessage = "Adjust Time range to 24 hours.";
+    if (timeRangeError === TimeErrorType.TimeRangeTooShort) {
+      durationToAdjust = moment.duration(15, 'minutes');
+      adjustMessage = "Adjust Time range to 15 minutes."
+    } else if (timeRangeError === TimeErrorType.TimeRangeTooLong) {
+      durationToAdjust = moment.duration(this.allowedDurationInDays * 24, 'hours');
+      adjustMessage = `Adjust time range to ${this.allowedDurationInDays} hours.`;
+    }
+    const { minMoment } = this.getMinAndMaxMoment(TimeType.EndTime, durationToAdjust);
+    endMoment = moment.max(minMoment, endMoment);
+    startMoment = endMoment.clone().subtract(durationToAdjust);
+    return { startMoment: startMoment, endMoment: endMoment, errorMessage, adjustMessage };
+
+  }
+
+  private getMinAndMaxMoment(type: TimeType, duration: moment.Duration) {
+    let minMoment: moment.Moment;
+    let maxMoment: moment.Moment;
+    if (type === TimeType.StartTime) {
+      minMoment = moment.utc().subtract(30, 'days');
+      maxMoment = moment.utc().subtract(15, 'minutes').subtract(duration);
+    } else if (type === TimeType.EndTime) {
+      minMoment = moment().utc().subtract(30, 'days').add(duration);
+      maxMoment = moment().utc().subtract(15, 'minute');
+    }
+    return { minMoment, maxMoment }
   }
 
   public selectDuration(duration: DurationSelector) {
@@ -268,17 +224,6 @@ export class DetectorControlService {
     this.setCustomStartEnd(this._startTime.format(this.stringFormat), this.endTime.format(this.stringFormat));
   }
 
-  public moveForwardDuration(): void {
-    this._startTime.add(this._duration.duration);
-    this._endTime.add(this._duration.duration);
-    this.setCustomStartEnd(this._startTime.format(this.stringFormat), this.endTime.format(this.stringFormat));
-  }
-
-  public moveBackwardDuration(): void {
-    this._startTime.subtract(this._duration.duration);
-    this._endTime.subtract(this._duration.duration);
-    this.setCustomStartEnd(this._startTime.format(this.stringFormat), this.endTime.format(this.stringFormat));
-  }
 
   public refresh(instanceId: string = "") {
     this._duration ? this.selectDuration(this._duration) : this._refreshData(instanceId);
@@ -345,15 +290,15 @@ export interface DurationSelector {
   displayName: string;
   duration: moment.Duration;
   internalOnly: boolean;
-  ariaLabel: string;
+  ariaLabel: string
 }
 
 export interface TimePickerInfo {
   //if it is customized, then prefill with strart date and time
   selectedKey: string,
   selectedText: string,
-  startDate?: Date,
-  endDate?: Date,
+  startMoment?: moment.Moment,
+  endMoment?: moment.Moment,
 }
 
 export enum TimePickerOptions {
@@ -363,4 +308,18 @@ export enum TimePickerOptions {
   Last24Hours = "Last 24 Hours",
   Last3Days = "Last 3 Days",
   Custom = "Custom"
+}
+
+enum TimeType {
+  StartTime = "Start Time",
+  EndTime = "End Time",
+}
+
+enum TimeErrorType {
+  None,
+  EmptyInput,
+  InvalidFormat,
+  TimeOutOfRange,
+  TimeRangeTooShort,
+  TimeRangeTooLong
 }

@@ -412,7 +412,8 @@ export class MainComponent implements OnInit {
       window.location.href = `https://azuresupportcenter.msftcloudes.com/caseoverview?srId=${this.resourceName}`;
     }
 
-    this._detectorControlService.setCustomStartEnd(this._detectorControlService.startTime, this._detectorControlService.endTime);
+
+    this._detectorControlService.setCustomStartEnd(this._detectorControlService.startTimeString, this._detectorControlService.endTimeString);
 
     let timeParams = {
       startTime: this._detectorControlService.startTimeString,

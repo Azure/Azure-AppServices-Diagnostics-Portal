@@ -1,8 +1,6 @@
 import { Component, OnInit, Output, Input, EventEmitter, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ICalendarStrings, IDatePickerProps, IChoiceGroupOption, ITextFieldStyles } from 'office-ui-fabric-react';
-import { addMonths, addDays } from 'office-ui-fabric-react/lib/utilities/dateMath/DateMath';
-//import * as momentNs from 'moment';
 import * as moment from 'moment';
 import { DetectorControlService, TimePickerInfo, TimePickerOptions } from '../../services/detector-control.service';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
@@ -11,7 +9,6 @@ import { Observable } from 'rxjs';
 import { UriUtilities } from '../../utilities/uri-utilities';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 
-//const moment = momentNs;
 
 @Component({
   selector: 'detector-time-picker',
@@ -23,21 +20,19 @@ export class DetectorTimePickerComponent implements OnInit {
   openTimePickerCallout: boolean = false;
   @Input() target: string = "";
   @Input() disableUpdateQueryParams: boolean = false;
-  //@Output() updateTimerMessage: EventEmitter<string> = new EventEmitter();
   @Output() updateTimerErrorMessage: EventEmitter<string> = new EventEmitter();
   timePickerButtonStr: string = "";
   showCalendar: boolean = false;
-  enableDateAndTimePicker: boolean = false;
-  defaultSelectedKey: string;
+  selectedKey: string;
+  get enableDateAndTimePicker() {
+    return this.selectedKey === TimePickerOptions.Custom;
+  }
 
-  today: Date = new Date(Date.now());
-  maxDate: Date = this.convertUTCToLocalDate(this.today);
-  minDate: Date = this.convertUTCToLocalDate(addDays(this.today, -30));
+  maxDate: Date = this.convertMomentInUTCToDateAndTime(this.detectorControlService.currentUTCMoment).date;
+  minDate: Date = this.convertMomentInUTCToDateAndTime(moment.utc().subtract(30, 'days')).date;
 
   startDate: Date;
   endDate: Date;
-  //set Last xx hours
-  hourDiff: number;
 
   startClock: string;
   endClock: string;
@@ -47,7 +42,6 @@ export class DetectorTimePickerComponent implements OnInit {
 
   formatDate: IDatePickerProps['formatDate'] = (date) => {
     //only this format can do both fill in date and select date
-    console.log(date);
     return moment(date).format('YYYY-MM-DD');
   };
 
@@ -60,14 +54,8 @@ export class DetectorTimePickerComponent implements OnInit {
     return new Date(year, month, date);
   }
 
-  choiceGroupOptions: IChoiceGroupOption[] =
-    [
-      { key: TimePickerOptions.Last1Hour, text: TimePickerOptions.Last1Hour, onClick: () => { this.setTime(1) } },
-      { key: TimePickerOptions.Last6Hours, text: TimePickerOptions.Last6Hours, onClick: () => { this.setTime(6) } },
-      { key: TimePickerOptions.Last12Hour, text: TimePickerOptions.Last12Hour, onClick: () => { this.setTime(12) } },
-      { key: TimePickerOptions.Last24Hours, text: TimePickerOptions.Last24Hours, onClick: () => { this.setTime(24) } },
-      { key: TimePickerOptions.Custom, text: TimePickerOptions.Custom, onClick: () => { this.selectCustom() } },
-    ];
+
+  choiceGroupOptions: IChoiceGroupOption[] = [];
 
   dayPickerString: ICalendarStrings = {
     months:
@@ -93,41 +81,40 @@ export class DetectorTimePickerComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.isPublic === false) {
-      this.choiceGroupOptions.splice(4, 0, { key: TimePickerOptions.Last3Days, text: TimePickerOptions.Last3Days, onClick: () => { this.setTime(72) } });
-    }
-    this.startDate = addDays(this.today, -1);
-    this.endDate = this.today;
+    this.choiceGroupOptions = this.detectorControlService.durationSelections.filter(selection => !this.isPublic || !selection.internalOnly).map(selection => <IChoiceGroupOption>{
+      key: selection.displayName,
+      text: selection.displayName,
+      onClick: () => this.setTime(selection.displayName)
+    }).concat([{
+      key: TimePickerOptions.Custom,
+      text: TimePickerOptions.Custom,
+      onClick: () => this.selectCustom()
+    }]);
 
     this.openTimePickerCalloutObservable.subscribe(o => {
       this.openTimePickerCallout = o;
     });
 
+    this.updateTimerErrorMessage.emit(this.detectorControlService.timeRangeErrorString);
 
     this.detectorControlService.timePickerInfoSub.subscribe(timerPickerInfo => {
       const option = this.choiceGroupOptions.find(option => timerPickerInfo.selectedKey === option.key);
-      this.defaultSelectedKey = option.key;
-      //If it's customized then should default the option
-      //If not customized then prefill start date and endDate
+      this.selectedKey = option.key;
       if (timerPickerInfo.selectedKey === TimePickerOptions.Custom) {
-        this.enableDateAndTimePicker = true;
-        this.startDate = timerPickerInfo.startDate;
-        this.endDate = timerPickerInfo.endDate;
+        const startTimeAndDate = this.convertMomentInUTCToDateAndTime(timerPickerInfo.startMoment);
+        const endTimeAndDate = this.convertMomentInUTCToDateAndTime(timerPickerInfo.endMoment);
 
-        //startDate and endDate contains current hour and minute info, only need HH:mm
-        this.startClock = this. getHourAndMinute(timerPickerInfo.startDate);
-        this.endClock = this.getHourAndMinute(timerPickerInfo.endDate);
+        this.startDate = startTimeAndDate.date;
+        this.startClock = startTimeAndDate.time;
+        this.endDate = endTimeAndDate.date;
+        this.endClock = endTimeAndDate.time;
       } else {
-        //Trigger setTime function to set this.hourDiff
+        //Trigger setTime function 
         option.onClick.apply(this);
       }
     });
 
-    //this.timeDiffError = '';
-    if (this.detectorControlService.timeRangeDefaulted) {
-      //this.timeDiffError = this.detectorControlService.timeRangeErrorString;
-      this.updateTimerErrorMessage.emit(this.detectorControlService.timeRangeErrorString);
-    }
+    
 
     this.detectorControlService.update.subscribe(validUpdate => {
       if (validUpdate) {
@@ -151,23 +138,44 @@ export class DetectorTimePickerComponent implements OnInit {
     });
   }
 
-  setTime(hourDiff: number) {
-    this.enableDateAndTimePicker = false;
+  setTime(key: string) {
+    this.selectedKey = key;
     this.timeDiffError = '';
-    this.hourDiff = hourDiff;
+    const duration = this.detectorControlService.durationSelections.find(d => d.displayName === key).duration;
+    const endUTC = this.detectorControlService.currentUTCMoment;
+    const startUTC = moment.utc().subtract(duration);
+    const startDateAndTime = this.convertMomentInUTCToDateAndTime(startUTC);
+    const endDateAndTime = this.convertMomentInUTCToDateAndTime(endUTC);
 
-    //this.startDate = timerPickerInfo.startDate;
-    //this.endDate = timerPickerInfo.endDate;
+    this.startDate = startDateAndTime.date;
+    this.startClock = startDateAndTime.time;
 
-    //startDate and endDate contains current hour and minute info, only need HH:mm
-    //this.startClock = this.getHourAndMinute(timerPickerInfo.startDate);
-    //this.endClock = this.getHourAndMinute(timerPickerInfo.endDate);
+    this.endDate = endDateAndTime.date;
+    this.endClock = endDateAndTime.time;
+  }
+
+  //Convert UTC time to show in calendar and time picker
+  convertMomentInUTCToDateAndTime(m: moment.Moment) {
+    const date = new Date(
+      m.year(), m.month(), m.date(), m.hour()
+    );
+    const time = m.format('HH:mm');
+
+    return {
+      date, time
+    }
+  }
+
+  //Convert date and time in picker into moment
+  convertDateAndTimeToMoment(date: Date, time: string) {
+    const hour = Number.parseInt(time.split(":")[0]);
+    const minute = Number.parseInt(time.split(":")[1]);
+    return moment.utc([date.getFullYear(), date.getMonth(), date.getDate(), hour, minute]);
   }
 
   //Click outside or tab to next component
   closeTimePicker() {
     this.openTimePickerCallout = false;
-    this.enableDateAndTimePicker = this.defaultSelectedKey === TimePickerOptions.Custom;
   }
 
   //Press Escape,Click Cancel
@@ -179,96 +187,44 @@ export class DetectorTimePickerComponent implements OnInit {
   applyTimeRange() {
     this.detectorControlService.changeFromTimePicker = true;
 
-    let startDateWithTime: string;
-    let endDateWithTime: string;
-    let timePickerInfo: TimePickerInfo;
-    //customize
-    if (this.enableDateAndTimePicker) {
-      startDateWithTime = this.convertDateTimeToString(this.startDate, this.startClock);
-      endDateWithTime = this.convertDateTimeToString(this.endDate, this.endClock);
-      //for timer picker, date and hour,minute
-      let infoStartDate = new Date(this.startDate);
-      infoStartDate.setHours(Number.parseInt(this.startClock.split(":")[0]), Number.parseInt(this.startClock.split(":")[1]));
-      let infoEndDate = new Date(this.endDate);
-      infoEndDate.setHours(Number.parseInt(this.endClock.split(":")[0]), Number.parseInt(this.endClock.split(":")[1]));
-      timePickerInfo =
-      {
-        selectedKey: TimePickerOptions.Custom,
-        selectedText: TimePickerOptions.Custom,
-        startDate: infoStartDate,
-        endDate: infoEndDate
-      };
-    } else {
-      const currentDate = new Date();
-      //End time should be less than 15 minute
-      const localEndTime = new Date(currentDate.getTime() - 15 * 60 * 1000);
-      const localStartTime = new Date(currentDate.getTime() - this.hourDiff * 60 * 60 * 1000);
-      startDateWithTime = this.convertLocalDateToUTC(localStartTime);
-      endDateWithTime = this.convertLocalDateToUTC(localEndTime);
+    const startMoment = this.convertDateAndTimeToMoment(this.startDate, this.startClock);
+    const endMoment = this.convertDateAndTimeToMoment(this.endDate, this.endClock);
 
-      //find which option contains the hourDiff number
-      const infoSelectOption = (this.hourDiff.toString() === '72') ? this.choiceGroupOptions.find(option => option.key.includes('3')) : this.choiceGroupOptions.find(option => option.key.includes(this.hourDiff.toString()))
-      timePickerInfo = {
-        selectedKey: infoSelectOption.key,
-        selectedText: infoSelectOption.text
-      };
+    const startTimeString = startMoment.format(this.detectorControlService.stringFormat);
+    const endTimeString = endMoment.format(this.detectorControlService.stringFormat);
+
+    this.timeDiffError = this.detectorControlService.getMessageAndAutoAdjust(startTimeString, endTimeString).errorMessage;
+
+    const timePickerInfo: TimePickerInfo = {
+      selectedKey: this.selectedKey,
+      selectedText: this.selectedKey,
+      startMoment: startMoment,
+      endMoment: endMoment
     }
 
-    this.timeDiffError = this.detectorControlService.getTimeDurationError(startDateWithTime, endDateWithTime);
+
     if (this.timeDiffError === '') {
-      this.detectorControlService.setCustomStartEnd(startDateWithTime, endDateWithTime);
+      this.detectorControlService.setCustomStartEndAfterValidation(startMoment, endMoment);
       this.detectorControlService.updateTimePickerInfo(timePickerInfo);
       this.updateTimerErrorMessage.emit("");
     }
     this.openTimePickerCallout = this.timeDiffError !== "";
 
-    const eventProperties = {
-      'Title': timePickerInfo.selectedKey
-    }
-    if (timePickerInfo.startDate) {
-      const startTimeString = moment(timePickerInfo.startDate).format(this.detectorControlService.stringFormat);
-      eventProperties['StartTime'] = startTimeString;
-    }
-    if (timePickerInfo.endDate) {
-      const endTimeString = moment(timePickerInfo.startDate).format(this.detectorControlService.stringFormat);
-      eventProperties['EndTime'] = endTimeString;
-    }
-    this.telemetryService.logEvent(TelemetryEventNames.TimePickerApplied, eventProperties);
+    this.telemetryService.logEvent(TelemetryEventNames.TimePickerApplied, {
+      'Title': timePickerInfo.selectedKey,
+      'StartTime': startTimeString,
+      'EndTime': endTimeString
+    });
   }
 
   onSelectStartDateHandler(e: { date: Date }) {
     this.startDate = e.date;
+    this.updateEndDateAndTime();
   }
   onSelectEndDateHandler(e: { date: Date }) {
     this.endDate = e.date;
   }
 
-
-  private convertLocalDateToUTC(date: Date): string {
-    const m = moment.utc(date.getTime());
-    return m.format(this.detectorControlService.stringFormat);
-  }
-
-  //convert  to LocalDate with same year,month,date...
-  private convertUTCToLocalDate(date: Date): Date {
-    const m = moment.utc(date);
-    return new Date(
-      m.year(), m.month(), m.date(),
-      m.hour(), m.minute()
-    );
-  }
-
-  //Get HH:mm from date
-  private getHourAndMinute(date: Date): string {
-    return moment(date).format('HH:mm');
-  }
-
-  private convertDateTimeToString(date: Date, time: string): string {
-    const dateString = moment(date).format('YYYY-MM-DD');
-    const hour = Number.parseInt(time.split(':')[0]) < 10 ? `0${Number.parseInt(time.split(':')[0])}` : `${Number.parseInt(time.split(':')[0])}`;
-    const minute = Number.parseInt(time.split(':')[1]) < 10 ? `0${Number.parseInt(time.split(':')[1])}` : `${Number.parseInt(time.split(':')[1])}`;
-    return `${dateString} ${hour}:${minute}`;
-  }
 
   private checkParamIsSameAsMoment(param: string, inputMoment: moment.Moment): boolean {
     const m = moment.utc(param);
@@ -278,27 +234,21 @@ export class DetectorTimePickerComponent implements OnInit {
 
   //when click LastXX hours,prefill into custom input, should be UTC time
   selectCustom() {
-    this.enableDateAndTimePicker = true;
+    this.selectedKey = TimePickerOptions.Custom;
     this.timeDiffError = "";
-    const currentDate = new Date();
-    const end = new Date(currentDate.getTime() - 15 * 60 * 1000);
-    const start = new Date(currentDate.getTime() - this.hourDiff * 60 * 60 * 1000);
-    this.startDate = this.convertUTCToLocalDate(start);
-    this.endDate = this.convertUTCToLocalDate(end);
-
-    //startDate and endDate contains current hour and minute info
-    //only need HH:mm
-    this.startClock = this.getHourAndMinute(this.startDate);
-    this.endClock = this.getHourAndMinute(this.endDate);
   }
 
-  getErrorMessageOnTextField(value: string): string {
-    var values = value.split(":");
-    var errorMessage = "";
-    if (!(values.length > 1 && +values[0] <= 24 && +values[1] <= 59)) {
-      errorMessage = `Invalid time`;
-    }
-    return errorMessage;
+
+  onChangeStartClock(value: string) {
+    this.startClock = value;
+    this.updateEndDateAndTime();
+  }
+
+  private validateClockInput(value :string) {
+    const hour = Number.parseInt(value.split(":")[0]);
+    const minute = Number.parseInt(value.split(":")[1]);
+    if(Number.isNaN(hour) || Number.isNaN(minute)) return false;
+    return hour <= 24 && minute <= 59
   }
 
   escapeHandler(e: KeyboardEvent) {
@@ -315,5 +265,20 @@ export class DetectorTimePickerComponent implements OnInit {
     if (ele.innerText.toLowerCase() === 'cancel') {
       this.closeTimePicker();
     }
+  }
+
+  //Change end date to startDate + 1
+  private updateEndDateAndTime() {
+    if(!this.validateClockInput(this.startClock)) return;
+
+    const currentMoment = this.detectorControlService.currentUTCMoment;
+    const startMoment = this.convertDateAndTimeToMoment(this.startDate, this.startClock);
+    const plusOneDayMoment = startMoment.add(1, 'day').clone();
+
+    const endMoment = moment.min(currentMoment, plusOneDayMoment);
+
+    const endDateAndTime = this.convertMomentInUTCToDateAndTime(endMoment);
+    this.endDate = endDateAndTime.date;
+    this.endClock = endDateAndTime.time
   }
 }

@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { ResourceService } from '../../shared-v2/services/resource.service';
 import { ArmResource } from '../../shared-v2/models/arm';
 import { DetectorControlService, TimePickerOptions } from 'diagnostic-data';
+import * as moment from 'moment';
 
 @Injectable()
 export class ResourceResolver implements Resolve<Observable<{} | ArmResource>> {
@@ -19,8 +20,8 @@ export class ResourceResolver implements Resolve<Observable<{} | ArmResource>> {
             this._detectorControlService.updateTimePickerInfo({
                 selectedKey: TimePickerOptions.Custom,
                 selectedText: TimePickerOptions.Custom,
-                startDate: new Date(startTime),
-                endDate: new Date(endTime)
+                startMoment: moment.utc(startTime),
+                endMoment: moment.utc(endTime)
             });
         }
 

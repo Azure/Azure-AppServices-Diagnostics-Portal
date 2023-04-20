@@ -194,6 +194,7 @@ export class DetectorViewComponent implements OnInit {
       this.breadCrumb = { ...this._global.breadCrumb };
       this._global.breadCrumb = null;
       this.loadDetector();
+      this.timePickerErrorStr = "";
     });
 
     this.errorSubject.subscribe((data: any) => {
@@ -814,7 +815,7 @@ export class DetectorViewComponent implements OnInit {
   }
 
   navigateForBreadCrumb() {
-    const combinedParams = {...this._route.snapshot.queryParams, ...this.breadCrumb.queryParams};
+    const combinedParams = { ...this._route.snapshot.queryParams, ...this.breadCrumb.queryParams };
     if (this.breadCrumb) {
       this._router.navigate([this.breadCrumb.fullPath], { queryParams: combinedParams });
     }
