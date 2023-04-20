@@ -294,7 +294,6 @@ export interface DurationSelector {
 }
 
 export interface TimePickerInfo {
-  //if it is customized, then prefill with strart date and time
   selectedKey: string,
   selectedText: string,
   startMoment?: moment.Moment,
