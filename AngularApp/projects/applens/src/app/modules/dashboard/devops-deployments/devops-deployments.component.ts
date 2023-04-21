@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import * as moment from 'moment';
 
-//const moment = momentNs;
+
 @Component({
   selector: 'devops-deployments',
   templateUrl: './devops-deployments.component.html',

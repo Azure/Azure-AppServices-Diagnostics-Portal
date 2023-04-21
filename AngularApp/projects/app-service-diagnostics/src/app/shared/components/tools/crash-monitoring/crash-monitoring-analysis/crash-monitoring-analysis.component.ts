@@ -2,7 +2,6 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output, 
 import { DiagnosticService, RenderingType, DataTableResponseObject, TelemetryEventNames, DiagnosticData } from 'diagnostic-data';
 import { DaasService } from '../../../../services/daas.service';
 import { SiteService } from '../../../../services/site.service';
-//import * as momentNs from 'moment';
 import { CrashMonitoringSettings, DaasStorageConfiguration } from '../../../../models/daas';
 import * as moment from 'moment';
 import { Subscription, interval, Observable } from 'rxjs';

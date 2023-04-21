@@ -78,6 +78,10 @@ export class DetectorViewComponent implements OnInit {
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   timePickerButtonStr: string = "";
   timePickerErrorStr: string = "";
+  get loadingMessage(){
+    return `Analyzing data ${this.timePickerButtonStr.includes("to") ? "from" : "in"} ${this.timePickerButtonStr}, to change use the time range picker`;
+  }
+
   buttonStyle: IButtonStyles = {
     root: {
       // color: "#323130",

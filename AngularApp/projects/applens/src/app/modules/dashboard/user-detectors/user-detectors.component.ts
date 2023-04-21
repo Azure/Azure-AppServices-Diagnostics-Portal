@@ -12,7 +12,6 @@ import { DevopsConfig } from '../../../shared/models/devopsConfig';
 import { ResourceDescriptor } from 'diagnostic-data';
 import * as moment from 'moment';
 
-//const moment = momentNs;
 
 @Component({
     selector: 'user-detectors',

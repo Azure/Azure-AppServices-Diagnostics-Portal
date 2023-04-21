@@ -1,4 +1,3 @@
-//import * as momentNs from 'moment';
 import * as moment from 'moment';
 import { Component, Input, OnInit, HostListener, ElementRef, Output, EventEmitter } from '@angular/core';
 import { TimeSeriesType } from '../../models/detector';
@@ -29,7 +28,6 @@ interface ExtendedPoint extends Highcharts.Point {
   id: string;
 }
 
-//const moment = momentNs;
 
 @Component({
     selector: 'highcharts-graph',

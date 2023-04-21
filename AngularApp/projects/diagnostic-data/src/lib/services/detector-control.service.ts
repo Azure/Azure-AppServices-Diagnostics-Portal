@@ -21,7 +21,6 @@ export class DetectorControlService {
   private _startTime: moment.Moment;
   private _endTime: moment.Moment;
 
-  // TODO: allow for this to be changed with dropdown
   private _internalView = true;
 
   public internalClient: boolean = false;
@@ -47,8 +46,8 @@ export class DetectorControlService {
   public timePickerInfoSub: BehaviorSubject<TimePickerInfo> = new BehaviorSubject<TimePickerInfo>({
     selectedKey: TimePickerOptions.Last24Hours,
     selectedText: TimePickerOptions.Last24Hours,
-    startMoment: moment.utc().subtract(24, 'hour'),
-    endMoment: moment.utc().subtract(16, 'minute')
+    startMoment: moment.utc().subtract(24, 'hours'),
+    endMoment: moment.utc().subtract(15, 'minute')
   });
 
   public changeFromTimePicker: boolean = false;

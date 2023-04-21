@@ -7,7 +7,6 @@ import { DiagnosticService } from '../../services/diagnostic.service';
 import { Router} from '@angular/router';
 import { DataSet, Timeline} from 'vis';
 import { DetectorControlService } from '../../services/detector-control.service';
-//import * as momentNs from 'moment';
 import * as moment from 'moment';
 import { Subscription, interval } from 'rxjs';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
@@ -15,7 +14,7 @@ import { SettingsService} from '../../services/settings.service';
 import { ChangeAnalysisUtilities } from '../../utilities/changeanalysis-utilities';
 import { DataTableUtilities } from '../../utilities/datatable-utilities';
 import { ChangeAnalysisService} from '../../services/change-analysis.service';
-//const moment = momentNs;
+
 @Component({
   selector: 'changesets-view',
   templateUrl: './changesets-view.component.html',

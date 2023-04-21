@@ -52,7 +52,7 @@ using Kusto.Data;
 //*****END OF DO NOT MODIFY PART*****
 `;
 
-//const moment = momentNs;
+
 const newDetectorId: string = "NEW_DETECTOR";
 
 // const commandbaritems: ICommandBarItemProps[] = [

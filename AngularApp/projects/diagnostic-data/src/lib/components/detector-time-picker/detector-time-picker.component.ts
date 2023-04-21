@@ -74,7 +74,7 @@ export class DetectorTimePickerComponent implements OnInit {
     weekNumberFormatString: 'Week number {0}',
   };
 
-  maskTextFieldStyles: Partial<ITextFieldStyles> = { fieldGroup: { width: "80px" } };
+  maskTextFieldStyles: Partial<ITextFieldStyles> = { fieldGroup: { width: "75px" } };
 
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private activatedRoute: ActivatedRoute, private detectorControlService: DetectorControlService, private router: Router, private telemetryService: TelemetryService) {
     this.isPublic = config && config.isPublic;
@@ -114,17 +114,18 @@ export class DetectorTimePickerComponent implements OnInit {
       }
     });
 
-    
 
+    let count = 0;
     this.detectorControlService.update.subscribe(validUpdate => {
-      if (validUpdate) {
-        //Todo, update custom prefill info
-      }
+      //Only showing error message on <detector-view> in the first time
+      if(count > 0) this.updateTimerErrorMessage.emit("");
+      count += 1;
+
       let queryParams = { ...this.activatedRoute.snapshot.queryParams };
       const isSameStartAndEndTime = this.checkParamIsSameAsMoment(queryParams["startTime"], this.detectorControlService.startTime) && this.checkParamIsSameAsMoment(queryParams["endTime"], this.detectorControlService.endTime);
       if (this.detectorControlService.startTime && this.detectorControlService.endTime) {
-        queryParams["startTime"] = this.detectorControlService.startTime.format('YYYY-MM-DDTHH:mm');
-        queryParams["endTime"] = this.detectorControlService.endTime.format('YYYY-MM-DDTHH:mm');
+        queryParams["startTime"] = this.detectorControlService.startTimeString;
+        queryParams["endTime"] = this.detectorControlService.endTimeString;
       }
       if (this.detectorControlService.changeFromTimePicker) {
         queryParams = UriUtilities.removeChildDetectorStartAndEndTime(queryParams);
@@ -187,13 +188,7 @@ export class DetectorTimePickerComponent implements OnInit {
   applyTimeRange() {
     this.detectorControlService.changeFromTimePicker = true;
 
-    const startMoment = this.convertDateAndTimeToMoment(this.startDate, this.startClock);
-    const endMoment = this.convertDateAndTimeToMoment(this.endDate, this.endClock);
-
-    const startTimeString = startMoment.format(this.detectorControlService.stringFormat);
-    const endTimeString = endMoment.format(this.detectorControlService.stringFormat);
-
-    this.timeDiffError = this.detectorControlService.getMessageAndAutoAdjust(startTimeString, endTimeString).errorMessage;
+    const { startMoment, endMoment } = this.validateStartAndEndTime();
 
     const timePickerInfo: TimePickerInfo = {
       selectedKey: this.selectedKey,
@@ -212,9 +207,20 @@ export class DetectorTimePickerComponent implements OnInit {
 
     this.telemetryService.logEvent(TelemetryEventNames.TimePickerApplied, {
       'Title': timePickerInfo.selectedKey,
-      'StartTime': startTimeString,
-      'EndTime': endTimeString
+      'StartTime': startMoment.format(this.detectorControlService.stringFormat),
+      'EndTime': endMoment.format(this.detectorControlService.stringFormat)
     });
+  }
+
+  private validateStartAndEndTime() {
+    const startMoment = this.convertDateAndTimeToMoment(this.startDate, this.startClock);
+    const endMoment = this.convertDateAndTimeToMoment(this.endDate, this.endClock);
+
+    const startTimeString = startMoment.format(this.detectorControlService.stringFormat);
+    const endTimeString = endMoment.format(this.detectorControlService.stringFormat);
+
+    this.timeDiffError = this.detectorControlService.getMessageAndAutoAdjust(startTimeString, endTimeString).errorMessage;
+    return { startMoment, endMoment };
   }
 
   onSelectStartDateHandler(e: { date: Date }) {
@@ -244,10 +250,10 @@ export class DetectorTimePickerComponent implements OnInit {
     this.updateEndDateAndTime();
   }
 
-  private validateClockInput(value :string) {
+  private validateClockInput(value: string) {
     const hour = Number.parseInt(value.split(":")[0]);
     const minute = Number.parseInt(value.split(":")[1]);
-    if(Number.isNaN(hour) || Number.isNaN(minute)) return false;
+    if (Number.isNaN(hour) || Number.isNaN(minute)) return false;
     return hour <= 24 && minute <= 59
   }
 
@@ -269,7 +275,7 @@ export class DetectorTimePickerComponent implements OnInit {
 
   //Change end date to startDate + 1
   private updateEndDateAndTime() {
-    if(!this.validateClockInput(this.startClock)) return;
+    if (!this.validateClockInput(this.startClock)) return;
 
     const currentMoment = this.detectorControlService.currentUTCMoment;
     const startMoment = this.convertDateAndTimeToMoment(this.startDate, this.startClock);
