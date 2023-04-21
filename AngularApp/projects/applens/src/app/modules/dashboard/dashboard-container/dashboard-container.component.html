@@ -70,7 +70,7 @@
                 <img
                   *ngIf="resource[keyPair[0]] !== null && resource[keyPair[0]] !== undefined  && !checkWithHref(resource[keyPair[0]])"
                   src="/assets/img/copy-icon.png" style="height: 12px; background-color:var(--imgButtonBackground);"
-                  (click)="copyToClipboard(resource[keyPair[0]], $event)" alt="Copy to clipboard" />
+                  (click)="copyToClipboard(resource[keyPair[0]], $event)" alt="Copy to clipboard" tabindex="0" (keyup.enter)="copyToClipboard(resource[keyPair[0]], $event)"/>
               </div>
             </td>
             <ng-container *ngIf="keyPair[1] !== ''">
@@ -94,7 +94,7 @@
                   <img
                     *ngIf="resource[keyPair[1]] !== null && resource[keyPair[1]] !== undefined  && !checkWithHref(resource[keyPair[1]])"
                     src="/assets/img/copy-icon.png" style="height: 12px; background-color:var(--imgButtonBackground);"
-                    (click)="copyToClipboard(resource[keyPair[1]], $event)" alt="Copy to clipboard" />
+                    (click)="copyToClipboard(resource[keyPair[1]], $event)" alt="Copy to clipboard" tabindex="0" (keyup.enter)="copyToClipboard(resource[keyPair[1]], $event)"/>
                 </div>
               </td>
             </ng-container>
