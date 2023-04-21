@@ -24,8 +24,8 @@ export class DetectorTimePickerComponent implements OnInit {
   timePickerButtonStr: string = "";
   showCalendar: boolean = false;
   selectedKey: string;
-  get enableDateAndTimePicker() {
-    return this.selectedKey === TimePickerOptions.Custom;
+  get disableDateAndTimePicker() {
+    return this.selectedKey !== TimePickerOptions.Custom;
   }
 
   maxDate: Date = this.convertMomentInUTCToDateAndTime(this.detectorControlService.currentUTCMoment).date;
@@ -118,7 +118,7 @@ export class DetectorTimePickerComponent implements OnInit {
     let count = 0;
     this.detectorControlService.update.subscribe(validUpdate => {
       //Only showing error message on <detector-view> in the first time
-      if(count > 0) this.updateTimerErrorMessage.emit("");
+      if (count > 0) this.updateTimerErrorMessage.emit("");
       count += 1;
 
       let queryParams = { ...this.activatedRoute.snapshot.queryParams };
@@ -212,7 +212,7 @@ export class DetectorTimePickerComponent implements OnInit {
     });
   }
 
-  private validateStartAndEndTime() {
+  validateStartAndEndTime() {
     const startMoment = this.convertDateAndTimeToMoment(this.startDate, this.startClock);
     const endMoment = this.convertDateAndTimeToMoment(this.endDate, this.endClock);
 

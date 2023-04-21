@@ -223,6 +223,17 @@ export class DetectorControlService {
     this.setCustomStartEnd(this._startTime.format(this.stringFormat), this.endTime.format(this.stringFormat));
   }
 
+  public moveForwardDuration(): void {
+    this._startTime.add(this._duration.duration);
+    this._endTime.add(this._duration.duration);
+    this.setCustomStartEnd(this._startTime.format(this.stringFormat), this.endTime.format(this.stringFormat));
+  }
+
+  public moveBackwardDuration(): void {
+    this._startTime.subtract(this._duration.duration);
+    this._endTime.subtract(this._duration.duration);
+    this.setCustomStartEnd(this._startTime.format(this.stringFormat), this.endTime.format(this.stringFormat));
+  }
 
   public refresh(instanceId: string = "") {
     this._duration ? this.selectDuration(this._duration) : this._refreshData(instanceId);
