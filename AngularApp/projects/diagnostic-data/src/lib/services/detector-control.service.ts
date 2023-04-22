@@ -111,7 +111,7 @@ export class DetectorControlService {
   private validateTimeRange(startMoment: moment.Moment, endMoment: moment.Moment): TimeErrorType {
     const diff = moment.duration(endMoment.diff(startMoment));
 
-    if (diff.asDays() > this.allowedDurationInDays) {
+    if (diff.asHours() > this.allowedDurationInDays * 24) {
       return TimeErrorType.TimeRangeTooLong;
     }
 
@@ -194,7 +194,7 @@ export class DetectorControlService {
       adjustMessage = "Adjust Time range to 15 minutes."
     } else if (timeRangeError === TimeErrorType.TimeRangeTooLong) {
       durationToAdjust = moment.duration(this.allowedDurationInDays * 24, 'hours');
-      adjustMessage = `Adjust time range to ${this.allowedDurationInDays} hours.`;
+      adjustMessage = `Adjust time range to ${this.allowedDurationInDays * 24} hours.`;
     }
     const { minMoment } = this.getMinAndMaxMoment(TimeType.EndTime, durationToAdjust);
     endMoment = moment.max(minMoment, endMoment);
