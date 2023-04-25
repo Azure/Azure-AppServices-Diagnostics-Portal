@@ -2,11 +2,9 @@ import { Component, OnInit, Input } from '@angular/core';
 import { DataTableDataType, DiagnosticData, TimeSeriesPerInstanceRendering, DataTableResponseObject, DataTableResponseColumn } from '../../models/detector';
 import { DataRenderBaseComponent, DataRenderer } from '../data-render-base/data-render-base.component';
 import { InstanceDetails, DetailedInstanceTimeSeries, DetailedInstanceHighChartTimeSeries,MetricType,GraphSeries, GraphPoint } from '../../models/time-series';
-import { TimeZones, TimeUtilities } from '../../utilities/time-utilities';
-import * as momentNs from 'moment';
+import { TimeUtilities } from '../../utilities/time-utilities';
+import * as moment from 'moment';
 import { HighchartsData, HighchartGraphSeries } from '../highcharts-graph/highcharts-graph.component';
-
-const moment = momentNs;
 
 @Component({
   selector: 'time-series-instance-graph',
@@ -319,7 +317,7 @@ export class TimeSeriesInstanceGraphComponent extends DataRenderBaseComponent im
 }
 
 interface InstanceTablePoint {
-  timestamp: momentNs.Moment;
+  timestamp: moment.Moment;
   value: number;
   counterName: string;
   instance: InstanceDetails;

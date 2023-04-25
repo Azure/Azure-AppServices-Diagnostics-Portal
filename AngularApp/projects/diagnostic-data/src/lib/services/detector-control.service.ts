@@ -2,13 +2,13 @@ import { Injectable, Inject } from '@angular/core';
 import * as moment from 'moment';
 import { BehaviorSubject } from 'rxjs';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../config/diagnostic-data-config';
-import { DateTimeUtilities } from '../utilities/date-time-utilities';
+import { TimeUtilities } from '../utilities/time-utilities';
 
 
 @Injectable()
 export class DetectorControlService {
 
-  readonly stringFormat: string = DateTimeUtilities.fullStringFormat;
+  readonly stringFormat: string = TimeUtilities.fullStringFormat;
 
   durationSelections: DurationSelector[] = [
     { displayName: TimePickerOptions.Last1Hour, duration: moment.duration(1, 'hours'), internalOnly: false, ariaLabel: "1 Hour" },
