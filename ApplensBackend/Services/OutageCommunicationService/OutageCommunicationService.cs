@@ -33,7 +33,7 @@ namespace AppLensV3.Services
 
         public async Task<List<Communication>> GetCommunicationsAsync(string subscription, DateTime startTime, DateTime endTime, bool checkEmergingIssues = false, string impactedService = "appservice")
         {
-            return GetAzCommsAsyncInternal(subscription, startTime, endTime, impactedService);
+            return await GetAzCommsAsyncInternal(subscription, startTime, endTime, impactedService);
         }
 
         private async Task<List<Communication>> GetAzCommsAsyncInternal(string subscription, DateTime startTime, DateTime endTime, string impactedService = "appservice")
