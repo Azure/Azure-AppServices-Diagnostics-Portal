@@ -103,20 +103,20 @@ export class DetectorControlService {
 
     const { minMoment, maxMoment } = this.getMinAndMaxMoment(type, moment.duration(15, 'minutes'));
 
-    if (!m.isBetween(minMoment, maxMoment)) {
+    if (!m.isBetween(minMoment, maxMoment,"minute","[]")) {
       return TimeErrorType.TimeOutOfRange;
     }
     return TimeErrorType.None;
   }
 
   private validateTimeRange(startMoment: moment.Moment, endMoment: moment.Moment): TimeErrorType {
-    const diff = moment.duration(endMoment.diff(startMoment));
+    const diffInMinute = moment.duration(endMoment.diff(startMoment,"minute")).asMinutes();
 
-    if (diff.asHours() > this.allowedDurationInDays * 24) {
+    if (diffInMinute > this.allowedDurationInDays * 24 * 60) {
       return TimeErrorType.TimeRangeTooLong;
     }
 
-    if (diff.asMinutes() < 15) {
+    if (diffInMinute < 15) {
       return TimeErrorType.TimeRangeTooShort;
     }
     return TimeErrorType.None;
