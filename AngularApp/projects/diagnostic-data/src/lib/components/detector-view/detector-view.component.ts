@@ -79,7 +79,7 @@ export class DetectorViewComponent implements OnInit {
   timePickerButtonStr: string = "";
   timePickerErrorStr: string = "";
   get loadingMessage(){
-    return `Analyzing data ${this.timePickerButtonStr.includes("to") ? "from" : "in"} ${this.timePickerButtonStr}, to change use the time range picker`;
+    return `Analyzing data ${this.timePickerButtonStr.includes("to") ? "from" : "in"} ${this.timePickerButtonStr}, to change, use the time range picker`;
   }
 
   buttonStyle: IButtonStyles = {
