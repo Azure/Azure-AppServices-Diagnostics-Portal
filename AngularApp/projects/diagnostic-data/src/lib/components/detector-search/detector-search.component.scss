@@ -89,6 +89,10 @@
     background-color: var(--bodyBackground);
 }
 
+.form-control:focus {
+    border-color: #3333ff;
+}
+
 .span-h1{
     font-size: 1.6rem;
     font-weight: 640;
