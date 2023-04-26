@@ -162,6 +162,7 @@ import { WorkflowConditionNodeComponent } from './components/workflow-condition-
 import { WorkflowAcceptUserinputComponent } from './components/workflow-accept-userinput/workflow-accept-userinput.component';
 import { VideoComponent } from './components/video/video.component';
 import { SafePipe } from './pipe/safe.pipe';
+import { DateTimePickerComponent } from './components/date-time-picker/date-time-picker.component';
 
 
 @NgModule({
@@ -272,7 +273,8 @@ import { SafePipe } from './pipe/safe.pipe';
         WorkflowAcceptUserinputComponent,
         VideoComponent,
         SafePipe,
-        OpenaiComponent
+        OpenaiComponent,
+        DateTimePickerComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
