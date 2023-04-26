@@ -15,13 +15,13 @@ export class TimeUtilities {
         if (duration.months() > 0) {
             date.startOf('month').month(date.month() - date.month() % duration.months());
         }
-        if (duration.days() > 0 ) {
+        if (duration.days() > 0) {
             date.startOf('day').days(date.days() - date.days() % duration.days());
         }
-        if (duration.hours() > 0 ) {
+        if (duration.hours() > 0) {
             date.startOf('hour').hours(date.hours() - date.hours() % duration.hours());
         }
-        if (duration.minutes() > 0 ) {
+        if (duration.minutes() > 0) {
             date.startOf('minute').minutes(date.minutes() - date.minutes() % duration.minutes());
         }
     }
@@ -43,5 +43,15 @@ export class TimeUtilities {
         const hour = Number.parseInt(time.split(":")[0]);
         const minute = Number.parseInt(time.split(":")[1]);
         return moment.utc([date.getFullYear(), date.getMonth(), date.getDate(), hour, minute]);
+    }
+
+    static passDateFromString(s: string): Date | null {
+        const dateStr = s || "";
+        const m = moment(dateStr, TimeUtilities.yearAndDateFormat);
+        return m.isValid() ? m.toDate() : null;
+    }
+
+    static formatDate(date: Date): string {
+        return moment(date).format(TimeUtilities.yearAndDateFormat);
     }
 }
