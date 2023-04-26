@@ -7,13 +7,6 @@ import { Globals } from "../../../globals";
 import { SelectionMode } from 'office-ui-fabric-react/lib/DetailsList'
 import { Router } from "@angular/router";
 import { TelemetryService, icons } from "diagnostic-data";
-
-enum BlurType {
-  //click other place to close panel
-  Blur,
-  //use tab or cross icon(on right) will not trigger blur
-  None
-}
 @Component({
   selector: 'fabric-search-results',
   templateUrl: './fabric-search-results.component.html',
@@ -24,13 +17,11 @@ export class FabricSearchResultsComponent {
   searchValue: string = "";
   resultCount: number;
   features: Feature[] = [];
-  searchLogTimout: any;
+  searchLogTimeout: any;
   hideSearchIcon: boolean = false;
   searchBoxInFocus: boolean = false;
+  isBlur = true;
   showSearchResults: boolean;
-  clickSearchBox: BlurType = BlurType.Blur;
-  //Only ture when press ESC and no word in search box,collapse search result.
-  isEscape: boolean = false;
   selectionMode = SelectionMode.none;
   isInCategory: boolean;
   get inputAriaLabel(): string {
@@ -39,69 +30,28 @@ export class FabricSearchResultsComponent {
     if (resultCount >= 1) {
       searchResultAriaLabel = resultCount > 1 ? `Found ${resultCount} Results` : `Found ${resultCount} Result`;
     } else {
-      searchResultAriaLabel = `No results were found.`;
+      searchResultAriaLabel = `No results were found`;
     }
     return `${searchResultAriaLabel}, Press Escape to clear search bar`;
   }
 
-  @HostListener('mousedown', ['$event.target'])
-  onClick(ele: HTMLElement) {
-    //If is cross icon in search box
-    if ((ele.tagName === "DIV" && ele.className.indexOf("ms-SearchBox-clearButton") > -1) ||
-      (ele.tagName === "BUTTON" && ele.className.indexOf("ms-Button--icon") > -1) ||
-      (ele.tagName === "DIV" && ele.className.indexOf("ms-Button-flexContainer") > -1) ||
-      (ele.tagName === "I" && ele.className.indexOf("ms-Button-icon") > -1)) {
-      this.clickSearchBox = BlurType.None;
-      //Async set to BlurType.Blur,so after clean result it will set to Blur for next onBlur action
-      setTimeout(() => { this.clickSearchBox = BlurType.Blur }, 0);
-    }
-    else if (this.isInCategory) {
-      this.clickSearchBox = BlurType.Blur;
-    }
-    else {
-      this.clickSearchBox = BlurType.Blur;
-    }
-  }
-
   @HostListener('keydown.Tab', ['$event.target'])
   onKeyDown(ele: HTMLElement) {
-    if (ele.tagName === "INPUT") {
-      if (this.isInCategory && this.features.length < 1) {
-        this.clickSearchBox = BlurType.Blur;
-        this.onBlurHandler();
-      } else {
-        this.clickSearchBox = BlurType.None;
-      }
-    }
-    //If in genie or detailLists then blur after tab
-    else if (ele.innerText === "Ask chatbot Genie" ||
-      ele.className.indexOf("ms-FocusZone") > -1) {
-      this.clickSearchBox = BlurType.Blur;
+    if (this.isInCategory) {
+      this.isBlur = true;
       this.onBlurHandler();
-    }
-    else {
-      this.clickSearchBox = BlurType.Blur;
+    } else {
+      this.checkIfNeedToBlur(ele)
     }
   }
 
   //Remove after no longer use search in command bar
   @HostListener('keydown.arrowright', ['$event.target'])
   onArrowLeft(ele: HTMLElement) {
-    if (this.isInCategory) {
-      this.clickSearchBox = BlurType.None;
-      const list = <any[]>Array.from(ele.parentElement.children);
-      const index = list.findIndex(e => ele === e);
-      if (ele.tagName === "A" && this.features.length > 0 && index === this.features.length - 1) {
-        this.clickSearchBox = BlurType.Blur;
-        this.onBlurHandler();
-      }
-
-      if (this.features.length === 0 && ele.innerHTML.includes('Genie')) {
-        this.clickSearchBox = BlurType.Blur;
-        this.onBlurHandler();
-      }
-    }
+    if(!this.isInCategory) return;
+    this.checkIfNeedToBlur(ele);
   }
+
 
   @ViewChild('fabSearchResult', { static: true }) fabSearchResult: ElementRef
   constructor(public featureService: FeatureService, private _logger: LoggingV2Service, private _notificationService: NotificationService, private globals: Globals, private router: Router, private render: Renderer2, private telemetryService: TelemetryService) {
@@ -144,31 +94,33 @@ export class FabricSearchResultsComponent {
     });
   }
 
-  updateSearchValue(searchValue) {
-    this.showSearchResults = !this.isEscape;
-
+  updateSearchValue(searchValue: string) {
+    this.showSearchResults = true;
     this.searchValue = searchValue ?? this.searchValue;
 
-    if (this.searchLogTimout) {
-      clearTimeout(this.searchLogTimout);
+    if (this.searchLogTimeout) {
+      clearTimeout(this.searchLogTimeout);
     }
 
-    this.searchLogTimout = setTimeout(() => {
+    this.searchLogTimeout = setTimeout(() => {
       this._logSearch();
     }, 5000);
     this.features = this.featureService.getFeatures(this.searchValue);
-    this.isEscape = false;
   }
 
   onSearchBoxFocus() {
+    this.isBlur = true;
     this.searchBoxInFocus = true;
     this.showSearchResults = true;
     this.hideSearchIcon = true;
     this.features = this.featureService.getFeatures(this.searchValue);
-    //Disable AutoComplete
-    if (document.querySelector("#fabSearchBox input")) {
-      const input = <any>document.querySelector("#fabSearchBox input");
-      input.autocomplete = "off";
+  }
+
+  clearSearchWithKey() {
+    if (this.searchValue.length > 0) {
+      this.clearSearch();
+    } else {
+      this.showSearchResults = false;
     }
   }
 
@@ -177,32 +129,32 @@ export class FabricSearchResultsComponent {
     this.features = this.featureService.getFeatures(this.searchValue);
   }
 
-  @HostListener('keydown.Escape', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent) { 
-    this.clearSearchWithKey(event);
-  }
-
-  clearSearchWithKey(event) {
-    this.clearSearch();
-    this.isEscape = true;
-  }
-
   onBlurHandler() {
+    if (!this.isBlur) return;
     this.hideSearchIcon = false;
     this.searchBoxInFocus = false;
-    switch (this.clickSearchBox) {
-      case BlurType.Blur:
-        this.clearSearch();
-        this.showSearchResults = false;
-        break;
-      case BlurType.None:
-        break;
-      default:
-        break;
+    this.clearSearch();
+    this.showSearchResults = false;
+  }
+
+  checkIfNeedToBlur(ele: HTMLElement) {
+    this.isBlur = false;
+    const list = <any[]>Array.from(ele.parentElement.children);
+    const index = list.findIndex(e => ele === e);
+
+    if (ele.tagName === "A" && this.features.length > 0 && index === this.features.length - 1) {
+      this.isBlur = true;
+      this.onBlurHandler();
+    }
+
+    if (this.features.length === 0) {
+      this.isBlur = true;
+      this.onBlurHandler();
     }
   }
+
+
   openGeniePanel() {
-    this.isEscape = true;
     this.globals.openGeniePanel = true;
   }
 
@@ -217,10 +169,10 @@ export class FabricSearchResultsComponent {
   }
 
   escapeHandler() {
-    (<HTMLInputElement>document.querySelector('#fabSearchBox input')).focus();
+    this.clearSearchWithKey();
+    (<HTMLInputElement>document.querySelector('#fabSearchBox')).focus();
   }
   clickOutside() {
-    this.clickSearchBox = BlurType.Blur;
     this.onBlurHandler();
   }
 
