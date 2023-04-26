@@ -110,7 +110,7 @@ export class DetectorControlService {
   }
 
   private validateTimeRange(startMoment: moment.Moment, endMoment: moment.Moment): TimeErrorType {
-    const diffInMinute = moment.duration(endMoment.diff(startMoment,"minute")).asMinutes();
+    const diffInMinute = endMoment.diff(startMoment,"minute");
 
     if (diffInMinute > this.allowedDurationInDays * 24 * 60) {
       return TimeErrorType.TimeRangeTooLong;
@@ -166,7 +166,7 @@ export class DetectorControlService {
       endMoment = needAdjustEndTime ? minMoment : moment.utc(endTime);
       startMoment = endMoment.clone().subtract(defaultDuration);
       errorMessage = startTimeErrorMessage;
-      adjustMessage = needAdjustEndTime ? "Adjust start and end time." : "Adjust start time to one day before start time";
+      adjustMessage = needAdjustEndTime ? "Adjust start and end time." : "Adjust start time to one day before end time";
       return { startMoment: startMoment, endMoment: endMoment, errorMessage, adjustMessage };
     } else if (endTimeError !== TimeErrorType.None) {
       const { maxMoment } = this.getMinAndMaxMoment(TimeType.StartTime, defaultDuration);
