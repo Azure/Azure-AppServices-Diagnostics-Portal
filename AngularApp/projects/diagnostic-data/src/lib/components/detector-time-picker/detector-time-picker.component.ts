@@ -119,7 +119,7 @@ export class DetectorTimePickerComponent implements OnInit {
   applyTimeRange() {
     this.detectorControlService.changeFromTimePicker = true;
 
-    this.timeDiffError = this.detectorControlService.getMessageAndAutoAdjust(this.startMoment.format(this.detectorControlService.stringFormat), this.endMoment.format(this.detectorControlService.stringFormat)).errorMessage;
+    this.validateStartAndEndTime();
 
     const timePickerInfo: TimePickerInfo = {
       selectedKey: this.selectedKey,
@@ -176,5 +176,9 @@ export class DetectorTimePickerComponent implements OnInit {
     const currentMoment = this.detectorControlService.currentUTCMoment;
     const plusOneDayMoment = startMoment.clone().add(1, 'day');
     this.endMoment = moment.min(currentMoment, plusOneDayMoment);
+  }
+
+  validateStartAndEndTime() {
+    this.timeDiffError = this.detectorControlService.getMessageAndAutoAdjust(this.startMoment.format(this.detectorControlService.stringFormat), this.endMoment.format(this.detectorControlService.stringFormat)).errorMessage;
   }
 }
