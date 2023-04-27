@@ -29,6 +29,8 @@ export class DetectorTimePickerComponent implements OnInit {
 
   startMoment: moment.Moment;
   endMoment: moment.Moment;
+  minMoment: moment.Moment = moment.utc().subtract(30, 'days');
+  maxMoment: moment.Moment = this.detectorControlService.currentUTCMoment;
   timeDiffError: string = "";
 
   isPublic: boolean = true;

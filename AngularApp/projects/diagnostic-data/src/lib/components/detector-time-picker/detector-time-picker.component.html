@@ -7,11 +7,11 @@
         </fab-choice-group>
         <div class="row">
           <div class="date-time-picker-row">
-            <date-time-picker [label]="'Start'" [disabled]="disableDateAndTimePicker" [moment]="startMoment" (momentChange)="onChangeStartMoment($event)"></date-time-picker>
+            <date-time-picker [label]="'Start'" [disabled]="disableDateAndTimePicker" [moment]="startMoment" [minMoment]="minMoment" [maxMoment]="maxMoment" (momentChange)="onChangeStartMoment($event)"></date-time-picker>
             <div class="date-picker-label">(UTC)</div>
           </div>
           <div class="date-time-picker-row">
-            <date-time-picker [label]="'End'" [disabled]="disableDateAndTimePicker" [(moment)]="endMoment" (onEnterPressInTime)="applyTimeRange()" (onTabKeyPressInTime)="validateStartAndEndTime()"></date-time-picker>
+            <date-time-picker [label]="'End'" [disabled]="disableDateAndTimePicker" [(moment)]="endMoment" [minMoment]="minMoment" [maxMoment]="maxMoment" (onEnterPressInTime)="applyTimeRange()" (onTabKeyPressInTime)="validateStartAndEndTime()"></date-time-picker>
             <div class="date-picker-label">(UTC)</div>
           </div>
         </div>
