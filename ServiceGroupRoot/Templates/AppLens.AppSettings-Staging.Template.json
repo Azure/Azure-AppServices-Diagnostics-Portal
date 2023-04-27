@@ -36,18 +36,16 @@
     },
     "resources": [
         {
-            "name": "[concat(parameters('siteName'),'\/','\/appsettings')]",
-            "type": "Microsoft.Web/sites/config",
+            "name": "[concat(parameters('siteName'),'\/',parameters('slotName'),'\/','\/appsettings')]",
+            "type": "Microsoft.Web/sites/slots/config",
             "apiVersion": "2018-11-01",
             "properties": {
-                "ASPNETCORE_ENVIRONMENT": "Production",
+                "ASPNETCORE_ENVIRONMENT": "Staging",
                 "CloudDomain": "[if(or(equals(parameters('cloudEnvironment'), 'Prod'), equals(parameters('cloudEnvironment'), 'Test')), 'PublicAzure', parameters('cloudEnvironment'))]",
-                "DatacenterFederationConfiguration:Realm": "[parameters('dstsRealm')]",
-                "DiagnosticRole:AppServiceEndpoint": "[parameters('runtimeHostEndpoint')]",
+                "DatacenterFederationConfiguration:Realm": "[parameters('dstsRealmStaging')]",
+                "DiagnosticRole:AppServiceEndpoint": "[parameters('runtimeHostEndpointStaging')]",
                 "WEBSITE_ADD_SITENAME_BINDINGS_IN_APPHOST_CONFIG": "1",
                 "WEBSITE_LOAD_CERTIFICATES": "*",
-                "DiagnosticRole:AppKey": "[parameters('runtimeHostKeyVaultAppKey')]",
-                "DiagnosticRole:clientCertEnabled": "false",
                 "DiagnosticRole:UseAppService": "true",
                 "Observer:clientCertEnabled": "false",
                 "Observer:clientSecret": "[parameters('observerKeyVaultAppKey')]"

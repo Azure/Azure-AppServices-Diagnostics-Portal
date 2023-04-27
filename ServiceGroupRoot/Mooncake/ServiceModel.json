@@ -43,6 +43,15 @@
               "parametersPath": "Parameters\\AppLens.AppSettings.Parameters.json"
             }
           }
+        },
+        {
+          "name": "ApplensAppSettingsStagingDefinition",
+          "composedOf": {
+            "arm": {
+              "templatePath": "Templates\\AppLens.AppSettings-Staging.Template.json",
+              "parametersPath": "Parameters\\AppLens.AppSettings.Parameters.json"
+            }
+          }
         }
       ]
     }
@@ -62,6 +71,15 @@
         {
           "name": "AppSettingsUpdate",
           "instanceOf": "ApplensAppSettingsDefinition",
+          "scopeTags": [
+            {
+              "name": "Applens"
+            }
+          ]
+        },
+        {
+          "name": "AppSettingsStagingUpdate",
+          "instanceOf": "ApplensAppSettingsStagingDefinition",
           "scopeTags": [
             {
               "name": "Applens"
