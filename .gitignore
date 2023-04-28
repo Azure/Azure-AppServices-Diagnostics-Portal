@@ -407,3 +407,4 @@ MigrationBackup/
 .ionide/
 
 .vscode/launch.json
+/package-lock.json

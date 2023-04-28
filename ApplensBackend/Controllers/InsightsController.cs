@@ -41,16 +41,16 @@ namespace AppLensV3.Controllers
         public async Task<object> GetInsights(string subscriptionId, string resourceGroupName, string provider, string resourceType, string resourceName, string pesId = null, string supportTopicId = null, string supportTopic = null, string startTime = null, string endTime = null)
         {
             Task<ObserverResponse> getResourceTask = null;
-            var appServiceResources = new string[] { InsightsConstants.SiteResourceTypeName, InsightsConstants.HostingEnvironmentResourceTypeName };
+            var appServiceResources = new string[] { ResourceConstants.SiteResourceTypeName, ResourceConstants.HostingEnvironmentResourceTypeName };
 
             if (appServiceResources.Contains(resourceType))
             {
                 switch (resourceType)
                 {
-                    case InsightsConstants.SiteResourceTypeName:
+                    case ResourceConstants.SiteResourceTypeName:
                         getResourceTask = observerService.GetSite(resourceName);
                         break;
-                    case InsightsConstants.HostingEnvironmentResourceTypeName:
+                    case ResourceConstants.HostingEnvironmentResourceTypeName:
                         getResourceTask = observerService.GetHostingEnvironmentDetails(resourceName);
                         break;
                 }

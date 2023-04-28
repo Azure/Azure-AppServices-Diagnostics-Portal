@@ -53,10 +53,11 @@ namespace AppLensV3.Helpers
         internal const string ArticleTemplatePath = "https://api.github.com/repos/Azure/SelfHelpContent/contents/articles/{0}?ref=master";
     }
 
-    internal static class InsightsConstants
+    internal static class ResourceConstants
     {
         internal const string SiteResourceTypeName = "sites";
         internal const string HostingEnvironmentResourceTypeName = "hostingEnvironments";
+        internal const string ArmUrlTemplate = "/subscriptions/{0}/resourceGroups/{1}/providers/{2}/{3}/{4}";
     }
 
     public static class HeaderConstants
