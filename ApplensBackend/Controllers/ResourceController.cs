@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -195,7 +196,6 @@ namespace AppLensV3
                 if (string.IsNullOrWhiteSpace(providerName) || string.IsNullOrWhiteSpace(serviceName) || string.IsNullOrWhiteSpace(resourceName))
                 {
                     return BadRequest("arguments cannot be null or empty.");
-
                 }
 
                 var armID = await _armResourceService.GetArmResourceUrlAsync(providerName, serviceName, resourceName);
@@ -203,7 +203,11 @@ namespace AppLensV3
             }
             catch (NotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return StatusCode(404, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
 

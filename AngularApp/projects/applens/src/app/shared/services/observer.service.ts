@@ -65,6 +65,10 @@ export class ObserverService {
     return this._diagnosticApiService.get<ObserverStampResponse>(`api/stamps/${stampName}`);
   }
 
+  public getArmResourceUrl(providerName: string, serviceName: string, resourceName: string) : Observable<string> {
+    return this._diagnosticApiService.get<string>(`api/armresourceurl/${providerName}/${serviceName}/${resourceName}`);
+  }
+
   private getSiteInfoWithSlot(site: ObserverSiteInfo): ObserverSiteInfo {
     const siteName = site.SiteName;
     let slot = '';

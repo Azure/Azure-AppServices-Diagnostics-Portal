@@ -70,7 +70,7 @@ namespace AppLensV3.Services
                 ArmResourceServiceConfig.ArmKustoQueryPerService.TryGetValue(dictKey, out var kustoInfo);
                 if (kustoInfo == null)
                 {
-                    throw new Exception($"No Arm kusto query found for provider : {provider} and service : {serviceName}");
+                    throw new Exception($"No Arm kusto query found for provider : {provider} and service : {serviceName}. Most likely ARM url resolution is not enabled for this service.");
                 }
 
                 var dt = await kustoQueryService.ExecuteQueryAsync(
@@ -82,7 +82,7 @@ namespace AppLensV3.Services
                 if (dt == null || dt.Rows == null || dt.Rows.Count == 0)
                 {
                     throw new NotFoundException(
-                        $"Unable to fetch arm resource for {string.Join("/", provider, serviceName, resourceName)}. " +
+                        $"Unable to fetch arm resource for '{string.Join("/", provider, serviceName, resourceName)}'. " +
                         $"Kusto query returned 0 results." +
                         $"Cluster: {kustoInfo.Item1}, Database: {kustoInfo.Item2}, Query: {string.Format(kustoInfo.Item3, resourceName)}",
                         System.Net.HttpStatusCode.NotFound);
@@ -92,7 +92,7 @@ namespace AppLensV3.Services
 
                 if (string.IsNullOrWhiteSpace(armId))
                 {
-                    throw new Exception($"Unable to fetch arm resource for {string.Join("//", provider, serviceName, resourceName)}. Kusto query results doesnt contain column 'armId'.");
+                    throw new Exception($"Unable to fetch arm resource for '{string.Join("//", provider, serviceName, resourceName)}'. Kusto query results doesnt contain column 'armId'.");
                 }
 
                 cacheValue = armId;

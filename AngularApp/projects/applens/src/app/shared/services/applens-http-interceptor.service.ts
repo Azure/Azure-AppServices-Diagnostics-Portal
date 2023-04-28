@@ -3,7 +3,7 @@ import { HttpInterceptor, HttpRequest, HttpResponse, HttpErrorResponse, HttpHand
 import { Observable, of, pipe } from 'rxjs';
 import { map, catchError, mergeMap } from 'rxjs/operators';
 import { AlertService } from './alert.service';
-import {AdalService} from 'adal-angular4';
+import { AdalService } from 'adal-angular4';
 import { AlertInfo, ConfirmationOption, UserAccessStatus } from '../models/alerts';
 import { HealthStatus } from "diagnostic-data";
 
@@ -14,7 +14,7 @@ export class AppLensInterceptorService implements HttpInterceptor {
   tokenRefreshRetry: boolean = true;
   constructor(private _alertService: AlertService, private _adalService: AdalService) { }
 
-  raiseAlert(event){
+  raiseAlert(event) {
     let errormsg = event.error;
     errormsg = errormsg.replace(/\\"/g, '"');
     errormsg = errormsg.replace(/\"/g, '"');
@@ -22,16 +22,16 @@ export class AppLensInterceptorService implements HttpInterceptor {
     let message = errobj.DetailText;
     message = message.trim();
     if (message) {
-      if (message[message.length-1] == '.') {
+      if (message[message.length - 1] == '.') {
         message = message.substring(0, message.length - 1);
       }
     }
     let alertInfo: AlertInfo = {
-        header: "Do you accept the risks?",
-        details: `${message}. If you choose to proceed, we will be logging it for audit purposes.`,
-        seekConfirmation: true,
-        confirmationOptions: [{label: 'Yes, proceed', value: 'yes'}, {label: 'No, take me back', value: 'no'}],
-        alertStatus: HealthStatus.Warning
+      header: "Do you accept the risks?",
+      details: `${message}. If you choose to proceed, we will be logging it for audit purposes.`,
+      seekConfirmation: true,
+      confirmationOptions: [{ label: 'Yes, proceed', value: 'yes' }, { label: 'No, take me back', value: 'no' }],
+      alertStatus: HealthStatus.Warning
     };
     this._alertService.sendAlert(alertInfo);
   }
@@ -39,11 +39,14 @@ export class AppLensInterceptorService implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     return next.handle(req).pipe(map((event: HttpEvent<any>) => {
-        if (event instanceof HttpResponse && event.url.includes("api/invoke")) {
-        }
-        return event;
-      }), catchError((error: HttpErrorResponse) => {
-          let errorObj = JSON.parse(error.error);
+      if (event instanceof HttpResponse && event.url.includes("api/invoke")) {
+      }
+      return event;
+    }), catchError((error: HttpErrorResponse) => {
+
+      try {
+        let errorObj = JSON.parse(error.error);
+
         if (error.status === 403 && error.url.includes("api/invoke") && errorObj.Status == UserAccessStatus.ResourceNotRelatedToCase) {
           this.raiseAlert(error);
         }
@@ -54,16 +57,21 @@ export class AppLensInterceptorService implements HttpInterceptor {
               this._adalService.userInfo.token = token;
               return next.handle(req);
             }),
-            catchError((err) => {
-              location.reload();
-              return of(null);
-            }));
+              catchError((err) => {
+                location.reload();
+                return of(null);
+              }));
           }
           else {
             this._alertService.notifyUnAuthorized(error);
           }
         }
-        return Observable.throw(error);
-      }));
+      }
+      catch (e) {
+        // Most liely the error.error object was not a json object. Lets consume the json parsing exception and rethrow the original error.
+      }
+
+      return Observable.throw(error);
+    }));
   }
 }
