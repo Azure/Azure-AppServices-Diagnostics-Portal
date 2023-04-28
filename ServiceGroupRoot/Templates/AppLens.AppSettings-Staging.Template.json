@@ -40,7 +40,7 @@
             "type": "Microsoft.Web/sites/slots/config",
             "apiVersion": "2018-11-01",
             "properties": {
-                "ASPNETCORE_ENVIRONMENT": "Staging",
+                "ASPNETCORE_ENVIRONMENT": "Production",
                 "CloudDomain": "[if(or(equals(parameters('cloudEnvironment'), 'Prod'), equals(parameters('cloudEnvironment'), 'Test')), 'PublicAzure', parameters('cloudEnvironment'))]",
                 "DatacenterFederationConfiguration:Realm": "[parameters('dstsRealmStaging')]",
                 "DiagnosticRole:AppServiceEndpoint": "[parameters('runtimeHostEndpointStaging')]",
@@ -58,7 +58,6 @@
             "apiVersion": "2018-11-01",
             "properties": {
                 "appSettingNames": [
-                    "ASPNETCORE_ENVIRONMENT",
                     "DatacenterFederationConfiguration:Realm",
                     "DiagnosticRole:AppServiceEndpoint",
                     "CloudDomain"

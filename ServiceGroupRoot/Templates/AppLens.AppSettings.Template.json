@@ -46,8 +46,6 @@
                 "DiagnosticRole:AppServiceEndpoint": "[parameters('runtimeHostEndpoint')]",
                 "WEBSITE_ADD_SITENAME_BINDINGS_IN_APPHOST_CONFIG": "1",
                 "WEBSITE_LOAD_CERTIFICATES": "*",
-                "DiagnosticRole:AppKey": "[parameters('runtimeHostKeyVaultAppKey')]",
-                "DiagnosticRole:clientCertEnabled": "false",
                 "DiagnosticRole:UseAppService": "true",
                 "Observer:clientCertEnabled": "false",
                 "Observer:clientSecret": "[parameters('observerKeyVaultAppKey')]"
@@ -60,7 +58,6 @@
             "apiVersion": "2018-11-01",
             "properties": {
                 "appSettingNames": [
-                    "ASPNETCORE_ENVIRONMENT",
                     "DatacenterFederationConfiguration:Realm",
                     "DiagnosticRole:AppServiceEndpoint",
                     "CloudDomain"

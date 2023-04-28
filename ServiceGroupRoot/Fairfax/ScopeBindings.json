@@ -31,7 +31,7 @@
         },
         {
           "find": "__OBSERVER_AAD_CLIENTID__",
-          "replaceWith": "75b6b750-c38e-481b-b56f-320f148174a9"
+          "replaceWith": "4be0dbdb-a5c2-4593-a851-895070a09dab"
         },
         {
           "find": "__APPSERVICE_DNS_SUFFIX__",
@@ -69,6 +69,10 @@
         {
           "find": "__ZIP_PACKAGE__",
           "replaceWith": "ApplensNationalCloud.zip"
+        },
+        {
+          "find": "__OBSERVER_AAD_APPKEY__",
+          "replaceWith": "@Microsoft.KeyVault(SecretUri=https://runtimehost-kv-bn1.vault.usgovcloudapi.net/secrets/SupportObserver--AppKey)"
         }
       ]
     },
