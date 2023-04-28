@@ -92,7 +92,7 @@ namespace AppLensV3.Services
 
                 if (string.IsNullOrWhiteSpace(armId))
                 {
-                    throw new Exception($"Unable to fetch arm resource for '{string.Join("//", provider, serviceName, resourceName)}'. Kusto query results doesnt contain column 'armId'.");
+                    throw new Exception($"Unable to fetch arm resource for '{string.Join("/", provider, serviceName, resourceName)}'. Kusto query results doesnt contain column 'armId'.");
                 }
 
                 cacheValue = armId;
