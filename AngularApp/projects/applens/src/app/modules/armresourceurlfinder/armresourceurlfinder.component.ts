@@ -23,13 +23,9 @@ export class ArmResourceUrlFinder implements OnInit {
   }
 
   ngOnInit() {
-    console.log('Inside ngOnInit() of ArmResourceUrlFinder ... ');
-
     this.providerName = this._route.snapshot.params['provider'];
     this.serviceName = this._route.snapshot.params['service'];
     this.resourceName = this._route.snapshot.params['name'];
-
-    console.log(`provider :${this.providerName}, service: ${this.serviceName}, resource: ${this.resourceName}`);
 
     this._observerService.getArmResourceUrl(this.providerName, this.serviceName, this.resourceName).subscribe(_armUrl => {
       this.loading = false;
