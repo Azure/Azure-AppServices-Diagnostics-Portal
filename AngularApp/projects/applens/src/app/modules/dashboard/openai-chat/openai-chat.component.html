@@ -1,0 +1,96 @@
+<div *ngIf="isEnabledChecked && isEnabled" class="chatgpt-bot-container">
+    <div class="chatgpt-box-row-container chatgpt-header-container" *ngIf="!_chatContextService.messages || _chatContextService.messages.length==0">
+        <h1 class="chatgpt-header-text">AppLens <img src="/assets/img/handshakelogo.png" class="chatgpt-handshake-logo"/> ChatGPT</h1>
+    </div>
+    <div class="chatgpt-box-row-container chatgpt-samples-container" *ngIf="!_chatContextService.messages || _chatContextService.messages.length==0">
+        <div class="chatgpt-box-row">
+            <ng-container *ngFor="let querySample of chatQuerySamples; let i = index">
+              <div class="chatgpt-box" *ngIf="i<=2" (click)="onchatSampleClick(i)" [innerHTML]="chatQuerySamples[i].key"></div>
+            </ng-container>
+        </div>
+        <div class="chatgpt-box-row">
+          <ng-container *ngFor="let querySample of chatQuerySamples; let i = index">
+            <div class="chatgpt-box" *ngIf="i>=3" (click)="onchatSampleClick(i)" [innerHTML]="chatQuerySamples[i].key"></div>
+          </ng-container>
+        </div>
+    </div>
+    <div id="chatgpt-all-messages-container-id" class="chatgpt-box-row-container chatgpt-chat-messages-container" *ngIf="_chatContextService.messages && _chatContextService.messages.length>0">
+      <div class="chatgpt-request-error-container" *ngIf="showChatGPTRequestError" [ngClass]="{'fade-in': showChatGPTRequestError, 'fade-out': !showChatGPTRequestError}">
+        {{chatGPTRequestError}}
+      </div>
+      <div class="chatgpt-message-box chatgpt-message-box-{{message.messageSource}}" *ngFor="let message of _chatContextService.messages">
+        <div class="chatgpt-message-content">
+          <ng-container *ngIf="message.messageSource=='system'">
+            <div class="chatgpt-message-icon">
+              <img src="/assets/img/openailogo.svg" class="avatar">
+            </div>
+          </ng-container>
+          <ng-container *ngIf="message.messageSource=='user'">
+            <div class="chatgpt-message-icon">
+              <img *ngIf="_chatContextService.userPhotoSource !== '';else userInitial" [src]="_chatContextService.userPhotoSource" alt="User Profile Photo" class="avatar">
+            </div>
+          </ng-container>
+          <ng-container *ngIf="message.status==1">
+            <div class="chatgpt-message chatgpt-message-{{message.renderingType}}">
+              <div class="chat-message-timestamp">{{message.messageDisplayDate}}</div>
+              <p class="blinking-cursor">...</p>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="message.status==2 || message.status==3">
+            <div class="chatgpt-message chatgpt-message-{{message.renderingType}}">
+              <div class="chat-message-timestamp">{{message.messageDisplayDate}}</div>
+              <div style="white-space:pre-wrap">
+                <p [ngClass]="{'blinking-cursor': message.status==2}" [innerText]="message.message">
+                </p>
+              </div>
+              <ng-container *ngIf="message.messageSource=='system'">
+                <div class="chatgpt-feedback-icons">
+                  <i class="fa fa-thumbs-up chatgpt-feedback-icon" [ngClass]="{'chatgpt-feedback-icon-selected': message.userFeedback=='like'}" (click)="logUserFeedback(message.id, 'like')"></i>
+                  <i class="fa fa-thumbs-down chatgpt-feedback-icon" [ngClass]="{'chatgpt-feedback-icon-selected': message.userFeedback=='dislike'}" (click)="logUserFeedback(message.id, 'dislike')"></i>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="chatgpt-box-row-container chatgpt-textarea-container">
+      <div class="chatgpt-message-quota-error" *ngIf="showMessageQuotaError">
+        You have exhausted your daily quota of {{dailyMessageQuota}} messages. We are working on increasing the quota capacity.
+      </div>
+      <div class="chatgpt-message-quota-warning" *ngIf="showMessageQuotaWarning">
+        You have used {{userChatGPTSetting.messageDailyCount}} out of the daily quota limit of {{dailyMessageQuota}} messages.
+      </div>
+      <div class="chatgpt-data-disclaimer" *ngIf="showDataDisclaimer">
+        * Please do not send any sensitive data in your queries. Please verify the response before sending to customers.
+      </div>
+      <div class="chatgpt-textarea-wrapper">
+        <textarea [(ngModel)]="chatgptSearchText" tabindex="0" class="chatgpt-textarea" rows="1" placeholder="Ask a question" (keyup.enter)="triggerChat()" id="chatGPTInputBox" [disabled]="_chatContextService.chatInputBoxDisabled"></textarea>
+        <button (click)="triggerChat()"
+            class="chatgpt-textarea-button"><svg
+                stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
+                stroke-linejoin="round" class="h-4 w-4 mr-1" height="1em" width="1em"
+                xmlns="http://www.w3.org/2000/svg">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+      </div>
+    </div>
+</div>
+
+<div *ngIf="isEnabledChecked && !isEnabled">
+  <div class="chatgpt-bot-container">
+    ChatGPT is currently disabled in AppLens. Please check back later.
+  </div>
+</div>
+
+<div *ngIf="!isEnabledChecked">
+  <div class="chatgpt-bot-container">
+    Checking ...
+  </div>
+</div>
+
+<ng-template #userInitial>
+  <div class="avatar user-initial">{{_chatContextService.userNameInitial}}</div>
+</ng-template>

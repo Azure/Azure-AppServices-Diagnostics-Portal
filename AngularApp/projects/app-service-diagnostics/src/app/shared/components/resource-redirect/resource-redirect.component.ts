@@ -4,7 +4,7 @@ import { Router, NavigationExtras } from '@angular/router';
 import { WindowService } from '../../../startup/services/window.service';
 import { environment } from '../../../../environments/environment';
 import { StartupInfo } from '../../models/portal';
-import { DemoSubscriptions } from '../../../betaSubscriptions';
+import { DemoSubscriptions } from '../../../../../../diagnostic-data/src/lib/models/betaSubscriptions';
 import { DetectorType, TelemetryService, TelemetrySource } from 'diagnostic-data';
 import { VersionTestService } from '../../../fabric-ui/version-test.service';
 
@@ -138,6 +138,8 @@ export class ResourceRedirectComponent implements OnInit {
                     path += `/detectors/${detectorIdParam.value}`;
                   } else if (detectorTypeParam.value === DetectorType.Analysis) {
                     path += `/analysis/${detectorIdParam.value}`;
+                  } else if (detectorTypeParam.value === DetectorType.Workflow) {
+                    path += `/workflows/${detectorIdParam.value}`;
                   }
                 } else if (toolIdParam) {
                   path += `/tools/${toolIdParam.value}`;
@@ -146,6 +148,11 @@ export class ResourceRedirectComponent implements OnInit {
                 if (startTime && endTime)
                 {
                     navigationExtras.queryParams = {...navigationExtras.queryParams, startTime: startTime.value, endTime: endTime.value};
+                }
+                // To download Report
+                let downloadReportType = info.optionalParameters.find(param => param.key === "downloadReport");
+                if (downloadReportType && downloadReportType.value) {
+                  path += `/downloadReport/${downloadReportType.value}`;
                 }
 
                 this._router.navigateByUrl(

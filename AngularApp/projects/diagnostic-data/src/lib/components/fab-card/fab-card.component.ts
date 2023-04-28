@@ -13,8 +13,14 @@ export class FabCardComponent {
   @Input() ariaLabel: string = "";
   @Input() background: string = "";
   @Input() hideBorder: boolean = false;
+
+  ariaLabelChevronUp: string = "";
+  ngOnInit(){
+    this.ariaLabelChevronUp=`${this.ariaLabel} chevronUp ${this.expanded? "expanded" : "collapsed"}`;
+  }
   get ariaExpaned() {
     if(!this.isExpandable) return null;
+    this.ariaLabelChevronUp=`${this.ariaLabel} chevronUp ${this.expanded? "expanded" : "collapsed"}`;
     return this.expanded ? "true" : "false";
   }
   toggleExpand() {

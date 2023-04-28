@@ -12,8 +12,8 @@
   <ng-container *ngIf="!disableEdit">
     <div class="filler"></div>
     <div class="center">
-      <i [ngClass]="data.isEditingTitle ? 'fa-save' : 'fa-pencil'" class="fa mr-2" aria-hidden="true"
-        (click)="data.isEditingTitle = !data.isEditingTitle"></i>
+      <button (click)="data.isEditingTitle = !data.isEditingTitle" class="fa mr-2" [ngClass]="data.isEditingTitle ? 'fa-save' : 'fa-pencil'">
+      </button>
     </div>
   </ng-container>
 

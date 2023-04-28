@@ -74,8 +74,33 @@ namespace AppLensV3.Controllers
             var theme = body?["theme"]?.ToString();
             var viewMode = body?["viewMode"]?.ToString();
             var expandAnalysisCheckCard = body?["expandAnalysisCheckCard"]?.ToString();
+            var codeCompletion = body?["codeCompletion"]?.ToString() ?? "on";
 
-            var userSetting = await _cosmosDBHandler.PatchUserPanelSetting(userId, theme, viewMode, expandAnalysisCheckCard);
+            var userSetting = await _cosmosDBHandler.PatchUserPanelSetting(userId, theme, viewMode, expandAnalysisCheckCard, codeCompletion);
+            return Ok(userSetting);
+        }
+
+        [HttpGet("{userId}/userChatGPTSetting")]
+        public async Task<IActionResult> GetUserChatGPTInfo(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return BadRequest("userId cannot be empty");
+            }
+            UserSetting user = await _cosmosDBHandler.GetUserSetting(userId, true, true);
+            if (user == null) return NotFound("");
+            return Ok(user);
+        }
+
+        [HttpPost("{userId}/userChatGPTSetting")]
+        public async Task<IActionResult> PathchUserChatGPTSettings(string userId, [FromBody] JToken body)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return BadRequest("userId cannot be empty");
+            }
+
+            var userSetting = await _cosmosDBHandler.PatchUserChatGPTSetting(userId, body);
             return Ok(userSetting);
         }
 

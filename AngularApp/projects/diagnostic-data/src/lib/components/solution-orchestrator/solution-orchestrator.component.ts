@@ -10,7 +10,7 @@ import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { Solution } from '../solution/solution';
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
-import { forkJoin as observableForkJoin, Observable, of } from 'rxjs';
+import { BehaviorSubject, forkJoin as observableForkJoin, Observable, of } from 'rxjs';
 import { map, catchError, delay, retryWhen } from 'rxjs/operators';
 import { DetectorResponse, DetectorMetaData, HealthStatus, DetectorType, DownTime } from '../../models/detector';
 import { Insight, InsightUtils } from '../../models/insight';
@@ -27,7 +27,11 @@ import {detectorSearchEnabledPesIds, detectorSearchEnabledPesIdsInternal } from 
 import { GenericResourceService } from '../../services/generic-resource-service';
 import { WebSearchConfiguration } from '../../models/search';
 import { GenericContentService } from '../../services/generic-content.service';
+import { OpenAIArmService } from '../../services/openai-arm.service';
 import {PanelType} from "office-ui-fabric-react";
+import { CXPChatService } from '../../services/cxp-chat.service';
+import { IButtonStyles } from 'office-ui-fabric-react/lib/components/Button';
+import { IIconProps } from 'office-ui-fabric-react/lib/components/Icon';
 
 @Component({
     selector: 'solution-orchestrator',
@@ -67,10 +71,42 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
     pesId: string = null;
     sapProductId: string = null;
 
+    showGPTSolution: boolean = true;
+    gptSolution: string = "";
+    feedbackLoggingData: any = {};
+    fetchingGPTResults: boolean = false;
+    buttonStyle: IButtonStyles = {
+        root: {
+          // color: "#323130",
+          borderRadius: "12px",
+          margin: " 0px 5px",
+          background: "rgba(0, 120, 212, 0.1)",
+          fontSize: "13",
+          fontWeight: "600",
+          height: "80%"
+        },
+        rootFocused: {
+          border: "2px solid black",
+        }
+      }
+      iconStyles: IIconProps["styles"] = {
+        root: {
+          color: "#0078d4"
+        }
+      }
+    openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
+    timePickerButtonStr: string = "";
+    timePickerErrorStr: string = "";
+    updateTimePickerErrorMessage(message: string) {
+        this.timePickerErrorStr = message;
+    }
+
+    searchPlaceHolder: string = "Search for solutions";
+    searchBoxInFocus: boolean = false;
+    hideSearchIcon: boolean = false;
+
     searchTermDisplayed: string = "";
     fetchingDetectors: boolean = false;
-
-    topLevelSolutions = [];
 
     issueDetectedViewModels: any[] = [];
     successfulViewModels: any[] = [];
@@ -96,31 +132,28 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
         this.showPanel(viewModel.solutions!=null? viewModel.solutions: [], `${viewModel.model.metadata.name} solutions`);
     }
 
-    mainSolutionIndex = 0;
-
     allSolutions: Solution[] = [];
 
-    timeoutToShowSolutions: number = 10000;
-    showSolutionsTimedout: boolean = false;
+    timeoutToShowSolutions: number = 20000;
+    gptSolutionTimeout: any;
+    gptSolutionHasTimedout: boolean = false;
+    detectorSolutionsTimedout: boolean = false;
+    successfulSectionCollapsed: boolean = true;
+    successfulSectionCollapsedChanged(event){
+        this.successfulSectionCollapsed = event;
+    }
+    articleSectionCollapsed: boolean = false;
+    articleSectionCollapsedChanged(event){
+        this.articleSectionCollapsed = event;
+    }
+    showThanksMessage: boolean = false;
+    showThanksMessageChanged(event){
+        this.showThanksMessage = event;
+    }
 
     startTime: Moment;
     endTime: Moment;
     isPublic: boolean;
-
-    /*numArticlesExpanded: number = 3;
-    articleSectionExpanded: boolean = false;
-    toggleArticleSection = () => {
-        this.articleSectionExpanded = !this.articleSectionExpanded;
-        if (this.articleSectionExpanded) {
-            this.logEvent(TelemetryEventNames.MoreWebResultsClicked,
-                {
-                    searchId: this.searchId,
-                    searchTerm: this.searchTerm,
-                    ts: Math.floor((new Date()).getTime() / 1000).toString()
-                }
-            );
-        }
-    };*/
 
     documentationSectionIcon: any = {
         iconName: "FileASPX",
@@ -184,28 +217,13 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
         }
     };
 
-    breadCrumbStyle = {
-        root: {
-            marginTop: "0px"
-        },
-        item: {
-            fontWeight: "400 !important"
-        },
-        itemLink: {
-            fontWeight: "400 !important"
-        }
-    };
-
-    selectSolution(sol, i) {
-        this.mainSolutionIndex = i;
-        this.telemetryService.logEvent(TelemetryEventNames.SolutionOrchestratorOptionSelected, {searchId: this.searchId, solutionTitle: sol.Title, solutionScore: sol.Score, solutionDetector: sol.DetectorId, solutionIndex: i, ts: Math.floor((new Date()).getTime() / 1000).toString()});
-    }
-
     constructor(public _activatedRoute: ActivatedRoute, private _router: Router,
         private _diagnosticService: DiagnosticService, private _detectorControl: DetectorControlService,
         protected telemetryService: TelemetryService, public _appInsightsService: AppInsightsQueryService,
         private _supportTopicService: GenericSupportTopicService, protected _globals: GenieGlobals, private _solutionService: SolutionService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, private _contentService: GenericContentService,) {
+        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, private _contentService: GenericContentService,
+        private _openAIArmService: OpenAIArmService,
+        private _cxpChatService: CXPChatService) {
         super(telemetryService);
         this.isPublic = config && config.isPublic;
 
@@ -241,22 +259,33 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
     }
 
     clearInsights() {
-        this.showSolutionsTimedout = false;
+        this.detectorSolutionsTimedout = false;
         this.detectorViewModels = [];
         this.issueDetectedViewModels = [];
         this.successfulViewModels = [];
         this.allSolutions = [];
-        this.topLevelSolutions = [];
-        this.mainSolutionIndex = 0;
+    }
+
+    clearGPTResults(){
+        this.showThanksMessage = false;
+        this.gptSolutionHasTimedout = false;
+        this.gptSolution = "";
+        this.showGPTSolution = false;
+        this.feedbackLoggingData = {};
+        clearTimeout(this.gptSolutionTimeout);
     }
 
     resetGlobals() {
         this.detectors = [];
         this.clearInsights();
+        this.clearGPTResults();
         this.inDrillDownMode = false;
     }
 
     ngOnInit() {
+        this._detectorControl.timePickerStrSub.subscribe(s => {
+            this.timePickerButtonStr = s;
+        });
         this.getAzureGuides();
         this._activatedRoute.paramMap.subscribe(params => {
             let detectorId = params.get("detectorName") === null ? null : params.get("detectorName");
@@ -287,9 +316,9 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
         this.startDetectorRendering(null, false);
     }
 
-    updateSearchTerm(searchValue: { newValue: any }) {
-        if (!!searchValue && !!searchValue.newValue && !!searchValue.newValue.currentTarget && !!searchValue.newValue.currentTarget.value) {
-            this.searchTermDisplayed = searchValue.newValue.currentTarget.value;
+    updateSearchTerm(searchValue: string) {
+        if (searchValue) {
+            this.searchTermDisplayed = searchValue;
         }
     }
 
@@ -316,10 +345,6 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
         //this.globals.openTimePicker = !this.globals.openTimePicker;
         //this.updateAriaExpanded();
     }*/
-
-    sendFeedback() {
-        this.portalActionService.openFeedbackPanel();
-    }
 
     getAzureGuides() {
         if (!this.supportDocumentRendered) {
@@ -473,21 +498,111 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
         return finalResults;
     }
 
-    onSearchEnter(searchValue: { newValue: string }) {
-        let searchTerm = searchValue.newValue;
-        if (searchTerm !== this.searchTerm) {
-            this._router.navigate([`../solutionorchestrator`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', preserveFragment: true, queryParams: { searchTerm: searchTerm, hideShieldComponent: true } });
+    onSearchEnter() {
+        if (this.searchTermDisplayed !== this.searchTerm && this.searchTermDisplayed.length>1) {
+            this._router.navigate([`../solutionorchestrator`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', preserveFragment: true, queryParams: { searchTerm: this.searchTermDisplayed, hideShieldComponent: true } });
         }
     }
 
     clearSearchTerm() {
         this.searchTermDisplayed = "";
     }
+    newSearchTriggered: boolean = false;
 
     hitSearch() {
         this.resetGlobals();
-        var detectorsTask = this.searchDetectors();
-        var webDocuments = this.getDocuments();
+        this.searchId = uuid();
+        this.newSearchTriggered = true;
+        //Lower limit is 4 characters and upper limit is 200 characters to trigger GPT search
+        if (this.searchTerm.length > 3 && this.searchTerm.length < 200) {
+            this.getGPTResults();
+        }
+        this.searchDetectors();
+        this.getDocuments();
+    }
+
+    gptSolutionSetTimer(extension = 1){
+        this.gptSolutionTimeout = setTimeout(() => {
+            if (this.fetchingGPTResults) {
+                //Extend timeout once if detectors have not finished yet
+                if (this.getPendingDetectorCount() > 0 && extension>0) {
+                    clearTimeout(this.gptSolutionTimeout);
+                    this.gptSolutionTimeout = this.gptSolutionSetTimer(0);
+                }
+                else {
+                    this.gptSolutionHasTimedout = true;
+                    this.fetchingGPTResults = false;
+                    this.showGPTSolution = false;
+                    this.logEvent(TelemetryEventNames.ChatGPTARMQueryTimedout, {
+                        searchMode: this.searchMode,
+                        searchId: this.searchId,
+                        query: this.searchTerm,
+                        timeoutPeriod: this.timeoutToShowSolutions,
+                        ts: Math.floor((new Date()).getTime() / 1000).toString()
+                    });
+                }
+            }
+        }, this.timeoutToShowSolutions);
+    }
+
+    getGPTResults(){
+        this.fetchingGPTResults = true;
+        this.gptSolutionSetTimer(1);
+        this._openAIArmService.CheckEnabled().subscribe(res => {
+            if (res) {
+                this._openAIArmService.getAnswer(this.searchTerm).subscribe(gptRes => {
+                    if (!this.gptSolutionHasTimedout) {
+                        if (gptRes && gptRes.length>2 && !gptRes.trim().toLowerCase().includes("we could not find any information about that")) {
+                            this.gptSolution = gptRes;
+                            this.feedbackLoggingData = {
+                                searchId: this.searchId,
+                                query: this.searchTerm,
+                                solutionOffered: this.gptSolution,
+                                solutionType: "ChatGPT"
+                            }
+                            this.showGPTSolution = true;
+                            this.newSearchTriggered = false;
+                            this.logEvent(TelemetryEventNames.ChatGPTARMQueryResults, {
+                                searchMode: this.searchMode,
+                                searchId: this.searchId,
+                                query: this.searchTerm,
+                                result: this.gptSolution,
+                                ts: Math.floor((new Date()).getTime() / 1000).toString()
+                            });
+                        }
+                        else {
+                            this.showGPTSolution = false;
+                            this.logEvent(TelemetryEventNames.ChatGPTARMQueryResultEmpty, {
+                                searchMode: this.searchMode,
+                                searchId: this.searchId,
+                                query: this.searchTerm,
+                                result: this.gptSolution,
+                                ts: Math.floor((new Date()).getTime() / 1000).toString()
+                            });
+                        }
+                        this.fetchingGPTResults = false;
+                    }
+                }, err => {
+                    this.showGPTSolution = false;
+                    this.fetchingGPTResults = false;
+                    this.logEvent(TelemetryEventNames.ChatGPTARMQueryError, {
+                        searchMode: this.searchMode,
+                        searchId: this.searchId,
+                        query: this.searchTerm,
+                        error: err.error,
+                        ts: Math.floor((new Date()).getTime() / 1000).toString()
+                    });
+                });
+            }
+            else {
+                this.showGPTSolution = false;
+                this.fetchingGPTResults = false;
+            }
+        },
+        err => {
+            this.showGPTSolution = false;
+            this.fetchingGPTResults = false;
+        });
     }
 
     insertInDetectorArray(detectorItem) {
@@ -502,20 +617,6 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
             return detector.name;
         }
         return null;
-    }
-
-    viewSolutionSupportingData(solution: Solution) {
-        let detectorId = solution.DetectorId;
-        let detectorName = this.getDetectorNameById(detectorId);
-        this.breadcrumbItems = [
-            {text: "Solutions", key: "mainSolutions", onClick: () => this.goBackToOrchestrator()},
-            {text: detectorName? detectorName: solution.Title, key: detectorId}
-        ];
-        this.telemetryService.logEvent(TelemetryEventNames.SolutionOrchestratorViewSupportingDataClicked, {searchId: this.searchId, detectorId: detectorId, score: solution.Score.toString(), solutionTitle: solution.Title, solutionIndex: this.mainSolutionIndex.toString(), ts: Math.floor((new Date()).getTime() / 1000).toString()});
-        if (detectorId) {
-            this._router.navigate([`../solutionorchestrator/detectors/${detectorId}`], { relativeTo: this._activatedRoute, queryParamsHandling: 'merge', preserveFragment: true, queryParams: { searchTerm: this.searchTerm, hideShieldComponent: true } });
-            this.inDrillDownMode = true;
-        }
     }
 
     viewDetectorData(viewModel, tabName) {
@@ -544,14 +645,28 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
         this.detectors = [];
         this._resourceService.getPesId().subscribe(pesId => {
             if (!((this.isPublic && detectorSearchEnabledPesIds.findIndex(x => x==pesId)<0) || (!this.isPublic && detectorSearchEnabledPesIdsInternal.findIndex(x => x==pesId)<0))){
-                this.searchId = uuid();
                 let searchTask = this._diagnosticService.getDetectorsSearch(this.searchTerm).pipe(map((res) => res), catchError(e => of([])));
                 let detectorsTask = this._diagnosticService.getDetectors().pipe(map((res) => res), catchError(e => of([])));
                 this.fetchingDetectors = true;
                 //this.showPreLoader = true;
                 observableForkJoin([searchTask, detectorsTask]).subscribe(results => {
+                    this.newSearchTriggered = false;
                     var searchResults: DetectorMetaData[] = results[0];
                     var detectorList = results[1];
+
+                    //Include any detectors that have been mapped to the support topic with the highest score 1.0
+                    let supportTopicMappedDetectors: DetectorMetaData[] = [];
+                    if (this._supportTopicService.sapSupportTopicId != "") {
+                        supportTopicMappedDetectors = detectorList.filter(detector =>
+                            detector.supportTopicList &&
+                            detector.supportTopicList.findIndex(supportTopicId => supportTopicId.sapSupportTopicId === this._supportTopicService.sapSupportTopicId) >= 0);
+                    }
+                    if (supportTopicMappedDetectors && supportTopicMappedDetectors.length>0) {
+                        supportTopicMappedDetectors.forEach(detector => {
+                            this.insertInDetectorArray({ name: detector.name, id: detector.id, score: 1.0 });
+                        });
+                    }
+
                     var logDetail = "";
                     
                     // When this happens this means that the RP is not sending the search term parameter to Runtimehost API
@@ -650,7 +765,7 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
         // Log all the children detectors
         setTimeout(() => {
             if (this.getPendingDetectorCount()>0) {
-                this.showSolutionsTimedout = true;
+                this.detectorSolutionsTimedout = true;
             }
         }, this.timeoutToShowSolutions);
         observableForkJoin(requests).subscribe(childDetectorData => {
@@ -671,14 +786,7 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
             if (this.searchId && this.searchId.length > 0) {
                 this.childDetectorsEventProperties['SearchId'] = this.searchId;
             }
-            this.topLevelSolutions = this.allSolutions.filter(x => x.Score>this.detectorThresholdScore).sort((a, b) => {if (a.Score>b.Score) return -1; else return 1;});
-            this.logEvent(TelemetryEventNames.SolutionOrchestratorSummary, {searchId: this.searchId, searchTerm: this.searchTerm, proposedSolutions: this.topLevelSolutions.map(x => {
-                return {
-                    title: x.Title,
-                    detectorId: x.DetectorId,
-                    score: x.Score
-                };
-            }), ts: Math.floor((new Date()).getTime() / 1000).toString()});
+            this.logEvent(TelemetryEventNames.SolutionOrchestratorSummary, {searchId: this.searchId, searchTerm: this.searchTerm, ts: Math.floor((new Date()).getTime() / 1000).toString()});
             this.logEvent(TelemetryEventNames.ChildDetectorsSummary, this.childDetectorsEventProperties);
         });
 
@@ -781,6 +889,30 @@ export class SolutionOrchestratorComponent extends DataRenderBaseComponent imple
         };
         let segments: string[] = [path];
         this._router.navigate(segments, navigationExtras);
+    }
+
+    cxpChatTrackingId: string = '';
+    supportTopicId: string = '';
+    cxpChatUrl: string = '';
+
+    showChatButton(): boolean {
+        return this.isPublic && this.cxpChatTrackingId != '' && this.cxpChatUrl != '';
+    }
+
+    renderCXPChatButton() {
+        if (this.cxpChatTrackingId === '' && this.cxpChatUrl === '') {
+            let effectiveSupportTopicId: string = '';
+            effectiveSupportTopicId = (this._supportTopicService && this._supportTopicService.sapSupportTopicId) ? this._supportTopicService.sapSupportTopicId : this._supportTopicService.supportTopicId;
+            if (this._supportTopicService && this._cxpChatService && this._cxpChatService.isSupportTopicEnabledForLiveChat(effectiveSupportTopicId)) {
+                this.cxpChatTrackingId = this._cxpChatService.generateTrackingId(effectiveSupportTopicId);
+                this.supportTopicId = effectiveSupportTopicId;
+                this._cxpChatService.getChatURL(effectiveSupportTopicId, this.cxpChatTrackingId).subscribe((chatApiResponse: any) => {
+                    if (chatApiResponse && chatApiResponse != '') {
+                        this.cxpChatUrl = chatApiResponse;
+                    }
+                });
+            }
+        }
     }
 }
 

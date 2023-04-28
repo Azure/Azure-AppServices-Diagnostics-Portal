@@ -322,6 +322,9 @@
         rel="noopener noreferrer" [href]="PRLink">here</a>.</div>
     <div *ngIf="saveFailed && saveIdFailure" style="margin-left: 4px;">This detector ID is already in use. Please try a
       new one</div>
+      <!-- <div *ngIf="(saveFailed || publishFailed) && badBranchNameFailure" style="margin-left: 4px;">The following characters are not allowed in 
+        detector ID: '<', '>'. Please edit the detector ID to remove these characters </div> -->
+        <div *ngIf="(saveFailed || publishFailed) && badBranchNameFailure" style="margin-left: 4px;">{{charWarningMessage}} Please edit the detector ID to remove these characters</div>
   </fab-panel>
 
 
@@ -345,7 +348,7 @@
       <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"
         [disabled]="runButtonDisabled"></fab-command-bar-item>
       <fab-command-bar-item [style]="saveButtonVisibilityStyle" key="save" [text]="saveButtonText"
-        [iconProps]="saveIcon" (click)="saveDetectorCode()"></fab-command-bar-item>
+        [iconProps]="saveIcon" (click)="saveDetectorCode()" [disabled]="saveButtonDisabled"></fab-command-bar-item>
       <fab-command-bar-item key="publishGrad" [text]="modalPublishingButtonText" [iconProps]="publishIcon"
         (click)="publishButtonOnClick()" [disabled]="publishButtonDisabled">
       </fab-command-bar-item>
@@ -366,7 +369,7 @@
         [iconProps]="{ iconName: 'BackToWindow' }" (click)="showGistDialog()"></fab-command-bar-item>
       <fab-command-bar-item [style]="commitHistoryVisibilityStyle" key="commitHistory" text="Commit History"
         [iconProps]="{iconName: 'ReadingMode'}" (click)="openCommitHistory()"></fab-command-bar-item>
-      <fab-command-bar-item [style]="deleteVisibilityStyle" key="delete" text="Delete"
+      <fab-command-bar-item [disabled]="isWorkflowDetector" [style]="deleteVisibilityStyle" key="delete" text="Delete"
         [iconProps]="{iconName: 'Delete'}" (click)="showDeleteDialog()"></fab-command-bar-item>
       <fab-command-bar-item *ngIf = "gistMode" [style]="detectorReferences" key="detectorRefs" text="Update Detector References" [iconProps]="{iconName: 'BackToWindow'}"
       (click)="showUpdateDetectorReferencesDialog()">
@@ -545,7 +548,7 @@
     </split>
   </div>
   <div *ngIf="isWorkflowDetector" class="onboarding-container">
-    <create-workflow [id]="id"></create-workflow>
+    <create-workflow [id]="id" [Branch]="Branch"></create-workflow>
   </div>
 
 </div>

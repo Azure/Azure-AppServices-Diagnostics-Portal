@@ -1,5 +1,5 @@
 
-import { Inject } from '@angular/core';
+import { Inject, Output, EventEmitter } from '@angular/core';
 import { Component, Input, OnInit } from '@angular/core';
 import { DiagnosticDataConfig, DIAGNOSTIC_DATA_CONFIG } from '../../config/diagnostic-data-config';
 import { TelemetryService } from "../../services/telemetry/telemetry.service";
@@ -17,6 +17,10 @@ export class SolutionViewContainerComponent implements OnInit {
     @Input() isKeystoneDetector: boolean = false;
     @Input() showFeedbackQuestion: boolean = true;
     @Input() askReasonNotHelpful: boolean = false;
+    @Input() metadataForLogging: any = {};
+    @Input() showThanksMessage: boolean = false;
+
+    @Output() showThanksMessageChange = new EventEmitter<any>();
     
     calloutSubmitDisabled: boolean = false;
     showReasonsCallout: boolean = false;
@@ -58,7 +62,6 @@ export class SolutionViewContainerComponent implements OnInit {
     yesSelected: boolean;
     noSelected: boolean;
     helpfulSelected: string;
-    showThanksMessage: boolean = false;
     eventProps: { [name: string]: string } = {};
     isPublic: boolean;
 
@@ -91,10 +94,12 @@ export class SolutionViewContainerComponent implements OnInit {
         const feedbackEventProps = {
             ...this.eventProps,
             'IsHelpful': this.helpfulSelected,
-            ...(this.askReasonNotHelpful && this.noSelected)? {'NotHelpfulReason': this.selectedCalloutOption.text}: {}
+            ...(this.askReasonNotHelpful && this.noSelected)? {'NotHelpfulReason': this.selectedCalloutOption.text}: {},
+            ...this.metadataForLogging
         }
         this.telemetryService.logEvent("SolutionFeedback", feedbackEventProps);
         this.showThanksMessage = this.yesSelected || this.noSelected;
+        this.showThanksMessageChange.emit(this.showThanksMessage);
     }
 
     feedbackButtonClicked(helpful: boolean) {
@@ -110,11 +115,13 @@ export class SolutionViewContainerComponent implements OnInit {
 
             const feedbackEventProps = {
                 ...this.eventProps,
-                'IsHelpful': String(helpful)
+                'IsHelpful': String(helpful),
+                ...this.metadataForLogging
             }
 
             this.telemetryService.logEvent("SolutionFeedback", feedbackEventProps);
             this.showThanksMessage = this.yesSelected || this.noSelected;
+            this.showThanksMessageChange.emit(this.showThanksMessage);
         }
     }
 

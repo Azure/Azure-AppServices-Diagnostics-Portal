@@ -125,6 +125,8 @@ import { FabHoverCardModule } from '@angular-react/fabric/lib/components/hover-c
 import { FabMessageBarModule } from '@angular-react/fabric/lib/components/message-bar';
 import { FabLinkModule } from '@angular-react/fabric/lib/components/link';
 import { FabPivotModule } from '@angular-react/fabric/lib/components/pivot';
+import { DownloadReportComponent } from './components/download-report/download-report.component';
+import { OptInsightsService } from './services/optinsights/optinsights.service';
 
 @NgModule({
     declarations: [
@@ -195,7 +197,8 @@ import { FabPivotModule } from '@angular-react/fabric/lib/components/pivot';
         ProfilerComponent,
         LinuxPythonCpuProfilerComponent,
         LinuxNodeHeapDumpComponent,
-        LinuxNodeCpuProfilerComponent
+        LinuxNodeCpuProfilerComponent,
+        DownloadReportComponent
     ],
     imports: [
         HttpClientModule,
@@ -319,7 +322,8 @@ export class SharedModule {
                 GenericCommsService,
                 GroupByPipe,
                 LocalBackendService,
-                ABTestingService
+                ABTestingService,
+                OptInsightsService
             ]
         };
     }

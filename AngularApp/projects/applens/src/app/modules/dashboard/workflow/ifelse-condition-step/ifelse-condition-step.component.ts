@@ -87,6 +87,9 @@ export class IfElseConditionStepComponent extends WorkflowNodeBaseClass implemen
     else if (dataType.toLowerCase() === "sbyte") {
       this.dataType = 'sbyte';
     }
+    else if (dataType.toLowerCase().endsWith('boolean')) {
+      this.dataType = 'boolean';
+    }
     else {
       this.dataType = 'string';
       if (!this.data.ifconditionExpression) {

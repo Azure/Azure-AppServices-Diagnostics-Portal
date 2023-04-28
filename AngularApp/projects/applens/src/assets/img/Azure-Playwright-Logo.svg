@@ -1,0 +1,28 @@
+<svg id="fc94c9f0-5a81-44cc-a7d6-d3c2c33d2e8b" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+  <defs>
+    <linearGradient id="bb2427ef-9c09-4d16-a5bc-83080d6f53b9" x1="1.29" y1="1005.135" x2="10.29" y2="1025.01" gradientTransform="translate(0 -1006)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#50e6ff" />
+      <stop offset="1" stop-color="#32bedd" />
+    </linearGradient>
+    <linearGradient id="f0b08b3a-b4d6-4bc9-9996-ed594d4fd31f" x1="6.5" y1="1015.733" x2="9.5" y2="1015.733" gradientTransform="translate(0 -1006)" gradientUnits="userSpaceOnUse">
+      <stop offset="0.303" stop-color="#50e6ff" stop-opacity="0" />
+      <stop offset="0.833" stop-color="#1eaac9" />
+    </linearGradient>
+    <linearGradient id="bf7189ef-63f0-44db-bce5-eb1e5778aaf2" x1="10" y1="1018.75" x2="7" y2="1018.75" gradientTransform="translate(0 -1006)" gradientUnits="userSpaceOnUse">
+      <stop offset="0.342" stop-color="#05769f" />
+      <stop offset="1" stop-color="#198ab3" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="a2e3a0f6-044c-4880-aee3-de9e09c6faf3" x1="8.123" y1="1003.998" x2="18.196" y2="1024.278" gradientTransform="translate(0 -1006)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5ea0ef" />
+      <stop offset="1" stop-color="#0078d4" />
+    </linearGradient>
+  </defs>
+  <path d="M1.5,1.5A1.5,1.5,0,0,0,0,3V9a9,9,0,0,0,8.193,8.964A.748.748,0,0,0,9,17.214V1.5Z" fill="url(#bb2427ef-9c09-4d16-a5bc-83080d6f53b9)" />
+  <path d="M1.5,1.5A1.5,1.5,0,0,0,0,3V9a9,9,0,0,0,8.193,8.964A.748.748,0,0,0,9,17.214V1.5Z" fill="url(#f0b08b3a-b4d6-4bc9-9996-ed594d4fd31f)" />
+  <path d="M8.25,11.25a3,3,0,0,0-2.97,2.574.377.377,0,0,0,.375.426H9v-3Z" fill="#198ab3" />
+  <path d="M8.25,11.25a3,3,0,0,0-2.97,2.574.377.377,0,0,0,.375.426H9v-3Z" fill="url(#bf7189ef-63f0-44db-bce5-eb1e5778aaf2)" />
+  <path d="M16.5,0H9.75A.75.75,0,0,0,9,.75V16.5a9,9,0,0,0,9-9v-6A1.5,1.5,0,0,0,16.5,0Z" fill="url(#a2e3a0f6-044c-4880-aee3-de9e09c6faf3)" />
+  <path d="M4.5,5.25A2.252,2.252,0,0,0,2.291,7.068a.372.372,0,0,0,.372.432H6.337a.373.373,0,0,0,.372-.432A2.251,2.251,0,0,0,4.5,5.25Z" fill="#198ab3" />
+  <path d="M13.5,5.25a2.252,2.252,0,0,0-2.209,1.818.372.372,0,0,0,.372.432h3.674a.372.372,0,0,0,.372-.432A2.251,2.251,0,0,0,13.5,5.25Z" fill="#005ba1" />
+  <path d="M12.345,11.25H9v3h.75a3,3,0,0,0,2.97-2.574A.377.377,0,0,0,12.345,11.25Z" fill="#005ba1" />
+</svg>

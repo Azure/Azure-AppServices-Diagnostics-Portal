@@ -4,33 +4,33 @@
     (onDismiss)="cancelTimeRange()" [isBeakVisible]="false">
     <div  *ngIf="openTimePickerCallout" style="width: 320px;">
       <div class="callout-padding">
-        <fab-choice-group [options]="choiceGroupOptions" [defaultSelectedKey]="defaultSelectedKey">
+        <fab-choice-group [options]="choiceGroupOptions" [defaultSelectedKey]="selectedKey">
         </fab-choice-group>
-        <div *ngIf="showTimePicker" class="row">
+        <div class="row">
           <div style="display: flex;" class="ml-3 mt-3">
             <div class="mr-2 date-picker-label">Start </div>
-            <fab-date-picker [minDate]="minDate" [maxDate]="maxDate"
+            <fab-date-picker [disabled]="disableDateAndTimePicker" [minDate]="minDate" [maxDate]="maxDate"
               placeholder="Select a date..." ariaLabel="Select start date" allowTextInput="true"
               showMonthPickerAsOverlay="true" (onSelectDate)="onSelectStartDateHandler($event)" [formatDate]="formatDate"
               [value]="startDate" [parseDateFromString]="parseDateFromString" [contentStyle]="'width:130px;'">
             </fab-date-picker>
-            <fab-masked-text-field [contentClass]="'col-md-4'" maxLength="6" [(value)]="startClock"
+            <fab-masked-text-field [disabled]="disableDateAndTimePicker" [contentClass]="'col-md-4'" maxLength="6" [value]="startClock"
               [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
-              [getErrorMessage]="getErrorMessageOnTextField" [ariaLabel]="'startTime'" [styles]="maskTextFieldStyles">
+              [ariaLabel]="'startTime'" [styles]="maskTextFieldStyles" (valueChange)="onChangeStartClock($event)">
             </fab-masked-text-field>
             <div class="date-picker-label">(UTC)</div>
           </div>
 
           <div style="display: flex;" class="ml-3 mt-3">
             <div  class="mr-2 date-picker-label">End&nbsp;</div>
-            <fab-date-picker [minDate]="minDate" [maxDate]="maxDate"
+            <fab-date-picker [disabled]="disableDateAndTimePicker" [minDate]="minDate" [maxDate]="maxDate"
               placeholder="Select a date..." ariaLabel="Select end date" allowTextInput="true"
               showMonthPickerAsOverlay="true" (onSelectDate)="onSelectEndDateHandler($event)" [formatDate]="formatDate"
               [value]="endDate" [parseDateFromString]="parseDateFromString" [contentStyle]="'width:130px'">
             </fab-date-picker>
-            <fab-masked-text-field [contentClass]="'col-md-4'" maxLength="6" [(value)]="endClock"
+            <fab-masked-text-field [disabled]="disableDateAndTimePicker" [contentClass]="'col-md-4'" maxLength="6" [(value)]="endClock"
               [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
-              [getErrorMessage]="getErrorMessageOnTextField" [ariaLabel]="'endTime'" [styles]="maskTextFieldStyles">
+              [ariaLabel]="'endTime'" [styles]="maskTextFieldStyles" (keyup.enter)="applyTimeRange()" (keydown.tab)="validateStartAndEndTime()">
             </fab-masked-text-field>
             <div class="date-picker-label">(UTC)</div>
           </div>

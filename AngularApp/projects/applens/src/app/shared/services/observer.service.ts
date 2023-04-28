@@ -2,7 +2,6 @@ import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DiagnosticApiService } from './diagnostic-api.service';
-import { isArray } from 'util';
 import { ObserverAseResponse, ObserverContainerAppResponse, ObserverSiteDetailsResponse, ObserverSiteInfo, ObserverSiteResponse, ObserverSiteSku, ObserverStampResponse, ObserverStaticWebAppResponse } from '../models/observer';
 
 @Injectable()
@@ -13,7 +12,7 @@ export class ObserverService {
   public getSite(site: string): Observable<ObserverSiteResponse> {
     return this._diagnosticApiService.get<ObserverSiteResponse>(`api/sites/${site}`).pipe(
       map((siteRes: ObserverSiteResponse) => {
-        if (siteRes && siteRes.details && isArray(siteRes.details)) {
+        if (siteRes && siteRes.details && Array.isArray(siteRes.details)) {
           siteRes.details.map(info => this.getSiteInfoWithSlot(info));
         }
 
@@ -28,7 +27,7 @@ export class ObserverService {
   public getContainerApp(containerAppName: string): Observable<ObserverContainerAppResponse> {
     return this._diagnosticApiService.get<ObserverContainerAppResponse>(`api/containerapps/${containerAppName}`).pipe(
       map((containerAppRes: ObserverContainerAppResponse) => {
-        if (containerAppRes && containerAppRes.details && isArray(containerAppRes.details)) {
+        if (containerAppRes && containerAppRes.details && Array.isArray(containerAppRes.details)) {
           containerAppRes.details.map(info => info);
         }
 
@@ -39,7 +38,7 @@ export class ObserverService {
   public getStaticWebApp(defaultHostNameOrAppName: string): Observable<ObserverStaticWebAppResponse> {
     return this._diagnosticApiService.get<ObserverStaticWebAppResponse>(`api/staticwebapps/${defaultHostNameOrAppName}`).pipe(
       map((staticWebAppRes: ObserverStaticWebAppResponse) => {
-        if (staticWebAppRes && staticWebAppRes.details && isArray(staticWebAppRes.details)) {
+        if (staticWebAppRes && staticWebAppRes.details && Array.isArray(staticWebAppRes.details)) {
           staticWebAppRes.details.map(info => info);
         }
         return staticWebAppRes;

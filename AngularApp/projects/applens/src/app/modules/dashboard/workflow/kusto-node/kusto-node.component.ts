@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { promptType, stepVariable, workflowNodeData } from 'projects/diagnostic-data/src/lib/models/workflow';
+import { kustoNode, promptType, stepVariable, workflowNodeData } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { NgFlowchartStepComponent } from 'projects/ng-flowchart/dist';
 import { ConfigureVariablesComponent } from '../configure-variables/configure-variables.component';
 import { KustoQueryDialogComponent } from '../kusto-query-dialog/kusto-query-dialog.component';
@@ -37,22 +37,31 @@ export class KustoNodeComponent extends WorkflowNodeBaseClass implements OnInit 
   configureKustoQuery() {
     const dialogConfig = this.getNewMatDialogConfig();
     let dialogParams: kustoQueryDialogParams = new kustoQueryDialogParams();
-    dialogParams.queryText = this.data.queryText !== '' ? this._workflowServicePrivate.decodeBase64String(this.data.queryText) : this.defaultQueryText;
+    let queryText = this._workflowServicePrivate.getQueryText(this.data);
+    dialogParams.queryText = queryText !== '' ? this._workflowServicePrivate.decodeBase64String(queryText) : this.defaultQueryText;
     dialogParams.queryLabel = this.data.name;
     dialogParams.variables = this.data.variables;
     dialogParams.kustoQueryColumns = this.data.kustoQueryColumns;
     dialogParams.completionOptions = this._workflowServicePrivate.getVariableCompletionOptions(this, false);
     dialogParams.currentNode = this.getCurrentNode();
+    if (this.data.kustoNode && this.data.kustoNode.addQueryOutputToMarkdown){
+      dialogParams.addQueryOutputToMarkdown = true;
+    }
 
     dialogConfig.data = dialogParams;
     this.matDialog.open(KustoQueryDialogComponent, dialogConfig).afterClosed().subscribe(modelData => {
       if (modelData != null) {
         this.variables = modelData.variables;
         this.data.name = modelData.queryLabel;
-        this.data.queryText = modelData.queryText;
+        this.data.kustoNode = new kustoNode();
+        this.data.kustoNode.queryText = modelData.queryText;
+        this.data.kustoNode.addQueryOutputToMarkdown = modelData.addQueryOutputToMarkdown
         this.data.variables = this.variables;
         this.data.kustoQueryColumns = modelData.kustoQueryColumns;
         this._workflowServicePrivate.emitVariablesChange(true);
+        if (this.data.title === this._workflowServicePrivate.titleKustoNode) {
+          this.data.title = this.data.name;
+        }
       }
     });
   }
@@ -95,6 +104,7 @@ export class KustoNodeComponent extends WorkflowNodeBaseClass implements OnInit 
     dialogConfig.maxWidth = "100%";
     dialogConfig.maxHeight = "100%";
     dialogConfig.disableClose = true;
+    dialogConfig.panelClass = "matDialogClass";
     return dialogConfig;
   }
 

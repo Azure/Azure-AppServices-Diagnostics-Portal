@@ -12,7 +12,7 @@ import { GenericSupportTopicService } from '../../services/generic-support-topic
 import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
 import { VersionService } from '../../services/version.service';
 import { CXPChatService } from '../../services/cxp-chat.service';
-import * as momentNs from 'moment';
+import * as moment from 'moment';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection } from '../../models/time-series';
 import { IButtonStyles } from 'office-ui-fabric-react/lib/components/Button';
 import { IChoiceGroupOption } from 'office-ui-fabric-react/lib/components/ChoiceGroup';
@@ -22,7 +22,6 @@ import { GenericUserSettingService } from '../../services/generic-user-setting.s
 import { GenieGlobals } from '../../services/genie.service';
 import { BreadcrumbNavigationItem } from '../../services/generic-breadcrumb.service';
 
-const moment = momentNs;
 const minSupportedDowntimeDuration: number = 10;
 const defaultDowntimeSelectionError: string = 'Downtimes less than 10 minutes are not supported. Select a time duration spanning at least 10 minutes.';
 
@@ -79,6 +78,10 @@ export class DetectorViewComponent implements OnInit {
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   timePickerButtonStr: string = "";
   timePickerErrorStr: string = "";
+  get loadingMessage(){
+    return `Analyzing data ${this.timePickerButtonStr.includes("to") ? "from" : "in"} ${this.timePickerButtonStr}, to change, use the time range picker`;
+  }
+
   buttonStyle: IButtonStyles = {
     root: {
       // color: "#323130",
@@ -140,7 +143,6 @@ export class DetectorViewComponent implements OnInit {
   downtimeFilterDisabled: boolean = false;
   public xAxisPlotBands: xAxisPlotBand[] = null;
   public zoomBehavior: zoomBehaviors = zoomBehaviors.Zoom;
-  // isMonitoring: boolean = false;
   @Input() set downtimeZoomBehavior(zoomBehavior: zoomBehaviors) {
     if (!!zoomBehavior) {
       this.zoomBehavior = zoomBehavior;
@@ -194,6 +196,7 @@ export class DetectorViewComponent implements OnInit {
       this.breadCrumb = { ...this._global.breadCrumb };
       this._global.breadCrumb = null;
       this.loadDetector();
+      this.timePickerErrorStr = "";
     });
 
     this.errorSubject.subscribe((data: any) => {
@@ -491,8 +494,8 @@ export class DetectorViewComponent implements OnInit {
 
   getDefaultDowntimeEntry(): DownTime {
     return {
-      StartTime: momentNs.utc('1990-01-01 00:00:00'),
-      EndTime: momentNs.utc('1990-01-01 00:00:00'),
+      StartTime: moment.utc('1990-01-01 00:00:00'),
+      EndTime: moment.utc('1990-01-01 00:00:00'),
       isSelected: false,
       downTimeLabel: 'Drag and select a time window on the graph'
     } as DownTime;
@@ -667,7 +670,7 @@ export class DetectorViewComponent implements OnInit {
 
   validateDowntimeEntry(selectedDownTime: DownTime): boolean {
     if (!!selectedDownTime && !!selectedDownTime.StartTime && !!selectedDownTime.EndTime) {
-      if (momentNs.duration(selectedDownTime.EndTime.diff(selectedDownTime.StartTime)).asMinutes() < minSupportedDowntimeDuration) {
+      if (moment.duration(selectedDownTime.EndTime.diff(selectedDownTime.StartTime)).asMinutes() < minSupportedDowntimeDuration) {
         return false;
       }
       else {
@@ -694,8 +697,8 @@ export class DetectorViewComponent implements OnInit {
   onDownTimeChange(selectedDownTime: DownTime, downtimeInteractionSource: string) {
     if (!!selectedDownTime && !!selectedDownTime.StartTime && !!selectedDownTime.EndTime &&
       selectedDownTime.downTimeLabel != this.getDefaultDowntimeEntry().downTimeLabel &&
-      momentNs.duration(selectedDownTime.StartTime.diff(this.startTime)).asMinutes() > -5 && //Allow a 5 min variance since backend normalizes starttime in 5 min timegrain
-      momentNs.duration(this.endTime.diff(selectedDownTime.EndTime)).asMinutes() > -5 //Allow a 5 min variance since backend normalizes endtime in 5 min timegrain
+      moment.duration(selectedDownTime.StartTime.diff(this.startTime)).asMinutes() > -5 && //Allow a 5 min variance since backend normalizes starttime in 5 min timegrain
+      moment.duration(this.endTime.diff(selectedDownTime.EndTime)).asMinutes() > -5 //Allow a 5 min variance since backend normalizes endtime in 5 min timegrain
     ) {
       if (this.validateDowntimeEntry(selectedDownTime)) {
         this.updateDownTimeErrorMessage('');
@@ -814,7 +817,7 @@ export class DetectorViewComponent implements OnInit {
   }
 
   navigateForBreadCrumb() {
-    const combinedParams = {...this._route.snapshot.queryParams, ...this.breadCrumb.queryParams};
+    const combinedParams = { ...this._route.snapshot.queryParams, ...this.breadCrumb.queryParams };
     if (this.breadCrumb) {
       this._router.navigate([this.breadCrumb.fullPath], { queryParams: combinedParams });
     }

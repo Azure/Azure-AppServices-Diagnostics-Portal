@@ -126,7 +126,7 @@
               </div>
             </div>
             <div class="section-wide" style="justify-content:space-between;" *ngIf="validationResponse && validationResponse.postMessage && validationResponse.postMessage.length>0">              
-              <div [innerHTML]="(validationResponse.postMessage && validationResponse.postMessage.length>0? validationResponse.postMessage: '') | safeHtml"></div>
+              <div [innerHTML]="(validationResponse.postMessage && validationResponse.postMessage.length>0? validationResponse.postMessage: '') | safe:'html'"></div>
             </div>
           </div>
         </fab-panel>

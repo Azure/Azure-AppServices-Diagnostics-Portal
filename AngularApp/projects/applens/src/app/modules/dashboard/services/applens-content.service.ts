@@ -21,15 +21,8 @@ export class ApplensContentService {
         //   link: 'https://docs.microsoft.com/en-us/azure/app-service/web-sites-purchase-ssl-web-site'
         // }
       ];
-    
-    private ocpApimKeySubject: Subject<string> = new ReplaySubject<string>(1);
-    private ocpApimKey: string = '';
 
     constructor(private _http: HttpClient, private _backendApi: DiagnosticApiService, private _resourceService: ResourceService,) { 
-        this._backendApi.get<string>(`api/appsettings/ContentSearch:Ocp-Apim-Subscription-Key`).subscribe((value: string) =>{
-            this.ocpApimKey = value;
-            this.ocpApimKeySubject.next(value);
-        });
     }
 
     public getContent(searchString?: string): Observable<any[]> {
@@ -55,15 +48,6 @@ export class ApplensContentService {
         }
 
         const query = encodeURIComponent(`${questionString} AND ${searchSuffix}${preferredSitesSuffix}${excludedSitesSuffix}`);
-        const url = `https://api.cognitive.microsoft.com/bing/v7.0/search?q='${query}'&count=${resultsCount}`;
-
-        return this.ocpApimKeySubject.pipe(mergeMap((key: string) => {
-            return this._http.get(url, { 
-                headers: {
-                    "Content-Type": "application/json",
-                    "Ocp-Apim-Subscription-Key": this.ocpApimKey
-                }
-            });
-        }));
+        return this._backendApi.get<string>(`api/bing/search?q=${query}&count=${resultsCount}`);
     }
 }

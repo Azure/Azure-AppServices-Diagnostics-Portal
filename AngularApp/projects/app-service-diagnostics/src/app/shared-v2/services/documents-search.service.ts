@@ -9,7 +9,6 @@ import { BackendCtrlService } from '../../shared/services/backend-ctrl.service';
   providedIn:"root"
 })
 export class DocumentSearchService {
-  private authKey: string = "";
   private url : string = "";
   private _config : DocumentSearchConfiguration;
   private featureEnabledForPesId  : boolean = false;
@@ -21,39 +20,12 @@ export class DocumentSearchService {
               ) {
 
       this._config = new DocumentSearchConfiguration();;
-
-      this._backendApi.get<string>(`api/appsettings/DeepSearch:Endpoint`).subscribe((value: string) =>{
-        this.url = value;
-      });
-
-      this._backendApi.get<string>(`api/appsettings/DeepSearch:AuthKey`).subscribe((value: string) =>{
-        this.authKey = value;
-        this.httpOptions = {
-          headers: new HttpHeaders({
-            "Content-Type" : "application/json",
-            "authKey" : this.authKey
-          })
-        };
-      });
-
   }
 
   public IsEnabled(pesId : string) : Observable<boolean> {
     // featureEnabledForProduct is disabled by default
+    return Observable.of(false);
 
-    var isPesIdValid = pesId && pesId.length >0 ;
-    if( isPesIdValid )
-    {
-      pesId = pesId.trim();
-      var listOfEnabledPesIds =  this._config.documentSearchEnabledSupportTopicIds[pesId] ;    
-      var isDeepSearchEnabledForThisPesId = listOfEnabledPesIds && (listOfEnabledPesIds.findIndex( x => x == pesId ) > -1)
-      this.featureEnabledForPesId = isDeepSearchEnabledForThisPesId ;
-    }
-   
-    return this._backendApi.get<string>(`api/appsettings/DeepSearch:isEnabled`)
-                            // Value in App Service Application Settings are returned as strings
-                            // converting this to boolean
-                            .map(status =>  ( status.toLowerCase() == "true" && this.featureEnabledForPesId) );
 
 
   }

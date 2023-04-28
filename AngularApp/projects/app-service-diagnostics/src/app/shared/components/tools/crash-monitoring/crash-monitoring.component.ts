@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IDatePickerProps, IDropdownOption, SelectableOptionMenuItemType, ICalloutProps } from 'office-ui-fabric-react';
-import * as momentNs from 'moment';
+import * as moment from 'moment';
 import { addMonths, addDays } from 'office-ui-fabric-react/lib/utilities/dateMath/DateMath';
 import { SiteDaasInfo } from '../../../models/solution-metadata';
 import { SiteService } from '../../../services/site.service';
@@ -29,10 +29,9 @@ export class CrashMonitoringComponent implements OnInit {
     private _sharedStorageAccountService: SharedStorageAccountService) {
     this._sharedStorageAccountService.changeEmitted$.subscribe(newStorageAccount => {
       this.chosenStorageAccount = newStorageAccount.name;
-      this.blobSasUriEnvironmentVariable = newStorageAccount.sasUri;
+      this.storageConnectionStringEnvironmentVariable = newStorageAccount.connectionString;
       if (this.chosenStorageAccount) {
         this.validationError = "";
-        this.storageConfiguredAsAppSetting = true;
       }
     })
   }
@@ -43,6 +42,8 @@ export class CrashMonitoringComponent implements OnInit {
   maxDate: Date = this.convertUTCToLocalDate(addMonths(this.today, 3));
   minDate: Date = this.convertUTCToLocalDate(this.today);
   startDate: Date = this.minDate;
+  startDateString = '';
+  endDateString = '';
   endDate: Date = addDays(this.startDate, 15);
   startClock: string;
   endClock: string;
@@ -55,7 +56,6 @@ export class CrashMonitoringComponent implements OnInit {
   validationError: string = "";
   updatingStorageAccounts: boolean = false;
   chosenStorageAccount: string = "";
-  storageConfiguredAsAppSetting: boolean = false;
 
   chosenStartDateTime: Date;
   chosenEndDateTime: Date;
@@ -63,7 +63,7 @@ export class CrashMonitoringComponent implements OnInit {
   monitoringEnabled: boolean = false;
   crashMonitoringSettings: CrashMonitoringSettings = null;
   collapsed: boolean = false;
-  blobSasUriEnvironmentVariable: string = "";
+  storageConnectionStringEnvironmentVariable: string = "";
 
   // For tooltip display
   directionalHint = DirectionalHint.rightTopEdge;
@@ -85,7 +85,7 @@ export class CrashMonitoringComponent implements OnInit {
   }
 
   formatDate: IDatePickerProps['formatDate'] = (date) => {
-    return momentNs(date).format('YYYY-MM-DD');
+    return moment(date).format('YYYY-MM-DD');
   };
 
   ngOnInit() {
@@ -120,8 +120,11 @@ export class CrashMonitoringComponent implements OnInit {
   getStorageAccountName(): Observable<string> {
     return this._daasService.getStorageConfiguration(this.siteToBeDiagnosed, false).pipe(
       map(storageConfig => {
-        this.storageConfiguredAsAppSetting = storageConfig.IsAppSetting;
-        return this.getStorageAccountNameFromSasUri(storageConfig.SasUri);
+        if (storageConfig.SasUri) {
+          return this._daasService.getStorageAccountNameFromSasUri(storageConfig.SasUri);
+        } else {
+          return this._daasService.getStorageAccountNameFromConnectionString(storageConfig.ConnectionString);
+        }
       }));
   }
 
@@ -145,22 +148,17 @@ export class CrashMonitoringComponent implements OnInit {
 
     let monitoringDates = this._siteService.getCrashMonitoringDates(crashMonitoringSettings);
 
-    this.startDate = this.convertUTCToLocalDate(monitoringDates.start);
-    this.endDate = this.convertUTCToLocalDate(monitoringDates.end);
+    this.startDate = monitoringDates.start;
+    this.endDate = monitoringDates.end;
 
-    this.startClock = this.getHourAndMinute(this.startDate);
-    this.endClock = this.getHourAndMinute(this.endDate);
+    this.startDateString = this.formatDateToString(monitoringDates.start);
+    this.endDateString = this.formatDateToString(monitoringDates.end);
+
+    this.startClock = moment.utc(this.startDate).format('HH:mm');
+    this.endClock = moment.utc(this.endDate).format('HH:mm');
 
     // Reset the minDate to avoid the UI displaying an error
     this.minDate = this.startDate;
-  }
-
-  getStorageAccountNameFromSasUri(blobSasUri: string): string {
-    if (!blobSasUri) {
-      return blobSasUri;
-    }
-    let blobUrl = new URL(blobSasUri);
-    return blobUrl.host.split('.')[0];
   }
 
   initDumpOptions() {
@@ -198,7 +196,7 @@ export class CrashMonitoringComponent implements OnInit {
   validateSettings(): boolean {
     this.validationError = ""
     let isValid: boolean = true;
-    if (!this.chosenStorageAccount || !this.storageConfiguredAsAppSetting) {
+    if (!this.chosenStorageAccount) {
       this.validationError = "Please choose a storage account to save the memory dumps";
       return false;
     }
@@ -214,7 +212,7 @@ export class CrashMonitoringComponent implements OnInit {
         this.validationError = "Start date and time cannot be greater than or equal to end date and time";
       }
 
-      let durationInHours = momentNs.utc().diff(momentNs.utc(this.chosenStartDateTime), 'hours', true);
+      let durationInHours = moment.utc().diff(moment.utc(this.chosenStartDateTime), 'hours', true);
       if (durationInHours > 1) {
         isValid = false;
         this.validationError = "Start date and time cannot be lesser than current date and time";
@@ -234,15 +232,15 @@ export class CrashMonitoringComponent implements OnInit {
 
   //Get HH:mm from date
   private getHourAndMinute(date: Date): string {
-    return momentNs(date).format('HH:mm');
+    return moment(date).format('HH:mm');
   }
 
   //convert ISO string(UTC time) to LocalDate with same year,month,date...
   private convertUTCToLocalDate(date: Date): Date {
-    const moment = momentNs.utc(date);
+    const m = moment.utc(date);
     return new Date(
-      moment.year(), moment.month(), moment.date(),
-      moment.hour(), moment.minute()
+      m.year(), m.month(), m.date(),
+      m.hour(), m.minute()
     );
   }
 
@@ -265,12 +263,15 @@ export class CrashMonitoringComponent implements OnInit {
     this.status = toolStatus.SavingCrashMonitoringSettings;
     let crashMonitoringSettings = this.getCrashMonitoringSetting();
     this.logCrashMonitoringEnabled(crashMonitoringSettings);
-    this._siteService.saveCrashMonitoringSettings(this.siteToBeDiagnosed, crashMonitoringSettings, this.blobSasUriEnvironmentVariable)
+    this._siteService.saveCrashMonitoringSettings(this.siteToBeDiagnosed, crashMonitoringSettings, this.storageConnectionStringEnvironmentVariable)
       .subscribe(resp => {
         this.crashMonitoringSettings = crashMonitoringSettings;
         this.status = toolStatus.SettingsSaved;
         this.monitoringEnabled = true;
         this.collapsed = true;
+        let monitoringDates = this._siteService.getCrashMonitoringDates(this.crashMonitoringSettings);
+        this.startDateString = this.formatDateToString(monitoringDates.start);
+        this.endDateString = this.formatDateToString(monitoringDates.end);
       },
         error => {
           this.status = toolStatus.Error;
@@ -292,8 +293,8 @@ export class CrashMonitoringComponent implements OnInit {
 
   getCrashMonitoringSetting(): CrashMonitoringSettings {
     let monitoringSettings: CrashMonitoringSettings = new CrashMonitoringSettings();
-    let durationInHours = momentNs.utc(this.chosenEndDateTime).diff(momentNs.utc(this.chosenStartDateTime), 'hours', true);
-    monitoringSettings.StartTimeUtc = momentNs.utc(this.chosenStartDateTime, momentNs.defaultFormatUtc).toISOString();
+    let durationInHours = moment.utc(this.chosenEndDateTime).diff(moment.utc(this.chosenStartDateTime), 'hours', true);
+    monitoringSettings.StartTimeUtc = moment.utc(this.chosenStartDateTime, moment.defaultFormatUtc).toISOString();
     monitoringSettings.MaxHours = durationInHours;
     monitoringSettings.MaxDumpCount = parseInt(this.selectedDumpCount);
     return monitoringSettings;
@@ -304,7 +305,6 @@ export class CrashMonitoringComponent implements OnInit {
   }
 
   getMonitoringSummary(): string {
-
     if (this.crashMonitoringSettings != null) {
       let monitoringDates = this._siteService.getCrashMonitoringDates(this.crashMonitoringSettings);
       return `${this.siteToBeDiagnosed.siteName} | ${this.formatDateToString(monitoringDates.start, true)} to ${this.formatDateToString(monitoringDates.end, true)} | ${this.crashMonitoringSettings.MaxDumpCount} memory dumps`;
@@ -312,8 +312,7 @@ export class CrashMonitoringComponent implements OnInit {
   }
 
   formatDateToString(date: Date, appendTime: boolean = false) {
-
-    return appendTime ? momentNs.utc(date).format("YYYY-MM-DD HH:mm") : momentNs.utc(date).format("YYYY-MM-DD");
+    return appendTime ? moment.utc(date).format("YYYY-MM-DD HH:mm") : moment.utc(date).format("YYYY-MM-DD");
   }
 
   monitoringSettingsChanged(event: CrashMonitoringSettings) {

@@ -4,7 +4,7 @@ import { DataTableResponseColumn, DetectorControlService, stepVariable, workflow
 import { NgFlowchartStepComponent } from 'projects/ng-flowchart/dist';
 import { CanvasFlow } from 'projects/ng-flowchart/dist/lib/ng-flowchart-canvas.service';
 import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
-import { kustoQueryDialogParams } from '../models/kusto';
+import { dynamicExpressionResponse, kustoQueryDialogParams } from '../models/kusto';
 import { dynamicExpressionBody } from '../models/kusto';
 import { WorkflowService } from '../services/workflow.service';
 
@@ -17,7 +17,7 @@ import { WorkflowService } from '../services/workflow.service';
 export class KustoQueryDialogComponent implements OnInit {
 
   // More editor options at https://github.com/Microsoft/vscode/issues/30795#issuecomment-410998882
-  editorOptions = { theme: 'vs-dark', language: 'text/plain', minimap: { enabled: false } };
+  editorOptions = { theme: 'vs-dark', language: 'csharp', minimap: { enabled: false } };
   code: string = '';
   kustoQueryColumns: DataTableResponseColumn[] = [];
   dataSource: any[] = [];
@@ -30,12 +30,14 @@ export class KustoQueryDialogComponent implements OnInit {
   inputKustoQueryDialogParams: kustoQueryDialogParams;
   flow: CanvasFlow = null;
   currentNode: NgFlowchartStepComponent<workflowNodeData>;
+  kustoQueryUrl: string = '';
+  kustoDesktopUrl: string = '';
 
   constructor(@Inject(MAT_DIALOG_DATA) data: kustoQueryDialogParams, public dialogRef: MatDialogRef<KustoQueryDialogComponent>,
     private _diagnosticService: ApplensDiagnosticService, private _detectorControlService: DetectorControlService,
     private _workflowService: WorkflowService) {
     this.inputKustoQueryDialogParams = data;
-    this.code = data.queryText;
+    this.code = '$@"' + data.queryText + '"';
     if (data.queryLabel) {
       this.kustoQueryLabel = data.queryLabel;
     }
@@ -63,32 +65,55 @@ export class KustoQueryDialogComponent implements OnInit {
       return;
     }
 
+    if (!this.code.startsWith('$@"') || !this.code.endsWith('"')) {
+      this._workflowService.showMessageBox("Error", "Invalid query text. The query text should start with $@ and end with a double quote");
+      return;
+    }
+
     let dialogResult: kustoQueryDialogParams = {
-      queryText: this.encodeString(this.code),
+      queryText: this.encodeString(this.getQueryText()),
       variables: this.variablesInMemoryCopy,
       queryLabel: this.kustoQueryLabel,
       kustoQueryColumns: this.kustoQueryColumns,
       completionOptions: this.inputKustoQueryDialogParams.completionOptions,
-      currentNode: null
+      currentNode: null,
+      addQueryOutputToMarkdown: this.inputKustoQueryDialogParams.addQueryOutputToMarkdown,
     };
 
     this.dialogRef.close(dialogResult);
   }
 
   executeQuery() {
+
+    if (!this.code.startsWith('$@"') || !this.code.endsWith('"')) {
+      this._workflowService.showMessageBox("Error", "Invalid query text. The query text should start with $@ and end with a double quote");
+      return;
+    }
+
     let dynamicExpression: dynamicExpressionBody = {
       WorkflowId: 'Workflow1',
       OperationName: this.kustoQueryLabel,
-      Text: this.code,
+      Text: this.getQueryText(),
       Variables: this.inputKustoQueryDialogParams.completionOptions,
       IsKustoQuery: true
     };
 
     this.error = '';
     this.isExecutingQuery = true;
-    this._diagnosticService.evaluateDynamicExpression(dynamicExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe(resp => {
+    this._diagnosticService.evaluateDynamicExpression(dynamicExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe(dynamicResponse => {
       this.isExecutingQuery = false;
       this.kustoQueryColumns = [];
+
+      let resp: any;
+      if (dynamicResponse.columns) {
+        resp = dynamicResponse;
+      } else {
+        let response: dynamicExpressionResponse = dynamicResponse
+        resp = response.response;
+        this.kustoQueryUrl = response.kustoQueryUrl;
+        this.kustoDesktopUrl = response.kustoDesktopUrl;
+      }
+
       resp.columns.forEach(entry => {
         this.kustoQueryColumns.push(entry);
       })
@@ -126,7 +151,8 @@ export class KustoQueryDialogComponent implements OnInit {
         name: name,
         value: value,
         type: col.dataType,
-        runtimeValue: element[col.columnName]
+        runtimeValue: element[col.columnName],
+        isUserInput: false
       });
     }
 
@@ -158,6 +184,12 @@ export class KustoQueryDialogComponent implements OnInit {
 
   getKustoSampleUsage(variable: stepVariable): string {
     return this._workflowService.getKustoSampleUsage(variable);
+  }
+
+  getQueryText(): string {
+    let code = this.code.substring(3);
+    code = code.substring(0, code.length - 1);
+    return code;
   }
 
 }

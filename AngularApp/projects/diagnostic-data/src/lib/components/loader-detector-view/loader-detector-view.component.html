@@ -1,8 +1,12 @@
-<div class="loader-container">
+<div *ngIf="!isTimeout;else loaderTimeout" class="loader-container">
   <div class="fxs-progress">
     <div class="fxs-progress-image">
       <img [src]=imgSrc />
     </div>
-    <fab-spinner [label]="loadingString"></fab-spinner>
+    <fab-spinner [label]="loadingString" [styles]="spinnerStyles"></fab-spinner>
   </div>
 </div>
+
+<ng-template #loaderTimeout>
+  <div class="critical-color">Sorry, an error occurred. Please refresh the page and try again.</div>
+</ng-template>

@@ -24,11 +24,10 @@ export class ConfigureStorageAccountComponent implements OnInit {
         this.validateStorageConfigurationResponse = null;
       }
 
-      if (newStorageAccount.sasUri || newStorageAccount.connectionString) {
-        this.validationResult.BlobSasUri = newStorageAccount.sasUri ? newStorageAccount.sasUri : '';
+      if (newStorageAccount.connectionString) {
+        this.validationResult.BlobSasUri = '';
         this.validationResult.ConnectionString = newStorageAccount.connectionString ? newStorageAccount.connectionString : '';
         this.validationResult.Validated = true;
-        this.validationResult.ConfiguredAsAppSetting = true;
         this.StorageAccountValidated.emit(this.validationResult);
       }
 
@@ -53,39 +52,37 @@ export class ConfigureStorageAccountComponent implements OnInit {
     this.telemetryService.logPageView("CreateStorageAccountPanelView");
   }
 
-  getStorageAccountNameFromSasUri(blobSasUri: string): string {
-    let blobUrl = new URL(blobSasUri);
-    return blobUrl.host.split('.')[0];
-  }
-
   ngOnInit() {
 
     this.checkingBlobSasUriConfigured = true;
 
     this._daasService.getStorageConfiguration(this.siteToBeDiagnosed, this.useDiagServerForLinux).subscribe(daasStorageConfiguration => {
-      if (!this.useDiagServerForLinux && daasStorageConfiguration.SasUri && daasStorageConfiguration.IsAppSetting) {
+      if (!this.useDiagServerForLinux && (daasStorageConfiguration.ConnectionString || daasStorageConfiguration.SasUri)) {
         this._daasService.validateSasUri(this.siteToBeDiagnosed).subscribe(resp => {
           this.checkingBlobSasUriConfigured = false;
           if (resp.IsValid) {
             this.validateStorageConfigurationResponse = null;
-            this.chosenStorageAccount = this.getStorageAccountNameFromSasUri(daasStorageConfiguration.SasUri);
+            if (daasStorageConfiguration.SasUri) {
+              this.chosenStorageAccount = this._daasService.getStorageAccountNameFromSasUri(daasStorageConfiguration.SasUri);
+            } else if (daasStorageConfiguration.ConnectionString) {
+              this.chosenStorageAccount = this._daasService.getStorageAccountNameFromConnectionString(daasStorageConfiguration.ConnectionString);
+            }
+
+            this.validationResult.ConnectionString = daasStorageConfiguration.ConnectionString;
             this.validationResult.BlobSasUri = daasStorageConfiguration.SasUri;
-            this.validationResult.ConfiguredAsAppSetting = daasStorageConfiguration.IsAppSetting;
             this.validationResult.Validated = true;
             this.StorageAccountValidated.emit(this.validationResult);
           } else {
             this.validateStorageConfigurationResponse = resp;
           }
         });
-      } else if (this.useDiagServerForLinux && daasStorageConfiguration.ConnectionString && daasStorageConfiguration.IsAppSetting) {
-
+      } else if (this.useDiagServerForLinux && daasStorageConfiguration.ConnectionString) {
         this._daasService.validateStorageAccount(this.siteToBeDiagnosed).subscribe(resp => {
           this.checkingBlobSasUriConfigured = false;
           if (resp.IsValid) {
             this.validateStorageConfigurationResponse = null;
             this.chosenStorageAccount = resp.StorageAccount;
             this.validationResult.ConnectionString = daasStorageConfiguration.ConnectionString;
-            this.validationResult.ConfiguredAsAppSetting = daasStorageConfiguration.IsAppSetting;
             this.validationResult.Validated = true;
             this.StorageAccountValidated.emit(this.validationResult);
           } else {

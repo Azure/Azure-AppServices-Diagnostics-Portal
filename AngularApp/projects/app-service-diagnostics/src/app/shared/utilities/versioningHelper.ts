@@ -1,4 +1,4 @@
-import { DemoSubscriptions } from "../../betaSubscriptions";
+import { DemoSubscriptions } from "../../../../../diagnostic-data/src/lib/models/betaSubscriptions";
 
 export class VersioningHelper {
 

@@ -10,7 +10,7 @@ import { OperatingSystem } from '../../../shared/models/site';
 import { AppType } from '../../../shared/models/portal';
 import { DirectionalHint } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
-import { DemoSubscriptions } from '../../../betaSubscriptions';
+import { DemoSubscriptions } from '../../../../../../diagnostic-data/src/lib/models/betaSubscriptions';
 import { Sku } from '../../../shared/models/server-farm';
 import { HttpClient } from '@angular/common/http';
 
@@ -28,7 +28,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   fullReportPath: string;
   subscriptionId: string;
 
-  displayRPDFButton: boolean = false;  
+  displayRPDFButton: boolean = false;
   gRPDFButtonChild: Element;
   gRPDFButtonId: string;
   gRPDFCoachmarkId: string;
@@ -39,6 +39,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   showCoachmark: boolean = true;
   showTeachingBubble: boolean = false;
   generatedOn: string;
+  coachMarkCookieName: string = "showCoachmark";
   coachmarkPositioningContainerProps = {
     directionalHint: DirectionalHint.bottomLeftEdge,
     doNotLayer: true
@@ -46,25 +47,14 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   teachingBubbleCalloutProps = {
     directionalHint: DirectionalHint.bottomLeftEdge
   };
+  teachingBubbleHeadline = "New Resiliency Score report!";
+  teachingBubbleText = "Download a report to check how well your Web App scores against our recommended resiliency best practices.";
   resourcePlatform: OperatingSystem = OperatingSystem.any;
   resourceAppType: AppType = AppType.WebApp;
   resourceSku: Sku = Sku.All;
   vfsFonts: any;
 
-  private _checkIsWebAppProdSku(platform: OperatingSystem): boolean {
-    let webSiteService = this._resourceService as WebSitesService;
-    this.resourcePlatform = webSiteService.platform;
-    this.resourceAppType = webSiteService.appType;
-    this.resourceSku = webSiteService.sku;
-    return this._resourceService && this._resourceService instanceof WebSitesService
-      && ((webSiteService.platform === platform) && (webSiteService.appType === AppType.WebApp) && (webSiteService.sku > 8)); //Only for Web Apps  in Standard or higher
-  }
-
-  // add logic for presenting initially to 100% of Subscriptions:  percentageToRelease = 1 (1=100%)
-  private _percentageOfSubscriptions(subscriptionId: string, percentageToRelease: number): boolean {
-    let firstDigit = "0x" + subscriptionId.substring(0, 1);
-    // roughly split of percentageToRelease of subscriptions to use new feature.
-     return ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease);
+  constructor(private globals: Globals, private _detectorControlService: DetectorControlService, private _diagnosticService: DiagnosticService, private _route: ActivatedRoute, private router: Router, private telemetryService: TelemetryService, private _resourceService: ResourceService, private http: HttpClient) {
   }
 
   ngOnInit(): void {
@@ -73,8 +63,8 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     this.subscriptionId = this._route.parent.snapshot.params['subscriptionid'];
     // allowlisting beta subscriptions for testing purposes
     _isBetaSubscription = DemoSubscriptions.betaSubscriptions.indexOf(this.subscriptionId) >= 0;
-    // allowing 0% of subscriptions to use new feature
-    _isSubIdInPercentageToRelease = this._percentageOfSubscriptions(this.subscriptionId, 0);
+    // allowing 100% of subscriptions to use new feature
+    _isSubIdInPercentageToRelease = this._percentageOfSubscriptions(this.subscriptionId, 1);
 
     // Releasing to only Beta Subscriptions for Web App (Linux) in standard or higher and all Web App (Windows) in standard or higher
     this.displayRPDFButton = ((this._checkIsWebAppProdSku(OperatingSystem.linux) && (_isSubIdInPercentageToRelease || _isBetaSubscription)) || this._checkIsWebAppProdSku(OperatingSystem.windows));
@@ -82,17 +72,17 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       'ResiliencyScoreButtonDisplayed': this.displayRPDFButton.toString(),
       'Subscription': this.subscriptionId,
       'Platform': this.resourcePlatform != undefined ? this.resourcePlatform.toString() : "",
-      'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString(): "",
-      'resourceSku': this.resourceSku != undefined ? this.resourceSku.toString(): "",
+      'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString() : "",
+      'resourceSku': this.resourceSku != undefined ? this.resourceSku.toString() : "",
     };
     this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportButtonDisplayed, rSBDEventProperties);
     const loggingError = new Error();
     this.gRPDFButtonDisabled = false;
     //Get showCoachMark value(string) from local storage (if exists), then convert to boolean
     try {
-      if (this.displayRPDFButton){
-        if (localStorage.getItem("showCoachmark") != undefined) {
-          this.showCoachmark = localStorage.getItem("showCoachmark") === "true";
+      if (this.displayRPDFButton) {
+        if (localStorage.getItem(this.coachMarkCookieName) != undefined) {
+          this.showCoachmark = localStorage.getItem(this.coachMarkCookieName) === "true";
         }
         else {
           this.showCoachmark = true;
@@ -105,7 +95,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       const eventProperties = {
         'Subscription': this.subscriptionId,
         'Error': error,
-        'Message': 'Error trying to retrieve showCoachmark from localStorage'        
+        'Message': `Error trying to retrieve ${this.coachMarkCookieName} from localStorage`
       }
       this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
@@ -116,10 +106,28 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     // Using this as an alternative to using the vfs_fonts.js build with PDFMake's build-vfs.js
     // as this file caused problems when being compiled in a library project like diagnostic-data
     //
-    this.http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => {this.vfsFonts=data}); 
+    this.http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => { this.vfsFonts = data });
   }
 
-  constructor(private globals: Globals, private _detectorControlService: DetectorControlService, private _diagnosticService: DiagnosticService, private _route: ActivatedRoute, private router: Router, private telemetryService: TelemetryService, private _resourceService: ResourceService, private http: HttpClient) {
+  private _checkIsWebAppProdSku(platform: OperatingSystem): boolean {
+    let webSiteService = this._resourceService as WebSitesService;
+    this.resourcePlatform = webSiteService.platform;
+    this.resourceAppType = webSiteService.appType;
+    this.resourceSku = webSiteService.sku;
+    if (this.resourcePlatform === OperatingSystem.linux) {
+      this.teachingBubbleHeadline = "New Resiliency Score report for Web App (Linux)!";
+      this.coachMarkCookieName = "showCoachmarkLinux";
+      this.teachingBubbleText = "Resiliency Score Report now supports Web App (Linux) in Standard or higher. Download a report to check how well your Web App scores against our recommended resiliency best practices.";
+    }
+    return this._resourceService && this._resourceService instanceof WebSitesService
+      && ((webSiteService.platform === platform) && (webSiteService.appType === AppType.WebApp) && (webSiteService.sku > 8)); //Only for Web Apps  in Standard or higher
+  }
+
+  // add logic for presenting initially to 100% of Subscriptions:  percentageToRelease = 1 (1=100%)
+  private _percentageOfSubscriptions(subscriptionId: string, percentageToRelease: number): boolean {
+    let firstDigit = "0x" + subscriptionId.substring(0, 1);
+    // roughly split of percentageToRelease of subscriptions to use new feature.
+    return ((16 - parseInt(firstDigit, 16)) / 16 <= percentageToRelease);
   }
 
   toggleOpenState() {
@@ -146,12 +154,12 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     // Once the button is clicked no need to show Coachmark anymore:
     const loggingError = new Error();
     try {
-      if (localStorage.getItem("showCoachmark") != undefined) {
-        this.showCoachmark = localStorage.getItem("showCoachmark") === "true";
+      if (localStorage.getItem(this.coachMarkCookieName) != undefined) {
+        this.showCoachmark = localStorage.getItem(this.coachMarkCookieName) === "true";
       }
       else {
         this.showCoachmark = false;
-        localStorage.setItem("showCoachmark", "false");
+        localStorage.setItem(this.coachMarkCookieName, "false");
       }
     }
     catch (error) {
@@ -160,7 +168,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
       const eventProperties = {
         'Subscription': this.subscriptionId,
         'Error': error,
-        'Message': 'Error trying to retrieve showCoachmark from localStorage'    
+        'Message': `Error trying to retrieve ${this.coachMarkCookieName} from localStorage`
       }
       this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportInPrivateAccess, eventProperties);
     }
@@ -175,17 +183,17 @@ export class DetectorCommandBarComponent implements AfterViewInit {
         }
       }
     };
-    this.gRPDFButtonDisabled = true;    
+    this.gRPDFButtonDisabled = true;
     this._diagnosticService.getDetector("ResiliencyScore", this._detectorControlService.startTimeString, this._detectorControlService.endTimeString)
       .subscribe((httpResponse: DetectorResponse) => {
         //If the page hasn't been refreshed this will use a cached request, so changing File Name to use the same name + "(cached)" to let them know they are seeing a cached version.
         let eT = new Date();
         let detectorTimeTaken = eT.getTime() - sT.getTime();
-        
-        
+
+
         if (this.gRPDFFileName == undefined) {
           this.generatedOn = ResiliencyScoreReportHelper.generatedOn();
-          this.gRPDFFileName = `ResiliencyReport-${JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName}-${this.generatedOn.replace(":", "-")}`;          
+          this.gRPDFFileName = `ResiliencyReport-${JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName}-${this.generatedOn.replace(":", "-")}`;
           ResiliencyScoreReportHelper.generateResiliencyReport(httpResponse.dataset[0].table, `${this.gRPDFFileName}`, this.generatedOn, this.vfsFonts);
         }
         else {
@@ -199,11 +207,15 @@ export class DetectorCommandBarComponent implements AfterViewInit {
         // log telemetry for interaction
         const eventProperties = {
           'Subscription': this.subscriptionId,
+          'Platform': this.resourcePlatform != undefined ? this.resourcePlatform.toString() : "",
+          'AppType': this.resourceAppType != undefined ? this.resourceAppType.toString() : "",
+          'ResourceSku': this.resourceSku != undefined ? this.resourceSku.toString() : "",
           'CustomerName': JSON.parse(httpResponse.dataset[0].table.rows[0][0]).CustomerName,
           'NameSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].Name,
           'ScoreSite1': JSON.parse(httpResponse.dataset[0].table.rows[1][0])[0].OverallScore,
           'DetectorTimeTaken': detectorTimeTaken.toString(),
-          'TotalTimeTaken': totalTimeTaken.toString()
+          'TotalTimeTaken': totalTimeTaken.toString(),
+
         };
         this.telemetryService.logEvent(TelemetryEventNames.ResiliencyScoreReportDownloaded, eventProperties);
         this.gRPDFButtonText = "Get Resiliency Score report";
@@ -220,7 +232,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     let childRouteSnapshot = this._route.firstChild.snapshot;
     let childRouteType = childRouteSnapshot.url[0].toString();
 
-    let instanceId = childRouteType === "overview" ? this._route.snapshot.params["category"] : (this._route.snapshot.params["category"] === "DiagnosticTools" ? childRouteSnapshot.url[1].toString() : childRouteType === "detectors" ? childRouteSnapshot.params["detectorName"] : childRouteSnapshot.params["analysisId"]);
+    let instanceId = childRouteType === "overview" ? this._route.snapshot.params["category"] : (this._route.snapshot.params["category"] === "DiagnosticTools" ? childRouteSnapshot.url[1].toString() : childRouteType === "detectors" ? childRouteSnapshot.params["detectorName"] : childRouteType === "workflows" ? childRouteSnapshot.params["workflowId"] : childRouteSnapshot.params["analysisId"]);
     let isDiagnosticToolUIPage = this._route.snapshot.params["category"] === "DiagnosticTools" && childRouteType !== "overview" && instanceId !== "eventviewer" && instanceId !== "freblogs";
 
     const eventProperties = {
@@ -230,7 +242,11 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     if (childRouteType === "detectors") {
       eventProperties['Detector'] = childRouteSnapshot.params['detectorName'];
       eventProperties['Type'] = 'detector';
-    } else if (childRouteType === "analysis") {
+    } else if (childRouteType === "workflows") {
+      eventProperties['Detector'] = childRouteSnapshot.params['workflowId'];
+      eventProperties['Type'] = 'detector';
+    }
+    else if (childRouteType === "analysis") {
       eventProperties['Analysis'] = childRouteSnapshot.params["analysisId"];
       eventProperties['Type'] = 'analysis';
     } else if (childRouteType === "overview") {
@@ -265,13 +281,13 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     const coachMarkId = "fab-coachmark";
     let PDFButtonIndex = -1;
     if (btns && btns.length > 0) {
-      btns.forEach((btn,i) => {
-        if(btn.textContent.includes(this.gRPDFButtonText)) {
+      btns.forEach((btn, i) => {
+        if (btn.textContent.includes(this.gRPDFButtonText)) {
           PDFButtonIndex = i;
         }
       });
 
-      if(PDFButtonIndex >= 0 && PDFButtonIndex < btns.length && btns[PDFButtonIndex]) {
+      if (PDFButtonIndex >= 0 && PDFButtonIndex < btns.length && btns[PDFButtonIndex]) {
         const PDFButton = btns[PDFButtonIndex];
         PDFButton.setAttribute("id", pdfButtonId);
       }
@@ -282,8 +298,8 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   }
 
   coachMarkViewed() {
-    if (!this.showTeachingBubble){
-      
+    if (!this.showTeachingBubble) {
+
       //
       // TeachingBubbles inherit from Callout react component and they have a 
       // some issue in the current version of the libaray with *ngIf and they are
@@ -301,7 +317,7 @@ export class DetectorCommandBarComponent implements AfterViewInit {
 
     //Once Coachmark has been seen, disable it by setting boolean value to local storage
     try {
-      localStorage.setItem("showCoachmark", "false");
+      localStorage.setItem(this.coachMarkCookieName, "false");
     }
     catch (error) {
       // Use TelemetryService logEvent when not able to access local storage.
@@ -316,8 +332,8 @@ export class DetectorCommandBarComponent implements AfterViewInit {
     this.removeTeachingBubbleFromDom();
   }
 
-  showingTeachingBubble(){
-    if (this.displayRPDFButton){
+  showingTeachingBubble() {
+    if (this.displayRPDFButton) {
       this.showTeachingBubble = true;
     }
   }

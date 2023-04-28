@@ -1,0 +1,64 @@
+<div class="mb-4">
+  <div *ngIf="data.inputNodeSettings.variableLabel" class="mb-2"> {{ data.inputNodeSettings.variableLabel }} </div>
+  <div *ngIf="data.inputNodeSettings.inputType === inputType.text">
+    <input class="form-control input-control-width" type="text" name="inputField" id="txtInputField"
+      [(ngModel)]="inputFieldValue" [disabled]="userInputDisabled" />
+  </div>
+  <div *ngIf="data.inputNodeSettings.inputType === inputType.select">
+    <select class="form-control input-control-width"
+      *ngIf="data.inputNodeSettings.options && data.inputNodeSettings.options.length > 0" [disabled]="userInputDisabled"
+      (change)="selectChanged($event)">
+      <option *ngFor="let opt of data.inputNodeSettings.options" [value]="opt" [selected]="opt === selectFieldValue"> {{
+        opt }} </option>
+    </select>
+  </div>
+  <div *ngIf="data.inputNodeSettings.inputType === inputType.date">
+    <div class="flex-display">
+      <div class="date-picker-container">
+        <fab-date-picker placeholder="Select a date..." ariaLabel="Select date" allowTextInput="true"
+          [disabled]="userInputDisabled" showMonthPickerAsOverlay="true"
+          (onSelectDate)="onSelectDateHandler($event, 'date')" [formatDate]="formatDate" [value]="dateFieldValue">
+        </fab-date-picker>
+      </div>
+      <div class="time-picker-container ml-2">
+        <fab-masked-text-field maxLength="6" [(value)]="dateTimeField" [iconProps]="{iconName: 'Clock'}"
+          [disabled]="userInputDisabled" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
+          [getErrorMessage]="getErrorMessageOnTextField">
+        </fab-masked-text-field>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="data.inputNodeSettings.inputType === inputType.daterange">
+
+    <div class="flex-display">
+      <div class="date-picker-container">
+        <fab-date-picker placeholder="Select a date..." ariaLabel="Select date" allowTextInput="true"
+          [disabled]="userInputDisabled" showMonthPickerAsOverlay="true"
+          (onSelectDate)="onSelectDateHandler($event, 'startDate')" [formatDate]="formatDate"
+          [value]="startDateFieldValue">
+        </fab-date-picker>
+      </div>
+      <div class="time-picker-container ml-2">
+        <fab-masked-text-field maxLength="6" [(value)]="startTimeField" [iconProps]="{iconName: 'Clock'}"
+          [disabled]="userInputDisabled" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
+          [getErrorMessage]="getErrorMessageOnTextField">
+        </fab-masked-text-field>
+      </div>
+    </div>
+
+    <div class="flex-display">
+      <div class="date-picker-container">
+        <fab-date-picker placeholder="Select a date..." ariaLabel="Select date" allowTextInput="true"
+          [disabled]="userInputDisabled" showMonthPickerAsOverlay="true"
+          (onSelectDate)="onSelectDateHandler($event, 'endDate')" [formatDate]="formatDate" [value]="endDateFieldValue">
+        </fab-date-picker>
+      </div>
+      <div class="time-picker-container ml-2">
+        <fab-masked-text-field maxLength="6" [(value)]="endTimeField" [iconProps]="{iconName: 'Clock'}"
+          [disabled]="userInputDisabled" [mask]="'99:99'" [maskChar]="'-'" [validateOnFocusOut]="true"
+          [getErrorMessage]="getErrorMessageOnTextField">
+        </fab-masked-text-field>
+      </div>
+    </div>
+  </div>
+</div>

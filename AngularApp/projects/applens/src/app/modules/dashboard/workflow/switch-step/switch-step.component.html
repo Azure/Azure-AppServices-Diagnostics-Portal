@@ -6,7 +6,7 @@
       </node-title>
     </div>
     <div class="panel-body">
-      <form>
+      <form class="example-form">
         <div class="form-group row">
           <div class="col-sm-12">
             <input class="form-control" type="text" name="switch-{{uniqueId}}" id="switch-{{uniqueId}}"
@@ -15,7 +15,7 @@
         </div>
       </form>
       <mat-form-field class="example-full-width" appearance="fill">
-        <mat-label>Variable</mat-label>
+        <mat-label class="matlabel">Variable</mat-label>
         <input type="text" placeholder="Choose a variable" aria-label="Number" matInput [formControl]="switchInputControl"
           [matAutocomplete]="auto" (input)="updateVariable($event.target.value)">
         <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="updateVariable($event.option.value)">

@@ -38,7 +38,7 @@ export class DiagnosticService {
         return null;
     }
 
-    getWorkflowNode(workflowId: string, workflowExecutionId: string, nodeId: string, startTime: string, endTime: string, internalView: boolean = true, formQueryParams?: string, overrideResourceUri?: string): Observable<workflowNodeResult> {
+    getWorkflowNode(workflowId: string, workflowExecutionId: string, nodeId: string, startTime: string, endTime: string, internalView: boolean = true, formQueryParams?: string, overrideResourceUri?: string, userInputs?:any): Observable<workflowNodeResult> {
         return null;
     }
 }

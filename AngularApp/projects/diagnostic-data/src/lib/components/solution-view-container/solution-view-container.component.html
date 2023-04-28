@@ -6,10 +6,10 @@
   <ng-content></ng-content>
   <div *ngIf="showFeedbackQuestion && !showThanksMessage" class="solution-feedback-message">
     <label for="feedbackbutton" class="solution-feedback-label"> Was this helpful?</label>
-    <a name="feedbackbutton" type="button" class="solution-feedback-button" [ngClass]="{'btn-primary':yesSelected}" (click)="feedbackButtonClicked(true)">
+    <a name="feedbackbutton" type="button" tabindex="0" class="solution-feedback-button" [ngClass]="{'btn-primary':yesSelected}" (click)="feedbackButtonClicked(true)">
         Yes
     </a>
-    <a name="feedbackbutton" type="button" class="solution-feedback-button" id="solutionNotHelpfulButton" [ngClass]="{'btn-primary':noSelected}" (click)="feedbackButtonClicked(false)">
+    <a name="feedbackbutton" type="button" tabindex="0" class="solution-feedback-button" id="solutionNotHelpfulButton" [ngClass]="{'btn-primary':noSelected}" (click)="feedbackButtonClicked(false)">
         No
     </a>
     <fab-callout [target]="'#solutionNotHelpfulButton'" [hidden]="!showReasonsCallout" (onDismiss)="closeReasonsCallout()">

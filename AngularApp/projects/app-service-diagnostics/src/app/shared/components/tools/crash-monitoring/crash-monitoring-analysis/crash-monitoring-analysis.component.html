@@ -16,9 +16,9 @@
               <div>
                 <div *ngIf="monitoringEnabled" class="data-collection-loading">
                   <div class="dot-flashing"></div>
-                  <div *ngIf="insights.length === 0">Crash Monitoring session is in progress. Please return to this page
+                  <div class="ml-3" *ngIf="insights.length === 0">Crash Monitoring session is in progress. Please return to this page
                     to view data collected on future crashes.</div>
-                  <div *ngIf="insights.length > 0">Crash Monitoring session is in progress. See the insights below for
+                  <div class="ml-3" *ngIf="insights.length > 0">Crash Monitoring session is in progress. See the insights below for
                     previously collected data and do not delete data while the tool is running.</div>
                 </div>
                 <div *ngIf="!monitoringEnabled">

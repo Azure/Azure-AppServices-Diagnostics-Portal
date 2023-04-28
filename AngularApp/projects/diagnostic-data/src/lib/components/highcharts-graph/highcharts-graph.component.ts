@@ -1,13 +1,12 @@
-import * as momentNs from 'moment';
+import * as moment from 'moment';
 import { Component, Input, OnInit, HostListener, ElementRef, Output, EventEmitter } from '@angular/core';
 import { TimeSeriesType } from '../../models/detector';
 import HC_exporting from 'highcharts/modules/exporting';
 import AccessibilityModule from 'highcharts/modules/accessibility';
 import { DetectorControlService } from '../../services/detector-control.service';
-import { HighChartTimeSeries } from '../../models/time-series';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection } from '../../models/time-series';
 import { KeyValue } from '@angular/common';
-import { PointerEventObject } from 'highcharts';
+import { PointerEventObject, SelectEventObject } from 'highcharts';
 import { interval, Subscription } from 'rxjs';
 import { GenericThemeService } from '../../services/generic-theme.service';
 import { HighChartsHoverService } from '../../services/highcharts-hover.service';
@@ -29,7 +28,6 @@ interface ExtendedPoint extends Highcharts.Point {
   id: string;
 }
 
-const moment = momentNs;
 
 @Component({
     selector: 'highcharts-graph',
@@ -52,9 +50,9 @@ export class HighchartsGraphComponent implements OnInit {
 
     @Input() yAxisCategories: any = [];
 
-    @Input() startTime: momentNs.Moment;
+    @Input() startTime: moment.Moment;
 
-    @Input() endTime: momentNs.Moment;
+    @Input() endTime: moment.Moment;
     public backgroundColor = "white";
     public bodyText = "black";
 
@@ -355,7 +353,7 @@ export class HighchartsGraphComponent implements OnInit {
         });
     };
 
-    private customChartSelectionCallbackFunction: Highcharts.ChartSelectionCallbackFunction = (event: Highcharts.ChartSelectionContextObject) => {
+    private customChartSelectionCallbackFunction: Highcharts.ChartSelectionCallbackFunction = (event: SelectEventObject) => {
         if (this._zoomBehavior & zoomBehaviors.FireXAxisSelectionEvent) {
             if (!!event.xAxis) {
                 let fromSelection = moment.utc(Highcharts.dateFormat('%Y-%m-%d %H:%M:00', event.xAxis[0].min));
@@ -704,12 +702,15 @@ export class HighchartsGraphComponent implements OnInit {
             },
             chart: {
                 reflow: true,
-                height: 300,
+                height: this.isGanttChart && this.HighchartData?.[0].dataLength > 10 ? this.HighchartData?.[0].dataLength * 30 : 300,
                 display: 'block!important',
                 type: 'line',
                 zoomType: 'x',
                 panKey: 'shift',
-                panning: true,
+                panning: {
+                    enabled: true,
+                    
+                },
                 resetZoomButton: {
                     position: {
                         ...(!this.isGanttChart && {
@@ -902,7 +903,7 @@ export class HighchartsGraphComponent implements OnInit {
 }
 
 export interface GraphPoint {
-    x: momentNs.Moment;
+    x: moment.Moment;
     y: number;
 }
 
@@ -912,7 +913,7 @@ export interface GraphSeries {
 }
 
 export interface HighchartsData {
-    x: momentNs.Moment;
+    x: moment.Moment;
     y: number;
     name: string;
     color: string;

@@ -41,7 +41,7 @@
   ariaLabelledByText="Coachmark notification">
   <fab-teachingbubble 
     *ngIf="showTeachingBubble==true"
-    headline="New Resiliency Score report!" 
+    headline= {{teachingBubbleHeadline}}
     (onDismiss)="coachMarkViewed()" 
     [target]="gRPDFButtonId"    
     [hasCloseIcon]="true" 
@@ -50,7 +50,7 @@
     hasCondensedHeadline="true"
     ariaDescribedBy="resiiencyreport-description1" 
     ariaLabelledBy="resiiencyreport-label1">
-    Download a report to check how well your Web App scores against our recommended resiliency best practices.
+    {{teachingBubbleText}}
   </fab-teachingbubble>
 </fab-coachmark>
 

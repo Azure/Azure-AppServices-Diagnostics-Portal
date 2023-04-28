@@ -71,6 +71,7 @@ namespace AppLensV3.Helpers
         public const string VerbHeader = "x-ms-verb";
         public const string CustomerCaseNumberHeader = "x-ms-customer-casenumber";
         public const string UserTokenHeader = "x-ms-user-token";
+        public const string OpenAICacheHeader = "x-ms-openai-cache";
     }
 
     public static class DetectorGistTemplateServiceConstants

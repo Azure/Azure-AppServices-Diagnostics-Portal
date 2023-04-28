@@ -55,9 +55,9 @@ export class FavoriteDetectorsComponent implements OnInit {
   public navigate(detector: DetectorMetaData) {
     this._telemetryService.logEvent(TelemetryEventNames.FavoriteDetectorClicked, { 'detectorId': detector.id, 'location': 'OverViewPage' });
     if (detector.type === DetectorType.Detector) {
-      this._router.navigate([`./detectors/${detector.id}`], { relativeTo: this._activatedRoute });
+      this._router.navigate([`./detectors/${detector.id}`], { relativeTo: this._activatedRoute,queryParamsHandling:'merge' });
     } else {
-      this._router.navigate([`./analysis/${detector.id}`,], { relativeTo: this._activatedRoute });
+      this._router.navigate([`./analysis/${detector.id}`,], { relativeTo: this._activatedRoute,queryParamsHandling:'merge' });
     }
   }
 

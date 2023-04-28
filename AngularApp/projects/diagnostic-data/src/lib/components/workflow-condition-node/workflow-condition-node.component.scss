@@ -1,0 +1,13 @@
+.panel {
+    border-radius: 100px;
+    margin-bottom: 0px;
+    border: 2px solid skyblue;
+    background-color: var(--bodyBackground);
+    color: var(--bodyText);
+}
+
+.panel-body {
+    min-height: 50px;
+    max-width: 300px;
+    font-size: small;
+}

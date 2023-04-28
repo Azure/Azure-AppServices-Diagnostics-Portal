@@ -2,52 +2,59 @@
   <button class="btn btn-sm btn-primary ml-2" (click)="showFlowData()">View Json</button>
 </div>
 
-<form>
-  <div class="form-row">
-    <div class="form-group col-md-3">
-      <label for="workflowId">Id</label>
-      <input name="workflowId" class="form-control" placeholder="Workflow Id" [(ngModel)]="publishBody.Id">
-    </div>
-    <div class="form-group col-md-3">
-      <label for="workflowName">Name</label>
-      <input class="form-control" name="workflowName" placeholder="Workflow Name"
-        [(ngModel)]="publishBody.WorkflowName">
-    </div>
-    <div class="form-group col-md-3">
-      <label for="description">Description</label>
-      <input class="form-control" name="description" placeholder="Workflow description"
-        [(ngModel)]="publishBody.Description">
-    </div>
+<div *ngIf="loadingCode">
+  <fab-spinner [label]="'Loading...'"></fab-spinner>
+</div>
 
-    <div class="form-group col-md-3">
-      <label for="workflowAuthor">Author</label>
-      <input class="form-control" name="workflowAuthor" placeholder="Enter your alias" [(ngModel)]="publishBody.Author">
-    </div>
-
-  </div>
-  <div class="form-row">
-    <ng-container *ngIf="service === 'SiteService'">
+<div style="height:100%">
+  <form>
+    <div class="form-row">
       <div class="form-group col-md-3">
-        <label for="appType">App Type</label>
-        <ng-select #selectAppType [items]="appTypes" [multiple]="true" (change)="onAppTypeChange($event)"
-          placeholder="Select App type">
-        </ng-select>
+        <label for="workflowId">Id</label>
+        <input name="workflowId" class="form-control input-sm" placeholder="Workflow Id" [(ngModel)]="publishBody.Id">
       </div>
       <div class="form-group col-md-3">
-        <label for="platformType">Platform Type</label>
-        <ng-select #selectPlatformType [items]="platformTypes" [multiple]="true" (change)="onPlatformTypeChange($event)"
-          placeholder="Select Platform type">
-        </ng-select>
+        <label for="workflowName">Name</label>
+        <input class="form-control input-sm" name="workflowName" placeholder="Workflow Name"
+          [(ngModel)]="publishBody.WorkflowName">
       </div>
       <div class="form-group col-md-3">
-        <label for="stackType">Stack Type</label>
-        <ng-select #selectStackType [items]="stackTypes" [multiple]="true" (change)="onStackTypeChange($event)"
-          placeholder="Select Stack type">
-        </ng-select>
+        <label for="description">Description</label>
+        <input class="form-control  input-sm" name="description" placeholder="Workflow description"
+          [(ngModel)]="publishBody.Description">
       </div>
-    </ng-container>
-  </div>
-</form>
 
-<div id="canvas" ngFlowchartCanvas [ngFlowchartOptions]="options" [disabled]="disabled"
-  [ngFlowchartCallbacks]="callbacks"></div>
+      <div class="form-group col-md-3">
+        <label for="workflowAuthor">Author</label>
+        <input class="form-control input-sm" name="workflowAuthor" placeholder="Enter your alias"
+          [(ngModel)]="publishBody.Author">
+      </div>
+
+    </div>
+    <div class="form-row">
+      <ng-container *ngIf="service === 'SiteService'">
+        <div class="form-group col-md-3">
+          <label for="appType">App Type</label>
+          <ng-select #selectAppType [items]="appTypes" [multiple]="true" (change)="onAppTypeChange($event)"
+            placeholder="Select App type">
+          </ng-select>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="platformType">Platform Type</label>
+          <ng-select #selectPlatformType [items]="platformTypes" [multiple]="true"
+            (change)="onPlatformTypeChange($event)" placeholder="Select Platform type">
+          </ng-select>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="stackType">Stack Type</label>
+          <ng-select #selectStackType [items]="stackTypes" [multiple]="true" (change)="onStackTypeChange($event)"
+            placeholder="Select Stack type">
+          </ng-select>
+        </div>
+      </ng-container>
+    </div>
+  </form>
+
+  <div #canvasId id="canvas" ngFlowchartCanvas [ngFlowchartOptions]="options" [disabled]="disabled"
+    [ngFlowchartCallbacks]="callbacks"></div>
+</div>

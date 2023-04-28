@@ -6,6 +6,7 @@ import { workflowExecution, workflowNodeExecution, workflowNodeResult, workflowN
 import { DetectorControlService } from '../../services/detector-control.service';
 import { DiagnosticService } from '../../services/diagnostic.service';
 import { WorkflowHelperService } from "../../services/workflow-helper.service";
+import { WorkflowConditionNodeComponent } from '../workflow-condition-node/workflow-condition-node.component';
 import { WorkflowNodeComponent } from '../workflow-node/workflow-node.component';
 
 @Component({
@@ -21,6 +22,7 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() workflowPublishBody: workflowPublishBody;
   @Input() lastRefreshed: string;
   @Output() onError = new EventEmitter<any>();
+  @Output() onPackageUpdated = new EventEmitter<any>();
 
   error: any;
   workflowNodeResults: workflowNodeResult[] = [];
@@ -58,6 +60,7 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
 
   ngAfterViewInit() {
     this.stepRegistry.registerStep('workflowNode', WorkflowNodeComponent);
+    this.stepRegistry.registerStep('workflowConditionNode', WorkflowConditionNodeComponent);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -96,6 +99,8 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
           if (workflowNodeResult != null) {
             this.createRootNode(workflowNodeResult);
           }
+
+          this.onPackageUpdated.emit(workflowQueryResponse.invocationOutput.workflowPackage);
 
         } else {
           if (workflowQueryResponse.compilationOutput.compilationTraces != null && workflowQueryResponse.compilationOutput.compilationTraces.length > 0) {

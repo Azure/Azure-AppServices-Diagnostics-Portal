@@ -15,4 +15,8 @@ export class GenericResourceService {
     public getSapProductId(): Observable<string>{
         return Observable.of(null);
     }
+
+    public get searchSuffix(): string {
+        return "Azure";
+    }
 }

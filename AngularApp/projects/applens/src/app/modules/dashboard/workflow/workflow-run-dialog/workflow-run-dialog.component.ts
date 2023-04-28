@@ -13,6 +13,7 @@ export class WorkflowRunDialogComponent implements OnInit {
   workflowId: string;
   workflowPublishBody: workflowPublishBody;
   error: any = null;
+  pkg: any = null;
 
   constructor(@Inject(MAT_DIALOG_DATA) data: any, public dialogRef: MatDialogRef<WorkflowRunDialogComponent>) {
     this.workflowId = data.workflowId;
@@ -27,11 +28,15 @@ export class WorkflowRunDialogComponent implements OnInit {
   }
 
   save() {
-    this.dialogRef.close({ workflowSucceeded: true });
+    this.dialogRef.close({ workflowSucceeded: true, workflowPackage: this.pkg });
   }
 
   onError(error: any) {
     this.error = error;
+  }
+
+  onPackageUpdated(pkg: any) {
+    this.pkg = pkg;
   }
 
 }

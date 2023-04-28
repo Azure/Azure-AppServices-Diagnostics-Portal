@@ -2,7 +2,6 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output, 
 import { DiagnosticService, RenderingType, DataTableResponseObject, TelemetryEventNames, DiagnosticData } from 'diagnostic-data';
 import { DaasService } from '../../../../services/daas.service';
 import { SiteService } from '../../../../services/site.service';
-import * as momentNs from 'moment';
 import { CrashMonitoringSettings, DaasStorageConfiguration } from '../../../../models/daas';
 import * as moment from 'moment';
 import { Subscription, interval, Observable } from 'rxjs';
@@ -25,7 +24,6 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
   @Output() settingsChanged: EventEmitter<CrashMonitoringSettings> = new EventEmitter<CrashMonitoringSettings>();
 
   loading: boolean = true;
-  blobSasUri: string = "";
   insights: CrashInsight[];
   monitoringEnabled: boolean = false;
   error: any;
@@ -39,7 +37,9 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
   savingSettings: boolean = false;
   crashMonitoringHistory: CrashMonitoringData[] = [];
   refreshingHistory: boolean = true;
-  blobSasUriObservable: Observable<DaasStorageConfiguration>;
+  storageAccountConfigurationObservable: Observable<DaasStorageConfiguration>;
+  daasStorageConfiguration: DaasStorageConfiguration = null;
+  daasBlobSasUri: string = '';
 
   // For tooltip display
   directionalHint = DirectionalHint.rightTopEdge;
@@ -68,12 +68,11 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
 
     this._siteService.getSiteDaasInfoFromSiteMetadata().subscribe(site => {
       this.siteToBeDiagnosed = site;
-      this.blobSasUriObservable = this._daasService.getStorageConfiguration(site, false);
+      this.storageAccountConfigurationObservable = this._daasService.getStorageConfiguration(site, false);
 
-      if (!this.blobSasUri) {
-
-        this.blobSasUriObservable.subscribe(daasSasUri => {
-          this.blobSasUri = daasSasUri.SasUri;
+      if (this.daasStorageConfiguration == null) {
+        this.storageAccountConfigurationObservable.subscribe(daasStorageConfiguration => {
+          this.daasStorageConfiguration = daasStorageConfiguration;
         });
       }
     });
@@ -108,18 +107,29 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
 
       this._diagnosticService.getDetector(crashMonitoringDetectorName, _startTime.format(this.stringFormat), _endTime.format(this.stringFormat), true, false, null, null).subscribe(detectorResponse => {
         let rawTable = detectorResponse.dataset.find(x => x.renderingProperties.type === RenderingType.Table) // && x.table.tableName === "CrashMonitoring");
-        if (this.blobSasUri) {
-          this.loadDetectorData(rawTable);
+        if (this.daasStorageConfiguration) {
+          this.updateSasUriAndLoadDetectorData(rawTable);
         } else {
 
-          if (!this.blobSasUri) {
-            this.blobSasUriObservable.subscribe(daasSasUri => {
-                this.blobSasUri = daasSasUri.SasUri;
-                this.loadDetectorData(rawTable);
+          if (!this.daasStorageConfiguration) {
+            this.storageAccountConfigurationObservable.subscribe(daasStorageConfiguration => {
+              this.daasStorageConfiguration = daasStorageConfiguration;
+              this.updateSasUriAndLoadDetectorData(rawTable);
             });
           }
         }
       });
+    }
+  }
+
+  updateSasUriAndLoadDetectorData(rawTable: DiagnosticData) {
+    if (this.daasStorageConfiguration.ConnectionString) {
+      this._daasService.getBlobSasUri(this.siteToBeDiagnosed).subscribe(blobSasUri => {
+        this.daasBlobSasUri = blobSasUri;
+        this.loadDetectorData(rawTable);
+      });
+    } else {
+      this.loadDetectorData(rawTable);
     }
   }
 
@@ -158,8 +168,8 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
       return;
     }
     let monitoringDates = this._siteService.getCrashMonitoringDates(this.crashMonitoringSettings);
-    if (momentNs.utc() > momentNs.utc(monitoringDates.start)
-      && momentNs.utc() < momentNs.utc(monitoringDates.end) && this.dumpsCollected < this.crashMonitoringSettings.MaxDumpCount) {
+    if (moment.utc() > moment.utc(monitoringDates.start)
+      && moment.utc() < moment.utc(monitoringDates.end) && this.dumpsCollected < this.crashMonitoringSettings.MaxDumpCount) {
       this.monitoringEnabled = true;
     } else {
       this.monitoringEnabled = false
@@ -246,7 +256,7 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
   }
 
   getDisplayDate(date: Date): string {
-    return momentNs(date).format('YYYY-MM-DD HH:mm') + ' UTC';
+    return moment(date).format('YYYY-MM-DD HH:mm') + ' UTC';
   }
 
   toggleInsightStatus(insight: CrashInsight) {
@@ -254,15 +264,35 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
   }
 
   getLinkToDumpFile(dumpFileName: string): string {
-    if (this.blobSasUri !== "") {
-      let blobUrl = new URL(this.blobSasUri);
-      let relativePath = "CrashDumps/" + dumpFileName;
-      return `https://${blobUrl.host}${blobUrl.pathname}/${relativePath}?${blobUrl.searchParams}`;
-    } else {
-      return "";
+    if (this.daasStorageConfiguration !== null) {
+      let blobUrl: URL = null;
+      if (this.daasStorageConfiguration.SasUri) {
+        blobUrl = this.getBlobUrl(this.daasStorageConfiguration.SasUri);
+      }
+      else if (this.daasStorageConfiguration.ConnectionString) {
+        blobUrl = this.getBlobUrl(this.daasBlobSasUri);
+      }
+
+      if (blobUrl) {
+        let relativePath = "CrashDumps/" + dumpFileName;
+        return `https://${blobUrl.host}${blobUrl.pathname}/${relativePath}?${blobUrl.searchParams}`;
+      }
     }
+
+    return "";
   }
 
+  getBlobUrl(host: string): URL {
+    try {
+      let blobUrl = new URL(host);
+      return blobUrl;
+    }
+    catch (error) {
+      // ignore
+    }
+
+    return null;
+  }
   stopMonitoring(viaAgent: boolean) {
     this.errorMessage = "";
     this.error = null;

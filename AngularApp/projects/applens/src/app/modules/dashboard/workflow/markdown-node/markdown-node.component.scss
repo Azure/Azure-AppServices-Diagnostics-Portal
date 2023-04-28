@@ -8,8 +8,12 @@
 
 .markdown-text {
     border: 1px solid lightgray;
-    height: 120px;
+    height: 45px;
     padding: 5px;
     width: 100%;
     font-family: 'Courier New', Courier, monospace;
+    word-break: break-word;
+    overflow: auto;
+    border-radius: 4px;
+    margin-bottom: 3px;
 }

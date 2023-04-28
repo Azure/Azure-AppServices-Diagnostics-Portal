@@ -9,6 +9,11 @@
           <i class="fa fa-info fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let item of overview" [menuItem]="item"></collapsible-menu-item>
         </section-divider>
+        <section-divider *ngIf="showChatGPT" [label]="'ChatGPT (Experimental)'" [selected]="isSectionHeaderSelected('chatgpt', false)" [initiallyExpanded]="false"
+          [collapsible]="false" (click)="navigateToChatGPT()" (keyup.enter)="navigateToChatGPT()">
+          <i class="menu-icon menu-icon-create" aria-hidden="true" style="padding-right: 4px;"><img src="/assets/img/openailogo.svg" style="width:1em;"/></i>
+          <collapsible-menu-item *ngFor="let item of chatgpt" [menuItem]="item"></collapsible-menu-item>
+        </section-divider>
         <section-divider [label]="'Pinned Detectors'"
           [selected]="isSectionHeaderSelected('detectors/', false) || isSectionHeaderSelected('analysis/', false)"
           [initiallyExpanded]="favoriteDetectorsCopy.length > 0">
@@ -38,11 +43,9 @@
           <i class="fa fa-code fa-fw menu-icon menu-icon-create" aria-hidden="true"></i>
           <collapsible-menu-item *ngFor="let item of createNew" [menuItem]="item"></collapsible-menu-item>
         </section-divider>
-        <section-divider [label]="'Pull Requests'" [selected]="isSectionHeaderSelected('activepullrequests', false)"
-          [initiallyExpanded]="false" [collapsible]="false" *ngIf="!isProd && isGraduation"
-          (click)="navigateToActivePRs()">
-          <i class="fa fa-code-fork menu-icon menu-icon-detectors" aria-hidden="true"></i>
-          <collapsible-menu-item *ngFor="let item of activePullRequest" [menuItem]="item"></collapsible-menu-item>
+        <section-divider [label]="'Tools'" [selected]="isSectionHeaderSelected('networkTraceAnalysis')" [initiallyExpanded]="true">
+          <i class="fa fa-wrench fa-fw menu-icon menu-icon-detectors" aria-hidden="true"></i>
+          <collapsible-menu-item *ngFor="let tool of tools" [menuItem]="tool" [searchValue]="searchValue"></collapsible-menu-item>
         </section-divider>
         <section-divider *ngIf="gists.length > 0" [selected]="isSectionHeaderSelected('gists/', false)"
           [label]="'Gists'" [initiallyExpanded]="false">

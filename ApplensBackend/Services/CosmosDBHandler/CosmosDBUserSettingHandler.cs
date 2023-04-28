@@ -1,6 +1,7 @@
 ﻿using AppLensV3.Models;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -77,20 +78,31 @@ namespace AppLensV3.Services
             return PathItemAsync(id, UserSettingConstant.PartitionKey, property, value);
         }
 
-        public async Task<UserSetting> PatchUserPanelSetting(string id, string theme, string viewMode, string expandAnalysisCheckCard)
+        public async Task<UserSetting> PatchUserPanelSetting(string id, string theme, string viewMode, string expandAnalysisCheckCard, string codeCompletion)
         {
             var patchOperations = new[]
             {
                 PatchOperation.Add("/theme",theme),
                 PatchOperation.Add("/viewMode",viewMode),
-                PatchOperation.Add("/expandAnalysisCheckCard",expandAnalysisCheckCard)
+                PatchOperation.Add("/expandAnalysisCheckCard",expandAnalysisCheckCard),
+                PatchOperation.Add("/codeCompletion", codeCompletion)
+            };
+            return await Container.PatchItemAsync<UserSetting>(id, new PartitionKey(UserSettingConstant.PartitionKey), patchOperations);
+        }
+
+        public async Task<UserSetting> PatchUserChatGPTSetting(string id, object value)
+        {
+            string jsonValue = JsonConvert.SerializeObject(value);
+            var patchOperations = new[]
+            {
+                PatchOperation.Add("/userChatGPTSetting", jsonValue)
             };
             return await Container.PatchItemAsync<UserSetting>(id, new PartitionKey(UserSettingConstant.PartitionKey), patchOperations);
         }
 
 
 
-        public async Task<UserSetting> GetUserSetting(string id, bool needCreate = true)
+        public async Task<UserSetting> GetUserSetting(string id, bool needCreate = true, bool chatGPT = false)
         {
             UserSetting userSetting = null;
             userSetting = await GetItemAsync(id, UserSettingConstant.PartitionKey);
@@ -107,6 +119,9 @@ namespace AppLensV3.Services
                     newUserSetting = new UserSetting(id);
                 }
                 userSetting = await CreateItemAsync(newUserSetting);
+            }
+            if (!chatGPT) {
+                userSetting.UserChatGPTSetting = "";
             }
             return userSetting;
         }

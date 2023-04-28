@@ -1,0 +1,12 @@
+<span>Add User</span> <input class="ml-1" type="text" [(ngModel)]="userAlias">
+<button class="btn btn-primary ml-1" (click)="addUser()">Add</button>
+
+<i class="fa fa-spinner fa-spin fa-fw" *ngIf="isloading"></i>
+
+<div *ngIf="error">{{  JSON.stringify(error) }} </div>
+
+<ul>
+    <li *ngFor="let user of workflowUsers">
+        {{ user }}
+    </li>
+</ul>

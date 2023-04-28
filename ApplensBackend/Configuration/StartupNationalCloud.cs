@@ -2,6 +2,7 @@
 using AppLensV3.Authorization;
 using AppLensV3.Helpers;
 using AppLensV3.Middleware;
+using AppLensV3.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -34,6 +35,7 @@ namespace AppLensV3
             });
 
             services.AddSingleton<IAuthorizationHandler, SecurityGroupHandlerNationalCloud>();
+            services.AddSingleton<IBingSearchService, BingSearchServiceDisabled>();
 
             if (environment.IsProduction())
             {

@@ -46,7 +46,7 @@ import { ITeachingBubbleProps, ITeachingBubbleStyles  } from 'office-ui-fabric-r
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FabTeachingBubbleComponent extends ReactWrapperComponent<ITeachingBubbleProps> {
-  @ViewChild('reactNode', { static: true }) protected reactNodeRef: ElementRef;
+  @ViewChild('reactNode', { static: true }) public reactNodeRef: ElementRef;
 
   @Input() target?: ITeachingBubbleProps['target'];
   @Input() ariaDescribedBy?: ITeachingBubbleProps['ariaDescribedBy'];

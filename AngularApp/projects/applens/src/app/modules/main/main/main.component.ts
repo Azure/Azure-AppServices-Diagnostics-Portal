@@ -42,6 +42,9 @@ export class MainComponent implements OnInit {
   displayLoader: boolean = false;
   loaderSize = SpinnerSize.large;
   caseNumberNeededForUser: boolean = false;
+  caseNumberNeededForProduct: boolean = false;
+  caseNumberNeededForRP: boolean = false;
+  caseNumberEnabledRPs: string[] = [];
   caseNumber: string = '';
   caseNumberValidationError: string = null;
   accessErrorMessage: string = '';
@@ -57,6 +60,7 @@ export class MainComponent implements OnInit {
   inIFrame = false;
   errorMessage = "";
   status = HealthStatus.Critical;
+  targetPathBeforeError: string = "";
 
   fabDropdownOptions: IDropdownOption[] = [];
   fabDropdownStyles: IDropdownProps["styles"] = {
@@ -104,7 +108,7 @@ export class MainComponent implements OnInit {
       this.resourceTypes = this.resourceTypes.filter(resourceType => !resourceType.caseId);
     }
 
-    if (this._activatedRoute.snapshot.queryParams['caseNumber'] && this._activatedRoute.snapshot.queryParams['caseNumber'] !== "undefined") {
+    if (this._activatedRoute.snapshot.queryParams['caseNumber']) {
       this.caseNumber = this._activatedRoute.snapshot.queryParams['caseNumber'];
     }
     if (this._activatedRoute.snapshot.queryParams['resourceName']) {
@@ -112,6 +116,12 @@ export class MainComponent implements OnInit {
     }
     if (this._activatedRoute.snapshot.queryParams['errorMessage']) {
       this.accessErrorMessage = this._activatedRoute.snapshot.queryParams['errorMessage'];
+    }
+    if (this._activatedRoute.snapshot.queryParams['caseNumberNeeded']) {
+      this.caseNumberNeededForProduct = true;
+    }
+    if (this._activatedRoute.snapshot.queryParams['targetPathBeforeError']) {
+      this.targetPathBeforeError = this._activatedRoute.snapshot.queryParams['targetPathBeforeError'];
     }
     if (this._activatedRoute.snapshot.queryParams['resourceType']) {
       let foundResourceType = this.defaultResourceTypes.find(resourceType => resourceType.resourceType.toLowerCase() === this._activatedRoute.snapshot.queryParams['resourceType'].toLowerCase());
@@ -124,12 +134,13 @@ export class MainComponent implements OnInit {
       if (this.selectedResourceType.resourceType == "ARMResourceId") {
         this.resourceName = this._activatedRoute.snapshot.queryParams['resourceId'];
       }
+      this.hasResourceCaseNumberEnforced();
     }
   }
 
   validateCaseNumber() {
     if (!this.caseNumber || this.caseNumber.length < 12) {
-      this.caseNumberValidationError = "Case number too short. It should be a minimum of 12 digits.";
+      this.caseNumberValidationError = "Case number too short. It should be a minimum of 15 digits.";
       return false;
     }
     if (this.caseNumber.length > 18) {
@@ -146,6 +157,54 @@ export class MainComponent implements OnInit {
     }
   }
 
+  fetchCaseNumberEnforcedRpList(){
+    this.displayLoader = true;
+    this._diagnosticApiService.FetchCaseEnabledResourceProviders().subscribe(res => {
+      this.displayLoader = false;
+      if (res && res.length>0) {
+        this.caseNumberEnabledRPs = res.split(",").map(x => x.toLowerCase());
+      }
+      this.hasResourceCaseNumberEnforced();
+    },
+    (err) => {
+      //This failure is critical, we will choose to show an error and request the user to try again
+      this.userAccessErrorMessage = "Failed to fetch case number enforcement information. Please try again. If the error persists, contact AppLens team.";
+      this.displayUserAccessError = true;
+      this.displayLoader = false;
+    });
+  }
+
+  //Checks if RP has case number enforcement e.g. microsoft.web/sites
+  hasRPCaseNumberEnforced(rpName) {
+    rpName = rpName.toLowerCase();
+    return this.caseNumberEnabledRPs.indexOf(rpName)>= 0;
+  }
+
+  extractRPInfoFromARMUri(armUri) {
+    const resourceUriPattern = /subscriptions\/(.*)\/resourceGroups\/(.*)\/providers\/([a-zA-Z\.]+)\/([a-zA-Z\.]+)\//i;
+    if (armUri && armUri.length>0) {
+      const match = armUri.match(resourceUriPattern);
+      return `${match[3]}/${match[4]}`;
+    }
+    else {
+      return "";
+    }
+  }
+
+  hasResourceCaseNumberEnforced() {
+    if (this.selectedResourceType.resourceType != null) {
+      if (this.selectedResourceType.resourceType.toLowerCase() == "armresourceid") {
+        this.caseNumberNeededForRP = this.hasRPCaseNumberEnforced(this.extractRPInfoFromARMUri(this.resourceName));
+      }
+      else {
+        this.caseNumberNeededForRP = this.hasRPCaseNumberEnforced(this.selectedResourceType.resourceType);
+      }
+    }
+    else {
+      this.caseNumberNeededForRP = false;
+    }
+  }
+
   fetchUserDetails() {
     this.displayLoader = true;
     this.userAccessErrorMessage = '';
@@ -153,6 +212,13 @@ export class MainComponent implements OnInit {
     this._diagnosticApiService.checkUserAccess().subscribe(res => {
       if (res && res.Status == UserAccessStatus.CaseNumberNeeded) {
         this.caseNumberNeededForUser = true;
+        if (res.EnforcedResourceProviders && res.EnforcedResourceProviders.length>0) {
+          this.caseNumberEnabledRPs = res.EnforcedResourceProviders.split(",").map(x => x.toLowerCase());
+          this.hasResourceCaseNumberEnforced();
+        }
+        else {
+          this.fetchCaseNumberEnforcedRpList();
+        }
         this._diagnosticApiService.setCaseNumberNeededForUser(this.caseNumberNeededForUser);
         this.displayLoader = false;
       }
@@ -186,6 +252,7 @@ export class MainComponent implements OnInit {
     this.resourceTypes = [...this.defaultResourceTypes];
     if (!this.selectedResourceType) {
       this.selectedResourceType = this.defaultResourceTypes[0];
+      this.hasResourceCaseNumberEnforced();
     }
 
     this.defaultResourceTypes.forEach(resource => {
@@ -204,6 +271,7 @@ export class MainComponent implements OnInit {
 
       if (!(this.accessErrorMessage && this.accessErrorMessage.length > 0 && this.selectedResourceType) && userInfo && userInfo.defaultServiceType && this.defaultResourceTypes.find(type => type.id.toLowerCase() === userInfo.defaultServiceType.toLowerCase())) {
         this.selectedResourceType = this.defaultResourceTypes.find(type => type.id.toLowerCase() === userInfo.defaultServiceType.toLowerCase());
+        this.hasResourceCaseNumberEnforced();
       }
     });
 
@@ -262,6 +330,7 @@ export class MainComponent implements OnInit {
   selectDropdownKey(e: { option: IDropdownOption, index: number }) {
     const resourceType = this.defaultResourceTypes.find(resource => resource.displayName === e.option.text);
     this.selectResourceType(resourceType);
+    this.hasResourceCaseNumberEnforced();
   }
 
   private normalizeArmUriForRoute(resourceURI: string, enabledResourceTypes: ResourceServiceInputs[]): string {
@@ -302,9 +371,29 @@ export class MainComponent implements OnInit {
     }
   }
 
+  paramsToObject(entries) {
+    const result = {}
+    for(const [key, value] of entries) { // each 'entry' is a [key, value] tupple
+      result[key] = value;
+    }
+    return result;
+  }
+
+  extractQueryParams(url) {
+    try {
+      const anchor = document.createElement('a');  
+      anchor.href = url;  
+      const queryParams = new URLSearchParams(anchor.search);
+      return { url: anchor.pathname, queryParams: this.paramsToObject(queryParams)};
+    }
+    catch (err) {
+      return { url: url, queryParams: {}};
+    }
+  }
+
   onSubmit() {
     this._userSettingService.updateDefaultServiceType(this.selectedResourceType.id);
-    if (!(this.caseNumber == "internal") && this.caseNumberNeededForUser && (this.selectedResourceType && this.selectedResourceType.userAuthorizationEnabled)) {
+    if (!(this.caseNumber == "internal") && this.caseNumberNeededForUser && (this.selectedResourceType && this.caseNumberNeededForRP)) {
       this.caseNumber = this.caseNumber.trim();
       if (!this.validateCaseNumber()) {
         return;
@@ -328,7 +417,7 @@ export class MainComponent implements OnInit {
     }
 
 
-    this._detectorControlService.setCustomStartEnd(this._detectorControlService.startTime, this._detectorControlService.endTime);
+    this._detectorControlService.setCustomStartEnd(this._detectorControlService.startTimeString, this._detectorControlService.endTimeString);
 
     let timeParams = {
       startTime: this._detectorControlService.startTimeString,
@@ -339,7 +428,18 @@ export class MainComponent implements OnInit {
       queryParams: {
         ...timeParams,
         ...!(this.caseNumber == "internal") && this.caseNumber ? { caseNumber: this.caseNumber } : {}
-      },
+      }
+    }
+
+    if (this.targetPathBeforeError && this.targetPathBeforeError.length>0) {
+      var extraction = this.extractQueryParams(this.targetPathBeforeError);
+      route = extraction.url;
+      //Case number should not be passed to the targeted path
+      if (extraction.queryParams.hasOwnProperty('caseNumber')) {
+        delete extraction.queryParams['caseNumber'];
+      }
+      
+      navigationExtras.queryParams = {...navigationExtras.queryParams, ...extraction.queryParams};
     }
 
     if (this.errorMessage === '') {
@@ -445,6 +545,7 @@ export class MainComponent implements OnInit {
 
   updateResourceName(e: { event: Event, newValue?: string }) {
     this.resourceName = e.newValue.toString();
+    this.hasResourceCaseNumberEnforced();
   }
 
   navigateToUnauthorized() {

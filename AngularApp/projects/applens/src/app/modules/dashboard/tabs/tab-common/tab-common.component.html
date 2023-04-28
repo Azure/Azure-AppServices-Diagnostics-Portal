@@ -29,6 +29,14 @@
   </div> 
 </div> -->
 <div class="mb-3">
+
+  <ng-container *ngIf="selectedTabKey === 'Data'">
+    <div style="margin-left: 8px;">
+      <p>{{detectorDescription}}</p>
+      <p>Authored by: <b>{{detectorAuthor}}</b></p>
+    </div>
+  </ng-container>
+
   <ng-container *ngIf="enabledDetectorDevelopment && !graduationEnabled else graduation">
     <fab-pivot (onLinkClick)="navigateToData($event)" [selectedKey]="selectedTabKey">
       <fab-pivot-item headerText="Data" [itemKey]="TabKey.Data"></fab-pivot-item>

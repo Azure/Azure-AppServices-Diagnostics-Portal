@@ -7,84 +7,84 @@
       </solution-view-container>
     </div>
   </fab-panel>
-  <div class="row" name="header">
-    <fab-command-bar [attr.id]="'fab-command-bar-sol-orch'"  [contentStyle]="'border-bottom: 1px solid #ccc;font-weight:12px'" [contentClass]="'fab-command-bar-class'" >
-      <items>
-        <fab-command-bar-item *ngIf="inDrillDownMode" key="custom1" text="custom text">
-          <render>
-            <ng-template let-item="item"><fab-breadcrumb [items]="breadcrumbItems" [styles]="breadCrumbStyle"></fab-breadcrumb></ng-template>
-          </render>
-        </fab-command-bar-item>
-      </items>
-      <far-items>
-        <fab-command-bar-item key="sendFeedback" text="Feedback" [iconProps]="{ iconName: 'Emoji2' }"
-          (click)="sendFeedback()"></fab-command-bar-item>
-        <fab-command-bar-item key="custom" text="custom text">
-          <render>
-            <ng-template let-item="item"><detector-control [disablePadding]="true"></detector-control></ng-template>
-          </render>
-        </fab-command-bar-item>
-      </far-items>
-    </fab-command-bar>
+  <div *ngIf="!inDrillDownMode">
+    <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>
   </div>
-  <div class="row" *ngIf="!inDrillDownMode" style="padding: 0 10%;">
+  <div *ngIf="timePickerErrorStr !==''" class="error-time-picker-message">{{timePickerErrorStr}}</div>
+  <div class="row" *ngIf="!inDrillDownMode" class="centered-view">
     <div class="row" name="search-bar" style="margin: 20px auto;">
       <div style="margin: auto 25%;">
-        <div class="row" style="font-size: 18px; font-weight: 700; padding: 12px;text-align: center;">Displaying Recommendations For ...</div>
-        <fab-search-box id="solOrchSearchBox" type="search" [placeholder]="'Briefly describe the issue'" [value]="searchTermDisplayed"
-          [ariaLabel]="inputAriaLabel" (onChange)="updateSearchTerm($event)" (onSearch)="onSearchEnter($event)" (onFocus)="onSearchBoxFocus()" (onClear)="clearSearchTerm()">
-        </fab-search-box>
-      </div>
-    </div>
-    <div class="row" name="top-solution" style="border-bottom: 1px solid #ccc;padding-bottom:15px;">
-      <h3 style="font-size: 16px;font-weight: 700;margin: 2px 10px;">Try these potential solutions!</h3>
-      <p style="margin: 2px 10px;">Customers with similar problems were able to solve it with these resources below</p>
-      <div style="width: 60%;margin: 15px 20%;min-width: 300px;background-color: white;" *ngIf="topLevelSolutions && topLevelSolutions.length>0 && !showSolutionsTimedout">
-        <solution-view-container [solutionTitle]="topLevelSolutions[mainSolutionIndex].Title" [isRecommended]="true" [detector]="'detector'"
-        [isAnalysisView]="false" [isKeystoneDetector]="false" [askReasonNotHelpful]="true">
-        <markdown [data]="topLevelSolutions[mainSolutionIndex].DescriptionMarkdown"></markdown>
-        </solution-view-container>
-        <div style="display: block;">
-          <fab-link [href]="''" [styles]="successfulLinkStyle" (click)="viewSolutionSupportingData(topLevelSolutions[mainSolutionIndex])">View supporting data</fab-link>
-        </div>
-        <div style="margin: 15px 0; min-width: 300px;" *ngIf="topLevelSolutions && topLevelSolutions.length>1">
-          <span>Try these other options:</span>
-          <div class="row">
-            <table style="table-layout: fixed;width: 100%;"><tbody>
-              <tr style="height: 50px;">
-                <td *ngFor="let sol of topLevelSolutions; let i =index" style="max-width: 33%;white-space: nowrap;" [hidden]="(i < 3)? false: true">
-                    <div class="solutions-small-card" [ngStyle]="{'background-color': mainSolutionIndex==i? '#e8e8e8': 'white'}" (click)="selectSolution(sol, i)">
-                      <span>{{sol.Title}}</span>
-                    </div>
-                </td>
-              </tr>
-            </tbody></table>
-            <!--<div *ngFor="let sol of topLevelSolutions; let i =index" class="col col-md-4 solutions-small-card-outer" [hidden]="(i < 3)? false: true">
-              <div class="solutions-small-card" [ngStyle]="{'background-color': mainSolutionIndex==i? '#e8e8e8': 'white'}" (click)="selectSolution(sol, i)">
-                <span>{{sol.Title}}</span>
-              </div>
-            </div>-->
+        <div class="search-box">
+          <div role="search" class="vanilla-search-box" [style.border]="searchBoxInFocus? '1px solid rgb(0, 120, 212)': ''">
+            <div class="vanilla-search-icon-container" [style.width]="hideSearchIcon? '0px': ''">
+              <fab-icon *ngIf="!hideSearchIcon" [iconName]="'Search'" aria-hidden="true"></fab-icon>
+            </div>
+            <input class="vanilla-search-box-input" id="fabSearchBox-solutionOrchestrator" type="search" [placeholder]="searchPlaceHolder" [ngModel]="searchTermDisplayed"
+              [attr.aria-label]="inputAriaLabel" (ngModelChange)="updateSearchTerm($event)" (focus)="onSearchBoxFocus()"
+              (keydown.escape)="clearSearchTerm()" (keyup.enter)="onSearchEnter()"/>
           </div>
         </div>
       </div>
-      <div style="width: 60%;margin: 15px 20%;min-width: 300px;background-color: white;" *ngIf="(fetchingDetectors || getPendingDetectorCount() > 0) && !showSolutionsTimedout">
-        <loader-detector-view></loader-detector-view>
-      </div>
-      <div style="width: 60%;margin: 15px 20%;min-width: 300px;background-color: white;" *ngIf="!fetchingDetectors && (((getPendingDetectorCount() === 0) && (!topLevelSolutions || topLevelSolutions.length==0)) || showSolutionsTimedout)">
-        <!--<div class="support-doc-section">
-          <markdown *ngIf="supportDocumentContent.length>0" [data]="supportDocumentContent"></markdown>
-        </div>-->
-        <div *ngFor="let doc of webDocuments;let i =index" class="article" style="margin: 10px 0px;" (click)="selectResult(doc)" tabindex="0" (keyup.enter)="selectResult(doc)" [hidden]="(i < 2 ) ? false : true">
-          <a style="font-weight:600;">{{doc.title}}
-          <i class="fa fa-external-link"></i>
-          </a>
-          <div class="article-link">{{doc.linkShort}}</div>
-          <div class="web-doc-text">{{doc.description}}</div>
+    </div>
+    <div class="row" name="top-solution" style="border-bottom: 1px solid #ccc;padding-bottom:15px;">
+      <div style="width: 75%; margin: auto;margin-bottom:60px;" [ngStyle]="{'margin-bottom': (fetchingGPTResults && !gptSolutionHasTimedout) || newSearchTriggered? '60px': 'auto'}">
+        <div *ngIf="(fetchingGPTResults && !gptSolutionHasTimedout) || newSearchTriggered" style="width: 60%;margin: 15px 20%;min-width: 300px;background-color: white;">
+          <loader-detector-view></loader-detector-view>
+        </div>
+        <div *ngIf="!fetchingGPTResults && showGPTSolution && gptSolution && gptSolution.length > 2" tabindex="0">
+          <solution-view-container [solutionTitle]="'The below answer may help you'" [isRecommended]="false" [detector]="'detector'"
+            [isAnalysisView]="false" [isKeystoneDetector]="false" [askReasonNotHelpful]="false" [metadataForLogging]="feedbackLoggingData" [showThanksMessage]="showThanksMessage" (showThanksMessageChange)="showThanksMessageChanged($event)">
+            <p [innerText]="gptSolution"></p>
+          </solution-view-container>
         </div>
       </div>
     </div>
+    <div class="row" name="detector-results">
+      <collapsible-list-fabric [iconProps]="observationSectionIcon" *ngIf="issueDetectedViewModels.length>0" [lessMargin]="true" [collapsed]="!(issueDetectedViewModels.length>0 || detectorSolutionsTimedout)" [title]="'Observations and solutions (' + issueDetectedViewModels.length + ')'">
+        <collapsible-list-item body *ngFor="let viewModel of issueDetectedViewModels;let i =index" style="display: block; width: 90%; margin: 5px 2.5%;">
+          <div class="insight-box">
+            <div style="display: block;">
+              <status-icon style="display: inline-block;" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"
+                [size]="16">
+              </status-icon>
+              <div class="insight-detector-name">{{viewModel.model.title}}</div>
+            </div>
+            <div class="insight-message">{{viewModel.insightTitle}}</div>
+            <div style="display: block;margin-left: 31px;">
+              <fab-primary-button [styles]="solutionButtonStyle" *ngIf="viewModel.solutions && viewModel.solutions.length>0"
+                  type="Submit" text='View solutions' (click)="showSolutions(viewModel)">
+              </fab-primary-button>
+              <fab-link [href]="''" [styles]="viewModel.solutions && viewModel.solutions.length>0? linkStyle: successfulLinkStyle" (click)="viewDetectorData(viewModel, 'Observations and solutions')">View supporting data</fab-link>
+            </div>
+          </div>
+        </collapsible-list-item>
+      </collapsible-list-fabric>
+      <div *ngIf="getPendingDetectorCount() > 0" style="margin-top: 5px;padding: 0px 10px;border-bottom: 1px solid #ccc;">
+        <div style="display: inline;" class="row">
+          <i class="fa fa-circle-o-notch fa-spin spin-icon" style="display:inline;float:left; vertical-align:text-bottom;" aria-hidden="true"></i>
+          <div class="sections-loading-title col-md-5" style="display: inline;">Running Diagnostic checks</div>
+          <div class="sections-loading-title col-md-3" style="display: inline;">Progress {{detectors.length-getPendingDetectorCount()}}/{{detectors.length}}</div>
+        </div>
+      </div>
+      <collapsible-list-fabric [iconProps]="successfulSectionIcon" *ngIf="successfulViewModels.length>0 && getPendingDetectorCount() === 0" (collapsedChange)="successfulSectionCollapsedChanged($event)" [collapsed]="successfulSectionCollapsed" [lessMargin]="true" [title]="'Successful Checks (' + successfulViewModels.length + ')'">
+        <collapsible-list-item body *ngFor="let viewModel of successfulViewModels;let i =index" style="display: block; width: 90%; margin: 5px 2.5%;">
+          <div class="insight-box">
+            <div style="display: block;">
+              <status-icon style="display: inline-block;" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"
+                [size]="20">
+              </status-icon>
+              <div class="insight-detector-name">{{viewModel.model.title}}</div>
+            </div>
+            <div class="insight-message">{{viewModel.insightTitle}}</div>
+            <div style="display: block;margin-left: 31px;">
+              <fab-link [href]="''" [styles]="successfulLinkStyle" (click)="viewDetectorData(viewModel, 'Successful checks')">View supporting data</fab-link>
+            </div>
+          </div>
+        </collapsible-list-item>
+      </collapsible-list-fabric>
+    </div>
     <div class="row" name="documentation-results">
-      <collapsible-list-fabric [iconProps]="documentationSectionIcon" [collapsed]="true" [title]="'View Documentation and Guides from the Web (' + 2 + ')'" [lessMargin]="true">
+      <collapsible-list-fabric [iconProps]="documentationSectionIcon" (collapsedChange)="articleSectionCollapsedChanged($event)" [collapsed]="articleSectionCollapsed" [title]="'View Documentation and Guides from the Web (' + 2 + ')'" [lessMargin]="true">
         <collapsible-list-item body *ngIf="supportDocumentContent && supportDocumentContent.length>0" style="margin-left:25px;"><p style="font-weight: 500;">Azure Guides</p></collapsible-list-item>
         <collapsible-list-item body *ngIf="supportDocumentContent && supportDocumentContent.length>0" style="display:inline-block; width: 90%; margin: 5px 2.5%;">
           <div class="support-doc-section">
@@ -108,63 +108,31 @@
         </collapsible-list-item>
       </collapsible-list-fabric>
     </div>
-    <div class="row" name="detector-results">
-      <div *ngIf="getPendingDetectorCount() > 0" style="margin-top: 5px;padding: 0px 10px;border-bottom: 1px solid #ccc;">
-        <div style="display: inline;" class="row">
-          <i class="fa fa-circle-o-notch fa-spin spin-icon" style="display:inline;float:left; vertical-align:text-bottom;" aria-hidden="true"></i>
-          <div class="sections-loading-title col-md-5" style="display: inline;">Observations and solutions</div>
-          <div class="sections-loading-title col-md-3" style="display: inline;">Running checks {{detectors.length-getPendingDetectorCount()}}/{{detectors.length}}</div>
-        </div>
-      </div>
-      <collapsible-list-fabric [iconProps]="observationSectionIcon" *ngIf="issueDetectedViewModels.length>0 && getPendingDetectorCount() === 0" [lessMargin]="true" [collapsed]="!(getPendingDetectorCount() === 0 && (!topLevelSolutions || topLevelSolutions.length==0) || showSolutionsTimedout)" [title]="'Observations and solutions (' + issueDetectedViewModels.length + ')'">
-        <collapsible-list-item body *ngFor="let viewModel of issueDetectedViewModels;let i =index" style="display: block; width: 90%; margin: 5px 2.5%;">
-          <div class="insight-box">
-            <div style="display: block;">
-              <status-icon style="display: inline-block;" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"
-                [size]="16">
-              </status-icon>
-              <div class="insight-detector-name">{{viewModel.model.title}}</div>
-            </div>
-            <div class="insight-message">{{viewModel.insightTitle}}</div>
-            <div style="display: block;margin-left: 31px;">
-              <fab-primary-button [styles]="solutionButtonStyle" *ngIf="viewModel.solutions && viewModel.solutions.length>0"
-                  type="Submit" text='View solutions' (click)="showSolutions(viewModel)">
-              </fab-primary-button>
-              <fab-link [href]="''" [styles]="viewModel.solutions && viewModel.solutions.length>0? linkStyle: successfulLinkStyle" (click)="viewDetectorData(viewModel, 'Observations and solutions')">View supporting data</fab-link>
-            </div>
-          </div>
-        </collapsible-list-item>
-      </collapsible-list-fabric>
-      <div *ngIf="getPendingDetectorCount() > 0" style="margin-top: 5px;padding: 0px 10px;border-bottom: 1px solid #ccc;">
-        <div style="display: inline;" class="row">
-          <i class="fa fa-circle-o-notch fa-spin spin-icon" style="display:inline;float:left; vertical-align:text-bottom;" aria-hidden="true"></i>
-          <div class="sections-loading-title col-md-5" style="display: inline;">Successful checks</div>
-          <div class="sections-loading-title col-md-3" style="display: inline;">Running checks {{detectors.length-getPendingDetectorCount()}}/{{detectors.length}}</div>
-        </div>
-      </div>
-      <collapsible-list-fabric [iconProps]="successfulSectionIcon" *ngIf="successfulViewModels.length>0 && getPendingDetectorCount() === 0" [collapsed]="true" [lessMargin]="true" [title]="'Successful Checks (' + successfulViewModels.length + ')'">
-        <collapsible-list-item body *ngFor="let viewModel of successfulViewModels;let i =index" style="display: block; width: 90%; margin: 5px 2.5%;">
-          <div class="insight-box">
-            <div style="display: block;">
-              <status-icon style="display: inline-block;" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status"
-                [size]="20">
-              </status-icon>
-              <div class="insight-detector-name">{{viewModel.model.title}}</div>
-            </div>
-            <div class="insight-message">{{viewModel.insightTitle}}</div>
-            <div style="display: block;margin-left: 31px;">
-              <fab-link [href]="''" [styles]="successfulLinkStyle" (click)="viewDetectorData(viewModel, 'Successful checks')">View supporting data</fab-link>
-            </div>
-          </div>
-        </collapsible-list-item>
-      </collapsible-list-fabric>
-    </div>
   </div>
   <div style="display: inline-block;margin-left: 19px; margin-top: 10px;" *ngIf="inDrillDownMode">
     <a tabindex="0" (keyup.enter)="goBackToOrchestrator()" aria-label="Link to go back to the solutions view" role="button"
-      (click)="goBackToOrchestrator()" >Return back to main screen</a>
+      (click)="goBackToOrchestrator()" >Go back to main screen</a>
   </div>
-  <div *ngIf="inDrillDownMode" style="padding: 0 10%;">
+  <div *ngIf="inDrillDownMode" class="wide-view">
     <router-outlet></router-outlet>
   </div>
 </div>
+<div *ngIf="searchMode !== 1" class="cxp-chat-launcher-container align-width">
+  <cxp-chat-launcher *ngIf="showChatButton()" [trackingId]="cxpChatTrackingId" [chatUrl]="cxpChatUrl"
+    [supportTopicId]="supportTopicId"></cxp-chat-launcher>
+</div>
+
+<ng-template #detectorTimePickerPill>
+  <div>
+    <fab-primary-button [id]="'time-picker-button'" [styles]="buttonStyle" (onClick)="openTimePickerSubject.next(true);">
+      <fab-icon [iconName]="'Clock'" [styles]="iconStyles"></fab-icon>
+      <span class="ml-3 control-pill-text">
+        <span>Time Range (UTC): </span>
+        {{timePickerButtonStr}}
+      </span>
+    </fab-primary-button>
+  </div>
+</ng-template>
+
+<detector-time-picker [target]="'#time-picker-button'" [openTimePickerCalloutObservable]="openTimePickerSubject" (updateTimerErrorMessage)="updateTimePickerErrorMessage($event)">
+</detector-time-picker>

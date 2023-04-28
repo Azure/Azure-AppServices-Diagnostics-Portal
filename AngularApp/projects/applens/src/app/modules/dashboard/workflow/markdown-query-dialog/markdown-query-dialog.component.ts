@@ -69,18 +69,21 @@ export class MarkdownQueryDialogComponent implements OnInit {
   }
 
   evaluateExpression() {
+    let status = this.evaluateStatus && this.chooseStatusType === 'dynamic' ? "{(" + this.statusExpression + ")}" : '';
+
     let dynamicExpression: dynamicExpressionBody = {
       WorkflowId: 'Workflow1',
       OperationName: '',
-      Text: "{(" + this.statusExpression + ")}",
+      Text: this.evaluateStatus ? status : this.input,
       Variables: this.inputParams.completionOptions.concat(this.inputParams.variables),
       IsKustoQuery: false
     };
 
     this.error = '';
     this.isExecuting = true;
-    this._diagnosticService.evaluateDynamicExpression(dynamicExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe(resp => {
+    this._diagnosticService.evaluateDynamicExpression(dynamicExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe(dynamicResponse => {
       this.isExecuting = false;
+      let resp = dynamicResponse.response ? dynamicResponse.response : dynamicResponse;
       this.output = this.evaluateStatus ? resp : this.parse(resp);
     }, error => {
       this.isExecuting = false;

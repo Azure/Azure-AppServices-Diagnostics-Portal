@@ -18,36 +18,12 @@ namespace AppLensV3.Services
         private TimeSpan _commExpandedWindow = TimeSpan.FromDays(1);
 
         private string commsQuery = @"
-        let startDate = datetime({START_TIME});
-        let endDate = datetime({END_TIME});
+        set query_results_cache_max_age = time(4h);
         cluster('Icmcluster').database('ACM.Backend'). 
-        GetCommunicationsBySubIdAndDateRange(@'{SUBSCRIPTION}', startDate, endDate) 
+        GetCommunicationsBySubIdAndDateRange(@'{SUBSCRIPTION}', ago(15d), now()) 
         | where CommunicationType == 'Outage'
-        | order by PublishedTime asc
         | project CommunicationId, PublishedTime, Title, RichTextMessage, Status, Severity, IncidentId, CommunicationType, ImpactedServices, ExternalIncidentId
-        ";
-
-        private string emergingIssuesQuery = @"
-        let timeRange = ago(7d);
-        let TenantNameStr = 'App Service (Web Apps)';
-        let incidentsWithEmergingIssueTitle = 
-        materialize (cluster('icmcluster').database('IcMDataWarehouse').Incidents
-        | where CreateDate > timeRange or ModifiedDate > timeRange
-        | where OwningTenantName =~ TenantNameStr
-        | where Title contains 'Emerging' and Title contains 'issue'
-        | distinct IncidentId);
-        let incidentsWithEmergingIssueFieldMarked =
-        materialize (cluster('icmcluster').database('IcMDataWarehouse').IncidentCustomFieldEntries
-        | where TenantName =~ TenantNameStr
-        | where DisplayName == 'Emerging Issue' and Value == 'Yes'
-        | where ModifiedDate > timeRange
-        | distinct IncidentId);
-        let allIncidents = union incidentsWithEmergingIssueTitle, incidentsWithEmergingIssueFieldMarked
-        | distinct IncidentId;
-        cluster('icmcluster').database('IcMDataWarehouse').Incidents
-        | where IncidentId in (allIncidents)
-        | summarize arg_max(ModifiedDate, Status), CreatedDate = any(CreateDate), Details = any(Summary), Title = any(Title) by IncidentId
-        | order by ModifiedDate desc
+        | order by PublishedTime asc
         ";
 
         public OutageCommunicationService(IKustoQueryService kustoQueryService)
@@ -55,22 +31,9 @@ namespace AppLensV3.Services
             _kustoQueryService = kustoQueryService;
         }
 
-        public async Task<List<Communication>> GetCommunicationsAsync(string subscription, DateTime startTime, DateTime endTime, bool checkEmergingIssues = true, string impactedService = "appservice")
+        public async Task<List<Communication>> GetCommunicationsAsync(string subscription, DateTime startTime, DateTime endTime, bool checkEmergingIssues = false, string impactedService = "appservice")
         {
-            Task<Communication> emergingIssueTask = Task.FromResult<Communication>(null);
-            Task<List<Communication>> azCommsTask = GetAzCommsAsyncInternal(subscription, startTime, endTime, impactedService);
-            if (checkEmergingIssues)
-            {
-                emergingIssueTask = GetEmergingIssueAsyncInternal();
-            }
-
-            var emergingIssue = await emergingIssueTask;
-            if(emergingIssue != null)
-            {
-                return new List<Communication>() { emergingIssue };
-            }
-
-            return await azCommsTask;
+            return await GetAzCommsAsyncInternal(subscription, startTime, endTime, impactedService);
         }
 
         private async Task<List<Communication>> GetAzCommsAsyncInternal(string subscription, DateTime startTime, DateTime endTime, string impactedService = "appservice")
@@ -148,34 +111,6 @@ namespace AppLensV3.Services
             }
 
             return commsList;
-        }
-
-        private async Task<Communication> GetEmergingIssueAsyncInternal()
-        {
-            DataTable dt = await _kustoQueryService.ExecuteQueryAsync("Icmcluster", "IcmDataWarehouse", emergingIssuesQuery, "GetEmergingIssuesQuery", DateTime.UtcNow.AddDays(-7), DateTime.UtcNow);
-            if (dt == null || dt.Rows == null || dt.Rows.Count == 0)
-            {
-                return null;
-            }
-
-            var activeIssue = dt.Select("Status LIKE 'ACTIVE'").FirstOrDefault();
-            if (activeIssue == default(DataRow))
-            {
-                return null;
-            }
-
-            return new Communication()
-            {
-                CommunicationId = Guid.NewGuid().ToString(),
-                PublishedTime = DateTimeHelper.GetDateTimeInUtcFormat(DateTime.Parse(activeIssue["ModifiedDate"].ToString())),
-                Title = $"[Detected Emerging Issue] : {activeIssue["Title"].ToString()}",
-                RichTextMessage = activeIssue["Details"].ToString().Truncate(500, true),
-                Status = activeIssue["Status"].ToString().Equals("Active", StringComparison.OrdinalIgnoreCase) ? CommunicationStatus.Active : CommunicationStatus.Resolved,
-                IncidentId = string.Empty,
-                IcmId = activeIssue["IncidentId"].ToString(),
-                IsAlert = true,
-                CommType = CommunicationType.EmergingIssue
-            };
         }
 
         private List<ImpactedService> GetImpactedRegions(string jsonStr)

@@ -2,7 +2,7 @@
 <h6>{{ workflowPublishBody.Description }}</h6>
 <mat-dialog-content>
     <workflow-view [workflowPublishBody]="workflowPublishBody" [onboardingFlow]="true" [workflowId]="workflowId"
-        (onError)="onError($event)">
+        (onError)="onError($event)" (onPackageUpdated)="onPackageUpdated($event)">
     </workflow-view>
 </mat-dialog-content>
 <mat-dialog-actions>

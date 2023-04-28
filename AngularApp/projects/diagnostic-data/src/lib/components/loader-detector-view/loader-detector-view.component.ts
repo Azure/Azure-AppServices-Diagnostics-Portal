@@ -1,18 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
+import { DiagnosticDataConfig, DIAGNOSTIC_DATA_CONFIG } from '../../config/diagnostic-data-config';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { Guid } from '../../utilities/guid';
+import { ISpinnerProps } from 'office-ui-fabric-react';
+
 
 @Component({
     selector: 'loader-detector-view',
     templateUrl: './loader-detector-view.component.html',
-    styleUrls: ['./loader-detector-view.component.scss']
+    styleUrls: ['./loader-detector-view.component.scss'],
+    template: 'Loading Message 4: {{LoadingMessage4}}'
 })
+
+
 export class LoaderDetectorViewComponent implements OnInit {
 
+    @Input() set LoadingMessage1(message: string) {
+        this.setLoadingString(message, 0);
+    }
+    @Input() set LoadingMessage2(message: string) {
+        this.setLoadingString(message, 1);
+    };
+    @Input() set LoadingMessage3(message: string) {
+        this.setLoadingString(message, 2);
+    };
+    @Input() set LoadingMessage4(message: string) {
+        this.setLoadingString(message, 3)
+    };
+    @Input() Source: string;
     message: string = "loading detector view";
     imgSrc: string = "assets/img/loading-detector-view/fetching_logs.svg";
-    loadingString: string = "Fetching properties and logs ...";
+    
     delay: number = 2000;
     timer: any = 0;
     i: number = 0;
@@ -20,6 +39,11 @@ export class LoaderDetectorViewComponent implements OnInit {
     endLoadingTimeInMilliSeconds: any;
     duration: any;
     trackingEventId: any;
+    isPublic: boolean = false;
+
+    isTimeout: boolean = false;
+    timeoutTimer: any = null;
+    readonly timeoutInMS: number = 120 * 1000;
 
     loadingStages: LoadingStage[] = [
         {
@@ -44,12 +68,21 @@ export class LoaderDetectorViewComponent implements OnInit {
         }
     ];
 
-    constructor(private telemetryService: TelemetryService) {
+    loadingString: string = this.loadingStages[0].loadingString;
+
+    spinnerStyles: ISpinnerProps['styles'] = {
+        label: { fontSize: "16px" }
     }
+
+    constructor(private telemetryService: TelemetryService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
+        this.isPublic = config?.isPublic;
+    }
+
 
     ngOnInit() {
         this.trackingEventId = Guid.newGuid();
         this.loading();
+        this.checkLoadingTimeout();
     }
 
     // This is the loading function for each stage. We set a random time out for each stage.
@@ -79,10 +112,31 @@ export class LoaderDetectorViewComponent implements OnInit {
         let endLoadingTimeISOString = new Date().toISOString();
         this.duration = this.endLoadingTimeInMilliSeconds - this.startLoadingTimeInMilliSeconds;
         this.telemetryService.logEvent(TelemetryEventNames.LoadingDetectorViewEnded, { "TrackingEventId": this.trackingEventId, "EndLoadingTime": endLoadingTimeISOString, "Duration": this.duration });
+
+        window.clearTimeout(this.timeoutTimer);
     }
 
     ngAfterViewInit() {
         this.startLoadingTimeInMilliSeconds = Date.now();
+    }
+
+    setLoadingString(loadingString: string, loadingStageIndex: number) {
+        if (!loadingString) return;
+        this.loadingString = loadingString;
+        this.loadingStages[loadingStageIndex].loadingString = loadingString;
+    }
+
+    checkLoadingTimeout() {
+        this.isTimeout = false;
+        this.timeoutTimer = setTimeout(() => {
+            if (!this.isTimeout) {
+                this.isTimeout = true;
+                this.telemetryService.logEvent(TelemetryEventNames.LoadingTimeOut, {
+                    source: this.Source,
+                    isPublic: `${this.isPublic}`
+                });
+            }
+        }, this.timeoutInMS);
     }
 }
 

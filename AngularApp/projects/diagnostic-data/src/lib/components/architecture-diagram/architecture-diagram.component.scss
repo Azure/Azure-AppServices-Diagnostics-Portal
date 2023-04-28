@@ -1,0 +1,27 @@
+
+  /** The drop icon outer circle */
+.ngflowchart-step-wrapper[ngflowchart-drop-hover]::after {
+    background: #a3e798 !important;
+  }
+  
+  /** The drop icon inner circle */
+  .ngflowchart-step-wrapper[ngflowchart-drop-hover]::before {
+    background: #4cd137 !important;
+  }
+  
+  /** The arrow paths and arrow head */
+  ::ng-deep .ngflowchart-arrow {
+    & #arrowhead {
+      fill: gray;
+    }
+  
+    & #arrowpath {
+      stroke: gray;
+      stroke: width 1px;
+    }
+
+  }
+  ::ng-deep .ngflowchart-canvas-content {
+    height: inherit; 
+    width: 2000px; 
+  }

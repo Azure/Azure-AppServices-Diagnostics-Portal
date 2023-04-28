@@ -12,4 +12,22 @@
 
 .panel {
     margin-bottom: 0px;
+    background-color: var(--bodyBackground);
+    color: var(--bodyText);
+}
+
+input,
+textarea,
+select {
+    background-color: var(--bodyBackground);
+    color: var(--inputText);
+}
+
+.matlabel {
+    background-color: var(--bodyBackground);
+    color: var(--inputText);
+}
+
+::ng-deep .mat-form-field-appearance-fill ::ng-deep .mat-form-field-flex {
+    background-color: var(--bodyBackground);
 }

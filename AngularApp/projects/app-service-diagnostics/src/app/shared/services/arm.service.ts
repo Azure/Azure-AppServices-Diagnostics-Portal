@@ -144,7 +144,7 @@ export class ArmService {
             subscriptionLocation = response.body['subscriptionPolicies'] ? response.body['subscriptionPolicies']['locationPlacementId'] : '';
         });
 
-        if (!!additionalHeaders == false){
+        if (!!additionalHeaders == false) {
             additionalHeaders = new Map<string, string>();
         }
 
@@ -335,7 +335,7 @@ export class ArmService {
         return this._cache.get(cacheKey, request, invalidateCache);
     }
 
-    requestResource<T, S>(method:string, resourceUri: string, body?: S, apiVersion?: string): Observable<{} | T> {
+    requestResource<T, S>(method: string, resourceUri: string, body?: S, apiVersion?: string): Observable<{} | T> {
         if (!resourceUri.startsWith('/')) {
             resourceUri = '/' + resourceUri;
         }
@@ -345,12 +345,12 @@ export class ArmService {
             bodyString = JSON.stringify(body);
         }
 
-        const request = this._http.request<S>(method, url, { headers: this.getHeaders(), body: bodyString, observe:"response" });
+        const request = this._http.request<S>(method, url, { headers: this.getHeaders(), body: bodyString, observe: "response" });
 
         return request;
     }
 
-    requestResourceWithCache<T, S>(method:string, resourceUri: string, body?: S, apiVersion?: string, invalidateCache = false): Observable<{} | T> {
+    requestResourceWithCache<T, S>(method: string, resourceUri: string, body?: S, apiVersion?: string, invalidateCache = false): Observable<{} | T> {
         if (!resourceUri.startsWith('/')) {
             resourceUri = '/' + resourceUri;
         }
@@ -360,7 +360,7 @@ export class ArmService {
             bodyString = JSON.stringify(body);
         }
 
-        const request = this._http.request<S>(method, url, { headers: this.getHeaders(), body: bodyString, observe:"response" });
+        const request = this._http.request<S>(method, url, { headers: this.getHeaders(), body: bodyString, observe: "response" });
 
         return this._cache.get(url, request, invalidateCache);
     }
@@ -507,6 +507,26 @@ export class ArmService {
         return this._cache.get(resourceUri, request, invalidateCache);
     }
 
+    retryWithPostOnGetFailure<T, S>(resourceUri: string, body?: S, apiVersion?: string, invalidateCache: boolean = false, upatedResourceUri: string = ''): Observable<boolean | {} | T> {
+        const url = this.createUrl(resourceUri, apiVersion);
+        return this._http.get<T>(url, { headers: this.getHeaders() }).pipe(
+            map(resp => {
+                return resp;
+            }),
+            catchError(err => {
+                if (err.status && err.status === 405) {
+                    let actualResourceUri = upatedResourceUri ? upatedResourceUri : resourceUri;
+                    return this.postResourceWithoutEnvelope<T, S>(actualResourceUri, body, apiVersion, invalidateCache);
+                } else {
+                    let actualError: string = JSON.stringify(err);
+                    if (err.error && err.error.Message) {
+                        actualError = err.error.Message;
+                    }
+                    return throwError(actualError)
+                }
+            }));
+    }
+
     static prettifyError(error: any): string {
         let errorReturn = '';
 
@@ -537,8 +557,8 @@ export class ArmService {
         let actualError = "";
         const loggingError = new Error();
         const loggingProps = {};
-
         if (error) {
+            loggingProps['rawError'] = JSON.stringify(error);
             if (error.error) {
                 if (error.error.error) {
                     actualError = ArmService.prettifyError(error.error.error);
@@ -556,9 +576,9 @@ export class ArmService {
             } else {
                 actualError = 'Server Error';
             }
-            loggingProps['url'] = error.url;
+            loggingProps['url'] = `${error.url}`;
             loggingProps['status'] = `${error.status}`;
-            loggingProps['statusText'] = error.statusText;
+            loggingProps['statusText'] = `${error.statusText}`;
         }
 
         if (!loggingError.message) {
@@ -566,7 +586,7 @@ export class ArmService {
         }
 
         if (this.telemetryService) {
-            this.telemetryService.logException(loggingError, null, loggingProps);
+            this.telemetryService.logException(loggingError, "arm.service", loggingProps);
         }
         return observableThrowError(actualError);
     }

@@ -7,7 +7,7 @@
       <div header>
         <div style="display: flex;align-items: center;min-height: 40px;">
           <status-icon class="mr-3" [status]="insight.status"></status-icon>
-          <div class="mr-3"><strong>{{insight.title}}</strong></div>
+          <div class="mr-3"><strong><openai [text]="insight.title"></openai></strong></div>
           <div *ngIf="hasSolutions(insight) && solutionButtonPosition === SolutionButtonPosition.NextToTitle">
             <ng-container [ngTemplateOutlet]="solutionButton" [ngTemplateOutletContext]="{'insight':insight}"></ng-container>
           </div>

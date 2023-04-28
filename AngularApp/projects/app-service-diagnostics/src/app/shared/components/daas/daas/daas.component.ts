@@ -404,7 +404,7 @@ export class DaasComponent implements OnInit, OnDestroy {
   }
 
   submitDiagnosticServerSession(session: Session): Observable<Array<SessionResponse>> {
-    session.SessionId = moment().utc().format('YYMMDD_HHmmssSSSS');
+    session.SessionId = moment.utc().format('YYMMDD_HHmmssSSSS');
     let tasks = this.instancesToDiagnose.map(instance => {
       return this.submitSessionOnInstance(instance, session)
     });

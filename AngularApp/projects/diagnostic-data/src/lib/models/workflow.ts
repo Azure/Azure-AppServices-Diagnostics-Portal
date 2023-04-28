@@ -1,5 +1,9 @@
 import { CompilationProperties } from "./compilation-properties";
-import { DataTableResponseColumn } from "./detector";
+import { DataTableResponseColumn, PropertyBag } from "./detector";
+
+export interface Dictionary<T> {
+  [K: string]: T;
+}
 
 export enum nodeStatus {
   Critical = 'Critical',
@@ -12,7 +16,8 @@ export enum nodeStatus {
 export enum nodeType {
   detector = 'detector',
   kustoQuery = 'kustoQuery',
-  markdown = 'markdown'
+  markdown = 'markdown',
+  input = 'input'
 }
 
 export enum promptType {
@@ -47,6 +52,7 @@ export class stepVariable {
   type: string = 'String';
   value: string = '';
   runtimeValue: any;
+  isUserInput: boolean = false;
 }
 
 export class workflowNodeData {
@@ -56,7 +62,7 @@ export class workflowNodeData {
   detectorId: string = '';
   isEditing: boolean = false;
   isEditingTitle: boolean = false;
-  queryText: string = '';
+  queryText?: string = '';
   kustoQueryColumns: DataTableResponseColumn[] = [];
   variables: stepVariable[] = [];
   markdownText: string = '';
@@ -69,6 +75,42 @@ export class workflowNodeData {
   ifconditionExpression: string;
   switchOnValue: string;
   switchCaseValue: string;
+  foreachVariable: string;
+  inputNode: inputNode = new inputNode();
+  kustoNode: kustoNode = new kustoNode();
+}
+
+export class kustoNode {
+  queryText: string = '';
+  kustoClusterName: string = '';
+  kustoClusterDataBase: string = '';
+  addQueryOutputToMarkdown: boolean = false;
+  slotMapConfiguration: slotMapConfiguration = new slotMapConfiguration()
+}
+
+export class slotMapConfiguration {
+  timeStampColumnName: string;
+  siteRuntimeNameColumnName: string;
+  finalColumnName: string;
+  aggregateColumnName: string;
+  runSlotMapOnQueryOutput: boolean = false;
+}
+
+export class inputNode {
+  variableName: string = '';
+  variableLabel: string = '';
+  inputType: inputType = inputType.text;
+  startDateVariableName: string = '';
+  endDateVariableName: string = '';
+  options: string = '';
+  variableSelectSource: string = '';
+}
+
+export enum inputType {
+  text = "Text",
+  select = "Select",
+  date = "Date",
+  daterange = "DateRange"
 }
 
 export class workflowPublishBody {
@@ -103,6 +145,16 @@ export interface workflowNodeResult {
   workflowPublishBody: workflowPublishBody;
   succeeded: boolean;
   promptType: string;
+  metadataPropertyBag: PropertyBag[]
+  inputNodeSettings: inputNodeSettings;
+  workflowPackage: any;
+}
+
+export interface inputNodeSettings {
+  inputType: inputType;
+  variableLabel: string;
+  variables: Dictionary<string>;
+  options: string[];
 }
 
 export interface workflowExecutionTrace {

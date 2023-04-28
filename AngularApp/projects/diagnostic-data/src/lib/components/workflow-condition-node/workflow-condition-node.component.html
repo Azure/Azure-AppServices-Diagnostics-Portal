@@ -1,0 +1,10 @@
+<div [attr.name]="data.name" #canvasContent>
+  <div class="panel">
+    <div class="panel-body">
+      <div>{{ data.description }}
+        <i *ngIf="data.promptType ==='automatic' && isLoading && data.children && data.children.length > 0"
+          class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+      </div>
+    </div>
+  </div>
+</div>

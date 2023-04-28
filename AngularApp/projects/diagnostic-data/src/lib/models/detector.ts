@@ -65,6 +65,8 @@ interface DetectorMetaDataBase {
 
 export interface ExtendDetectorMetaData extends DetectorMetaDataBase {
     internalOnly: boolean;
+    commitSha: string;
+    gitCommitDate: Date;
 }
 
 export interface DataProviderMetadata {
@@ -130,7 +132,9 @@ export enum RenderingType {
     StepViews,
     Report,
     ClientScriptComponent,
-    WorkflowResult
+    WorkflowResult, 
+    Video,
+    ArchitectureDiagramResult
 }
 
 export enum TimeSeriesType {

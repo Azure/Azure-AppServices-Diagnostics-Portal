@@ -35,6 +35,7 @@ export class ApplensHeaderComponent implements OnInit {
   };
   expandCheckCard: boolean = false;
   darkThemeChecked: boolean = false;
+  codeCompletionChecked: boolean = false;
   smartViewChecked: boolean = false;
   //Only If user changed setting, then send request to backend
   userSettingChanged: boolean = false;
@@ -42,16 +43,24 @@ export class ApplensHeaderComponent implements OnInit {
   themeChanged: boolean = false;
   viewModeChanged: boolean = false;
   selectedKey: string = "smarter";
+  showGPTComponent: boolean = false;
   choiceGroupOptions: IChoiceGroupOption[] = [
     { key: 'smarter', text: 'Smart Grouping', onClick: () => { this.smartViewChecked = true; this.selectedKey = "smarter"; } },
     { key: 'waterfall', text: 'Waterfall', onClick: () => { this.smartViewChecked = false; this.selectedKey = "waterfall"; } }
   ];
 
-  constructor(private _adalService: AdalService, private _diagnosticApiService: DiagnosticApiService, private _activatedRoute: ActivatedRoute, private _userSettingService: UserSettingService, private _router: Router, private _themeService: ApplensThemeService, private _detectorControlService: DetectorControlService, @Optional() public _searchService?: SearchService, @Optional() private _applensGlobal?: ApplensGlobal) { }
+  constructor(private _adalService: AdalService, private _diagnosticApiService: DiagnosticApiService, private _activatedRoute: ActivatedRoute, private _userSettingService: UserSettingService, private _router: Router, private _themeService: ApplensThemeService, private _detectorControlService: DetectorControlService, @Optional() public _searchService?: SearchService, @Optional() private _applensGlobal?: ApplensGlobal) {
+    this._router.events.subscribe((val) => {
+      // see also
+      this.checkGPTRoute();
+    });
+  }
 
   ngOnInit() {
     const alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
     const userId = alias.replace('@microsoft.com', '');
+
+    this.checkGPTRoute();
 
     if (this._adalService.userInfo.profile) {
       const familyName: string = this._adalService.userInfo.profile.family_name;
@@ -75,6 +84,7 @@ export class ApplensHeaderComponent implements OnInit {
     this._userSettingService.getUserSetting().subscribe(userSettings => {
       this.expandCheckCard = userSettings ? userSettings.expandAnalysisCheckCard : false;
       this.darkThemeChecked = userSettings && userSettings.theme.toLowerCase() == "dark" ? true : false;
+      this.codeCompletionChecked = userSettings && userSettings.codeCompletion && userSettings.codeCompletion.toLowerCase() == "off" ? false : true;
       this.smartViewChecked = userSettings && userSettings.viewMode.toLowerCase() == "smarter" ? true : false;
       this.selectedKey = userSettings && userSettings.viewMode.toLowerCase() == "smarter" ? "smarter" : "waterfall";
     });
@@ -82,6 +92,15 @@ export class ApplensHeaderComponent implements OnInit {
     this._diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
       this.envTag = `(${env})`;
     });
+  }
+
+  checkGPTRoute(){
+    if (this._router.url.includes("chatgpt")) {
+      this.showGPTComponent = true;
+    }
+    else {
+      this.showGPTComponent = false;
+    }
   }
 
   navigateToLandingPage() {
@@ -100,6 +119,10 @@ export class ApplensHeaderComponent implements OnInit {
     this.darkThemeChecked = event.checked;
   }
 
+  toggleCodeCompletion(event: { checked: boolean }) {
+    this.codeCompletionChecked = event.checked;
+  }
+
   toggleViewMode(event: { checked: boolean }) {
     this.viewModeChanged = !this.viewModeChanged;
     this.userSettingChanged = this.expandAnalysisChanged || this.themeChanged || this.viewModeChanged;
@@ -110,14 +133,15 @@ export class ApplensHeaderComponent implements OnInit {
   private updateUserSettingsFromPanel() {
     const themeStr = this.darkThemeChecked ? "dark" : "light";
     const updatedSettings: UserPanelSetting = {
+      codeCompletion: this.codeCompletionChecked ? "on": "off",
       expandAnalysisCheckCard: this.expandCheckCard,
       theme: themeStr,
       viewMode: this.smartViewChecked ? "smarter" : "waterfall"
     };
     this._themeService.setActiveTheme(themeStr);
     this._userSettingService.isWaterfallViewSub.next(!this.smartViewChecked);
-    this._userSettingService.updateUserPanelSetting(updatedSettings).subscribe();
-    window.location.reload();
+    this._userSettingService.updateUserPanelSetting(updatedSettings).subscribe(res => {}, err => {});
+    setTimeout(() => {window.location.reload();}, 1000);
   }
 
   openCallout() {

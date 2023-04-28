@@ -15,8 +15,8 @@
       <div class="col-sm-2">
         <label class="form-label">Other Step variables</label>
       </div>
-      <div class="col-sm-10">
-        <table class="table table-bordered table-responsive">
+      <div class="col-sm-10 variables-table">
+        <table class="table table-bordered">
           <thead>
             <tr>
               <th>Name</th>
@@ -30,7 +30,12 @@
               <td>{{ v.name }}</td>
               <td>{{ v.type }}</td>
               <td>{{ getKustoSampleUsage(v) }}</td>
-              <td>{{ v.runtimeValue }}</td>
+              <td>
+                <span *ngIf="!v.isUserInput">{{ v.runtimeValue }}</span>
+                <ng-container *ngIf="v.isUserInput">
+                  <input class="form-control" type="text" [name]="v.name" [(ngModel)]="v.runtimeValue" />
+                </ng-container>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -47,6 +52,10 @@
         <div class="mt-2 mb-2">
           <button class="btn btn-primary btn-sm" (click)="executeQuery()">Execute</button>
           <i *ngIf="isExecutingQuery" class="ml-2 fa fa-gear fa-spin fa-1x"></i>
+          <a class="ml-2 kusto-link" *ngIf="kustoQueryUrl && !isExecutingQuery" [href]="kustoQueryUrl"
+            target="_blank">Kusto Web</a>
+          <a class="ml-2 kusto-link" *ngIf="kustoDesktopUrl && !isExecutingQuery" [href]="kustoDesktopUrl">Kusto
+            Desktop</a>
           <div *ngIf="error">
             <error-message [error]="error"></error-message>
           </div>
@@ -59,7 +68,7 @@
       </div>
       <div class="col-sm-10 border border-primary">
         <div class="query-output">
-          <table *ngIf="dataSource.length > 0" class="mt-3 table table-bordered table-responsive">
+          <table *ngIf="dataSource.length > 0" class="mt-3 table-hovering table table-bordered">
             <thead>
               <tr>
                 <th *ngFor="let disCol of kustoQueryColumns; let colIndex = index">{{disCol.columnName}}
@@ -78,6 +87,19 @@
         </div>
       </div>
     </div>
+    <div class="row mb-2 mt-2">
+      <div class="col-sm-2">
+        <label class="form-label">Add query output to markdown</label>
+      </div>
+      <div class="col-sm-10">
+        <div>
+          <label class="checkbox-inline">
+            <input [(ngModel)]="inputKustoQueryDialogParams.addQueryOutputToMarkdown" id="addQueryOutputToMarkdown"
+              name="chkaddQueryOutputToMarkdown" type="checkbox" /> (Check this checkbox if you want to append the query
+            output as an HTML table to the markdown) </label>
+        </div>
+      </div>
+    </div>
     <div class="row mb-2 mt-5">
       <div class="col-sm-2">
         <label class="form-label">Configure Variables</label>
@@ -88,8 +110,8 @@
           in subsequent steps.
         </span>
         <div class="mt-3 mb-3">
-          <configure-variables [variables]="variablesInMemoryCopy"
-            (onVariablesSaved)="updateVariables($event)" [currentNode]="currentNode" >
+          <configure-variables [variables]="variablesInMemoryCopy" (onVariablesSaved)="updateVariables($event)"
+            [currentNode]="currentNode">
           </configure-variables>
         </div>
       </div>

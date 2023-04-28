@@ -15,6 +15,7 @@ import { FavoriteDetectorProp, FavoriteDetectors, LandingInfo, RecentResource, U
 import { List } from 'office-ui-fabric-react';
 import { dynamicExpressionBody } from '../../modules/dashboard/workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
+import { CommitStatus } from '../models/devopsCommitStatus';
 
 
 @Injectable()
@@ -52,6 +53,11 @@ export class DiagnosticApiService {
     return this.invoke<any>(path, HttpMethod.GET, null, true, false, true, false);
   }
 
+  public FetchCaseEnabledResourceProviders() {
+    let path = "internal/FetchCaseEnabledResourceProviders";
+    return this.invoke<any>(path, HttpMethod.GET, null, true, false, true, false);
+  }
+
   public unrelatedResourceConfirmation(resourceId: string) {
     let body = {
       caseNumber: this.CustomerCaseNumber,
@@ -74,17 +80,19 @@ export class DiagnosticApiService {
   }
 
   public getWorkflowNode(version: string, resourceId: string, workflowId: string, workflowExecutionId: string, nodeId: string, startTime?: string, endTime?: string,
-    internalView: boolean = true, additionalQueryParams?: string):
+    internalView: boolean = true, additionalQueryParams?: string, workflowUserInputs?: any):
     Observable<workflowNodeResult> {
     let timeParameters = this._getTimeQueryParameters(startTime, endTime);
-    let path = `${version}${resourceId}/workflows/${workflowId}?${timeParameters}`;
-    if (workflowExecutionId && nodeId) {
-      path = `${version}${resourceId}/workflows/${workflowId}/${workflowExecutionId}/${nodeId}?${timeParameters}`;
-    }
+    let path = `${version}${resourceId}/detectors/${workflowId}?${timeParameters}&diagnosticEntityType=workflow&workflowNodeId=${nodeId}&workflowExecutionId=${workflowExecutionId}`;
 
     if (additionalQueryParams != undefined) {
       path += additionalQueryParams;
     }
+
+    if (workflowUserInputs != null) {
+      path += `&workflowUserInputs=${JSON.stringify(workflowUserInputs)}`;
+    }
+
     return this.invoke<workflowNodeResult>(path, HttpMethod.POST, null, false, true, true, internalView);
   }
 
@@ -105,10 +113,19 @@ export class DiagnosticApiService {
   }
 
   public getWorkflows(version: string, resourceId: string, body?: any, queryParams?: any[], internalClient: boolean = true): Observable<DetectorMetaData[]> {
-    let path = `${version}${resourceId}/workflows`;
-    if (queryParams) {
-      path = path + "?" + queryParams.map(qp => qp.key + "=" + qp.value).join("&");
+    let path = `${version}${resourceId}/detectors`;
+    if (queryParams == null) {
+      queryParams = [];
     }
+
+    let idx = queryParams.findIndex(x => x.key === 'diagnosticEntityType');
+    if (idx > -1) {
+      queryParams[idx].value = 'workflow';
+    } else {
+      queryParams.push({ key: 'diagnosticEntityType', value: 'workflow' });
+    }
+
+    path = path + "?" + queryParams.map(qp => qp.key + "=" + qp.value).join("&");
     return this.invoke<DetectorResponse[]>(path, HttpMethod.POST, body, true, false, internalClient).pipe(retry(1), map(response => response.map(detector => detector.metadata)));
   }
 
@@ -173,11 +190,11 @@ export class DiagnosticApiService {
     return this.invoke<DetectorResponse[]>(path, HttpMethod.POST, body).pipe(retry(1), map(response => response.map(gist => gist.metadata)));
   }
 
-  
-  public getGistId(version: string, resourceId: string, gistId: string, body?: any): Observable<any>{
-    
+
+  public getGistId(version: string, resourceId: string, gistId: string, body?: any): Observable<any> {
+
     let path = `${version}${resourceId}/gists/${gistId}`;
-    return this.invoke<any>(path, HttpMethod.POST, body, true); 
+    return this.invoke<any>(path, HttpMethod.POST, body, true);
   }
 
 
@@ -392,6 +409,29 @@ export class DiagnosticApiService {
     return this._cacheService.get(path, request, invalidateCache);
   }
 
+  public post<T, S>(path: string, body?: S, additionalHeaders: HttpHeaders = null): Observable<T> {
+    const url = `${this.diagnosticApi}${path}`;
+    let bodyString: string = '';
+    if (body) {
+      bodyString = JSON.stringify(body);
+    }
+
+    var requestHeaders = this._getHeaders();
+    if (additionalHeaders) {
+      additionalHeaders.keys().forEach(key => {
+        if (!requestHeaders.has(key)) {
+          requestHeaders = requestHeaders.set(key, additionalHeaders.get(key));
+        }
+      });
+    }
+
+    const request = this._httpClient.post(url, bodyString, {
+      headers: requestHeaders,
+    });
+
+    return this._cacheService.get(path, request, true);
+  }
+
   public hasApplensAccess(): Observable<any> {
     let url = `${this.diagnosticApi}api/ping`;
     let request = this._httpClient.get<HttpResponse<Object>>(url, {
@@ -495,6 +535,17 @@ export class DiagnosticApiService {
   updateUserPanelSetting(panelSetting: UserPanelSetting, userId: string): Observable<UserSetting> {
     const url: string = `${this.diagnosticApi}api/usersetting/${userId}/userPanelSetting`;
     return this._httpClient.post<UserSetting>(url, panelSetting, {
+      headers: this._getHeaders()
+    });
+  }
+
+  public getUserSettingChatGPT(userId: string, invalidateCache: boolean): Observable<UserSetting> {
+    return this.get<UserSetting>(`api/usersetting/${userId}/userChatGPTSetting`, invalidateCache);
+  }
+
+  updateUserChatGPTSetting(chatGPTSetting: any, userId: string): Observable<UserSetting> {
+    const url: string = `${this.diagnosticApi}api/usersetting/${userId}/userChatGPTSetting`;
+    return this._httpClient.post<UserSetting>(url, chatGPTSetting, {
       headers: this._getHeaders()
     });
   }
@@ -641,9 +692,28 @@ export class DiagnosticApiService {
     }));
   }
 
-  public isUserAllowedForWorkflow(userAlias:string):Observable<boolean>{
+  public isUserAllowedForWorkflow(userAlias: string): Observable<boolean> {
     const path = `api/workflows/isuserallowed/${userAlias}`;
     return this.get(path).pipe(map((res: boolean) => {
+      return res;
+    }));
+  }
+
+  public getDevopsCommitStatus(commitid: string, resourceUri: string): Observable<CommitStatus[]> {
+    let path = `devops/getCommitStatus?commitid=${commitid}&resourceUri=${resourceUri}`;
+    return this.invoke(path, HttpMethod.GET, null, false);
+  }
+
+  public getWorkflowUsers(): Observable<string[]> {
+    const path = `api/workflowusers`;
+    return this.get(path, true).pipe(map((res: string[]) => {
+      return res;
+    }));
+  }
+
+  public addWorkflowUser(useralias: string): Observable<any> {
+    const path = `api/workflowusers`;
+    return this.post(path, useralias).pipe(map(res => {
       return res;
     }));
   }

@@ -9,6 +9,7 @@ import { filter } from 'rxjs-compat/operator/filter';
 import { map } from 'rxjs/operators';
 import { dynamicExpressionBody } from '../workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
+import { CommitStatus } from '../../../shared/models/devopsCommitStatus';
 
 
 @Injectable()
@@ -47,7 +48,7 @@ export class ApplensDiagnosticService {
       formQueryParams);
   }
 
-  getWorkflowNode(workflowId: string, workflowExecutionId: string, nodeId: string, startTime: string, endTime: string, internalView: boolean = true, formQueryParams?: string, overrideResourceUri?: string): Observable<workflowNodeResult> {
+  getWorkflowNode(workflowId: string, workflowExecutionId: string, nodeId: string, startTime: string, endTime: string, internalView: boolean = true, formQueryParams?: string, overrideResourceUri?: string, userInputs?: any): Observable<workflowNodeResult> {
     let resourceId = overrideResourceUri ? overrideResourceUri : this._resourceService.getCurrentResourceId(true);
     if (!resourceId.startsWith('/')) resourceId = '/' + resourceId;
 
@@ -62,7 +63,8 @@ export class ApplensDiagnosticService {
       startTime,
       endTime,
       internalView,
-      formQueryParams);
+      formQueryParams,
+      userInputs);
   }
 
   getSystemInvoker(detector: string, systemInvokerId: string = '', dataSource: string, timeRange: string): Observable<DetectorResponse> {
@@ -182,9 +184,9 @@ export class ApplensDiagnosticService {
     }));
   }
 
-  getGistDetailsById(id: string) : Observable<DetectorMetaData[]>{
-    return this._diagnosticApi.getGistId(this._resourceService.versionPrefix, 
-      this._resourceService.getCurrentResourceId(true), id); 
+  getGistDetailsById(id: string): Observable<DetectorMetaData[]> {
+    return this._diagnosticApi.getGistId(this._resourceService.versionPrefix,
+      this._resourceService.getCurrentResourceId(true), id);
   }
 
 
@@ -341,7 +343,27 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getDevopsCommitContent(filePath, commitid, resourceUri);
   }
 
-  isUserAllowedForWorkflow(userAlias:string){
+  isUserAllowedForWorkflow(userAlias: string) {
     return this._diagnosticApi.isUserAllowedForWorkflow(userAlias);
+  }
+
+  getDevopsCommitStatus(commitid: string, resourceUri:string):Observable<CommitStatus[]> {
+    return this._diagnosticApi.getDevopsCommitStatus(commitid, resourceUri).pipe(map((res:CommitStatus[]) =>   
+    {
+      let currStatus= res;
+      currStatus.forEach(status => {
+        status.commitId = commitid;
+      });
+      return currStatus;
+    }));
+
+  }
+  
+  getWorkflowUsers(): Observable<string[]> {
+    return this._diagnosticApi.getWorkflowUsers();
+  }
+
+  addWorkflowUser(useralias: string): Observable<any> {
+    return this._diagnosticApi.addWorkflowUser(useralias);
   }
 }

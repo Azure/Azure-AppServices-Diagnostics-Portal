@@ -152,6 +152,21 @@ import { WorkflowResultComponent } from './components/workflow-result/workflow-r
 import { WorkflowViewComponent } from './components/workflow-view/workflow-view.component';
 import { WorkflowNodeComponent } from './components/workflow-node/workflow-node.component';
 import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
+import { ArchitectureDiagramComponent } from './components/architecture-diagram/architecture-diagram.component';
+import { ArchitectureDiagramNodeComponent } from './components/architecture-diagram-node/architecture-diagram-node.component';
+import { ChatGPTContextService } from './services/chat-gpt-context-service';
+import { GenericOpenAIChatService, OpenAIArmService } from '../public_api';
+import { OpenaiComponent } from './components/openai/openai.component';
+import { QueryResponseService } from './services/query-response.service';
+import { WorkflowConditionNodeComponent } from './components/workflow-condition-node/workflow-condition-node.component';
+import { OptInsightsEnablementComponent } from './components/opt-insights-enablement/opt-insights-enablement.component';
+import { OptInsightsMarkdownComponent } from './components/opt-insights-markdown/opt-insights-markdown.component';
+import { OptInsightsGenericService } from './services/optinsights.service';
+import { DemoSubscriptions } from './models/betaSubscriptions';
+import { WorkflowAcceptUserinputComponent } from './components/workflow-accept-userinput/workflow-accept-userinput.component';
+import { VideoComponent } from './components/video/video.component';
+import { SafePipe } from './pipe/safe.pipe';
+
 
 @NgModule({
     imports: [
@@ -188,6 +203,7 @@ import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
         FabDatePickerModule,
         FabCalendarModule,
         NgFlowchartModule
+        
     ],
     providers: [
         ClipboardService
@@ -253,7 +269,16 @@ import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
         GanttChartTaskbarColorsComponent,
         WorkflowResultComponent,
         WorkflowViewComponent,
-        WorkflowNodeComponent
+        WorkflowNodeComponent,
+        ArchitectureDiagramComponent,
+        ArchitectureDiagramNodeComponent,
+        WorkflowConditionNodeComponent,
+        OptInsightsEnablementComponent,
+        OptInsightsMarkdownComponent,
+        WorkflowAcceptUserinputComponent,
+        VideoComponent,
+        SafePipe,
+        OpenaiComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -295,7 +320,9 @@ import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
         FabCardComponent,
         FormStepComponent,
         GanttChartTaskbarColorsComponent,
-        WorkflowViewComponent
+        WorkflowViewComponent,
+        SafePipe,
+        OpenaiComponent
     ]
 })
 export class DiagnosticDataModule {
@@ -323,7 +350,13 @@ export class DiagnosticDataModule {
                 AppInsightsQueryService,
                 ParseResourceService,
                 HighChartsHoverService,
-                GenericFeatureService
+                GenericFeatureService,
+                GenericOpenAIChatService,
+                OpenAIArmService,
+                ChatGPTContextService,
+                QueryResponseService,
+                OptInsightsGenericService,
+                DemoSubscriptions
             ]
         };
     }

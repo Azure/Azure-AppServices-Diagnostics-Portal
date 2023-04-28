@@ -112,10 +112,6 @@ export const Routes = RouterModule.forRoot([
                         loadChildren: () => import('./modules/ase/ase.module').then(m => m.AseModule)
                     },
                     {
-                        path: 'subscriptions/:subscriptionId/resourceGroups/:resourceGroup/:resourceTypeName/:resourceName',
-                        redirectTo: 'subscriptions/:subscriptionId/resourceGroups/:resourceGroup/providers/Microsoft.Web/:resourceTypeName/:resourceName'
-                    },
-                    {
                         path: 'subscriptions/:subscriptionId/resourceGroups/:resourceGroup/providers/:provider/:resourceTypeName/:resourceName',
                         loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule),
                         resolve: { validResources: ValidResourceResolver }
@@ -124,6 +120,10 @@ export const Routes = RouterModule.forRoot([
                     {
                         path: 'subscriptions/:subscriptionId/resourcegroups/:resourceGroup/providers/:provider/:resourceTypeName/:resourceName',
                         redirectTo: 'subscriptions/:subscriptionId/resourceGroups/:resourceGroup/providers/:provider/:resourceTypeName/:resourceName',
+                    },
+                    {
+                      path: 'subscriptions/:subscriptionId/resourceGroups/:resourceGroup/:resourceTypeName/:resourceName',
+                      redirectTo: 'subscriptions/:subscriptionId/resourceGroups/:resourceGroup/providers/Microsoft.Web/:resourceTypeName/:resourceName'
                     },
                     {
                         path: 'stamps/:stampName',

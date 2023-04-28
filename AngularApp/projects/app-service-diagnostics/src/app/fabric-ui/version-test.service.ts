@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DemoSubscriptions } from '../betaSubscriptions';
+import { DemoSubscriptions } from '../../../../diagnostic-data/src/lib/models/betaSubscriptions';
 import { AuthService } from '../startup/services/auth.service';
 import { ResourceType, AppType } from '../shared/models/portal';
 import { SiteService } from '../shared/services/site.service';

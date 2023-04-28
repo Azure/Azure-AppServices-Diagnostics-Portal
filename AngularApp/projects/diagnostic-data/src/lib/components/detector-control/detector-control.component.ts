@@ -49,7 +49,7 @@ export class DetectorControlComponent implements OnInit {
   }
 
   setManualDate() {
-    this.timeDiffError = this.detectorControlService.getTimeDurationError(this.startTime, this.endTime);
+    this.timeDiffError = this.detectorControlService.getMessageAndAutoAdjust(this.startTime, this.endTime).errorMessage;
     if(this.timeDiffError === ''){
       this.detectorControlService.setCustomStartEnd(this.startTime, this.endTime);
     }

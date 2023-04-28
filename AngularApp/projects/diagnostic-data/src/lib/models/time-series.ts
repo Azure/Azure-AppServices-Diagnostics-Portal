@@ -56,7 +56,7 @@ export enum zoomBehaviors {
 
 export class XAxisSelection {
   public chart:Highcharts.Chart;
-  public _rawEventArgs:Highcharts.ChartSelectionContextObject;
+  public _rawEventArgs:Highcharts.SelectEventObject;
   public fromTime:momentNs.Moment;
   public toTime:momentNs.Moment;
 }

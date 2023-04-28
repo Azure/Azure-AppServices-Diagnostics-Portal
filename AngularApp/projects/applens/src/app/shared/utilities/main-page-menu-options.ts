@@ -13,8 +13,7 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       displayName: 'App Service',
       enabled: true,
       caseId: false,
-      id: 'App Service',
-      userAuthorizationEnabled: true
+      id: 'App Service'
     },
     {
       resourceType: "Microsoft.Web/hostingEnvironments",
@@ -23,8 +22,7 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       displayName: 'App Service Environment',
       enabled: true,
       caseId: false,
-      id: 'App Service Environment',
-      userAuthorizationEnabled: false
+      id: 'App Service Environment'
     },
     {
       resourceType: "Microsoft.Web/containerApps",
@@ -33,8 +31,7 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       displayName: 'Container App',
       enabled: true,
       caseId: false,
-      id: 'Container App',
-      userAuthorizationEnabled: false
+      id: 'Container App'
     }, {
       resourceType: "Microsoft.Web/staticSites",
       resourceTypeLabel: 'Static App Name Or Default Host Name',
@@ -42,8 +39,7 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       displayName: 'Static Web App',
       enabled: true,
       caseId: false,
-      id: 'Static Web App',
-      userAuthorizationEnabled: false
+      id: 'Static Web App'
     },
     {
       resourceType: "Microsoft.Compute/virtualMachines",
@@ -52,8 +48,7 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       displayName: 'Virtual Machine',
       enabled: true,
       caseId: false,
-      id: 'Virtual Machine',
-      userAuthorizationEnabled: false
+      id: 'Virtual Machine'
     },
     {
       resourceType: "ARMResourceId",
@@ -62,8 +57,7 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       displayName: 'ARM Resource ID',
       enabled: true,
       caseId: false,
-      id: 'ARM Resource ID',
-      userAuthorizationEnabled: false
+      id: 'ARM Resource ID'
     },
     {
       resourceType: null,
@@ -72,7 +66,6 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       displayName: 'Internal Stamp',
       enabled: true,
       caseId: false,
-      id: 'Internal Stamp',
-      userAuthorizationEnabled: false
+      id: 'Internal Stamp'
     }
 ];

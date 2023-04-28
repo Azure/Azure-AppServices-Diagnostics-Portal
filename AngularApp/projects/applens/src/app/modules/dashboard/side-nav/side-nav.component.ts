@@ -17,6 +17,7 @@ import { element } from 'protractor';
 import { ApplensDocumentationService } from '../services/applens-documentation.service';
 import { DocumentationRepoSettings } from '../../../shared/models/documentationRepoSettings';
 import { DocumentationFilesList } from './documentationFilesList';
+import { ApplensOpenAIChatService } from '../../../shared/services/applens-openai-chat.service';
 
 @Component({
   selector: 'side-nav',
@@ -53,6 +54,8 @@ export class SideNavComponent implements OnInit {
   searchValue: string = undefined;
   searchAriaLabel: string = "Filter by name or id";
 
+  toolsCopy: CollapsibleMenuItem[] = [];
+
   contentHeight: string;
 
   getDetectorsRouteNotFound: boolean = false;
@@ -61,12 +64,16 @@ export class SideNavComponent implements OnInit {
   isGraduation: boolean = false;
   isProd: boolean = false;
   workflowsEnabled: boolean = false;
+  showChatGPT: boolean = false;
 
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService, private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService, private _userSettingService: UserSettingService, private breadcrumbService: BreadcrumbService, private _diagnosticApi: DiagnosticApiService, private _documentationService: ApplensDocumentationService) {
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService,
+    private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService,
+    private _userSettingService: UserSettingService, private breadcrumbService: BreadcrumbService, private _diagnosticApi: DiagnosticApiService,
+    private _documentationService: ApplensDocumentationService,
+    private _openAIService: ApplensOpenAIChatService) {
     this.contentHeight = (window.innerHeight - 139) + 'px';
     if (environment.adal.enabled) {
-      let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
-      this.userId = alias.replace('@microsoft.com', '');
+      this.userId = this.getUserId();
     }
   }
 
@@ -85,6 +92,19 @@ export class SideNavComponent implements OnInit {
   overview: CollapsibleMenuItem[] = [
     {
       label: 'Detector List',
+      id: "",
+      onClick: () => {
+        this.navigateTo("");
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: null,
+      icon: null
+    }];
+
+  chatgpt: CollapsibleMenuItem[] = [
+    {
+      label: 'ChatGPT',
       id: "",
       onClick: () => {
         this.navigateTo("");
@@ -134,6 +154,19 @@ export class SideNavComponent implements OnInit {
         return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `createGist`.toLowerCase();
       },
       icon: null
+    },
+    {
+      label: 'View Pending Changes',
+      id: "",
+      onClick: () => {
+        this.navigateTo("deployments");
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: () => {
+        return this.currentRoutePath && (this.currentRoutePath.join('/').toLowerCase().indexOf('deployments') > 0);
+      },
+      icon: null
     }
   ];
 
@@ -153,25 +186,25 @@ export class SideNavComponent implements OnInit {
     }
   ];
 
-
-  activePullRequest: CollapsibleMenuItem[] = [
+  tools: CollapsibleMenuItem[] = [
     {
+      label: 'Network Trace Analysis',
       id: "",
-      label: 'Your Active Pull Request',
       onClick: () => {
-        let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
-        const userId: string = alias.replace('@microsoft.com', '');
-        if (userId.length > 0) {
-          this.navigateTo(`users/${userId}/activepullrequests`);
-        }
+        this.navigateTo("networkTraceAnalysis");
       },
       expanded: false,
       subItems: null,
-      isSelected: null,
+      isSelected: () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `networkTraceAnalysis`.toLowerCase();
+      },
       icon: null
     }];
 
   ngOnInit() {
+    this._openAIService.CheckEnabled().subscribe(enabled => {
+      this.showChatGPT = this._openAIService.isEnabled;
+    });
     this._documentationService.getDocsRepoSettings().subscribe(settings => {
       this.documentationRepoSettings = settings;
       this.initializeDetectors();
@@ -181,37 +214,37 @@ export class SideNavComponent implements OnInit {
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
       this.getCurrentRoutePath();
     });
-    this.initializeActivePullRequestTab();
     this.initializeFavoriteDetectors();
 
-    this._diagnosticApiService.isUserAllowedForWorkflow(this.userId).subscribe(resp => {
-      if (resp) {
-        this.workflowsEnabled = this.resourceService.workflowsEnabled;
-        if (this.workflowsEnabled) {
-          this.initializeWorkflows();
-          this.createNew.push(
-            {
-              label: 'New Workflow',
-              id: "",
-              onClick: () => {
-                this.navigateTo('createWorkflow');
-              },
-              expanded: false,
-              subItems: null,
-              isSelected: () => {
-                return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `createWorkflow`.toLowerCase();
-              },
-              icon: null
-            }
-          );
+    this.workflowsEnabled = this.resourceService.workflowsEnabled;
+    if (this.workflowsEnabled) {
+      this.initializeWorkflows();
+      this.createNew.push(
+        {
+          label: 'New Workflow',
+          id: "",
+          onClick: () => {
+            this.navigateTo('createWorkflow');
+          },
+          expanded: false,
+          subItems: null,
+          isSelected: () => {
+            return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `createWorkflow`.toLowerCase();
+          },
+          icon: null
         }
-      }
-    });
+      );
+    }
 
+    this.toolsCopy = this.deepCopyArray(this.tools);
   }
 
   navigateToOverview() {
     this.navigateTo("overview");
+  }
+
+  navigateToChatGPT() {
+    this.navigateTo("chatgpt");
   }
 
   navigateToDetectorList() {
@@ -219,13 +252,18 @@ export class SideNavComponent implements OnInit {
   }
 
   navigateToActivePRs() {
-    let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
-    const userId: string = alias.replace('@microsoft.com', '');
+    const userId: string = this.getUserId();
     this.navigateTo(`users/${userId}/activepullrequests`);
   }
 
   private getCurrentRoutePath() {
     this.currentRoutePath = this._activatedRoute.firstChild.snapshot.url.map(urlSegment => urlSegment.path);
+  }
+
+  private getUserId() {
+    let alias: string = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
+    const userId: string = alias.replace('@microsoft.com', '');
+    return userId;
   }
 
   navigateTo(path: string) {
@@ -360,6 +398,7 @@ export class SideNavComponent implements OnInit {
           });
           fileNames.push(folderList);
           fileNames[filesIndex].forEach(d => {
+            this.documentList.addDocument(`${categories[filesIndex]}:${d}`);
             let docItem: CollapsibleMenuItem = {
               label: d,
               id: "",
@@ -468,14 +507,6 @@ export class SideNavComponent implements OnInit {
     });
   }
 
-  private initializeActivePullRequestTab() {
-    this._diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(config => {
-      this.isGraduation = config.graduationEnabled;
-    })
-    this._diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
-      this.isProd = env === "Prod";
-    });
-  }
   doesMatchCurrentRoute(expectedRoute: string) {
     return this.currentRoutePath && this.currentRoutePath.join('/') === expectedRoute;
   }
@@ -500,14 +531,16 @@ export class SideNavComponent implements OnInit {
     this.categories = this.updateMenuItems(this.categoriesCopy, searchTerm);
     this.gists = this.updateMenuItems(this.gistsCopy, searchTerm);
     this.favoriteDetectors = this.updateMenuItems(this.favoriteDetectorsCopy, searchTerm);
+    this.tools = this.updateMenuItems(this.toolsCopy, searchTerm);
 
     const subDetectorCount = this.contSubMenuItems(this.categories);
     const subGistCount = this.contSubMenuItems(this.gists);
+    const foundToolsCount = this.tools.length;
     const detectorAriaLabel = `${subDetectorCount > 0 ? subDetectorCount : 'No'} ${subDetectorCount > 1 ? 'Detectors' : 'Detector'}`;
     const gistAriaLabel = `${subGistCount > 0 ? subGistCount : 'No'} ${subGistCount > 1 ? 'Gists' : 'Gist'}`;
-    this.searchAriaLabel = `${detectorAriaLabel} And ${gistAriaLabel} Found for ${this.searchValue}`;
+    const toolsAriaLabel = `${foundToolsCount > 0 ? foundToolsCount : 'No'} ${foundToolsCount > 1 ? 'Tools' : 'Tool'}`;
+    this.searchAriaLabel = `${detectorAriaLabel}, ${gistAriaLabel} And ${toolsAriaLabel} Found for ${this.searchValue}`;
   }
-
 
   //Only support filtering for two layer menu-item
   private updateMenuItems(items: CollapsibleMenuItem[], searchValue: string): CollapsibleMenuItem[] {

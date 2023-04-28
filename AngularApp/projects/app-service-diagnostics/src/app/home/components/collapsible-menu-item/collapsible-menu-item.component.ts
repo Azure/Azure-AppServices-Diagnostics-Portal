@@ -11,6 +11,7 @@ import { DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
 export class CollapsibleMenuItemComponent implements OnInit {
   @Input() menuItem: CollapsibleMenuItem;
   @Input() level: number = 0;
+  @Input() tooltip: string = '';
 
   children: CollapsibleMenuItem[];
   hasChildren: boolean;
@@ -23,6 +24,7 @@ export class CollapsibleMenuItemComponent implements OnInit {
   ngOnInit() {
     this.children = this.menuItem.subItems;
     this.hasChildren = this.menuItem.subItems && this.menuItem.subItems.length > 0;
+    if (this.tooltip === '') this.tooltip = this.menuItem.label;
   }
 
   handleClick() {
@@ -62,13 +64,15 @@ export class CollapsibleMenuItem {
   subItems: CollapsibleMenuItem[];
   isSelected: Function;
   icon: string;
+  tooltip: string;
 
-  constructor(label: string, onClick: Function, isSelected: Function, icon: string = null, expanded: boolean = false, subItems: CollapsibleMenuItem[] = []) {
+  constructor(label: string, onClick: Function, isSelected: Function, icon: string = null, tooltip: string = null, expanded: boolean = false, subItems: CollapsibleMenuItem[] = []) {
     this.label = label;
     this.onClick = onClick;
     this.expanded = expanded;
     this.subItems = subItems;
     this.isSelected = isSelected;
     this.icon = icon;
+    this.tooltip = tooltip == null ? label : tooltip;
   }
 }

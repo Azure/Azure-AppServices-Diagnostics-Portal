@@ -183,12 +183,7 @@ export class CreateStorageAccountPanelComponent implements OnInit {
               return;
             }
             let storageKey = resp.keys[0].value;
-            if (this.isWindowsApp) {
-              this.generateSasKey(storageAccountId, storageAccountName, storageKey);
-            } else {
-              this.generateStorageConnectionString(storageAccountId, storageAccountName, storageKey);
-            }
-
+            this.generateStorageConnectionString(storageAccountId, storageAccountName, storageKey);
           }
         },
           error => {
@@ -208,30 +203,6 @@ export class CreateStorageAccountPanelComponent implements OnInit {
         this.error = error;
       });
 
-  }
-
-  generateSasKey(storageAccountId: string, storageAccountName: string, storageKey: string) {
-    this._storageService.generateSasKey(storageAccountId, storageKey).subscribe(generatedSasUri => {
-      if (generatedSasUri) {
-        let storageAccountProperties: StorageAccountProperties = new StorageAccountProperties();
-        storageAccountProperties.name = storageAccountName;
-        storageAccountProperties.sasUri = `https://${storageAccountName}.blob.${this._armService.storageUrl}/${this._daasService.defaultContainerName}?${generatedSasUri}`;
-        this._daasService.setStorageConfiguration(this.siteToBeDiagnosed, storageAccountProperties, false).subscribe(resp => {
-          this.generatingSasUri = false;
-          this._sharedStorageAccountService.emitChange(storageAccountProperties);
-          this.globals.openCreateStorageAccountPanel = false;
-        }, error => {
-          this.errorMessage = "Failed while updating SAS Key app setting";
-          this.generatingSasUri = false;
-          this.error = error;
-        });
-
-      }
-    }, error => {
-      this.errorMessage = "Failed while generating SAS Key";
-      this.generatingSasUri = false;
-      this.error = error;
-    });
   }
 
   generateStorageConnectionString(storageAccountId: string, storageAccountName: string, storageKey: string) {

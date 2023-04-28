@@ -15,7 +15,7 @@
       </div>
     </div>
 
-    <div *ngIf="_searchService">
+    <div *ngIf="_searchService && !showGPTComponent">
       <input class="header-search" type="text" aria-label="Describe your problem and Search" autocomplete="off" [(ngModel)]="searchValue" (keyup.enter)="triggerSearch()" placeholder="Describe your problem and hit enter">
     </div>
 
@@ -29,6 +29,7 @@
   <div class="user-setting-section" style="height: 80%;">
     <!-- <fab-toggle [onnText]="'Expand'" [offText]="'Collapse'" [label]="'Expand Analysis Card'" [checked]="expandCheckCard" (onChange)="toggleExpandCheckCard($event)"></fab-toggle> -->
     <fab-toggle [onnText]="'Dark'" [offText]="'Light'" [label]="'Dark Theme'" [checked]="darkThemeChecked" (onChange)="toggleTheme($event)"></fab-toggle>
+    <fab-toggle [onnText]="'On'" [offText]="'Off'" [label]="'Code Completion'" [checked]="codeCompletionChecked" (onChange)="toggleCodeCompletion($event)"></fab-toggle>
     <br />
     <fab-choice-group [label]="'Detector View Mode'" [options]="choiceGroupOptions"  [selectedKey]="selectedKey">
     </fab-choice-group>

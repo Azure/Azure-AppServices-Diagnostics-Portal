@@ -1,6 +1,6 @@
 import { newNodeProperties } from "./node-actions/node-actions.component";
 import { WorkflowService } from "./services/workflow.service";
-import { NgFlowchartStepComponent } from "projects/ng-flowchart/dist";
+import { NgFlowchart, NgFlowchartStepComponent } from "projects/ng-flowchart/dist";
 import { nodeType, stepVariable, workflowNodeData } from "projects/diagnostic-data/src/lib/models/workflow";
 
 export class WorkflowNodeBaseClass extends NgFlowchartStepComponent<workflowNodeData> {
@@ -37,12 +37,20 @@ export class WorkflowNodeBaseClass extends NgFlowchartStepComponent<workflowNode
             return;
         }
 
+        if (conditionType === 'foreach' && this._workflowService.getVariableCompletionOptions(this).filter(x => x.type === 'Array').length === 0) {
+            this._workflowService.showMessageBox("Error", "You cannot add Foreach node because you have not added any variable of type array. Please first add a variable of type Array and then add a foreach node.");
+            return;
+        }
+
         switch (conditionType) {
             case 'switch':
                 this._workflowService.addSwitchCondition(this);
                 break;
             case 'ifelse':
                 this._workflowService.addCondition(this);
+                break;
+            case 'foreach':
+                this._workflowService.addForEach(this);
                 break;
             default:
                 break;
@@ -57,5 +65,23 @@ export class WorkflowNodeBaseClass extends NgFlowchartStepComponent<workflowNode
         }
 
         this._workflowService.addSwitchCase(this);
+    }
+
+    canDrop(dropEvent: NgFlowchart.DropTarget): boolean {
+        let currentNodeType = this.type;
+        let destinationNodeType = dropEvent.step.type;
+
+        if (this._workflowService.nodeTypesAllowedForDragDrop.indexOf(currentNodeType) === -1
+            && (this._workflowService.nodeTypesAllowedForDrag.indexOf(this.type) === -1
+                || dropEvent.position !== 'BELOW')) {
+            return false;
+        }
+
+        if (this._workflowService.nodeTypesAllowedForDragDrop.indexOf(destinationNodeType) > -1
+            || (dropEvent.position === 'BELOW' && this._workflowService.nodeTypesAllowedForDropBelow.indexOf(destinationNodeType) > -1)) {
+            return true;
+        }
+
+        return false;
     }
 }

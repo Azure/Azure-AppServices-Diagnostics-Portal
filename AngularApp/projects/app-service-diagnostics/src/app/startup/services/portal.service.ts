@@ -1,6 +1,6 @@
 import { Injectable, isDevMode } from '@angular/core';
 import { Observable, of, ReplaySubject, throwError } from 'rxjs';
-import { StartupInfo, Event, Data, Verbs, Action, LogEntryLevel, Message, OpenBladeInfo, KeyValuePair } from '../../shared/models/portal';
+import { StartupInfo, Event, Data, Verbs, Action, LogEntryLevel, Message, OpenBladeInfo, KeyValuePair, ScopeAuthorizationToken } from '../../shared/models/portal';
 import { ErrorEvent } from '../../shared/models/error-event';
 import { BroadcastService } from './broadcast.service';
 import { BroadcastEvent } from '../models/broadcast-event';
@@ -33,6 +33,7 @@ export class PortalService {
 
     public shellSrc: string;
     private tokenObservable: ReplaySubject<string>;
+    private scopedAuthorizationTokenObservable: ReplaySubject<string>;
     private origin: string;
     private acceptedOriginsSuffix: string[] = [];
 
@@ -41,6 +42,8 @@ export class PortalService {
 
         this.startupInfoObservable = new ReplaySubject<StartupInfo>(1);
         this.tokenObservable = new ReplaySubject<string>(1);
+        this.scopedAuthorizationTokenObservable = new ReplaySubject<string>(1);
+
         this.appInsightsResourceObservable = new ReplaySubject<any>(1);
 
         this.isIFrameForCaseSubmissionSolution = new ReplaySubject<boolean>(1);
@@ -68,6 +71,17 @@ export class PortalService {
 
     getToken(): ReplaySubject<string> {
         return this.tokenObservable;
+    }
+
+    getScopedToken(scope: ScopeAuthorizationToken): Observable<any> {
+        if (!!scope.resourceName) {
+            this.postMessage(Verbs.getScopedAuthorizationToken, JSON.stringify(scope));
+            return this.scopedAuthorizationTokenObservable;
+        }
+        else {
+            this.logException("NULL data cannot be used for a scoped token");
+            return of (null);
+        }        
     }
 
     getAppInsightsResourceInfo(): ReplaySubject<any> {
@@ -226,6 +240,9 @@ export class PortalService {
                 const iFrameInfo = data;
                 this.slot = data.slot;
                 this.sendIFrameInfoObservable.next(iFrameInfo);
+            }  else if (methodName == Verbs.sendScopedAuthorizationToken) {
+                const token = data;
+                this.scopedAuthorizationTokenObservable.next(token);
             }
         });
     }

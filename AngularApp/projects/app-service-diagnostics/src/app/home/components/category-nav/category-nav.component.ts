@@ -84,7 +84,7 @@ export class CategoryNavComponent implements OnInit {
 
     constructor(public siteFeatureService: SiteFeatureService, protected _diagnosticApiService: DiagnosticService, private _route: Router, private _activatedRoute: ActivatedRoute, private categoryService: CategoryService,
         private _chatState: CategoryChatStateService,
-        protected _authService: AuthService, public _detectorCategorization: DetectorCategorizationService, private _webSiteService: WebSitesService,private _telemetryService:TelemetryService) { }
+        protected _authService: AuthService, public _detectorCategorization: DetectorCategorizationService, private _webSiteService: WebSitesService, private _telemetryService: TelemetryService) { }
 
     detectorDataLocalCopy: DetectorMetaData[] = [];
     detectorList: CollapsibleMenuItem[] = [];
@@ -104,13 +104,13 @@ export class CategoryNavComponent implements OnInit {
             if (this._activatedRoute.firstChild.snapshot.routeConfig.path.startsWith("tools/")) {
                 this.currentDetectorId = this._activatedRoute.firstChild.snapshot.routeConfig.path.split("/")[1];
             }
-            else if (!this._activatedRoute.firstChild.snapshot.params['analysisId']) {
-                if (this._activatedRoute.firstChild.snapshot.params['detectorName']) {
-                    this.currentDetectorId = this._activatedRoute.firstChild.snapshot.params['detectorName'];
-                }
+            else if (this._activatedRoute.firstChild.snapshot.params['detectorName']) {
+                this.currentDetectorId = this._activatedRoute.firstChild.snapshot.params['detectorName'];
             }
-            else {
+            else if (this._activatedRoute.firstChild.snapshot.params['analysisId']) {
                 this.currentDetectorId = this._activatedRoute.firstChild.snapshot.params['analysisId'];
+            } else if (this._activatedRoute.firstChild.snapshot.params['workflowId']) {
+                this.currentDetectorId = this._activatedRoute.firstChild.snapshot.params['workflowId'];
             }
         }
     }
@@ -156,7 +156,7 @@ export class CategoryNavComponent implements OnInit {
                         this.logCategoryNavClicked(tool.item.name, "Diagnostic Tools");
                         tool.item.clickAction();
                     }
-                    
+
                     let isSelected = () => {
                         return this.checkIsSelected(tool.item.id);
                     };
@@ -203,7 +203,7 @@ export class CategoryNavComponent implements OnInit {
             }
         });
 
-        const resourceType:string = this._activatedRoute.parent.snapshot.data.data.type;
+        const resourceType: string = this._activatedRoute.parent.snapshot.data.data.type;
 
         if (resourceType.toLowerCase().startsWith("microsoft.web/sites")) {
             this.toolCategoriesFilteredByStack = this.transform(this.toolCategories);
@@ -221,12 +221,12 @@ export class CategoryNavComponent implements OnInit {
                 return new CollapsibleMenuItem(tool.item.name, onClick, isSelected, icon);
             });
             this.toolCategoriesFilteredByStack = [
-                { 
+                {
                     item: {
                         title: 'Diagnostic Tools',
                         tools: diagnosticToolsForNonWeb
-                    } 
-                    
+                    }
+
                 }
             ];
         }
@@ -251,7 +251,7 @@ export class CategoryNavComponent implements OnInit {
 
                 // Get all the detector list under this category
                 this.siteFeatureService.getFeaturesForCategorySub(this.category).subscribe(features => {
-                    if (!this.isDiagnosticTools) {
+                    if (!this.isDiagnosticTools && Array.isArray(features)) {
                         features.forEach(feature => {
                             let onClick = () => {
                                 this.logCategoryNavClicked(feature.name, feature.category);
@@ -262,7 +262,8 @@ export class CategoryNavComponent implements OnInit {
                                 return this.currentDetectorId === feature.id;
                             }
                             let icon = this.getIconImagePath(feature.id);
-                            let menuItem = new CollapsibleMenuItem(feature.name, onClick, isSelected, icon);
+                            let desc = this.detectorDataLocalCopy?.find(x => { return x.name === feature.name })?.description ?? "";
+                            let menuItem = new CollapsibleMenuItem(feature.name, onClick, isSelected, icon, desc);
                             this.detectorList.push(menuItem);
                         });
                     }
@@ -341,8 +342,8 @@ export class CategoryNavComponent implements OnInit {
     }
 
     private logCategoryNavClicked(name: string, category: string) {
-        this._telemetryService.logEvent(TelemetryEventNames.CategoryNavItemClicked,{
-            'DetectorName':name,
+        this._telemetryService.logEvent(TelemetryEventNames.CategoryNavItemClicked, {
+            'DetectorName': name,
             'CategoryName': category
         });
     }

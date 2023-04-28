@@ -18,7 +18,7 @@
 
         <form class="example-form">
           <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>Variable</mat-label>
+            <mat-label class="matlabel">Variable</mat-label>
             <input type="text" placeholder="Choose a variable" aria-label="Number" id="leftControl" matInput
               [formControl]="leftControl" [matAutocomplete]="autoLeft"
               (input)="updateVariable($event.target.value, 'ifconditionLeftValue')">
@@ -47,16 +47,20 @@
           <option>ine</option>
           <option>contains</option>
           <option>icontains</option>
+          <option>startswith</option>
+          <option>istartswith</option>
+          <option>endswith</option>
+          <option>iendswith</option>
         </select>
 
-        <select class="ml-2 form-select" *ngIf="dataType === 'sbyte'">
+        <select class="ml-2 form-select" *ngIf="dataType === 'sbyte' || dataType === 'boolean'">
           <option selected>is true</option>
         </select>
 
-        <form *ngIf="dataType !=='sbyte'" class="example-form">
+        <form *ngIf="dataType !=='sbyte' && dataType !=='boolean'" class="example-form">
           <mat-form-field class="example-full-width" appearance="fill">
-            <mat-label>Variable</mat-label>
-            <input type="text" placeholder="Choose a variable" aria-label="Number" id="rightControl" matInput
+            <mat-label class="matlabel">Value</mat-label>
+            <input type="text" placeholder="Choose a variable or type a static value" aria-label="Number" id="rightControl" matInput
               [formControl]="rightControl" [matAutocomplete]="autoRight"
               (input)="updateVariable($event.target.value, 'ifconditionRightValue')">
             <mat-autocomplete autoActiveFirstOption #autoRight="matAutocomplete"

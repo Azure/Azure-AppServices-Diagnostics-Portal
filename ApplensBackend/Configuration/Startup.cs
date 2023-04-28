@@ -72,6 +72,7 @@ namespace AppLensV3
 
             services.AddSingleton<IObserverClientService, SupportObserverClientService>();
             services.AddSingleton<IDiagnosticClientService, DiagnosticClient>();
+            services.AddSingleton<IWorkflowUsersCacheService, WorkflowUsersCacheService>();
 
             services.AddSingletonWhenEnabled<IGithubClientService, GithubClientService>(Configuration, "Github");
 
@@ -103,12 +104,41 @@ namespace AppLensV3
 
             services.AddSingletonWhenEnabled<ICosmosDBUserSettingHandler, CosmosDBUserSettingHandler, NullableCosmosDBUserSettingsHandler>(Configuration, "UserSetting");
 
+            services.AddSingletonWhenEnabled<ICosmosDBWorkflowUsersHandler, CosmosDBWorkflowUsersHandler, NullableCosmosDBWorkflowUsersHandler>(Configuration, "Workflow");
+
             services.AddSingletonWhenEnabled<IDetectorGistTemplateService, TemplateService>(Configuration, "DetectorGistTemplateService");
 
             services.AddSingletonWhenEnabled<IAppSvcUxDiagnosticDataService, AppSvcUxDiagnosticDataService, NullableAppSvcUxDiagnosticDataService>(Configuration, "LocationPlacementIdService");
 
+            if (Configuration.GetValue("OpenAIService:Enabled", false))
+            {
+                services.AddSingleton<IOpenAIService, OpenAIService>();
+                if (Configuration.GetValue("OpenAIService:RedisEnabled", false))
+                {
+                    services.AddSingleton(async x => await RedisConnection.InitializeAsync(true, connectionString: Configuration["OpenAIService:RedisConnectionString"].ToString()));
+                    services.AddSingleton<IOpenAIRedisService, OpenAIRedisService>();
+                }
+                else
+                {
+                    services.AddSingleton<IOpenAIRedisService, OpenAIRedisServiceDisabled>();
+                }
+            }
+            else
+            {
+                services.AddSingleton<IOpenAIService, OpenAIServiceDisabled>();
+            }
+
             services.AddMemoryCache();
             services.AddMvc().AddNewtonsoftJson();
+
+            if (!string.IsNullOrWhiteSpace(Configuration.GetValue("ContentSearch:Ocp-Apim-Subscription-Key", string.Empty)))
+            {
+                services.AddSingleton<IBingSearchService, BingSearchService>();
+            }
+            else
+            {
+                services.AddSingleton<IBingSearchService, BingSearchServiceDisabled>();
+            }
 
             if (Configuration.GetValue("Graph:Enabled", false))
             {

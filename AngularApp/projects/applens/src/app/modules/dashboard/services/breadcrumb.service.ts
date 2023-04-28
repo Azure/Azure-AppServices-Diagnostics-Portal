@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { BreadcrumbNavigationItem, DetectorControlService, TimePickerOptions } from "diagnostic-data";
 import { BehaviorSubject } from "rxjs";
 import { ApplensDiagnosticService } from "./applens-diagnostic.service";
+import * as moment from "moment";
 
 
 
@@ -50,13 +51,13 @@ export class BreadcrumbService {
             this._detectorControl.updateTimePickerInfo({
                 selectedKey: TimePickerOptions.Custom,
                 selectedText: TimePickerOptions.Custom,
-                startDate: new Date(routingParams["startTime"]),
-                endDate: new Date(routingParams["endTime"])
+                startMoment: moment.utc(routingParams["startTime"]),
+                endMoment: moment.utc(routingParams["endTime"])
             });
         }
 
         if (item) {
-            this._router.navigate([item.fullPath], { queryParams: routingParams });
+            this._router.navigate([item.fullPath], { queryParams: routingParams,queryParamsHandling:'merge' });
             return;
         }
     }

@@ -25,6 +25,7 @@ import { ILinkProps } from 'office-ui-fabric-react';
 import { SolutionService } from '../../services/solution.service';
 import { GenericUserSettingService } from '../../services/generic-user-setting.service';
 import { GenieGlobals } from '../../services/genie.service';
+import { GenericSupportTopicService } from '../../services/generic-support-topic.service';
 
 @Component({
   selector: 'detector-list',
@@ -67,12 +68,15 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   loading = LoadingStatus.Loading;
   expandIssuedChecks: boolean = false;
   isWaterfallViewMode: boolean = false;
+  isCaseSubmissionFlow: boolean = false;
 
   constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private _solutionService: SolutionService,
     private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router,
-    private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _breadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService, private _globals: GenieGlobals) {
+    private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _breadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService, private _globals: GenieGlobals,
+    private _supportTopicService: GenericSupportTopicService) {
     super(telemetryService);
     this.isPublic = this.config && this.config.isPublic;
+    this.isCaseSubmissionFlow = this._supportTopicService && (!!this._supportTopicService.sapSupportTopicId || !!this._supportTopicService.supportTopicId );
 
     this._genericUserSettingsService.isWaterfallViewSub.subscribe(isWaterfallViewMode => {
       this.isWaterfallViewMode = isWaterfallViewMode;

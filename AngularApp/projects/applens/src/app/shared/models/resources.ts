@@ -16,7 +16,6 @@ export interface ResourceTypeState {
     enabled: boolean;
     caseId: boolean;
     id: string;
-    userAuthorizationEnabled: boolean;
 }
 
 export interface ActivatedResource {
@@ -68,7 +67,6 @@ export interface ResourceServiceInputs {
     emergingIssuesICMLookupEnabled?: boolean;
     displayName?: string;
     overviewPageMetricsId?: string;
-    userAuthorizationEnabled: boolean;
     workflowsEnabled: boolean;
 }
 
@@ -86,6 +84,5 @@ export const DEFAULT_RESOURCE_SERVICE_INPUTS: ResourceServiceInputs = {
     sapProductId:'',
     staticSelfHelpContent: '',
     searchSuffix: 'AZURE',
-    userAuthorizationEnabled: false,
     workflowsEnabled: false
 };

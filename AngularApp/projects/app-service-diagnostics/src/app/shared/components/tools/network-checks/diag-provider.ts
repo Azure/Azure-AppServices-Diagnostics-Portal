@@ -1,7 +1,6 @@
 import { HttpResponse } from '@angular/common/http';
 import { TelemetryService } from 'diagnostic-data';
 import { Globals } from 'projects/app-service-diagnostics/src/app/globals';
-import { stringify } from 'querystring';
 import { Observable, of, throwError, timer } from 'rxjs';
 import { catchError, mergeMap } from 'rxjs/operators';
 import { ResponseMessageEnvelope } from '../../../models/responsemessageenvelope';
@@ -34,6 +33,7 @@ export class DiagProvider {
     public portalDomain: string;
     public scmHostName: string;
     private _telemetryService: TelemetryService;
+    private _armHostName: string;
     constructor(siteInfo: SiteInfoMetaData & Site & { fullSiteName: string }, armService: ArmService, siteService: SiteService, portalDomain: string, globals: Globals, telemetryService: TelemetryService) {
         this._siteInfo = siteInfo;
         this._armService = armService;
@@ -46,6 +46,7 @@ export class DiagProvider {
         this.scmHostName = scmHostNameState == null ? null : scmHostNameState.name;
         this.portalDomain = portalDomain;
         armService.clearCache();
+        this._armHostName = this._armService.armUrl.replace("https://", "");
     }
 
 
@@ -177,7 +178,7 @@ export class DiagProvider {
 
     public async postNetworkTroubleshooterApiAsync(api: string, body: any, timeoutInSec: number = 15): Promise<any> {
         var params = "api-version=2015-08-01";
-        var prefix = `management.azure.com/${this._siteInfo.resourceUri}`;
+        var prefix = `${this._armHostName}/${this._siteInfo.resourceUri}`;
         var stack = new Error("error_message_placeholder").stack;
         var promise = this._armService.post(`https://${prefix}/${api}?${params}`, body)
             .toPromise()
@@ -240,7 +241,7 @@ export class DiagProvider {
 
     public getExtensionApiAsync(uri: string, params = [], timeoutInSec: number = 15, scm = false): Promise<any> {
         var stack = new Error("error_message_placeholder").stack;
-        var prefix = scm ? this.scmHostName : `management.azure.com/${this._siteInfo.resourceUri}/extensions`;
+        var prefix = scm ? this.scmHostName : `${this._armHostName}/${this._siteInfo.resourceUri}/extensions`;
         if (!scm) {
             params.push("api-version=2015-08-01");
         }
@@ -255,7 +256,7 @@ export class DiagProvider {
     public postKuduApiAsync(uri: string, body?: any, instance?: string, timeoutInSec: number = 15, scm = false): Promise<any> {
         var params = [instance == null ? null : `instance=${instance}`, scm ? null : "api-version=2015-08-01"].filter(s => s != null).join("&");
         var postfix = (params == "" ? "" : `?${params}`);
-        var prefix = scm ? this.scmHostName : `management.azure.com/${this._siteInfo.resourceUri}/extensions`;
+        var prefix = scm ? this.scmHostName : `${this._armHostName}/${this._siteInfo.resourceUri}/extensions`;
         var stack = new Error("error_message_placeholder").stack;
         var promise = this._armService.post(`https://${prefix}/api/${uri}${postfix}`, body)
             .toPromise()
@@ -428,10 +429,10 @@ export class DiagProvider {
                     ip = "";
                 }
                 else {
-                    throw new Error("DaaS nameresolver failed, result: " + stringify(result));
+                    throw new Error("DaaS nameresolver failed, result: " + JSON.stringify(result));
                 }
             } else {
-                throw new Error("DaaS nameresolver response is null, response: " + stringify(resp));
+                throw new Error("DaaS nameresolver response is null, response: " + JSON.stringify(resp));
             }
         }
         return { ip, aliases };

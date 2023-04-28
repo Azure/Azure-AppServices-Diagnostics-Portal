@@ -18,6 +18,9 @@ namespace AppLensV3.Models
         [JsonProperty(PropertyName = "theme")]
         public string Theme { get; set; }
 
+        [JsonProperty(PropertyName = "codeCompletion")]
+        public string CodeCompletion { get; set; }
+
         [JsonProperty(PropertyName = "viewMode")]
         public string ViewMode { get; set; }
 
@@ -29,6 +32,9 @@ namespace AppLensV3.Models
 
         [JsonProperty(PropertyName = "defaultServiceType")]
         public string DefaultServiceType { get; set; }
+
+        [JsonProperty(PropertyName = "userChatGPTSetting")]
+        public string UserChatGPTSetting { get; set; }
 
         /// <summary>
         /// Key is detectorId, value is detector property
@@ -42,6 +48,7 @@ namespace AppLensV3.Models
             Resources = new List<RecentResource>();
             PartitionKey = UserSettingConstant.PartitionKey;
             Theme = defaultUserSetting?.Theme ?? UserSettingConstant.DefaultTheme;
+            CodeCompletion = defaultUserSetting?.CodeCompletion ?? "on";
             ViewMode = defaultUserSetting?.ViewMode ?? UserSettingConstant.DefaultViewMode;
             DefaultServiceType = defaultUserSetting?.DefaultServiceType ?? string.Empty;
             FavoriteDetectors = defaultUserSetting?.FavoriteDetectors ?? new Dictionary<string, FavoriteDetectorProp>();
