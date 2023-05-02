@@ -16,7 +16,7 @@ import { ApplensOpenAIChatService } from '../../../shared/services/applens-opena
 import { ResourceService } from '../../../shared/services/resource.service';
 import { dynamicExpressionBody, kustoQueryDialogParams } from '../workflow/models/kusto';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DataSourceType, InsightRenderingJsonModel, NoCodeExpressionBody } from '../dynamic-node-settings/node-rendering-json-models';
+import { NoCodeSupportedDataSourceTypes, NoCodeExpressionBody, NodeSettings, NoCodeTableRenderingProperties, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties } from '../dynamic-node-settings/node-rendering-json-models';
 const moment = momentNs;
 
 @Component({
@@ -43,6 +43,8 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   resourceId: string;
   kustoQueryLabel: string = '';
   inputKustoQueryDialogParams: kustoQueryDialogParams;
+  dRenderingSettings: any = {};
+  noCodeExpression: NoCodeExpressionBody;
 
   microsoftWebPrompt: string = `input: for an app named nmallick1
 
@@ -59,11 +61,11 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   output:
   StatsDWASWorkerProcessTenMinuteTable
   
-  | where {Utilities.TenantAndTimeFilterQuery(cxt.StartTime, cxt.EndTime, "TIMESTAMP")}
+  | where {Utilities.TimeAndTenantFilterQuery(cxt.StartTime, cxt.EndTime, "TIMESTAMP")}
   | where ApplicationPool startswith '{cxt.Resource.Name}_' or ApplicationPool == '{cxt.Resource.Name}'
   | summarize by RoleInstance, Tenant, EventPrimaryStampName
   | join kind = inner (RoleInstanceHeartbeat
-      | where {Utilities.TenantAndTimeFilterQuery(cxt.StartTime, cxt.EndTime, "PreciseTimeStamp")}
+      | where {Utilities.TimeAndTenantFilterQuery(cxt.StartTime, cxt.EndTime, "PreciseTimeStamp")}
       | summarize take_any(MachineName), IP = take_any(Details) by RoleInstance, Tenant
       ) on RoleInstance, Tenant
   | project RoleInstance, Tenant, MachineName, IP
@@ -78,7 +80,7 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   
   output:
   AntaresIISLogFrontEndTable
-  | where {Utilities.TenantAndTimeFilterQuery(cxt.StartTime, cxt.EndTime, "PreciseTimeStamp")}
+  | where {Utilities.TimeAndTenantFilterQuery(cxt.StartTime, cxt.EndTime, "PreciseTimeStamp")}
   | where {Utilities.HostNamesFilterQuery(cxt.Resource.Hostnames)}
   | where User_agent == 'AlwaysOn'
   | where Sc_status != 200
@@ -274,6 +276,7 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initComponent();
     this.resourceId = this.resourceService.getCurrentResourceId();
+    this.nodeModel.settings.renderingSettings = new NoCodeTableRenderingProperties;
   }
 
   ngOnDestroy(): void {
@@ -301,9 +304,30 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
     //let key:string = event.option.key.toString();
     this.removeProjectStatement(this.getProjectStatement(this.nodeModel.renderingType));
     this.nodeModel.renderingType = event.option.key;
+    this.setRenderingSettings(event.option.key);
     this.setProjectStatement(this.getProjectStatement(this.nodeModel.renderingType));
     this.nodeModelChange.emit(this.nodeModel);
     this.onNodeModelChange.emit({fieldChanged:'renderingType', nodeModel:this.nodeModel});
+  }
+  
+  setRenderingSettings(type: NoCodeSupportedRenderingTypes){
+    switch (type) {
+      case RenderingType.Table:
+        this.nodeModel.settings.renderingSettings = new NoCodeTableRenderingProperties;
+        break;
+      case RenderingType.TimeSeries:
+        this.nodeModel.settings.renderingSettings = new NoCodeGraphRenderingProperties;
+        break;
+      case RenderingType.Insights:
+        this.nodeModel.settings.renderingSettings = new NoCodeInsightRenderingProperties;
+        break;
+      case RenderingType.Markdown:
+        this.nodeModel.settings.renderingSettings = new NoCodeMarkdownRenderingProperties;
+        break;
+      default:
+        this.nodeModel.settings.renderingSettings = new NoCodeTableRenderingProperties;
+        break;
+    }
   }
 
   getProjectStatement(renderingType: NoCodeSupportedRenderingTypes){
@@ -336,18 +360,13 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   public previewResults(event:any) {
     if (this.templatized){
       //this.pivotSelectedKey = this.nodeModel.id + '_Result';
-      let noCodeExpression: NoCodeExpressionBody = {
+      this.noCodeExpression = {
         DetectorId: 'NoCode',
-        OperationName: 'kustoQuery1',
+        OperationName: this.nodeModel.queryName,
         Text: this.nodeModel.code,
-        DataSourceType: DataSourceType.Kusto,
-        ConnectionString: "test",
-        RenderingType: this.nodeModel.renderingType,
-        RenderingProperties: {
-          type: this.nodeModel.renderingType
-        }
+        NodeSettings: this.nodeModel.settings
       };
-      this.diagnosticApiService.evaluateNoCodeExpression(noCodeExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe( x => {
+      this.diagnosticApiService.evaluateNoCodeExpression(this.noCodeExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe( x => {
         
         this.sampleTestDataset = x.res;
         this.pivotSelectedKey = this.nodeModel.id + '_Result';
@@ -377,6 +396,9 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
       "isVisible": true,
       "graphType": 0
     }
+  }
+  rsc(event: any){
+    this.nodeModel.settings = event.instance;
   }
 
   writeDatasetJson(response){ 

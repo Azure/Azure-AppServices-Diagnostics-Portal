@@ -27,6 +27,7 @@ import { DetectorSettingsModel } from '../models/detector-designer-models/detect
 import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 import { INodeModelChangeEventProps } from '../node-composer/node-composer.component';
+import { NodeSettings } from '../dynamic-node-settings/node-rendering-json-models';
 
 
 @Component({
@@ -218,7 +219,8 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       id: Guid.newGuid(),
       queryName: 'firstQuery',
       code:'<query>\r\n',
-      renderingType:RenderingType.Table
+      renderingType:RenderingType.Table,
+      settings: new NodeSettings
     }/*,
     {
       id: Guid.newGuid(),

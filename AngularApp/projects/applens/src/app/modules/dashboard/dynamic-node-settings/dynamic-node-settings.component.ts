@@ -8,6 +8,10 @@ import { ApplensGlobal } from '../../../applens-global';
 import { InsightRenderingSettingsComponent } from '../rendering-settings-components/insight-rendering-settings/insight-rendering-settings.component';
 import { RenderingSettingsBaseComponent } from '../rendering-settings-components/rendering-settings-base/rendering-settings-base.component';
 import { TableRenderingSettingsComponent } from '../rendering-settings-components/table-rendering-settings/table-rendering-settings.component';
+import { NodeSettings, testDatasettings } from './node-rendering-json-models';
+import { NoCodeSupportedDataSourceTypes } from './node-rendering-json-models';
+import { KustoDataSourceSettings } from './node-rendering-json-models';
+import { RenderingSettingsBase } from './node-rendering-json-models';
 
 @Component({
   selector: 'dynamic-node-settings',
@@ -19,6 +23,37 @@ export class DynamicNodeSettings implements OnInit {
   clusterName: string = '@StampCluster';
   databaseName: string = 'wawsprod';
   scopeString: string = "";
+  //dataSourceType: NoCodeSupportedDataSourceTypes = NoCodeSupportedDataSourceTypes.Kusto
+  // dataSource: KustoDataSourceSettings = {
+  //   clusterName: this.clusterName,
+  //   dataBaseName: this.databaseName,
+  //   getConnectionString: function (): string {
+  //     throw new Error('Function not implemented.');
+  //   },
+  //   GetJson: function (): string {
+  //     throw new Error('Function not implemented.');
+  //   },
+  //   dataSourceType: NoCodeSupportedDataSourceTypes.Kusto
+  // }
+  datasource_: KustoDataSourceSettings = new KustoDataSourceSettings;
+
+  datasource: testDatasettings = {
+    connectionString: '',
+    dataSourceType: NoCodeSupportedDataSourceTypes.Kusto
+  }
+
+  rendering: RenderingSettingsBase = {
+    renderingType: RenderingType.Table,
+    isVisible: true
+  }
+
+  settings: NodeSettings = {
+    dataSourceSettings: this.datasource,
+    renderingSettings: this.rendering,
+    GetJson: function (): string {
+      throw new Error('Function not implemented.');
+    }
+  }
 
   textBoxStyle: ITextFieldProps['styles'] = {
     root: {
@@ -52,7 +87,8 @@ export class DynamicNodeSettings implements OnInit {
     return this._renderingSettings;
   }
 
-  @Output() renderingSettingsChange = new EventEmitter<{field:string, instance:any}>();
+  @Output() renderingSettingsChange = new EventEmitter<{instance:any}>();
+  @Output() settingsChangeEvent = new EventEmitter<{field:string, oldValue:any, newValue: any}>();
 
 
   @ViewChild('dynamicRenderingSettingsContainer', { read: ViewContainerRef, static: true }) dynamicRenderingSettingsContainer: ViewContainerRef;
@@ -61,6 +97,24 @@ export class DynamicNodeSettings implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  updateScope(event: any){
+    //(this.settings.dataSourceSettings as testDatasettings).connectionString = event.newValue;
+    if (event.newValue.includes('/')){
+      let connection = event.newValue.splice('/');
+
+      this.datasource_.clusterName = connection[0];
+      this.datasource_.dataBaseName = connection[1]; 
+    }
+    else {
+      this.datasource_.dataBaseName = event.newValue;
+    }
+
+    this.settings.dataSourceSettings = this.datasource_;
+     
+    this.renderingSettingsChange.emit({instance: this.settings});
+    this.settingsChangeEvent.emit({field: 'scope', oldValue: this.scopeString, newValue: event.newValue});   
   }
 
   private _processRenderingSettingsData() {
@@ -79,7 +133,11 @@ export class DynamicNodeSettings implements OnInit {
         instance.renderingType = this.renderingType;
         instance.renderingSettings = this.renderingSettings;
         instance.renderingSettingsChange.subscribe((data) => {
-          this.renderingSettingsChange.emit(data);
+          this.settings.renderingSettings = data.instance;
+          this.renderingSettingsChange.emit({instance: this.settings});
+        });
+        instance.settingsChangeEvent.subscribe((data) => {
+          this.settingsChangeEvent.emit(data);
         });
         this._instanceRef = instance;
       }
