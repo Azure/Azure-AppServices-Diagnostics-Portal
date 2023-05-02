@@ -35,12 +35,7 @@ export class DynamicNodeSettings implements OnInit {
   //   },
   //   dataSourceType: NoCodeSupportedDataSourceTypes.Kusto
   // }
-  datasource_: KustoDataSourceSettings = new KustoDataSourceSettings;
-
-  datasource: testDatasettings = {
-    connectionString: '',
-    dataSourceType: NoCodeSupportedDataSourceTypes.Kusto
-  }
+  datasource: KustoDataSourceSettings = new KustoDataSourceSettings;
 
   rendering: RenderingSettingsBase = {
     renderingType: RenderingType.Table,
@@ -101,17 +96,19 @@ export class DynamicNodeSettings implements OnInit {
 
   updateScope(event: any){
     //(this.settings.dataSourceSettings as testDatasettings).connectionString = event.newValue;
-    if (event.newValue.includes('/')){
-      let connection = event.newValue.splice('/');
+    // if (event.newValue.includes('/')){
+    //   let connection = event.newValue.split('/');
 
-      this.datasource_.clusterName = connection[0];
-      this.datasource_.dataBaseName = connection[1]; 
-    }
-    else {
-      this.datasource_.dataBaseName = event.newValue;
-    }
+    //   this.datasource_.clusterName = connection[0];
+    //   this.datasource_.dataBaseName = connection[1]; 
+    // }
+    // else {
+    //   this.datasource_.dataBaseName = event.newValue;
+    // }
 
-    this.settings.dataSourceSettings = this.datasource_;
+    this.settings.dataSourceSettings.processScopeString(event.newValue);
+
+    this.settings.dataSourceSettings = this.datasource;
      
     this.renderingSettingsChange.emit({instance: this.settings});
     this.settingsChangeEvent.emit({field: 'scope', oldValue: this.scopeString, newValue: event.newValue});   

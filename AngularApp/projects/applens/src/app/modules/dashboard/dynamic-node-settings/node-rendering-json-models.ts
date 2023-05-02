@@ -78,20 +78,30 @@ export class NoCodeGraphRenderingProperties extends RenderingSettingsBase{
     graphDefaultValue?: number;
   }
 
-export class DataSourceSettingsBase {
+export abstract class DataSourceSettingsBase {
     dataSourceType:NoCodeSupportedDataSourceTypes = NoCodeSupportedDataSourceTypes.Kusto;
+    public processScopeString(scope: string){}
 }
 
 export class testDatasettings extends DataSourceSettingsBase {
   connectionString: string = '@stampcluster/wawsprod';
 }
 
-export class KustoDataSourceSettings extends DataSourceSettingsBase {
+export class  KustoDataSourceSettings extends DataSourceSettingsBase {
     dataBaseName: string = "wawsprod";
     clusterName: string = "@stampcluster";
 
     public getConnectionString() {
         return `https://${this.clusterName}.kusto.windows.net/${this.dataBaseName}`
+    }
+
+    public processScopeString(scope: string){
+      if (scope.includes('/')){
+        let sParams = scope.split('/');
+        this.clusterName = sParams[0];
+        this.dataBaseName = sParams[1];
+      }
+      else this.dataBaseName = scope;
     }
 
     public GetJson(): string {
