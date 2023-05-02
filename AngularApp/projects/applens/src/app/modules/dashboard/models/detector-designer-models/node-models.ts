@@ -1,5 +1,7 @@
 import { RenderingType } from "diagnostic-data";
 import { Guid } from "projects/diagnostic-data/src/lib/utilities/guid";
+import { NodeSettings } from "../../dynamic-node-settings/node-rendering-json-models";
+import { nodeStatus } from "dist/diagnostic-data/public_api";
 
 export class ComposerNodeModel {
     id: string = Guid.newGuid();
@@ -7,6 +9,7 @@ export class ComposerNodeModel {
     public code:string = '<query>\r\n';
     public editorRef?: monaco.editor.ICodeEditor = null;
     public renderingType:NoCodeSupportedRenderingTypes = RenderingType.Table;
+    public settings:NodeSettings = new NodeSettings;
     public constructor() {
         this.id = Guid.newGuid();
     }

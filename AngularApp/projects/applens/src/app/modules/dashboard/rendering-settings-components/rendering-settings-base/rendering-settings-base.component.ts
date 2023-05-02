@@ -17,7 +17,8 @@ export class RenderingSettingsBaseComponent {
     this.processData(settings);
   }
 
-  @Output() renderingSettingsChange = new EventEmitter<{field:string, instance:any}>();
+  @Output() settingsChangeEvent = new EventEmitter<{field:string, oldValue:any, newValue: any}>();
+  @Output() renderingSettingsChange = new EventEmitter<{instance:any}>();
   
   constructor() {
   }

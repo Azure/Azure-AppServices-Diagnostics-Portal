@@ -2,7 +2,7 @@
     <div style="height:calc(20%);display: block;">
         <div>
             <div>
-                <fab-text-field [label]="'scope: '" [placeholder]="'@StampCluster/wawsprod'" [(value)]="scopeString" [styles]="textBoxStyle"></fab-text-field>
+                <fab-text-field [label]="'scope: '" [placeholder]="'@StampCluster/wawsprod'" [(value)]="scopeString" [styles]="textBoxStyle" (onChange)="updateScope($event)"></fab-text-field>
             </div>
         </div>
     </div>
