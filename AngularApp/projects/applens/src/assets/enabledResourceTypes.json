@@ -739,14 +739,14 @@
         },
         {
             "service": "ResourceService",
-            "resourceType": "Microsoft.DevCenter/projects",
-            "templateFileName": "DevCenter",
+            "resourceType": "Microsoft.DevCenter/devcenters",
+            "templateFileName": "Devbox",
             "imgSrc": "assets/img/Azure-DevBox-Logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
             "pesId": "17466",
             "staticSelfHelpContent": "",
-            "searchSuffix": "MICROSOFT DEV CENTER",
+            "searchSuffix": "MICROSOFT DEV BOX",
             "displayName": "Microsoft Dev Center"
         },
         {
@@ -775,7 +775,7 @@
         },
         {
             "service": "ResourceService",
-            "resourceType": "Microsoft.DevCenter/devcenter",
+            "resourceType": "Microsoft.DevCenter/devcenters",
             "templateFileName": "ADE",
             "imgSrc": "assets/img/Azure-ADE-Logo.svg",
             "versionPrefix": "",
