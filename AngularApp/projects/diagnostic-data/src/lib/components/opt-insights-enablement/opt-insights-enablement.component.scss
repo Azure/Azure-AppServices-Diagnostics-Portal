@@ -1,0 +1,44 @@
+.banner {
+    background-color: var(--homeBannerProd);
+    min-height: 48px;
+    color: var(--bodyText);
+    display: table;
+    border-color: none;
+  }
+  
+  .banner-child {
+    display: table-cell;
+    vertical-align: middle;
+    width: 100vw;
+    margin: 10px;
+    border-color: none;
+  }
+
+.noHover:hover { 
+    background-color: inherit;     
+    opacity: 1.0;
+ }
+
+ .table {
+    /* Remove or override the CSS properties associated with hover */
+    background-color: inherit; /* var(--homeBannerProd);*/
+    color: var(--bodyText);
+    padding: auto;
+    margin-top: 20px;
+}
+
+table th {
+    border-bottom: 1pt solid inherit;
+}
+
+.header {
+    background-color: inherit; /*var(--homeBannerProd);*/
+    color: var(--bodyText);
+    margin-top: 10px;
+}
+
+.error {
+  background-color: inherit; /*var(--homeBannerProd);*/
+  color: var(--bodyText);
+  margin: 10px;
+}

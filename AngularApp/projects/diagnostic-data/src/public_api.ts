@@ -34,6 +34,7 @@ export * from './lib/services/query-response.service';
 export * from './lib/services/openai-arm.service';
 export * from './lib/config/diagnostic-data-config';
 export * from './lib/diagnostic-data.module';
+export * from './lib/services/optinsights.service';
 
 
 export * from './lib/models/detector';
@@ -57,6 +58,7 @@ export * from './lib/models/theme';
 export * from './lib/models/workflow';
 export * from './lib/models/openai-data-models';
 export * from './lib/models/chatbot-models';
+export * from './lib/models/optinsights';
 
 export * from './lib/components/detector-list-analysis/detector-list-analysis.component'
 

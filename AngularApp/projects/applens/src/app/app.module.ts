@@ -147,7 +147,7 @@ export const Routes = RouterModule.forRoot([
         component: UnauthorizedComponent
     },
     {
-        path: 'authRequestFailed',
+        path: 'downpage',
         component: AuthRequestFailedComponent
     },
     {

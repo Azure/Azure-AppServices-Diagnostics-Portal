@@ -760,8 +760,7 @@
             "staticSelfHelpContent": "",
             "searchSuffix": "MICROSOFT GRAPH AUTHENTICATION AND AUTHORIZATION (AZURE AD)",
             "displayName": "Microsoft Graph Authentication and Authorization (Azure AD)"
-        }
-        ,
+        },
         {
             "service": "ResourceService",
             "resourceType": "Microsoft.AzurePlaywrightService/accounts",
@@ -773,6 +772,18 @@
             "staticSelfHelpContent": "",
             "searchSuffix": "MICROSOFT PLAYWRIGHT TESTING",
             "displayName": "Microsoft Playwright Testing"
-        }
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.DevCenter/devcenter",
+            "templateFileName": "ADE",
+            "imgSrc": "assets/img/Azure-ADE-Logo.svg",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "",
+            "pesId": "17897",
+            "staticSelfHelpContent": "",
+            "searchSuffix": "AZURE DEPLOYMENT ENVIRONMENT",
+            "displayName": "Azure Deployment Environments"
+        } 
     ]
 }

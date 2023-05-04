@@ -27,7 +27,7 @@ export class TimeUtilities {
     }
 
     //Convert UTC time to show in calendar and time picker
-    static convertMomentInUTCToDateAndTime(m: moment.Moment): { date: Date, time: string } {
+    static convertMomentToDateAndTime(m: moment.Moment): { date: Date, time: string } {
         const date = new Date(
             m.year(), m.month(), m.date(), m.hour()
         );
@@ -39,10 +39,11 @@ export class TimeUtilities {
     }
 
     //Convert date and time in picker into moment in UTC
-    static convertDateAndTimeToUTCMoment(date: Date, time: string): moment.Moment {
+    static convertDateAndTimeToMoment(date: Date, time: string, isUTC: boolean = true): moment.Moment {
         const hour = Number.parseInt(time.split(":")[0]);
         const minute = Number.parseInt(time.split(":")[1]);
-        return moment.utc([date.getFullYear(), date.getMonth(), date.getDate(), hour, minute]);
+        const dateTimeArray = [date.getFullYear(), date.getMonth(), date.getDate(), hour, minute];
+        return isUTC ? moment.utc(dateTimeArray) : moment(dateTimeArray);
     }
 
     static passDateFromString(s: string): Date | null {

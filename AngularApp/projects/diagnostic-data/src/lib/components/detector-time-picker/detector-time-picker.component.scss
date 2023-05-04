@@ -1,22 +1,9 @@
-.time-picker-container {
-    position: absolute;
-    z-index: 1000;
-    border-radius: 2px;
-    box-shadow: 0 8px 16px rgba(0,0,0,.16);
-    right: 20px!important;
-    top: 40px!important;
-    padding: 10px!important;
-    left: unset!important;
-    background-color: var(--bodyBackground);
-    width: 350px;
-    border: 1px solid var(--borderBottom)
-}
-
-.date-picker-label {
-    font-size: 12px;
-    padding-top: 5px;
-}
-
 .callout-padding {
     padding: 4px 16px;
+}
+
+.date-time-picker-row {
+    display: flex; 
+    align-items: center;
+    justify-content: flex-end;
 }

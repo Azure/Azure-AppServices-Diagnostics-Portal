@@ -10,7 +10,7 @@ import { OperatingSystem } from '../../../shared/models/site';
 import { AppType } from '../../../shared/models/portal';
 import { DirectionalHint } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
-import { DemoSubscriptions } from '../../../betaSubscriptions';
+import { DemoSubscriptions } from '../../../../../../diagnostic-data/src/lib/models/betaSubscriptions';
 import { Sku } from '../../../shared/models/server-farm';
 import { HttpClient } from '@angular/common/http';
 

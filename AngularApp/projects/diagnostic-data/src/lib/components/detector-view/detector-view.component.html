@@ -14,13 +14,11 @@
   </div>
 </h2>
 
-<a *ngIf="breadCrumb &&breadCrumb.name && isPublic" (click)="navigateForBreadCrumb()"
-  (keyup.enter)="navigateForBreadCrumb()">Go Back to {{breadCrumb.name}}</a>
+<a *ngIf="breadCrumb && breadCrumb.name && isPublic" (click)="navigateForBreadCrumb()"
+  (keyup.enter)="navigateForBreadCrumb()" tabindex="0" [attr.aria-label]="'Go Back to ' + breadCrumb.name">Go Back to
+  {{breadCrumb.name}}
+</a>
 
-<!-- <div *ngIf="detectorDataLocalCopy && detectorDataLocalCopy.metadata && !isPublic && !isInCaseSubmission()">
-  <p><b>Author</b>: {{detectorDataLocalCopy.metadata.author}}</p>
-  <p><b>Description</b>: {{detectorDataLocalCopy.metadata.description}}</p>
-</div> -->
 <div *ngIf="detectorDataLocalCopy" class="detector-control">
   <div *ngIf="!hideDetectorControl && !insideDetectorList">
     <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>
@@ -74,7 +72,8 @@
     <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>
   </div>
   <ng-container *ngIf="!errorState">
-    <loader-detector-view style="margin-top:300px" [Source]="'DetectorView'" [LoadingMessage1]="loadingMessage" [LoadingMessage2]="loadingMessage" [LoadingMessage3]="loadingMessage" [LoadingMessage4]="loadingMessage">
+    <loader-detector-view style="margin-top:300px" [Source]="'DetectorView'" [LoadingMessage1]="loadingMessage"
+      [LoadingMessage2]="loadingMessage" [LoadingMessage3]="loadingMessage" [LoadingMessage4]="loadingMessage">
     </loader-detector-view>
   </ng-container>
   <ng-container *ngIf="errorState">

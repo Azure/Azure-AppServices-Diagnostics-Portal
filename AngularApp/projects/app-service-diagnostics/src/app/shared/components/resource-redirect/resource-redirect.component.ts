@@ -4,7 +4,7 @@ import { Router, NavigationExtras } from '@angular/router';
 import { WindowService } from '../../../startup/services/window.service';
 import { environment } from '../../../../environments/environment';
 import { StartupInfo } from '../../models/portal';
-import { DemoSubscriptions } from '../../../betaSubscriptions';
+import { DemoSubscriptions } from '../../../../../../diagnostic-data/src/lib/models/betaSubscriptions';
 import { DetectorType, TelemetryService, TelemetrySource } from 'diagnostic-data';
 import { VersionTestService } from '../../../fabric-ui/version-test.service';
 
