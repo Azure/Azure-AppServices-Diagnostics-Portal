@@ -116,6 +116,10 @@ export const Routes = RouterModule.forRoot([
                       loadChildren: () => import('./modules/armresourceurlfinder/armresourceurlfinder.module').then(m => m.ArmResourceUrlFinderModule)
                     },
                     {
+                      path: 'armresourceurlfinder/:provider/:service/:name/:feature/:featureid',
+                      loadChildren: () => import('./modules/armresourceurlfinder/armresourceurlfinder.module').then(m => m.ArmResourceUrlFinderModule)
+                    },
+                    {
                         path: 'subscriptions/:subscriptionId/resourceGroups/:resourceGroup/providers/:provider/:resourceTypeName/:resourceName',
                         loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule),
                         resolve: { validResources: ValidResourceResolver }

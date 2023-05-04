@@ -16,6 +16,8 @@ export class ArmResourceUrlFinder implements OnInit {
   providerName: string;
   serviceName: string;
   resourceName: string;
+  feature: string;
+  featureId: string;
   armUrl : string;
 
   constructor(private _route: ActivatedRoute, private _router: Router, private _observerService: ObserverService) {
@@ -26,6 +28,8 @@ export class ArmResourceUrlFinder implements OnInit {
     this.providerName = this._route.snapshot.params['provider'];
     this.serviceName = this._route.snapshot.params['service'];
     this.resourceName = this._route.snapshot.params['name'];
+    this.feature = this._route.snapshot.params['feature'];
+    this.featureId = this._route.snapshot.params['featureid'];
 
     this._observerService.getArmResourceUrl(this.providerName, this.serviceName, this.resourceName).subscribe(_armUrl => {
       this.loading = false;
@@ -39,6 +43,12 @@ export class ArmResourceUrlFinder implements OnInit {
 
   navigateToArmUrl(armUrl: string) {
     let resourceArray: string[] = [armUrl];
+    if(this.feature && this.feature !== '' && this.featureId && this.featureId !== '')
+    {
+      resourceArray.push(this.feature);
+      resourceArray.push(this.featureId);
+    }
+
     this._router.navigate(resourceArray, { queryParamsHandling: "preserve" });
   }
 
