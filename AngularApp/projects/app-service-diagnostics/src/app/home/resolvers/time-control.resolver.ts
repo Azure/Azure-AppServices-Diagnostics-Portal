@@ -2,6 +2,7 @@ import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/r
 import { Injectable } from '@angular/core';
 import { DetectorControlService, TimePickerOptions } from 'diagnostic-data';
 import { Observable, of } from 'rxjs';
+import * as moment from 'moment';
 
 @Injectable()
 export class TimeControlResolver implements Resolve<Observable<boolean>> {
@@ -16,8 +17,8 @@ export class TimeControlResolver implements Resolve<Observable<boolean>> {
             this._detectorControlService.updateTimePickerInfo({
                 selectedKey: TimePickerOptions.Custom,
                 selectedText: TimePickerOptions.Custom,
-                startDate: new Date(startTime),
-                endDate: new Date(endTime)
+                startMoment: moment.utc(startTime),
+                endMoment: moment.utc(endTime)
             });
         }
 

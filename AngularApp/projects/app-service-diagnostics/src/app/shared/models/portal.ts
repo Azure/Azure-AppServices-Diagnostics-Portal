@@ -95,6 +95,10 @@ export class Verbs {
     public static sendToken = 'send-token';
     public static sendIFrameInfo = 'send-iframe-info';
 
+    // Get a scoped token
+    public static getScopedAuthorizationToken = 'get-scoped-token';
+    public static sendScopedAuthorizationToken = 'send-scoped-token';
+
     // Blade-specific Requests from iframe
     public static openScaleUpBlade = 'open-scaleup-blade';
     public static openSupportRequestBlade = 'open-support-request-inputs';
@@ -189,4 +193,8 @@ export class SupportBladeDefinitions {
         Identifier: BladeOptions.diagnostics,
         Title: 'Diagnostics'
     };
+}
+
+export interface ScopeAuthorizationToken {
+    resourceName: string;
 }

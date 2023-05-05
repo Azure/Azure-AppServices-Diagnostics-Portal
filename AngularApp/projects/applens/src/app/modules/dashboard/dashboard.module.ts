@@ -135,6 +135,7 @@ import { ForeachNodeComponent } from './workflow/foreach-node/foreach-node.compo
 import { WorkflowUserAccessComponent } from './workflow/workflow-user-access/workflow-user-access.component';
 import { InputNodeComponent } from './workflow/input-node/input-node.component';
 import { NetworkTraceAnalysisComponent } from './network-trace-analysis/network-trace-analysis.component';
+import * as moment from 'moment';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -147,8 +148,8 @@ export class InitResolver implements Resolve<Observable<ResourceInfo>>{
         this._detectorControlService.updateTimePickerInfo({
             selectedKey: TimePickerOptions.Custom,
             selectedText: TimePickerOptions.Custom,
-            startDate: new Date(this._detectorControlService.startTimeString),
-            endDate: new Date(this._detectorControlService.endTimeString)
+            startMoment: moment.utc(this._detectorControlService.startTimeString),
+            endMoment: moment.utc(this._detectorControlService.endTimeString)
         });
 
         //Wait for getting UserSetting and update landingPage info before going to dashboard/detector page

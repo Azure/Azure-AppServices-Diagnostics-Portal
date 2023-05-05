@@ -171,6 +171,7 @@ export class TabDataComponent implements OnInit {
     this._diagnosticApiService.getDetectorMetaDataById(this.detector, this.isWorkflowDetector).subscribe(metaData => {
       if (metaData) {
         this._applensGlobal.updateHeader(metaData.name);
+        this._applensGlobal.updateAuthorAndDescription(metaData.author,metaData.description);
         this.detectorMetaData = metaData;
       }
     });

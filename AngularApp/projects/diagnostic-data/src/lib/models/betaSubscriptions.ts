@@ -38,6 +38,8 @@ export class DemoSubscriptions {
         '750f6b19-1621-45ba-a641-0eb3babe2141', // Tulika Chaudharie's Subscription
         'fa125e53-a44d-494b-a386-824498910cd4', //  Venkata Manusha Gopisetty's subscription
         'a2c49f0f-548f-4f3b-86a4-39c8eafc0780', // Private Test Sub CURIBE (Cristhian Uribe's subscription)
-        'dd5a12e0-3f90-47b8-9c07-7f9f0c1af13a'  // Microsoft Azure Internal Consumption (Cristhian Uribe's subscription)
+        'dd5a12e0-3f90-47b8-9c07-7f9f0c1af13a', // Microsoft Azure Internal Consumption (Cristhian Uribe's subscription)
+        'bbe41737-1ade-44df-8e33-217f11b8b452', // Code Optimizations subscription - Service Profiler Jacob Bovee
+        '432a7068-99ae-4975-ad38-d96b71172cdf'  // Code Optimizations subscription - Azure Profiler Testing Jacob Bovee
     ];
 }

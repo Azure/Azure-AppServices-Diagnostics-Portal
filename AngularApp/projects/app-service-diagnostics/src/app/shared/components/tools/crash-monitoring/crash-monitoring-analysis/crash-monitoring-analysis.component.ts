@@ -2,7 +2,6 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output, 
 import { DiagnosticService, RenderingType, DataTableResponseObject, TelemetryEventNames, DiagnosticData } from 'diagnostic-data';
 import { DaasService } from '../../../../services/daas.service';
 import { SiteService } from '../../../../services/site.service';
-import * as momentNs from 'moment';
 import { CrashMonitoringSettings, DaasStorageConfiguration } from '../../../../models/daas';
 import * as moment from 'moment';
 import { Subscription, interval, Observable } from 'rxjs';
@@ -169,8 +168,8 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
       return;
     }
     let monitoringDates = this._siteService.getCrashMonitoringDates(this.crashMonitoringSettings);
-    if (momentNs.utc() > momentNs.utc(monitoringDates.start)
-      && momentNs.utc() < momentNs.utc(monitoringDates.end) && this.dumpsCollected < this.crashMonitoringSettings.MaxDumpCount) {
+    if (moment.utc() > moment.utc(monitoringDates.start)
+      && moment.utc() < moment.utc(monitoringDates.end) && this.dumpsCollected < this.crashMonitoringSettings.MaxDumpCount) {
       this.monitoringEnabled = true;
     } else {
       this.monitoringEnabled = false
@@ -257,7 +256,7 @@ export class CrashMonitoringAnalysisComponent implements OnInit, OnChanges, OnDe
   }
 
   getDisplayDate(date: Date): string {
-    return momentNs(date).format('YYYY-MM-DD HH:mm') + ' UTC';
+    return moment(date).format('YYYY-MM-DD HH:mm') + ' UTC';
   }
 
   toggleInsightStatus(insight: CrashInsight) {

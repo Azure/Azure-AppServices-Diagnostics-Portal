@@ -3,7 +3,7 @@
     class="list-header" [attr.aria-label]="title">
     <span class="btn-inner">
       <div style="float:left" class="custom-caret" [class.custom-caret-down]="collapsed">
-        <fab-icon iconName="ChevronUp" ariaLabel="ChevronUp"></fab-icon>
+        <fab-icon iconName="ChevronUp" [ariaLabel]="ariaLabelChevronUp"></fab-icon>
       </div>
       <div style="float:left" *ngIf="iconProps">
         <fab-icon [iconName]="iconProps.iconName" ariaLabel="Section icon" [styles]="iconProps.styles"></fab-icon>

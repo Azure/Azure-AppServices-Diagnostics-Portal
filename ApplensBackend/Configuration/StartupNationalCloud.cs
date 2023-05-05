@@ -37,7 +37,7 @@ namespace AppLensV3
             services.AddSingleton<IAuthorizationHandler, SecurityGroupHandlerNationalCloud>();
             services.AddSingleton<IBingSearchService, BingSearchServiceDisabled>();
 
-            if (environment.IsProduction())
+            if (environment.IsProduction() || environment.IsStaging())
             {
                 services.AddDstsAuthFlow(configuration, environment);
             }

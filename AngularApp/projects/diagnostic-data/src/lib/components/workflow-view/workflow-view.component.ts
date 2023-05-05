@@ -22,6 +22,7 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() workflowPublishBody: workflowPublishBody;
   @Input() lastRefreshed: string;
   @Output() onError = new EventEmitter<any>();
+  @Output() onPackageUpdated = new EventEmitter<any>();
 
   error: any;
   workflowNodeResults: workflowNodeResult[] = [];
@@ -98,6 +99,8 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
           if (workflowNodeResult != null) {
             this.createRootNode(workflowNodeResult);
           }
+
+          this.onPackageUpdated.emit(workflowQueryResponse.invocationOutput.workflowPackage);
 
         } else {
           if (workflowQueryResponse.compilationOutput.compilationTraces != null && workflowQueryResponse.compilationOutput.compilationTraces.length > 0) {

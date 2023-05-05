@@ -1,0 +1,13 @@
+<div style="display: flex;" class="ml-3 mt-3">
+    <div *ngIf="label" class="mr-2 date-picker-label">{{label}}<span *ngIf="required" class="date-picker-asterisk">*</span></div>
+    <fab-date-picker [disabled]="disabled" [minDate]="minDate" [maxDate]="maxDate"
+        placeholder="Select a date..." ariaLabel="Select a date" allowTextInput="true"
+        showMonthPickerAsOverlay="true" (onSelectDate)="onSelectDateHandler($event)" [formatDate]="formatDate"
+        [value]="date" [parseDateFromString]="parseDateFromString" [contentStyle]="'width:130px;'">
+    </fab-date-picker>
+    <fab-masked-text-field *ngIf="!showDatePickerOnly" [disabled]="disabled" [contentClass]="'col-md-4'" maxLength="6"
+        [value]="time" [iconProps]="{iconName: 'Clock'}" [mask]="'99:99'" [maskChar]="'-'" 
+        [validateOnFocusOut]="true" [ariaLabel]="'Type a time'" [styles]="maskTextFieldStyles"
+        (valueChange)="onChangeTime($event)" (keyup.enter)="onTimeEnterHandler()" (keydown.tab)="onTimeTabHandler()">
+    </fab-masked-text-field>
+</div>

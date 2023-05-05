@@ -1,8 +1,10 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AppLensV3.Services;
+using Octokit;
 
 namespace AppLensV3
 {
@@ -10,10 +12,12 @@ namespace AppLensV3
     public class ResourceController : Controller
     {
         IObserverClientService _observerService;
+        IArmResourceService _armResourceService;
 
-        public ResourceController(IObserverClientService observerService)
+        public ResourceController(IObserverClientService observerService, IArmResourceService resourceService)
         {
             _observerService = observerService;
+            _armResourceService = resourceService;
         }
 
         [HttpGet("api/sites/{siteName}")]
@@ -62,7 +66,7 @@ namespace AppLensV3
 
         [HttpGet]
         [Route("api/stamps/{stamp}/sites/{siteName}/sku")]
-        public async Task<IActionResult> GetSiteSku(string stamp,string siteName)
+        public async Task<IActionResult> GetSiteSku(string stamp, string siteName)
         {
             var siteSku = await _observerService.GetSiteSku(stamp, siteName);
             return Ok(new { Details = siteSku.Content });
@@ -181,6 +185,30 @@ namespace AppLensV3
         public async Task<IActionResult> GetKustoByGeo([FromServices] IKustoQueryService kustoQueryService, string geoRegionName)
         {
             return await GetKustoByGeoInternal(kustoQueryService, geoRegionName);
+        }
+
+        [HttpGet]
+        [Route("api/armresourceurl/{providerName}/{serviceName}/{resourceName}")]
+        public async Task<IActionResult> GetArmResourceUrl(string providerName, string serviceName, string resourceName)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(providerName) || string.IsNullOrWhiteSpace(serviceName) || string.IsNullOrWhiteSpace(resourceName))
+                {
+                    return BadRequest("arguments cannot be null or empty.");
+                }
+
+                var armID = await _armResourceService.GetArmResourceUrlAsync(providerName, serviceName, resourceName);
+                return Ok(armID);
+            }
+            catch (NotFoundException ex)
+            {
+                return StatusCode(404, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         private async Task<IActionResult> GetKustoByGeoInternal(IKustoQueryService kustoQueryService, string geoRegionName)

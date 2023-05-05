@@ -1,0 +1,67 @@
+<div *ngIf="!loading && isBetaSubscription ">
+    <div style="text-align: center; padding:10px" *ngIf="loading">
+        <i class="fa fa-circle-o-notch fa-2x fa-spin spin-icon" aria-hidden="true"></i>
+    </div>
+    <div>
+        <div *ngIf="!loading">
+            <div *ngIf="!error; else errorOptInsights">
+                <div *ngIf="!loading && table.length > 0">
+                    <div class="header">
+                        <span class="fxs-blade-header-icon" id="_weave_e_1001">
+                            <img src="assets/img/azure-icons/AzureOptInsights.svg" alt="">
+                            Code Optimizations found code recommendations:
+                        </span>
+                    </div>
+                    <table class="table table-responsive no-border" class="table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Performance issue</th>
+                                <th>Component</th>
+                                <th>Count</th>
+                                <th>Impact</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of table" style="font-size:13px">
+                                <td>{{item.type}}</td>
+                                <td><a href="#" (click)="openOptInsightsBladewithTimeRange()">{{item.issue}}</a></td>
+                                <td>{{item.component}}</td>
+                                <td>{{item.count}}</td>
+                                <td>{{item.impact}}</td>
+                                <td>{{item.role}}</td>
+                            </tr>
+                        </tbody>
+                        <div class="header">
+                            <span class="fxs-blade-header-icon" id="_weave_e_1001">
+                                For more Insights, go to <a href="#" (click)="openOptInsightsBladewithTimeRange()">Code
+                                    Optimizations</a>
+                            </span>
+                        </div>
+                    </table>
+                </div>
+                <div *ngIf="!loading && table.length === 0" class="error">
+                    <span class="fxs-blade-header-icon" id="_weave_e_1001">
+                        <img src="assets/img/azure-icons/AzureOptInsights.svg" alt="">
+                        There are no Code Optimizations insights for this application. Insights are generated from
+                        profiles
+                        and no profiles have been uploaded for the selected time range. Please change to a different
+                        time range or follow the <a
+                            href="https://aka.ms/serviceprofiler">instructions</a> to enable the Application Insights
+                        Profiler for this application. For more questions, visit our <a
+                            href="https://aka.ms/CodeOptimizationsTroubleshooting">Troubleshooting guide</a>.
+                    </span>
+                </div>
+            </div>
+        </div>
+        <ng-template #errorOptInsights>
+            <div class="header">
+                <span class="fxs-blade-header-icon" id="_weave_e_1001">
+                    <img src="assets/img/azure-icons/AzureOptInsights.svg" alt="">
+                    Error while calling Code Optimizations. Please try again later.
+                </span>
+            </div>
+        </ng-template>
+    </div>
+</div>

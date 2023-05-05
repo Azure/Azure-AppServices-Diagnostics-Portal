@@ -10,9 +10,8 @@ import { ApplensGlobal } from '../../../applens-global';
 import { SupportTopicResult } from '../resource-home/resource-home.component';
 import { DevopsConfig } from '../../../shared/models/devopsConfig';
 import { ResourceDescriptor } from 'diagnostic-data';
-import * as momentNs from 'moment';
+import * as moment from 'moment';
 
-const moment = momentNs;
 
 @Component({
     selector: 'user-detectors',

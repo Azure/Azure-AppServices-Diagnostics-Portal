@@ -14,7 +14,8 @@
   </div>
 </h2>
 
-<a *ngIf="breadCrumb &&breadCrumb.name && isPublic" (click)="navigateForBreadCrumb()" (keyup.enter)="navigateForBreadCrumb()">Go Back to {{breadCrumb.name}}</a>
+<a *ngIf="breadCrumb &&breadCrumb.name && isPublic" (click)="navigateForBreadCrumb()"
+  (keyup.enter)="navigateForBreadCrumb()">Go Back to {{breadCrumb.name}}</a>
 
 <!-- <div *ngIf="detectorDataLocalCopy && detectorDataLocalCopy.metadata && !isPublic && !isInCaseSubmission()">
   <p><b>Author</b>: {{detectorDataLocalCopy.metadata.author}}</p>
@@ -50,8 +51,6 @@
   </div>
 </div>
 
-<div *ngIf="timePickerErrorStr !==''" class="error-time-picker-message">{{timePickerErrorStr}}</div>
-
 <div *ngIf="detectorDataLocalCopy">
   <div *ngFor="let data of detectorDataLocalCopy.dataset  | renderfilter:isAnalysisView"
     [ngClass]="{'dynamic-data-container': !isRiskAlertDetector}">
@@ -69,19 +68,21 @@
 
 <cxp-chat-launcher *ngIf="showChatButton()" [trackingId]="cxpChatTrackingId" [chatUrl]="cxpChatUrl"
   [supportTopicId]="supportTopicId"></cxp-chat-launcher>
-<loader-detector-view style="margin-top:300px" *ngIf="!detectorDataLocalCopy && !errorState" [Source]="'DetectorView'"></loader-detector-view>
 
-<ng-container *ngIf="!detectorDataLocalCopy && errorState">
-  <div class="mt-3">
-    <ng-container *ngIf="!hideDetectorControl && !insideDetectorList">
-      <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>
-    </ng-container>
+<ng-container *ngIf="!detectorDataLocalCopy">
+  <div class="mt-3" *ngIf="!hideDetectorControl && !insideDetectorList">
+    <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>
+  </div>
+  <ng-container *ngIf="!errorState">
+    <loader-detector-view style="margin-top:300px" [Source]="'DetectorView'" [LoadingMessage1]="loadingMessage" [LoadingMessage2]="loadingMessage" [LoadingMessage3]="loadingMessage" [LoadingMessage4]="loadingMessage">
+    </loader-detector-view>
+  </ng-container>
+  <ng-container *ngIf="errorState">
     <span class="critical-color" *ngIf="errorState.error && !isPublic"> Error: {{errorState.error}}</span>
     <span class="critical-color" *ngIf="isPublic && errorState || !errorState.error">Sorry, an error occurred. Please
       refresh the page and try again.</span>
-  </div>
+  </ng-container>
 </ng-container>
-
 
 <ng-template #detectorName>
   <span>{{detectorDataLocalCopy.metadata.name}}</span>
@@ -93,7 +94,8 @@
 
 <ng-template #detectorTimePickerPill>
   <div>
-    <fab-primary-button [id]="'time-picker-button'" [styles]="buttonStyle" (onClick)="openTimePickerSubject.next(true);">
+    <fab-primary-button [id]="'time-picker-button'" [styles]="buttonStyle"
+      (onClick)="openTimePickerSubject.next(true);">
       <fab-icon [iconName]="'Clock'" [styles]="iconStyles"></fab-icon>
       <span class="ml-3 control-pill-text">
         <span>Time Range (UTC): </span>
@@ -101,7 +103,9 @@
       </span>
     </fab-primary-button>
   </div>
+  <div *ngIf="timePickerErrorStr !==''" class="mt-3 error-time-picker-message">{{timePickerErrorStr}}</div>
 </ng-template>
 
-<detector-time-picker [target]="'#time-picker-button'" [openTimePickerCalloutObservable]="openTimePickerSubject" (updateTimerErrorMessage)="updateTimePickerErrorMessage($event)">
+<detector-time-picker [target]="'#time-picker-button'" [openTimePickerCalloutObservable]="openTimePickerSubject"
+  (updateTimerErrorMessage)="updateTimePickerErrorMessage($event)">
 </detector-time-picker>

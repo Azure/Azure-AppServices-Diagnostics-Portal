@@ -66,7 +66,7 @@ export class FabricSearchResultsComponent {
   @HostListener('keydown.Tab', ['$event.target'])
   onKeyDown(ele: HTMLElement) {
     if (ele.tagName === "INPUT") {
-      if (this.isInCategory) {
+      if (this.isInCategory && this.features.length < 1) {
         this.clickSearchBox = BlurType.Blur;
         this.onBlurHandler();
       } else {
@@ -120,6 +120,7 @@ export class FabricSearchResultsComponent {
   }
 
   navigateToFeature(feature: Feature) {
+    this.clickOutside();
     this._notificationService.dismiss();
     this._logSearchSelection(feature);
     feature.clickAction();

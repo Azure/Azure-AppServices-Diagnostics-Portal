@@ -40,7 +40,7 @@ export class FeatureService {
         this._diagnosticApiService.getDetectors().subscribe(detectors => {
           this._categoryService.categories.subscribe(categories => {
             this._detectors = detectors;
-            if(categories.length > 0) {
+            if (categories.length > 0) {
               this.categories = categories;
             }
             detectors.forEach(detector => {
@@ -68,7 +68,7 @@ export class FeatureService {
                       }
                     })
                   });
-                } else {
+                } else if (detector.type === DetectorType.Analysis) {
                   this._features.push(<Feature>{
                     id: detector.id,
                     description: detector.description,
@@ -80,6 +80,21 @@ export class FeatureService {
                         this._router.navigateByUrl(`resource${startupInfo.resourceId}/analysis/${detector.id}`);
                       } else {
                         this.navigatTo(startupInfo, categoryId, detector.id, DetectorType.Analysis);
+                      }
+                    })
+                  });
+                } else if (detector.type === DetectorType.Workflow) {
+                  this._features.push(<Feature>{
+                    id: detector.id,
+                    description: detector.description,
+                    category: categoryName,
+                    featureType: DetectorType.Workflow,
+                    name: detector.name,
+                    clickAction: this._createFeatureAction(detector.name, categoryName, () => {
+                      if (this.isLegacy) {
+                        this._router.navigateByUrl(`resource${startupInfo.resourceId}/workflows/${detector.id}`);
+                      } else {
+                        this.navigatTo(startupInfo, categoryId, detector.id, DetectorType.Workflow);
                       }
                     })
                   });
@@ -184,7 +199,7 @@ export class FeatureService {
 
   private getCategoryIdByCategoryName(categoryId: string) {
     const currentCategoryId = this._activatedRoute.root?.firstChild?.firstChild?.firstChild?.firstChild?.firstChild?.snapshot.params["category"];
-    return this.getCategoryIdByNameAndCurrentCategory(categoryId,currentCategoryId);
+    return this.getCategoryIdByNameAndCurrentCategory(categoryId, currentCategoryId);
   }
 
   getCategoryIdByNameAndCurrentCategory(name: string, currentCategoryId?: string): string {
@@ -228,6 +243,8 @@ export class FeatureService {
         this._router.navigateByUrl(`resource${startupInfo.resourceId}/categories/${category}/detectors/${detector}`);
       } else if (type === DetectorType.Analysis) {
         this._router.navigateByUrl(`resource${startupInfo.resourceId}/categories/${category}/analysis/${detector}`);
+      } else if (type === DetectorType.Workflow) {
+        this._router.navigateByUrl(`resource${startupInfo.resourceId}/categories/${category}/workflows/${detector}`);
       }
 
     }

@@ -44,6 +44,30 @@ class Logging {
         };
         this.logAction('diagnostic-data', eventMessage, eventProp);
     }
+
+    setIntervalForCheckComponent(intervalInMs, lengthInMs) {
+        const startTime = (new Date()).getTime();
+        const interval = setInterval(() => {
+            const currentTime = (new Date()).getTime();
+            const isDisplay = this.checkIfComponentDisplayed();
+            if (isDisplay) {
+                clearInterval(interval);
+            } else if (currentTime >= startTime + lengthInMs) {
+                clearInterval(interval);
+                this.logEvent(LoggingUtilities.portalBlankPageEvent, {});
+            }
+        }, intervalInMs);
+    }
+
+    checkIfComponentDisplayed() {
+        const eles = document.getElementsByTagName("sc-app");
+        for (const ele of eles) {
+            if (ele.innerText.length > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 class LoggingUtilities {
@@ -80,17 +104,9 @@ class LoggingUtilities {
 function monitoring() {
     const shellSrc = LoggingUtilities.getQueryStringParameter("trustedAuthority");
     const logger = new Logging(shellSrc);
-    logger.postMessage("initializationcomplete",null);
-    logger.logEvent(LoggingUtilities.startMonitoringIFrame,{});
-    let timer = setTimeout(() => {
-        const eles = document.getElementsByTagName("sc-app");
-        for (const ele of eles) {
-            if (ele.innerText.length === 0) {
-                logger.logEvent(LoggingUtilities.portalBlankPageEvent, {});
-            }
-        }
-        clearTimeout(timer);
-    }, LoggingUtilities.monitoringTimeout * 1000);
+    logger.postMessage("initializationcomplete", null);
+    logger.logEvent(LoggingUtilities.startMonitoringIFrame, {});
+    logger.setIntervalForCheckComponent(2 * 1000, LoggingUtilities.monitoringTimeout * 1000);
 }
 
 monitoring();

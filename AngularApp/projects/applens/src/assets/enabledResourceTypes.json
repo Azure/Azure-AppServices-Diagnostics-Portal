@@ -476,7 +476,8 @@
              "azureCommImpactedServicesList": "staticSites",
             "pesId": "17265",
             "searchSuffix": "AZURE STATIC WEB APPS",
-            "displayName": "Static Web Apps"
+            "displayName": "Static Web Apps",
+            "workflowsEnabled": true
          },
         {
              "service": "ResourceService",

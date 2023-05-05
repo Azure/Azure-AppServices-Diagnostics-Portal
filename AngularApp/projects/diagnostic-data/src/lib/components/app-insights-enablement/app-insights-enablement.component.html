@@ -81,7 +81,8 @@
                           <i class="fa fa-exclamation-triangle warning-icon-color mr-2"></i>
                         </td>
                         <td colspan="3">We failed to validate the saved AppInsights configuration. This might be a
-                          temporary error. Please retry after some time. Additional Details: {{ appInsightsValiationError }}</td>
+                          temporary error. Please retry after some time. Additional Details: {{
+                          appInsightsValiationError }}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -127,6 +128,48 @@
           <div *ngIf="error">
             <i class="fa fa-exclamation-triangle warning-icon-color mr-2"></i>
             Failed while connecting App Insights with App Service Diagnostics. {{ error }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="isEnabledInProd && !loadingSettings && appInsightsValiationError.length == 0" class="animated fadeIn panel panel-info width-90">
+  <div class="banner">
+    <div class="banner-child">
+      <div class="ml-3">
+        <div *ngIf="loadingSettings">
+          <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+          Verifying Optimization Insights...
+        </div>
+        <div *ngIf="!loadingSettings">
+          <div *ngIf="!connecting && !error">
+            <div *ngIf="isAppInsightsEnabled">
+              <table *ngIf="hasWriteAccess && !isAppInsightsConnected && canCreateApiKeys">
+                <tbody>
+                  <tr>
+                    <td><i class="fa fa-exclamation-triangle warning-icon-color mr-2"></i>
+                    </td>
+                    <td>Connect Application Insights with App Service Diagnostics to allow App Service Diagnostics
+                      to
+                      access Code Optimizations insights.
+                    </td>
+                    <td>
+                      <div class="ml-2">
+                        <a href="https://aka.ms/serviceprofiler"
+                          aria-label="Click to know more about Code Optimizations insights" target="_blank">Learn
+                          more</a>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <ng-container *ngIf="appInsightsValidated">
+                <div><opt-insights-enablement
+                    [optInsightResourceInfo]="optInsightResourceInfoSubject"></opt-insights-enablement></div>
+              </ng-container>
+            </div>
           </div>
         </div>
       </div>

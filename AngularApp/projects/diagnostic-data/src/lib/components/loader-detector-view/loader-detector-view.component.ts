@@ -3,6 +3,7 @@ import { DiagnosticDataConfig, DIAGNOSTIC_DATA_CONFIG } from '../../config/diagn
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { Guid } from '../../utilities/guid';
+import { ISpinnerProps } from 'office-ui-fabric-react';
 
 
 @Component({
@@ -15,14 +16,22 @@ import { Guid } from '../../utilities/guid';
 
 export class LoaderDetectorViewComponent implements OnInit {
 
-    @Input() LoadingMessage1: string;
-    @Input() LoadingMessage2: string;
-    @Input() LoadingMessage3: string;
-    @Input() LoadingMessage4: string;
+    @Input() set LoadingMessage1(message: string) {
+        this.setLoadingString(message, 0);
+    }
+    @Input() set LoadingMessage2(message: string) {
+        this.setLoadingString(message, 1);
+    };
+    @Input() set LoadingMessage3(message: string) {
+        this.setLoadingString(message, 2);
+    };
+    @Input() set LoadingMessage4(message: string) {
+        this.setLoadingString(message, 3)
+    };
     @Input() Source: string;
     message: string = "loading detector view";
     imgSrc: string = "assets/img/loading-detector-view/fetching_logs.svg";
-    loadingString: string = "Fetching properties and logs ...";
+    
     delay: number = 2000;
     timer: any = 0;
     i: number = 0;
@@ -59,6 +68,12 @@ export class LoaderDetectorViewComponent implements OnInit {
         }
     ];
 
+    loadingString: string = this.loadingStages[0].loadingString;
+
+    spinnerStyles: ISpinnerProps['styles'] = {
+        label: { fontSize: "16px" }
+    }
+
     constructor(private telemetryService: TelemetryService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
         this.isPublic = config?.isPublic;
     }
@@ -66,9 +81,6 @@ export class LoaderDetectorViewComponent implements OnInit {
 
     ngOnInit() {
         this.trackingEventId = Guid.newGuid();
-        if (this.LoadingMessage1 || this.LoadingMessage2 || this.LoadingMessage3 || this.LoadingMessage4) {
-            this.customLoadingMessages();
-        }
         this.loading();
         this.checkLoadingTimeout();
     }
@@ -108,12 +120,10 @@ export class LoaderDetectorViewComponent implements OnInit {
         this.startLoadingTimeInMilliSeconds = Date.now();
     }
 
-    // Assigning custom messages
-    customLoadingMessages() {
-        this.loadingStages[0].loadingString = this.LoadingMessage1 != undefined ? this.LoadingMessage1 : this.loadingStages[0].loadingString;
-        this.loadingStages[1].loadingString = this.LoadingMessage2 != undefined ? this.LoadingMessage2 : this.loadingStages[1].loadingString;
-        this.loadingStages[2].loadingString = this.LoadingMessage3 != undefined ? this.LoadingMessage3 : this.loadingStages[2].loadingString;
-        this.loadingStages[3].loadingString = this.LoadingMessage4 != undefined ? this.LoadingMessage4 : this.loadingStages[3].loadingString;
+    setLoadingString(loadingString: string, loadingStageIndex: number) {
+        if (!loadingString) return;
+        this.loadingString = loadingString;
+        this.loadingStages[loadingStageIndex].loadingString = loadingString;
     }
 
     checkLoadingTimeout() {

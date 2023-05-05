@@ -407,5 +407,4 @@ MigrationBackup/
 .ionide/
 
 .vscode/launch.json
-
-ev2out*
+/package-lock.json

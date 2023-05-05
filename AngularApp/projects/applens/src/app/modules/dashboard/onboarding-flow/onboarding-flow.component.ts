@@ -2,7 +2,7 @@ import { AdalService } from 'adal-angular4';
 import {
   CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, TableColumnOption, TableFilterSelectionOption, DataTableResponseObject, DataTableResponseColumn, FabDataTableComponent, QueryResponseService
 } from 'diagnostic-data';
-import * as momentNs from 'moment';
+import * as moment from 'moment';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import {
   concat,
@@ -52,7 +52,7 @@ using Kusto.Data;
 //*****END OF DO NOT MODIFY PART*****
 `;
 
-const moment = momentNs;
+
 const newDetectorId: string = "NEW_DETECTOR";
 
 // const commandbaritems: ICommandBarItemProps[] = [
@@ -117,8 +117,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   @Input() id: string = '';
   @Input() dataSource: string = '';
   @Input() timeRange: string = '';
-  @Input() startTime: momentNs.Moment = moment.utc().subtract(1, 'days');
-  @Input() endTime: momentNs.Moment = moment.utc();
+  @Input() startTime: moment.Moment = moment.utc().subtract(1, 'days');
+  @Input() endTime: moment.Moment = moment.utc();
   @Input() gistMode: boolean = false;
   @Input() branchInput: string = '';
   @Input() isWorkflowDetector: boolean = false;
@@ -227,6 +227,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   gistCommitVersion: string = "";
   charWarningMessage: string = '';
   detectorLoaded: boolean = false;
+  workflowPackage: Package;
 
   runButtonStyle: any = {
     root: { cursor: "default" }
@@ -520,7 +521,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
         this.publishButtonDisabled = true;
         this.modalPublishingButtonText = "Publishing...";
 
-        let publishBody = this.createWorkflow.getWorkflowPublishBody()
+        let publishBody = this.createWorkflow.getWorkflowPublishBody();
         if (publishBody == null) {
           return;
         }
@@ -536,9 +537,9 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
           this.showAlertBox('alert-danger', 'Publishing failed. Please try again after some time.');
         });
       } else {
-        this._workflowService.showMessageBoxWithFooter('Error', 
-        `Workflow publishing is not open to everyone yet. The user '${this.userId}' does not have access to publish workflows. Please request access to this feature by clicking below. <br/><br/>Also, <strong>download the workflow</strong> to ensure you don't loose your created workflow.`,
-        "<a target='_blank' href='mailto:applensv2team@microsoft.com?subject=Requesting Workflow Publishing Access&body=Please provide access to &lt;Enter your alias&gt;'>Request Access</a>");
+        this._workflowService.showMessageBoxWithFooter('Error',
+          `Workflow publishing is not open to everyone yet. The user '${this.userId}' does not have access to publish workflows. Please request access to this feature by clicking below. <br/><br/>Also, <strong>download the workflow</strong> to ensure you don't loose your created workflow.`,
+          "<a target='_blank' href='mailto:applensv2team@microsoft.com?subject=Requesting Workflow Publishing Access&body=Please provide access to &lt;Enter your alias&gt;'>Request Access</a>");
       }
     });
 
@@ -579,6 +580,16 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this._queryResponseService.getQueryResponse().subscribe(qr => {
       this.queryResponse = qr;
     });
+
+    //
+    // Disable Save button by default for Workflows. This should get enabled only on a
+    // successful Workflow run compilation.
+    //
+
+    if (this.isWorkflowDetector) {
+      this.disableSaveButton();
+    }
+
     this.detectorGraduation = true;
     let isSystemInvoker: boolean = this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics;
     this.branchInput = this._activatedRoute.snapshot.queryParams['branchInput'];
@@ -726,6 +737,9 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
         if (this.mode != DevelopMode.Create) {
           var branchRegEx = this.gistMode ? new RegExp(`^dev\/.*\/gist\/${this.id}$`, "i") : new RegExp(`^dev\/.*\/detector\/${this.id}$`, "i");
+          if (this.isWorkflowDetector){
+            branchRegEx = new RegExp(`^dev\/.*\/workflow\/${this.id}$`, "i")
+          }
           branches.forEach(option => {
             this.optionsForSingleChoice.push({
               key: String(option["branchName"]),
@@ -742,6 +756,10 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
         }
         else {
           var branchRegEx = this.gistMode ? new RegExp(`^dev\/.*\/gist\/.*$`, "i") : new RegExp(`^dev\/.*\/detector\/.*$`, "i");
+          if (this.isWorkflowDetector){
+            branchRegEx = new RegExp(`^dev\/.*\/workflow\/.*$`, "i")
+          }
+
           let idList = [];
           listDetectors.forEach(det => {
             idList.push(det.id.toLowerCase());
@@ -1335,9 +1353,11 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
     this.workflowPublishBody = this.createWorkflow.getWorkflowPublishBody();
     if (this.workflowPublishBody == null) {
+      this.disableSaveButton();
       return;
     }
 
+    this.enableSaveButton();
     this.workflowId = this.getDetectorId();
 
     const dialogConfig = this.getNewMatDialogConfig();
@@ -1349,8 +1369,13 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.matDialog.open(WorkflowRunDialogComponent, dialogConfig).afterClosed().subscribe(modelData => {
       if (modelData != null) {
         if (modelData.workflowSucceeded === true) {
+          this.workflowPackage = modelData.workflowPackage;
+          this.useAutoMergeText = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.code) && !this.IsDetectorMarkedPublic(this.originalCode));
+          this.modalPublishingButtonText = !this.useAutoMergeText ? "Create PR" : "Publish";
           this.enablePublishButton();
         }
+      } else {
+        this.disableSaveButton();
       }
     });
   }
@@ -1638,8 +1663,17 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
     var targetBranch = "";
 
-    if (tempId === null) targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${this.id.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`;
-    else targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${tempId.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${tempId.toLowerCase()}`;
+    if (tempId === null) {
+      targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${this.id.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${this.id.toLowerCase()}`;
+    }
+    else {
+      targetBranch = this.gistMode ? `dev/${this.userName.split("@")[0]}/gist/${tempId.toLowerCase()}` : `dev/${this.userName.split("@")[0]}/detector/${tempId.toLowerCase()}`;
+    }
+
+    if (this.isWorkflowDetector) {
+      let publishBody = this.createWorkflow.getWorkflowPublishBody();
+      targetBranch = `dev/${this.userName.split("@")[0]}/workflow/${publishBody.Id}`;
+    }
 
     if (this.Branch === this.defaultBranch && this.targetInShowBranches(targetBranch)) {
       this.Branch = targetBranch.replace(/\s/g, "");
@@ -1658,11 +1692,21 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
     this.setTargetBranch();
 
-    if (this.mode == DevelopMode.Create && !this.isSaved) {
-      this.PRTitle = `Creating ${this.id}`;
-    }
-    else {
-      this.PRTitle = `Changes to ${this.id}`;
+    if (this.isWorkflowDetector) {
+      let publishBody = this.createWorkflow.getWorkflowPublishBody();
+      if (this.mode == DevelopMode.Create && !this.isSaved) {
+        this.PRTitle = `Creating ${publishBody.Id}`;
+      }
+      else {
+        this.PRTitle = `Changes to ${publishBody.Id}`;
+      }
+    } else {
+      if (this.mode == DevelopMode.Create && !this.isSaved) {
+        this.PRTitle = `Creating ${this.id}`;
+      }
+      else {
+        this.PRTitle = `Changes to ${this.id}`;
+      }
     }
     this.publishDialogHidden = false;
   }
@@ -1703,6 +1747,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     if (this.publishButtonDisabled) {
       return;
     }
+
+    this.updatePublishingPackageIfWorkflow();
 
     if (!this.publishingPackage ||
       this.publishingPackage.codeString === '' ||
@@ -1799,6 +1845,11 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       `/${this.publishingPackage.id.toLowerCase()}/package.json`
     ];
 
+    if (this.isWorkflowDetector) {
+      gradPublishFileTitles.push(`/${this.publishingPackage.id.toLowerCase()}/workflow.json`);
+      gradPublishFiles.push(this.publishingPackage.workflowJson);
+    }
+
     let reviewers = "";
 
     if (Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0) {
@@ -1814,6 +1865,10 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     }
 
     let link = this.gistMode ? `${this.PPEHostname}/${this.resourceId}/gists/${this.publishingPackage.id}?branchInput=${this.Branch}` : `${this.PPEHostname}/${this.resourceId}/detectors/${this.publishingPackage.id}/edit?branchInput=${this.Branch}`;
+    if (this.isWorkflowDetector) {
+      link = `${this.PPEHostname}/${this.resourceId}/workflows/${this.publishingPackage.id}/edit?branchInput=${this.Branch}`;
+    }
+
     let description = `This Pull Request was created via AppLens. To make edits, go to ${link}`;
     const DetectorObservable = isSystemInvoker ? this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`, commitType, this.SYSTEM_INVOKER_RESOURCE_ID) : this.diagnosticApiService.pushDetectorChanges(requestBranch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${this.publishingPackage.id} Author : ${this.userName}`, commitType, this.resourceId);
     const makePullRequestObservable = isSystemInvoker ? this.diagnosticApiService.makePullRequest(requestBranch, this.SYSTEM_INVOKER_MAIN_BRANCH, this.PRTitle, this.SYSTEM_INVOKER_RESOURCE_ID, this.owners, description) : this.diagnosticApiService.makePullRequest(requestBranch, this.defaultBranch, this.PRTitle, this.resourceId, this.owners, description);
@@ -1916,7 +1971,19 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
   saveTempId: string = "";
 
+  updatePublishingPackageIfWorkflow() {
+    if (this.isWorkflowDetector) {
+      this.publishingPackage = this.workflowPackage;
+      if (this.publishingPackage.metadata == null) {
+        this.publishingPackage.metadata = "{}";
+      }
+      this.code = this.publishingPackage.codeString;
+    }
+  }
+
   saveDetectorCode() {
+    this.updatePublishingPackageIfWorkflow();
+
     this.saveTempId = this.getIdFromCodeString();
     this.setTargetBranch(this.saveTempId);
     this.publishDialogHidden = true;
@@ -1945,6 +2012,11 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       `/${idForSave.toLowerCase()}/package.json`
     ];
 
+    if (this.isWorkflowDetector) {
+      gradPublishFileTitles.push(`/${idForSave.toLowerCase()}/workflow.json`);
+      gradPublishFiles.push(this.publishingPackage.workflowJson);
+    }
+
     let reviewers = "";
 
     if (Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0) {
@@ -1962,7 +2034,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     // successfully ran or edit mode
     if (!!this.publishingPackage || this.mode == DevelopMode.Edit) {
       DetectorObservable.subscribe(_ => {
-        this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${idForSave}/${idForSave}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${this.Branch}`;
+        this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${this.Branch}`;
         this.saveSuccess = true;
         this.lastSavedVersion = gradPublishFiles[0]
         this.postSave();
@@ -2129,7 +2201,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
         dllBytes: this.compilationPackage.assemblyBytes,
         pdbBytes: this.compilationPackage.pdbBytes,
         packageConfig: JSON.stringify(this.configuration),
-        metadata: JSON.stringify({ "utterances": this.allUtterances })
+        metadata: JSON.stringify({ "utterances": this.allUtterances }),
+        workflowJson: ''
       };
     });
   }

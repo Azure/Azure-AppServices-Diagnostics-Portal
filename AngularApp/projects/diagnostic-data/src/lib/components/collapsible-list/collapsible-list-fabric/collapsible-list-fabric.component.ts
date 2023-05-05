@@ -17,10 +17,14 @@ export class CollapsibleListFabricComponent {
   @Output() collapsedChange = new EventEmitter<any>();
 
   @ContentChildren(CollapsibleListItemComponent) listItemComponents: QueryList<CollapsibleListItemComponent>;
+  ariaLabelChevronUp: string;
 
   constructor(private telemetryService:TelemetryService) {
   }
 
+  ngOnInit(): void {
+    this.ariaLabelChevronUp = `${this.title} chevron up ${this.collapsed ? 'collapsed' : 'expanded'}`;
+  }
   clickHandler() {
     this.telemetryService.logEvent("ClickCollapsibleList",{
       "CurrentState" : this.collapsed ? "Collapse" : "Expand",

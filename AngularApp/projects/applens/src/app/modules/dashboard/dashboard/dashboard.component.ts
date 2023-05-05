@@ -112,6 +112,7 @@ export class DashboardComponent implements OnDestroy {
   dialogType: DialogType = DialogType.normal;
   crossSubJustification: string = '';
   defaultResourceTypes = defaultResourceTypes;
+  isPPE:boolean = false;
 
   constructor(public resourceService: ResourceService, private startupService: StartupService,  private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
@@ -185,6 +186,11 @@ export class DashboardComponent implements OnDestroy {
         this.navigateBackToHomePage();
       }
     });
+
+    this._diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
+      this.isPPE = env === "PPE";
+    });
+
   }
 
   resetDialogSuccessStatus(){
@@ -206,7 +212,8 @@ export class DashboardComponent implements OnDestroy {
       errorMessage: this.accessError,
       resourceType: mainPageResourceType? mainPageResourceType.resourceType: "armresourceid",
       resourceName: resourceInfo.resourceName,
-      resourceId: this._resourceService.getCurrentResourceId()
+      resourceId: this._resourceService.getCurrentResourceId(),
+      targetPathBeforeError: this._router.url.toString()
     };
     const queryString = new URLSearchParams(queryParams).toString();
     window.location.href = "/?" + queryString;
