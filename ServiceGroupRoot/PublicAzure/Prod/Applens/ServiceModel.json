@@ -121,6 +121,33 @@
       ]
     },
     {
+      "azureResourceGroupName": "applens-db3",
+      "location": "North Europe",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "PublicAzure"
+        },
+        {
+          "name": "DB3"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "ApplensZipDeployDB3",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "DB3SWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
       "azureResourceGroupName": "DiagnosticBackendUsSecWest",
       "location": "USSec West",
       "instanceOf": "WebAppResourceGroupDefinitions",

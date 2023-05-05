@@ -197,6 +197,23 @@
       ]
     },
     {
+      "scopeTagName": "DB3",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-db3"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "North Europe"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "Applens.zip"
+        }
+      ]
+    },
+    {
       "scopeTagName": "PublicAzure",
       "bindings": [
         {
