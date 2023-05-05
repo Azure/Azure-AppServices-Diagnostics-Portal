@@ -155,6 +155,10 @@
         {
           "find": "__LOCATION__",
           "replaceWith": "West US 2"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "Applens.zip"
         }
       ]
     },
@@ -168,6 +172,10 @@
         {
           "find": "__LOCATION__",
           "replaceWith": "West Europe"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "Applens.zip"
         }
       ]
     },
@@ -181,6 +189,10 @@
         {
           "find": "__LOCATION__",
           "replaceWith": "East US"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "Applens.zip"
         }
       ]
     },
