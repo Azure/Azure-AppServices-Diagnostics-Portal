@@ -214,6 +214,23 @@
       ]
     },
     {
+      "scopeTagName": "BAY",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-bay"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "West US"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "Applens.zip"
+        }
+      ]
+    },
+    {
       "scopeTagName": "PublicAzure",
       "bindings": [
         {

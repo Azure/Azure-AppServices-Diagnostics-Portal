@@ -3,7 +3,7 @@
     "rolloutMetadata": {
         "serviceModelPath": "PublicAzure\\Prod\\Applens\\ServiceModel.json",
         "scopeBindingsPath": "PublicAzure\\ScopeBindings.json",
-        "name": "DB3 SWAP",
+        "name": "BAY SWAP",
         "rolloutType": "Major",
         "buildSource": {
             "parameters": {
@@ -25,9 +25,9 @@
     },
     "orchestratedsteps": [
         {
-            "name": "SWAP DB3",
+            "name": "SWAP BAY",
             "targetType": "ServiceResource",
-            "targetName": "DB3SWAP",
+            "targetName": "BAYSWAP",
             "actions": [
                 "Deploy"
             ]
