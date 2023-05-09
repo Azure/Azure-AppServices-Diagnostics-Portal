@@ -154,7 +154,6 @@ import { WorkflowNodeComponent } from './components/workflow-node/workflow-node.
 import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
 import { ArchitectureDiagramComponent } from './components/architecture-diagram/architecture-diagram.component';
 import { ArchitectureDiagramNodeComponent } from './components/architecture-diagram-node/architecture-diagram-node.component';
-import { ChatGPTContextService } from './services/chat-gpt-context-service';
 import { GenericOpenAIChatService, OpenAIArmService } from '../public_api';
 import { OpenaiComponent } from './components/openai/openai.component';
 import { QueryResponseService } from './services/query-response.service';
@@ -167,6 +166,9 @@ import { WorkflowAcceptUserinputComponent } from './components/workflow-accept-u
 import { VideoComponent } from './components/video/video.component';
 import { SafePipe } from './pipe/safe.pipe';
 import { DateTimePickerComponent } from './components/date-time-picker/date-time-picker.component';
+import { ChatUIComponent } from './components/chat-ui/chat-ui.component';
+import { ChatUIContextService } from './services/chatui-context.service';
+import {OpenAIChatComponent} from './components/openai-chat/openai-chat.component';
 
 
 @NgModule({
@@ -280,7 +282,9 @@ import { DateTimePickerComponent } from './components/date-time-picker/date-time
         VideoComponent,
         SafePipe,
         OpenaiComponent,
-        DateTimePickerComponent
+        DateTimePickerComponent,
+        ChatUIComponent,
+        OpenAIChatComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -324,7 +328,9 @@ import { DateTimePickerComponent } from './components/date-time-picker/date-time
         GanttChartTaskbarColorsComponent,
         WorkflowViewComponent,
         SafePipe,
-        OpenaiComponent
+        OpenaiComponent,
+        ChatUIComponent,
+        OpenAIChatComponent
     ]
 })
 export class DiagnosticDataModule {
@@ -355,10 +361,10 @@ export class DiagnosticDataModule {
                 GenericFeatureService,
                 GenericOpenAIChatService,
                 OpenAIArmService,
-                ChatGPTContextService,
                 QueryResponseService,
                 OptInsightsGenericService,
-                DemoSubscriptions
+                DemoSubscriptions,
+                ChatUIContextService
             ]
         };
     }

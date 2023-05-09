@@ -138,7 +138,7 @@ export class OptInsightsService {
     }
     else {
       return result
-        .sort((a, b) => (Number(b.count) * Number(b.impact.replace("%", ""))) - (Number(a.count) * Number(a.impact.replace("%", ""))))
+        .sort((a, b) => (Number(b.impact.replace("%", ""))) - (Number(a.impact.replace("%", ""))))
         .slice(0, top);
       //.map(insight => insight);
     }

@@ -51,7 +51,7 @@ export class AadAuthGuard implements CanActivate {
                         this._router.navigate(['tokeninvalid']);
                     }
                     else {
-                        this._router.navigate(['authRequestFailed']);
+                        this._router.navigate(['downpage']);
                     }
                     return observableThrowError(false);
                 }));

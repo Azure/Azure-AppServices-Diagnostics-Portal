@@ -4,6 +4,7 @@
     color: var(--bodyText);
     display: table;
     border-color: none;
+    padding-right: 30px;
   }
   
   .banner-child {
@@ -23,8 +24,8 @@
     /* Remove or override the CSS properties associated with hover */
     background-color: inherit; /* var(--homeBannerProd);*/
     color: var(--bodyText);
-    padding: auto;
-    margin-top: 20px;
+    padding-right: 30px;
+    margin-top: 10px;
 }
 
 table th {
@@ -34,11 +35,29 @@ table th {
 .header {
     background-color: inherit; /*var(--homeBannerProd);*/
     color: var(--bodyText);
-    margin-top: 10px;
+    margin: 4px 0px;   
+    padding: 1px;     
+}
+
+.h2CodeOptimizations {
+  color: var(--bodyText);
+  font-size: 13px;  
+  font-weight: inherit;
 }
 
 .error {
   background-color: inherit; /*var(--homeBannerProd);*/
   color: var(--bodyText);
-  margin: 10px;
+}
+
+#app-root[theme=dark] a{ 
+  color: var(--linkCodeOptimizations) !important 
+}
+
+.linkCodeOptimizations { 
+  color: var(--linkCodeOptimizations) !important 
+}
+
+#_link_CodeOptimizations { 
+  color: var(--linkCodeOptimizations) !important 
 }

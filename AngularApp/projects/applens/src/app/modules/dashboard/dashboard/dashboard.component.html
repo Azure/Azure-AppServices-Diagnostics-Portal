@@ -33,7 +33,7 @@
 <side-nav *ngIf="!stillLoading && showDashboardContent"></side-nav>
 <div *ngIf="!stillLoading && showGPTComponent" class="dashboard-container content-under-header" [ngStyle]="getContainerStyle()">
   <div class="dashboard-content">
-    <openai-chat></openai-chat>
+    <applens-openai-chat></applens-openai-chat>
     <div [class.content-with-side-nav]="showL2SideNav" style="padding: 0px 20px;">
       <router-outlet></router-outlet>
     </div>

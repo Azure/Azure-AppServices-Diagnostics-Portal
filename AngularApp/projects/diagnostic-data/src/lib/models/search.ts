@@ -2,7 +2,7 @@ interface PreferredSitesConfig {
     [index: string]: string[];
 }
 
-export var detectorSearchEnabledPesIds: string[] = ["14748", "16072", "16170", "15791", "15551", "16450"];
+export var detectorSearchEnabledPesIds: string[] = ["14748", "16072", "16170", "15791", "15551", "16450", "17378"];
 export var detectorSearchEnabledSapProductIds: string[] = [
     'b4d0e877-0166-0474-9a76-b5be30ba40e4',
     'b452a42b-3779-64de-532c-8a32738357a6',
@@ -11,7 +11,7 @@ export var detectorSearchEnabledSapProductIds: string[] = [
     '1890289e-747c-7ef6-b4f5-b1dbb0bead28'
     ];
 
-export var detectorSearchEnabledPesIdsInternal: string[] = ["14748", "16072", "16170", "16450", "15791", "15551"];
+export var detectorSearchEnabledPesIdsInternal: string[] = ["14748", "16072", "16170", "16450", "15791", "15551", "17378"];
 export var detectorSearchEnabledSapProductIdsInternal: string[] = [
     'b4d0e877-0166-0474-9a76-b5be30ba40e4',
     'b452a42b-3779-64de-532c-8a32738357a6',
@@ -34,6 +34,8 @@ var productPreferredSitesConfig: PreferredSitesConfig = {
     "16450": ["github.com/Azure/AKS", "kubernetes.io/docs", "kubernetes.io/blog", "stackoverflow.com"],
     //LOGIC APPS
     "15791": ["docs.microsoft.com/azure/logic-apps", "github.com/logicappsio", "github.com/Azure/logicapps", "techcommunity.microsoft.com/t5/integrations-on-azure", "stackoverflow.com"],
+    //LOGIC APPS Standard
+    "17378": ["docs.microsoft.com/azure/logic-apps", "github.com/logicappsio", "github.com/Azure/logicapps", "stackoverflow.com"],
     //API Management
     "15551": ["github.com/Azure/api-management-samples", "github.com/Azure/azure-api-management-devops-resource-kit", "github.com/Azure/api-management-developer-portal", "stackoverflow.com"]
 };
@@ -64,6 +66,8 @@ var productExcludedSitesConfig: PreferredSitesConfig = {
     "16450": [],
     //LOGIC APPS
     "15791": [],
+    //Logic Apps Standard
+    "17378": [],
     //API Management
     "15551": []
 };

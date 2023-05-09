@@ -35,7 +35,7 @@
             [required]="true" [label]="'Service type'">
           </fab-dropdown>
         </div>
-        <div class="view-resource-link"><a tabindex="0" (click)="openResourcePanel()">View all supported resource
+        <div class="view-resource-link"><a tabindex="0" (click)="openResourcePanel()" (keyup.enter)="openResourcePanel()">View all supported resource
             types</a></div>
         <div class="section" style="margin-top: 15px;">
           <fab-text-field [ariaLabel]="selectedResourceType.resourceTypeLabel" [defaultValue]="resourceName" (onChange)="updateResourceName($event)"

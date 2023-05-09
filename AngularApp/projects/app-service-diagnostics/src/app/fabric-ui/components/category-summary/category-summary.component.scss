@@ -92,6 +92,10 @@
     background-color: #f3f2f1;
   }
 
+  .collapsible-button:focus {
+    outline: 2px dashed #0065B3;
+  }
+
   .collapsible-button {
     outline-style: dashed;
     outline-width: 1px;

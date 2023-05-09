@@ -14,3 +14,8 @@
     margin-left: 5px;
 }
 
+.required::after {
+    content: "*";
+    color: red; /* optional: customize the style of the asterisk */
+    margin-left: 5px; /* optional: add some spacing between the label and the asterisk */
+}

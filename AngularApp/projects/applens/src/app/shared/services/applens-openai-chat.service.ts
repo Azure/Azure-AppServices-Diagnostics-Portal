@@ -25,8 +25,13 @@ export class ApplensOpenAIChatService {
     this.productName = this._resourceService.searchSuffix + ((this.resourceProvider === 'microsoft.web/sites')? ` ${this._resourceService.displayName}`: '');
   }
 
-  public generateTextCompletion(queryModel: TextCompletionModel, caching: boolean = true): Observable<OpenAIAPIResponse> {
-    queryModel.prompt = `You are helping support eningeers to debug issues related to ${this.productName}. Do not be repetitive when providing steps in your answer. Please answer the below question\n${queryModel.prompt}:`;
+  public generateTextCompletion(queryModel: TextCompletionModel, customPrompt: string = '', caching: boolean = true): Observable<OpenAIAPIResponse> {
+    if (customPrompt && customPrompt.length > 0) {
+      queryModel.prompt = `${customPrompt}\n${queryModel.prompt}`;
+    }
+    else {
+      queryModel.prompt = `You are helping eningeers to debug issues related to ${this.productName}. Do not be repetitive when providing steps in your answer. Please answer the below question\n${queryModel.prompt}`;
+    }
     return this._backendApi.post(this.completionApiPath, {payload: queryModel}, new HttpHeaders({"x-ms-openai-cache": caching.toString()})).pipe(map((response: OpenAIAPIResponse) => {
       return response;
     }));

@@ -6,6 +6,8 @@ import { BackendCtrlQueryService } from '../../services/backend-ctrl-query.servi
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { MessageBarType } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { DemoSubscriptions } from '../../../lib/models/betaSubscriptions';
 
 const maxApiKeysPerAiResource: number = 10;
 
@@ -19,10 +21,12 @@ export class AppInsightsEnablementComponent implements OnInit {
 
   constructor(private _appInsightsService: AppInsightsQueryService,
     private _backendCtrlService: BackendCtrlQueryService,
-    private _settingsService: SettingsService) {
+    private _settingsService: SettingsService,
+    private _route: ActivatedRoute) {
   }
 
   loadingSettings: boolean = true;
+  loadingCodeOptimizationSettings: boolean = true;
   isAppInsightsEnabled: boolean = false;
   isAppInsightsConnected: boolean = false;
   appInsightsValidated: boolean = false;
@@ -33,6 +37,7 @@ export class AppInsightsEnablementComponent implements OnInit {
   appSettingsHaveInstrumentationKey: boolean = false;
   hasWriteAccess: boolean = false;
   isEnabledInProd: boolean = true;
+  isCodeInsightsEnabledInProd: boolean = true;
   messageBarType = MessageBarType.info;
   canCreateApiKeys: boolean = false;
   appInsightsValiationError: string = "";

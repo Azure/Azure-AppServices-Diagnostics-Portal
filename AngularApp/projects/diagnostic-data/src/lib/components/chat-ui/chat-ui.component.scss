@@ -1,4 +1,4 @@
-.chatgpt-bot-container{
+.chatui-bot-container{
     height: 100%;
     display: flex;
     align-items: center;
@@ -6,12 +6,7 @@
     z-index: 9999;
   }
 
-  .chatgpt-handshake-logo{
-    width: 50px;
-    height: 50px;
-  }
-
-  .chatgpt-request-error-container {
+  .chatui-top-error-container {
     text-align: center;
     color: red;
     margin: auto;
@@ -46,7 +41,7 @@
     to { opacity: 0; } /* end with opacity 0 */
   }
 
-  .chatgpt-header-container{
+  .chatui-header-container{
     position: absolute;
     top: 0;
     left: 0;
@@ -55,29 +50,17 @@
     margin: 20vh auto!important;
   }
 
-  .chatgpt-header-text{
-    font-weight: 600;
-    font-size: 2.75rem;
-    line-height: 2.75rem;
-    text-align: center;
-    gap: 0.5rem;
-    margin-bottom: 4rem;
-    margin-left: auto;
-    margin-right: auto;
-    font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
-  }
-
-  .chatgpt-box-row-container{
+  .chatui-box-row-container{
     width: 55%;
     margin: auto;
   }
 
-  .chatgpt-samples-container{
+  .chatui-samples-container{
     position: absolute;
     top: 28vh;
   }
 
-  .chatgpt-box-row{
+  .chatui-box-row{
     display: flex;
     width: 100%;
     margin: auto;
@@ -85,7 +68,7 @@
     padding: 10px 10px;
   }
 
-  .chatgpt-box{
+  .chatui-box{
     border: 0px solid black;
     height: 86px;
     margin: 5px 5px;
@@ -101,17 +84,17 @@
     font-size: 11px;
   }
 
-  .chatgpt-box:hover{
+  .chatui-box:hover{
     background-color: rgba(247,247,248,0.5);
     cursor: pointer;
   }
 
-  .chatgpt-textarea-container{
+  .chatui-textarea-container{
     position: absolute;
     bottom: 5px;
   }
 
-  .chatgpt-textarea-wrapper{
+  .chatui-textarea-wrapper{
     display: flex;
     position: absolute;
     bottom: 37px;
@@ -119,26 +102,26 @@
     height: 40px;
   }
 
-  .chatgpt-message-quota-warning{
+  .chatui-message-validation-warning{
     color: orange;
     position:absolute;
     bottom:85px;
   }
 
-  .chatgpt-message-quota-error{
+  .chatui-message-validation-error{
     color: red;
     position:absolute;
     bottom:85px;
   }
 
-  .chatgpt-data-disclaimer{
+  .chatui-content-disclaimer{
     font-weight: 400;
     color: #740505;
     position: absolute;
     bottom: 0px;
   }
 
-  .chatgpt-textarea{
+  .chatui-textarea{
     max-height: 200px;
     height: 100%;
     overflow-y: hidden;
@@ -150,7 +133,7 @@
     padding-right: 1.75rem;
   }
 
-  .chatgpt-textarea-button{
+  .chatui-textarea-button{
     position: relative;
     padding: 0.25rem;
     border-radius: 0.375rem;
@@ -159,7 +142,7 @@
     width: 30px;
   }
 
-  .chatgpt-chat-messages-container{
+  .chatui-chat-messages-container{
     position: absolute;
     top: 3vh;
     width: 100%;
@@ -170,18 +153,18 @@
     padding: 7px;
   }
 
-  .chatgpt-message-icon {
+  .chatui-message-icon {
     width: 40px;
     margin-right: 10px;
     display: flex;
     align-items: top;
   }
 
-  .chatgpt-feedback-icons {
+  .chatui-feedback-icons {
     float: right;
   }
 
-  .chatgpt-feedback-icon {
+  .chatui-feedback-icon {
     font-size: 16px;
     margin: 2px 5px;
     color: transparent;
@@ -190,7 +173,7 @@
     -webkit-text-stroke-color: gray;
   }
 
-  .chatgpt-feedback-icon-selected {
+  .chatui-feedback-icon-selected {
     font-size: 16px;
     margin: 2px 5px;
     color: gray!important;
@@ -199,7 +182,7 @@
     -webkit-text-stroke-color: gray!important;
   }
   
-  .chatgpt-message-icon :hover {
+  .chatui-message-icon :hover {
     cursor: pointer;
   }
 
@@ -222,7 +205,16 @@
     align-items: center;
   }
 
-  .chatgpt-message-box {
+  .system-initial {
+    background-color: #CDDAEA;
+    color: #0F3057;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .chatui-message-box {
     padding: 8px;
     position: relative;
     margin: auto;
@@ -232,23 +224,44 @@
     padding-left: 15%;
   }
 
-  .chatgpt-message-content{
+  .chatui-message-box-left-aligned {
+    padding: 8px;
+    position: relative;
+    margin: auto;
+    margin-top: 10px;
+    min-height: 30px;
+    display: flex;
+  }
+
+  .chatui-message-content{
     width: 80%;
     margin: auto;
     display: flex;
   }
+
+  .chatui-message-content-left-aligned{
+    width: 100%;
+    margin: auto;
+    display: flex;
+  }
   
-  .chatgpt-message-box-user {
+  .chatui-message-box-user {
     border: 1px solid rgba(247,247,248);
   }
 
-  .chatgpt-message-box-system {
+  .chatui-message-box-system {
     background-color: rgba(247,247,248);
   }
 
 
-  .chatgpt-message {
+  .chatui-message {
     width: 73%;
+    margin: auto;
+    margin-left: 10px;
+  }
+
+  .chatui-message-left-aligned {
+    width: 100%;
     margin: auto;
     margin-left: 10px;
   }
@@ -279,20 +292,4 @@
     100% {
       opacity: 0;
     }
-  }
-
-  .typewriter {
-    
-  }
-  
-  .chatgpt-message-text{
-
-  }
-
-  .chatgpt-message-markdown{
-    
-  }
-
-  .chatgpt-message-code{
-    
   }

@@ -1,5 +1,6 @@
 import { DetectorResponse } from '../models/detector';
 import { IDropdownOption } from 'office-ui-fabric-react/lib/components/Dropdown';
+import { TimeUtilities } from '../utilities/time-utilities';
 
 export class Form {
     formId: number;
@@ -83,13 +84,13 @@ export class Dropdown extends FormInput {
     }
 }
 
-
 export enum InputType {
     TextBox,
     Checkbox,
     RadioButton,
     DropDown,
-    Button
+    Button,
+    DateTimePicker
 }
 
 export enum ButtonStyles {
@@ -109,4 +110,19 @@ export interface ListItem {
     value: string;
     isSelected: boolean;
     tooltipIcon: string;
+}
+
+export class DateTimePicker extends FormInput {
+    restrictToDate : moment.Moment;
+    showDatePickerOnly : boolean;
+    selectedMoment: moment.Moment;
+
+    constructor(internalId: string, id: number, inputType: InputType, label: string,
+        defaultSelectedDateTime: moment.Moment, restrictToDate: moment.Moment, showDatePickerOnly: boolean, isVisible: boolean = true, isRequired: boolean = false, tooltip: string = "", tooltipIcon: string = "") {
+        super(internalId, id, inputType, label, isRequired, tooltip, tooltipIcon, isVisible);
+        this.selectedMoment = defaultSelectedDateTime.clone();
+        this.inputValue = this.selectedMoment.clone().format(TimeUtilities.fullStringFormat);
+        this.restrictToDate = restrictToDate;
+        this.showDatePickerOnly = showDatePickerOnly;
+    }
 }

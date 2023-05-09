@@ -29,12 +29,12 @@ export * from './lib/services/generic-user-setting.service';
 export * from './lib/services/generic-portal.service';
 export * from './lib/services/generic-feature-service';
 export * from './lib/services/generic-openai-chat.service';
-export * from './lib/services/chat-gpt-context-service';
 export * from './lib/services/query-response.service';
 export * from './lib/services/openai-arm.service';
 export * from './lib/config/diagnostic-data-config';
 export * from './lib/diagnostic-data.module';
 export * from './lib/services/optinsights.service';
+export * from './lib/services/chatui-context.service';
 
 
 export * from './lib/models/detector';
@@ -66,6 +66,7 @@ export * from './lib/utilities/pii-utilities';
 export * from './lib/utilities/icons-constants';
 export * from './lib/utilities/uri-utilities';
 export * from './lib/utilities/string-utilities';
+export * from './lib/utilities/time-utilities';
 export * from './lib/components/step-views/step-view-lib';
 export * from "./lib/components/solution-orchestrator/solution-orchestrator.component";
 export * from './lib/utilities/resiliencyScoreReportHelper';
@@ -152,6 +153,8 @@ export * from './lib/components/workflow-view/workflow-view.component'
 export * from './lib/modules/fab-coachmark/coachmark.component'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.component'
 export * from './lib/components/gantt-chart-taskbar-colors/gantt-chart-taskbar-colors.component'
+export * from './lib/components/chat-ui/chat-ui.component';
+export * from './lib/components/openai-chat/openai-chat.component';
 
 export * from './lib/modules/fab-coachmark/coachmark.module'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.module'

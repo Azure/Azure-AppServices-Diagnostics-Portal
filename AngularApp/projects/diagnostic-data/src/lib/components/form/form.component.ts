@@ -1,7 +1,7 @@
 import { Component, Inject, ViewChild, ElementRef } from '@angular/core';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { DiagnosticData, Rendering, DataTableResponseObject, DetectorResponse } from '../../models/detector';
-import { Form, FormInput, InputType, FormButton, ButtonStyles, RadioButtonList, Dropdown } from '../../models/form';
+import { Form, FormInput, InputType, FormButton, ButtonStyles, RadioButtonList, Dropdown, DateTimePicker } from '../../models/form';
 import { DiagnosticService } from '../../services/diagnostic.service';
 import { DetectorControlService } from '../../services/detector-control.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -13,6 +13,8 @@ import { DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
 import { IDropdownOption, IDropdown } from 'office-ui-fabric-react';
 import { UriUtilities } from '../../utilities/uri-utilities';
 import { QueryResponseService } from '../../services/query-response.service';
+import * as moment from 'moment';
+import { TimeUtilities } from '../../utilities/time-utilities';
 
 @Component({
   selector: 'custom-form',
@@ -20,7 +22,6 @@ import { QueryResponseService } from '../../services/query-response.service';
   styleUrls: ['./form.component.scss']
 })
 export class FormComponent extends DataRenderBaseComponent {
-
   renderingProperties: Rendering;
   detectorForms: Form[] = [];
   isPublic: boolean;
@@ -28,6 +29,7 @@ export class FormComponent extends DataRenderBaseComponent {
   datasourcesKey: string = '';
   readonly maxInputLength = 150;
 
+  startMoment: moment.Moment;
 
   @ViewChild('formDropdown') formdropDownRef: ElementRef<IDropdown>;
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _diagnosticService: DiagnosticService, private _router: Router, protected telemetryService: TelemetryService,
@@ -63,6 +65,10 @@ export class FormComponent extends DataRenderBaseComponent {
 
   public isDropdown(inputType: InputType) {
     return inputType === InputType.DropDown;
+  }
+
+  public isDateTimePicker(inputType: InputType) {
+    return inputType === InputType.DateTimePicker;
   }
 
   // parses the incoming data to render a form
@@ -112,6 +118,21 @@ export class FormComponent extends DataRenderBaseComponent {
               formInputs[ip]["children"] != undefined ? formInputs[ip]["children"] : [],
               formInputs[ip]["isVisible"] != undefined ? formInputs[ip]["isVisible"] : true
             ));
+          }
+          else if(this.isDateTimePicker(formInputs[ip]["inputType"])) {
+            this.detectorForms[i].formInputs.push(new DateTimePicker(
+              `${this.detectorForms[i].formId}.${formInputs[ip]["inputId"]}`,
+              formInputs[ip]["inputId"],
+              formInputs[ip]["inputType"],
+              formInputs[ip]["label"],
+              moment.utc(formInputs[ip]["defaultSelectedDateTime"]),
+              moment.utc(formInputs[ip]["restrictToDate"]),
+              formInputs[ip]["showDatePickerOnly"],
+              formInputs[ip]["isVisible"] != undefined ?  formInputs[ip]["isVisible"] : true,
+              formInputs[ip]["isRequired"] != undefined ?  formInputs[ip]["isRequired"] : false,
+              formInputs[ip]["toolTip"] != undefined ? formInputs[ip]["toolTip"] : "",
+              formInputs[ip]["tooltipIcon"] != "" ? formInputs[ip]["tooltipIcon"] : "fa-info-circle"
+              ));
           }
           else {
             this.detectorForms[i].formInputs.push(new FormInput(
@@ -249,6 +270,9 @@ export class FormComponent extends DataRenderBaseComponent {
           }
           // Set visibility in case detector refreshed or opened with deep link
           inputElement.isVisible = true;
+        } else if (this.isDateTimePicker(ip.inpType)) {
+          (inputElement as DateTimePicker).selectedMoment = moment.utc(ip.val);
+          inputElement.inputValue = ip.val;
         } else {
           inputElement.inputValue = ip.val;
         }
@@ -287,7 +311,7 @@ export class FormComponent extends DataRenderBaseComponent {
       if ((input.isRequired && !hasInputValue) || (hasInputValue && input.inputValue.length > this.maxInputLength)) {
         input.displayValidation = true;
         return false;
-      }
+      } 
     }
     return true;
   }
@@ -385,4 +409,10 @@ export class FormComponent extends DataRenderBaseComponent {
       if (formInput) formInput.isVisible = false;
     });
   }
+
+  onChangeSelectedMoment(selectedMoment: moment.Moment, formInput: DateTimePicker) {
+    formInput.selectedMoment = selectedMoment.clone();
+    formInput.inputValue = selectedMoment.clone().format(TimeUtilities.fullStringFormat);
+  }
+
 }

@@ -55,4 +55,16 @@ export class TimeUtilities {
     static formatDate(date: Date): string {
         return moment(date).format(TimeUtilities.yearAndDateFormat);
     }
+
+    static checkSameDay(daytimestamp: number){
+        var today = new Date().setHours(0, 0, 0, 0);
+        var thatDay = new Date(daytimestamp).setHours(0, 0, 0, 0);
+        return today === thatDay;
+    }
+    
+    static displayMessageDate(timestamp){
+        return timestamp.getHours() + ":" + timestamp.getMinutes() + "   " + (timestamp.getMonth()+1) + "/" + timestamp.getDate() + "/" + timestamp.getFullYear();
+    }
+
+
 }
