@@ -40,6 +40,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
   allSessions: string = '../../diagnosticTools';
   subscription: Subscription;
   initializedOnce: boolean = false;
+  scmHostName: string = '';
 
   // For tooltip display
   directionalHint = DirectionalHint.rightTopEdge;
@@ -76,6 +77,7 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
     });
     this.enableSessionsPanel = this._route.snapshot.params['category'] != null || this._route.parent.snapshot.params['category'] != null;
     this.isWindowsApp = this._webSiteService.platform === OperatingSystem.windows;
+    this.scmHostName = this._webSiteService.resource.properties.enabledHostNames.find((hostname: string) => hostname.indexOf('.scm.') > 0);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -415,6 +417,10 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
   }
 
   openUrl(url: string) {
+    if (url.toLowerCase().startsWith('/api/')) {
+      url = "https://" + this.scmHostName + url;
+    }
+
     this._windowService.open(url);
   }
 
