@@ -5,6 +5,9 @@
         "siteName1": {
             "value": "__SITENAME__"
         },
+        "siteName2": {
+            "value": "__SITENAME__-__LOCATION_ABBR__"
+        },
         "location": {
           "value": "__LOCATION__"
         }
