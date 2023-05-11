@@ -142,10 +142,6 @@ export class DaasValidatorComponent implements OnInit {
   }
 
   checkDiagServerForLinux(): Observable<boolean> {
-    if (!this.allLinuxInstancesOnAnt98) {
-      return of(false);
-    }
-
     return this._daasService.isDiagServerEnabledForLinux(this.siteToBeDiagnosed);
   }
 
