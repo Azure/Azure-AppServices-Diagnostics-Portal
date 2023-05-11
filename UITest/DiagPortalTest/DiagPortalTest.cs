@@ -92,7 +92,7 @@ namespace DiagPortalTest
         {
             try
             {
-                _driver.Navigate().GoToUrl("https://ms.portal.azure.com/#home");
+                _driver.Navigate().GoToUrl(_portalBaseUrl);
                 Thread.Sleep(1000);
                 Console.WriteLine("Login Start");
                 _driver.FindElement(By.Id("i0116")).SendKeys(_email);
@@ -101,18 +101,16 @@ namespace DiagPortalTest
 
                 Console.WriteLine("Enter Email Success");
 
-                _driver.FindElement(By.XPath("//span[text()='Password']")).Click();
+                _driver.FindElement(By.Id("FormsAuthentication")).Click();
                 Thread.Sleep(500);
                 _driver.FindElement(By.Id("passwordInput")).SendKeys(_password);
                 _driver.FindElement(By.Id("submitButton")).Click();
 
                 Console.WriteLine("Enter Password Success");
 
-                var staySignedInPage = _driver.FindElement(By.XPath("//div[text()='Stay signed in?']"));
-                if (staySignedInPage != null)
-                {
-                    _driver.FindElement(By.XPath("//input[@value='Yes']")).Click();
-                }
+
+                //Click "Yes" button
+                _driver.FindElement(By.Id("idSIButton9")).Click();
                 Console.WriteLine("Login Success");
             }
             catch (Exception e)
