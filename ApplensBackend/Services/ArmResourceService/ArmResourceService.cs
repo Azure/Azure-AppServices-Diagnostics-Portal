@@ -1,20 +1,12 @@
 ﻿using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.Configuration;
-using AppLensV3.Helpers;
 using Octokit;
-using Newtonsoft.Json;
 
 namespace AppLensV3.Services
 {
     public interface IArmResourceService
     {
-        /// <summary>
-        /// This service is enabled or not.
-        /// </summary>
-        /// <returns>true/false</returns>
-        bool IsEnabled();
-
         /// <summary>
         /// Returns Arm url for the resource.
         /// </summary>
@@ -30,7 +22,6 @@ namespace AppLensV3.Services
     /// </summary>
     public class ArmResourceService : IArmResourceService
     {
-        private readonly bool enabled;
         private readonly IRedisService<ArmResourceRedisModel> redisService;
         private readonly IKustoQueryService kustoQueryService;
         private readonly IConfiguration config;
@@ -43,25 +34,13 @@ namespace AppLensV3.Services
         public ArmResourceService(IConfiguration configuration, IRedisService<ArmResourceRedisModel> redis, IKustoQueryService kustoQuerySvc)
         {
             config = configuration;
-            enabled = configuration.GetValue("ArmResourceService:Enabled", false);
             redisService = redis;
             kustoQueryService = kustoQuerySvc;
         }
 
         /// <inheritdoc/>
-        public bool IsEnabled()
-        {
-            return enabled;
-        }
-
-        /// <inheritdoc/>
         public async Task<string> GetArmResourceUrlAsync(string provider, string serviceName, string resourceName)
         {
-            if (!enabled)
-            {
-                return FakeResource(provider, serviceName, resourceName);
-            }
-
             var cacheKey = string.Join("/", provider, serviceName, resourceName);
             var cacheValue = await redisService.GetKey(cacheKey);
             if (string.IsNullOrWhiteSpace(cacheValue))
@@ -101,8 +80,5 @@ namespace AppLensV3.Services
 
             return cacheValue;
         }
-
-        private string FakeResource(string provider, string serviceName, string resourceName) =>
-            string.Format(ResourceConstants.ArmUrlTemplate, "00000000-0000-0000-0000-000000000000", "Fake-RG", provider, serviceName, resourceName);
     }
 }

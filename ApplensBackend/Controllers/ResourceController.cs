@@ -189,7 +189,7 @@ namespace AppLensV3
 
         [HttpGet]
         [Route("api/armresourceurl/{providerName}/{serviceName}/{resourceName}")]
-        public async Task<IActionResult> GetArmResourceUrl(string providerName, string serviceName, string resourceName)
+        public async Task<IActionResult> GetArmResourceUrl(string providerName, string serviceName, string resourceName, [FromServices] IArmResourceService resourceService)
         {
             try
             {
@@ -198,7 +198,7 @@ namespace AppLensV3
                     return BadRequest("arguments cannot be null or empty.");
                 }
 
-                var armID = await _armResourceService.GetArmResourceUrlAsync(providerName, serviceName, resourceName);
+                var armID = await resourceService.GetArmResourceUrlAsync(providerName, serviceName, resourceName);
                 return Ok(armID);
             }
             catch (NotFoundException ex)
