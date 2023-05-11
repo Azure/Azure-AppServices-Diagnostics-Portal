@@ -12,12 +12,10 @@ namespace AppLensV3
     public class ResourceController : Controller
     {
         IObserverClientService _observerService;
-        IArmResourceService _armResourceService;
 
-        public ResourceController(IObserverClientService observerService, IArmResourceService resourceService)
+        public ResourceController(IObserverClientService observerService)
         {
             _observerService = observerService;
-            _armResourceService = resourceService;
         }
 
         [HttpGet("api/sites/{siteName}")]
@@ -189,7 +187,7 @@ namespace AppLensV3
 
         [HttpGet]
         [Route("api/armresourceurl/{providerName}/{serviceName}/{resourceName}")]
-        public async Task<IActionResult> GetArmResourceUrl(string providerName, string serviceName, string resourceName)
+        public async Task<IActionResult> GetArmResourceUrl(string providerName, string serviceName, string resourceName, [FromServices] IArmResourceService resourceService)
         {
             try
             {
@@ -198,7 +196,7 @@ namespace AppLensV3
                     return BadRequest("arguments cannot be null or empty.");
                 }
 
-                var armID = await _armResourceService.GetArmResourceUrlAsync(providerName, serviceName, resourceName);
+                var armID = await resourceService.GetArmResourceUrlAsync(providerName, serviceName, resourceName);
                 return Ok(armID);
             }
             catch (NotFoundException ex)
