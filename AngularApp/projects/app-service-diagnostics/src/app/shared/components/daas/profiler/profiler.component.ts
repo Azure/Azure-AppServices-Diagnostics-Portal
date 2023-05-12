@@ -108,7 +108,7 @@ export class ProfilerComponent extends DaasComponent implements OnInit, OnDestro
       return;
     }
 
-    let activeInstance = session.ActiveInstances.find(x => x.Name === this.selectedInstance);
+    let activeInstance = session.ActiveInstances.find(x => x.Name.toLowerCase() === this.selectedInstance.toLowerCase());
     if (!activeInstance) {
       return;
     }

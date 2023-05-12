@@ -203,7 +203,7 @@ export class DaasComponent implements OnInit, OnDestroy {
       return;
     }
 
-    let activeInstance = session.ActiveInstances.find(x => x.Name === this.selectedInstance);
+    let activeInstance = session.ActiveInstances.find(x => x.Name.toLowerCase() === this.selectedInstance.toLowerCase());
     if (!activeInstance) {
       return;
     }
