@@ -277,9 +277,10 @@ export class DaasService {
     }
 
     isDiagServerEnabledForLinux(site: SiteDaasInfo): Observable<boolean> {
-        if (this.linuxDiagServerEnabledChecked) {
-            return of(this.linuxDiagServerEnabled);
-        }
+        return of(true);
+        // if (this.linuxDiagServerEnabledChecked) {
+        //     return of(this.linuxDiagServerEnabled);
+        // }
 
         //
         // Commenting this out because of a bug in /daas/v2/sesssions/settings implementation
@@ -298,25 +299,25 @@ export class DaasService {
         //         return of(this.linuxDiagServerEnabled)
         //     }));
 
-        const resourceUri: string = this._uriElementsService.getLinuxCommandUrl(site);
-        let command: LinuxCommand = { command: "printenv WEBSITE_USE_DIAGNOSTIC_SERVER" };
-        return this._armClient.postResourceWithoutEnvelope<LinuxCommandOutput, LinuxCommand>(resourceUri, command, null, true).pipe(
-            map((resp: LinuxCommandOutput) => {
-                if (resp && resp.Output) {
-                    this.linuxDiagServerEnabled = resp.Output.toLowerCase().startsWith('true');
-                    this.linuxDiagServerEnabledChecked = true;
-                    return this.linuxDiagServerEnabled;
-                } else {
-                    this.linuxDiagServerEnabled = false;
-                    this.linuxDiagServerEnabledChecked = true;
-                    return this.linuxDiagServerEnabled;
-                }
-            }),
-            catchError(e => {
-                this.linuxDiagServerEnabled = false;
-                this.linuxDiagServerEnabledChecked = true;
-                return of(this.linuxDiagServerEnabled)
-            }));
+        // const resourceUri: string = this._uriElementsService.getLinuxCommandUrl(site);
+        // let command: LinuxCommand = { command: "printenv WEBSITE_USE_DIAGNOSTIC_SERVER" };
+        // return this._armClient.postResourceWithoutEnvelope<LinuxCommandOutput, LinuxCommand>(resourceUri, command, null, true).pipe(
+        //     map((resp: LinuxCommandOutput) => {
+        //         if (resp && resp.Output) {
+        //             this.linuxDiagServerEnabled = resp.Output.toLowerCase().startsWith('true');
+        //             this.linuxDiagServerEnabledChecked = true;
+        //             return this.linuxDiagServerEnabled;
+        //         } else {
+        //             this.linuxDiagServerEnabled = false;
+        //             this.linuxDiagServerEnabledChecked = true;
+        //             return this.linuxDiagServerEnabled;
+        //         }
+        //     }),
+        //     catchError(e => {
+        //         this.linuxDiagServerEnabled = false;
+        //         this.linuxDiagServerEnabledChecked = true;
+        //         return of(this.linuxDiagServerEnabled)
+        //     }));
     }
 
     putStdoutSetting(resourceUrl: string, enabled: boolean): Observable<{ Stdout: string }> {

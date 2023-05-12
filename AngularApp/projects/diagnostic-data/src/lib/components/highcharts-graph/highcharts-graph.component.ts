@@ -1,4 +1,4 @@
-import * as momentNs from 'moment';
+import * as moment from 'moment';
 import { Component, Input, OnInit, HostListener, ElementRef, Output, EventEmitter } from '@angular/core';
 import { TimeSeriesType } from '../../models/detector';
 import HC_exporting from 'highcharts/modules/exporting';
@@ -28,7 +28,6 @@ interface ExtendedPoint extends Highcharts.Point {
   id: string;
 }
 
-const moment = momentNs;
 
 @Component({
     selector: 'highcharts-graph',
@@ -51,9 +50,9 @@ export class HighchartsGraphComponent implements OnInit {
 
     @Input() yAxisCategories: any = [];
 
-    @Input() startTime: momentNs.Moment;
+    @Input() startTime: moment.Moment;
 
-    @Input() endTime: momentNs.Moment;
+    @Input() endTime: moment.Moment;
     public backgroundColor = "white";
     public bodyText = "black";
 
@@ -904,7 +903,7 @@ export class HighchartsGraphComponent implements OnInit {
 }
 
 export interface GraphPoint {
-    x: momentNs.Moment;
+    x: moment.Moment;
     y: number;
 }
 
@@ -914,7 +913,7 @@ export interface GraphSeries {
 }
 
 export interface HighchartsData {
-    x: momentNs.Moment;
+    x: moment.Moment;
     y: number;
     name: string;
     color: string;

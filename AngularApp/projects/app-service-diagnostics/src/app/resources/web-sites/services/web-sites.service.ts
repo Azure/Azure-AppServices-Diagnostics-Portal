@@ -89,6 +89,9 @@ export class WebSitesService extends ResourceService {
             else if (this.appType == AppType.FunctionApp) {
                 return of("16072");
             }
+            else if (this.appType == AppType.WorkflowApp) {
+                return of("17378");
+            }
             else {
                 return of(null);
             }

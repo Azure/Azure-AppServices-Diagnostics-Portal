@@ -12,7 +12,7 @@
     },
     "notification": {
       "email": {
-        "to": "applensv2team@microsoft.com",
+        "to": "applensdeployments@microsoft.com",
         "options": {
           "when": [
             "onError",

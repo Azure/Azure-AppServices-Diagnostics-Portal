@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TextCompletionModel, OpenAIAPIResponse } from '../models/openai-data-models';
 import { Observable, of} from 'rxjs';
+import { ChatMessage } from '../models/chatbot-models';
 
 @Injectable()
 export class GenericOpenAIChatService {
@@ -10,7 +11,7 @@ export class GenericOpenAIChatService {
     return of(false);
   }
 
-  public generateTextCompletion(queryModel: TextCompletionModel, caching: boolean = true): Observable<OpenAIAPIResponse> {
+  public generateTextCompletion(queryModel: TextCompletionModel, customPrompt: string = '', caching: boolean = true): Observable<OpenAIAPIResponse> {
     return null;
   }
 }

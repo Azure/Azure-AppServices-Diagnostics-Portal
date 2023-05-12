@@ -12,6 +12,22 @@ body {
     }
 }
 
+.chatui-header-text{
+    font-weight: 600;
+    font-size: 2.75rem;
+    line-height: 2.75rem;
+    text-align: center;
+    gap: 0.5rem;
+    margin-bottom: 4rem;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+  }
+  
+  .chatui-center-logo{
+    width: 50px;
+    height: 50px;
+  }
 
 
 /* highchart container configuration */
@@ -47,10 +63,6 @@ fab-command-bar .ms-SearchBox {
     left: unset!important;
     background-color: var(--bodyBackground)!important;
     width: 270px;
-}
-
-.ms-Callout-container .ms-Callout-main {
-    overflow-y: hidden!important;
 }
 
 

@@ -43,7 +43,7 @@ export class AseFinderComponent implements OnInit {
       'providers','Microsoft.Web',
       'hostingEnvironments', matchingAse.Name];
 
-    this._router.navigate(resourceArray);
+    this._router.navigate(resourceArray, { queryParamsHandling: 'preserve' });
   }
 
 }

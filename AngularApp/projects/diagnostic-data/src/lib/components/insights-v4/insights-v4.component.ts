@@ -34,6 +34,7 @@ export class InsightsV4Component extends DataRenderBaseComponent {
   solutionButtonPosition = SolutionButtonPosition.Bottom;
   solutionButtonLabel: string = "View Solution";
   solutionButtonType = SolutionButtonType.Button;
+
   constructor(protected telemetryService: TelemetryService) {
     super(telemetryService);
   }

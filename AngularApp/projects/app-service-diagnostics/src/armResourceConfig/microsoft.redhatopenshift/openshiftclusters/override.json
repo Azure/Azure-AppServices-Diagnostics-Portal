@@ -1,0 +1,33 @@
+{
+	"homePageText": {
+		"title": "",
+		"description": "",
+		"searchBarPlaceHolder": ""
+	},
+	"matchRegEx": "/Microsoft.RedHatOpenShift/openShiftClusters/",
+	"searchSuffix": "",
+	"azureServiceName": "",
+	"armApiConfig": {
+		"armApiVersion": "",
+		"isArmApiResponseBase64Encoded": false
+	},
+	"isSearchEnabled": true,
+	"keystoneDetectorId": "",
+	"liveChatConfig": {
+		"isApplicableForLiveChat": false,
+		"supportTopicIds": []
+	},
+	"categories": [{
+			"id": "",
+			"name": "",
+			"description": "",
+			"keywords": [],
+			"color": "",
+			"createFlowForCategory": true,
+			"overridePath": "",
+			"chatEnabled": false
+		}
+	],
+	"pesId": "16734",
+	"sapProductId": "b701b8d6-fc99-aba8-bab9-bc2e171fa89c"
+}

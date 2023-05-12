@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DetectorControlService, DetectorMetaData, DetectorResponse, DiagnosticService, ResiliencyScoreReportHelper, TelemetryEventNames, TelemetryService } from 'diagnostic-data';
-import { DemoSubscriptions } from '../../../betaSubscriptions';
+import { DemoSubscriptions } from '../../../../../../diagnostic-data/src/lib/models/betaSubscriptions';
 import { WebSitesService } from '../../../resources/web-sites/services/web-sites.service';
 import { ResourceService } from '../../../shared-v2/services/resource.service';
 import { AuthService } from '../../../startup/services/auth.service';

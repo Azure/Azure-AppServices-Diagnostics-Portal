@@ -5,6 +5,9 @@ import { SettingsService } from '../../services/settings.service';
 import { BackendCtrlQueryService } from '../../services/backend-ctrl-query.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
 import { MessageBarType } from 'office-ui-fabric-react';
+import { BehaviorSubject } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { DemoSubscriptions } from '../../../lib/models/betaSubscriptions';
 
 const maxApiKeysPerAiResource: number = 10;
 
@@ -18,10 +21,12 @@ export class AppInsightsEnablementComponent implements OnInit {
 
   constructor(private _appInsightsService: AppInsightsQueryService,
     private _backendCtrlService: BackendCtrlQueryService,
-    private _settingsService: SettingsService) {
+    private _settingsService: SettingsService,
+    private _route: ActivatedRoute) {
   }
 
   loadingSettings: boolean = true;
+  loadingCodeOptimizationSettings: boolean = true;
   isAppInsightsEnabled: boolean = false;
   isAppInsightsConnected: boolean = false;
   appInsightsValidated: boolean = false;
@@ -32,9 +37,13 @@ export class AppInsightsEnablementComponent implements OnInit {
   appSettingsHaveInstrumentationKey: boolean = false;
   hasWriteAccess: boolean = false;
   isEnabledInProd: boolean = true;
+  isCodeInsightsEnabledInProd: boolean = true;
   messageBarType = MessageBarType.info;
   canCreateApiKeys: boolean = false;
   appInsightsValiationError: string = "";
+  test1: string = "Value1";
+  test2: string = "Value2";
+  optInsightResourceInfoSubject = new BehaviorSubject<{ resourceUri: string, appId: string }>({ resourceUri: "", appId: "" });
 
   @Input()
   resourceId: string = "";
@@ -48,6 +57,7 @@ export class AppInsightsEnablementComponent implements OnInit {
           this.isAppInsightsEnabled = appInsightsSettings.enabledForWebApp;
           this.appInsightsResourceUri = appInsightsSettings.resourceUri;
           this.appId = appInsightsSettings.appId;
+          this.optInsightResourceInfoSubject.next({ resourceUri: this.appInsightsResourceUri, appId: this.appId });
 
           if (this.isAppInsightsEnabled) {
             this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsEnabled);

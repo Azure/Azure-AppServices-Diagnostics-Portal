@@ -154,13 +154,21 @@ import { WorkflowNodeComponent } from './components/workflow-node/workflow-node.
 import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
 import { ArchitectureDiagramComponent } from './components/architecture-diagram/architecture-diagram.component';
 import { ArchitectureDiagramNodeComponent } from './components/architecture-diagram-node/architecture-diagram-node.component';
-import { ChatGPTContextService } from './services/chat-gpt-context-service';
 import { GenericOpenAIChatService, OpenAIArmService } from '../public_api';
+import { OpenaiComponent } from './components/openai/openai.component';
 import { QueryResponseService } from './services/query-response.service';
 import { WorkflowConditionNodeComponent } from './components/workflow-condition-node/workflow-condition-node.component';
+import { OptInsightsEnablementComponent } from './components/opt-insights-enablement/opt-insights-enablement.component';
+import { OptInsightsMarkdownComponent } from './components/opt-insights-markdown/opt-insights-markdown.component';
+import { OptInsightsGenericService } from './services/optinsights.service';
+import { DemoSubscriptions } from './models/betaSubscriptions';
 import { WorkflowAcceptUserinputComponent } from './components/workflow-accept-userinput/workflow-accept-userinput.component';
 import { VideoComponent } from './components/video/video.component';
 import { SafePipe } from './pipe/safe.pipe';
+import { DateTimePickerComponent } from './components/date-time-picker/date-time-picker.component';
+import { ChatUIComponent } from './components/chat-ui/chat-ui.component';
+import { ChatUIContextService } from './services/chatui-context.service';
+import {OpenAIChatComponent} from './components/openai-chat/openai-chat.component';
 
 
 @NgModule({
@@ -268,9 +276,15 @@ import { SafePipe } from './pipe/safe.pipe';
         ArchitectureDiagramComponent,
         ArchitectureDiagramNodeComponent,
         WorkflowConditionNodeComponent,
+        OptInsightsEnablementComponent,
+        OptInsightsMarkdownComponent,
         WorkflowAcceptUserinputComponent,
         VideoComponent,
-        SafePipe
+        SafePipe,
+        OpenaiComponent,
+        DateTimePickerComponent,
+        ChatUIComponent,
+        OpenAIChatComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -313,7 +327,10 @@ import { SafePipe } from './pipe/safe.pipe';
         FormStepComponent,
         GanttChartTaskbarColorsComponent,
         WorkflowViewComponent,
-        SafePipe
+        SafePipe,
+        OpenaiComponent,
+        ChatUIComponent,
+        OpenAIChatComponent
     ]
 })
 export class DiagnosticDataModule {
@@ -344,8 +361,10 @@ export class DiagnosticDataModule {
                 GenericFeatureService,
                 GenericOpenAIChatService,
                 OpenAIArmService,
-                ChatGPTContextService,
-                QueryResponseService
+                QueryResponseService,
+                OptInsightsGenericService,
+                DemoSubscriptions,
+                ChatUIContextService
             ]
         };
     }

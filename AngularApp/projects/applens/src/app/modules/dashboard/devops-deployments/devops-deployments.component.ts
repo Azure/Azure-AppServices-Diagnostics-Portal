@@ -7,9 +7,9 @@ import { DataTableResponseColumn, DataTableResponseObject, ResourceDescriptor, T
 import { MessageBarType } from 'office-ui-fabric-react';
 import { Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import * as momentNs from 'moment';
+import * as moment from 'moment';
 
-const moment = momentNs;
+
 @Component({
   selector: 'devops-deployments',
   templateUrl: './devops-deployments.component.html',

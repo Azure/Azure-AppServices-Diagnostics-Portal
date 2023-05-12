@@ -95,7 +95,7 @@ export class PortalReferrerResolverComponent implements OnInit {
       }
 
       if (
-        referrer.DetectorType && (referrer.DetectorType.toLowerCase() === DetectorType.Analysis.toLowerCase() || referrer.DetectorType.toLowerCase() === DetectorType.Detector.toLowerCase()) &&
+        referrer.DetectorType && (referrer.DetectorType.toLowerCase() === DetectorType.Analysis.toLowerCase() || referrer.DetectorType.toLowerCase() === DetectorType.Detector.toLowerCase() || referrer.DetectorType.toLowerCase() === DetectorType.Workflow.toLowerCase()) &&
         referrer.DetectorId && referrer.DetectorId.length > 1
       ) {
 
@@ -115,6 +115,8 @@ export class PortalReferrerResolverComponent implements OnInit {
           path = `${path}/detectors/${referrer.DetectorId}`;
         } else if (referrer.DetectorType.toLowerCase() === DetectorType.DiagnosticTool.toLowerCase()) {
           path = `${path}/tools/${referrer.DetectorId}`;
+        } else if (referrer.DetectorType.toLowerCase() === DetectorType.Workflow.toLowerCase()) {
+          path = `${path}/workflows/${referrer.DetectorId}`;
         }
       }
       else {
@@ -134,6 +136,8 @@ export class PortalReferrerResolverComponent implements OnInit {
           }
           else if (referrerMatch.DetectorType === DetectorType.DiagnosticTool) {
             path = `${path}/tools/${referrerMatch.DetectorId}`;
+          } else if (referrerMatch.DetectorType === DetectorType.Workflow) {
+            path = `${path}/workflows/${referrerMatch.DetectorId}`;
           }
 
           this._logService.logEvent('IntegratedDiagnostics', {

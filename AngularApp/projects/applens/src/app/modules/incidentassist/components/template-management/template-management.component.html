@@ -22,6 +22,7 @@
         <div class="card-box" style="width:64%" *ngIf="!pageLoading && selectedTeam">
           <div class="box-header with-border">
             <h3 class="box-title">Team: {{selectedTeam.teamName}} &nbsp; IncidentType: {{selectedTeam.incidentType}}</h3>
+            <p style="color:#0451a5;">(Update Button will activate only after you run at least one Test using the Test button)</p>
           </div>
 
           <div style="max-height: calc(100vh - 140px);" *ngIf="!displayLoader && selectedTeam && !(templateLoadError && templateLoadError.length>0)">

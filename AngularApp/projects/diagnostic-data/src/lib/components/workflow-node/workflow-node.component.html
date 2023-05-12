@@ -5,13 +5,13 @@
       <div class="node-heading">
         <status-icon class="mr-3" [status]="status"></status-icon>
         <div class="mr-3"><strong>{{ data.title }}</strong></div>
-        <div *ngIf="data.executionTraces && data.executionTraces.length > 0" class="tool-tip-icon">
+        <div class="tool-tip-icon">
           <div class="mr-2">
             <i *ngIf="isLoading && ((data.children && data.children.length > 0) || data.type.toLowerCase() === 'input')"
-              class="fa fa-circle-o-notch fa-spin spin-icon mr-2" aria-hidden="true"></i>
+              class="fa fa-circle-o-notch fa-spin spin-icon mr-2" style="color:#0058ad" aria-hidden="true"></i>
             <img class="kusto-icon mr-2" *ngIf="data.metadataPropertyBag && data.metadataPropertyBag.length > 0"
               src="assets/img/kusto.png" (click)="showMetadata()" />
-            <div class="hover-text">
+            <div *ngIf="data.executionTraces && data.executionTraces.length > 0" class="hover-text">
               <i class="fa fa-tasks" aria-hidden="true"></i>
               <span class="tooltip-text" id="right">
                 <table class="table table-bordered">

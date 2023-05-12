@@ -128,6 +128,9 @@ namespace AppLensV3
                 services.AddSingleton<IOpenAIService, OpenAIServiceDisabled>();
             }
 
+            services.AddSingleton<IRedisService<ArmResourceRedisModel>>(new ArmResourceRedisCache(Configuration, RedisConnection.InitializeAsync(true, connectionString: Configuration["ArmResourceService:RedisConnectionString"].ToString())));
+            services.AddSingletonWhenEnabled<IArmResourceService, ArmResourceService, NullableArmResourceService>(Configuration, "ArmResourceService");
+
             services.AddMemoryCache();
             services.AddMvc().AddNewtonsoftJson();
 

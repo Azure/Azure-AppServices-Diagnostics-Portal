@@ -1,7 +1,7 @@
 import { Component, Inject, ViewChild, ElementRef } from '@angular/core';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { DiagnosticData, Rendering, DataTableResponseObject, DetectorResponse } from '../../models/detector';
-import { Form, FormInput, InputType, FormButton, ButtonStyles, RadioButtonList, Dropdown } from '../../models/form';
+import { Form, FormInput, InputType, FormButton, ButtonStyles, RadioButtonList, Dropdown, DateTimePicker } from '../../models/form';
 import { DiagnosticService } from '../../services/diagnostic.service';
 import { DetectorControlService } from '../../services/detector-control.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -13,6 +13,8 @@ import { DirectionalHint } from 'office-ui-fabric-react/lib/Tooltip';
 import { IDropdownOption, IDropdown } from 'office-ui-fabric-react';
 import { UriUtilities } from '../../utilities/uri-utilities';
 import { QueryResponseService } from '../../services/query-response.service';
+import * as moment from 'moment';
+import { TimeUtilities } from '../../utilities/time-utilities';
 
 @Component({
   selector: 'custom-form',
@@ -20,13 +22,14 @@ import { QueryResponseService } from '../../services/query-response.service';
   styleUrls: ['./form.component.scss']
 })
 export class FormComponent extends DataRenderBaseComponent {
-
   renderingProperties: Rendering;
   detectorForms: Form[] = [];
   isPublic: boolean;
   directionalHint = DirectionalHint.topLeftEdge;
   datasourcesKey: string = '';
+  readonly maxInputLength = 150;
 
+  startMoment: moment.Moment;
 
   @ViewChild('formDropdown') formdropDownRef: ElementRef<IDropdown>;
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _diagnosticService: DiagnosticService, private _router: Router, protected telemetryService: TelemetryService,
@@ -61,7 +64,11 @@ export class FormComponent extends DataRenderBaseComponent {
   }
 
   public isDropdown(inputType: InputType) {
-      return inputType === InputType.DropDown;
+    return inputType === InputType.DropDown;
+  }
+
+  public isDateTimePicker(inputType: InputType) {
+    return inputType === InputType.DateTimePicker;
   }
 
   // parses the incoming data to render a form
@@ -94,22 +101,37 @@ export class FormComponent extends DataRenderBaseComponent {
               formInputs[ip]["toolTip"] != undefined ? formInputs[ip]["toolTip"] : "",
               formInputs[ip]["tooltipIcon"] != "" ? formInputs[ip]["tooltipIcon"] : "fa-info-circle",
               formInputs[ip]["isVisible"] != undefined ? formInputs[ip]["isVisible"] : true
-              ));
+            ));
           }
-          else if(this.isDropdown(formInputs[ip]["inputType"])) {
-              this.detectorForms[i].formInputs.push(new Dropdown(
-                `formDropdown-${this.detectorForms[i].formId}-${formInputs[ip]["inputId"]}`,
-                formInputs[ip]["inputId"],
-                formInputs[ip]["inputType"],
-                formInputs[ip]["label"],
-                formInputs[ip]["dropdownOptions"],
-                formInputs[ip]["defaultSelectedKey"],
-                formInputs[ip]["isMultiSelect"],
-                formInputs[ip]["defaultSelectedKeys"],
-                formInputs[ip]["toolTip"] != undefined ? formInputs[ip]["toolTip"] : "",
-                formInputs[ip]["tooltipIcon"] != "" ? formInputs[ip]["tooltipIcon"] : "fa-info-circle",
-                formInputs[ip]["children"] != undefined ? formInputs[ip]["children"] : [],
-                formInputs[ip]["isVisible"] != undefined ?  formInputs[ip]["isVisible"] : true
+          else if (this.isDropdown(formInputs[ip]["inputType"])) {
+            this.detectorForms[i].formInputs.push(new Dropdown(
+              `formDropdown-${this.detectorForms[i].formId}-${formInputs[ip]["inputId"]}`,
+              formInputs[ip]["inputId"],
+              formInputs[ip]["inputType"],
+              formInputs[ip]["label"],
+              formInputs[ip]["dropdownOptions"],
+              formInputs[ip]["defaultSelectedKey"],
+              formInputs[ip]["isMultiSelect"],
+              formInputs[ip]["defaultSelectedKeys"],
+              formInputs[ip]["toolTip"] != undefined ? formInputs[ip]["toolTip"] : "",
+              formInputs[ip]["tooltipIcon"] != "" ? formInputs[ip]["tooltipIcon"] : "fa-info-circle",
+              formInputs[ip]["children"] != undefined ? formInputs[ip]["children"] : [],
+              formInputs[ip]["isVisible"] != undefined ? formInputs[ip]["isVisible"] : true
+            ));
+          }
+          else if(this.isDateTimePicker(formInputs[ip]["inputType"])) {
+            this.detectorForms[i].formInputs.push(new DateTimePicker(
+              `${this.detectorForms[i].formId}.${formInputs[ip]["inputId"]}`,
+              formInputs[ip]["inputId"],
+              formInputs[ip]["inputType"],
+              formInputs[ip]["label"],
+              moment.utc(formInputs[ip]["defaultSelectedDateTime"]),
+              moment.utc(formInputs[ip]["restrictToDate"]),
+              formInputs[ip]["showDatePickerOnly"],
+              formInputs[ip]["isVisible"] != undefined ?  formInputs[ip]["isVisible"] : true,
+              formInputs[ip]["isRequired"] != undefined ?  formInputs[ip]["isRequired"] : false,
+              formInputs[ip]["toolTip"] != undefined ? formInputs[ip]["toolTip"] : "",
+              formInputs[ip]["tooltipIcon"] != "" ? formInputs[ip]["tooltipIcon"] : "fa-info-circle"
               ));
           }
           else {
@@ -121,7 +143,7 @@ export class FormComponent extends DataRenderBaseComponent {
               formInputs[ip]["isRequired"],
               formInputs[ip]["toolTip"] != undefined ? formInputs[ip]["toolTip"] : "",
               formInputs[ip]["tooltipIcon"] != "" ? formInputs[ip]["tooltipIcon"] : "fa-info-circle",
-              formInputs[ip]["isVisible"] != undefined ?  formInputs[ip]["isVisible"] : true));
+              formInputs[ip]["isVisible"] != undefined ? formInputs[ip]["isVisible"] : true));
           }
         }
       }
@@ -141,14 +163,14 @@ export class FormComponent extends DataRenderBaseComponent {
       formToExecute.errorMessage = '';
       let queryParams = `&fId=${formId}&btnId=${buttonId}`;
       formToExecute.formInputs.forEach(ip => {
-          if(ip.isVisible) {
-            if(this.isDropdown(ip.inputType)) {
-                let val = this.getQueryParamForDropdown(ip);
-                queryParams +=  `&inpId=${ip.inputId}&val=${val}&inpType=${ip.inputType}&isMultiSelect=${ip["isMultiSelect"]}`;
-            } else {
-                queryParams += `&inpId=${ip.inputId}&val=${ip.inputValue}&inpType=${ip.inputType}`;
-            }
+        if (ip.isVisible) {
+          if (this.isDropdown(ip.inputType)) {
+            let val = this.getQueryParamForDropdown(ip);
+            queryParams += `&inpId=${ip.inputId}&val=${val}&inpType=${ip.inputType}&isMultiSelect=${ip["isMultiSelect"]}`;
+          } else {
+            queryParams += `&inpId=${ip.inputId}&val=${ip.inputValue}&inpType=${ip.inputType}`;
           }
+        }
       });
       this.activatedRoute.queryParams.subscribe(allRouteParams => {
         queryParams = UriUtilities.addAdditionalQueryParams(allRouteParams, queryParams);
@@ -192,30 +214,30 @@ export class FormComponent extends DataRenderBaseComponent {
           'inputs': [],
         }
         formToExecute.formInputs.forEach(ip => {
-            if(ip.isVisible) {
-                if(this.isDropdown(ip.inputType)) {
-                    let val = this.getQueryParamForDropdown(ip);
-                    detectorParams.inputs.push({
-                        'inpId': ip.inputId,
-                        'val': val,
-                        'inpType': ip.inputType,
-                        'isMultiSelect': ip["isMultiSelect"]
-                      });
-                } else {
-                    detectorParams.inputs.push({
-                        'inpId': ip.inputId,
-                        'val': ip.inputValue,
-                        'inpType': ip.inputType
-                      });
-                }
+          if (ip.isVisible) {
+            if (this.isDropdown(ip.inputType)) {
+              let val = this.getQueryParamForDropdown(ip);
+              detectorParams.inputs.push({
+                'inpId': ip.inputId,
+                'val': val,
+                'inpType': ip.inputType,
+                'isMultiSelect': ip["isMultiSelect"]
+              });
+            } else {
+              detectorParams.inputs.push({
+                'inpId': ip.inputId,
+                'val': ip.inputValue,
+                'inpType': ip.inputType
+              });
             }
+          }
         });
         this.activatedRoute.queryParams.subscribe(allRouteParams => {
-          for(let key of Object.keys(allRouteParams)) {
-            if(!detectorParams.hasOwnProperty(key)) {
-                detectorParams[key] = allRouteParams[key];
+          for (let key of Object.keys(allRouteParams)) {
+            if (!detectorParams.hasOwnProperty(key)) {
+              detectorParams[key] = allRouteParams[key];
             }
-        }
+          }
         });
         let detectorQueryParamsString = JSON.stringify(detectorParams);
         if (!this.isPublic) {
@@ -236,20 +258,23 @@ export class FormComponent extends DataRenderBaseComponent {
       detectorQueryParams.inputs.forEach(ip => {
         let inputElement = formToSetValues.formInputs.find(input => input.inputId == ip.inpId);
         inputElement.inputType = ip.inpType;
-        if(this.isDropdown(ip.inpType)) {
-            let selection = ip.val;
-            let isMultiSelect = ip["isMultiSelect"];
-            if (isMultiSelect) {
-                inputElement["defaultSelectedKeys"] = selection.split(",");
-                inputElement.inputValue = selection.split(",");
-            }  else {
-                inputElement["defaultSelectedKey"] = selection;
-                inputElement.inputValue = selection;
-            }
-            // Set visibility in case detector refreshed or opened with deep link
-            inputElement.isVisible = true;
+        if (this.isDropdown(ip.inpType)) {
+          let selection = ip.val;
+          let isMultiSelect = ip["isMultiSelect"];
+          if (isMultiSelect) {
+            inputElement["defaultSelectedKeys"] = selection.split(",");
+            inputElement.inputValue = selection.split(",");
+          } else {
+            inputElement["defaultSelectedKey"] = selection;
+            inputElement.inputValue = selection;
+          }
+          // Set visibility in case detector refreshed or opened with deep link
+          inputElement.isVisible = true;
+        } else if (this.isDateTimePicker(ip.inpType)) {
+          (inputElement as DateTimePicker).selectedMoment = moment.utc(ip.val);
+          inputElement.inputValue = ip.val;
         } else {
-            inputElement.inputValue = ip.val;
+          inputElement.inputValue = ip.val;
         }
       });
     }
@@ -282,10 +307,11 @@ export class FormComponent extends DataRenderBaseComponent {
 
   validateInputs(formInputs: FormInput[]): boolean {
     for (let input of formInputs) {
-      if (input.isRequired && (input.inputValue == undefined || input.inputValue == "")) {
+      const hasInputValue = input.inputValue != undefined && input.inputValue != "";
+      if ((input.isRequired && !hasInputValue) || (hasInputValue && input.inputValue.length > this.maxInputLength)) {
         input.displayValidation = true;
         return false;
-      }
+      } 
     }
     return true;
   }
@@ -338,49 +364,55 @@ export class FormComponent extends DataRenderBaseComponent {
     let form = this.detectorForms.find(f => f.formId == formId);
     // Find the input
     let formInput = form.formInputs.find(inp => inp.inputId == inputId);
-    if(isMultiSelect) {
-        formInput.inputValue = this.formdropDownRef["current"].selectedOptions;
+    if (isMultiSelect) {
+      formInput.inputValue = this.formdropDownRef["current"].selectedOptions;
     } else {
-        formInput.inputValue = [];
-        formInput.inputValue = [event.option['key']];
-        let children = event.option['data']['children'];
-        if(children) {
-            this.changeVisibility(children, form.formInputs,formInput);
-        }
+      formInput.inputValue = [];
+      formInput.inputValue = [event.option['key']];
+      let children = event.option['data']['children'];
+      if (children) {
+        this.changeVisibility(children, form.formInputs, formInput);
+      }
     }
   }
 
   getQueryParamForDropdown(formInput: FormInput): string {
     let val = '';
-    if(formInput["isMultiSelect"] == true) {
-        let keys = [];
-        formInput.inputValue.forEach(element => {
-        if(element.hasOwnProperty('key')) {
-            keys.push(element['key']);
+    if (formInput["isMultiSelect"] == true) {
+      let keys = [];
+      formInput.inputValue.forEach(element => {
+        if (element.hasOwnProperty('key')) {
+          keys.push(element['key']);
         } else {
-            keys.push(element);
+          keys.push(element);
         }
       });
       val = keys.join(',');
     } else {
-        val = formInput['inputValue'];
+      val = formInput['inputValue'];
     }
     return val;
   }
 
 
 
-  changeVisibility(selectedChildren:any, allInputs: FormInput[], currentDropdown:FormInput) {
-     //set visibility of selected children of dropdown option to true
+  changeVisibility(selectedChildren: any, allInputs: FormInput[], currentDropdown: FormInput) {
+    //set visibility of selected children of dropdown option to true
     selectedChildren.forEach(element => {
-        let formInput = allInputs.find(ip => ip.inputId == element);
-        if(formInput) formInput.isVisible = true;
+      let formInput = allInputs.find(ip => ip.inputId == element);
+      if (formInput) formInput.isVisible = true;
     });
     // set visibility of other children linked with current dropdown to false
     let inputsToHide = currentDropdown["children"].filter(item => selectedChildren.indexOf(item) < 0);
     inputsToHide.forEach(element => {
-        let formInput = allInputs.find(ip => ip.inputId == element);
-        if(formInput) formInput.isVisible = false;
+      let formInput = allInputs.find(ip => ip.inputId == element);
+      if (formInput) formInput.isVisible = false;
     });
   }
+
+  onChangeSelectedMoment(selectedMoment: moment.Moment, formInput: DateTimePicker) {
+    formInput.selectedMoment = selectedMoment.clone();
+    formInput.inputValue = selectedMoment.clone().format(TimeUtilities.fullStringFormat);
+  }
+
 }

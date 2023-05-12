@@ -1,0 +1,34 @@
+{
+    "homePageText": {
+        "title": "ARO Diagnostics (Preview)",
+        "description": "Investigate how your cluster is performing, diagnose issues, and discover how to improve its reliability.",
+        "searchBarPlaceHolder": "Search a keyword that best describes your issue"
+    },
+	"matchRegEx": "/Microsoft.RedHatOpenShift/openShiftClusters/",
+	"searchSuffix": "ARO",
+	"azureServiceName": "Azure Red Hat OpenShift",
+	"armApiConfig": {
+		"armApiVersion": "2022-09-04"
+	},
+	"isSearchEnabled": true,
+	"keystoneDetectorId": "",
+	"liveChatConfig": {
+		"isApplicableForLiveChat": false,
+		"supportTopicIds": []
+	},
+    "categories": [
+        {
+            "id": "crudaro",
+            "name": "Create, Upgrade, Delete, and Scale",
+            "description": "Check your cluster for CRUD operations",
+            "keywords": [ "failed operations"],
+            "color": "rgb(186, 211, 245)",
+            "createFlowForCategory": true,
+            "chatEnabled": false,
+            "overviewDetectorId": "arocreateupgradedeletescale"
+        }
+    ],
+
+	"pesId": "16734",
+    "sapProductId": "b701b8d6-fc99-aba8-bab9-bc2e171fa89c"
+}

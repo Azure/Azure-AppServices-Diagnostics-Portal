@@ -11,7 +11,7 @@ import { XAxisSelection, zoomBehaviors } from '../../models/time-series';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 import { Inject } from '@angular/core';
 import { FeatureNavigationService } from '../../services/feature-navigation.service';
-import { takeUntil, tap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 const moment = momentNs;
 
 const hideTimePickerDetectors: string[] = [
@@ -47,8 +47,6 @@ export class DetectorContainerComponent implements OnInit {
   isPublic: boolean = true;
   workflowLastRefreshed: string = '';
   detectorSubject = new BehaviorSubject<string>(null);
-  detectorResponseObservable:Observable<DetectorResponse>;
-  stopDetectorResponseSubject: Subject<boolean> = new Subject();
 
   @Input() set detector(detector: string) {
     this.detectorSubject.next(detector);
@@ -258,19 +256,12 @@ export class DetectorContainerComponent implements OnInit {
 
       this.workflowLastRefreshed = Date.now().toString();
     } else {
-      if(this.detectorResponseObservable) {
-        //Stop previous subscribe by emitting any value
-        this.stopDetectorResponseSubject.next(true);
-      }
-
-      this.stopDetectorResponseSubject = new Subject<boolean>();
-      this.detectorResponseObservable = this._diagnosticService.getDetector(this.detectorName, startTime, endTime,invalidateCache, this.detectorControlService.isInternalView, additionalQueryString).pipe(takeUntil(this.stopDetectorResponseSubject));
-      this.detectorResponseObservable.subscribe((response: DetectorResponse) => {
-          this.shouldHideTimePicker(response);
-          this.detectorResponse = response;
-        }, (error: any) => {
-          this.error = error;
-        });
+      this._diagnosticService.getDetector(this.detectorName, startTime, endTime, invalidateCache, this.detectorControlService.isInternalView, additionalQueryString).subscribe((response: DetectorResponse) => {
+        this.shouldHideTimePicker(response);
+        this.detectorResponse = response;
+      }, (error: any) => {
+        this.error = error;
+      });
     }
   }
 

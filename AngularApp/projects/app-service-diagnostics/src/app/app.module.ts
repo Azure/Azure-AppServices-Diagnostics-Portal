@@ -2,7 +2,7 @@ import {
   CommsService, DiagnosticDataModule, DiagnosticService, DiagnosticSiteService,
   PUBLIC_DEV_CONFIGURATION, PUBLIC_PROD_CONFIGURATION, SolutionService, SettingsService,
   BackendCtrlQueryService, GenieGlobals, VersionService, PortalActionGenericService,
-  KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService, GenericFeatureService
+  KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService, GenericFeatureService, OptInsightsGenericService
 } from 'diagnostic-data';
 import { SiteService } from 'projects/app-service-diagnostics/src/app/shared/services/site.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -49,6 +49,7 @@ import { ThemeService } from './theme/theme.service';
 import { GenericThemeService } from 'diagnostic-data';
 import { ClientScriptService } from './shared-v2/services/client-script.service';
 import { OpenAIArmService } from 'diagnostic-data';
+import { OptInsightsService } from './shared/services/optinsights/optinsights.service';
 
 @NgModule({
   imports: [
@@ -115,6 +116,7 @@ import { OpenAIArmService } from 'diagnostic-data';
     RiskAlertService,
     ThemeService,
     { provide: GenericThemeService, useExisting: ThemeService },
+    { provide: OptInsightsGenericService, useExisting: OptInsightsService }
   ],
   bootstrap: [AppComponent]
 })

@@ -1,0 +1,15 @@
+.slice {
+    text-decoration: underline dotted 2px;
+}
+
+.slice:hover .slice-icon,
+.slice:not(:hover) .slice-icon-hovered {
+    display: none;
+}
+.slice:hover .slice-icon-hovered,
+.slice:not(:hover) .slice-icon {
+    position: relative;
+    top: -0.4em;
+    height: 1em;
+    width: 1em;
+}

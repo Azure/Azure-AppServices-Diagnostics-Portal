@@ -476,7 +476,8 @@
              "azureCommImpactedServicesList": "staticSites",
             "pesId": "17265",
             "searchSuffix": "AZURE STATIC WEB APPS",
-            "displayName": "Static Web Apps"
+            "displayName": "Static Web Apps",
+            "workflowsEnabled": true
          },
         {
              "service": "ResourceService",
@@ -738,15 +739,15 @@
         },
         {
             "service": "ResourceService",
-            "resourceType": "Microsoft.DevCenter/projects",
-            "templateFileName": "DevCenter",
+            "resourceType": "Microsoft.DevCenter/devcenters",
+            "templateFileName": "Devbox",
             "imgSrc": "assets/img/Azure-DevBox-Logo.svg",
             "versionPrefix": "",
             "azureCommImpactedServicesList": "",
             "pesId": "17466",
             "staticSelfHelpContent": "",
-            "searchSuffix": "MICROSOFT DEV CENTER",
-            "displayName": "Microsoft Dev Center"
+            "searchSuffix": "MICROSOFT DEV BOX",
+            "displayName": "Microsoft Dev Box"
         },
         {
             "service": "ResourceService",
@@ -759,8 +760,7 @@
             "staticSelfHelpContent": "",
             "searchSuffix": "MICROSOFT GRAPH AUTHENTICATION AND AUTHORIZATION (AZURE AD)",
             "displayName": "Microsoft Graph Authentication and Authorization (Azure AD)"
-        }
-        ,
+        },
         {
             "service": "ResourceService",
             "resourceType": "Microsoft.AzurePlaywrightService/accounts",
@@ -772,6 +772,18 @@
             "staticSelfHelpContent": "",
             "searchSuffix": "MICROSOFT PLAYWRIGHT TESTING",
             "displayName": "Microsoft Playwright Testing"
-        }
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.DevCenter/devcenters",
+            "templateFileName": "ADE",
+            "imgSrc": "assets/img/Azure-ADE-Logo.svg",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "",
+            "pesId": "17897",
+            "staticSelfHelpContent": "",
+            "searchSuffix": "AZURE DEPLOYMENT ENVIRONMENT",
+            "displayName": "Azure Deployment Environments"
+        } 
     ]
 }

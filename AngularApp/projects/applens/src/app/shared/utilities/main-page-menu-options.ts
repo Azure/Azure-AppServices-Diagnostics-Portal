@@ -42,6 +42,15 @@ export const defaultResourceTypes: ResourceTypeState[] = [
       id: 'Static Web App'
     },
     {
+      resourceType: "Microsoft.ApiManagement/service",
+      resourceTypeLabel: 'APIM Service Name',
+      routeName: (name) => `armresourceurlfinder/Microsoft.ApiManagement/service/${name}`,
+      displayName: 'APIM Service',
+      enabled: true,
+      caseId: false,
+      id: 'APIM Service'
+    },
+    {
       resourceType: "Microsoft.Compute/virtualMachines",
       resourceTypeLabel: 'Virtual machine Id',
       routeName: (name) => getFakeArmResource('Microsoft.Compute', 'virtualMachines', name),

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, OnInit, QueryList, SimpleChanges, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ResourceService } from '../../../../shared/services/resource.service';
 import { GithubApiService } from '../../../../shared/services/github-api.service';
@@ -19,13 +19,14 @@ import { AdalService } from 'adal-angular4';
 import { WorkflowRootNodeComponent } from '../workflow-root-node/workflow-root-node.component';
 import { ForeachNodeComponent } from '../foreach-node/foreach-node.component';
 import { InputNodeComponent } from '../input-node/input-node.component';
+import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
 
 @Component({
   selector: 'create-workflow',
   templateUrl: './create-workflow.component.html',
   styleUrls: ['./create-workflow.component.scss']
 })
-export class CreateWorkflowComponent implements OnInit, AfterViewInit {
+export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges {
   loadingCode: boolean = false;
   resourceId: string = '';
   searchStr = "";
@@ -55,16 +56,36 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit {
   disabled = false;
   nodeType = nodeType;
   chosenNodeType: nodeType = nodeType.kustoQuery;
+  workflowJsonString: string = '';
 
   @Input() id: string = '';
+  @Input() Branch: string = '';
 
   constructor(private stepRegistry: NgFlowchartStepRegistry, private _workflowService: WorkflowService,
     private _route: ActivatedRoute, private resourceService: ResourceService, private _adalService: AdalService,
-    private githubService: GithubApiService) {
+    private githubService: GithubApiService, private diagnosticApiService: ApplensDiagnosticService) {
     this.callbacks.afterRender = this.afterRender.bind(this);
   }
 
   ngOnInit(): void {
+    this.initialize();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this.Branch) {
+      return;
+    }
+
+    let branchNameArray = this.Branch.split("/");
+    if (branchNameArray.length < 4) {
+      return;
+    }
+
+    this.id = this.Branch.split("/")[3];
+    this.initialize();
+  }
+
+  initialize() {
     this.service = this.resourceService.service;
     if (this.id === '') {
       this.publishBody.IsInternal = true;
@@ -82,35 +103,49 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit {
         }
       });
 
-      this.githubService.getConfiguration(this.id.toLowerCase()).subscribe(packageJson => {
-        this.publishBody.Id = packageJson.id;
-        this.publishBody.Author = packageJson.Author;
-        this.publishBody.Description = packageJson.Description;
-        this.publishBody.IsInternal = packageJson.IsInternal;
-        this.publishBody.WorkflowName = packageJson.name;
+      this.resourceId = this.resourceService.getCurrentResourceId();
+      this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/package.json`, this.Branch, this.resourceId).subscribe(resp => {
+        if (resp) {
+          let packageJson: object = JSON.parse(resp);
+          this.updateWorkflowMetadata(packageJson);
 
-        if (this.resourceService.service === 'SiteService') {
-          this.publishBody.AppType = packageJson.AppType;
-          this.publishBody.Platform = packageJson.PlatForm;
-          this.publishBody.StackType = packageJson.StackType;
-
-          this.updateMultiSelect(this.publishBody.StackType, this.selectStackType, this.stackTypes);
-          this.updateMultiSelect(this.publishBody.Platform, this.selectPlatformType, this.platformTypes);
-          this.updateMultiSelect(this.publishBody.AppType, this.selectAppType, this.appTypes);
+          this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/workflow.json`, this.Branch, this.resourceId).subscribe(workflowJsonResp => {
+            if (workflowJsonResp) {
+              this.canvas.getFlow().upload(workflowJsonResp);
+            }
+            this.loadingCode = false;
+          }, error => {
+            this.loadingCode = false;
+            this.error = error;
+          });
         }
-
-        this.githubService.getWorkflow(this.id.toLowerCase()).subscribe(workflowJson => {
-          this.canvas.getFlow().upload(workflowJson);
-        }, error => {
-          this.loadingCode = false;
-          this.error = error;
-        });
       }, error => {
         this.loadingCode = false;
         this.error = error;
       });
     }
+  }
 
+  updateWorkflowMetadata(packageJson: any) {
+    if (packageJson) {
+      this.publishBody.Id = packageJson.id;
+      this.publishBody.Author = packageJson.Author;
+      this.publishBody.Description = packageJson.Description;
+      this.publishBody.IsInternal = packageJson.IsInternal;
+      this.publishBody.WorkflowName = packageJson.name;
+
+      if (this.resourceService.service === 'SiteService') {
+        this.publishBody.AppType = packageJson.AppType;
+        this.publishBody.Platform = packageJson.PlatForm;
+        this.publishBody.StackType = packageJson.StackType;
+
+        if (this.publishBody) {
+          this.updateMultiSelect(this.publishBody.StackType, this.selectStackType, this.stackTypes);
+          this.updateMultiSelect(this.publishBody.Platform, this.selectPlatformType, this.platformTypes);
+          this.updateMultiSelect(this.publishBody.AppType, this.selectAppType, this.appTypes);
+        }
+      }
+    }
   }
 
   ngAfterViewInit() {
@@ -140,6 +175,16 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit {
       }
 
       this.addRootNode();
+    }
+
+    if (this.workflowJsonString) {
+      this.canvas.getFlow().upload(this.workflowJsonString);
+    }
+
+    if (this.publishBody) {
+      this.updateMultiSelect(this.publishBody.StackType, this.selectStackType, this.stackTypes);
+      this.updateMultiSelect(this.publishBody.Platform, this.selectPlatformType, this.platformTypes);
+      this.updateMultiSelect(this.publishBody.AppType, this.selectAppType, this.appTypes);
     }
   }
 

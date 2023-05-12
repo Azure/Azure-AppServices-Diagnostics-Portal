@@ -2,7 +2,7 @@
   <div [class.card-align]="!isExpandable && isAlign">
     <div *ngIf="isExpandable" class="btn-outer" [attr.aria-expanded]="ariaExpaned" [attr.aria-label]="ariaLabel">
       <button *ngIf="isExpandable" class="custom-caret" [class.custom-caret-down]="!expanded" (click)="toggleExpand()">
-        <fab-icon iconName="ChevronUp" ariaLabel="ChevronUp"></fab-icon>
+        <fab-icon iconName="ChevronUp" [ariaLabel]="ariaLabelChevronUp"></fab-icon>
       </button>
     </div>
   </div>

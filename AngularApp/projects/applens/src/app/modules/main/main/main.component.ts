@@ -60,6 +60,7 @@ export class MainComponent implements OnInit {
   inIFrame = false;
   errorMessage = "";
   status = HealthStatus.Critical;
+  targetPathBeforeError: string = "";
 
   fabDropdownOptions: IDropdownOption[] = [];
   fabDropdownStyles: IDropdownProps["styles"] = {
@@ -119,6 +120,9 @@ export class MainComponent implements OnInit {
     if (this._activatedRoute.snapshot.queryParams['caseNumberNeeded']) {
       this.caseNumberNeededForProduct = true;
     }
+    if (this._activatedRoute.snapshot.queryParams['targetPathBeforeError']) {
+      this.targetPathBeforeError = this._activatedRoute.snapshot.queryParams['targetPathBeforeError'];
+    }
     if (this._activatedRoute.snapshot.queryParams['resourceType']) {
       let foundResourceType = this.defaultResourceTypes.find(resourceType => resourceType.resourceType.toLowerCase() === this._activatedRoute.snapshot.queryParams['resourceType'].toLowerCase());
       if (!foundResourceType) {
@@ -136,7 +140,7 @@ export class MainComponent implements OnInit {
 
   validateCaseNumber() {
     if (!this.caseNumber || this.caseNumber.length < 12) {
-      this.caseNumberValidationError = "Case number too short. It should be a minimum of 12 digits.";
+      this.caseNumberValidationError = "Case number too short. It should be a minimum of 15 digits.";
       return false;
     }
     if (this.caseNumber.length > 18) {
@@ -279,7 +283,8 @@ export class MainComponent implements OnInit {
       { name: "App Service Environment", imgSrc: "assets/img/ASE-Logo.jpg" },
       { name: "Virtual Machine", imgSrc: "assets/img/Icon-compute-21-Virtual-Machine.svg" },
       { name: "Container App", imgSrc: "assets/img/Azure-ContainerApp-Logo.png" },
-      { name: "Internal Stamp", imgSrc: "assets/img/Cloud-Service-Logo.svg" }];
+      { name: "Internal Stamp", imgSrc: "assets/img/Cloud-Service-Logo.svg" },
+      { name: "APIM Service", imgSrc: "assets/img/Azure-ApiManagement-Logo.png"}];
 
     // TODO: Use this to restrict access to routes that don't match a supported resource type
     this._http.get<ResourceServiceInputsJsonResponse>('assets/enabledResourceTypes.json').subscribe(jsonResponse => {
@@ -367,6 +372,26 @@ export class MainComponent implements OnInit {
     }
   }
 
+  paramsToObject(entries) {
+    const result = {}
+    for(const [key, value] of entries) { // each 'entry' is a [key, value] tupple
+      result[key] = value;
+    }
+    return result;
+  }
+
+  extractQueryParams(url) {
+    try {
+      const anchor = document.createElement('a');  
+      anchor.href = url;  
+      const queryParams = new URLSearchParams(anchor.search);
+      return { url: anchor.pathname, queryParams: this.paramsToObject(queryParams)};
+    }
+    catch (err) {
+      return { url: url, queryParams: {}};
+    }
+  }
+
   onSubmit() {
     this._userSettingService.updateDefaultServiceType(this.selectedResourceType.id);
     if (!(this.caseNumber == "internal") && this.caseNumberNeededForUser && (this.selectedResourceType && this.caseNumberNeededForRP)) {
@@ -393,7 +418,7 @@ export class MainComponent implements OnInit {
     }
 
 
-    this._detectorControlService.setCustomStartEnd(this._detectorControlService.startTime, this._detectorControlService.endTime);
+    this._detectorControlService.setCustomStartEnd(this._detectorControlService.startTimeString, this._detectorControlService.endTimeString);
 
     let timeParams = {
       startTime: this._detectorControlService.startTimeString,
@@ -404,7 +429,18 @@ export class MainComponent implements OnInit {
       queryParams: {
         ...timeParams,
         ...!(this.caseNumber == "internal") && this.caseNumber ? { caseNumber: this.caseNumber } : {}
-      },
+      }
+    }
+
+    if (this.targetPathBeforeError && this.targetPathBeforeError.length>0) {
+      var extraction = this.extractQueryParams(this.targetPathBeforeError);
+      route = extraction.url;
+      //Case number should not be passed to the targeted path
+      if (extraction.queryParams.hasOwnProperty('caseNumber')) {
+        delete extraction.queryParams['caseNumber'];
+      }
+      
+      navigationExtras.queryParams = {...navigationExtras.queryParams, ...extraction.queryParams};
     }
 
     if (this.errorMessage === '') {

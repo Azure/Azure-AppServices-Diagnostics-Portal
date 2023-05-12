@@ -201,6 +201,18 @@ export const HomeRoutes = RouterModule.forChild([
                         }
                     },
                     {
+                        path: 'workflows/:workflowId',
+                        component: GenericDetectorComponent,
+                        data: {
+                            cacheComponent: true
+                        },
+                        resolve: {
+                            time: TimeControlResolver,
+                            navigationTitle: TabTitleResolver,
+                            uncategorizedDetector: UncategorizedDetectorsResolver,
+                        }
+                    },
+                    {
                         path: 'downloadReport/:detectorName',
                         component: DownloadReportComponent,
                         data: {
@@ -606,6 +618,17 @@ export const HomeRoutes = RouterModule.forChild([
             ,
             {
                 path: 'detectors/:detectorName',
+                component: GenericDetectorComponent,
+                data: {
+                    cacheComponent: true
+                },
+                resolve: {
+                    time: TimeControlResolver,
+                    navigationTitle: TabTitleResolver
+                }
+            },
+            {
+                path: 'workflows/:workflowId',
                 component: GenericDetectorComponent,
                 data: {
                     cacheComponent: true

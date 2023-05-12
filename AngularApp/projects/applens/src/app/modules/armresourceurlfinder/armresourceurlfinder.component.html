@@ -1,0 +1,6 @@
+<applens-header></applens-header>
+<div class="container-fluid main-container content-under-header">
+  <div class="big-text" *ngIf="loading">Searching for the resource ...</div>
+  <div class="big-text" *ngIf="!loading && error">{{error}}</div>
+  <div class="big-text" *ngIf="!loading && !error">Redirecting to {{armUrl}}</div>
+</div>

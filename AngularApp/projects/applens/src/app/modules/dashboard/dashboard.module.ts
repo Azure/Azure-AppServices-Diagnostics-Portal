@@ -128,13 +128,14 @@ import { WorkflowRootNodeComponent } from './workflow/workflow-root-node/workflo
 import { ApplensOpenAIChatService } from '../../shared/services/applens-openai-chat.service';
 import { GenericOpenAIChatService } from '../../../../../diagnostic-data/src/public_api';
 import { OpenAIArmService } from '../../../../../diagnostic-data/src/public_api';
-import { OpenAIChatComponent } from './openai-chat/openai-chat.component';
-import {ChatGPTContextService} from 'diagnostic-data';
+import { ChatUIContextService } from 'diagnostic-data';
 import { DevopsDeploymentsComponent } from './devops-deployments/devops-deployments.component';
 import { ForeachNodeComponent } from './workflow/foreach-node/foreach-node.component';
 import { WorkflowUserAccessComponent } from './workflow/workflow-user-access/workflow-user-access.component';
 import { InputNodeComponent } from './workflow/input-node/input-node.component';
 import { NetworkTraceAnalysisComponent } from './network-trace-analysis/network-trace-analysis.component';
+import * as moment from 'moment';
+import { ApplensOpenAIChatComponent } from './applens-openai-chat/applens-openai-chat.component';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -147,8 +148,8 @@ export class InitResolver implements Resolve<Observable<ResourceInfo>>{
         this._detectorControlService.updateTimePickerInfo({
             selectedKey: TimePickerOptions.Custom,
             selectedText: TimePickerOptions.Custom,
-            startDate: new Date(this._detectorControlService.startTimeString),
-            endDate: new Date(this._detectorControlService.endTimeString)
+            startMoment: moment.utc(this._detectorControlService.startTimeString),
+            endMoment: moment.utc(this._detectorControlService.endTimeString)
         });
 
         //Wait for getting UserSetting and update landingPage info before going to dashboard/detector page
@@ -570,7 +571,7 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         InitResolver,
         ApplensGlobals,
         ApplensOpenAIChatService,
-        ChatGPTContextService,
+        ChatUIContextService,
         OpenAIArmService,
         BreadcrumbService,
         ClientScriptService,
@@ -602,6 +603,8 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         L2SideNavComponent, UserActivePullrequestsComponent, FavoriteDetectorsComponent, ApplensDocsComponent, ApplensDocSectionComponent, CreateWorkflowComponent,
         IfElseConditionStepComponent, ConditionIftrueStepComponent, ConditionIffalseStepComponent, SwitchStepComponent, SwitchCaseStepComponent, SwitchCaseDefaultStepComponent,
         KustoQueryDialogComponent, DetectorNodeComponent, KustoNodeComponent, MarkdownNodeComponent, NodeActionsComponent, ConfigureVariablesComponent, CommonNodePropertiesComponent,
-        NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent, OpenAIChatComponent, WorkflowUserAccessComponent, ForeachNodeComponent, DevopsDeploymentsComponent, InputNodeComponent, NetworkTraceAnalysisComponent]
+        NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent,
+        WorkflowUserAccessComponent, ForeachNodeComponent, DevopsDeploymentsComponent, InputNodeComponent, NetworkTraceAnalysisComponent,
+        ApplensOpenAIChatComponent]
 })
 export class DashboardModule { }

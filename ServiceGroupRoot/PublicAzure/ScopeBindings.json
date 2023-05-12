@@ -155,6 +155,10 @@
         {
           "find": "__LOCATION__",
           "replaceWith": "West US 2"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "Applens.zip"
         }
       ]
     },
@@ -168,6 +172,10 @@
         {
           "find": "__LOCATION__",
           "replaceWith": "West Europe"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "Applens.zip"
         }
       ]
     },
@@ -181,6 +189,44 @@
         {
           "find": "__LOCATION__",
           "replaceWith": "East US"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "Applens.zip"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "DB3",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-db3"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "North Europe"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "Applens.zip"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "BAY",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-bay"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "West US"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "Applens.zip"
         }
       ]
     },

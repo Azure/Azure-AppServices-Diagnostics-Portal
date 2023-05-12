@@ -119,8 +119,10 @@ export class CategoryPageComponent implements OnInit {
                                 if (detector.type === DetectorType.Analysis) {
                                     this.navigateTo(`../../analysis/${detector.id}`);
                                 }
-                                else {
+                                else if (detector.type === DetectorType.Detector) {
                                     this.navigateTo(`../../detectors/${detector.id}`);
+                                } else if (detector.type === DetectorType.Workflow) {
+                                    this.navigateTo(`../../workflows/${detector.id}`);
                                 }
                             };
 

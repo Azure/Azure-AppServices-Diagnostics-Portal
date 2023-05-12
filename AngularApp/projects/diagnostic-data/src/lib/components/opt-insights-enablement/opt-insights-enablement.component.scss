@@ -1,0 +1,63 @@
+.banner {
+    background-color: var(--homeBannerProd);
+    min-height: 48px;
+    color: var(--bodyText);
+    display: table;
+    border-color: none;
+    padding-right: 30px;
+  }
+  
+  .banner-child {
+    display: table-cell;
+    vertical-align: middle;
+    width: 100vw;
+    margin: 10px;
+    border-color: none;
+  }
+
+.noHover:hover { 
+    background-color: inherit;     
+    opacity: 1.0;
+ }
+
+ .table {
+    /* Remove or override the CSS properties associated with hover */
+    background-color: inherit; /* var(--homeBannerProd);*/
+    color: var(--bodyText);
+    padding-right: 30px;
+    margin-top: 10px;
+}
+
+table th {
+    border-bottom: 1pt solid inherit;
+}
+
+.header {
+    background-color: inherit; /*var(--homeBannerProd);*/
+    color: var(--bodyText);
+    margin: 4px 0px;   
+    padding: 1px;     
+}
+
+.h2CodeOptimizations {
+  color: var(--bodyText);
+  font-size: 13px;  
+  font-weight: inherit;
+}
+
+.error {
+  background-color: inherit; /*var(--homeBannerProd);*/
+  color: var(--bodyText);
+}
+
+#app-root[theme=dark] a{ 
+  color: var(--linkCodeOptimizations) !important 
+}
+
+.linkCodeOptimizations { 
+  color: var(--linkCodeOptimizations) !important 
+}
+
+#_link_CodeOptimizations { 
+  color: var(--linkCodeOptimizations) !important 
+}

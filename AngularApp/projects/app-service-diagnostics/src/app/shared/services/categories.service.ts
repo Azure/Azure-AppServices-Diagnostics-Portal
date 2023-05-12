@@ -68,31 +68,42 @@ export class CategoriesService {
 
                 this._categories.push(category);
             }
-            if (detector.type === DetectorType.Analysis){
+            if (detector.type === DetectorType.Analysis) {
                 category.Subcategories.push(<Subcategory>{
                     Name: detector.name,
                     BgColor: '#1446a0',
                     TextColor: 'White',
-                    Href:  `${resourceId}/analysis/${detector.id}`,
+                    Href: `${resourceId}/analysis/${detector.id}`,
                     OperatingSystem: OperatingSystem.any,
                     AppStack: '',
                     AppType: AppType.WebApp | AppType.FunctionApp,
                     Sku: Sku.All
                 });
             }
-            else{
+            else if (detector.type === DetectorType.Detector) {
                 category.Subcategories.push(<Subcategory>{
                     Name: detector.name,
                     BgColor: '#1446a0',
                     TextColor: 'White',
-                    Href:  `${resourceId}/detectors/${detector.id}`,
+                    Href: `${resourceId}/detectors/${detector.id}`,
+                    OperatingSystem: OperatingSystem.any,
+                    AppStack: '',
+                    AppType: AppType.WebApp | AppType.FunctionApp,
+                    Sku: Sku.All
+                });
+            } else if (detector.type === DetectorType.Workflow) {
+                category.Subcategories.push(<Subcategory>{
+                    Name: detector.name,
+                    BgColor: '#1446a0',
+                    TextColor: 'White',
+                    Href: `${resourceId}/workflows/${detector.id}`,
                     OperatingSystem: OperatingSystem.any,
                     AppStack: '',
                     AppType: AppType.WebApp | AppType.FunctionApp,
                     Sku: Sku.All
                 });
             }
-            
+
         });
     }
 
@@ -113,7 +124,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         perf.Subcategories.push({
@@ -124,7 +135,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.linux,
             AppType: AppType.WebApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         perf.Subcategories.push({
@@ -135,7 +146,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows | OperatingSystem.linux,
             AppType: AppType.WebApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         perf.Subcategories.push({
@@ -146,7 +157,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         perf.Subcategories.push({
@@ -157,7 +168,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         perf.Subcategories.push({
@@ -168,7 +179,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         perf.Subcategories.push({
@@ -179,7 +190,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.linux,
             AppType: AppType.WebApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         perf.Subcategories.push({
@@ -190,7 +201,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp | AppType.FunctionApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         const tools = new Category();
@@ -208,7 +219,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp | AppType.FunctionApp,
             Sku: Sku.NotDynamic,
-            AppStack : 'ASP.Net'
+            AppStack: 'ASP.Net'
         });
 
         tools.Subcategories.push({
@@ -219,7 +230,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp | AppType.FunctionApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         tools.Subcategories.push({
@@ -230,7 +241,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp | AppType.FunctionApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         tools.Subcategories.push({
@@ -241,7 +252,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp | AppType.FunctionApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         tools.Subcategories.push({
@@ -252,7 +263,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp | AppType.FunctionApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         tools.Subcategories.push({
@@ -263,7 +274,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp | AppType.FunctionApp,
             Sku: Sku.NotDynamic,
-            AppStack : ''
+            AppStack: ''
         });
 
         tools.Subcategories.push({
@@ -274,7 +285,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp | AppType.FunctionApp,
             Sku: Sku.NotDynamic,
-            AppStack : 'Java'
+            AppStack: 'Java'
         });
 
         tools.Subcategories.push({
@@ -285,7 +296,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp | AppType.FunctionApp,
             Sku: Sku.NotDynamic,
-            AppStack : 'Java'
+            AppStack: 'Java'
         });
 
         tools.Subcategories.push({
@@ -296,7 +307,7 @@ export class CategoriesService {
             OperatingSystem: OperatingSystem.windows,
             AppType: AppType.WebApp | AppType.FunctionApp,
             Sku: Sku.NotDynamic,
-            AppStack : 'Java'
+            AppStack: 'Java'
         });
 
         this._categories.push(perf);

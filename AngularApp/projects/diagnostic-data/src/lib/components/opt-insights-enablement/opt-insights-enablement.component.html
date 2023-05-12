@@ -1,0 +1,75 @@
+<div *ngIf="loading">
+    <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+    Verifying Code Optimization insights...
+</div>
+<div>
+    <div *ngIf="!loading">
+        <div *ngIf="!error; else errorOptInsights">
+            <div *ngIf="!loading && table.length > 0">
+                <div class="header" tabIndex="0">
+                    <span class="fxs-blade-header-icon" id="_weave_e_1001">
+                        <img src="assets/img/azure-icons/AzureOptInsights.svg" alt="" class="linkCodeOptimizations">
+                        <h2 class="h2CodeOptimizations" aria-label="Code Optimizations found code recommendations:">
+                            Code Optimizations found code recommendations:
+                        </h2>
+                    </span>
+                </div>
+                <table class="table table-responsive no-border" class="table">
+                    <thead>
+                        <tr>
+                            <th tabIndex="0">Type</th>
+                            <th tabIndex="0">Performance issue</th>
+                            <th tabIndex="0">Component</th>
+                            <th tabIndex="0">Count</th>
+                            <th tabIndex="0">Impact</th>
+                            <th tabIndex="0">Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of table" style="font-size:13px">
+                            <td tabIndex="0">{{item.type}}</td>
+                            <td tabIndex="0"><a href="#" (click)="openOptInsightsBladewithTimeRange()"
+                                    class="linkCodeOptimizations">{{item.issue}}</a></td>
+                            <td tabIndex="0">{{item.component}}</td>
+                            <td tabIndex="0">{{item.count}}</td>
+                            <td tabIndex="0">{{item.impact}}</td>
+                            <td tabIndex="0">{{item.role}}</td>
+                        </tr>
+                    </tbody>
+                    <div class="header" tabIndex="0">
+                        <span class="fxs-blade-header-icon" id="_weave_e_1001">
+                            For more Insights, go to <a class="linkCodeOptimizations" id="_link_CodeOptimizations"
+                                href="#" (click)="openOptInsightsBladewithTimeRange()">Code
+                                Optimizations</a>
+                        </span>
+                    </div>
+                </table>
+            </div>
+            <div *ngIf="!loading && table.length === 0" tabIndex="0">
+                <div class="header" tabIndex="0">
+                    <span class="fxs-blade-header-icon" id="_weave_e_1001">                        
+                        <h2 class="h2CodeOptimizations">
+                            <img src="assets/img/azure-icons/AzureOptInsights.svg" alt="" class="linkCodeOptimizations">
+                            There are no Code Optimizations insights for this application. Insights are generated from
+                            profiles
+                            and no profiles have been uploaded for the selected time range. Please change to a different
+                            time range or follow the <a href="https://aka.ms/serviceprofiler"
+                                class="linkCodeOptimizations">instructions</a> to enable the Application Insights
+                            Profiler for this application. For more questions, visit our <a
+                                href="https://aka.ms/CodeOptimizationsTroubleshooting"
+                                class="linkCodeOptimizations">Troubleshooting guide</a>.
+                        </h2>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ng-template #errorOptInsights>
+        <div class="header">
+            <span class="fxs-blade-header-icon" id="_weave_e_1001">
+                <img src="assets/img/azure-icons/AzureOptInsights.svg" alt="" class="linkCodeOptimizations">
+                Error while calling Code Optimizations. Please try again later.
+            </span>
+        </div>
+    </ng-template>
+</div>

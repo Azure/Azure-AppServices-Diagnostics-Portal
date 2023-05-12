@@ -17,7 +17,7 @@
     <toggle-button ToggleText="Proactive Auto-Heal" [selected]="proactiveAutoHealEnabled"
       (selectedChange)="proactiveAutoHealEnabled = $event;checkForChanges()"></toggle-button>
 
-    <div *ngIf="!retrievingProactiveSettings  && !errorMessage && saveEnabled" class="alert alert-danger alert-section">
+    <div *ngIf="!retrievingProactiveSettings  && !errorMessage && saveEnabled" class="alert alert-danger alert-section" role="alert">
       <strong>CAUTION</strong>: Saving pro-active autoheal settings will restart the application domain
       for the web app and this can cause logged-in user information, sessions, and in-memory cache to be cleared.
       Hence, it is advised to make these changes during non-business hours.
