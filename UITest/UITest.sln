@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiagPortalTest", "DiagPortalTest\DiagPortalTest.csproj", "{CD6B5760-BFBF-459F-8E80-01BDADBFAD7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITestUtilities", "UITestUtilities\UITestUtilities.csproj", "{2B4EB64C-4119-49F3-A628-F168819AB161}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{CD6B5760-BFBF-459F-8E80-01BDADBFAD7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD6B5760-BFBF-459F-8E80-01BDADBFAD7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD6B5760-BFBF-459F-8E80-01BDADBFAD7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B4EB64C-4119-49F3-A628-F168819AB161}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B4EB64C-4119-49F3-A628-F168819AB161}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B4EB64C-4119-49F3-A628-F168819AB161}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B4EB64C-4119-49F3-A628-F168819AB161}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
