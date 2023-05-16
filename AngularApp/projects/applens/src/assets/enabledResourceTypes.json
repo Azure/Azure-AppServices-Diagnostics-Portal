@@ -683,6 +683,7 @@
             "templateFileName": "AIP",
             "imgSrc": "assets/img/Azure-Aip-Logo.svg",
             "versionPrefix": "",
+            "isNoResourceFlow": true,
             "azureCommImpactedServicesList": "",
             "pesId": "14997",
             "staticSelfHelpContent": "",
@@ -707,6 +708,7 @@
             "templateFileName": "Billing",
             "imgSrc": "assets/img/Azure-Cost-Logo.svg",
             "versionPrefix": "",
+            "isNoResourceFlow": true,
             "azureCommImpactedServicesList": "",
             "pesId": "15659",
             "staticSelfHelpContent": "",
@@ -746,8 +748,8 @@
             "azureCommImpactedServicesList": "",
             "pesId": "17466",
             "staticSelfHelpContent": "",
-            "searchSuffix": "MICROSOFT DEV BOX",
-            "displayName": "Microsoft Dev Box"
+            "searchSuffix": "AZURE DEV CENTERS",
+            "displayName": "Azure Dev Centers"
         },
         {
             "service": "ResourceService",
@@ -755,6 +757,7 @@
             "templateFileName": "GraphAuth",
             "imgSrc": "assets/img/Graph-Auth-Logo.svg",
             "versionPrefix": "",
+            "isNoResourceFlow": true,
             "azureCommImpactedServicesList": "",
             "pesId": "16952",
             "staticSelfHelpContent": "",

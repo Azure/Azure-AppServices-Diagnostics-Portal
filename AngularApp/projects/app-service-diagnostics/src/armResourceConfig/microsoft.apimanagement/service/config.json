@@ -87,7 +87,7 @@
       "color": "rgb(186, 211, 245)",
       "createFlowForCategory": true,
       "chatEnabled": false,
-      "overviewDetectorId": ""
+      "overviewDetectorId": "apim-diagnostic-tools-overview"
     }
   ],
   "quickLinks": [

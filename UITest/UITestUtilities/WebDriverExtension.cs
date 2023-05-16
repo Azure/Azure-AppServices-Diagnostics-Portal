@@ -4,8 +4,7 @@ using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
-
-namespace DiagPortalTest
+namespace UITestUtilities
 {
     public static class WebDriverExtensions
     {

@@ -1,17 +1,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Extensions.Configuration;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Identity;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using UITestUtilities;
+using System.Collections.Generic;
 
 namespace DiagPortalTest
 {
@@ -51,19 +48,17 @@ namespace DiagPortalTest
 
             GetPassword();
 
-            var chromeOption = new ChromeOptions();
-            var extensionPath = $"{Directory.GetCurrentDirectory()}\\windows10.crx";
-            chromeOption.AddExtension(extensionPath);
+            var extensions = new List<string> { $"{Directory.GetCurrentDirectory()}\\windows10.crx" };
+            var arguments = new List<string>();
             if (_isProd)
             {
-                chromeOption.AddArgument("headless");
+                arguments.Add("headless");
             }
             else
             {
-                chromeOption.AddArgument("--incognito");
+                arguments.Add("--incognito");
             }
-
-            _driver = new ChromeDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), chromeOption);
+            _driver = BroswerUtilities.GetBroswer(BroswerType.Chrome, arguments, extensions);
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
 
             Console.WriteLine("Setup Driver Success");
@@ -92,7 +87,7 @@ namespace DiagPortalTest
         {
             try
             {
-                _driver.Navigate().GoToUrl("https://ms.portal.azure.com/#home");
+                _driver.Navigate().GoToUrl(_portalBaseUrl);
                 Thread.Sleep(1000);
                 Console.WriteLine("Login Start");
                 _driver.FindElement(By.Id("i0116")).SendKeys(_email);
@@ -101,18 +96,16 @@ namespace DiagPortalTest
 
                 Console.WriteLine("Enter Email Success");
 
-                _driver.FindElement(By.XPath("//span[text()='Password']")).Click();
+                _driver.FindElement(By.Id("FormsAuthentication")).Click();
                 Thread.Sleep(500);
                 _driver.FindElement(By.Id("passwordInput")).SendKeys(_password);
                 _driver.FindElement(By.Id("submitButton")).Click();
 
                 Console.WriteLine("Enter Password Success");
 
-                var staySignedInPage = _driver.FindElement(By.XPath("//div[text()='Stay signed in?']"));
-                if (staySignedInPage != null)
-                {
-                    _driver.FindElement(By.XPath("//input[@value='Yes']")).Click();
-                }
+
+                //Click "Yes" button
+                _driver.FindElement(By.Id("idSIButton9")).Click();
                 Console.WriteLine("Login Success");
             }
             catch (Exception e)
@@ -195,46 +188,6 @@ namespace DiagPortalTest
         {
             string value = Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.User) ?? string.Empty;
             return value;
-        }
-    }
-
-
-
-    public class JsonFileTestDataAttribute<T> : Attribute, ITestDataSource where T : class
-    {
-        private Dictionary<string, T> _data;
-
-        public JsonFileTestDataAttribute(string filePath)
-        {
-            var path = Path.IsPathRooted(filePath) ? filePath : Path.GetRelativePath(Directory.GetCurrentDirectory(), filePath);
-
-
-            if (!File.Exists(path))
-            {
-                throw new ArgumentException($"Could not find file at path: {path}");
-            }
-
-            var fileData = File.ReadAllText(filePath);
-            _data = JObject.Parse(fileData).ToObject<Dictionary<string, T>>();
-        }
-
-
-        public IEnumerable<object[]> GetData(MethodInfo methodInfo)
-        {
-
-            foreach (var entry in _data)
-            {
-                yield return new object[] { entry.Key, entry.Value };
-            }
-        }
-
-        public string GetDisplayName(MethodInfo methodInfo, object[] data)
-        {
-            if (data != null)
-            {
-                return string.Format("{0}({1})", methodInfo.Name, data[0]);
-            }
-            return null;
         }
     }
 }
