@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { catchError, flatMap, map, mergeMap } from 'rxjs/operators';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 import { Inject, Injectable } from '@angular/core';
 import { RESOURCE_SERVICE_INPUTS, ResourceServiceInputs, ResourceInfo } from '../models/resources';
 import { ObserverService } from './observer.service';
@@ -26,7 +26,7 @@ export class SiteService extends ResourceService {
                 map((observerResponse: ObserverSiteResponse) => {
                     const siteObject = this.getSiteFromObserverResponse(observerResponse);
                     return siteObject;
-                }), flatMap(site => {
+                }), mergeMap(site => {
                     return this._observerApiService.getSiteSku(site.InternalStampName, site.SiteName).pipe(
                         map((siteSku: any) => {
                             if(siteSku == "Resource Not Found. API : GetSiteSku") {
