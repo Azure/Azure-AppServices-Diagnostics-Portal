@@ -9,7 +9,6 @@ import { SiteService } from '../../shared/services/site.service';
 import { CategoryService } from '../../shared-v2/services/category.service';
 import { PortalActionService } from '../../shared/services/portal-action.service';
 import { StartupInfo } from '../../shared/models/portal';
-import { VersionTestService } from '../../fabric-ui/version-test.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ToolIds, ToolNames } from '../../shared/models/tools-constants';
@@ -25,100 +24,79 @@ export class FeatureService {
   protected _features: Feature[] = [];
   protected categories: Category[] = [];
   public featureSub: BehaviorSubject<Feature[]> = new BehaviorSubject<Feature[]>([]);
-  protected isLegacy: boolean;
   protected _featureDisplayOrderSub: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
   public diagnosticToolsForNonWeb: any[] = [];
   protected set _featureDisplayOrder(order: any[]) {
     this._featureDisplayOrderSub.next(order);
   }
   constructor(protected _diagnosticApiService: DiagnosticService, protected _contentService: ContentService, protected _router: Router, protected _authService: AuthService,
-    protected _logger: TelemetryService, protected _siteService: SiteService, protected _categoryService: CategoryService, protected _activatedRoute: ActivatedRoute, protected _portalActionService: PortalActionService, protected versionTestService: VersionTestService) {
-    this.versionTestService.isLegacySub.subscribe(isLegacy => {
-      this.isLegacy = isLegacy;
-      this._authService.getStartupInfo().subscribe(startupInfo => {
-        this.addDiagnosticToolsForNonWeb(startupInfo.resourceId);
-        this._diagnosticApiService.getDetectors().subscribe(detectors => {
-          this._categoryService.categories.subscribe(categories => {
-            this._detectors = detectors;
-            if (categories.length > 0) {
-              this.categories = categories;
-            }
-            detectors.forEach(detector => {
-              if (this.validateDetectorMetadata(detector)) {
-                this._rewriteCategory(detector);
-                const categoryId = this.getCategoryIdByCategoryName(detector.category);
-                const categoryName = this.getCategoryNameByCategoryId(categoryId);
-                if (detector.type === DetectorType.Detector) {
-                  this._features.push(<Feature>{
-                    id: detector.id,
-                    description: detector.description,
-                    category: detector.category,
-                    featureType: DetectorType.Detector,
-                    name: detector.name,
-                    clickAction: this._createFeatureAction(detector.name, categoryName, () => {
-                      //Remove after A/B test
-                      if (this.isLegacy) {
-                        if (detector.id === 'appchanges') {
-                          this._portalActionService.openChangeAnalysisBlade();
-                        } else {
-                          this._router.navigateByUrl(`resource${startupInfo.resourceId}/detectors/${detector.id}`);
-                        }
-                      } else {
-                        this.navigatTo(startupInfo, categoryId, detector.id, DetectorType.Detector);
-                      }
-                    })
-                  });
-                } else if (detector.type === DetectorType.Analysis) {
-                  this._features.push(<Feature>{
-                    id: detector.id,
-                    description: detector.description,
-                    category: categoryName,
-                    featureType: DetectorType.Analysis,
-                    name: detector.name,
-                    clickAction: this._createFeatureAction(detector.name, categoryName, () => {
-                      if (this.isLegacy) {
-                        this._router.navigateByUrl(`resource${startupInfo.resourceId}/analysis/${detector.id}`);
-                      } else {
-                        this.navigatTo(startupInfo, categoryId, detector.id, DetectorType.Analysis);
-                      }
-                    })
-                  });
-                } else if (detector.type === DetectorType.Workflow) {
-                  this._features.push(<Feature>{
-                    id: detector.id,
-                    description: detector.description,
-                    category: categoryName,
-                    featureType: DetectorType.Workflow,
-                    name: detector.name,
-                    clickAction: this._createFeatureAction(detector.name, categoryName, () => {
-                      if (this.isLegacy) {
-                        this._router.navigateByUrl(`resource${startupInfo.resourceId}/workflows/${detector.id}`);
-                      } else {
-                        this.navigatTo(startupInfo, categoryId, detector.id, DetectorType.Workflow);
-                      }
-                    })
-                  });
-                }
+    protected _logger: TelemetryService, protected _siteService: SiteService, protected _categoryService: CategoryService, protected _activatedRoute: ActivatedRoute, protected _portalActionService: PortalActionService) {
+    this._authService.getStartupInfo().subscribe(startupInfo => {
+      this.addDiagnosticToolsForNonWeb(startupInfo.resourceId);
+      this._diagnosticApiService.getDetectors().subscribe(detectors => {
+        this._categoryService.categories.subscribe(categories => {
+          this._detectors = detectors;
+          if (categories.length > 0) {
+            this.categories = categories;
+          }
+          detectors.forEach(detector => {
+            if (this.validateDetectorMetadata(detector)) {
+              this._rewriteCategory(detector);
+              const categoryId = this.getCategoryIdByCategoryName(detector.category);
+              const categoryName = this.getCategoryNameByCategoryId(categoryId);
+              if (detector.type === DetectorType.Detector) {
+                this._features.push(<Feature>{
+                  id: detector.id,
+                  description: detector.description,
+                  category: detector.category,
+                  featureType: DetectorType.Detector,
+                  name: detector.name,
+                  clickAction: this._createFeatureAction(detector.name, categoryName, () => {
+                    this.navigatTo(startupInfo, categoryId, detector.id, DetectorType.Detector);
+                  })
+                });
+              } else if (detector.type === DetectorType.Analysis) {
+                this._features.push(<Feature>{
+                  id: detector.id,
+                  description: detector.description,
+                  category: categoryName,
+                  featureType: DetectorType.Analysis,
+                  name: detector.name,
+                  clickAction: this._createFeatureAction(detector.name, categoryName, () => {
+                    this.navigatTo(startupInfo, categoryId, detector.id, DetectorType.Analysis);
+                  })
+                });
+              } else if (detector.type === DetectorType.Workflow) {
+                this._features.push(<Feature>{
+                  id: detector.id,
+                  description: detector.description,
+                  category: categoryName,
+                  featureType: DetectorType.Workflow,
+                  name: detector.name,
+                  clickAction: this._createFeatureAction(detector.name, categoryName, () => {
+                    this.navigatTo(startupInfo, categoryId, detector.id, DetectorType.Workflow);
+                  })
+                });
               }
-            });
-            this.sortFeatures();
-            this.featureSub.next(this._features);
+            }
           });
+          this.sortFeatures();
+          this.featureSub.next(this._features);
         });
       });
+    });
 
-      this._contentService.getContent().subscribe(articles => {
-        articles.forEach(article => {
-          this._features.push(<Feature>{
-            id: article.title,
-            name: article.title,
-            description: article.description,
-            category: '',
-            featureType: "Documentation",
-            clickAction: this._createFeatureAction(article.title, 'Content', () => {
-              window.open(article.link, '_blank');
-            })
-          });
+    this._contentService.getContent().subscribe(articles => {
+      articles.forEach(article => {
+        this._features.push(<Feature>{
+          id: article.title,
+          name: article.title,
+          description: article.description,
+          category: '',
+          featureType: "Documentation",
+          clickAction: this._createFeatureAction(article.title, 'Content', () => {
+            window.open(article.link, '_blank');
+          })
         });
       });
     });
@@ -181,15 +159,8 @@ export class FeatureService {
 
     searchValue = searchValue.toLowerCase();
     return featureUnique.filter(feature => {
-      //Remove after A/B Test
-      if (this.isLegacy) {
-        return feature.name.toLowerCase().indexOf(searchValue) != -1
-          || (feature.category && feature.category.toLowerCase().indexOf(searchValue) != -1)
-          || (feature.description && feature.description.toLowerCase().indexOf(searchValue) != -1);
-      } else {
-        return feature.name.toLowerCase().indexOf(searchValue) != -1
-          || (feature.category && feature.category.toLowerCase().indexOf(searchValue) != -1);
-      }
+      return feature.name.toLowerCase().indexOf(searchValue) != -1
+        || (feature.category && feature.category.toLowerCase().indexOf(searchValue) != -1);
     });
   }
   getCategoryIdByhDetectorId(detectorId: string): string {
@@ -265,7 +236,7 @@ export class FeatureService {
   }
 
   private validateDetectorMetadata(detector: DetectorMetaData): boolean {
-    if (!this.isLegacy && exclusiveDetectorTypes.findIndex(type => detector.type === type) > -1) return false;
+    if (exclusiveDetectorTypes.findIndex(type => detector.type === type) > -1) return false;
     if (this._features.findIndex(f => f.id === detector.id) > -1) return false;
 
     return (detector.category && detector.category.length > 0) || (detector.description && detector.description.length > 0)

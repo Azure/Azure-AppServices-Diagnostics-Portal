@@ -1,7 +1,7 @@
 import {
   CommsService, DiagnosticDataModule, DiagnosticService, DiagnosticSiteService,
   PUBLIC_DEV_CONFIGURATION, PUBLIC_PROD_CONFIGURATION, SolutionService, SettingsService,
-  BackendCtrlQueryService, GenieGlobals, VersionService, PortalActionGenericService,
+  BackendCtrlQueryService, GenieGlobals, PortalActionGenericService,
   KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService, GenericFeatureService, OptInsightsGenericService
 } from 'diagnostic-data';
 import { SiteService } from 'projects/app-service-diagnostics/src/app/shared/services/site.service';
@@ -39,7 +39,6 @@ import { SupportTopicService } from './shared-v2/services/support-topic.service'
 import { ResourceResolver } from './home/resolvers/resource.resolver';
 import { ResourcesModule } from './resources/resources.module';
 import { WebSitesModule } from './resources/web-sites/web-sites.module';
-import { VersionTestService } from './fabric-ui/version-test.service';
 import { BackendCtrlService } from './shared/services/backend-ctrl.service';
 import { PortalActionService} from './shared/services/portal-action.service';
 import { FabricModule } from './fabric-ui/fabric.module';
@@ -109,7 +108,6 @@ import { OptInsightsService } from './shared/services/optinsights/optinsights.se
     LoggingV2Service,
     SupportTopicService,
     ResourceResolver,
-    { provide: VersionService, useExisting: VersionTestService },
     { provide: BackendCtrlQueryService, useExisting: BackendCtrlService },
     { provide: PortalActionGenericService, useExisting: PortalActionService},
     QuickLinkService,

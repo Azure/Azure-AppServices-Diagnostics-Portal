@@ -4,7 +4,6 @@ import { ArmService } from '../../shared/services/arm.service';
 import { Observable, pipe } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ResponseMessageEnvelope } from '../models/responsemessageenvelope';
-import { VersionTestService } from '../../fabric-ui/version-test.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,14 +13,11 @@ export class PortalSettingsService {
   resource: any;
   resourceId: string;
   scanEnabled: boolean = false;
-  constructor(private authService: AuthService, private armService: ArmService, private versionTestService: VersionTestService) {
+  constructor(private authService: AuthService, private armService: ArmService) {
     this.authService.getStartupInfo().subscribe(data => {
       this.resourceId = data.resourceId;
-      this.settingsUrl = `/resource${data.resourceId}/settings`;
       // This needs to be mapped to dynamic category once we expand this to other resource types.
-      this.versionTestService.isLegacySub.subscribe(isLegacy => {
-        this.settingsUrl = isLegacy ? `/resource${data.resourceId}/settings`:`/resource${data.resourceId}/categories/AvailabilityAndPerformanceWindows/settings`;
-      });
+      this.settingsUrl = `/resource${data.resourceId}/categories/AvailabilityAndPerformanceWindows/settings`;
     });
   }
 
