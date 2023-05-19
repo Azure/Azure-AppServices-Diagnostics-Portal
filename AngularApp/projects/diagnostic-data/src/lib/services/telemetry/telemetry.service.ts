@@ -5,7 +5,6 @@ import { AppInsightsTelemetryService } from './appinsights-telemetry.service';
 import { KustoTelemetryService } from './kusto-telemetry.service';
 import { BehaviorSubject } from 'rxjs';
 import { SeverityLevel } from '../../models/telemetry';
-import { VersionService } from '../version.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DiagnosticSiteService } from '../diagnostic-site.service';
 import { HttpClient } from '@angular/common/http';
@@ -16,15 +15,12 @@ export class TelemetryService {
     private telemetryProviders: ITelemetryProvider[] = [];
     eventPropertiesSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
     private eventPropertiesLocalCopy: { [name: string]: string } = {};
-    private slot: string = "";
-    private isLegacy: boolean;
-    private initializedPortalVersion: string = "v2";
     private isPublic: boolean;
     private ticketBladeWorkflowId: string = "";
     private enabledResourceTypes: { resourceType: string, searchSuffix: string }[] = [];
     private commonProperties: { [name: string]: string } = {};
     constructor(private _appInsightsService: AppInsightsTelemetryService, private _kustoService: KustoTelemetryService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _versionService: VersionService, private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticSiteService: DiagnosticSiteService, private _http: HttpClient, private _genericPortalService: GenericPortalService) {
+        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticSiteService: DiagnosticSiteService, private _http: HttpClient, private _genericPortalService: GenericPortalService) {
         if (config.useKustoForTelemetry) {
             this.telemetryProviders.push(this._kustoService);
         }
@@ -41,9 +37,6 @@ export class TelemetryService {
                 }
             }
         });
-        this._versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
-        this._versionService.initializedPortalVersion.subscribe(initializedVersion => this.initializedPortalVersion = initializedVersion);
-        this._versionService.slot.subscribe(slot => this.slot = slot);
         this._http.get<any>('assets/enabledResourceTypes.json').subscribe(res => {
             this.enabledResourceTypes = res.enabledResourceTypes;
         });
@@ -172,8 +165,6 @@ export class TelemetryService {
     }
 
     private addProperties(): void {
-        this.commonProperties["portalVersion"] = this.isLegacy ? 'v2' : 'v3';
-        this.commonProperties["slot"] = this.slot;
         if (!(this.commonProperties["url"] || this.commonProperties["Url"])) {
             this.commonProperties["url"] = this._router.url;
         }

@@ -4,14 +4,12 @@ import { DetectorControlService } from '../../services/detector-control.service'
 import { ActivatedRoute, Router, UrlSegment } from '@angular/router';
 import { DetectorResponse, RenderingType, DownTime } from '../../models/detector';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { VersionService } from '../../services/version.service';
 import { Moment } from 'moment';
 import * as momentNs from 'moment';
 import { XAxisSelection, zoomBehaviors } from '../../models/time-series';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 import { Inject } from '@angular/core';
 import { FeatureNavigationService } from '../../services/feature-navigation.service';
-import { switchMap } from 'rxjs/operators';
 const moment = momentNs;
 
 const hideTimePickerDetectors: string[] = [
@@ -78,12 +76,11 @@ export class DetectorContainerComponent implements OnInit {
   @Output() downTimeChanged: EventEmitter<DownTime> = new EventEmitter<DownTime>();
 
   isCategoryOverview: boolean = false;
-  private isLegacy: boolean;
 
 
 
   constructor(private _route: ActivatedRoute, private _diagnosticService: DiagnosticService,
-    public detectorControlService: DetectorControlService, private versionService: VersionService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private featureNavigationService: FeatureNavigationService, private router: Router) {
+    public detectorControlService: DetectorControlService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private featureNavigationService: FeatureNavigationService, private router: Router) {
     this.isPublic = config && config.isPublic;
   }
 
@@ -98,13 +95,7 @@ export class DetectorContainerComponent implements OnInit {
   }
 
   public initialize(): void {
-    this.versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
-    //Remove after A/B Test
-    if (this.isLegacy) {
-      this.hideTimerPicker = false;
-    } else {
-      this.hideTimerPicker = this.hideDetectorControl || this._route.snapshot.parent.url.findIndex((x: UrlSegment) => x.path === "categories") > -1;
-    }
+    this.hideTimerPicker = this.hideDetectorControl || this._route.snapshot.parent.url.findIndex((x: UrlSegment) => x.path === "categories") > -1;
 
     this.detectorRefreshSubscription = this.detectorControlService.update.subscribe(isValidUpdate => {
       if (isValidUpdate && this.detectorName) {
@@ -166,40 +157,11 @@ export class DetectorContainerComponent implements OnInit {
 
   public get getStartTime(): Moment {
     let startTime: Moment = this.detectorControlService.startTime;
-    // const startTimeChildDetector: string = this._route.snapshot.queryParams['startTimeChildDetector'];
-    // //If it is analysisView or no startTimeChildDetector query param -> use startTime
-    // if (this.isAnalysisView || !startTimeChildDetector) {
-    //   return startTime;
-    // }
-
-    // if (!!startTimeChildDetector && startTimeChildDetector.length > 1 && moment.utc(startTimeChildDetector).isValid()) {
-    //   startTime = moment.utc(startTimeChildDetector);
-    //   this.startTimeChildDetector = startTime;
-    // }
-    // else {
-    //   if (!!this.startTimeChildDetector && this.startTimeChildDetector.isValid()) {
-    //     startTime = this.startTimeChildDetector;
-    //   }
-    // }
     return startTime;
   }
 
   public get getEndTime(): Moment {
     let endTime: Moment = this.detectorControlService.endTime;
-    // let endTimeChildDetector: string = this._route.snapshot.queryParams['endTimeChildDetector'];
-    // if (this.isAnalysisView || !endTimeChildDetector) {
-    //   return endTime;
-    // }
-
-    // if (!!endTimeChildDetector && endTimeChildDetector.length > 1 && moment.utc(endTimeChildDetector).isValid()) {
-    //   endTime = moment.utc(endTimeChildDetector);
-    //   this.endTimeChildDetector = endTime;
-    // }
-    // else {
-    //   if (!!this.endTimeChildDetector && this.endTimeChildDetector.isValid()) {
-    //     endTime = this.endTimeChildDetector;
-    //   }
-    // }
     return endTime;
   }
 
@@ -234,19 +196,6 @@ export class DetectorContainerComponent implements OnInit {
       }
     });
 
-    //If not in analysis view and not change from time picker(change from time picker will remove startTimeChildDetector/endTimeChildDetector) => replace XXXTimeChildDetector to startTime/endTime
-    // if (!this.isAnalysisView && !this.detectorControlService.changeFromTimePicker && allRouteQueryParams['startTimeChildDetector'] && allRouteQueryParams['endTimeChildDetector']) {
-    //   const startTimeChildDetector: string = allRouteQueryParams['startTimeChildDetector'];
-    //   const endTimeChildDetector: string = allRouteQueryParams['endTimeChildDetector'];
-    //   if (startTimeChildDetector != null) {
-    //     startTime = startTimeChildDetector;
-    //   }
-
-    //   if (endTimeChildDetector != null) {
-    //     endTime = endTimeChildDetector;
-    //   }
-    // }
-
     if (this.isWorkflowDetector) {
 
       //
@@ -269,13 +218,7 @@ export class DetectorContainerComponent implements OnInit {
   shouldHideTimePicker(response: DetectorResponse) {
     if (response && response.dataset && response.dataset.length > 0) {
       const cardRenderingIndex = response.dataset.findIndex(data => data.renderingProperties.type == RenderingType.Cards);
-
-      //Remove after A/B Test
-      if (this.isLegacy) {
-        this.hideDetectorControl = cardRenderingIndex >= 0;
-      } else {
-        this.hideDetectorControl = cardRenderingIndex >= 0 || this.hideDetectorControl;
-      }
+      this.hideDetectorControl = cardRenderingIndex >= 0 || this.hideDetectorControl;
 
     }
   }
