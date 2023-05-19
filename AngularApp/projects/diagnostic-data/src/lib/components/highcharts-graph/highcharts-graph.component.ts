@@ -6,7 +6,7 @@ import AccessibilityModule from 'highcharts/modules/accessibility';
 import { DetectorControlService } from '../../services/detector-control.service';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection } from '../../models/time-series';
 import { KeyValue } from '@angular/common';
-import { PointerEventObject, SelectEventObject } from 'highcharts';
+import { PointerEventObject, SVGAttributes, SelectEventObject } from 'highcharts';
 import { interval, Subscription } from 'rxjs';
 import { GenericThemeService } from '../../services/generic-theme.service';
 import { HighChartsHoverService } from '../../services/highcharts-hover.service';
@@ -18,14 +18,14 @@ import xrange from 'highcharts/modules/xrange';
 
 declare var require: any;
 var Highcharts = require('highcharts'),
-  HighchartsCustomEvents = require('highcharts-custom-events')(Highcharts);
+    HighchartsCustomEvents = require('highcharts-custom-events')(Highcharts);
 HC_exporting(Highcharts);
 AccessibilityModule(Highcharts);
 xrange(Highcharts);
 
 // Introducing properties.
 interface ExtendedPoint extends Highcharts.Point {
-  id: string;
+    id: string;
 }
 
 
@@ -246,40 +246,39 @@ export class HighchartsGraphComponent implements OnInit {
     }
 
     highchartCallback: Highcharts.ChartLoadCallbackFunction = function () {
-        var chart: any = this;
-        chart.customNamespace = {};
-        chart.customNamespace["toggleSelectionButton"] = chart.renderer.button(
-            "None", null, -10, function () {
-                var series = chart.series;
-                var statusToSet = this.text && this.text.textStr && this.text.textStr === "All" ? true : false;
-                for (var i = 0; i < series.length; i++) {
-                    series[i].setVisible(statusToSet, false);
-                }
-                statusToSet = !statusToSet;
-                var textStr = statusToSet ? "All" : "None";
-                var ariaLabel = statusToSet ? "Select all the series" : "Deselect all the series";
-                this.attr({
-                    role: 'button',
-                    text: textStr,
-                    "aria-label": ariaLabel,
-                });
-            }, {
+        const btnNormalState: SVGAttributes = {
             fill: 'none',
             stroke: 'none',
             'stroke-width': 0,
             style: {
                 color: '#015cda'
             }
-        }, {
-            fill: 'grey',
-            stroke: 'none',
-            'stroke-width': 0,
-            style: {
-                color: '#015cda'
-            }
-        }, null, null, null, true).add();
+        }
 
-        var namespace = chart.customNamespace || {};
+        const chart = this;
+        chart["customNamespace"] = {};
+        chart["currentStatus"] = true;
+        chart["customNamespace"]["toggleSelectionButton"] = chart.renderer.button(
+            "None", 0, -10, function () {
+                let series = chart.series;
+
+                let currentStatus: boolean = chart["currentStatus"];
+                let statusToSet = !currentStatus;
+                for (let i = 0; i < series.length; i++) {
+                    series[i].setVisible(statusToSet, false);
+                }
+                let textStr = statusToSet ? "None" : "All";
+                let ariaLabel = statusToSet ? "Deselect all the series" : "Select all the series";
+                chart["currentStatus"] = statusToSet;
+                this.attr({
+                    role: 'button',
+                    text: textStr,
+                    "aria-label": ariaLabel,
+                    zIndex: 9999
+                });
+            }, btnNormalState).add();
+
+        const namespace = chart["customNamespace"] || {};
         if (namespace["toggleSelectionButton"]) {
             namespace["toggleSelectionButton"].attr({
                 role: 'button',
@@ -508,10 +507,10 @@ export class HighchartsGraphComponent implements OnInit {
     }
 
     constructor(private detectorControlService: DetectorControlService, private el: ElementRef<HTMLElement>, private highChartsHoverService: HighChartsHoverService, private themeService: GenericThemeService) {
-            // Update highchart theme based on ibiza theme attributes
-            this.themeService.currentThemeSub.subscribe((theme) => {
-                this.updateHighChartTheme(theme);
-            });
+        // Update highchart theme based on ibiza theme attributes
+        this.themeService.currentThemeSub.subscribe((theme) => {
+            this.updateHighChartTheme(theme);
+        });
     }
 
     ngOnInit() {
@@ -647,7 +646,7 @@ export class HighchartsGraphComponent implements OnInit {
 
     private _updateObject(obj: any, replacement: any): Object {
         //Not update tooltip background color as it will be break in the dark mode
-        if(replacement?.tooltip?.backgroundColor) {
+        if (replacement?.tooltip?.backgroundColor) {
             delete replacement.tooltip.backgroundColor;
         }
 
@@ -709,12 +708,12 @@ export class HighchartsGraphComponent implements OnInit {
                 panKey: 'shift',
                 panning: {
                     enabled: true,
-                    
+
                 },
                 resetZoomButton: {
                     position: {
                         ...(!this.isGanttChart && {
-                        x: -80,
+                            x: -80,
                         }),
                         y: -19,
                     },
@@ -783,20 +782,19 @@ export class HighchartsGraphComponent implements OnInit {
                 ...(this.isGanttChart && {
                     formatter: function () {
                         var dateFormat = Highcharts.dateFormat,
-                        point = this.point,
-                        format = '%m/%d/%Y %H:%M:%S %p';
+                            point = this.point,
+                            format = '%m/%d/%Y %H:%M:%S %p';
                         var from = dateFormat(format, point.x),
-                        to = dateFormat(format, point.x2),
-                        id = (point as ExtendedPoint)?.id;
+                            to = dateFormat(format, point.x2),
+                            id = (point as ExtendedPoint)?.id;
                         return (
-                        `${
-                            !!id
-                            ? '<span style="font-weight: bold;">' + id + '</span>' + ' | '
-                            : ''
-                        }` +
-                        from +
-                        ' - ' +
-                        to
+                            `${!!id
+                                ? '<span style="font-weight: bold;">' + id + '</span>' + ' | '
+                                : ''
+                            }` +
+                            from +
+                            ' - ' +
+                            to
                         );
                     },
                 }),
