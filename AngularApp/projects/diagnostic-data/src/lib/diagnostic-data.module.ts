@@ -31,7 +31,6 @@ import { DetectorViewComponent } from './components/detector-view/detector-view.
 import { DynamicDataComponent } from './components/dynamic-data/dynamic-data.component';
 import { EmailComponent } from './components/email/email.component';
 import { FeedbackComponent } from './components/feedback/feedback.component';
-import { InsightsComponent } from './components/insights/insights.component';
 import { LoaderViewComponent } from './components/loader-view/loader-view.component';
 import { MarkdownEditorComponent } from './components/markdown-editor/markdown-editor.component';
 import { MarkdownViewComponent } from './components/markdown-view/markdown-view.component';
@@ -212,7 +211,7 @@ import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.compo
     declarations: [
         TimeSeriesGraphComponent, DynamicDataComponent,
         DataRenderBaseComponent, DataContainerComponent, TimeSeriesInstanceGraphComponent, DetectorViewComponent, DetectorSearchComponent,
-        DataSummaryComponent, EmailComponent, InsightsComponent, LoaderViewComponent,
+        DataSummaryComponent, EmailComponent, LoaderViewComponent,
         MarkdownViewComponent, DetectorListComponent, DetectorOrderPipe, StarRatingComponent, StarRatingFeedbackComponent,
         StatusIconComponent, DetectorControlComponent, DetectorContainerComponent, InternalPipe,
         CommAlertComponent, FeedbackComponent, CopyInsightDetailsComponent, MarkdownEditorComponent,

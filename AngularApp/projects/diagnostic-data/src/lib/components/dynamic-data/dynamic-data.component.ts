@@ -9,7 +9,6 @@ import { DataRenderBaseComponent } from '../data-render-base/data-render-base.co
 import { DataSummaryComponent } from '../data-summary/data-summary.component';
 import { DetectorListComponent } from '../detector-list/detector-list.component';
 import { EmailComponent } from '../email/email.component';
-import { InsightsComponent } from '../insights/insights.component';
 import { MarkdownViewComponent } from '../markdown-view/markdown-view.component';
 import { SolutionComponent } from '../solution/solution.component';
 import { GuageControlComponent } from '../guage-control/guage-control.component';
