@@ -12,14 +12,13 @@ namespace UITestUtilities
             Retry(run, null, null, maxRetries, retryDelayInSecond);
         }
 
-        public static void Retry(Action run, Action<Exception> fail, int maxRetries = 3, int retryDelayInSecond = 2)
+        public static void Retry(Action run, Action<int, Exception> fail, int maxRetries = 3, int retryDelayInSecond = 2)
         {
             Retry(run, fail, null, maxRetries, retryDelayInSecond);
         }
 
 
-
-        public static void Retry(Action run, Action<Exception> fail, Action final, int maxRetries, int retryDelayInSecond)
+        public static void Retry(Action run, Action<int, Exception> fail, Action final, int maxRetries, int retryDelayInSecond)
         {
             int retryCount = 0;
             var exceptions = new List<Exception>();
@@ -39,7 +38,7 @@ namespace UITestUtilities
                 {
                     if (fail != null)
                     {
-                        fail(e);
+                        fail(retryCount, e);
                     }
                     attemptException = e;
                     exceptions.Add(e);

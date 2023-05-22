@@ -110,7 +110,7 @@ namespace DiagPortalTest
                 Console.WriteLine("Login Fail");
                 Console.WriteLine(e.ToString());
 
-                _driver.TakeAndSaveScreenShot(context, "LoginFailed");
+                _driver.TakeAndSaveScreenshot(context, "LoginFailed");
 
                 throw;
             }
@@ -143,7 +143,7 @@ namespace DiagPortalTest
         {
             var diagAndSolveTester = new DiagAndSolveTest(_driver, TestContext, appType, testConfig, _portalBaseUrl, _slot, _region);
 
-            diagAndSolveTester.TestWithRetry(diagAndSolveTester.Run);
+            diagAndSolveTester.TestWithRetry();
         }
 
         [DataTestMethod]
@@ -152,7 +152,7 @@ namespace DiagPortalTest
         {
             var caseSubmissionTester = new CaseSubmissionTest(_driver, TestContext, appType, testConfig, _portalBaseUrl, _slot, _region);
 
-            caseSubmissionTester.TestWithRetry(caseSubmissionTester.Run);
+            caseSubmissionTester.TestWithRetry();
 
         }
 

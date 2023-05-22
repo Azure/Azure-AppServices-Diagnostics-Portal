@@ -7,7 +7,7 @@ using UITestUtilities;
 namespace DiagPortalTest
 {
 
-    class DiagPortalTestBase : UITestBase
+    abstract class DiagPortalTestBase : UITestBase
     {
         protected string _slot;
         protected string _region;

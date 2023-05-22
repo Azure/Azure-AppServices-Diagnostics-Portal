@@ -4,7 +4,7 @@ using System;
 
 namespace UITestUtilities
 {
-    public class UITestBase
+    public abstract class UITestBase
     {
         protected IWebDriver _driver;
         protected TestContext _testContext;
@@ -17,23 +17,29 @@ namespace UITestUtilities
             _key = key;
         }
 
-        protected virtual void TakeAndSaveScreenshot(string fileName)
+        /// <summary>
+        /// Method for running the test
+        /// </summary>
+        public abstract void TestRun();
+
+        /// <summary>
+        /// Method for when test failing
+        /// </summary>
+        /// <param name="retryCount">Current # of retry</param>
+        /// <param name="exception">Excetpion</param>
+        public abstract void TestFail(int retryCount, Exception exception);
+
+        protected void TakeAndSaveScreenshotForRetry(string testName, int retryCount)
         {
-            _driver.TakeAndSaveScreenShot(_testContext, fileName);
+            string fileName = $"RetryAttempt{retryCount}_{testName}_{_key}";
+            _driver.TakeAndSaveScreenshot(_testContext, fileName);
         }
 
-        public void TestWithRetry(Action run, int maxRetries = 3, int retryDelayInSecond = 2)
+        public void TestWithRetry(int maxRetries = 3, int retryDelayInSecond = 2)
         {
-            int retryCount = 0;
-            Action<Exception> fail = (Exception e) =>
-            {
-                TakeAndSaveScreenshot($"RetryAttempt{retryCount}_{this.GetType().Name}_{_key}");
-                retryCount++;
-            };
-
             try
             {
-                RetryUtilities.Retry(run, fail, maxRetries, retryDelayInSecond);
+                RetryUtilities.Retry(TestRun, TestFail, maxRetries, retryDelayInSecond);
             }
             catch (Exception e)
             {
