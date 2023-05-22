@@ -34,10 +34,23 @@ namespace DiagPortalTest
         [ClassInitialize]
         public static void InitalizeTestClass(TestContext context)
         {
+            Action run = () =>
+            {
+                InitSettings();
+                InitBroswerDriver();
+                LogIn(context);
+            };
+
+            RetryUtilities.Retry(run);
+        }
+
+
+        private static void InitSettings()
+        {
             var builder = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
-               .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-               .AddEnvironmentVariables();
+                                   .SetBasePath(Directory.GetCurrentDirectory())
+                                   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                                   .AddEnvironmentVariables();
             _config = builder.Build();
 
             _email = _config[DiagPortalTestConst.DiagPortalTestEmail];
@@ -47,7 +60,10 @@ namespace DiagPortalTest
             _isProd = CheckEnvIsProd();
 
             GetPassword();
+        }
 
+        private static void InitBroswerDriver()
+        {
             var extensions = new List<string> { $"{Directory.GetCurrentDirectory()}\\windows10.crx" };
             var arguments = new List<string>();
             if (_isProd)
@@ -62,26 +78,7 @@ namespace DiagPortalTest
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
 
             Console.WriteLine("Setup Driver Success");
-
-            LogIn(context);
-
         }
-
-        [TestInitialize()]
-        public void TestSetup()
-        {
-            _slot = TestContext.Properties[DiagPortalTestConst.Slot].ToString();
-            _region = TestContext.Properties[DiagPortalTestConst.Region].ToString();
-            Console.WriteLine($"Get settings from runsettings, Slot is {(string.IsNullOrEmpty(_slot) ? "Empty" : _slot)}, Region is {(string.IsNullOrEmpty(_region) ? "Empty" : _region)}");
-        }
-
-        [ClassCleanup]
-        public static void TestClassCleanUp()
-        {
-            Console.WriteLine("Quite broswer");
-            _driver.Quit();
-        }
-
 
         private static void LogIn(TestContext context)
         {
@@ -118,6 +115,26 @@ namespace DiagPortalTest
                 throw;
             }
 
+        }
+
+
+        [TestInitialize()]
+        public void TestSetup()
+        {
+            _slot = TestContext.Properties[DiagPortalTestConst.Slot].ToString();
+            _region = TestContext.Properties[DiagPortalTestConst.Region].ToString();
+            Console.WriteLine($"Get settings from runsettings, Slot is {(string.IsNullOrEmpty(_slot) ? "Empty" : _slot)}, Region is {(string.IsNullOrEmpty(_region) ? "Empty" : _region)}");
+        }
+
+
+        [ClassCleanup]
+        public static void TestClassCleanUp()
+        {
+            if (_driver != null)
+            {
+                Console.WriteLine("Quite broswer");
+                _driver.Quit();
+            }
         }
 
         [DataTestMethod]

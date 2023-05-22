@@ -1,8 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace UITestUtilities
 {
@@ -27,52 +25,26 @@ namespace UITestUtilities
         public void TestWithRetry(Action run, int maxRetries = 3, int retryDelayInSecond = 2)
         {
             int retryCount = 0;
-            var exceptions = new List<Exception>();
-            Exception attemptException = null;
-            do
+            Action<Exception> fail = (Exception e) =>
             {
-                try
-                {
-                    attemptException = null;
-                    run();
-                    break;
-                }
-                catch (Exception e)
-                {
-                    TakeAndSaveScreenshot($"RetryAttempt{retryCount}_{this.GetType().Name}_{_key}");
-                    attemptException = e;
-                    exceptions.Add(e);
-                }
-                finally
-                {
-                    if (attemptException != null)
-                    {
-                        Console.WriteLine($"Retry Attempt {retryCount} is Failed. {attemptException.Message}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Retry Attempt {retryCount} is Successful");
-                    }
-                    retryCount++;
-                }
-                if (retryCount < maxRetries)
-                {
-                    Thread.Sleep(retryDelayInSecond * 1000);
-                }
-            } while (retryCount < maxRetries);
+                TakeAndSaveScreenshot($"RetryAttempt{retryCount}_{this.GetType().Name}_{_key}");
+                retryCount++;
+            };
 
-            if (attemptException != null)
+            try
             {
-                var aggregateException = new AggregateException($"Failed {maxRetries} retries. Look at inner exceptions", exceptions);
-                Assert.Fail(aggregateException.ToString());
+                RetryUtilities.Retry(run, fail, maxRetries, retryDelayInSecond);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(e.ToString());
             }
         }
 
-        protected bool CheckIfDetectorPresent(int timeoutInSeconds = 0)
+        protected bool CheckIfDetectorPresent(int timeoutInSeconds)
         {
             var bys = new By[] {
                 By.TagName("dynamic-data"),
-                By.TagName("loader-detector-view"),
                 By.TagName("detector-list-analysis")
             };
             var element = _driver.FindFirstElement(bys, timeoutInSeconds);
