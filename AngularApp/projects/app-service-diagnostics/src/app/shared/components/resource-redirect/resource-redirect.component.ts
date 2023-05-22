@@ -7,6 +7,7 @@ import { StartupInfo } from '../../models/portal';
 import { DemoSubscriptions } from '../../../../../../diagnostic-data/src/lib/models/betaSubscriptions';
 import { DetectorType, TelemetryService, TelemetrySource } from 'diagnostic-data';
 import { VersionTestService } from '../../../fabric-ui/version-test.service';
+import { GenericArmConfigService } from '../../services/generic-arm-config.service';
 
 @Component({
   selector: 'resource-redirect',
@@ -29,9 +30,11 @@ export class ResourceRedirectComponent implements OnInit {
     this._authService.getStartupInfo()
       .subscribe(info => {
         if (info) {
+          //RegeEx
             const resourceId = info.resourceId ? info.resourceId : '';
             const ticketBladeWorkflowId = info.workflowId ? info.workflowId : '';
             const supportTopicId = info.supportTopicId ? info.supportTopicId : '';
+            const sapProductId = info.sapProductId? info.sapProductId : '';
             const sapSupportTopicId = info.sapSupportTopicId ? info.sapSupportTopicId : '';
             const sessionId = info.sessionId ? info.sessionId : '';
             const effectiveLocale = !!info.effectiveLocale ? info.effectiveLocale.toLowerCase() : "";
@@ -42,6 +45,7 @@ export class ResourceRedirectComponent implements OnInit {
                 'ResourceId': resourceId,
                 'TicketBladeWorkflowId': ticketBladeWorkflowId,
                 'SupportTopicId': supportTopicId,
+                'SapProductId': sapProductId,
                 'SapSupportTopicId': sapSupportTopicId,
                 'PortalSessionId': sessionId,
                 'EffectiveLocale': effectiveLocale,
@@ -66,6 +70,7 @@ export class ResourceRedirectComponent implements OnInit {
           };
 
           let path = 'resource' + info.resourceId.toLowerCase();
+
           var caseSubject = null;
           if (Array.isArray(info.optionalParameters)) {
             let startTime = info.optionalParameters.find(param => param.key === "startTime");

@@ -126,7 +126,7 @@ namespace DiagPortalTest
         {
             var diagAndSolveTester = new DiagAndSolveTest(_driver, TestContext, appType, testConfig, _portalBaseUrl, _slot, _region);
 
-            diagAndSolveTester.TestWithRetry();
+            diagAndSolveTester.TestWithRetry(diagAndSolveTester.Run);
         }
 
         [DataTestMethod]
@@ -135,7 +135,7 @@ namespace DiagPortalTest
         {
             var caseSubmissionTester = new CaseSubmissionTest(_driver, TestContext, appType, testConfig, _portalBaseUrl, _slot, _region);
 
-            caseSubmissionTester.TestWithRetry();
+            caseSubmissionTester.TestWithRetry(caseSubmissionTester.Run);
 
         }
 

@@ -16,12 +16,15 @@ export class SolutionViewContainerComponent implements OnInit {
     @Input() isAnalysisView: boolean = false;
     @Input() isKeystoneDetector: boolean = false;
     @Input() showFeedbackQuestion: boolean = true;
+    @Input() showLikeDislike: boolean = false;
     @Input() askReasonNotHelpful: boolean = false;
     @Input() metadataForLogging: any = {};
     @Input() showThanksMessage: boolean = false;
+    @Input() customSolutionTitleImageSrc: string = "";
 
     @Output() showThanksMessageChange = new EventEmitter<any>();
     
+    likeDislikeStatus: string = "";
     calloutSubmitDisabled: boolean = false;
     showReasonsCallout: boolean = false;
     calloutOptions: any[] = [
@@ -125,6 +128,15 @@ export class SolutionViewContainerComponent implements OnInit {
         }
     }
 
+    likeDislikeClicked(feedbackType: string) {
+        this.likeDislikeStatus = feedbackType;
+        const feedbackEventProps = {
+            ...this.eventProps,
+            'FeedbackType': feedbackType,
+            ...this.metadataForLogging
+        }
+        this.telemetryService.logEvent("SolutionFeedbackLikeDislike", feedbackEventProps);
+    }
 }
 
 

@@ -10,7 +10,7 @@ import { FeatureService } from '../../../shared-v2/services/feature.service';
 import { Tile } from '../../../shared/components/tile-list/tile-list.component';
 import { Feature } from '../../../shared-v2/models/features';
 import { AuthService } from '../../../startup/services/auth.service';
-import { DiagnosticService, DetectorMetaData, DetectorType, TelemetryService, TelemetryEventNames } from 'diagnostic-data';
+import { DiagnosticService, DetectorMetaData, DetectorType, TelemetryService, TelemetryEventNames, UriUtilities } from 'diagnostic-data';
 import { filter, tap } from 'rxjs/operators';
 import { PortalActionService } from '../../../shared/services/portal-action.service';
 import { Globals } from '../../../globals';
@@ -91,8 +91,12 @@ export class CategorySummaryComponent implements OnInit {
             this.category = categories.find(category => category.id.toLowerCase() === this._activatedRoute.snapshot.params.category.toLowerCase() ||  category.name.replace(/\s/g, '').toLowerCase() === decodedCategoryName);
             this._chatState.category = this.category;
             this.categoryName = this.category ? this.category.name : "";
-
-            this.resourceName = this._activatedRoute.snapshot.parent.params.resourcename;
+            if(this._resourceService.resource.id && UriUtilities.isNoResourceCall(this._resourceService.resource.id)) {
+                this.resourceName = this._activatedRoute.snapshot.parent.params.resourcename;
+            } else {
+                this.resourceName = '';
+            }
+            
             this._portalActionService.updateDiagnoseCategoryBladeTitle(`${this.resourceName} | ` + this.categoryName);
           });
         });

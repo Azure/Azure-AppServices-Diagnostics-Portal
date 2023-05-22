@@ -1,4 +1,5 @@
 import { DetectorType } from "diagnostic-data";
+import { KeyValuePair } from "./portal";
 
 export interface PortalReferrerMap {
     ReferrerExtensionName: string,
@@ -16,5 +17,6 @@ export interface PortalReferrerInfo {
     DetectorType?: DetectorType,
     DetectorId?: string,
     StartTime?: string,
-    EndTime?: string
+    EndTime?: string,
+    AdditionalQueryParams?:Array<KeyValuePair>
 }

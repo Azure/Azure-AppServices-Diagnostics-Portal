@@ -253,9 +253,9 @@
     <div *ngIf="!isDynamicAnalysis && isSearchEmbedded" style="margin-left:30px;">
       <detector-search [detector]="analysisId" [diagnosticData]="searchDiagnosticData"></detector-search>
     </div>
-    <div *ngIf="isDynamicAnalysis && ((!showPreLoader && getPendingDetectorCount() === 0) || showWebSearch)"
-      style="margin-left:80px;margin-top:20px;">
-      <web-search [searchTerm]="searchTerm" [searchId]="searchId" [isChildComponent]="true">
+    <div *ngIf="(webSearchEnabled) && (isDynamicAnalysis || withinGenie) && ((!showPreLoader && getPendingDetectorCount() === 0) || showWebSearch)"
+      style="margin-left:80px;margin-top:20px;" [ngStyle]="{'margin-left': (withinGenie? '0px': '80px')}">
+      <web-search [searchTerm]="searchTerm" [searchId]="searchId" [isChildComponent]="true" [searchMode]="searchMode" (onComplete)="webSearchCompleted($event)">
       </web-search>
     </div>
 

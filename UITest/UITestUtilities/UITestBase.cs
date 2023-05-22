@@ -24,12 +24,7 @@ namespace UITestUtilities
             _driver.TakeAndSaveScreenShot(_testContext, fileName);
         }
 
-        protected virtual void Run()
-        {
-
-        }
-
-        public void TestWithRetry(int maxRetries = 3, int retryDelayInSecond = 2)
+        public void TestWithRetry(Action run, int maxRetries = 3, int retryDelayInSecond = 2)
         {
             int retryCount = 0;
             var exceptions = new List<Exception>();
@@ -39,7 +34,7 @@ namespace UITestUtilities
                 try
                 {
                     attemptException = null;
-                    Run();
+                    run();
                     break;
                 }
                 catch (Exception e)

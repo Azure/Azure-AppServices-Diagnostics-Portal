@@ -1,0 +1,17 @@
+<div *ngIf="!isDisabled && (fetchingDeepSearchSolution || showDeepSearchSolution)" class="row" style="border-bottom: 1px solid #ccc;padding-bottom:15px;padding-left:10px;">
+    <div style="margin: auto;">
+      <div *ngIf="fetchingDeepSearchSolution">
+        <span style="margin-top:10px;">
+          <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
+          <span *ngIf="diagnosticToolFindings && diagnosticToolFindings.length>0;else generic_message" style="margin-left:5px">Finding Next Steps...</span>
+        </span>
+      </div>
+      <div *ngIf="!fetchingDeepSearchSolution && showDeepSearchSolution && deepSearchSolution" tabindex="0" style="margin-left:5px;">
+          <solution-view-container [showLikeDislike]="true" [solutionTitle]="'AI-powered recommendation'" [isRecommended]="false" [detector]="'detector'"
+          [isAnalysisView]="false" [isKeystoneDetector]="false" [askReasonNotHelpful]="false" [showThanksMessage]="false" [customSolutionTitleImageSrc]="solutionTitleImgSrc">
+          <markdown [data]="deepSearchSolution"></markdown>
+        </solution-view-container>
+      </div>
+    </div>
+</div>
+<ng-template #generic_message>Finding Next Steps...</ng-template>

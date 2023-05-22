@@ -787,6 +787,18 @@
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE DEPLOYMENT ENVIRONMENT",
             "displayName": "Azure Deployment Environments"
-        } 
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.Chaos/experiments",
+            "templateFileName": "ChaosStudio",
+            "imgSrc": "assets/img/Azure-Chaos-Studio-Logo.svg",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "",
+            "pesId": "17700",
+            "staticSelfHelpContent": "",
+            "searchSuffix": "AZURE CHAOS STUDIO",
+            "displayName": "Azure Chaos Studio"
+        }        
     ]
 }

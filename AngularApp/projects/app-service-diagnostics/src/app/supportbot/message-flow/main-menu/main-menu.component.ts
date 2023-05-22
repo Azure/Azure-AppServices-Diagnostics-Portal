@@ -47,15 +47,26 @@ export class MainMenuComponent implements OnInit, AfterViewInit, IChatMessageCom
                     this.sku = Sku[site.sku];
                     this._authService.getStartupInfo().subscribe((startupInfo: StartupInfo) => {
                         const resourceUriParts = this._siteService.parseResourceUri(startupInfo.resourceId);
-                        this._appAnalysisService.getDiagnosticProperties(resourceUriParts.subscriptionId, resourceUriParts.resourceGroup, resourceUriParts.siteName, resourceUriParts.slotName).subscribe((data: IDiagnosticProperties) => {
-                            this.AppStack = data && data.appStack && data.appStack != '' ? data.appStack : 'ASP.Net';
+                        if(resourceUriParts.resourceGroup) {
+                            this._appAnalysisService.getDiagnosticProperties(resourceUriParts.subscriptionId, resourceUriParts.resourceGroup, resourceUriParts.siteName, resourceUriParts.slotName).subscribe((data: IDiagnosticProperties) => {
+                                this.AppStack = data && data.appStack && data.appStack != '' ? data.appStack : 'ASP.Net';
+                                this.categoryService.Categories.subscribe(categories => {
+                                    this.allProblemCategories = categories;
+                                });
+                                setTimeout(() => {
+                                    this.onComplete.emit({ status: true });
+                                }, 2000);
+                            });
+                        }
+                        else {
+                            this.AppStack = 'ASP.Net';
                             this.categoryService.Categories.subscribe(categories => {
                                 this.allProblemCategories = categories;
                             });
                             setTimeout(() => {
                                 this.onComplete.emit({ status: true });
                             }, 2000);
-                        });
+                        }
                     });
                 }
             });

@@ -71,7 +71,7 @@ namespace DiagPortalTest
 
         }
 
-        protected override void Run()
+        public void Run()
         {
             NavigateToHomePage();
             TestCategoryOverview();

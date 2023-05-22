@@ -64,7 +64,7 @@
       <div class="chatui-content-disclaimer" *ngIf="showContentDisclaimer">
         {{contentDisclaimerMessage}}
       </div>
-      <div class="chatui-textarea-wrapper">
+      <div *ngIf="showSearchBox" class="chatui-textarea-wrapper">
         <textarea [(ngModel)]="chatInputTextInternal" tabindex="0" class="chatui-textarea" rows="1" placeholder="Ask a question" (keyup.enter)="triggerChat()" id="chatUIInputBox" [disabled]="chatInputBoxDisabled"></textarea>
         <button (click)="triggerChat()"
             class="chatui-textarea-button"><svg

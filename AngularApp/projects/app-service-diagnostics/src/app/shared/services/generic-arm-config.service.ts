@@ -4,9 +4,10 @@ import { HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
 import { Category } from "../../shared-v2/models/category";
 import { Observable, of, forkJoin } from 'rxjs';
-import { AppInsightsTelemetryService, ResourceDescriptor, TelemetryEventNames } from 'diagnostic-data';
+import { AppInsightsTelemetryService, ResourceDescriptor, TelemetryEventNames, UriUtilities } from 'diagnostic-data';
 import { PortalKustoTelemetryService } from './portal-kusto-telemetry.service';
 
+const APOLLO_API_VERSION:string = '2020-07-01-preview';
 @Injectable()
 export class GenericArmConfigService {
   public resourceMap: Array<ArmResourceConfig> = [];
@@ -121,7 +122,8 @@ export class GenericArmConfigService {
           },
           armApiConfig: {
             armApiVersion: '',
-            isArmApiResponseBase64Encoded:false
+            isArmApiResponseBase64Encoded:false,
+            useApolloApi:false
           },
           isSearchEnabled:true,
           categories: [{
@@ -134,6 +136,7 @@ export class GenericArmConfigService {
             createFlowForCategory: true,
             chatEnabled: false
           }],
+          sapProductIdList:[],
           quickLinks: [],
           disableGenie: false
         }
@@ -249,7 +252,8 @@ export class GenericArmConfigService {
             else {
               let currArmApiConfig:ArmApiConfig = {
                 armApiVersion:'',
-                isArmApiResponseBase64Encoded:false
+                isArmApiResponseBase64Encoded:false,
+                useApolloApi:false
               };
               if(this.overrideConfig.armApiConfig && this.resourceConfig.armApiConfig) {
                 //armApiConfig is not present in both configs. Merge.
@@ -280,6 +284,21 @@ export class GenericArmConfigService {
                     "resourceUri": resourceUri,
                     "reason": `${TelemetryEventNames.ArmConfigMergeError}: Error while merging armConfig.`,
                     "field": "armApiConfig.isArmApiResponseBase64Encoded"
+                  });
+                  throw error;
+                }
+
+                //armApiConfig.useApolloPath
+                try{
+                  if (!!this.getValue(this.resourceConfig.armApiConfig.useApolloApi, this.overrideConfig.armApiConfig.useApolloApi)) {
+                    currArmApiConfig.useApolloApi = this.getValue(this.resourceConfig.armApiConfig.useApolloApi, this.overrideConfig.armApiConfig.useApolloApi);
+                  }
+                }
+                catch(error) {
+                  this.logException(error, null, {
+                    "resourceUri": resourceUri,
+                    "reason": `${TelemetryEventNames.ArmConfigMergeError}: Error while merging armConfig.`,
+                    "field": "armApiConfig.useApolloApi"
                   });
                   throw error;
                 }
@@ -340,6 +359,24 @@ export class GenericArmConfigService {
           });
           throw error;
         }
+
+        //currConifig.sapProductIdList
+        try {
+          if (this.getValue(this.resourceConfig.sapProductIdList, this.overrideConfig.sapProductIdList) != null) {
+            currConfig.sapProductIdList = this.getValue(this.resourceConfig.sapProductIdList, this.overrideConfig.sapProductIdList);
+            // Add the configured sapProductId into the list if it is not already present.
+            if(currConfig.sapProductId && currConfig.sapProductIdList && !currConfig.sapProductIdList.some(id=>id?.trim().toLowerCase() === currConfig.sapProductId.trim().toLowerCase() ) ) {
+              currConfig.sapProductIdList.push(currConfig.sapProductId);
+            }
+          }
+        } catch (error) {
+          this.logException(error, null, {
+            "resourceUri": resourceUri,
+            "reason": `${TelemetryEventNames.ArmConfigMergeError}: Error while merging armConfig.`,
+            "field": "sapProductIdList"
+          });
+          throw error;
+        }        
 
         //currConfig.liveChatConfig
         try {
@@ -689,8 +726,32 @@ export class GenericArmConfigService {
     );
   }
 
+  getArmResourceConfigBySapProductId(sapProductId:string ): ArmResourceConfig {
+    let returnValue: ArmResourceConfig = new ArmResourceConfig();
+    if(sapProductId && this.resourceMap.length > 0) {
+      sapProductId = sapProductId.trim().toLowerCase();
+      let configLookupFound:ArmResourceConfig = this.resourceMap.find((resource: ArmResourceConfig) => resource.sapProductIdList.some(sapId=> sapId && sapId.trim().toLowerCase() === sapProductId));
+      if(configLookupFound) {
+        return configLookupFound;
+      }
+    }
+    return returnValue;
+  }
+
+  getResourceProviderBySapProductId(sapProductId:string ): string {
+    let returnValue = '';
+    if(sapProductId && this.getArmResourceConfigBySapProductId(sapProductId)) {
+      returnValue = this.getArmResourceConfigBySapProductId(sapProductId)?.matchRegEx;
+      //Remove leading and trailing '/' characters from returnValue if present
+      returnValue = returnValue?.replace(/^\/|\/$/g, '');
+    }
+    return returnValue;
+  }
 
   getArmResourceConfig(resourceUri: string, recurse?: boolean): ArmResourceConfig {
+    if(!resourceUri.endsWith('/')) {
+      resourceUri = `${resourceUri}/`;
+    }
     let returnValue: ArmResourceConfig = new ArmResourceConfig();
     if (this.resourceMap.length > 0) {
       this.resourceMap.some((resource: ArmResourceConfig) => {
@@ -714,7 +775,18 @@ export class GenericArmConfigService {
     }
   }
 
+  getApolloApiVersion(resourceUri):string {
+    return APOLLO_API_VERSION;
+  }
+
   getApiVersion(resourceUri: string): string {
+    if(resourceUri?.toLowerCase().indexOf('/microsoft.diagnostics/apollo/') > -1) {
+      return APOLLO_API_VERSION;
+    }
+    if(resourceUri && UriUtilities.isNoResourceCall(resourceUri) ) {
+      //Call is for empty resource, return the API version for GET subscription call
+      return '2019-06-01';
+    }
     let apiVersion = '';
     if (!!this.getArmApiConfig(resourceUri) && !!this.getArmApiConfig(resourceUri).armApiVersion) {
       apiVersion = this.getArmApiConfig(resourceUri).armApiVersion;
@@ -730,5 +802,4 @@ export class GenericArmConfigService {
       return false;
     }
   }
-
 }

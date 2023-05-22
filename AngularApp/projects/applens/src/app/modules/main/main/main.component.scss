@@ -82,6 +82,13 @@
     word-break: break-word;
 }
 
+.required-asterix {
+    &::after{
+        content: " *";
+        color: #a4262c;
+    }
+}
+
 .required {
     color: #a4262c;
 }

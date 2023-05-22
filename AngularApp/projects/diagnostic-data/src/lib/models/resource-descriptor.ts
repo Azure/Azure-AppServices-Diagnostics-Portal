@@ -1,3 +1,5 @@
+import { UriUtilities } from "../utilities/uri-utilities";
+
 export enum ResourceDescriptorGroups {
 	subscription = 1,
 	resourceGroup = 3,
@@ -23,10 +25,11 @@ export class ResourceDescriptor {
 	resource: string;
 	types: Array<string>;
 	resources: Array<string>;
-    resourceUriRegExp:RegExp;
+  resourceUriRegExp:RegExp;
     
     
     public static parseResourceUri(resourceUri: string): ResourceDescriptor {
+      
         let resourceDesc: ResourceDescriptor = new ResourceDescriptor();
     
         if (resourceUri) {
@@ -59,18 +62,26 @@ export class ResourceDescriptor {
             }
     
             if (result[ResourceDescriptorGroups.resource]) {
-              const resourceParts = result[ResourceDescriptorGroups.resource].split('/');
-              if (resourceParts.length % 2 != 0) {
-                //ARM URI is incorrect. The resource section contains an uneven number of parts
+              if( UriUtilities.isNoResourceCall(resourceUri) ) {
+                resourceDesc.type = result[ResourceDescriptorGroups.resource].split('/')[0];
                 resourceDesc.resource = '';
+                resourceDesc.types.push(resourceDesc.type);
+                resourceDesc.resources.push(resourceDesc.resource);
               }
               else {
-                for (var i = 0; i < resourceParts.length; i += 2) {
-                  resourceDesc.type = resourceParts[i];
-                  resourceDesc.resource = resourceParts[i + 1];
-    
-                  resourceDesc.types.push(resourceDesc.type);
-                  resourceDesc.resources.push(resourceDesc.resource);
+                const resourceParts = result[ResourceDescriptorGroups.resource].split('/');
+                if (resourceParts.length % 2 != 0) {
+                  //ARM URI is incorrect. The resource section contains an uneven number of parts
+                  resourceDesc.resource = '';
+                }
+                else {
+                  for (var i = 0; i < resourceParts.length; i += 2) {
+                    resourceDesc.type = resourceParts[i];
+                    resourceDesc.resource = resourceParts[i + 1];
+      
+                    resourceDesc.types.push(resourceDesc.type);
+                    resourceDesc.resources.push(resourceDesc.resource);
+                  }
                 }
               }
             }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Web;
+using UITestUtilities;
 
 namespace DiagPortalTest
 {
@@ -35,7 +36,7 @@ namespace DiagPortalTest
             return url;
         }
 
-        protected override void Run()
+        public void Run()
         {
             string url = GetCaseSubmissionUrl(_testConfig.ResourceUri, _caseSubmissionItem.CaseSubject);
             _driver.Navigate().GoToUrl(url);

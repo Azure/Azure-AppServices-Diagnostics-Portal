@@ -1,6 +1,6 @@
 import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { DiagnosticApiService } from './diagnostic-api.service';
 import { ObserverAseResponse, ObserverContainerAppResponse, ObserverSiteDetailsResponse, ObserverSiteInfo, ObserverSiteResponse, ObserverSiteSku, ObserverStampResponse, ObserverStaticWebAppResponse } from '../models/observer';
 
@@ -50,7 +50,12 @@ export class ObserverService {
   }
 
   public getSiteRequestBody(site: string, stamp: string) {
-    return this._diagnosticApiService.get<ObserverSiteResponse>(`api/stamps/${stamp}/sites/${site}/postBody`);
+    if(!!site && !!stamp) {
+      return this._diagnosticApiService.get<ObserverSiteResponse>(`api/stamps/${stamp}/sites/${site}/postBody`);
+    }
+    else {
+      return Observable.of(null);
+    }
   }
 
   public getSiteRequestDetails(site: string, stamp: string) {
@@ -58,7 +63,12 @@ export class ObserverService {
   }
 
   public getAseRequestBody(name: string) {
-    return this._diagnosticApiService.get<ObserverSiteResponse>(`api/hostingEnvironments/${name}/postBody`);
+    if(!!name) {
+      return this._diagnosticApiService.get<ObserverSiteResponse>(`api/hostingEnvironments/${name}/postBody`);
+    }
+    else {
+      return of(null);
+    }
   }
 
   public getStamp(stampName: string): Observable<ObserverStampResponse> {

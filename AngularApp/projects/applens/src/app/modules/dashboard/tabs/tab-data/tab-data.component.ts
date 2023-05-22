@@ -96,7 +96,7 @@ export class TabDataComponent implements OnInit {
       }
       this.analysisMode = this._route.snapshot.data['analysisMode'];
       this.detector = this._route.snapshot.params['detector'] ? this._route.snapshot.params['detector'] : null;
-      this._telemetryService.logEvent(TelemetryEventNames.DownloadReportButtonDisplayed, { 'DownloadReportButtonDisplayed': this.displayDownloadReportButton.toString(), 'Detector:': this.detector, 'SubscriptionId': this._route.parent.snapshot.params['subscriptionid'], 'Resource': this.resource.SiteName });
+      this._telemetryService.logEvent(TelemetryEventNames.DownloadReportButtonDisplayed, { 'DownloadReportButtonDisplayed': this.displayDownloadReportButton.toString(), 'Detector:': this.detector, 'SubscriptionId': this._route.parent.snapshot.params['subscriptionid'], 'Resource': this.resource?.SiteName?? 'NoResource' });
     });
 
     if (this._detectorControlService.isInternalView) {
@@ -113,11 +113,13 @@ export class TabDataComponent implements OnInit {
     });
     // Retrieving info about the site 
     // Sample response: {"kind":"app","is_linux":false,"sku":"Standard","actual_number_of_workers":3,"current_worker_size":1}    
-    this._observerService.getSiteSku(this.resource.InternalStampName, this.resource.SiteName).subscribe(siteSku => {
-      if (siteSku) {
-        this.siteSku = siteSku;
-      }
-    });
+    if(!!this.resource?.InternalStampName && !!this.resource?.SiteName) {
+      this._observerService.getSiteSku(this.resource.InternalStampName, this.resource.SiteName).subscribe(siteSku => {
+        if (siteSku) {
+          this.siteSku = siteSku;
+        }
+      });
+    }    
 
     this._route.params.subscribe((params: Params) => {
       this.subscriptionId = params["subscriptionId"];

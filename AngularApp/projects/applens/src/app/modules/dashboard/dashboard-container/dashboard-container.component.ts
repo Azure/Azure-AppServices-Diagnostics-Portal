@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { ApplensGlobal } from '../../../applens-global';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ObserverService } from '../../../shared/services/observer.service';
@@ -70,11 +70,16 @@ export class DashboardContainerComponent implements OnInit {
   ngOnInit() {
     this.subscriptionId = this._activatedRoute.snapshot.queryParams['subscriptionId'];
     this.showMetrics = !(this._resourceService.overviewPageMetricsId == undefined || this._resourceService.overviewPageMetricsId == "");
+    if(this.showMetrics) {
+      this._applensDiagnosticApiService.getDetectors().subscribe(detectors => {
+        this.showMetrics = detectors.some(detector => {detector.id.toLowerCase() === this._resourceService?.overviewPageMetricsId?.toLowerCase()});
+      });
+    }    
     let serviceInputs = this._startupService.getInputs();
     let alias = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
     let userId = alias.replace('@microsoft.com', '').toLowerCase();
     this._telemetryService.logEvent(TelemetryEventNames.HomePageLogUser, {"userId": userId});
-    this.resourceReady = this._resourceService.getCurrentResource();
+    this.resourceReady = !!this._resourceService.ArmResource.resourceGroup && !!this._resourceService.ArmResource.resourceName? this._resourceService.getCurrentResource() : of(null);
     this._applensGlobal.updateHeader("");
     this.resourceReady.subscribe(resource => {
       if (resource) {
@@ -83,7 +88,7 @@ export class DashboardContainerComponent implements OnInit {
         if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/hostingenvironments' && this.resource && this.resource.Name) {
           this.observerLink = "https://wawsobserver.azurewebsites.windows.net/MiniEnvironments/" + this.resource.Name;
         }
-        else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/sites') {
+        else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/sites' && this.resource && this.resource.Name) {
           this._diagnosticApiService.GeomasterServiceAddress = this.resource["GeomasterServiceAddress"];
           this._diagnosticApiService.GeomasterName = this.resource["GeomasterName"];
           this._diagnosticApiService.Location = this.resource["WebSpace"];
@@ -92,8 +97,8 @@ export class DashboardContainerComponent implements OnInit {
           if (resource['IsXenon']) {
             this._resourceService.imgSrc = this._resourceService.altIcons['Xenon'];
           }
-        } else if (serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/containerapps' ||
-          serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.app/containerapps') {
+        } else if ((serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.web/containerapps' ||
+          serviceInputs.resourceType.toString().toLowerCase() === 'microsoft.app/containerapps')  && this.resource && this.resource.Name) {
           this._diagnosticApiService.GeomasterServiceAddress = this.resource.ServiceAddress;
           this._diagnosticApiService.GeomasterName = this.resource.GeoMasterName;
           this.observerLink = "https://wawsobserver.azurewebsites.windows.net/partner/containerapp/" + this.resource.ContainerAppName;
@@ -118,12 +123,14 @@ export class DashboardContainerComponent implements OnInit {
       }
     });
         // Retrieving info about the site 
-    // Sample response: {"kind":"app","is_linux":false,"sku":"Standard","actual_number_of_workers":3,"current_worker_size":1}    
-    this._observerService.getSiteSku(this.resource.InternalStampName, this.resource.SiteName).subscribe(siteSku => {
-      if (siteSku) {
-        this.siteSku = siteSku;
-      }
-    });
+    // Sample response: {"kind":"app","is_linux":false,"sku":"Standard","actual_number_of_workers":3,"current_worker_size":1}
+    if(!!this.resource && !!this.resource.InternalStampName && !!this.resource.SiteName) {
+      this._observerService.getSiteSku(this.resource.InternalStampName, this.resource.SiteName).subscribe(siteSku => {
+        if (siteSku) {
+          this.siteSku = siteSku;
+        }
+      });
+    }    
     // Detecting whether Download Report button should be displayed or not
     this.displayDownloadReportButton = this.checkIsWindowsApp() || this.checkIsLinuxApp();
 
@@ -279,7 +286,7 @@ export class DashboardContainerComponent implements OnInit {
 
   replaceResourceEmptyValue() {
     this.keys.forEach(key => {
-      if (this.resource[key] === "") {
+      if (!!this.resource && this.resource[key] === "") {
         this.resource[key] = "N/A";
       }
     });

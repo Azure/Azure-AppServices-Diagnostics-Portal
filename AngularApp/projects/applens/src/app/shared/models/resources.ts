@@ -70,6 +70,11 @@ export interface ResourceServiceInputs {
     workflowsEnabled: boolean;
 }
 
+export interface ResourceError {
+    resource: string;
+    error: string;
+}
+
 export const RESOURCE_SERVICE_INPUTS = new InjectionToken<ResourceServiceInputs>('ResourceServiceInputs');
 
 export const DEFAULT_RESOURCE_SERVICE_INPUTS: ResourceServiceInputs = {

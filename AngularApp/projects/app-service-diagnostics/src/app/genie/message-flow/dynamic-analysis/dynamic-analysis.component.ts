@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Injector, OnInit, Output, Input } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Injector, OnInit, Output, Input, ViewChild } from '@angular/core';
 import { Message, TextMessage, ButtonListMessage } from '../../models/message';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IChatMessageComponent } from '../../interfaces/ichatmessagecomponent';
@@ -9,6 +9,8 @@ import { LoggingV2Service } from '../../../shared-v2/services/logging-v2.service
 import { TelemetryService, TelemetryEventNames } from 'diagnostic-data';
 import { v4 as uuid } from 'uuid';
 import { ReplaySubject } from 'rxjs';
+import { GenericAnalysisComponent } from '../../../shared/components/generic-analysis/generic-analysis.component';
+import { HealthStatus } from 'diagnostic-data';
 
 @Component({
     selector: 'dynamic-analysis',
@@ -16,6 +18,8 @@ import { ReplaySubject } from 'rxjs';
     styleUrls: ['./dynamic-analysis.component.scss']
 })
 export class DynamicAnalysisComponent implements OnInit, AfterViewInit, IChatMessageComponent {
+
+    @ViewChild('genericAnalysis', { static: true }) genericAnalysis: GenericAnalysisComponent;
 
     @Input() keyword: string = "";
     @Input() resourceId: string = "";
@@ -29,7 +33,6 @@ export class DynamicAnalysisComponent implements OnInit, AfterViewInit, IChatMes
     loading: boolean = true;
     searchMode: SearchAnalysisMode = SearchAnalysisMode.Genie;
     viewUpdated: boolean = false;
-    webSearchId: string = null;
 
     constructor(private _routerLocal: Router, private _activatedRouteLocal: ActivatedRoute, private injector: Injector, private _contentService: ContentService, private _chatState: CategoryChatStateService, private _logger: LoggingV2Service, private _telemetryService: TelemetryService) { }
     noSearchResult: boolean = false;
@@ -39,6 +42,16 @@ export class DynamicAnalysisComponent implements OnInit, AfterViewInit, IChatMes
     ratingEventProperties: { [name: string]: string };
     content: any[];
     analysisListSubject: ReplaySubject<any> = new ReplaySubject<any>(1);
+    deepSearchEnabled: boolean = true;
+    deepSearchCompleted: boolean = false;
+    waitTimeBeforeDeepSearch: number = 20000; // Maximum wait 20 seconds before we force call deep search
+    showDeepSearchSolution: boolean = false;
+    diagnosticToolFindings: string = "";
+    detectorInsightsReturned: boolean = false;
+    webSearchEnabled: boolean = false;
+    webSearchCompleted: boolean = false;
+    detectorAnalysisCompleted: boolean = false;
+    statusValue: any;
 
     ngOnInit() {
         this.searchMode = SearchAnalysisMode.Genie;
@@ -50,60 +63,107 @@ export class DynamicAnalysisComponent implements OnInit, AfterViewInit, IChatMes
             'Url': window.location.href
         };
 
-        this._contentService.searchWeb(this.keyword, this.documentResultCount).subscribe(searchResults => {
-            this.webSearchId = uuid();
-            if (searchResults && searchResults.webPages && searchResults.webPages.value && searchResults.webPages.value.length > 0) {
-                this.content = searchResults.webPages.value.map(result => {
-                    return {
-                        title: result.name,
-                        description: result.snippet,
-                        link: result.url
-                    };
-                });
-                this._telemetryService.logEvent(TelemetryEventNames.WebQueryResults, {
-                    searchId: this.webSearchId,
-                    searchMode: "1",
-                    query: this.keyword,
-                    results: JSON.stringify(this.content),
-                    ts: Math.floor((new Date()).getTime() / 1000).toString()
-                });
+        setTimeout(() => {
+            if (!this.detectorInsightsReturned && !this.showDeepSearchSolution) {
+                let issueDetectedViewModels = this.genericAnalysis ? this.genericAnalysis.getIssuesDetected(): [];
+                this.diagnosticToolFindings = this.extractDiagnosticInsights(issueDetectedViewModels);
+                this.showDeepSearchSolution = true;
+            }
+        }, this.waitTimeBeforeDeepSearch);
 
-                setTimeout(() => {
-                    this.onViewUpdate.emit();
-                }, 100);
-                this.viewUpdated = true;
+        setTimeout(() => {
+            this.onViewUpdate.emit();
+        }, 100);
+
+        this.analysisListSubject.subscribe((dataOutput) => {
+            this.detectorAnalysisCompleted = true;
+            let nextKey = "";
+            if ((dataOutput == undefined || dataOutput.data == undefined || dataOutput.data.detectors == undefined || dataOutput.data.detectors.length === 0) && (this.content == undefined || this.content.length == 0)) {
+                this.noSearchResult = true;
+            }
+            else {
+                this.noSearchResult = false;
+                nextKey = "feedback";
             }
 
-            this.analysisListSubject.subscribe((dataOutput) => {
-                let nextKey = "";
-                if ((dataOutput == undefined || dataOutput.data == undefined || dataOutput.data.detectors == undefined || dataOutput.data.detectors.length === 0) && (this.content == undefined || this.content.length == 0)) {
-                    this.noSearchResult = true;
+            this.statusValue = {
+                status: dataOutput && dataOutput.status ? dataOutput.status : false,
+                data: {
+                    hasResult: !this.noSearchResult,
+                    next_key: nextKey,
                 }
-                else {
-                    this.noSearchResult = false;
-                    nextKey = "feedback";
-                }
+            };
+            this.detectorInsightsReturned = true;
 
-                let statusValue = {
-                    status: dataOutput && dataOutput.status ? dataOutput.status : false,
-                    data: {
-                        hasResult: !this.noSearchResult,
-                        next_key: nextKey,
-                    }
-                };
-                this.onComplete.emit(statusValue);
-            });
+            setTimeout(() => {
+                this.onViewUpdate.emit();
+            }, 100);
+
+            if (!this.showDeepSearchSolution) {
+                try {
+                    this.diagnosticToolFindings = dataOutput.status && dataOutput.data ? this.extractDiagnosticInsights(dataOutput.data.issueDetectedViewModels): "";
+                    this.showDeepSearchSolution = true;
+                }
+                catch (error) {
+                    //This is not a breaking error
+                    this.handleDeepSearchFailure();
+                }
+            }
+
+            this.checkCompletionStatus();
         });
     }
 
-
-    openArticle(article: any) {
-        this._telemetryService.logEvent(TelemetryEventNames.WebQueryResultClicked, { searchId: this.webSearchId, searchMode: "1", article: JSON.stringify(article), ts: Math.floor((new Date()).getTime() / 1000).toString() });
-        window.open(article.link, '_blank');
+    extractDiagnosticInsights(issueDetectedViewModels: any[]): string {
+        let onlyCriticalInsights = issueDetectedViewModels.filter(x => x.model.status == HealthStatus.Critical);
+        let insightsToUse = onlyCriticalInsights && (onlyCriticalInsights.length > 0)? onlyCriticalInsights: issueDetectedViewModels;
+        if (insightsToUse && insightsToUse.length > 0) {
+            let numInsights = insightsToUse.length;
+            // Take maximum 4 insights
+            numInsights = numInsights > 5 ? 5 : numInsights;
+            let maxLengthEach = Math.floor(1000/numInsights);
+            return insightsToUse.slice(0, numInsights).map((insight) => { 
+                return insight.insightDescription && insight.insightDescription.length > 0
+                ? `Diagnostic Check: ${insight.model.metadata.name}\nFinding: ${insight.insightTitle}\nDescription: ${insight.insightDescription.substring(0, maxLengthEach)}`
+                : `Diagnostic Check: ${insight.model.metadata.name}\nFinding: ${insight.insightTitle}`;
+            }).join("\n\n");
+        }
+        else {
+            return "";
+        }
     }
 
-    getLink(link: string) {
-        return !link || link.length < 20 ? link : link.substr(0, 25) + '...';
+    checkCompletionStatus() {
+        if (this.detectorAnalysisCompleted && (!this.webSearchEnabled || (this.webSearchEnabled && this.webSearchCompleted)) && ((!this.deepSearchEnabled) || (this.deepSearchEnabled && this.deepSearchCompleted))) {
+            setTimeout(() => {
+                this.onViewUpdate.emit({data: "view-loaded"});
+            }, 100);
+            this.viewUpdated = true;
+            this.onComplete.emit(this.statusValue);
+        }
+    }
+
+    handleDeepSearchComplete(event)
+    {
+        this.deepSearchCompleted = true;
+        this.checkCompletionStatus();
+    }
+
+    handleWebSearchComplete(event){
+        this.webSearchCompleted = true;
+        this.checkCompletionStatus();
+    }
+
+    handleDeepSearchFailure = () => {
+        this.deepSearchEnabled = false;
+        this.deepSearchCompleted = true;
+        this.diagnosticToolFindings = "";
+        this.webSearchEnabled = true;
+        this.checkCompletionStatus();
+    }
+
+    enableSearchBox(){
+        (<HTMLTextAreaElement>document.getElementById("genieChatBox")).disabled = false;
     }
 
     ngAfterViewInit() {

@@ -8,17 +8,18 @@ import { ServerFarm, Sku } from '../../../shared/models/server-farm';
 import { IDiagnosticProperties } from '../../../shared/models/diagnosticproperties';
 import { flatMap } from 'rxjs/operators';
 import { PortalReferrerMap } from '../../../shared/models/portal-referrer-map';
-import { DetectorType } from 'diagnostic-data';
+import { DetectorType, UriUtilities } from 'diagnostic-data';
 import { of, Observable, merge } from 'rxjs';
 import { ArmResource } from '../../../shared-v2/models/arm';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+import { AuthService } from '../../../startup/services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class WebSitesService extends ResourceService {
 
-    private _resourceGroup: string;
-    private _siteName: string;
-    private _slotName: string;
+    private _resourceGroup: string = '';
+    private _siteName: string = '';
+    private _slotName: string = '';
 
     public appStack: string = '';
     public platform: OperatingSystem = OperatingSystem.any;
@@ -27,8 +28,8 @@ export class WebSitesService extends ResourceService {
     public hostingEnvironmentKind: HostingEnvironmentKind = HostingEnvironmentKind.All;
     public linuxFxVersion: string = '';
 
-    constructor(protected _armService: ArmService, private _appAnalysisService: AppAnalysisService) {
-        super(_armService);
+    constructor(protected _armService: ArmService, protected _authService:AuthService, private _appAnalysisService: AppAnalysisService) {
+        super(_armService, _authService);
     }
 
     public getIbizaBladeToDetectorMapings(): Observable<PortalReferrerMap[]> {
@@ -143,6 +144,10 @@ export class WebSitesService extends ResourceService {
         return this.appType === AppType.WebApp ? this.platform === OperatingSystem.windows ? 'Web App (Windows)' : 'Web App (Linux)' : 'Function App';
     }
 
+    public get useApolloApi():boolean {
+        return false;
+    }
+
     public get isArmApiResponseBase64Encoded(): boolean {
         return false;
     }
@@ -190,30 +195,38 @@ export class WebSitesService extends ResourceService {
         this.warmUpCallFinished.next(true);
     }
 
-    private _populateSiteInfo(): void {
+    private _populateSiteInfo(): void {        
         const pieces = this.resource.id.toLowerCase().split('/');
         this._subscription = pieces[pieces.indexOf('subscriptions') + 1];
-        this._resourceGroup = pieces[pieces.indexOf('resourcegroups') + 1];
-        this._siteName = pieces[pieces.indexOf('sites') + 1];
-        this._slotName = pieces.indexOf('slots') >= 0 ? pieces[pieces.indexOf('slots') + 1] : '';
+        if(!UriUtilities.isNoResourceCall(this.resource.id)) {
+            this._resourceGroup = pieces[pieces.indexOf('resourcegroups') + 1];
+            this._siteName = pieces[pieces.indexOf('sites') + 1];
+            this._slotName = pieces.indexOf('slots') >= 0 ? pieces[pieces.indexOf('slots') + 1] : '';
 
-        const site: Site = <Site>this.resource.properties;
-
-        this._appAnalysisService.getDiagnosticProperties(this._subscription, this._resourceGroup, this._siteName, this._slotName).subscribe((data: IDiagnosticProperties) => {
-            this.appStack = data && data.appStack && data.appStack != '' ? data.appStack : '';
-        });
-
-        this.appType = site.kind.toLowerCase().indexOf('workflowapp') >= 0 ? AppType.WorkflowApp : site.kind.toLowerCase().indexOf('functionapp') >= 0 ? AppType.FunctionApp : AppType.WebApp;
-        this.platform = site.isXenon ? OperatingSystem.HyperV : site.kind.toLowerCase().indexOf('linux') >= 0 ? OperatingSystem.linux : OperatingSystem.windows;
-        this.sku = Sku[site.sku] ? Sku[site.sku] : this.sku;
-        this.hostingEnvironmentKind = this.getHostingEnvirontmentKind(site);
-        if (this.platform === OperatingSystem.linux) {
-            if (site.siteProperties != null && site.siteProperties.properties != null) {
-                let linuxFxVersionProp = site.siteProperties.properties.find(x => x.name && x.name === "LinuxFxVersion");
-                if (linuxFxVersionProp != null) {
-                    this.linuxFxVersion = linuxFxVersionProp.value;
+            const site: Site = <Site>this.resource.properties;
+            this._appAnalysisService.getDiagnosticProperties(this._subscription, this._resourceGroup, this._siteName, this._slotName).subscribe((data: IDiagnosticProperties) => {
+                this.appStack = data && data.appStack && data.appStack != '' ? data.appStack : '';
+            });
+    
+            this.appType = site.kind.toLowerCase().indexOf('workflowapp') >= 0 ? AppType.WorkflowApp : site.kind.toLowerCase().indexOf('functionapp') >= 0 ? AppType.FunctionApp : AppType.WebApp;
+            this.platform = site.isXenon ? OperatingSystem.HyperV : site.kind.toLowerCase().indexOf('linux') >= 0 ? OperatingSystem.linux : OperatingSystem.windows;
+            this.sku = Sku[site.sku] ? Sku[site.sku] : this.sku;
+            this.hostingEnvironmentKind = this.getHostingEnvirontmentKind(site);
+            if (this.platform === OperatingSystem.linux) {
+                if (site.siteProperties != null && site.siteProperties.properties != null) {
+                    let linuxFxVersionProp = site.siteProperties.properties.find(x => x.name && x.name === "LinuxFxVersion");
+                    if (linuxFxVersionProp != null) {
+                        this.linuxFxVersion = linuxFxVersionProp.value;
+                    }
                 }
             }
+        }
+        else {
+            this.appStack = '';
+            this.appType = AppType.WebApp;
+            this.platform = OperatingSystem.windows;
+            this.sku = Sku.Standard;
+            this.hostingEnvironmentKind = HostingEnvironmentKind.None;
         }
     }
 

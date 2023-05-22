@@ -61,6 +61,24 @@ export class PortalReferrerResolverComponent implements OnInit {
       queryParamsJson = { ...queryParamsJson, startTime: startTimeStr, endTime: endTimeStr };
     }
 
+    if(referrer.AdditionalQueryParams && referrer.AdditionalQueryParams.length > 0) {
+      // If referrer.StartTime has value then skip the startTime param from additional query params else use the startTime param from additional query params.
+      if(!referrer.StartTime && referrer.AdditionalQueryParams.find(p => `${p.key}`.toLocaleLowerCase() === 'starttime')) {
+        queryParamsJson = { ...queryParamsJson, startTime: referrer.AdditionalQueryParams.find(p => `${p.key}`.toLocaleLowerCase() === 'starttime').value };
+        startTimeStr = queryParamsJson["startTime"];
+
+        // If referrer.EndTime has value then skip the endTime param from additional query params else use the endTime param from additional query params.
+        if(!referrer.EndTime && referrer.AdditionalQueryParams.find(p => `${p.key}`.toLocaleLowerCase() === 'endtime')) {
+          queryParamsJson = { ...queryParamsJson, endTime: referrer.AdditionalQueryParams.find(p => `${p.key}`.toLocaleLowerCase() === 'endtime').value };
+          endTimeStr = queryParamsJson["endTime"];
+        }
+      }
+
+      referrer.AdditionalQueryParams.filter(p => p.value && `${p.key}`.toLocaleLowerCase() != 'starttime' && `${p.key}`.toLocaleLowerCase() != 'endtime' ).forEach(param => {
+        queryParamsJson = { ...queryParamsJson, [param.key]: param.value };
+      });
+    }
+
     // Map the right "Availability and Performance" overview detector for Load testing resources.
     if (!!referrer.ExtensionName && !!referrer.BladeName && referrer.ExtensionName === "Microsoft_Azure_CloudNativeTesting" && referrer.BladeName === "ReportsBlade") {
       if (this._resourceService && this._resourceService instanceof WebSitesService) {

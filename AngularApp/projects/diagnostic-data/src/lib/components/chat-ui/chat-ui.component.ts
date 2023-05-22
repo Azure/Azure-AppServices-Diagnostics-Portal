@@ -16,6 +16,7 @@ export class ChatUIComponent implements OnInit {
     @Input() chatIdentifier: string = '';
     @Input() chatHeader: string = '';
     @Input() messages: string = '';
+    @Input() showSearchBox: boolean = true;
     @Input() chatInputText: string = '';
     @Input() onSendMessage: Function = (message: ChatMessage) => {};
     @Input() chatAlignment: ChatAlignment = ChatAlignment.Center;

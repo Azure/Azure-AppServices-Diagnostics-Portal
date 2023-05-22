@@ -1,4 +1,4 @@
-import { DetectorControlService, FeatureNavigationService, TelemetryEventNames, ResourceDescriptor } from 'diagnostic-data';
+import { DetectorControlService, FeatureNavigationService, TelemetryEventNames, ResourceDescriptor, UriUtilities } from 'diagnostic-data';
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category } from '../../../shared-v2/models/category';
@@ -196,7 +196,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
             }
         });
 
-        if (this._resourceService && !!this._resourceService.resource && this._resourceService.resource.type === 'Microsoft.Web/sites') {
+        if (this._resourceService && !!this._resourceService.resource && this._resourceService.resource.type === 'Microsoft.Web/sites' && !UriUtilities.isNoResourceCall(this._resourceService.resourceIdForRouting) ) {
             if (locationPlacementId.toLowerCase() !== 'geos_2020-01-01') {
                 // Register Change Analysis Resource Provider.
                 this.armService.postResourceFullResponse(this.providerRegisterUrl, {}, true, '2018-05-01').subscribe((response: HttpResponse<{}>) => {

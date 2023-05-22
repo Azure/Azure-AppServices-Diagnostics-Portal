@@ -3,25 +3,6 @@ import {
     Component, ComponentFactoryResolver, EventEmitter, Input, Output, ReflectiveInjector, ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { ButtonMessageComponent } from '../common/button-message/button-message.component';
-import { FeedbackButtonMessageComponent } from '../common/feedback-button-message/feedback-button-message.component';
-import { GraphMessageComponent } from '../common/graph-message/graph-message.component';
-import { SolutionsMessageComponent } from '../common/solutions-message/solutions-message.component';
-import { GenieTextMessageComponent } from '../common/text-message/text-message.component';
-import {
-    DetectorSummaryComponent
-} from '../message-flow/detector-summary/detector-summary.component';
-import {
-    DocumentSearchResultsComponent
-} from '../message-flow/document-search-results/document-search-results.component';
-import {
-    DynamicAnalysisComponent
-} from '../message-flow/dynamic-analysis/dynamic-analysis.component';
-import { DocumentSearchComponent } from '../message-flow/document-search/document-search.component';
-import { GenieFeedbackComponent } from '../message-flow/genie-feedback/genie-feedback.component';
-import {
-    TalkToAgentMessageComponent
-} from '../message-flow/talk-to-agent/talk-to-agent-message.component';
 import { Message } from '../models/message';
 import { takeUntil } from 'rxjs/operators';
 

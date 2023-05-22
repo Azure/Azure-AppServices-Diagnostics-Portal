@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent, FormatResourceNamePipe } from './dashboard/dashboard.component';
 import { SharedModule } from '../../shared/shared.module';
-import { RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { RouterModule, Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { AngularSplitModule } from 'angular-split-ng6';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { NgxSmartModalModule } from 'ngx-smart-modal';
@@ -57,7 +57,7 @@ import { DashboardContainerComponent } from './dashboard-container/dashboard-con
 import { L2SideNavComponent } from './l2-side-nav/l2-side-nav.component';
 import { ApplensCommandBarService } from './services/applens-command-bar.service';
 import { ApplensGlobal as ApplensGlobals } from '../../applens-global';
-import { ResourceInfo } from '../../shared/models/resources';
+import { ResourceError, ResourceInfo } from '../../shared/models/resources';
 import { catchError, map, mergeMap, take } from 'rxjs/operators';
 import { RecentResource } from '../../shared/models/user-setting';
 import { UserSettingService } from './services/user-setting.service';
@@ -139,7 +139,7 @@ import { ApplensOpenAIChatComponent } from './applens-openai-chat/applens-openai
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
-    constructor(private _resourceService: ResourceService, private _detectorControlService: DetectorControlService, private _userSettingService: UserSettingService) { }
+    constructor(private _resourceService: ResourceService, private _detectorControlService: DetectorControlService, private _userSettingService: UserSettingService, private _router: Router) { }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<ResourceInfo> {
         const startTime = route.queryParams['startTime'];
@@ -154,7 +154,14 @@ export class InitResolver implements Resolve<Observable<ResourceInfo>>{
 
         //Wait for getting UserSetting and update landingPage info before going to dashboard/detector page
         let recentResource: RecentResource = null;
-        return this._resourceService.waitForInitialization().pipe(map(resourceInfo => {
+        return this._resourceService.waitForInitialization().pipe(catchError(err => {
+            const resourceError: ResourceError = {
+                error: JSON.stringify(err),
+                resource: route.params["resourceName"]
+            }
+            this._router.navigate(["resourceError"], { state: { resourceError } });
+            throw err;
+        }), map(resourceInfo => {
             const queryParams = this._userSettingService.excludeQueryParams(route.queryParams);
             recentResource = {
                 resourceUri: resourceInfo.resourceUri,
@@ -191,7 +198,6 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
             },
             {
                 path: 'home/:viewType',
-                // component: ResourceHomeComponent,
                 redirectTo: '',
                 pathMatch: 'full'
             },
@@ -216,10 +222,6 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
                     }
                 ]
             },
-            // {
-            //     path: 'categories/:category',
-            //     component: CategoryPageComponent,
-            // },
             {
                 path: 'supportTopics/:supportTopic',
                 component: SupportTopicPageComponent,
@@ -592,8 +594,8 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         { provide: GenieGlobals, useExisting: ApplensGlobals },
         { provide: GenericBreadcrumbService, useExisting: BreadcrumbService },
         { provide: GenericUserSettingService, useExisting: UserSettingService },
-        { provide: GenericClientScriptService, useExisting: ClientScriptService},
-        { provide: GenericOpenAIChatService, useExisting: ApplensOpenAIChatService}
+        { provide: GenericClientScriptService, useExisting: ClientScriptService },
+        { provide: GenericOpenAIChatService, useExisting: ApplensOpenAIChatService }
     ],
     declarations: [DashboardComponent, SideNavComponent, ResourceMenuItemComponent, ResourceHomeComponent, OnboardingFlowComponent, SearchTermAdditionComponent,
         SearchMenuPipe, TabDataComponent, TabDevelopComponent, TabCommonComponent, TabDataSourcesComponent, TabMonitoringComponent,

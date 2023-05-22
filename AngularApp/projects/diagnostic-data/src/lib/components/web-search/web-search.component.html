@@ -10,7 +10,7 @@
             </button>
         </div>
     </div>
-    <span *ngIf="showPreLoadingError" style="margin-top:10px;">{{preLoadingErrorMessage}}</span>
+    <span *ngIf="showPreLoadingError && !withinGenie" style="margin-top:10px;">{{preLoadingErrorMessage}}</span>
     <span *ngIf="showPreLoader" style="margin-top:10px;">
         <i class="fa fa-circle-o-notch fa-spin spin-icon" aria-hidden="true"></i>
         <span style="margin-left:5px">Fetching results from web...</span>
@@ -27,15 +27,14 @@
 
     <div *ngIf="searchResults && searchResults.length>0">
         <div class="article-container">
-          <div class="article-heading" tabindex="0">Here are some documents from the web that might help you</div>
+          <div class="article-heading" tabindex="0">{{headerStatement}}</div>
           <div *ngFor="let article of searchResults;let i =index" >
-            <!--if deepSearchEnabled = false, hidden = false -->
             <div  [hidden]="(i < numArticlesExpanded ) ? false : !viewRemainingArticles" 
                 class="article" 
                 (click)="selectResult(article)" 
                 tabindex="0" 
                 (keyup.enter)="selectResult(article)" >
-                <a style="font-weight:600;">{{article.title}}
+                <a>{{article.title}}
                 <i class="fa fa-external-link"></i>
                 </a>
                 <div class="article-link">{{getLinkText(article.link)}}</div>
@@ -43,7 +42,6 @@
             </div>
           </div>
 
-          <!--Anchor tag should be displayed only if deep search is enabled-->
           <a  *ngIf="searchResults.length>numArticlesExpanded"
                 (click)="showRemainingArticles()"> 
                 {{viewOrHideAnchorTagText(viewRemainingArticles , searchResults.length , numArticlesExpanded )}}   

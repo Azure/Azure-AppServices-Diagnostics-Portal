@@ -50,3 +50,25 @@
     margin-right: 5px;
     text-decoration: none;
 }
+
+.chatui-feedback-icons {
+    text-align: right;
+  }
+
+  .chatui-feedback-icon {
+    font-size: 16px;
+    margin: 2px 5px;
+    color: transparent;
+    cursor: pointer;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: gray;
+  }
+
+  .chatui-feedback-icon-selected {
+    font-size: 16px;
+    margin: 2px 5px;
+    color: gray!important;
+    cursor: pointer;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: gray!important;
+  }

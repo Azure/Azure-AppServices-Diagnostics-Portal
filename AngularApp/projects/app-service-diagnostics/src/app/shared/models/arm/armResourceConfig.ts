@@ -13,6 +13,7 @@ export class ArmResourceConfig {
 	categories?: Array<Category>;
     pesId?: string;
 	sapProductId?: string;
+	sapProductIdList?:string[];
     liabilityCheckConfig?: LiabilityCheckConfig;
     quickLinks?: string[];
     keystoneDetectorId?: string;
@@ -24,6 +25,7 @@ export class ArmResourceConfig {
 export interface ArmApiConfig {
 	armApiVersion?:string;
 	isArmApiResponseBase64Encoded?:boolean;
+	useApolloApi?:boolean;
 }
 
 export interface LiveChatConfig {

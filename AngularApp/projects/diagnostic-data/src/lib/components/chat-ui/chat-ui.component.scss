@@ -1,6 +1,5 @@
 .chatui-bot-container{
     height: 100%;
-    display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
@@ -90,7 +89,6 @@
   }
 
   .chatui-textarea-container{
-    position: absolute;
     bottom: 5px;
   }
 
@@ -144,13 +142,11 @@
 
   .chatui-chat-messages-container{
     position: absolute;
-    top: 3vh;
     width: 100%;
     overflow-y: scroll;
     height: 70vh;
     border: 1px solid #f6f6f6;
     border-bottom: 0px;
-    padding: 7px;
   }
 
   .chatui-message-icon {

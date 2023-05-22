@@ -68,4 +68,12 @@ export class UriUtilities {
         }
         return originalParams;
     }
+
+    static isNoResourceCall(resourceUri: string): boolean {
+        return `${resourceUri}`.toLowerCase().indexOf('/resourcegroups/') < 0;
+    }
+
+    static isApolloApiCall(resourceUri: string): boolean {
+        return `${resourceUri}`.toLowerCase().indexOf('/microsoft.diagnostics/apollo/') > -1;
+    }
 }

@@ -67,12 +67,14 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     @Input() resourceId: string = "";
     @Input() targetedScore: number = 0.5;
     @Output() onComplete = new EventEmitter<any>();
+    @Output() onWebSearchCompletion = new EventEmitter<any>();
     @Output() updateDowntimeZoomBehavior = new EventEmitter<any>();
     allowUpdateDowntimeZoomBehaviorEvent: boolean = false;
     timeWhenAnalysisStarted: Moment;
     downtimeResetTimer: any = null;
     @Input() searchTerm: string = "";
     @Input() keystoneSolutionView: boolean = false;
+    @Input() webSearchEnabled: boolean = true;
     analysisName: string = "";
     detectorViewModels: any[];
     detectorId: string;
@@ -128,6 +130,10 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
     solutionTitle: string = "";
     expandIssuedAnalysisChecks: boolean = false;
     allDetectors: DetectorMetaData[] = [];
+
+    public getIssuesDetected() {
+        return this.issueDetectedViewModels;
+    }
 
 
     constructor(public _activatedRoute: ActivatedRoute, private _router: Router,
@@ -287,6 +293,10 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
             }
         });
         return additionalQueryString;
+    }
+
+    webSearchCompleted(event){
+        this.onWebSearchCompletion.emit();
     }
 
     analysisContainsDowntime(): Observable<boolean> {
@@ -546,6 +556,10 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                             this.startDetectorRendering(detectorList, downTime, containsDownTime);
                         });
 
+                    }
+                    else {
+                        let dataOutput = {};
+                        this.onComplete.emit(dataOutput);
                     }
                 },
                     (err) => {

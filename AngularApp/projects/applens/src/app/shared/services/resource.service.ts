@@ -74,7 +74,12 @@ export class ResourceService {
   }
 
   public getCurrentResourceId(forDiagApi?: boolean): string {
-    return `subscriptions/${this._armResource.subscriptionId}/resourceGroups/${this._armResource.resourceGroup}/providers/${this._armResource.provider}/${this._armResource.resourceTypeName}/${this._armResource.resourceName}`;
+    if(!!this._armResource.resourceGroup && this._armResource.resourceName) {
+      return `subscriptions/${this._armResource.subscriptionId}/resourceGroups/${this._armResource.resourceGroup}/providers/${this._armResource.provider}/${this._armResource.resourceTypeName}/${this._armResource.resourceName}`;
+    }
+    else {
+      return `subscriptions/${this._armResource.subscriptionId}/providers/${this._armResource.provider}/${this._armResource.resourceTypeName}`;
+    }
   }
 
   public getCurrentResource(): Observable<any> {

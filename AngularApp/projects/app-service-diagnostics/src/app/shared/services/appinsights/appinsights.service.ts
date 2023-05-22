@@ -55,10 +55,10 @@ export class AppInsightsService {
         appSettingsHaveInstrumentationKey: true
     };
 
-    subscriptionId: string;
-    resourceGroup: string;
-    siteName: string;
-    slotName: string;
+    subscriptionId: string = '';
+    resourceGroup: string = '';
+    siteName: string = '';
+    slotName: string = '';
 
     constructor(private http: HttpClient, private authService: AuthService, private armService: ArmService,
         private siteService: SiteService, private appAnalysisService: AppAnalysisService, private portalService: PortalService,
@@ -69,7 +69,7 @@ export class AppInsightsService {
         this.applicationInsightsValidForApp = new BehaviorSubject<boolean>(null);
 
         this.authService.getStartupInfo().subscribe((startupInfo: StartupInfo) => {
-            if (startupInfo.resourceType === ResourceType.Site) {
+            if (startupInfo.resourceType === ResourceType.Site && startupInfo.resourceId.toLowerCase().indexOf('/resoucegroups/') < 0) {
                 this.postCommandToGetAIResource(startupInfo.resourceId);
 
                 const resourceUriParts = siteService.parseResourceUri(startupInfo.resourceId);
@@ -78,21 +78,23 @@ export class AppInsightsService {
                 this.siteName = resourceUriParts.siteName;
                 this.slotName = resourceUriParts.slotName;
 
-                this._backendService.get<string>(`api/appsettings/AppInsights:UseCertificates`).subscribe(useCertificatesSetting => {
-                    if (useCertificatesSetting 
-                        && useCertificatesSetting.toString().toLowerCase() == 'true') {
-                            this.useAppSettingsForAppInsightEncryption = true;
-                    }
-                    this.loadAppInsightsSettings(resourceUriParts.subscriptionId, resourceUriParts.resourceGroup, resourceUriParts.siteName, resourceUriParts.slotName);
-                }, error => {
-                    this.loadAppInsightsSettings(resourceUriParts.subscriptionId, resourceUriParts.resourceGroup, resourceUriParts.siteName, resourceUriParts.slotName);
-                });
+                if(this.resourceGroup) {
+                    // Resource group will be empty for a partial resource URI
+                    this._backendService.get<string>(`api/appsettings/AppInsights:UseCertificates`).subscribe(useCertificatesSetting => {
+                        if (useCertificatesSetting 
+                            && useCertificatesSetting.toString().toLowerCase() == 'true') {
+                                this.useAppSettingsForAppInsightEncryption = true;
+                        }
+                        this.loadAppInsightsSettings(resourceUriParts.subscriptionId, resourceUriParts.resourceGroup, resourceUriParts.siteName, resourceUriParts.slotName);
+                    }, error => {
+                        this.loadAppInsightsSettings(resourceUriParts.subscriptionId, resourceUriParts.resourceGroup, resourceUriParts.siteName, resourceUriParts.slotName);
+                    });
+                }
             }
         });
     }
 
     private loadAppInsightsSettings(subscriptionId: string, resourceGroup: string, siteName: string, slotName: string = ''): void {
-
         // Check the stack of the web app to determine whether App Insights can be shown as an option
         this.appAnalysisService.getDiagnosticProperties(subscriptionId, resourceGroup, siteName, slotName).subscribe(data => {
 
@@ -152,10 +154,15 @@ export class AppInsightsService {
 
     CheckIfAppInsightsEnabled(): Observable<boolean> {
         let appInsightsEnabled: boolean = false;
-        return this.getAppInsightsResourceForWebApp().pipe(map(resp => {
-            appInsightsEnabled = this.isNotNullOrEmpty(resp);
-            return appInsightsEnabled;
-        }));
+        if(this.resourceGroup) {
+            return this.getAppInsightsResourceForWebApp().pipe(map(resp => {
+                appInsightsEnabled = this.isNotNullOrEmpty(resp);
+                return appInsightsEnabled;
+            }));
+        }
+        else {
+            return of(appInsightsEnabled);
+        }
     }
 
     getAppInsightsResourceForWebApp(): Observable<string> {
@@ -222,14 +229,19 @@ export class AppInsightsService {
     }
 
     getAppInsightsApiKeysCount(): Observable<number> {
-        return this.authService.getStartupInfo().pipe(
-            map((startupInfo: StartupInfo) => {
-                let headers = this._getHeaders(startupInfo, null);
-                return headers;
-            }),
-            mergeMap((headers: HttpHeaders) => {
-                return this.getAppInsightsApiKeysLength(headers);
-            }));
+        if(this.resourceGroup) {
+            return this.authService.getStartupInfo().pipe(
+                map((startupInfo: StartupInfo) => {
+                    let headers = this._getHeaders(startupInfo, null);
+                    return headers;
+                }),
+                mergeMap((headers: HttpHeaders) => {
+                    return this.getAppInsightsApiKeysLength(headers);
+                }));
+        }
+        else {
+            return of(NaN);
+        }
     }
 
     getRandomNumbers() {

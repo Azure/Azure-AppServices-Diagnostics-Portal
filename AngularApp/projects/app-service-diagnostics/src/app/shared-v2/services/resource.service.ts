@@ -7,24 +7,33 @@ import { ArmService } from '../../shared/services/arm.service';
 import { ArmResourceConfig } from '../../shared/models/arm/armResourceConfig';
 import { GenericArmConfigService } from '../../shared/services/generic-arm-config.service';
 import { PortalReferrerMap } from '../../shared/models/portal-referrer-map';
-import { DetectorType } from 'diagnostic-data';
+import { DetectorType, UriUtilities } from 'diagnostic-data';
+import { AuthService } from '../../startup/services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class ResourceService {
 
   protected _subscription: string;
+  protected _sapProductId:string = '';
 
   public resource: ArmResource;
 
   public warmUpCallFinished: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
   public error: any;
 
-  constructor(protected _armService: ArmService, private _genericArmConfigService?: GenericArmConfigService) { }
+  constructor(protected _armService: ArmService, protected _authService:AuthService, private _genericArmConfigService?: GenericArmConfigService) { }
 
   private _initialize() {
     const pieces = this.resource.id.toLowerCase().split('/');
     this._subscription = pieces[pieces.indexOf('subscriptions') + 1];
+    this._authService.getStartupInfo()
+    .subscribe(info => {
+      if (info) {
+        this._sapProductId = info.sapProductId? info.sapProductId : '';
+      }
+    });
   }
+  
 
   public get resourceIdForRouting() {
     return this.resource.id.toLowerCase();
@@ -53,13 +62,29 @@ export class ResourceService {
     if (this.armResourceConfig) {
       return of(this.armResourceConfig.pesId);
     }
+
+    if(this.resource?.id?.toLowerCase().indexOf('microsoft.web/sites') > -1) {
+      // PesId of web app windows.
+      return of('14748');
+    }
+    else if(this.resource?.id?.toLowerCase().indexOf('microsoft.web/hostingenvironments') > -1) {
+      return of('16533');
+    }
+    
     return of(null);
   }
 
   public getSapProductId(): Observable<string> {
+    // If case submission has passed us the SapProductId, use that instead of the config file.
+    // This helps in case the same ARM provider has different SAP product id's based on the support topic tree.
+    if(this._sapProductId) {
+      return of(this._sapProductId);
+    }
+
     if (this.armResourceConfig) {
       return of(this.armResourceConfig.sapProductId);
     }
+
     return of(null);
   }
 
@@ -120,6 +145,15 @@ export class ResourceService {
       else {
         return false;
       }
+    }
+    else {
+      return false;
+    }
+  }
+
+  public get useApolloApi():boolean {
+    if (this._genericArmConfigService) {
+      return this._genericArmConfigService.getArmApiConfig(this.resource.id)?.useApolloApi === true;
     }
     else {
       return false;
@@ -188,6 +222,15 @@ export class ResourceService {
     }
   }
 
+  private _computeResourceIdFromResource(resourceUri: string, resource: ArmResource): string {
+    if(!UriUtilities.isNoResourceCall(resourceUri)) {
+      return resource.id;
+    }
+    else {
+      return `/subscriptions/${resourceUri.split("subscriptions/")[1].split("/")[0]}/providers/${resourceUri.split("/providers/")[1].split("/")[0]}/${resourceUri.split("/providers/")[1].split("/")[1].split("?")[0]}`;
+    }
+  }
+
   public registerResource(resourceUri: string): Observable<{} | ArmResource> {
     if (this._genericArmConfigService && resourceUri.indexOf('hostingenvironments') < 0) {
       return this._genericArmConfigService.initArmConfig(resourceUri).pipe(
@@ -195,9 +238,10 @@ export class ResourceService {
           return this._armService.getArmResource<ArmResource>(resourceUri).pipe(
             map(resource => {
               this.resource = resource;
+              this.resource.id = this._computeResourceIdFromResource(resourceUri, resource);
               this._initialize();
               this.makeWarmUpCalls();
-              return resource;
+              return this.resource;
             }));
         })
       );
@@ -206,9 +250,10 @@ export class ResourceService {
       return this._armService.getArmResource<ArmResource>(resourceUri).pipe(
         map(resource => {
           this.resource = resource;
+          this.resource.id = this._computeResourceIdFromResource(resourceUri, resource);
           this._initialize();
           this.makeWarmUpCalls();
-          return resource;
+          return this.resource;
         }));
     }
   }

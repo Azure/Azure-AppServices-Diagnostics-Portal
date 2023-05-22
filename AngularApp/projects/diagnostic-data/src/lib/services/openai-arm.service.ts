@@ -10,6 +10,7 @@ export class OpenAIArmService {
 
   private allowedStacks: string[] = ["net", "net core", "asp", "php", "python", "node", "docker", "java", "tomcat", "kube", "ruby", "dotnet", "static"];
   public isEnabled: boolean = true;
+  private maxLengthAllowed: number = 500;
 
   public CheckEnabled(): Observable<boolean> {
     return of(this.isEnabled);
@@ -29,18 +30,25 @@ export class OpenAIArmService {
     }
   }
 
-  runOpenAIDetector(questionString: string, useStack: boolean = true): Observable<any> {
-    const query = this.constructQueryBody(questionString, useStack);
+  runOpenAIDetector(questionString: string, useStack: boolean = true, useDeepSearch: boolean = false, diagnosticToolFindings: string = ""): Observable<any> {
+    const query = this.constructQueryBody(questionString, useStack, useDeepSearch, diagnosticToolFindings);
     let queryParams = `&text=${encodeURIComponent(query)}`;
     return this._diagnosticService.getDetector("OpenAIDetectorId-1ce0e6a6-210d-43c8-9d90-0ab0dd171828", this._detectorControlService.startTimeString, this._detectorControlService.endTimeString, true, false, queryParams, null).pipe(
       map((response: DetectorResponse) => {
         return this.processDetectorResponse(response);
       }),
-      catchError((err) => {throw err;})
+      catchError((err) => {
+        if (err && err.status == "404" && useDeepSearch) {
+          return this.runOpenAIDetector(questionString, useStack, false, "");
+        }
+        else {
+          throw err;
+        }
+      })
     );
   }
 
-  constructQueryBody(questionString: string, useStack: boolean) : any {
+  constructQueryBody(questionString: string, useStack: boolean, useDeepSearch: boolean = false, diagnosticToolFindings: string = "") : any {
     let resourceType = this._resourceService.searchSuffix;
     //Decide the stack type to use with query
     var stackTypeSuffix = this._resourceService["appStack"] ? ` ${this._resourceService["appStack"]}` : "";
@@ -57,12 +65,21 @@ export class OpenAIArmService {
     const query = JSON.stringify({
       query: encodeURIComponent(questionString),
       resourceType: resourceType,
-      stackInfo: stackTypeSuffix
+      stackInfo: stackTypeSuffix,
+      useDeepSearch: useDeepSearch,
+      ...(diagnosticToolFindings && diagnosticToolFindings.length > 0 && {diagnosticToolFindings: diagnosticToolFindings})
     });
     return query;
   }
 
   public getAnswer(questionString: string, caching: boolean = true): Observable<any> {
     return this.runOpenAIDetector(questionString, true);
+  }
+
+  public getDeepSearchAnswer(questionString: string, diagnosticToolFindings: string): Observable<any> {
+    if (questionString.length > this.maxLengthAllowed) {
+      questionString = questionString.substring(0, this.maxLengthAllowed-2);
+    }
+    return this.runOpenAIDetector(questionString, true, true, diagnosticToolFindings);
   }
 }

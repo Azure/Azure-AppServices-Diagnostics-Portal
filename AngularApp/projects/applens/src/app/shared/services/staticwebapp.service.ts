@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@angular/core";
-import { of as observableOf, BehaviorSubject, Observable } from "rxjs";
+import { of as observableOf, BehaviorSubject, Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { ObserverStaticWebAppInfo, ObserverStaticWebAppResponse } from "../models/observer";
 import { ResourceInfo, ResourceServiceInputs, RESOURCE_SERVICE_INPUTS } from "../models/resources";
@@ -18,12 +18,18 @@ export class StaticWebAppService extends ResourceService {
     }
 
     public startInitializationObservable() {
-        this._initialized = this._observerApiService.getStaticWebApp(this._armResource.resourceName)
+        if(!!this._armResource.resourceName) {
+            this._initialized = this._observerApiService.getStaticWebApp(this._armResource.resourceName)
             .pipe(map((observerResponse: ObserverStaticWebAppResponse) => {
                 this._observerResource = this._staticWebAppObject = this.getStaticWebAppFromObserverResponse(observerResponse);
                 this._currentResource.next(this._staticWebAppObject);
                 return new ResourceInfo(this.getResourceName(), this.imgSrc, this.displayName, this.getCurrentResourceId());
-            }))
+            }));
+        }
+        else {
+            this._currentResource.next(null);
+            return of(new ResourceInfo(this.getResourceName(), this.imgSrc, this.displayName, this.getCurrentResourceId()));
+        }
     }
 
     public getCurrentResource(): Observable<any> {

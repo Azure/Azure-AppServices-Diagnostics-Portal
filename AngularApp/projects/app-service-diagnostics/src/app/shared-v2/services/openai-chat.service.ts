@@ -21,7 +21,7 @@ export class OpenAIChatService {
   constructor(private _backendApi: BackendCtrlService, private _resourceService: ResourceService) { 
   }
 
-  public generateTextCompletion(queryModel: TextCompletionModel, caching: boolean = true): Observable<OpenAIAPIResponse> {
+  public generateTextCompletion(queryModel: TextCompletionModel, customPrompt: string = '', caching: boolean = true): Observable<OpenAIAPIResponse> {
     var productName = this._resourceService.searchSuffix;
     queryModel.prompt = `Please answer questions about ${productName}\n${queryModel.prompt}:`;
     return this._backendApi.post(this.completionApiPath, {payload: queryModel}, new HttpHeaders({"x-ms-openai-cache": caching.toString()})).pipe(map((response: OpenAIAPIResponse) => {

@@ -14,6 +14,8 @@ import { FabIconModule } from '@angular-react/fabric/lib/components/icon';
 import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown';
 import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
 import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
+import { FabCheckboxModule } from '@angular-react/fabric/lib/components/checkbox';
+import { FabTagPickerModule, FabBasePickerModule } from '@angular-react/fabric/lib/components/pickers';
 
 export const MainModuleRoutes : ModuleWithProviders<MainModule> = RouterModule.forChild([
   {
@@ -28,6 +30,9 @@ export const MainModuleRoutes : ModuleWithProviders<MainModule> = RouterModule.f
     MainModuleRoutes,
     FormsModule,
     SharedModule,
+    FabCheckboxModule,
+    FabTagPickerModule,
+    FabBasePickerModule,
     FabButtonModule,
     FabDialogModule,
     FabTextFieldModule,

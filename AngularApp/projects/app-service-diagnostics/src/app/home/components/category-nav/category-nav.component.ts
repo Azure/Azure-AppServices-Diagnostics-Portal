@@ -205,10 +205,10 @@ export class CategoryNavComponent implements OnInit {
 
         const resourceType: string = this._activatedRoute.parent.snapshot.data.data.type;
 
-        if (resourceType.toLowerCase().startsWith("microsoft.web/sites")) {
+        if (resourceType && resourceType.toLowerCase().startsWith("microsoft.web/sites")) {
             this.toolCategoriesFilteredByStack = this.transform(this.toolCategories);
         } else {
-            const diagnosticToolsForNonWeb = this.siteFeatureService.diagnosticToolsForNonWeb.filter(t => t.type.toLowerCase() === resourceType.toLowerCase()).map(tool => {
+            const diagnosticToolsForNonWeb = this.siteFeatureService.diagnosticToolsForNonWeb.filter(t =>resourceType && t.type.toLowerCase() === resourceType.toLowerCase()).map(tool => {
                 let onClick = () => {
                     this.logCategoryNavClicked(tool.item.name, "Diagnostic Tools");
                     tool.item.clickAction();

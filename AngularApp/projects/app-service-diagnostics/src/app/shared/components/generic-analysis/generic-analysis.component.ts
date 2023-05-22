@@ -22,10 +22,12 @@ export class GenericAnalysisComponent extends GenericDetectorComponent implement
     @Input() searchMode: SearchAnalysisMode = SearchAnalysisMode.CaseSubmission;
     @Input() resourceId: string = "";
     @Input() targetedScore: number = 0;
+    @Input() webSearchEnabled: boolean = true;
     detectorId: string = "";
     detectorName: string = "";
     @Input() showSearchBar: boolean = undefined;
     @Output() onComplete = new EventEmitter<any>();
+    @Output() onWebSearchComplete = new EventEmitter<any>();
 
     SearchAnalysisMode = SearchAnalysisMode;
     displayDetectorContainer: boolean = true;
@@ -37,6 +39,15 @@ export class GenericAnalysisComponent extends GenericDetectorComponent implement
     cxpChatTrackingId: string = '';
     supportTopicId: string = '';
     cxpChatUrl: string = '';
+
+    public getIssuesDetected() {
+        if (this.detectorListAnalysis) {
+            return this.detectorListAnalysis.getIssuesDetected();
+        }
+        else {
+            return [];
+        }
+    }
 
     constructor(private _activatedRouteLocal: ActivatedRoute, private _diagnosticServiceLocal: DiagnosticService, _resourceService: ResourceService, _authServiceInstance: AuthService, public _telemetryService: TelemetryService,
         _navigator: FeatureNavigationService, private _routerLocal: Router, private _supportTopicService: GenericSupportTopicService, private _cxpChatService: CXPChatService,
@@ -103,6 +114,10 @@ export class GenericAnalysisComponent extends GenericDetectorComponent implement
 
     updateLoadingStatus(dataOutput) {
         this.onComplete.emit(dataOutput);
+    }
+
+    updateWebSearchStatus(event){
+        this.onWebSearchComplete.emit();
     }
 
     triggerSearch() {

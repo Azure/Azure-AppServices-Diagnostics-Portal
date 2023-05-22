@@ -17,6 +17,10 @@
         <h3>Select a resource to begin troubleshooting:</h3>
       </div>
       <div style="width: 50%;">
+        <div class="section">
+          <fab-checkbox [label] = "'I do not have a resource'" [ariaLabel]="'Check if you do not have a complete resource'" [checked]="isNoResource" [boxSide]="'end'"
+          (checkedChange)="toggleIsNoResource($event)" [styles]="fabCheckBoxStyles"></fab-checkbox>
+        </div>
         <div class="section"
         *ngIf="caseNumberNeededForProduct || (caseNumberNeededForUser && caseNumberNeededForRP)">
           <fab-text-field [ariaLabel]="'Customer case number'" [defaultValue]="caseNumber" (onChange)="updateCaseNumber($event)"
@@ -29,18 +33,29 @@
               class="ml-3 error-message">{{caseNumberValidationError}}</span>
           </div>
         </div>
-        <div class="section">
+        <div class="section" *ngIf = "!isNoResource">
           <fab-dropdown [options]="fabDropdownOptions" [selectedKey]="selectedResourceType.id"
             (onChange)="selectDropdownKey($event)" [styles]="fabDropdownStyles" [ariaLabel]="'Service Type'"
             [required]="true" [label]="'Service type'">
           </fab-dropdown>
         </div>
+        <div class="section" *ngIf = "isNoResource">
+          <div style="display:flex; justify-content:space-between;align-items: center;">
+            <label class = 'required-asterix'>Service type</label>
+            <div style="width:50%">
+              <fab-tag-picker [itemLimit] = 1 [inputProps] = "serviceTypePickerInputProps"
+              [resolveSuggestions]="serviceTypePickerSuggestionsResolverClosure" [resolveDelay] = 500
+              [selectedItems] = "serviceTypePickerSelectedItems"  (onChange) = "updateServiceTypePickerSelectedItems($event)"
+              [pickerSuggestionsOptions]="{noResultsFoundText: 'No matching service type found', loadingText: 'Loading'}"></fab-tag-picker>
+            </div>
+          </div>
+        </div>
         <div class="view-resource-link"><a tabindex="0" (click)="openResourcePanel()" (keyup.enter)="openResourcePanel()">View all supported resource
             types</a></div>
         <div class="section" style="margin-top: 15px;">
-          <fab-text-field [ariaLabel]="selectedResourceType.resourceTypeLabel" [defaultValue]="resourceName" (onChange)="updateResourceName($event)"
-           [placeholder]="'Type ' + selectedResourceType.resourceTypeLabel"
-            (keyup.enter)="onSubmit()" [required]="true" [label]="selectedResourceType.resourceTypeLabel"
+          <fab-text-field [ariaLabel]="isNoResource? 'Subscription Id' : selectedResourceType.resourceTypeLabel" [defaultValue]="resourceName" (onChange)="updateResourceName($event)"
+           [placeholder]="'Type ' + (isNoResource? 'Subscription Id' : selectedResourceType.resourceTypeLabel)"
+            (keyup.enter)="onSubmit()" [required]="true" [label]="isNoResource? 'Subscription Id':selectedResourceType.resourceTypeLabel"
             [styles]="fabTextFieldStyles">
           </fab-text-field>
           <div *ngIf="errorMessage!== ''" class="mt-3 error-message-container">

@@ -3,6 +3,7 @@ import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {ArmService} from './arm.service';
 import {Permissions, PermissionsAsRegExp} from '../models/arm/permission';
+import { UriUtilities } from 'diagnostic-data';
 
 @Injectable()
 export class RBACService {
@@ -17,6 +18,10 @@ export class RBACService {
     }
 
     hasPermission(resourceId: string, requestedActions: string[]) {
+        if(UriUtilities.isNoResourceCall(resourceId)) {
+            let split = resourceId.toLowerCase().split('/');
+            resourceId = `/subscriptions/${split[split.indexOf('subscriptions') + 1]}`;
+        }
         const authUrl = `${resourceId}/providers/microsoft.authorization/permissions`;
         return this._armService.getResource<any>(authUrl, '2015-07-01').pipe(
         map((result: any) => {
@@ -25,13 +30,25 @@ export class RBACService {
     }
 
     private _getResourceType(resourceId: string) {
-        const parts = resourceId.split('/').filter(part => !!part);
-        let resourceType = parts[5];
-        for (let i = 6; i < parts.length; i += 2) {
-            resourceType = resourceType + '/' + parts[i];
+        if(resourceId.toLowerCase().indexOf('/resourcegroups/')) {
+            const parts = resourceId.split('/').filter(part => !!part);
+            let resourceType = parts[5];
+            for (let i = 6; i < parts.length; i += 2) {
+                resourceType = resourceType + '/' + parts[i];
+            }
+            return resourceType;
         }
-
-        return resourceType;
+        else {
+            // Empty resource
+            let split = resourceId.toLowerCase().split('/');
+            if( split && split.indexOf('providers') > -1) {
+                return split[split.indexOf('providers') + 1] + '/' + split[split.indexOf('providers') + 2];
+            }
+            else {
+                // Subscription level resource.
+                return 'subscriptions';
+            }
+        }
     }
 
     private _checkPermissions(resourceId: string, requestedActions: string[], permissionsSet: Permissions[]) {

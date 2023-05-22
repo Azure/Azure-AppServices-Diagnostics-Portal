@@ -169,6 +169,7 @@ import { DateTimePickerComponent } from './components/date-time-picker/date-time
 import { ChatUIComponent } from './components/chat-ui/chat-ui.component';
 import { ChatUIContextService } from './services/chatui-context.service';
 import {OpenAIChatComponent} from './components/openai-chat/openai-chat.component';
+import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.component';
 
 
 @NgModule({
@@ -284,7 +285,8 @@ import {OpenAIChatComponent} from './components/openai-chat/openai-chat.componen
         OpenaiComponent,
         DateTimePickerComponent,
         ChatUIComponent,
-        OpenAIChatComponent
+        OpenAIChatComponent,
+        OpenAIGenieComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -330,7 +332,8 @@ import {OpenAIChatComponent} from './components/openai-chat/openai-chat.componen
         SafePipe,
         OpenaiComponent,
         ChatUIComponent,
-        OpenAIChatComponent
+        OpenAIChatComponent,
+        OpenAIGenieComponent
     ]
 })
 export class DiagnosticDataModule {

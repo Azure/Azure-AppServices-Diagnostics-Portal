@@ -5,7 +5,7 @@ import {
   ResourceServiceInputs, ResourceTypeState, ResourceServiceInputsJsonResponse
 } from '../../../shared/models/resources';
 import { HttpClient } from '@angular/common/http';
-import { IDropdownOption, IDropdownProps, ITextFieldProps, PanelType, SpinnerSize } from 'office-ui-fabric-react';
+import { IBasePickerProps, ICheckboxProps, IDropdownOption, IDropdownProps, ITag, ITagItemProps, ITagPickerProps, ITextFieldProps, PanelType, SpinnerSize } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
 import { DetectorControlService, GenericThemeService, HealthStatus } from 'diagnostic-data';
 import { AdalService } from 'adal-angular4';
@@ -17,6 +17,8 @@ import { defaultResourceTypes } from '../../../shared/utilities/main-page-menu-o
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { UserAccessStatus } from '../../../shared/models/alerts';
 import { applensDashboards } from '../../../shared/utilities/applens-dashboards-constant';
+import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
+
 const moment = momentNs;
 
 @Component({
@@ -61,6 +63,25 @@ export class MainComponent implements OnInit {
   errorMessage = "";
   status = HealthStatus.Critical;
   targetPathBeforeError: string = "";
+  isNoResource:boolean = false;
+
+  fabCheckBoxStyles: ICheckboxProps["styles"] = {
+    text:{
+      fontSize: '14px',
+      fontWeight: '400'
+    }
+  }
+
+  serviceTypePickerInputProps:IBasePickerProps<ITagPickerProps>["inputProps"] = {
+    "aria-label": "Service type picker",
+    spellCheck: false,
+    autoComplete: "off",
+    width:'300px',
+    style: {
+      width:'300px'
+    }
+  };
+  serviceTypePickerSelectedItems: ITag[];
 
   fabDropdownOptions: IDropdownOption[] = [];
   fabDropdownStyles: IDropdownProps["styles"] = {
@@ -91,7 +112,7 @@ export class MainComponent implements OnInit {
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   timePickerStr: string = "";
   get disableSubmitButton(): boolean {
-    return !this.resourceName || this.resourceName.length === 0;
+    return !this.resourceName || this.resourceName.length === 0 ;
   }
   troubleShootIcon: string = "../../../../assets/img/applens-skeleton/main/troubleshoot.svg";
   userGivenName: string = "";
@@ -299,8 +320,12 @@ export class MainComponent implements OnInit {
       });
 
       this._userSettingService.getUserSetting().subscribe(userInfo => {
-        if (userInfo && userInfo.resources) {
+        if (userInfo && userInfo.resources &&  userInfo.resources.length > 0) {
           this.table = this.generateDataTable(userInfo.resources);
+          this.serviceTypePickerSelectedItems = [{
+            key: `${ResourceDescriptor.parseResourceUri(userInfo.resources[0].resourceUri).provider}/${ResourceDescriptor.parseResourceUri(userInfo.resources[0].resourceUri).type}`,
+            name: `${ResourceDescriptor.parseResourceUri(userInfo.resources[0].resourceUri).provider}/${ResourceDescriptor.parseResourceUri(userInfo.resources[0].resourceUri).type}`
+          }];
         }
       });
     });
@@ -364,11 +389,38 @@ export class MainComponent implements OnInit {
 
       return routeString;
     } else {
-      this.errorMessage = "Invalid ARM resource id. Resource id must be of the following format:\n" +
+      const noResourcePattern = /subscriptions\/(.*)\/providers\/(.*)/i;
+      const noResourceMatchResult = resourceURI.match(noResourcePattern);
+      if (noResourceMatchResult && noResourceMatchResult.length === 3) {
+        let allowedResources: string = "";
+        let routeString: string = '';
+        if (enabledResourceTypes) {
+          enabledResourceTypes.forEach(enabledResource => {
+            allowedResources += `${enabledResource.resourceType}\n`;
+            const resourcePattern = new RegExp(
+              `^${enabledResource.resourceType.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\/$`, 'i'
+            );
+            const enabledResourceResult = noResourceMatchResult[2].match(resourcePattern);
+
+            if (enabledResourceResult) {
+              routeString = `subscriptions/${noResourceMatchResult[1]}/providers/${enabledResource.resourceType}/`;
+            }
+          });
+        }
+
+        this.errorMessage = routeString === '' ?
+          'The supplied ARM resource is not enabled in AppLens. Allowed resource types are as follows\n\n' +
+          `${allowedResources}` :
+          '';
+
+        return routeString;
+      }
+      else {
+        this.errorMessage = "Invalid ARM resource id. Resource id must be of the following format:\n" +
         `  /subscriptions/<sub id>/resourceGroups/<resource group>/providers/${this.selectedResourceType.resourceType}/` +
         "<resource name>";
-
-      return resourceURI;
+        return resourceURI;
+      }
     }
   }
 
@@ -393,7 +445,12 @@ export class MainComponent implements OnInit {
   }
 
   onSubmit() {
+    if(!!this.errorMessage) {
+      return;
+    }
+    
     this._userSettingService.updateDefaultServiceType(this.selectedResourceType.id);
+    let resourceUri = '';
     if (!(this.caseNumber == "internal") && this.caseNumberNeededForUser && (this.selectedResourceType && this.caseNumberNeededForRP)) {
       this.caseNumber = this.caseNumber.trim();
       if (!this.validateCaseNumber()) {
@@ -401,20 +458,35 @@ export class MainComponent implements OnInit {
       }
       this._diagnosticApiService.setCustomerCaseNumber(this.caseNumber);
     }
-    this.resourceName = this.resourceName.trim();
+
+
+    if(this.isNoResource) {
+      if(!Guid.isGuid(this.resourceName.trim())) {
+        this.errorMessage = 'Invalid subscription id.';
+        return;
+      }
+      this._userSettingService.updateDefaultServiceType(this.serviceTypePickerSelectedItems[0].name);
+      resourceUri = `/subscriptions/${this.resourceName.trim()}/providers/${this.serviceTypePickerSelectedItems[0].name}/`;
+    }
+    else {
+      this._userSettingService.updateDefaultServiceType(this.selectedResourceType.id);
+      resourceUri = this.resourceName.trim();
+    }    
+    
+    
 
     //If it is ARM resource id
     //if (this.defaultResourceTypes.findIndex(resource => this.selectedResourceType.displayName === resource.displayName) === -1) {
-    if (this.selectedResourceType.displayName === "ARM Resource ID") {
-      this.resourceName = this.normalizeArmUriForRoute(this.resourceName, this.enabledResourceTypes);
+    if (this.selectedResourceType.displayName === "ARM Resource ID" || this.isNoResource) {
+      resourceUri = this.normalizeArmUriForRoute(resourceUri, this.enabledResourceTypes);
     } else {
       this.errorMessage = "";
     }
 
-    let route = this.selectedResourceType.routeName(this.resourceName);
+    let route = !this.isNoResource? this.selectedResourceType.routeName(resourceUri) : resourceUri;
 
     if (route === 'srid') {
-      window.location.href = `https://azuresupportcenter.msftcloudes.com/caseoverview?srId=${this.resourceName}`;
+      window.location.href = `https://azuresupportcenter.msftcloudes.com/caseoverview?srId=${resourceUri}`;
     }
 
 
@@ -465,7 +537,7 @@ export class MainComponent implements OnInit {
         return this.handleStampForRecentResource(recentResource);
       }
       var descriptor = ResourceDescriptor.parseResourceUri(recentResource.resourceUri);
-      const name = descriptor.resource;
+      const name = !!descriptor.resource? descriptor.resource : `Subscription: ${descriptor.subscription}` ;
       const type = `${descriptor.provider}/${descriptor.type}`.toLowerCase();
       const resourceType = this.enabledResourceTypes.find(t => t.resourceType.toLocaleLowerCase() === type);
       const display: RecentResourceDisplay = {
@@ -546,6 +618,16 @@ export class MainComponent implements OnInit {
 
   updateResourceName(e: { event: Event, newValue?: string }) {
     this.resourceName = e.newValue.toString();
+    if(this.isNoResource) {
+      if(!Guid.isGuid(this.resourceName.trim())) {
+        this.errorMessage = 'Invalid subscription id.';
+      }
+      else {
+        if(this.errorMessage === 'Invalid subscription id.') {
+          this.errorMessage = '';
+        }
+      }
+    }
     this.hasResourceCaseNumberEnforced();
   }
 
@@ -561,6 +643,56 @@ export class MainComponent implements OnInit {
 
   updateCaseNumber(e: { event: Event, newValue?: string }) {
     this.caseNumber = e.newValue.toString();
+  }
+
+  toggleIsNoResource(checked: boolean) {
+    this.isNoResource = checked;
+    if(!this.isNoResource && this.errorMessage === 'Service type cannot be empty.') {
+      this.errorMessage = '';
+    }
+    else {
+      if(this.serviceTypePickerSelectedItems.length < 1 && this.table && this.table.length > 0) {
+        this.serviceTypePickerSelectedItems = [{
+          key: `${ResourceDescriptor.parseResourceUri(this.table[0].resourceUri).provider}/${ResourceDescriptor.parseResourceUri(this.table[0].resourceUri).type}`,
+          name: `${ResourceDescriptor.parseResourceUri(this.table[0].resourceUri).provider}/${ResourceDescriptor.parseResourceUri(this.table[0].resourceUri).type}`
+        }];
+      }
+    }
+  }
+
+  updateServiceTypePickerSelectedItems(event: any): boolean {
+    this.serviceTypePickerSelectedItems = event.items;
+    if(!this.serviceTypePickerSelectedItems || this.serviceTypePickerSelectedItems.length < 1 ) {
+      this.errorMessage = 'Service type cannot be empty.';
+    }
+    else {
+      if (this.errorMessage === 'Service type cannot be empty.') {
+        this.errorMessage = '';
+      }
+    }
+    return false;
+  }
+
+  public serviceTypePickerSuggestionsResolverClosure = (data:any):any => {
+    const _this = this;
+    return this.serviceTypePickerSuggestionsResolver(data, _this);
+  }
+
+  public serviceTypePickerSuggestionsResolver(data: any, _this:this): ITagItemProps[] | Promise<ITagItemProps[]>  {
+      let tagIndex = 0;
+      data = data.toString().toLowerCase();
+      return _this.enabledResourceTypes.filter(enabledResourceType=> 
+        enabledResourceType.resourceType.toLowerCase().indexOf(data) > -1 
+        || enabledResourceType.displayName?.toLowerCase().indexOf(data) > -1 
+        || enabledResourceType.searchSuffix?.toLowerCase().indexOf(data) > -1
+        || enabledResourceType.service?.toLowerCase().indexOf(data) > -1 )
+      .map<ITagItemProps>((enabledResourceType: ResourceServiceInputs) => <ITagItemProps>{
+        index: tagIndex++,
+        item: {
+          key:enabledResourceType.resourceType.trim(),
+          name: enabledResourceType.resourceType.trim()
+        }
+      });
   }
 
 }

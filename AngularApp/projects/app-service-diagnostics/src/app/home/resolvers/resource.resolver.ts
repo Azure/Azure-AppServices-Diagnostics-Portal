@@ -58,7 +58,7 @@ export class ResourceResolver implements Resolve<Observable<{} | ArmResource>> {
         return resourceUri === "" || resourceUri === "/";
     }
 
-    //if it is invalidate resource uri, block call to registerResource
+    //if it is invalid resource uri, block call to registerResource
     private validateResourceUri(resourceUri: string): boolean {
         return resourceUri.toLowerCase().startsWith("subscriptions") || resourceUri.toLowerCase().startsWith("/subscriptions");
     }

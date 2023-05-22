@@ -65,13 +65,13 @@ export class CXPChatCallerService {
       });
 
     this._resourceService.getPesId().subscribe(pesId => {
-      if(isNaN(Number(pesId))) {
+      if(!isNaN(Number(pesId))) {
         this.configuredPesId = pesId;
       }
     });
     
     this._resourceService.getSapProductId().subscribe(sapProductId => {
-      if(!isNaN(Number(sapProductId))) {
+      if(sapProductId) {
         this.configuredSapProductId = sapProductId;
       }
     });

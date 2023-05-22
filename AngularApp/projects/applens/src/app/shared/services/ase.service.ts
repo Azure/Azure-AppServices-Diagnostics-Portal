@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { Inject, Injectable } from '@angular/core';
 import { RESOURCE_SERVICE_INPUTS, ResourceServiceInputs, ResourceInfo } from '../models/resources';
@@ -18,13 +18,19 @@ export class AseService extends ResourceService {
   }
 
   public startInitializationObservable() {
-    this._initialized = this._observerApiService.getAse(this._armResource.resourceName)
+    if(!!this._armResource.resourceName) {
+      this._initialized = this._observerApiService.getAse(this._armResource.resourceName)
       .pipe(
         map((observerResponse: ObserverAseResponse) => {
         this._hostingEnvironmentResource = observerResponse.details;
         this._currentResource.next(observerResponse.details);
         return new ResourceInfo(this.getResourceName(),this.imgSrc,this.displayName,this.getCurrentResourceId());
       }));
+    }
+    else {
+      this._currentResource.next(null);
+      this._initialized = of(new ResourceInfo(this.getResourceName(),this.imgSrc,this.displayName,this.getCurrentResourceId()));
+    }
   }
 
   public getCurrentResource(): Observable<ObserverAseInfo> {

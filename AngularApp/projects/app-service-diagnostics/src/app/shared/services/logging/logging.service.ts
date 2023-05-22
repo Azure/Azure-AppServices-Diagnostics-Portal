@@ -10,6 +10,7 @@ import { IncidentNotification, IncidentType, IncidentStatus } from '../../models
 import { PortalService } from '../../../startup/services/portal.service';
 import { Observable, forkJoin } from 'rxjs';
 import { VersioningHelper } from '../../utilities/versioningHelper';
+import { UriUtilities } from 'diagnostic-data';
 
 @Injectable()
 export class LoggingService {
@@ -69,26 +70,35 @@ export class LoggingService {
                 }
 
                 if (siteIndex !== -1) {
-                    const siteSpecificDataRequests = forkJoin(
-                        this._armServiceInstance.getResource<IDiagnosticProperties>(this._startUpInfo.resourceId + '/diagnostics/properties'),
-                        this._armServiceInstance.getResource<Site>(this._startUpInfo.resourceId)
-                    );
-
-                    siteSpecificDataRequests.subscribe(partialObserver => {
-                        const propertiesEnvelope: ResponseMessageEnvelope<IDiagnosticProperties> = <ResponseMessageEnvelope<IDiagnosticProperties>>partialObserver[0];
-                        const resourceEnvelope: ResponseMessageEnvelope<Site> = <ResponseMessageEnvelope<Site>>partialObserver[0];
-
-                        if (propertiesEnvelope && propertiesEnvelope.properties) {
-                            this.appStackInfo = propertiesEnvelope.properties.appStack;
-                        }
-
-                        if (resourceEnvelope && resourceEnvelope.properties) {
-                            this.platform = SiteExtensions.operatingSystem(resourceEnvelope.properties) === OperatingSystem.windows ? 'windows' : 'linux';
-                            this._appType = resourceEnvelope.properties.kind && resourceEnvelope.properties.kind.toLowerCase().indexOf('functionapp') >= 0 ? 'functionapp' : 'webapp';
-                        }
-
+                    if(UriUtilities.isNoResourceCall(this._startUpInfo.resourceId)) {
+                        this.appStackInfo = 'Others';
+                        this.platform = 'windows';
+                        this._appType = 'webapp';
                         this.LogStartUpInfo(this._startUpInfo);
-                    });
+                    }
+                    else {
+                        const siteSpecificDataRequests = forkJoin(
+                            this._armServiceInstance.getResource<IDiagnosticProperties>(this._startUpInfo.resourceId + '/diagnostics/properties'),
+                            this._armServiceInstance.getResource<Site>(this._startUpInfo.resourceId)
+                        );
+    
+                        siteSpecificDataRequests.subscribe(partialObserver => {
+                            const propertiesEnvelope: ResponseMessageEnvelope<IDiagnosticProperties> = <ResponseMessageEnvelope<IDiagnosticProperties>>partialObserver[0];
+                            const resourceEnvelope: ResponseMessageEnvelope<Site> = <ResponseMessageEnvelope<Site>>partialObserver[0];
+    
+                            if (propertiesEnvelope && propertiesEnvelope.properties) {
+                                this.appStackInfo = propertiesEnvelope.properties.appStack;
+                            }
+    
+                            if (resourceEnvelope && resourceEnvelope.properties) {
+                                this.platform = SiteExtensions.operatingSystem(resourceEnvelope.properties) === OperatingSystem.windows ? 'windows' : 'linux';
+                                this._appType = resourceEnvelope.properties.kind && resourceEnvelope.properties.kind.toLowerCase().indexOf('functionapp') >= 0 ? 'functionapp' : 'webapp';
+                            }
+    
+                            this.LogStartUpInfo(this._startUpInfo);
+                        });
+                    }                    
+
                 } else {
                     this.LogStartUpInfo(this._startUpInfo);
                 }

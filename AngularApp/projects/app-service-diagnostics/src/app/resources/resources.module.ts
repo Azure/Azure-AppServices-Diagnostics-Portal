@@ -17,22 +17,23 @@ const ResourceRoutes = RouterModule.forChild([
     path: 'subscriptions/:subscriptionid/resourcegroups/:resourcegroup/providers/microsoft.web/sites/:resourcename/slots/:slot',
     loadChildren: () => import('./web-sites/web-sites.module').then(m => m.WebSitesModule)
   },
-
   // App Service Environment
   {
     path: 'subscriptions/:subscriptionid/resourcegroups/:resourcegroup/providers/microsoft.web/hostingenvironments/:resourcename',
     loadChildren: () => import('./web-hosting-environments/web-hosting-environments.module').then(m => m.WebHostingEnvironmentsModule)
   },
-
   // Generic ARM Resource
   {
     path: 'subscriptions/:subscriptionid/resourcegroups/:resourcegroup/providers/:providerName/:resourceTypeName/:resourcename',
     loadChildren: () => import('./generic-arm-resources/generic-arm-resources.module').then(m => m.GenericArmResourcesModule)
   },
-
   //Generic ARM Resource with suffix
   {
     path: 'subscriptions/:subscriptionid/resourcegroups/:resourcegroup/providers/:providerName/:resourceTypeName/:resourcename/:armSuffix',
+    loadChildren: () => import('./generic-arm-resources/generic-arm-resources.module').then(m => m.GenericArmResourcesModule)
+  },
+  {
+    path:'subscriptions/:subscriptionid/providers/:providerName/:resourceTypeName',
     loadChildren: () => import('./generic-arm-resources/generic-arm-resources.module').then(m => m.GenericArmResourcesModule)
   }
 
