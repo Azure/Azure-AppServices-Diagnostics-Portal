@@ -50,9 +50,10 @@ namespace DiagPortalTest
         private static void InitSettings()
         {
             var builder = new ConfigurationBuilder()
-                                   .SetBasePath(Directory.GetCurrentDirectory())
-                                   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                                   .AddEnvironmentVariables();
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddEnvironmentVariables();
+            
             _config = builder.Build();
 
             _email = _config[DiagPortalTestConst.DiagPortalTestEmail];
