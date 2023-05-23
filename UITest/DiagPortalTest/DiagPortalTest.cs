@@ -10,6 +10,9 @@ using System.Linq;
 using UITestUtilities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using OpenQA.Selenium.DevTools;
+using static System.Net.WebRequestMethods;
 
 namespace DiagPortalTest
 {
@@ -39,10 +42,23 @@ namespace DiagPortalTest
             {
                 InitSettings();
                 InitBroswerDriver();
-                LogIn(context);
+                LogIn(context).Wait();
             };
 
-            RetryUtilities.Retry(init);
+            Action<int, Exception> fail = (retryCount, exception) =>
+            {
+                _driver?.TakeAndSaveScreenshot(context, $"RetryAttempt{retryCount}_InitPortalTestClass");
+            };
+
+            try
+            {
+                RetryUtilities.Retry(init, fail);
+            }
+            catch (Exception ex)
+            {
+                string message = _driver != null ? "Init failed in login" : "Inint failed before login";
+                Assert.Fail($"{message}. {ex}");
+            }
         }
 
 
@@ -53,7 +69,7 @@ namespace DiagPortalTest
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddEnvironmentVariables();
-            
+
             _config = builder.Build();
 
             _email = _config[DiagPortalTestConst.DiagPortalTestEmail];
@@ -82,61 +98,61 @@ namespace DiagPortalTest
 
             Console.WriteLine("Setup Driver Success");
         }
+
         //For Local, login will go through Basic Auth(already have MS account logged in as system level)
-        //will need to stop network monitoring once logged in finished
         //For PROD go though login by form
-        private static void LogIn(TestContext context)
+        private static async Task LogIn(TestContext context)
         {
-            try
+            if (_isProd)
             {
-                if(!_isProd)
-                {
-                    LogInWithBasicAuth().Wait();
-                }
-
-                _driver.Navigate().GoToUrl(_portalBaseUrl);
-                Thread.Sleep(1000);
-                Console.WriteLine("Login Start");
-                _driver.FindElement(By.Id("i0116")).SendKeys(_email);
-                _driver.FindElement(By.Id("i0116")).SendKeys(Keys.Enter);
-                Thread.Sleep(1000 * 5);
-
-                Console.WriteLine("Enter Email Success");
-                
-                
-                if (_isProd)
-                {
-                    _driver.FindElement(By.Id("FormsAuthentication")).Click();
-                    Thread.Sleep(500);
-                    _driver.FindElement(By.Id("passwordInput")).SendKeys(_password);
-                    _driver.FindElement(By.Id("submitButton")).Click();
-
-                    Console.WriteLine("Enter Password Success");
-
-
-                    //Click "Yes" button
-                    _driver.FindElement(By.Id("idSIButton9")).Click();
-                    Console.WriteLine("Login Success");
-                } else
-                {
-                    //Stop networking monitoring once login finished
-                    _driver.Manage().Network.StopMonitoring().Wait();
-                }
+                LogInWithForm();
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine("Login Fail");
-                Console.WriteLine(e.ToString());
-
-                _driver.TakeAndSaveScreenshot(context, "LoginFailed");
-
-                throw;
+                await LogInWithBasicAuth();
             }
-
         }
-        //BiDirectional API only works in Chrome and Edge
+
+        /// <summary>
+        /// Both baisc auth and form authentiaction for portal, first step of login is entering email, 
+        /// </summary>
+        private static void LogInEnterEmail()
+        {
+            _driver.Navigate().GoToUrl(_portalBaseUrl);
+            Thread.Sleep(1000);
+            Console.WriteLine("Login Start");
+            _driver.FindElement(By.Id("i0116")).SendKeys(_email);
+            _driver.FindElement(By.Id("i0116")).SendKeys(Keys.Enter);
+            Thread.Sleep(1000 * 5);
+
+            Console.WriteLine("Enter Email Success");
+        }
+
+        private static void LogInWithForm()
+        {
+            Console.WriteLine($"Login with Form,isProd is {_isProd}");
+            LogInEnterEmail();
+
+            _driver.FindElement(By.Id("FormsAuthentication")).Click();
+            Thread.Sleep(500);
+            _driver.FindElement(By.Id("passwordInput")).SendKeys(_password);
+            _driver.FindElement(By.Id("submitButton")).Click();
+
+            Console.WriteLine("Enter Password Success");
+
+
+            //Click "Yes" button
+            _driver.FindElement(By.Id("idSIButton9")).Click();
+            Console.WriteLine("Login Success");
+        }
+
+        /// <summary>
+        /// Basic Auth login,BiDirectional API only works in Chrome and Edge
+        /// </summary>
+        /// <returns></returns>
         private static async Task LogInWithBasicAuth()
         {
+            Console.WriteLine($"Login with Basic Auth,isProd is {_isProd}");
             NetworkAuthenticationHandler handler = new NetworkAuthenticationHandler()
             {
                 UriMatcher = (d) => d.Host.Contains("msft.sts.microsoft.com"),
@@ -146,6 +162,12 @@ namespace DiagPortalTest
             INetwork networkInterceptor = _driver.Manage().Network;
             networkInterceptor.AddAuthenticationHandler(handler);
             await networkInterceptor.StartMonitoring();
+            Console.WriteLine("Start Network Monitoring");
+
+            LogInEnterEmail();
+
+            await _driver.Manage().Network.StopMonitoring();
+            Console.WriteLine("Login Success, stop network monitoring");
         }
 
 

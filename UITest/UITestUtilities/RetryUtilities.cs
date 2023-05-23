@@ -28,27 +28,18 @@ namespace UITestUtilities
                 try
                 {
                     attemptException = null;
-                    if (run != null)
-                    {
-                        run();
-                    }
+                    run?.Invoke();
                     break;
                 }
                 catch (Exception e)
                 {
-                    if (fail != null)
-                    {
-                        fail(retryCount, e);
-                    }
+                    fail?.Invoke(retryCount, e);
                     attemptException = e;
                     exceptions.Add(e);
                 }
                 finally
                 {
-                    if (final != null)
-                    {
-                        final();
-                    }
+                    final?.Invoke();
 
                     if (attemptException != null)
                     {
