@@ -48,7 +48,7 @@ namespace DiagPortalTest
 
         public override void TestFail(int retryCount, Exception e)
         {
-            TakeAndSaveScreenshotForRetry("CaseSubmission", retryCount);
+            TakeAndSaveScreenshotForRetry(retryCount, "CaseSubmission");
         }
     }
 }

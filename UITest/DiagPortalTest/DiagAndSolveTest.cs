@@ -80,7 +80,7 @@ namespace DiagPortalTest
 
         public override void TestFail(int retryCount, Exception exception)
         {
-            TakeAndSaveScreenshotForRetry("DiagAndSolve", retryCount);
+            TakeAndSaveScreenshotForRetry(retryCount, "DiagAndSolve");
         }
     }
 }

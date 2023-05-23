@@ -10,9 +10,6 @@ using System.Linq;
 using UITestUtilities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using OpenQA.Selenium.DevTools;
-using static System.Net.WebRequestMethods;
 
 namespace DiagPortalTest
 {

@@ -29,7 +29,7 @@ namespace UITestUtilities
         /// <param name="exception">Excetpion</param>
         public abstract void TestFail(int retryCount, Exception exception);
 
-        protected void TakeAndSaveScreenshotForRetry(string testName, int retryCount)
+        protected void TakeAndSaveScreenshotForRetry(int retryCount, string testName)
         {
             string fileName = $"RetryAttempt{retryCount}_{testName}_{_key}";
             _driver.TakeAndSaveScreenshot(_testContext, fileName);
