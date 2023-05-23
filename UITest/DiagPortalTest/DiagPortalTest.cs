@@ -166,8 +166,7 @@ namespace DiagPortalTest
 
             LogInEnterEmail();
 
-            await _driver.Manage().Network.StopMonitoring();
-            Console.WriteLine("Login Success, stop network monitoring");
+            Console.WriteLine("Login Success with basic auth");
         }
 
 
