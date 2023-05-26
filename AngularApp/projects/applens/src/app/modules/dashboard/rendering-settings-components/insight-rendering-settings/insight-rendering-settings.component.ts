@@ -15,11 +15,7 @@ import { RenderingType } from 'diagnostic-data';
 export class InsightRenderingSettingsComponent extends RenderingSettingsBaseComponent {
   expandedByDefault: boolean = false;
 
-  renderingProperties: NoCodeInsightRenderingProperties = {
-    renderingType: RenderingType.Insights,
-    isVisible: true,
-    isExpanded: false
-  }
+  renderingProperties: NoCodeInsightRenderingProperties = new NoCodeInsightRenderingProperties;
 
   constructor() {
     super();

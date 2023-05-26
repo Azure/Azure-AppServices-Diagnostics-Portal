@@ -17,10 +17,7 @@ export class TableRenderingSettingsComponent extends RenderingSettingsBaseCompon
   title: string = "";
   desc: string = "";
 
-  renderingProperties: NoCodeTableRenderingProperties = {
-    renderingType: RenderingType.Table,
-    isVisible: true
-  }
+  renderingProperties: NoCodeTableRenderingProperties = new NoCodeTableRenderingProperties;
 
   textBoxStyle: ITextFieldProps['styles'] = {
     root: {

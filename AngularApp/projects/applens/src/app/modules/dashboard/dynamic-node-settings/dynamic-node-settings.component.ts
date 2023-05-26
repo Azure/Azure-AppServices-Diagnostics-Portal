@@ -8,7 +8,7 @@ import { ApplensGlobal } from '../../../applens-global';
 import { InsightRenderingSettingsComponent } from '../rendering-settings-components/insight-rendering-settings/insight-rendering-settings.component';
 import { RenderingSettingsBaseComponent } from '../rendering-settings-components/rendering-settings-base/rendering-settings-base.component';
 import { TableRenderingSettingsComponent } from '../rendering-settings-components/table-rendering-settings/table-rendering-settings.component';
-import { NodeSettings, testDatasettings } from './node-rendering-json-models';
+import { DataSourceSettingsBase, NoCodeTableRenderingProperties, NodeSettings } from './node-rendering-json-models';
 import { NoCodeSupportedDataSourceTypes } from './node-rendering-json-models';
 import { KustoDataSourceSettings } from './node-rendering-json-models';
 import { RenderingSettingsBase } from './node-rendering-json-models';
@@ -35,20 +35,11 @@ export class DynamicNodeSettings implements OnInit {
   //   },
   //   dataSourceType: NoCodeSupportedDataSourceTypes.Kusto
   // }
-  datasource: KustoDataSourceSettings = new KustoDataSourceSettings;
+  datasource: DataSourceSettingsBase = new KustoDataSourceSettings;
 
-  rendering: RenderingSettingsBase = {
-    renderingType: RenderingType.Table,
-    isVisible: true
-  }
+  rendering: RenderingSettingsBase = new NoCodeTableRenderingProperties;
 
-  settings: NodeSettings = {
-    dataSourceSettings: this.datasource,
-    renderingSettings: this.rendering,
-    GetJson: function (): string {
-      throw new Error('Function not implemented.');
-    }
-  }
+  settings: NodeSettings = new NodeSettings;
 
   textBoxStyle: ITextFieldProps['styles'] = {
     root: {
@@ -92,6 +83,8 @@ export class DynamicNodeSettings implements OnInit {
   }
 
   ngOnInit() {
+    this.settings.dataSourceSettings = this.datasource;
+    this.settings.renderingSettings = this.rendering;
   }
 
   updateScope(event: any){

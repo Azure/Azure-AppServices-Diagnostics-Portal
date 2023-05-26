@@ -24,10 +24,7 @@ export class MarkdownRenderingSettingsComponent extends RenderingSettingsBaseCom
     }
   }
 
-  renderingProperties: NoCodeMarkdownRenderingProperties = {
-    renderingType: RenderingType.Markdown,
-    isVisible: true
-  }
+  renderingProperties: NoCodeMarkdownRenderingProperties = new NoCodeMarkdownRenderingProperties;
 
   // updateTitle(event: any){
   //   this.renderingProperties.title = event.newValue == '' ? null : event.newValue;
