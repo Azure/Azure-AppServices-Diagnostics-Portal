@@ -27,7 +27,7 @@ import { DetectorSettingsModel } from '../models/detector-designer-models/detect
 import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 import { INodeModelChangeEventProps } from '../node-composer/node-composer.component';
-import { NodeSettings } from '../dynamic-node-settings/node-rendering-json-models';
+import { NoCodeDetectorJson, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
 
 
 @Component({
@@ -167,6 +167,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       height: "80%"
     }
   };
+  detectorJson = [];
   //#endregion Graduation branch picker variables
 
   //#region Time picker variables
@@ -215,13 +216,14 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   //#region Element composer
   elements:ComposerNodeModel[] = [
-    {
-      id: Guid.newGuid(),
-      queryName: 'firstQuery',
-      code:'<query>\r\n',
-      renderingType:RenderingType.Table,
-      settings: new NodeSettings
-    }/*,
+    // {
+    //   id: Guid.newGuid(),
+    //   queryName: 'firstQuery',
+    //   code:'<query>\r\n',
+    //   renderingType:RenderingType.Table,
+    //   settings: new NodeSettings,
+    // }
+    /*,
     {
       id: Guid.newGuid(),
       queryName: 'secondQuery',
@@ -272,6 +274,8 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       });
       this.startUp();
     });
+    this.elements.push(new ComposerNodeModel);
+    this.elements[0].queryName = 'firstQuery';
   }
 
   startUp(){
@@ -309,6 +313,14 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   
   public runCompilation():void {
+    let djson = '['
+    this.elements.forEach(x => {
+      djson = djson.concat(x.GetJson(),',');
+      //this.detectorJson.push(x.GetJson());
+    });
+    djson = djson.substring(0,djson.length - 1);
+    djson = djson.concat(']');
+    console.log(JSON.stringify(this.detectorJson));
     console.log('Run Compilation');
   }
 

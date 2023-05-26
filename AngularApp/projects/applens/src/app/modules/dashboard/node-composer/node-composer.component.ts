@@ -16,7 +16,7 @@ import { ApplensOpenAIChatService } from '../../../shared/services/applens-opena
 import { ResourceService } from '../../../shared/services/resource.service';
 import { dynamicExpressionBody, kustoQueryDialogParams } from '../workflow/models/kusto';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { NoCodeSupportedDataSourceTypes, NoCodeExpressionBody, NodeSettings, NoCodeTableRenderingProperties, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties } from '../dynamic-node-settings/node-rendering-json-models';
+import { NoCodeSupportedDataSourceTypes, NoCodeExpressionBody, NodeSettings, NoCodeTableRenderingProperties, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
 const moment = momentNs;
 
 @Component({
@@ -44,7 +44,7 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   kustoQueryLabel: string = '';
   inputKustoQueryDialogParams: kustoQueryDialogParams;
   dRenderingSettings: any = {};
-  noCodeExpression: NoCodeExpressionBody;
+  noCodeExpression: NoCodeExpressionBody= new NoCodeExpressionBody;
 
   microsoftWebPrompt: string = `input: for an app named nmallick1
 
@@ -277,6 +277,7 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
     this.initComponent();
     this.resourceId = this.resourceService.getCurrentResourceId();
     this.nodeModel.settings.renderingSettings = new NoCodeTableRenderingProperties;
+    this.nodeModelChange.emit(this.nodeModel);
   }
 
   ngOnDestroy(): void {
@@ -360,12 +361,9 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   public previewResults(event:any) {
     if (this.templatized){
       //this.pivotSelectedKey = this.nodeModel.id + '_Result';
-      this.noCodeExpression = {
-        DetectorId: 'NoCode',
-        OperationName: this.nodeModel.queryName,
-        Text: this.nodeModel.code,
-        NodeSettings: this.nodeModel.settings
-      };
+      this.noCodeExpression.OperationName = this.nodeModel.queryName;
+      this.noCodeExpression.Text = this.nodeModel.code;
+      this.noCodeExpression.NodeSettings = this.nodeModel.settings;
       this.diagnosticApiService.evaluateNoCodeExpression(this.noCodeExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe( x => {
         
         this.sampleTestDataset = x.res;
@@ -407,6 +405,14 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
       "table": response,
       "renderingProperties": renderingProps
     }
+  }
+
+  public writeNodeJson(){
+    let node: nodeJson = {
+      queryName: this.nodeModel.queryName,
+      nodeExpression: this.noCodeExpression
+    };
+    return node;
   }
 
   public duplicateNode(event:any) {

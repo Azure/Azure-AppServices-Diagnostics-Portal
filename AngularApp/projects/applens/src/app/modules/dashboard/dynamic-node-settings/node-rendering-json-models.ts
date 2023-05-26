@@ -3,10 +3,12 @@ import { NormalPeoplePickerBase } from "office-ui-fabric-react";
 import { NoCodeSupportedRenderingTypes } from "../models/detector-designer-models/node-models";
 
 export class NoCodeExpressionBody {
-    DetectorId: string;
     Text: string;
     OperationName: string;
     NodeSettings: NodeSettings;
+    public GetJson(){
+      return `{"Text":{${this.Text}},"OperationName":{${this.Text}},"NodeSettings":{${this.NodeSettings.GetJson()}}`
+    }
     // DataSourceType: NoCodeSupportedDataSourceTypes;
     // ConnectionString: string;
     // RenderingType: RenderingType;
@@ -45,29 +47,39 @@ export class NodeSettings {
     dataSourceSettings: DataSourceSettingsBase = new KustoDataSourceSettings;
     renderingSettings: RenderingSettingsBase = new NoCodeTableRenderingProperties;
     public GetJson(): string {
-        return JSON.stringify(this);
+        return `{"dataSourceSettings":${this.dataSourceSettings.GetJson()},"renderingSettings":${this.renderingSettings.getJson()}}`
     }
 }
 
-export class RenderingSettingsBase {
+export abstract class RenderingSettingsBase {
     //renderingType: NoCodeSupportedRenderingTypesRMs = NoCodeSupportedRenderingTypesRMs.Table;
     renderingType: RenderingType = RenderingType.Table;
     isVisible: boolean = true;
+    abstract getJson();
 }
 
 export class NoCodeTableRenderingProperties extends RenderingSettingsBase {
     renderingType: RenderingType = RenderingType.Table;
     title?: string;
     description?: string;
+    public getJson(){
+      return JSON.stringify(this);
+    }
   }
 
 export class NoCodeMarkdownRenderingProperties extends RenderingSettingsBase {
     renderingType: RenderingType = RenderingType.Markdown;
+    public getJson(){
+      return JSON.stringify(this);
+    }
   }
 
 export class NoCodeInsightRenderingProperties extends RenderingSettingsBase {
     renderingType: RenderingType = RenderingType.Insights;
     isExpanded: boolean = true;
+    public getJson(){
+      return JSON.stringify(this);
+    }
   }
 
 export class NoCodeGraphRenderingProperties extends RenderingSettingsBase{
@@ -76,16 +88,20 @@ export class NoCodeGraphRenderingProperties extends RenderingSettingsBase{
     description?: string;
     graphType?: TimeSeriesType;
     graphDefaultValue?: number;
+    public getJson(){
+      return JSON.stringify(this);
+    }
   }
 
 export abstract class DataSourceSettingsBase {
     dataSourceType:NoCodeSupportedDataSourceTypes = NoCodeSupportedDataSourceTypes.Kusto;
-    public processScopeString(scope: string){}
+    abstract processScopeString(scope: string);
+    abstract GetJson(): string;
 }
 
-export class testDatasettings extends DataSourceSettingsBase {
-  connectionString: string = '@stampcluster/wawsprod';
-}
+// export class testDatasettings extends DataSourceSettingsBase {
+//   connectionString: string = '@stampcluster/wawsprod';
+// }
 
 export class  KustoDataSourceSettings extends DataSourceSettingsBase {
     dataBaseName: string = "wawsprod";
@@ -107,4 +123,13 @@ export class  KustoDataSourceSettings extends DataSourceSettingsBase {
     public GetJson(): string {
         return JSON.stringify(this);
     }
+}
+
+export class nodeJson {
+  queryName: string;
+  nodeExpression: NoCodeExpressionBody;
+}
+
+export class NoCodeDetectorJson {
+  nodes: nodeJson[];
 }

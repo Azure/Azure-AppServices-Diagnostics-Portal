@@ -14,10 +14,7 @@ export class GraphRenderingSettingsComponent extends RenderingSettingsBaseCompon
   desc: string = "";
   selectedType: string = 'line';
 
-  renderingProperties: NoCodeGraphRenderingProperties = {
-    renderingType: RenderingType.TimeSeries,
-    isVisible: true
-  }
+  renderingProperties: NoCodeGraphRenderingProperties = new NoCodeGraphRenderingProperties;
 
   graphTypeOptions: IDropdownProps['options'] = [
     {key: 'line', text: 'line'},

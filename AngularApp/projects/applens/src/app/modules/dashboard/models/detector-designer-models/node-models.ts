@@ -1,6 +1,6 @@
 import { RenderingType } from "diagnostic-data";
 import { Guid } from "projects/diagnostic-data/src/lib/utilities/guid";
-import { NodeSettings } from "../../dynamic-node-settings/node-rendering-json-models";
+import { NodeSettings, nodeJson } from "../../dynamic-node-settings/node-rendering-json-models";
 import { nodeStatus } from "dist/diagnostic-data/public_api";
 
 export class ComposerNodeModel {
@@ -10,6 +10,9 @@ export class ComposerNodeModel {
     public editorRef?: monaco.editor.ICodeEditor = null;
     public renderingType:NoCodeSupportedRenderingTypes = RenderingType.Table;
     public settings:NodeSettings = new NodeSettings;
+    public GetJson(){
+        return`{"id":{${this.id}},"queryName":{${this.queryName}},"code":{${this.code}},"editorRef":{${this.editorRef}},"renderingType":{${this.renderingType}},"settings":{${this.settings.GetJson()}}}`
+    }
     public constructor() {
         this.id = Guid.newGuid();
     }
