@@ -91,7 +91,7 @@ export class CategorySummaryComponent implements OnInit {
             this.category = categories.find(category => category.id.toLowerCase() === this._activatedRoute.snapshot.params.category.toLowerCase() ||  category.name.replace(/\s/g, '').toLowerCase() === decodedCategoryName);
             this._chatState.category = this.category;
             this.categoryName = this.category ? this.category.name : "";
-            if(this._resourceService.resource.id && UriUtilities.isNoResourceCall(this._resourceService.resource.id)) {
+            if(this._resourceService.resource.id && !UriUtilities.isNoResourceCall(this._resourceService.resource.id)) {
                 this.resourceName = this._activatedRoute.snapshot.parent.params.resourcename;
             } else {
                 this.resourceName = '';
