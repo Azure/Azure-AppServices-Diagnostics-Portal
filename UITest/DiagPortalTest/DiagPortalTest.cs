@@ -100,14 +100,52 @@ namespace DiagPortalTest
         //For PROD go though login by form
         private static async Task LogIn()
         {
-            bool isBasicAuthLogIn = false;
-            //Basic auth login for locl
+            if(_isProd)
+            {
+                LogInWithForm();
+            }else
+            {
+                await LogInWithBasicAuth();
+            }
+        }
+
+        private static void LogInEnterEmail()
+        {
+            _driver.Navigate().GoToUrl(_portalBaseUrl);
+            Thread.Sleep(1000);
+            Console.WriteLine("Login Start");
+            _driver.FindElement(By.Id("i0116")).SendKeys(_email);
+
+            _driver.FindElement(By.Id("i0116")).SendKeys(Keys.Enter);
+            Thread.Sleep(1000 * 5);
+
+            Console.WriteLine("Enter Email Success");
+        }
+
+        private static void LogInWithForm()
+        {
+            Console.WriteLine("Login with Form");
+            LogInEnterEmail();
+            _driver.FindElement(By.Id("FormsAuthentication")).Click();
+            Thread.Sleep(500);
+            _driver.FindElement(By.Id("passwordInput")).SendKeys(_password);
+            _driver.FindElement(By.Id("submitButton")).Click();
+
+            Console.WriteLine("Enter Password Success");
+
+
+            //Click "Yes" button
+            _driver.FindElement(By.Id("idSIButton9")).Click();
+        }
+
+        private static async Task LogInWithBasicAuth()
+        {
+            Console.WriteLine("Login with basic auth");
             NetworkAuthenticationHandler handler = new NetworkAuthenticationHandler()
             {
                 UriMatcher = (d) =>
                 {
-                    isBasicAuthLogIn = true;
-                    Console.WriteLine("Login with basic auth");
+                    
                     return string.Equals(d.Host, "msft.sts.microsoft.com", StringComparison.CurrentCultureIgnoreCase);
                 },
                 Credentials = new PasswordCredentials(_email, _password)
@@ -117,32 +155,9 @@ namespace DiagPortalTest
             networkInterceptor.AddAuthenticationHandler(handler);
             await networkInterceptor.StartMonitoring();
 
-            //Enter password
-            _driver.Navigate().GoToUrl(_portalBaseUrl);
-            Thread.Sleep(1000);
-            Console.WriteLine("Login Start");
-            _driver.FindElement(By.Id("i0116")).SendKeys(_email);
-            _driver.FindElement(By.Id("i0116")).SendKeys(Keys.Enter);
-            Thread.Sleep(1000 * 5);
+            LogInEnterEmail();
 
-            Console.WriteLine("Enter Email Success");
-
-
-            //From log in for PROD, no need if using basic auth
-            if (!isBasicAuthLogIn)
-            {
-                Console.WriteLine("Login with Form");
-                _driver.FindElement(By.Id("FormsAuthentication")).Click();
-                Thread.Sleep(500);
-                _driver.FindElement(By.Id("passwordInput")).SendKeys(_password);
-                _driver.FindElement(By.Id("submitButton")).Click();
-
-                Console.WriteLine("Enter Password Success");
-
-
-                //Click "Yes" button
-                _driver.FindElement(By.Id("idSIButton9")).Click();
-            }
+            await networkInterceptor.StopMonitoring();
         }
 
 
