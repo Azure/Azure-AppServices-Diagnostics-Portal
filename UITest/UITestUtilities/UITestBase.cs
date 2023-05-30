@@ -1,12 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace UITestUtilities
 {
-    public class UITestBase
+    public abstract class UITestBase
     {
         protected IWebDriver _driver;
         protected TestContext _testContext;
@@ -19,60 +17,40 @@ namespace UITestUtilities
             _key = key;
         }
 
-        protected virtual void TakeAndSaveScreenshot(string fileName)
+        /// <summary>
+        /// Method for running the test
+        /// </summary>
+        public abstract void TestRun();
+
+        /// <summary>
+        /// Method for when test failing
+        /// </summary>
+        /// <param name="retryCount">Current # of retry</param>
+        /// <param name="exception">Excetpion</param>
+        public abstract void TestFail(int retryCount, Exception exception);
+
+        protected void TakeAndSaveScreenshotForRetry(int retryCount, string testName)
         {
-            _driver.TakeAndSaveScreenShot(_testContext, fileName);
+            string fileName = $"RetryAttempt{retryCount}_{testName}_{_key}";
+            _driver.TakeAndSaveScreenshot(_testContext, fileName);
         }
 
-        public void TestWithRetry(Action run, int maxRetries = 3, int retryDelayInSecond = 2)
+        public void TestWithRetry(int maxRetries = 3, int retryDelayInSecond = 2)
         {
-            int retryCount = 0;
-            var exceptions = new List<Exception>();
-            Exception attemptException = null;
-            do
+            try
             {
-                try
-                {
-                    attemptException = null;
-                    run();
-                    break;
-                }
-                catch (Exception e)
-                {
-                    TakeAndSaveScreenshot($"RetryAttempt{retryCount}_{this.GetType().Name}_{_key}");
-                    attemptException = e;
-                    exceptions.Add(e);
-                }
-                finally
-                {
-                    if (attemptException != null)
-                    {
-                        Console.WriteLine($"Retry Attempt {retryCount} is Failed. {attemptException.Message}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Retry Attempt {retryCount} is Successful");
-                    }
-                    retryCount++;
-                }
-                if (retryCount < maxRetries)
-                {
-                    Thread.Sleep(retryDelayInSecond * 1000);
-                }
-            } while (retryCount < maxRetries);
-
-            if (attemptException != null)
+                RetryUtilities.Retry(TestRun, TestFail, maxRetries, retryDelayInSecond);
+            }
+            catch (Exception e)
             {
-                var aggregateException = new AggregateException($"Failed {maxRetries} retries. Look at inner exceptions", exceptions);
-                Assert.Fail(aggregateException.ToString());
+                Assert.Fail(e.ToString());
             }
         }
 
-        protected bool CheckIfDetectorPresent(int timeoutInSeconds = 0)
+        protected bool CheckIfDetectorPresent(int timeoutInSeconds)
         {
             var bys = new By[] {
                 By.TagName("dynamic-data"),
-                By.TagName("loader-detector-view"),
                 By.TagName("detector-list-analysis")
             };
             var element = _driver.FindFirstElement(bys, timeoutInSeconds);

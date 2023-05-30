@@ -11,7 +11,6 @@ import { MonacoEditorModule } from 'ngx-monaco-editor';
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule, SecurityContext } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CardSelectionComponent } from './components/card-selection/card-selection.component';
 import { CommAlertComponent } from './components/comm-alert/comm-alert.component';
 import {
     CopyInsightDetailsComponent
@@ -29,12 +28,9 @@ import {
     DetectorListComponent, DetectorOrderPipe
 } from './components/detector-list/detector-list.component';
 import { DetectorViewComponent } from './components/detector-view/detector-view.component';
-import { DropdownComponent } from './components/dropdown/dropdown.component';
 import { DynamicDataComponent } from './components/dynamic-data/dynamic-data.component';
-import { DynamicInsightComponent } from './components/dynamic-insight/dynamic-insight.component';
 import { EmailComponent } from './components/email/email.component';
 import { FeedbackComponent } from './components/feedback/feedback.component';
-import { InsightsComponent } from './components/insights/insights.component';
 import { LoaderViewComponent } from './components/loader-view/loader-view.component';
 import { MarkdownEditorComponent } from './components/markdown-editor/markdown-editor.component';
 import { MarkdownViewComponent } from './components/markdown-view/markdown-view.component';
@@ -215,10 +211,10 @@ import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.compo
     declarations: [
         TimeSeriesGraphComponent, DynamicDataComponent,
         DataRenderBaseComponent, DataContainerComponent, TimeSeriesInstanceGraphComponent, DetectorViewComponent, DetectorSearchComponent,
-        DataSummaryComponent, EmailComponent, InsightsComponent, LoaderViewComponent, DynamicInsightComponent,
+        DataSummaryComponent, EmailComponent, LoaderViewComponent,
         MarkdownViewComponent, DetectorListComponent, DetectorOrderPipe, StarRatingComponent, StarRatingFeedbackComponent,
-        DropdownComponent, StatusIconComponent, DetectorControlComponent, DetectorContainerComponent, InternalPipe,
-        CommAlertComponent, FeedbackComponent, CopyInsightDetailsComponent, MarkdownEditorComponent, CardSelectionComponent,
+        StatusIconComponent, DetectorControlComponent, DetectorContainerComponent, InternalPipe,
+        CommAlertComponent, FeedbackComponent, CopyInsightDetailsComponent, MarkdownEditorComponent,
         GuageGraphicComponent, GuageControlComponent, SolutionComponent, SolutionsComponent, FormComponent,
         VerticalDisplayListComponent, VerticalDisplayListItemComponent, SolutionTypeTagComponent, SolutionDisplayComponent,
         SolutionDisplayItemComponent,

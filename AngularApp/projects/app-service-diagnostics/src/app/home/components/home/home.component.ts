@@ -17,7 +17,6 @@ import { DiagnosticService } from 'diagnostic-data';
 import { HttpResponse } from '@angular/common/http';
 import { Globals } from '../../../globals';
 import { PortalActionService } from '../../../shared/services/portal-action.service';
-import { allowV3PResourceTypeList, VersionTestService } from '../../../fabric-ui/version-test.service';
 import { SubscriptionPropertiesService } from '../../../shared/services/subscription-properties.service';
 import { Feature } from '../../../shared-v2/models/features';
 import { QuickLinkService } from '../../../shared-v2/services/quick-link.service';
@@ -32,7 +31,6 @@ import { SlotType } from '../../../shared/models/slottypes';
     styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, AfterViewInit {
-    useLegacy: boolean = true;
     resourceName: string;
     categories: Category[];
     searchValue = '';
@@ -57,12 +55,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     abTestingBannerText: string = "";
     disableGenie: boolean = false;
 
-    get showSwitchBanner(): boolean {
-        const typeSwitchItem = allowV3PResourceTypeList.find(item => this._resourceService.resource && this._resourceService.resource.type && this._resourceService.resource.type.toLowerCase() === item.type.toLowerCase());
-        const allowResourceTypeSwitch = typeSwitchItem === undefined ? false : typeSwitchItem.allowSwitchBack;
-        return allowResourceTypeSwitch && this._showSwitchBanner;
-    }
-    initializedPortalVersion = 'v3';
     get inputAriaLabel(): string {
         return this.searchValue !== '' ?
             `${this.searchResultCount} Result` + (this.searchResultCount !== 1 ? 's' : '') :
@@ -80,11 +72,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
     constructor(private _resourceService: ResourceService, private _categoryService: CategoryService, private _notificationService: NotificationService, private _router: Router,
         private _detectorControlService: DetectorControlService, private _featureService: FeatureService, private _logger: LoggingV2Service, private _authService: AuthService,
         private _navigator: FeatureNavigationService, private _activatedRoute: ActivatedRoute, private armService: ArmService, private _telemetryService: TelemetryService, private _diagnosticService: DiagnosticService, private _portalService: PortalActionService, private globals: Globals,
-        private versionTestService: VersionTestService, private subscriptionPropertiesService: SubscriptionPropertiesService, private _quickLinkService: QuickLinkService, private _riskAlertService: RiskAlertService, public abTestingService: ABTestingService) {
+        private subscriptionPropertiesService: SubscriptionPropertiesService, private _quickLinkService: QuickLinkService, private _riskAlertService: RiskAlertService, public abTestingService: ABTestingService) {
 
         this.subscriptionId = this._activatedRoute.snapshot.params['subscriptionid'];
-        this.versionTestService.isLegacySub.subscribe(isLegacy => this.useLegacy = isLegacy);
-        this.versionTestService.initializedPortalVersion.subscribe(v => this.initializedPortalVersion = v);
         this.resourceName = this._resourceService.resource ? this._resourceService.resource.name : "";
         this.disableGenie = this._resourceService.isGenieDisabled();
 
@@ -373,17 +363,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
             this._riskAlertService.riskPanelContentsSub.next(this._riskAlertService.risksPanelContents);
             this._riskAlertService.isRiskTileRefreshing.next(false);
         });
-    }
-
-    switchView() {
-        this.useLegacy = !this.useLegacy;
-        this.versionTestService.setLegacyFlag(this.useLegacy === true ? 1 : 2);
-        let eventProps = {
-            subscriptionId: this.subscriptionId,
-            resourceName: this.resourceName,
-            switchToLegacy: this.useLegacy.toString(),
-        };
-        this._telemetryService.logEvent('SwitchView', eventProps);
     }
 
     private initalABTestingBanner() {

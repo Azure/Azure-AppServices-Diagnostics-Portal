@@ -2,7 +2,6 @@ import { Component, OnInit, forwardRef, Inject } from '@angular/core';
 import { INavigationItem } from '../../models/inavigationitem';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { VersionTestService } from '../../../fabric-ui/version-test.service';
 import { AuthService } from '../../../startup/services/auth.service';
 
 @Component({
@@ -13,10 +12,8 @@ import { AuthService } from '../../../startup/services/auth.service';
 export class TabsComponent implements OnInit {
 
   public navigationItems: INavigationItem[];
-  public isLegacy:boolean = true;
-    constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _versionTestService:VersionTestService,private _authService: AuthService) {
+    constructor(private _router: Router, private _activatedRoute: ActivatedRoute,private _authService: AuthService) {
     this.navigationItems = [];
-    this._versionTestService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
   }
 
   ngOnInit() {

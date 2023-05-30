@@ -1,17 +1,4 @@
 <div class="home-body-container">
-<ng-container *ngIf="initializedPortalVersion === 'v3'&&showSwitchBanner">
-  <div *ngIf="useLegacy" class="switch2new-context-text home-banner">
-    <i class="fa fa-info-circle info-banner-icon"></i>
-    We have recently launched the new version of {{homePageText.title}}.
-    <a (click)="switchView()" tabindex="0" (keyup.enter)="switchView()" aria-label="switch to the new version">Click
-      here to checkout the new version.</a>
-  </div>
-</ng-container>
-<ng-container *ngIf="useLegacy">
-  <ng-container *ngTemplateOutlet="previewBanner"></ng-container>
-</ng-container>
-
-
 <div *ngIf="useStaticAksText else newHomePage" class="home-container">
   <div role="status">
     <p *ngIf="inputAriaLabel">{{inputAriaLabel}}</p>
@@ -116,14 +103,6 @@
   <ng-container *ngTemplateOutlet="previewBanner"></ng-container>
   <risk-alerts-notification></risk-alerts-notification>
 
-  <ng-container *ngIf="initializedPortalVersion === 'v3'&&showSwitchBanner">
-    <div *ngIf="!useLegacy" class="switch2old-context-text home-banner">
-      <i class="fa fa-info-circle info-banner-icon"></i>
-      Welcome to the new {{homePageText.title}}.
-      <a (click)="switchView()" class="old-version-link" tabindex="0" (keyup.enter)="switchView()"
-        aria-label="switch to the old version">Click here to go back to the old version.</a>
-    </div>
-  </ng-container>
 
   <div class="home-main-area">
     <div class="home-title-container">

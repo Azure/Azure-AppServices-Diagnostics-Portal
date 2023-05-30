@@ -10,7 +10,6 @@ import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { CompilationProperties } from '../../models/compilation-properties';
 import { GenericSupportTopicService } from '../../services/generic-support-topic.service';
 import { ActivatedRoute, NavigationEnd, Params, Router } from '@angular/router';
-import { VersionService } from '../../services/version.service';
 import { CXPChatService } from '../../services/cxp-chat.service';
 import * as moment from 'moment';
 import { xAxisPlotBand, xAxisPlotBandStyles, zoomBehaviors, XAxisSelection } from '../../models/time-series';
@@ -21,7 +20,6 @@ import { IIconProps } from 'office-ui-fabric-react/lib/components/Icon';
 import { GenericUserSettingService } from '../../services/generic-user-setting.service';
 import { GenieGlobals } from '../../services/genie.service';
 import { BreadcrumbNavigationItem } from '../../services/generic-breadcrumb.service';
-import { DetectorMetadataService } from '../../services/detector-metadata.service';
 
 const minSupportedDowntimeDuration: number = 10;
 const defaultDowntimeSelectionError: string = 'Downtimes less than 10 minutes are not supported. Select a time duration spanning at least 10 minutes.';
@@ -180,11 +178,10 @@ export class DetectorViewComponent implements OnInit {
   }
 
   @Output() downTimeChanged: EventEmitter<DownTime> = new EventEmitter<DownTime>();
-  private isLegacy: boolean;
   public breadCrumb: BreadcrumbNavigationItem;
 
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private telemetryService: TelemetryService,
-    private detectorControlService: DetectorControlService, private _supportTopicService: GenericSupportTopicService, private _cxpChatService: CXPChatService, protected _route: ActivatedRoute, private versionService: VersionService, private _router: Router, private _genericUserSettingsService: GenericUserSettingService, private _global: GenieGlobals, private _detectorMetadataService: DetectorMetadataService) {
+    private detectorControlService: DetectorControlService, private _supportTopicService: GenericSupportTopicService, private _cxpChatService: CXPChatService, protected _route: ActivatedRoute, private _router: Router, private _genericUserSettingsService: GenericUserSettingService, private _global: GenieGlobals) {
     this.isPublic = config && config.isPublic;
     this.feedbackButtonLabel = this.isPublic ? 'Send Feedback' : 'Rate Detector';
   }
@@ -192,7 +189,6 @@ export class DetectorViewComponent implements OnInit {
   ngOnInit() {
     if (this._route.snapshot.data.tabKey == 'Monitoring' || this._route.snapshot.data.tabKey == 'Analytics')
       this.buttonStyle = { root: { display: "none" } };
-    this.versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
     this._route.params.subscribe(p => {
       this.breadCrumb = { ...this._global.breadCrumb };
       this._global.breadCrumb = null;
@@ -241,13 +237,9 @@ export class DetectorViewComponent implements OnInit {
         this._genericUserSettingsService.isWaterfallViewMode().subscribe(isWaterfallViewMode => {
           if (isWaterfallViewMode) {
             this.detectorDataLocalCopy = data;
-            this._detectorMetadataService.setAuthor(this.detectorDataLocalCopy.metadata.author);
-            this._detectorMetadataService.setDescription(this.detectorDataLocalCopy.metadata.description);
           }
           else {
             this.detectorDataLocalCopy = this.mergeDetectorListResponse(data);
-            this._detectorMetadataService.setAuthor(this.detectorDataLocalCopy.metadata.author);
-            this._detectorMetadataService.setDescription(this.detectorDataLocalCopy.metadata.description);
           }
         });
       }

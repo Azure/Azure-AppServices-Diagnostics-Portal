@@ -12,7 +12,7 @@ import { SettingsService} from '../../services/settings.service';
   selector: 'changeanalysis-onboarding',
   templateUrl: './changeanalysis-onboarding.component.html',
   styleUrls: ['./changeanalysis-onboarding.component.scss',
-'../insights/insights.component.scss'],
+  '../../scss/insights.scss'],
 })
 
 export class ChangeAnalysisOnboardingComponent extends DataRenderBaseComponent {

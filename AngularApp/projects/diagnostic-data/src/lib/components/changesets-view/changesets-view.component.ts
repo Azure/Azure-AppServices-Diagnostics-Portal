@@ -19,7 +19,7 @@ import { ChangeAnalysisService} from '../../services/change-analysis.service';
   selector: 'changesets-view',
   templateUrl: './changesets-view.component.html',
   styleUrls: ['./changesets-view.component.scss',
-'../insights/insights.component.scss']
+'../../scss/insights.scss']
 })
 export class ChangesetsViewComponent extends DataRenderBaseComponent implements OnInit,OnDestroy {
     isPublic: boolean;

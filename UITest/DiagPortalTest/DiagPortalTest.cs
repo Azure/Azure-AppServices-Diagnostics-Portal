@@ -9,6 +9,7 @@ using Azure.Identity;
 using System.Linq;
 using UITestUtilities;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DiagPortalTest
 {
@@ -34,10 +35,38 @@ namespace DiagPortalTest
         [ClassInitialize]
         public static void InitalizeTestClass(TestContext context)
         {
+            Action init = () =>
+            {
+                InitSettings();
+                InitBroswerDriver();
+                LogIn().Wait();
+            };
+
+            Action<int, Exception> fail = (retryCount, exception) =>
+            {
+                _driver?.TakeAndSaveScreenshot(context, $"RetryAttempt{retryCount}_InitPortalTestClass");
+            };
+
+            try
+            {
+                RetryUtilities.Retry(init, fail);
+            }
+            catch (Exception ex)
+            {
+                string message = _driver != null ? "Init failed in login" : "Inint failed before login";
+                Assert.Fail($"{message}. {ex}");
+            }
+        }
+
+
+
+        private static void InitSettings()
+        {
             var builder = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
-               .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-               .AddEnvironmentVariables();
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddEnvironmentVariables();
+
             _config = builder.Build();
 
             _email = _config[DiagPortalTestConst.DiagPortalTestEmail];
@@ -47,7 +76,10 @@ namespace DiagPortalTest
             _isProd = CheckEnvIsProd();
 
             GetPassword();
+        }
 
+        private static void InitBroswerDriver()
+        {
             var extensions = new List<string> { $"{Directory.GetCurrentDirectory()}\\windows10.crx" };
             var arguments = new List<string>();
             if (_isProd)
@@ -62,40 +94,44 @@ namespace DiagPortalTest
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
 
             Console.WriteLine("Setup Driver Success");
-
-            LogIn(context);
-
         }
 
-        [TestInitialize()]
-        public void TestSetup()
+        //For Local, login will go through Basic Auth(already have MS account logged in as system level)
+        //For PROD go though login by form
+        private static async Task LogIn()
         {
-            _slot = TestContext.Properties[DiagPortalTestConst.Slot].ToString();
-            _region = TestContext.Properties[DiagPortalTestConst.Region].ToString();
-            Console.WriteLine($"Get settings from runsettings, Slot is {(string.IsNullOrEmpty(_slot) ? "Empty" : _slot)}, Region is {(string.IsNullOrEmpty(_region) ? "Empty" : _region)}");
-        }
-
-        [ClassCleanup]
-        public static void TestClassCleanUp()
-        {
-            Console.WriteLine("Quite broswer");
-            _driver.Quit();
-        }
-
-
-        private static void LogIn(TestContext context)
-        {
-            try
+            bool isBasicAuthLogIn = false;
+            //Basic auth login for locl
+            NetworkAuthenticationHandler handler = new NetworkAuthenticationHandler()
             {
-                _driver.Navigate().GoToUrl(_portalBaseUrl);
-                Thread.Sleep(1000);
-                Console.WriteLine("Login Start");
-                _driver.FindElement(By.Id("i0116")).SendKeys(_email);
-                _driver.FindElement(By.Id("i0116")).SendKeys(Keys.Enter);
-                Thread.Sleep(1000 * 5);
+                UriMatcher = (d) =>
+                {
+                    isBasicAuthLogIn = true;
+                    Console.WriteLine("Login with basic auth");
+                    return string.Equals(d.Host, "msft.sts.microsoft.com", StringComparison.CurrentCultureIgnoreCase);
+                },
+                Credentials = new PasswordCredentials(_email, _password)
+            };
 
-                Console.WriteLine("Enter Email Success");
+            INetwork networkInterceptor = _driver.Manage().Network;
+            networkInterceptor.AddAuthenticationHandler(handler);
+            await networkInterceptor.StartMonitoring();
 
+            //Enter password
+            _driver.Navigate().GoToUrl(_portalBaseUrl);
+            Thread.Sleep(1000);
+            Console.WriteLine("Login Start");
+            _driver.FindElement(By.Id("i0116")).SendKeys(_email);
+            _driver.FindElement(By.Id("i0116")).SendKeys(Keys.Enter);
+            Thread.Sleep(1000 * 5);
+
+            Console.WriteLine("Enter Email Success");
+
+
+            //From log in for PROD, no need if using basic auth
+            if (!isBasicAuthLogIn)
+            {
+                Console.WriteLine("Login with Form");
                 _driver.FindElement(By.Id("FormsAuthentication")).Click();
                 Thread.Sleep(500);
                 _driver.FindElement(By.Id("passwordInput")).SendKeys(_password);
@@ -106,18 +142,28 @@ namespace DiagPortalTest
 
                 //Click "Yes" button
                 _driver.FindElement(By.Id("idSIButton9")).Click();
-                Console.WriteLine("Login Success");
             }
-            catch (Exception e)
+        }
+
+
+
+        [TestInitialize()]
+        public void TestSetup()
+        {
+            _slot = TestContext.Properties[DiagPortalTestConst.Slot].ToString();
+            _region = TestContext.Properties[DiagPortalTestConst.Region].ToString();
+            Console.WriteLine($"Get settings from runsettings, Slot is {(string.IsNullOrEmpty(_slot) ? "Empty" : _slot)}, Region is {(string.IsNullOrEmpty(_region) ? "Empty" : _region)}");
+        }
+
+
+        [ClassCleanup]
+        public static void TestClassCleanUp()
+        {
+            if (_driver != null)
             {
-                Console.WriteLine("Login Fail");
-                Console.WriteLine(e.ToString());
-
-                _driver.TakeAndSaveScreenShot(context, "LoginFailed");
-
-                throw;
+                Console.WriteLine("Quite broswer");
+                _driver.Quit();
             }
-
         }
 
         [DataTestMethod]

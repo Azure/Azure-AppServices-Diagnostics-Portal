@@ -21,7 +21,6 @@ export * from './lib/services/unhandled-exception-handler.service';
 export * from './lib/services/solution.service';
 export * from './lib/services/settings.service';
 export * from './lib/services/genie.service';
-export * from './lib/services/version.service';
 export * from './lib/services/backend-ctrl-query.service';
 export * from './lib/services/portal-action.service';
 export * from './lib/services/generic-breadcrumb.service';
@@ -74,7 +73,6 @@ export * from './lib/utilities/resiliencyScoreReportHelper';
 export * from './lib/components/app-dependencies/app-dependencies.component'
 export * from './lib/components/app-insights-enablement/app-insights-enablement.component'
 export * from './lib/components/app-insights-markdown/app-insights-markdown.component'
-export * from './lib/components/card-selection/card-selection.component'
 export * from './lib/components/changeanalysis-onboarding/changeanalysis-onboarding.component'
 export * from './lib/components/changes-view/changes-view.component'
 export * from './lib/components/changesets-view/changesets-view.component'
@@ -97,10 +95,8 @@ export * from './lib/components/detector-search/detector-search.component'
 export * from './lib/components/detector-time-picker/detector-time-picker.component'
 export * from './lib/components/detector-view/detector-view.component'
 export * from './lib/components/documents-search/documents-search.component'
-export * from './lib/components/dropdown/dropdown.component'
 export * from './lib/components/dropdown-v4/dropdown-v4.component'
 export * from './lib/components/dynamic-data/dynamic-data.component'
-export * from './lib/components/dynamic-insight/dynamic-insight.component'
 export * from './lib/components/dynamic-insight-v4/dynamic-insight-v4.component'
 export * from './lib/components/client-script-view/client-script-view.component'
 export * from './lib/components/email/email.component'
@@ -113,7 +109,6 @@ export * from './lib/components/feedback/feedback.component'
 export * from './lib/components/form/form.component'
 export * from './lib/components/guage-control/guage-control.component'
 export * from './lib/components/guage-graphic/guage-graphic.component'
-export * from './lib/components/insights/insights.component'
 export * from './lib/components/insights-v4/insights-v4.component'
 export * from './lib/components/keystone-insight/keystone-insight.component'
 export * from './lib/components/loader-detector-view/loader-detector-view.component'

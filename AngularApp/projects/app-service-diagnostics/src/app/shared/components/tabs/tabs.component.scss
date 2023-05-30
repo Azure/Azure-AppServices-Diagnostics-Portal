@@ -18,28 +18,10 @@ a, .link{
     color: var(--bodyText);
 }
 
-
-.app-nav-bar {
-    background-color: var(--bodyBackground);
-    padding: 5px 5px 0;
-}
-
-.nav.nav-tabs {
-    border: 0;
-}
-
-.panel-body-withtab {
-    height: calc(100vh - 56px);
-}
-
 .panel-body-notab {
     height: calc(100vh - 10px);
 }
 
 .panel-body-nopadding {
     padding: 0px;
-}
-
-.panel-body-padding {
-    padding: 15px auto;
 }

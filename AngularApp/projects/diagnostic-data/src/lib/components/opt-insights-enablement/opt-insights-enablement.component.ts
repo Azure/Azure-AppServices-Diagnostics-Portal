@@ -49,7 +49,9 @@ export class OptInsightsEnablementComponent implements OnInit {
         this._optInsightsService.getInfoForOptInsights(optInsightResourceInfo.resourceUri, optInsightResourceInfo.appId, this._route.parent.snapshot.params['site'], this._detectorControlService.startTime, this._detectorControlService.endTime, false).subscribe(res => {
           if (res) {
             this.table = res;
-            this._optInsightsService.logOptInsightsEvent(optInsightResourceInfo.resourceUri, TelemetryEventNames.AICodeOptimizerInsightsReceived);
+            if (this.table.length > 0) {
+                this._optInsightsService.logOptInsightsEvent(optInsightResourceInfo.resourceUri, TelemetryEventNames.AICodeOptimizerInsightsReceived);
+            }
           }
           this.loading = false;
         }, error => {
@@ -74,6 +76,7 @@ export class OptInsightsEnablementComponent implements OnInit {
     let optInsightsResource: OptInsightsResource = this.parseOptInsightsResource(this.appInsightsResourceUri, 0, 'microsoft.insights/components', false);
     let optInsightsTimeContext: OptInsightsTimeContext = { durationMs: durationMs, endTime: this._detectorControlService.endTime.toISOString(), createdTime: this._detectorControlService.startTime.toISOString(), isInitialTime: false, grain: 1, useDashboardTimeRange: false };
     this.portalActionService.openOptInsightsBladewithTimeRange(optInsightsResource, optInsightsTimeContext);
+    this._optInsightsService.logOptInsightsEvent(this.appInsightsResourceUri, TelemetryEventNames.AICodeOptimizerOpenOptInsightsBladewithTimeRange);
   }
 
 

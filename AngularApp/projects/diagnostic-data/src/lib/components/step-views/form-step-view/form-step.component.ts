@@ -4,7 +4,6 @@ import { IDropdown, IDropdownOption } from 'office-ui-fabric-react/lib/component
 import { ISelectableOption } from 'office-ui-fabric-react/lib/utilities/selectableOption';
 import { InputType } from '../../../models/form';
 import { TelemetryService } from '../../../services/telemetry/telemetry.service';
-import { DropdownComponent } from '../../dropdown/dropdown.component';
 import { FormStepView, StepViewContainer } from '../step-view-lib';
 
 

@@ -88,7 +88,7 @@ export class OptInsightsService {
       retry(2),
       map((aggregatedInsights: any) => {
         this.optInsightsResponse = this.parseRowsIntoTable(aggregatedInsights);
-        this.logOptInsightsEvent(this.appInsightsResourceUri, TelemetryEventNames.AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeSuccessful, aggregatedInsights.length);
+        this.logOptInsightsEvent(this.appInsightsResourceUri, TelemetryEventNames.AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeSuccessful, "", aggregatedInsights.length);
         if (this.optInsightsResponse.length <= 1) {
           return this.optInsightsResponse;
         }

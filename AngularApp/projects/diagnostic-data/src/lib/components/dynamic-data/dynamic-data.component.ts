@@ -4,15 +4,11 @@ import {
   Component, Input, OnInit, ViewChild, ViewContainerRef, Output, EventEmitter
 } from '@angular/core';
 import { DiagnosticData, Rendering, RenderingType } from '../../models/detector';
-import { CardSelectionComponent } from '../card-selection/card-selection.component';
 import { AppInsightsMarkdownComponent } from '../app-insights-markdown/app-insights-markdown.component';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { DataSummaryComponent } from '../data-summary/data-summary.component';
 import { DetectorListComponent } from '../detector-list/detector-list.component';
-import { DropdownComponent } from '../dropdown/dropdown.component';
-import { DynamicInsightComponent } from '../dynamic-insight/dynamic-insight.component';
 import { EmailComponent } from '../email/email.component';
-import { InsightsComponent } from '../insights/insights.component';
 import { MarkdownViewComponent } from '../markdown-view/markdown-view.component';
 import { SolutionComponent } from '../solution/solution.component';
 import { GuageControlComponent } from '../guage-control/guage-control.component';
@@ -29,7 +25,6 @@ import { SummaryCardsComponent } from '../summary-cards/summary-cards.component'
 import { InsightsV4Component } from '../insights-v4/insights-v4.component';
 import { DropdownV4Component } from '../dropdown-v4/dropdown-v4.component';
 import { CardSelectionV4Component } from '../card-selection-v4/card-selection-v4.component';
-import { VersionService } from '../../services/version.service';
 import { ConnectAppInsightsComponent } from '../connect-app-insights/connect-app-insights.component';
 import { DetectorSearchComponent } from '../detector-search/detector-search.component';
 import { xAxisPlotBand, zoomBehaviors, XAxisSelection } from '../../models/time-series';
@@ -103,11 +98,9 @@ export class DynamicDataComponent implements OnInit {
   @Output() XAxisSelection: EventEmitter<XAxisSelection> = new EventEmitter<XAxisSelection>();
 
   @ViewChild('dynamicDataContainer', { read: ViewContainerRef, static: true }) dynamicDataContainer: ViewContainerRef;
-  private isLegacy: boolean;
-  constructor(private versionService: VersionService, private telemetryService: TelemetryService) { }
+  constructor(private telemetryService: TelemetryService) { }
 
   ngOnInit(): void {
-    this.versionService.isLegacySub.subscribe(isLegacy => this.isLegacy = isLegacy);
     this.dataBehaviorSubject.subscribe((diagnosticData: DiagnosticData) => {
       const isVisible = (<Rendering>diagnosticData?.renderingProperties)?.isVisible;
       if (isVisible !== undefined && !isVisible) {
@@ -154,11 +147,11 @@ export class DynamicDataComponent implements OnInit {
       case RenderingType.Email:
         return EmailComponent;
       case RenderingType.Insights:
-        return this.isLegacy ? InsightsComponent : InsightsV4Component;
+        return InsightsV4Component;
       case RenderingType.TimeSeriesPerInstance:
         return TimeSeriesInstanceGraphComponent;
       case RenderingType.DynamicInsight:
-        return this.isLegacy ? DynamicInsightComponent : DynamicInsightV4Component;
+        return DynamicInsightV4Component;
       case RenderingType.Markdown:
         return MarkdownViewComponent;
       case RenderingType.DetectorList:
@@ -166,7 +159,7 @@ export class DynamicDataComponent implements OnInit {
       case RenderingType.DropDown:
         return DropdownV4Component;
       case RenderingType.Cards:
-        return this.isLegacy ? CardSelectionComponent : CardSelectionV4Component;
+        return CardSelectionV4Component;
       case RenderingType.Solution:
         return SolutionComponent;
       case RenderingType.Guage:
