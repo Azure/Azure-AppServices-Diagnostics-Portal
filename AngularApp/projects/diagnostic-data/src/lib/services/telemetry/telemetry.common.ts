@@ -136,7 +136,10 @@ export const TelemetryEventNames = {
     ChatGPTARMQueryResults: 'ChatGPTARMQueryResults',
     ChatGPTARMQueryError: 'ChatGPTARMQueryError',
     ChatGPTARMQueryTimedout: 'ChatGPTARMQueryTimedout',
-    ChatGPTARMQueryResultEmpty: 'ChatGPTARMQueryResultEmpty'
+    ChatGPTARMQueryResultEmpty: 'ChatGPTARMQueryResultEmpty',
+    SuperGistAPILoaded: 'SuperGistAPILoaded',
+    SuperGistUpdateDetectorReferencesButtonClicked: 'SuperGistDetectorReferencesButtonClicked',
+    SuperGistUpdateSelectedButtonClicked: 'SuperGistUpdateSelectedButtonClicked'
 };
 
 export const TelemetrySource = {
