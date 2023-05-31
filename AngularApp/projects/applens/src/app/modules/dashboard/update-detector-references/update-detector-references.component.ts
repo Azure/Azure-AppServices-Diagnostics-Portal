@@ -77,9 +77,6 @@ export class UpdateDetectorReferencesComponent implements OnInit{
   updateDetectorReferences(detectorReferences : any[]) {
 
     this._telemetryService.logEvent(TelemetryEventNames.SuperGistUpdateSelectedButtonClicked, {
-      UserName: this.userName,
-      UTCDateTime: (new Date()).toUTCString(),
-      LocaleDateTime: (new Date()).toString(),
       ResourceID: this.resourceId,
       ID: this.id,
     });
@@ -309,9 +306,6 @@ updateDetectorPackageJsonAll(){
     this.updateDetectorFailed = true; 
     this.displayUpdateDetectorResults(); 
     this._telemetryService.logException(err, "update-detector-references-component", {
-      UserName: this.userName,
-      UTCDateTime: (new Date()).toUTCString(),
-      LocaleDateTime: (new Date()).toString(),
       ResourceID: this.resourceId,
       ID: this.id,
     });
@@ -327,9 +321,6 @@ displayDetectorReferenceTable(){
     this.diagnosticApiService.getGistDetailsById(this.id).subscribe( data=>{ 
 
     this._telemetryService.logEvent(TelemetryEventNames.SuperGistAPILoaded, {
-      UserName: this.userName,
-      UTCDateTime: (new Date()).toUTCString(),
-      LocaleDateTime: (new Date()).toString(),
       ResourceID: this.resourceId,
       ID: this.id,
     });
