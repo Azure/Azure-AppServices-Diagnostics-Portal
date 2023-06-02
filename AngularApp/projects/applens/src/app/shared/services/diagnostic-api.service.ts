@@ -717,4 +717,16 @@ export class DiagnosticApiService {
       return res;
     }));
   }
+
+  public validateResourceExistenceInArmCluster(resourceId: string, eventTime: string, targetResourceProvider: string, targetResourceType: string): Observable<any> {
+    let path: string = `userAuthorization/fetchresourcefromarmcluster`;
+    var body =
+    {
+      'ResourceId': resourceId,
+      'EventTime': eventTime,
+      'TargetResourceProvider': targetResourceProvider,
+      'TargetResourceType': targetResourceType
+    };
+    return this.invoke<any>(path, HttpMethod.POST, body, false, false, true, false);
+  }
 }
