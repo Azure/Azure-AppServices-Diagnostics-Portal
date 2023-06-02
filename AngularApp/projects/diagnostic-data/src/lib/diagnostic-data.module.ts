@@ -333,7 +333,8 @@ import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.compo
         OpenaiComponent,
         ChatUIComponent,
         OpenAIChatComponent,
-        OpenAIGenieComponent
+        OpenAIGenieComponent,
+        DateTimePickerComponent
     ]
 })
 export class DiagnosticDataModule {
