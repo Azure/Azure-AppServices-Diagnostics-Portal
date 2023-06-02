@@ -72,8 +72,8 @@ export class DateTimePickerComponent implements OnInit {
   onSelectDateHandler(e: { date: Date }) {
     this.date = e.date;
     if (this.validateTimeInput(this.time)) {
-      this._moment = TimeUtilities.convertDateAndTimeToMoment(this.date, this.time, this._isUTC);
-      this.momentChange.next(this._moment.clone());
+      this._moment = this.date != null ? TimeUtilities.convertDateAndTimeToMoment(this.date, this.time, this._isUTC) : null;
+      this.momentChange.next(this._moment ? this._moment.clone() : null);
     }
   }
 
