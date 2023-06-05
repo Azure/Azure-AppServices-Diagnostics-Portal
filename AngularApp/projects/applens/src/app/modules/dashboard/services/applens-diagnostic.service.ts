@@ -301,6 +301,10 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.evaluateNoCodeExpression(this._resourceService.getCurrentResourceId(true), expression, startTime, endTime);
   }
 
+  executeNoCodeDetector(expression: any, startTime: string, endTime: string): Observable<any> {
+    return this._diagnosticApi.executeNoCodeDetector(this._resourceService.getCurrentResourceId(true), expression, startTime, endTime);
+  }
+
   publishWorkflow(publishBody: workflowPublishBody) {
     this._resourceService.getCurrentResourceId(true)
     return this._diagnosticApi.publishWorkflow(this._resourceService.getCurrentResourceId(true), publishBody);
