@@ -26,7 +26,7 @@ export class NoCodeExpressionBody {
 //   }
   
   export class NoCodeExpressionResponse {
-    response: string;
+    res: string;
     kustoQueryText: string;
     kustoQueryUrl: string;
     kustoDesktopUrl: string;

@@ -1,3 +1,6 @@
+<div>
+  <no-code-detector-panel [isOpenObservable]="detectorPanelOpenObservable" [detectorNodes]="detectorNodes" [detectorJson]="detectorJson" [startTime]="_detectorControlService.startTimeString" [endTime]="_detectorControlService.endTimeString"></no-code-detector-panel>
+</div>
 <div style="width: 100%;">
     <div style = "display: flex; justify-content: left;align-items: baseline;">
         <fab-text-field [ariaLabel]="'Detector Name'" [styles]="fabTextFieldStyle" [label]="'Name'" [required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" 

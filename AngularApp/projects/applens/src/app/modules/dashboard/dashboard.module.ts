@@ -157,6 +157,8 @@ import { TableRenderingSettingsComponent } from './rendering-settings-components
 import { InsightRenderingSettingsComponent } from './rendering-settings-components/insight-rendering-settings/insight-rendering-settings.component';
 import * as moment from 'moment';
 import { NetworkTraceAnalysisComponent } from './network-trace-analysis/network-trace-analysis.component';
+import { NoCodeDetectorPanelComponent } from './no-code-detector-panel/no-code-detector-panel.component';
+import { NoCodeDetectorViewComponent } from './no-code-detector-view/no-code-detector-view.component';
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
     constructor(private _resourceService: ResourceService, private _detectorControlService: DetectorControlService, private _userSettingService: UserSettingService, private _router: Router) { }
@@ -657,9 +659,7 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         KustoQueryDialogComponent, DetectorNodeComponent, KustoNodeComponent, MarkdownNodeComponent, NodeActionsComponent, ConfigureVariablesComponent, CommonNodePropertiesComponent,
         NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent,
         WorkflowUserAccessComponent, ForeachNodeComponent, DevopsDeploymentsComponent, InputNodeComponent, NetworkTraceAnalysisComponent,
-        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent, ApplensDocsCopilotComponent, ChatFeedbackPanelComponent
-        NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent,
-        OpenAIChatComponent, WorkflowUserAccessComponent, ForeachNodeComponent, DevopsDeploymentsComponent, InputNodeComponent, 
-        CreateExperiencePicker,  DetectorDesignerComponent, DetectorSettingsPanelComponent, NodeComposerComponent, DynamicNodeSettings, RenderingSettingsBaseComponent, TableRenderingSettingsComponent, InsightRenderingSettingsComponent]
+        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent, ApplensDocsCopilotComponent, ChatFeedbackPanelComponent,
+        CreateExperiencePicker,  DetectorDesignerComponent, DetectorSettingsPanelComponent, NodeComposerComponent, DynamicNodeSettings, RenderingSettingsBaseComponent, TableRenderingSettingsComponent, InsightRenderingSettingsComponent, NoCodeDetectorPanelComponent, NoCodeDetectorViewComponent]
 })
 export class DashboardModule { }

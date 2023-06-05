@@ -370,7 +370,13 @@ export class DiagnosticApiService {
 
   public evaluateNoCodeExpression(resourceId: string, body: NoCodeExpressionBody, startTime: string, endTime: string): Observable<any> {
     let timeParameters = this._getTimeQueryParameters(startTime, endTime);
-    let path = `${resourceId}/NoCodeEvaluateExpression?${timeParameters}`;
+    let path = `${resourceId}/noCodeEvaluateExpression?${timeParameters}`;
+    return this.invoke<string>(path, HttpMethod.POST, body, false);
+  }
+
+  public executeNoCodeDetector(resourceId: string, body: any, startTime: string, endTime: string): Observable<any> {
+    let timeParameters = this._getTimeQueryParameters(startTime, endTime);
+    let path = `${resourceId}/executeNoCodeDetector?${timeParameters}`;
     return this.invoke<string>(path, HttpMethod.POST, body, false);
   }
 

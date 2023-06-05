@@ -16,7 +16,7 @@ import { ApplensOpenAIChatService } from '../../../shared/services/applens-opena
 import { ResourceService } from '../../../shared/services/resource.service';
 import { dynamicExpressionBody, kustoQueryDialogParams } from '../workflow/models/kusto';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { NoCodeSupportedDataSourceTypes, NoCodeExpressionBody, NodeSettings, NoCodeTableRenderingProperties, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
+import { NoCodeSupportedDataSourceTypes, NoCodeExpressionBody, NodeSettings, NoCodeTableRenderingProperties, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, nodeJson, NoCodeExpressionResponse } from '../dynamic-node-settings/node-rendering-json-models';
 const moment = momentNs;
 
 @Component({
@@ -374,6 +374,10 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
       this.templatized = true;
       this.templatizeQuery(event);
     }
+  }
+
+  public setResult(res: NoCodeExpressionResponse) {
+    this.sampleTestDataset = res.res;
   }
 
   buildRenderingProps(){

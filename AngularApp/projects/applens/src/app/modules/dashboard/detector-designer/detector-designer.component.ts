@@ -27,7 +27,7 @@ import { DetectorSettingsModel } from '../models/detector-designer-models/detect
 import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 import { INodeModelChangeEventProps } from '../node-composer/node-composer.component';
-import { NoCodeDetectorJson, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
+import { NoCodeDetectorJson, NoCodeExpressionBody, NoCodeExpressionResponse, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
 
 
 @Component({
@@ -40,6 +40,8 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   @Input() mode: DevelopMode = DevelopMode.Create;
 
   detectorName:string = 'Settings Panel Name';//'Auto Generated Detector Name';
+  detectorPanelOpen:boolean = true;
+  detectorPanelOpenObservable: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   PanelType = PanelType;
   RenderingType = RenderingType;
@@ -167,7 +169,8 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       height: "80%"
     }
   };
-  detectorJson = [];
+  detectorJson = "";
+  detectorNodes: NoCodeExpressionResponse[] = [];
   //#endregion Graduation branch picker variables
 
   //#region Time picker variables
@@ -258,7 +261,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService, private detectorGistApiService: DetectorGistApiService,
     public diagnosticApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService, private resourceService: ResourceService,
-    private _detectorControlService: DetectorControlService, private _adalService: AdalService,
+    public _detectorControlService: DetectorControlService, private _adalService: AdalService,
     public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute,
     private _applensCommandBarService: ApplensCommandBarService, private _router: Router, private _themeService: GenericThemeService, private _applensGlobal: ApplensGlobal ) {
     this._applensGlobal.updateHeader('');
@@ -318,8 +321,15 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       djson = djson.concat(x.GetJson(),',');
       //this.detectorJson.push(x.GetJson());
     });
-    djson = djson.substring(0,djson.length - 1);
+    djson = djson.substring(0, djson.length - 1);
     djson = djson.concat(']');
+
+    this.detectorJson = djson;
+
+    this.diagnosticApiService.executeNoCodeDetector(djson, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe((x: NoCodeExpressionResponse[]) => {
+      this.detectorNodes = x;
+      this.detectorPanelOpenObservable.next(true);
+    });
     console.log(JSON.stringify(this.detectorJson));
     console.log('Run Compilation');
   }
@@ -451,6 +461,11 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
         height: "80%"
       }
     };
+  }
+
+  jsonToNodeExpression(jsonString: string){
+    let nodeList: NoCodeExpressionBody[] = JSON.parse(jsonString);
+    return nodeList;
   }
 
   closeBranchCallout() {
