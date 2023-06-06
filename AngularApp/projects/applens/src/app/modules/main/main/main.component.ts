@@ -535,6 +535,7 @@ export class MainComponent implements OnInit {
   }
 
   onGetDeletedOrCreationFailedResource() {
+    const regex = /providers\/(?<providerName>[a-zA-Z.]+)\/(?<resourceType>[a-zA-Z0-9_-]+)(\/(?<resourceName>[a-zA-Z0-9_-]+))/;
     const { targetPathBeforeError } = this.queryParams;
     const dateStringFormat : string = TimeUtilities.fullStringFormat;
     const eventTime = this.deletedOrCreationFailedResourceEventTime.format(dateStringFormat);
@@ -545,12 +546,16 @@ export class MainComponent implements OnInit {
       }
     }
 
-    this._diagnosticApiService.validateResourceExistenceInArmCluster(this.queryParams.resourceId, eventTime, "MICROSOFT.CONTAINERSERVICE", "MANAGEDCLUSTERS").subscribe(() => {
-      this.resetValuesAndNavigateToResource(urlPath, navigationExtras);
-    },
-    (error) => {
-      this.resetValuesAndNavigateToResource(urlPath, navigationExtras);
-    });
+    const match = this.queryParams.resourceId.match(regex);
+    const { providerName: targetResourceProvider, resourceType: targetResourceType } = match?.groups || {}
+    if (targetResourceProvider && targetResourceType) {
+      this._diagnosticApiService.validateResourceExistenceInArmCluster(this.queryParams.resourceId, eventTime, targetResourceProvider, targetResourceType).subscribe(() => {
+        this.resetValuesAndNavigateToResource(urlPath, navigationExtras);
+      },
+      (error) => {
+        this.resetValuesAndNavigateToResource(urlPath, navigationExtras);
+      });
+    }
   }
 
   extractUrlPathAndQueryParams(urlString: string) : { urlPath: string, queryParams: any } {
