@@ -1,6 +1,6 @@
 <div>
     <fab-panel *ngIf="true" [isOpen]="isOpen" [hasCloseButton]="true">
-        <no-code-detector-view [detectorNodes]="nodeList"></no-code-detector-view>
+        <no-code-detector-view [detectorNodes]="nodeList" [startTime]="startTime" [endTime]="endTime"></no-code-detector-view>
 
         <fab-primary-button (onClick)="publishDetector()">publish</fab-primary-button>
         <fab-default-button (onClick)="closePanel()">edit</fab-default-button>
