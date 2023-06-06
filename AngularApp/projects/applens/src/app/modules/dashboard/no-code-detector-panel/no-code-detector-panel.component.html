@@ -1,15 +1,30 @@
 <div>
     <fab-panel [isOpen]="isOpen">
+        <div *ngIf="isOpen">
+            <p>ngIf works</p>
+        </div>
         <ng-container >
             <div>
                 {{nodeList[0] | json}}
             </div>
+            
+            <div *ngFor="let t of testArray">
+                <p>t</p>
+            </div>
             <dynamic-data *ngIf="nodeList.length > 0" [diagnosticData]="nodeList[0].res[0]" [startTime]="startTime" [endTime]="endTime"></dynamic-data>
             {{nodeList.length}}
             <!-- <dynamic-data [diagnosticData]="node.res[0]" [startTime]="startTime" [endTime]="endTime"></dynamic-data> -->
-            <ng-template ngFor let-node [ngForOf]="nodeList">
+            <ng-template ngFor let-node [ngForOf]="testArray">
                 {{0123}}
             </ng-template>
+            <!-- <ng-container *ngIf="(detectorNodes$ | async) as nodeListtest">  
+                <ng-container *ngFor="let node of nodeListtest">  
+                    <p>{{node | json}}</p>  
+                </ng-container>  
+            </ng-container>  -->
+            <ng-container *ngFor="let node of testArray">
+                {{node | json}}
+            </ng-container>
         </ng-container>
         
         <!-- <div>
