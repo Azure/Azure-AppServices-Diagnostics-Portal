@@ -11,35 +11,23 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 })
 export class NoCodeDetectorPanelComponent implements OnInit {
   detectorNodesSubject = new BehaviorSubject<NoCodeExpressionResponse[]>([]);
-  detectorNodes$ = this.detectorNodesSubject.asObservable(); 
-  //@Input() detectorNodes: NoCodeExpressionResponse[] = [];
   @Input() set detectorNodes(nodes: NoCodeExpressionResponse[]) {
     this.detectorNodesSubject.next(nodes);
-    //this.changeDetection.detectChanges();
-    // this.nodeList = nodes;
-    // this.isOpen = nodes.length > 0;
   }
   nodeList: NoCodeExpressionResponse[] = [];
-  testArray = ["to", "be", "continued"];
-  //@Input() detectorNodes: NoCodeExpressionResponse[] = [];
   @Input() detectorJson: string = "";
   @Input() startTime: string = "";
   @Input() endTime: string = "";
   @Input() isOpenObservable: Observable<boolean>;
   isOpen: boolean = false;
-  //@Output() isOpenChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(private changeDetection: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    // this.isOpenObservable.subscribe(x => {
-    //   this.isOpen = x;
-    // });
     this.detectorNodesSubject.subscribe(x => {
       this.nodeList = x;
       this.nodeList.slice();
       this.isOpen = x.length > 0;
-      //this.changeDetection.detectChanges();
     });
   }
 

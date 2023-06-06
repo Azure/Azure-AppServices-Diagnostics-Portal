@@ -1,1 +1,5 @@
-<p>no-code-detector-view works!</p>
+<ng-container *ngFor="let node of nodeList">
+    <div>
+        <dynamic-data [diagnosticData]="node.res[0]" [startTime]="startTime" [endTime]="endTime"></dynamic-data>
+    </div>
+</ng-container>
