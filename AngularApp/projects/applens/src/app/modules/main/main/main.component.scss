@@ -146,21 +146,10 @@
 }
 
 .yes-button {
-    background-color: #008000;
-    color: white; 
     margin-right: 1rem;
   }
   
 .no-button {
-    background-color: rgb(219, 75, 75);
-    color: white;
+    color: var(--primaryButtonBackground);
+    background-color: white;
 }
-
-.yes-button,
-.no-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-  
