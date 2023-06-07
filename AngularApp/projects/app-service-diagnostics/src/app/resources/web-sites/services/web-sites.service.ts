@@ -45,8 +45,8 @@ export class WebSitesService extends ResourceService {
             },
             {
                 ReferrerExtensionName: 'Websites',
-                ReferrerBladeName: 'CertificatesBladeV2',
-                ReferrerTabName: 'Bindings',
+                ReferrerBladeName: 'CertificatesBladeV3',
+                ReferrerTabName: '',
                 DetectorType: DetectorType.Detector,
                 DetectorId: 'configuringsslandcustomdomains'
             },
