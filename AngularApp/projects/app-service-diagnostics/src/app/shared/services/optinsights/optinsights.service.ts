@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, mergeMap, retry, take, tap } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, flatMap, map, mergeMap, retry, take, tap } from 'rxjs/operators';
 import { ScopeAuthorizationToken } from '../../models/portal';
 import { PortalService } from '../../../startup/services/portal.service';
 import { CacheService } from '../cache.service';
@@ -10,9 +10,13 @@ import { WebSitesService } from 'projects/app-service-diagnostics/src/app/resour
 import { ResourceService } from 'projects/app-service-diagnostics/src/app/shared-v2/services/resource.service';
 import { AppType } from 'projects/app-service-diagnostics/src/app/shared/models/portal';
 import { Sku } from 'projects/app-service-diagnostics/src/app/shared/models/server-farm';
-import { CodeOptimizationType, DetectorControlService, TelemetryEventNames, TelemetryService } from 'diagnostic-data';
+import { CodeOptimizationsRequest, CodeOptimizationsLogEvent, CodeOptimizationType, DetectorControlService, TelemetryEventNames, TelemetryService } from 'diagnostic-data';
 import * as moment from 'moment';
 
+
+interface IssueData {
+  [issueId: string]: string;
+}
 
 @Injectable()
 export class OptInsightsService {
@@ -21,6 +25,7 @@ export class OptInsightsService {
   private readonly OAUTH_TOKEN_API: string = "/token";
   private readonly optInsightsRole: string = 'ProfileReader';
   private readonly authEndpoint: string = "https://management.azure.com"
+  private readonly timeRangeAPIVersion: string = "api-version=2023-03-19-preview"
   private optInsightsResponse: any;
   isEnabledInProd: boolean = true;
   loading: boolean;
@@ -37,6 +42,9 @@ export class OptInsightsService {
   site: any;
   startTime: string;
   endTime: string;
+  OPIResources: any = [];
+
+
 
   constructor(private http: HttpClient, private _portalService: PortalService, private _cache: CacheService, private telemetryService: TelemetryService, private _resourceService: ResourceService, private _detectorControlService: DetectorControlService) {
   }
@@ -47,11 +55,20 @@ export class OptInsightsService {
       let authData = JSON.parse(data);
       if (!authData.error) {
         let scopedToken = authData.token
-        this.logOptInsightsEvent(this.appInsightsResourceUri, TelemetryEventNames.AICodeOptimizerInsightsARMTokenSuccessful);
+        let codeOptimizationsLogEvent: CodeOptimizationsLogEvent = {
+          resourceUri: this.appInsightsResourceUri,
+          telemetryEvent: TelemetryEventNames.AICodeOptimizerInsightsARMTokenSuccessful
+        };
+        this.logOptInsightsEvent(codeOptimizationsLogEvent);
         return scopedToken;
       }
       else {
-        this.logOptInsightsEvent(this.appInsightsResourceUri, TelemetryEventNames.AICodeOptimizerInsightsARMTokenFailure, authData.error);
+        let codeOptimizationsLogEvent: CodeOptimizationsLogEvent = {
+          resourceUri: this.appInsightsResourceUri,
+          telemetryEvent: TelemetryEventNames.AICodeOptimizerInsightsARMTokenFailure,
+          error: authData.error
+        };
+        this.logOptInsightsEvent(codeOptimizationsLogEvent);
         return null;
       }
     }));
@@ -67,62 +84,117 @@ export class OptInsightsService {
     return this.http.post(`${this.GATEWAY_HOST_URL}${this.OAUTH_TOKEN_API}`, data, { headers }).pipe(
       map((response: any) => {
         _token = response.access_token;
-        this.logOptInsightsEvent(this.appInsightsResourceUri, TelemetryEventNames.AICodeOptimizerInsightsOAuthAccessTokenSuccessful);
+        let codeOptimizationsLogEvent: CodeOptimizationsLogEvent = {
+          resourceUri: this.appInsightsResourceUri,
+          telemetryEvent: TelemetryEventNames.AICodeOptimizerInsightsOAuthAccessTokenSuccessful
+        };
+        this.logOptInsightsEvent(codeOptimizationsLogEvent);
         return _token;
       }, (error: any) => {
         this.error = error;
-        this.logOptInsightsEvent(this.appInsightsResourceUri, TelemetryEventNames.AICodeOptimizerInsightsOAuthAccessTokenFailure, error);
+        let codeOptimizationsLogEvent: CodeOptimizationsLogEvent = {
+          resourceUri: this.appInsightsResourceUri,
+          telemetryEvent: TelemetryEventNames.AICodeOptimizerInsightsOAuthAccessTokenFailure,
+          error: error
+        };
+        this.logOptInsightsEvent(codeOptimizationsLogEvent);
       }));
   }
 
-  getAggregatedInsightsbyTimeRange(oAuthAccessToken: string, appId: string, startTime: moment.Moment, endTime: moment.Moment, invalidateCache: boolean = false, type?: CodeOptimizationType): Observable<any[]> {
-    const _startTime = startTime.clone();
-    const _endTime = endTime.clone();
+  getAggregatedInsightsbyTimeRange(oAuthAccessToken: string, codeOptimizationsRequest: CodeOptimizationsRequest): Observable<any[]> {
+    const _startTime = codeOptimizationsRequest.startTime.clone();
+    const _endTime = codeOptimizationsRequest.endTime.clone();
 
-    const query: string = `${this.GATEWAY_HOST_URL}/api/apps/${appId}/aggregatedInsights/timeRange?startTime=${_startTime.toISOString()}&endTime=${_endTime.toISOString()}`;
+    const query: string = `${this.GATEWAY_HOST_URL}/api/apps/${codeOptimizationsRequest.appId}/aggregatedInsights/timeRange?${this.timeRangeAPIVersion}&startTime=${_startTime.toISOString()}&endTime=${_endTime.toISOString()}&roleName=${codeOptimizationsRequest.site}`;
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${oAuthAccessToken}`,
       'Content-Type': 'application/json'
     });
     const request = this.http.get(query, { headers: headers }).pipe(
       retry(2),
-      map((aggregatedInsights: any) => {
-        this.optInsightsResponse = this.parseRowsIntoTable(aggregatedInsights);
-        this.logOptInsightsEvent(this.appInsightsResourceUri, TelemetryEventNames.AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeSuccessful, "", aggregatedInsights.length);
-        if (this.optInsightsResponse.length <= 1) {
-          return this.optInsightsResponse;
-        }
-        else {
-          if (type != undefined) {
-            return this.getTopTypeByImpact(this.optInsightsResponse, type, 3);
-          }
-          else {
-            return this.getTopTypeByImpact(this.optInsightsResponse, CodeOptimizationType.All, 3);
-          }
-        }
-      }, (error: any) => {
-        this.error = error;
-        this.logOptInsightsEvent(this.appInsightsResourceUri, TelemetryEventNames.AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeFailure, error);
-      }));
-    return this._cache.get(query, request, invalidateCache);
+      mergeMap((aggregatedInsights: any) => {
+        return this.getOPIResources(false).pipe(map((oPIResources: any) => { 
+          return { aggregatedInsights, oPIResources } 
+        }));
+      }),
+      map((response) => {        
+          this.optInsightsResponse = this.parseRowsIntoTable(response.aggregatedInsights, response.oPIResources);
+          let codeOptimizationsLogEvent: CodeOptimizationsLogEvent = {
+            resourceUri: this.appInsightsResourceUri,
+            telemetryEvent: TelemetryEventNames.AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeSuccessful,
+            totalInsights: response.aggregatedInsights.length
+          };
+          this.logOptInsightsEvent(codeOptimizationsLogEvent);
+        }),
+        catchError(error => {
+          let codeOptimizationsLogEvent: CodeOptimizationsLogEvent = {
+            resourceUri: this.appInsightsResourceUri,
+            telemetryEvent: TelemetryEventNames.AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeFailure,
+            error: error
+          };
+          this.logOptInsightsEvent(codeOptimizationsLogEvent);
+          return throwError(error);          
+      }),
+        
+        );
+    return this._cache.get(query, request, codeOptimizationsRequest.invalidateCache);
   }
 
-  parseRowsIntoTable(rows: any) {
+  getOPIResources(invalidateCache: boolean): Observable<any[]> {
+    const query = 'assets/OPIResources.json';
+    const oPIResourcesRequest = this.http.get<any>(query).pipe(
+      retry(2),
+      map((oPIResources: any) => {
+        return oPIResources;
+      },
+        (error: any) => {
+          this.error = error;
+          let codeOptimizationsLogEvent: CodeOptimizationsLogEvent = {
+            resourceUri: this.appInsightsResourceUri,
+            telemetryEvent: TelemetryEventNames.AICodeOptimizerInsightsFailureGettingOPIResources,
+            error: error
+          };
+          this.logOptInsightsEvent(codeOptimizationsLogEvent);
+        }));
+    return this._cache.get(query, oPIResourcesRequest, invalidateCache);
+  }
+
+  parseRowsIntoTable(rows: any, oPIResources: any) {
     let table: any = [];
     if (!rows || rows.length === 0) {
       return table;
     }
     rows.forEach(element => {
       table.push({
-        type: element.insight.type,
-        issue: `${element.insight.method} is causing high ${element.insight.type}`,
-        component: element.insight.component,
+        type: element.issueCategory,
+        issue: `${oPIResources[element.issueId]?.title || this.defaultStrings(element.issueCategory, element.function)}`,
+        component: element.function,
         count: element.count,
-        impact: `${element.insight.impactPercent.toFixed(2)}%`,
-        role: element.insight.roleName,
+        impact: `${element.value.toFixed(2)}%`,
+        role: element.roleName,
       });
     });
     return table;
+  }
+
+  getIssueStrings(issueId: string): any | undefined {
+    if (this.OPIResources.hasOwnProperty(issueId)) {
+      return this.OPIResources[issueId];
+    }
+    return undefined;
+  }
+
+  defaultStrings(type: CodeOptimizationType, functionName: string): string {
+    switch (type) {
+      case CodeOptimizationType.CPU:
+        return `${functionName} is causing high CPU usage`;
+      case CodeOptimizationType.Memory:
+        return `Excessive allocations due to ${functionName}`;
+      case CodeOptimizationType.Blocking:
+        return `Excessive thread blocking by ${functionName}`;
+      default:
+        return `Issue caused by ${functionName}`;
+    }
   }
 
   getTopTypeByImpact(array: any, type: CodeOptimizationType, top: number): any {
@@ -131,35 +203,49 @@ export class OptInsightsService {
       result = array;
     }
     else {
-      result = array.filter(insight => <CodeOptimizationType>insight.type == type);
+      result = array.filter(insight => insight.type == CodeOptimizationType[type]);
     }
-    if (result.length < 2) {
+    if (result.length == 1) {
       return result;
     }
     else {
+      if (result.length == 0) {
+        result = array;
+      }
       return result
         .sort((a, b) => (Number(b.impact.replace("%", ""))) - (Number(a.impact.replace("%", ""))))
         .slice(0, top);
-      //.map(insight => insight);
     }
   }
 
-  getInfoForOptInsights(appInsightsResourceId: string, appId: string, site: string, startTime: moment.Moment, endTime: moment.Moment, invalidateCache: boolean = false, type?: CodeOptimizationType): Observable<any[] | null> {
-    this.appInsightsResourceUri = appInsightsResourceId;
-    this.site = site;
+  getInfoForOptInsights(codeOptimizationsRequest: CodeOptimizationsRequest): Observable<any[] | null> {
+    this.appInsightsResourceUri = codeOptimizationsRequest.appInsightsResourceId;
+    this.site = codeOptimizationsRequest.site;
     return this.getARMToken().pipe(
       (mergeMap(aRMToken => {
-        if (aRMToken === null || appInsightsResourceId === null || appId === null) return of(null);
-        return this.getOAuthAccessToken(aRMToken, appInsightsResourceId).pipe(map(accessToken => {
+        if (aRMToken === null || codeOptimizationsRequest.appInsightsResourceId === null || codeOptimizationsRequest.appId === null) return of(null);
+        return this.getOAuthAccessToken(aRMToken, codeOptimizationsRequest.appInsightsResourceId).pipe(map(accessToken => {
           return accessToken;
         }), mergeMap(accessToken => {
-          if (accessToken === null || appInsightsResourceId === null || appId === null) return of(null);
-          return this.getAggregatedInsightsbyTimeRange(accessToken, appId, startTime, endTime, invalidateCache);
+          if (accessToken === null || codeOptimizationsRequest.appInsightsResourceId === null || codeOptimizationsRequest.appId === null) return of(null);
+          return this.getAggregatedInsightsbyTimeRange(accessToken, codeOptimizationsRequest);
+        }), mergeMap(aggregatedInsights => {
+          if (this.optInsightsResponse.length <= 1) {
+            return this.optInsightsResponse;
+          }
+          else {
+            if (codeOptimizationsRequest.type != undefined) {
+              return of(this.getTopTypeByImpact(this.optInsightsResponse, codeOptimizationsRequest.type, 3));
+            }
+            else {
+              return of(this.getTopTypeByImpact(this.optInsightsResponse, CodeOptimizationType.All, 3));
+            }
+          }
         }));
       })));
   }
 
-  logOptInsightsEvent(resourceUri: string, telemetryEvent: string, error?: string, totalInsights?: number, site?: string) {
+  logOptInsightsEvent(codeOptimizationsLogEvent: CodeOptimizationsLogEvent) {
     let webSiteService = this._resourceService as WebSitesService;
     this.resourcePlatform = webSiteService.platform;
     this.resourceAppType = webSiteService.appType;
@@ -167,16 +253,16 @@ export class OptInsightsService {
     this.startTime = this._detectorControlService.startTime.toISOString();
     this.endTime = this._detectorControlService.endTime.toISOString();
     const aICodeEventProperties = {
-      'Site': site != undefined ? site : this.site != undefined ? `${this.site}` : "",
-      'AppInsightsResourceUri': `${resourceUri}`,
+      'Site': codeOptimizationsLogEvent.site != undefined ? codeOptimizationsLogEvent.site : this.site != undefined ? `${this.site}` : "",
+      'AppInsightsResourceUri': `${codeOptimizationsLogEvent.resourceUri}`,
       'Platform': this.resourcePlatform != undefined ? `${this.resourcePlatform}` : "",
       'AppType': this.resourceAppType != undefined ? `${this.resourceAppType}` : "",
       'ResourceSku': this.resourceSku != undefined ? `${this.resourceSku}` : "",
       'StartTime': this.startTime != undefined ? `${this.startTime}` : "",
       'EndTime': this.endTime != undefined ? `${this.endTime}` : "",
-      'Error': error != undefined ? `${error}` : "",
-      'TotalInsights': totalInsights != undefined ? `${totalInsights}` : ""
+      'Error': codeOptimizationsLogEvent.error != undefined ? `${codeOptimizationsLogEvent.error}` : "",
+      'TotalInsights': codeOptimizationsLogEvent.totalInsights != undefined ? `${codeOptimizationsLogEvent.totalInsights}` : ""
     };
-    this.telemetryService.logEvent(telemetryEvent, aICodeEventProperties);
+    this.telemetryService.logEvent(codeOptimizationsLogEvent.telemetryEvent, aICodeEventProperties);
   }
 }

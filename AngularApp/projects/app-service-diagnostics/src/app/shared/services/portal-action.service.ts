@@ -171,7 +171,7 @@ export class PortalActionService {
                     LinkedApplicationType: appInsightsResourceUri.LinkedApplicationType,
                     ResourceId: appInsightsResourceUri.ResourceId,
                     ResourceType: appInsightsResourceUri.ResourceType,
-                    IsAzureFirst: appInsightsResourceUri.IsAzureFirst
+                    IsAzureFirst: appInsightsResourceUri.IsAzureFirst,
                 },
                 OpenedFrom: 'app-service-diagnose-and-solve-problems'
             }
@@ -180,7 +180,7 @@ export class PortalActionService {
         this._portalService.openBlade(bladeInfo, 'troubleshoot');
     }
 
-    public openOptInsightsBladewithTimeRange(appInsightsResourceUri: OptInsightsResource, optInsightsTimeContext: OptInsightsTimeContext) {
+    public openOptInsightsBladewithTimeRange(appInsightsResourceUri: OptInsightsResource, optInsightsTimeContext: OptInsightsTimeContext, SiteName: string) {
         const bladeInfo = {
             detailBlade: 'ServiceProfilerPerflensBlade',
             extension: 'AppInsightsExtension',
@@ -200,8 +200,9 @@ export class PortalActionService {
                     createdTime: optInsightsTimeContext.createdTime,
                     isInitialTime: optInsightsTimeContext.isInitialTime,
                     grain: optInsightsTimeContext.grain,
-                    useDashboardTimeRange: optInsightsTimeContext.useDashboardTimeRange
+                    useDashboardTimeRange: optInsightsTimeContext.useDashboardTimeRange,            
                 },
+                RoleName: SiteName,
                 OpenedFrom: 'app-service-diagnose-and-solve-problems'
             }
         };

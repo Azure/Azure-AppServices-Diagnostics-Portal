@@ -73,7 +73,7 @@ export class SitesCategoryService extends CategoryService {
           },
           {
             type:DetectorType.Detector,
-            id:'http server errors',
+            id:'httpservererrorslinux',
             displayText:'HTTP Server Errors'
           }
         ],

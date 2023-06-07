@@ -60,7 +60,7 @@ export class SiteFeatureService extends FeatureService {
     let locationPlacementId = '';
     if (this.subscriptionPropertiesService && subscriptionId) {
       this.subscriptionPropertiesService.getSubscriptionProperties(subscriptionId).pipe(catchError(error => of({}))).subscribe(response => {
-        locationPlacementId = (<HttpResponse<any>>response)?.body['subscriptionPolicies']['locationPlacementId'];
+        locationPlacementId = (<HttpResponse<any>>response)?.body?.subscriptionPolicies?.locationPlacementId ?? '';
 
         // remove features not applicable
         if (locationPlacementId && locationPlacementId.toLowerCase() === 'geos_2020-01-01') {

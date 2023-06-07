@@ -398,7 +398,7 @@ export async function checkAppSettingsAsync(siteInfo, diagProvider, flowMgr) {
     }
 }
 
-export async function checkDnsSettingV2Async(siteInfo, diagProvider, flowMgr, isKuduAccessiblePromise, dnsSettings) {
+export async function checkDnsSettingV2Async(siteInfo, diagProvider, flowMgr, isKuduAccessiblePromise, dnsSettings, useNetworkTroubleshooterBackend = false) {
     var promiseCompletion = new PromiseCompletionSource();
     flowMgr.addViews(promiseCompletion, "Checking DNS settings...");
     try {
@@ -409,7 +409,7 @@ export async function checkDnsSettingV2Async(siteInfo, diagProvider, flowMgr, is
         var vnetConfigChecker = new VnetIntegrationConfigChecker(siteInfo, diagProvider);
         var vnetIntegrationType = await vnetConfigChecker.getVnetIntegrationTypeAsync();
         if (vnetIntegrationType == "swift") {
-            if (await isKuduAccessiblePromise) {
+            if (await isKuduAccessiblePromise || useNetworkTroubleshooterBackend) {
                 isContinue = true;
                 var dnsChecker = new VnetDnsConfigChecker(siteInfo, diagProvider);
 
@@ -420,7 +420,7 @@ export async function checkDnsSettingV2Async(siteInfo, diagProvider, flowMgr, is
                     for (let idx = 0; idx < appSettingDns.length; ++idx) {
                         let dns = appSettingDns[idx];
                         if (dns != null) {
-                            let result = await dnsChecker.isDnsServerReachableAsync(dns);
+                            let result = await dnsChecker.isDnsServerReachableAsync(dns, useNetworkTroubleshooterBackend);
                             appSettingDnsSubChecks.push(wordings.dnsReachability.get(dns, idx == 0 ? "WEBSITE_DNS_SERVER" : "WEBSITE_DNS_ALT_SERVER", result));
                             if (result == false) {
                                 unreachableDns.push(dns);
@@ -469,7 +469,7 @@ export async function checkDnsSettingV2Async(siteInfo, diagProvider, flowMgr, is
 
                                 for (let idx = 0; idx < dnsSettings.length; ++idx) {
                                     let dns = dnsSettings[idx];
-                                    let result = await dnsChecker.isDnsServerReachableAsync(dns);
+                                    let result = await dnsChecker.isDnsServerReachableAsync(dns, useNetworkTroubleshooterBackend);
                                     vnetDnsSubChecks.push(wordings.dnsReachability.get(dns, `VNet DNS list position ${idx}`, result));
                                     if (result == false) {
                                         unreachableDns.push(dns);

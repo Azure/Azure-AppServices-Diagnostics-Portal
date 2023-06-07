@@ -111,8 +111,8 @@
     margin: 0px;
     padding: 1px 0px 1px 4px;
     box-sizing: border-box;
-    color: rgb(48, 41, 40);
-    background-color: rgb(255, 255, 255);
+    color: var(--inputText);
+    background-color: var(--inputBackground);
     display: flex;
     flex-flow: row nowrap;
     align-items: stretch;
@@ -126,13 +126,13 @@
     margin: 0px;
     padding: 0px 0px 0.5px;
     box-sizing: border-box;
-    background-color: transparent;
+    background-color: var(--inputBackground);
     border: none;
     outline: none;
     font-weight: inherit;
     font-family: inherit;
     font-size: inherit;
-    color: rgb(48, 41, 40);
+    color: var(--inputText);
     flex: 1 1 0px;
     min-width: 0px;
     overflow: hidden;
@@ -152,4 +152,3 @@
     cursor: text;
     transition: width 0.167s ease 0s;
 }
-

@@ -24,23 +24,24 @@ export class GenericCommsService {
           map((response: any) => {
 
             var commsList = new Array();
-            var alertFound: boolean = false;
-            response.value.forEach((item: any) => {
-              if (item.properties && item.properties.eventType && item.properties.eventType === 'ServiceIssue') {
-                var comm = {
-                  publishedTime: item.properties['lastUpdateTime'],
-                  title: item.properties['title'],
-                  richTextMessage: item.properties['description'],
-                  status: item.properties['status'] === 'Active' ? CommunicationStatus.Active : CommunicationStatus.Resolved,
-                  incidentId: item.name,
-                  isAlert: false,
-                  isExpanded: false,
-                  commType: 0
-                };
-
-                commsList.push(comm);
-              }
-            });
+            if(Array.isArray(response.value)){
+              response.value.forEach((item: any) => {
+                if (item.properties && item.properties.eventType && item.properties.eventType === 'ServiceIssue') {
+                  var comm = {
+                    publishedTime: item.properties['lastUpdateTime'],
+                    title: item.properties['title'],
+                    richTextMessage: item.properties['description'],
+                    status: item.properties['status'] === 'Active' ? CommunicationStatus.Active : CommunicationStatus.Resolved,
+                    incidentId: item.name,
+                    isAlert: false,
+                    isExpanded: false,
+                    commType: 0
+                  };
+  
+                  commsList.push(comm);
+                }
+              });
+            }
 
             var activeComm = commsList.find(item => item.status === CommunicationStatus.Active);
             if(activeComm){

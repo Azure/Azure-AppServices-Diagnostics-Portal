@@ -3,7 +3,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot, CanDeactivate, Params, Router, 
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import {
-  CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, TableColumnOption, TableFilterSelectionOption, DataTableResponseObject, DataTableResponseColumn, FabDataTableComponent
+  CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, TableColumnOption, TableFilterSelectionOption, DataTableResponseObject, DataTableResponseColumn, FabDataTableComponent, TelemetryService, TelemetryEventNames
 } from 'diagnostic-data';
 import { forkJoin } from 'rxjs';
 import { DevopsConfig } from '../../../shared/models/devopsConfig';
@@ -23,7 +23,8 @@ export enum DevelopMode {
 })
 export class UpdateDetectorReferencesComponent implements OnInit{
 
-  constructor( private diagnosticApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService, private _activatedRoute: ActivatedRoute) { }
+  constructor( private diagnosticApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService, private _activatedRoute: ActivatedRoute, 
+    private _telemetryService: TelemetryService) { }
 
  
   @Input() id: string; //gist id 
@@ -74,6 +75,11 @@ export class UpdateDetectorReferencesComponent implements OnInit{
   
   
   updateDetectorReferences(detectorReferences : any[]) {
+
+    this._telemetryService.logEvent(TelemetryEventNames.SuperGistUpdateSelectedButtonClicked, {
+      ResourceID: this.resourceId,
+      ID: this.id,
+    });
     
     detectorReferences.forEach( key => {
       this.detectorsToCheck.add(key.Name); 
@@ -84,7 +90,6 @@ export class UpdateDetectorReferencesComponent implements OnInit{
     detectorReferences.forEach( detector =>{
       this.checkCompilation(detector, detectorReferences.length); 
     }); 
-    
   }
 
   private checkCompilation(detector : any, num: number) {
@@ -300,6 +305,10 @@ updateDetectorPackageJsonAll(){
   }, err => {
     this.updateDetectorFailed = true; 
     this.displayUpdateDetectorResults(); 
+    this._telemetryService.logException(err, "update-detector-references-component", {
+      ResourceID: this.resourceId,
+      ID: this.id,
+    });
 
   }
 
@@ -310,6 +319,12 @@ updateDetectorPackageJsonAll(){
 displayDetectorReferenceTable(){ 
 
     this.diagnosticApiService.getGistDetailsById(this.id).subscribe( data=>{ 
+
+    this._telemetryService.logEvent(TelemetryEventNames.SuperGistAPILoaded, {
+      ResourceID: this.resourceId,
+      ID: this.id,
+    });
+
     this.detectorReferencesList = data;
     this.gistCommitVersion = this.detectorReferencesList["currentCommitVersion"]; 
     

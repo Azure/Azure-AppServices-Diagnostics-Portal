@@ -1,12 +1,7 @@
 <ng-template #header>
     {{renderingProperties.title}}
-    <button class="btn btn-default markdown-button" style="float:right;margin-top: -7px" *ngIf="!isPublic" (click)="copyMarkdown()">
+    <button class="btn btn-default markdown-button" style="float:right;margin-top: -5px" *ngIf="!isPublic" (click)="copyMarkdown()" tabindex="0" (keyup.enter)="copyMarkdown()" aria-label="copy markdown">
         <span class="fa fa-copy"></span>
-        Copy to Email
-    </button>
-    <button class="btn btn-default markdown-button" style="float:right;margin-top: -7px;margin-right:10px" *ngIf="!isPublic" (click)="openEmail()">
-        <span class="fa fa-envelope"></span>
-        Open in Outlook
     </button>
 </ng-template>
 

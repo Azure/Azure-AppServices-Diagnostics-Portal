@@ -29,6 +29,24 @@ interface Insight {
     method: string;
 }
 
+export interface CodeOptimizationsRequest {
+    appInsightsResourceId: string;
+    appId: string;
+    site: string;
+    startTime: moment.Moment;
+    endTime: moment.Moment; 
+    invalidateCache: boolean;
+    type: CodeOptimizationType;
+}
+
+export interface CodeOptimizationsLogEvent {
+    resourceUri: string;
+    telemetryEvent: string;
+    error?: string;
+    totalInsights?: number;
+    site?: string;
+}
+
 export interface OptInsightsResource {
     SubscriptionId: string;
     ResourceGroup: string;

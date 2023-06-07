@@ -278,6 +278,11 @@
                 "glob": "**/*",
                 "input": "node_modules/ngx-monaco-editor/assets/monaco",
                 "output": "/assets/monaco"
+              },
+              {
+                "glob": "OPIResources.json",
+                "input": "node_modules/@opi-perf/json",
+                "output": "/assets"
               }
             ],
             "styles": [

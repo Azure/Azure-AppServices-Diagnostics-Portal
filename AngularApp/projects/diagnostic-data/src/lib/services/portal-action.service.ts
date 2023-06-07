@@ -14,7 +14,7 @@ export class PortalActionGenericService {
 
   public openFeedbackPanel(){}
 
-  public openOptInsightsBladewithTimeRange(appInsightsResourceUri: OptInsightsResource, optInsightsTimeContext: OptInsightsTimeContext) {
+  public openOptInsightsBladewithTimeRange(appInsightsResourceUri: OptInsightsResource, optInsightsTimeContext: OptInsightsTimeContext, RoleName: string) {
   }
 
   public openOptInsightsBlade(appInsightsResourceUri: OptInsightsResource) {}

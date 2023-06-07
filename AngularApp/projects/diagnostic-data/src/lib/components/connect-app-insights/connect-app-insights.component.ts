@@ -13,10 +13,15 @@ export class ConnectAppInsightsComponent extends DataRenderBaseComponent {
 
   isPublic: boolean;
   resourceId: string;
+  detectorId: string = "";
 
   constructor(protected telemetryService: TelemetryService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
     super(telemetryService);
     this.isPublic = config && config.isPublic;
+  }
+
+  ngOnInit() {
+    this.detectorId = this.detectorEventProperties.DetectorId;
   }
 
   protected processData(data: DiagnosticData) {
