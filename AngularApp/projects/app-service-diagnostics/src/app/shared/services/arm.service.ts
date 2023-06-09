@@ -137,7 +137,7 @@ export class ArmService {
 
     createUrl(resourceUri: string, apiVersion?: string) {
         let resourceUriToUse = resourceUri;
-        if (UriUtilities.isNoResourceCall(resourceUri) && !UriUtilities.isApolloApiCall(resourceUri)) {
+        if (UriUtilities.isNoResourceCall(resourceUri) && !UriUtilities.isApolloApiCall(resourceUri) && resourceUri.split("subscriptions/").length > 1) {
             //Call is for get resource with a partial resource uri, convert it into a get subscription call.
             //If the call is for Apollo, then we do not want to modify anything in the resource uri and just construct the URL            
             resourceUriToUse = `/subscriptions/${resourceUri.split("subscriptions/")[1].split("/")[0]}`;//resourceUri.replace(/\/providers\/[^\/]*\/[^\/]*\//, '/');
