@@ -175,6 +175,58 @@
       ]
     },
     {
+      "azureResourceGroupName": "Support-RG",
+      "location": "West US",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "PublicAzure"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "ApplensZipDeployPPEEA",
+          "instanceOf": "ZipDeployDefinition",
+          "scopeTags": [
+            {
+              "name": "PPEEA"
+            }
+          ]
+        },
+        {
+          "name": "PPEEASWAP",
+          "instanceOf": "AutoSwapDefinition",
+          "scopeTags": [
+            {
+              "name": "PPEEA"
+            }
+          ]
+        },
+        {
+          "name": "ApplensZipDeployPPEBLU",
+          "instanceOf": "ZipDeployDefinition",
+          "scopeTags": [
+            {
+              "name": "PPEBLU"
+            }
+          ]
+        },
+        {
+          "name": "PPEBLUSWAP",
+          "instanceOf": "AutoSwapDefinition",
+          "scopeTags": [
+            {
+              "name": "PPEBLU"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "azureResourceGroupName": "DiagnosticBackendUsSecWest",
       "location": "USSec West",
       "instanceOf": "WebAppResourceGroupDefinitions",
@@ -193,34 +245,6 @@
       "serviceResources": [
         {
           "name": "ApplensUsSec",
-          "instanceOf": "WebAppDefinitionV2",
-          "scopeTags": [
-            {
-              "name": "Applens"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "azureResourceGroupName": "Support-RG",
-      "location": "USGov Virginia",
-      "instanceOf": "WebAppResourceGroupDefinitions",
-      "azureSubscriptionId": "86067b54-e1da-4079-96bb-4c4b5e1be1b6",
-      "scopeTags": [
-        {
-          "name": "General"
-        },
-        {
-          "name": "Fairfax"
-        },
-        {
-          "name": "USSecWestRegion"
-        }
-      ],
-      "serviceResources": [
-        {
-          "name": "ApplensFairfax",
           "instanceOf": "WebAppDefinitionV2",
           "scopeTags": [
             {

@@ -231,6 +231,40 @@
       ]
     },
     {
+      "scopeTagName": "PPEEA",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-ppe-ea"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "East Asia"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "Applens.zip"
+        }
+      ]
+    },
+    {
+      "scopeTagName": "PPEBLU",
+      "bindings": [
+        {
+          "find": "__SITENAME__",
+          "replaceWith": "applens-ppe-blu"
+        },
+        {
+          "find": "__LOCATION__",
+          "replaceWith": "East US"
+        },
+        {
+          "find": "__ZIP_PACKAGE__",
+          "replaceWith": "Applens.zip"
+        }
+      ]
+    },
+    {
       "scopeTagName": "PublicAzure",
       "bindings": [
         {
