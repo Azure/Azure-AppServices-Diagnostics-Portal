@@ -10,8 +10,8 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class NoCodeDetectorPanelComponent implements OnInit {
-  detectorNodesSubject = new BehaviorSubject<NoCodeExpressionResponse[]>([]);
-  @Input() set detectorNodes(nodes: NoCodeExpressionResponse[]) {
+  detectorNodesSubject = new BehaviorSubject<any>(null);
+  @Input() set detectorNodes(nodes: any) {
     this.detectorNodesSubject.next(nodes);
   }
   nodeList: NoCodeExpressionResponse[] = [];
@@ -20,14 +20,17 @@ export class NoCodeDetectorPanelComponent implements OnInit {
   @Input() endTime: string = "";
   @Input() isOpenObservable: Observable<boolean>;
   isOpen: boolean = false;
+  detectorView: any;
 
   constructor(private changeDetection: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.detectorNodesSubject.subscribe(x => {
-      this.nodeList = x;
-      this.nodeList.slice();
-      this.isOpen = x.length > 0;
+      this.detectorView = x;
+      this.isOpen = x != null;
+      // this.nodeList = x;
+      // this.nodeList.slice();
+      // this.isOpen = x.length > 0;
     });
   }
 

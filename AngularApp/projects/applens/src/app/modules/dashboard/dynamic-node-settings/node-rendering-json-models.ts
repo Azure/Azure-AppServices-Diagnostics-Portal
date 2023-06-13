@@ -131,5 +131,9 @@ export class nodeJson {
 }
 
 export class NoCodeDetectorJson {
-  nodes: nodeJson[];
+  nodes: NoCodeExpressionBody[] = [];
+  id: string = "";
+  name: string = "";
+  description: string = "";
+  author: string = "";
 }

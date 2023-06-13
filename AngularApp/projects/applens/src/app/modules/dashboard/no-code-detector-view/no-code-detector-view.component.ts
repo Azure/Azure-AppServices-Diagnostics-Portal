@@ -14,15 +14,17 @@ export class NoCodeDetectorViewComponent implements OnInit {
 
   @Input() startTime: string = "";
   @Input() endTime: string = "";
-  @Input() set detectorNodes(nodes: NoCodeExpressionResponse[]) {
+  @Input() set detectorNodes(nodes: any) {
     this.detectorNodesSubject.next(nodes);
   }
+  detectorView = null;
 
   constructor() { }
 
   ngOnInit(): void {
     this.detectorNodesSubject.subscribe(x => {
-      this.nodeList = x;
+      //this.nodeList = x;
+      this.detectorView = x;
     });
   }
 
