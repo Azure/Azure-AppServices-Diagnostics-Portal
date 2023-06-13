@@ -16,7 +16,7 @@ export class DiagnosticService {
         return null;
     }
 
-    public getDetector(detector: string, startTime: string, endTime: string, refresh?: boolean, internalView?: boolean, formQueryParams?: string, overrideResourceUri?: string): Observable<DetectorResponse> {
+    public getDetector(detector: string, startTime: string, endTime: string, refresh?: boolean, internalView?: boolean, formQueryParams?: string, overrideResourceUri?: string, additionalHeaders?: Map<string, string>): Observable<DetectorResponse> {
         return null;
     }
 

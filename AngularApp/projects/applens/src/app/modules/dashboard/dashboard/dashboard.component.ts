@@ -20,12 +20,12 @@ import { UserInfo } from '../user-detectors/user-detectors.component';
 import { BreadcrumbService } from '../services/breadcrumb.service';
 import { UserSettingService } from '../services/user-setting.service';
 import {AlertService} from '../../../shared/services/alert.service';
-import {AlertInfo, ConfirmationOption} from '../../../shared/models/alerts';
+import {AlertInfo, ConfirmationOption} from 'diagnostic-data';
 import { TelemetryService } from 'diagnostic-data';
 import { TelemetryEventNames } from 'diagnostic-data';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
-import { UserAccessStatus } from "../../../shared/models/alerts";
+import { UserAccessStatus } from "diagnostic-data";
 import { defaultResourceTypes } from '../../../shared/utilities/main-page-menu-options';
 
 @Component({
@@ -113,7 +113,6 @@ export class DashboardComponent implements OnDestroy {
   crossSubJustification: string = '';
   defaultResourceTypes = defaultResourceTypes;
   isPPE:boolean = false;
-
   constructor(public resourceService: ResourceService, private startupService: StartupService,  private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
     private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, public _applensGlobal: ApplensGlobal, private _startupService: StartupService, private _resourceService: ResourceService, private _breadcrumbService: BreadcrumbService, private _userSettingsService: UserSettingService, private _themeService: GenericThemeService,

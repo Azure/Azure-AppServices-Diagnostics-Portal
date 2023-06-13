@@ -167,6 +167,7 @@ import { ChatUIContextService } from './services/chatui-context.service';
 import {OpenAIChatComponent} from './components/openai-chat/openai-chat.component';
 import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.component';
 
+import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
 
 @NgModule({
     imports: [
@@ -202,8 +203,8 @@ import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.compo
         RouterModule,
         FabDatePickerModule,
         FabCalendarModule,
-        NgFlowchartModule
-        
+        NgFlowchartModule,
+        FabDialogModule
     ],
     providers: [
         ClipboardService
@@ -329,7 +330,8 @@ import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.compo
         OpenaiComponent,
         ChatUIComponent,
         OpenAIChatComponent,
-        OpenAIGenieComponent
+        OpenAIGenieComponent,
+        DateTimePickerComponent
     ]
 })
 export class DiagnosticDataModule {

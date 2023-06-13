@@ -19,13 +19,13 @@
       <div style="width: 50%;">
         <div class="section">
           <fab-checkbox [label] = "'I do not have a resource'" [ariaLabel]="'Check if you do not have a complete resource'" [checked]="isNoResource" [boxSide]="'end'"
-          (checkedChange)="toggleIsNoResource($event)" [styles]="fabCheckBoxStyles"></fab-checkbox>
+          (checkedChange)="toggleIsNoResource($event)" [styles]="fabCheckBoxStyles" [disabled]="isDeletedOrCreationFailedResource"></fab-checkbox>
         </div>
         <div class="section"
         *ngIf="caseNumberNeededForProduct || (caseNumberNeededForUser && caseNumberNeededForRP)">
           <fab-text-field [ariaLabel]="'Customer case number'" [defaultValue]="caseNumber" (onChange)="updateCaseNumber($event)"
             [placeholder]="caseNumberPlaceholder" [label]="'Case Number'" [required]="true"
-            [styles]="fabTextFieldStyles">
+            [styles]="fabTextFieldStyles" [disabled]="isDeletedOrCreationFailedResource">
           </fab-text-field>
           <div *ngIf="caseNumberValidationError && caseNumberValidationError!== ''"
             class="mt-3 error-message-container">
@@ -36,10 +36,10 @@
         <div class="section" *ngIf = "!isNoResource">
           <fab-dropdown [options]="fabDropdownOptions" [selectedKey]="selectedResourceType.id"
             (onChange)="selectDropdownKey($event)" [styles]="fabDropdownStyles" [ariaLabel]="'Service Type'"
-            [required]="true" [label]="'Service type'">
+            [required]="true" [label]="'Service type'" [disabled]="isDeletedOrCreationFailedResource">
           </fab-dropdown>
         </div>
-        <div class="section" *ngIf = "isNoResource">
+        <div class="section" *ngIf = "isNoResource && !isDeletedOrCreationFailedResource">
           <div style="display:flex; justify-content:space-between;align-items: center;">
             <label class = 'required-asterix'>Service type</label>
             <div style="width:50%">
@@ -56,26 +56,38 @@
           <fab-text-field [ariaLabel]="isNoResource? 'Subscription Id' : selectedResourceType.resourceTypeLabel" [defaultValue]="resourceName" (onChange)="updateResourceName($event)"
            [placeholder]="'Type ' + (isNoResource? 'Subscription Id' : selectedResourceType.resourceTypeLabel)"
             (keyup.enter)="onSubmit()" [required]="true" [label]="isNoResource? 'Subscription Id':selectedResourceType.resourceTypeLabel"
-            [styles]="fabTextFieldStyles">
+            [styles]="fabTextFieldStyles" [disabled]="isDeletedOrCreationFailedResource">
           </fab-text-field>
           <div *ngIf="errorMessage!== ''" class="mt-3 error-message-container">
             <status-icon [status]="status"></status-icon><span class="ml-3 error-message">{{errorMessage}}</span>
           </div>
         </div>
         <div class="section" style="display: flex;justify-content: space-between;">
-          <label for="landing-page-time-picker">Time range (UTC)</label>
-          <div id="landing-page-time-picker" (click)="openTimePicker()" class="time-picker"
-            (keydown.enter)="openTimePicker()" tabindex="0" aria-label="Choose time range">
-            <span class="time-picker-str">{{timePickerStr}}</span>
-            <fab-icon iconName="ChevronDown" ariaLabel="ChevronDown"></fab-icon>
-          </div>
+          <ng-container *ngIf="!isDeletedOrCreationFailedResource; else deletedOrCreationFailedResourceTimePicker">
+            <label for="landing-page-time-picker">Time range (UTC)</label>
+            <div id="landing-page-time-picker" (click)="openTimePicker()" class="time-picker"
+              (keydown.enter)="openTimePicker()" tabindex="0" aria-label="Choose time range">
+              <span class="time-picker-str">{{timePickerStr}}</span>
+              <fab-icon iconName="ChevronDown" ariaLabel="ChevronDown"></fab-icon>
+            </div>
+          </ng-container>
         </div>
 
         <div class="section">
           <button type="button" class="btn btn-sm btn-primary btn-continuebtn" [disabled]="disableSubmitButton"
-            (click)="onSubmit()">Continue</button>
-          <div *ngIf="accessErrorMessage && accessErrorMessage!== ''" class="mt-3 error-message-container">
-            <status-icon [status]="status"></status-icon><span class="ml-3 error-message">{{accessErrorMessage}}</span>
+            (click)="isDeletedOrCreationFailedResource ? onGetDeletedOrCreationFailedResource() : onSubmit()">Continue</button>
+          <div style="flex-direction: column;" *ngIf="accessErrorMessage && accessErrorMessage!== ''" class="mt-3 error-message-container">
+            <div style="display: flex;">
+              <status-icon [status]="status"></status-icon>
+              <span class="ml-3 error-message">{{accessErrorMessage}}</span>
+            </div>
+            <div *ngIf="isArmResourceRelatedError">
+              <div style="font-weight: 600; margin-bottom: 1rem;">Was this resource deleted recently or did the creation process encounter a failure recently?</div>
+              <div>
+                <button type="button" class="btn btn-sm btn-primary btn-continuebtn yes-button" (click)="onClickDeletedOrCreationFailedResourceBtn(true)">Yes</button>
+                <button type="button" class="btn btn-sm btn-primary btn-continuebtn no-button" (click)="onClickDeletedOrCreationFailedResourceBtn(false)">No</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -145,6 +157,9 @@
   <tr>No Recent Resource</tr>
 </ng-template>
 
+<ng-template #deletedOrCreationFailedResourceTimePicker>
+  <date-time-picker style="margin-right: 6.5rem;" [label]="'Time when resource was deleted or created (UTC)'"  [moment]="deletedOrCreationFailedResourceSelectedMoment" (momentChange)="updateMomentForDeletedOrCreationFailedResource($event)"></date-time-picker>
+</ng-template>
 
 <fab-panel [isOpen]="openResourceTypePanel == true" [type]="type" [customWidth]="width" 
   [styles]="panelStyles" [isLightDismiss]="true" [hasCloseButton]="true" [closeButtonAriaLabel]="'close'"

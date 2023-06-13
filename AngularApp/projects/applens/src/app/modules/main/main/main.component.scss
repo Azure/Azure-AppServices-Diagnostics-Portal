@@ -144,3 +144,12 @@
     background-color: #0367AC;
     margin-top: -2px; 
 }
+
+.yes-button {
+    margin-right: 1rem;
+  }
+  
+.no-button {
+    color: var(--primaryButtonBackground);
+    background-color: white;
+}

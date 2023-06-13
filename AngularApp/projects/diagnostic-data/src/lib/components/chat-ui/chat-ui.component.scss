@@ -1,6 +1,5 @@
 .chatui-bot-container{
     height: 100%;
-    align-items: center;
     justify-content: center;
     z-index: 9999;
     display: flex;
@@ -145,7 +144,7 @@
     position: absolute;
     width: 100%;
     overflow-y: scroll;
-    height: 70vh;
+    height: 83%;
     border: 1px solid #f6f6f6;
     border-bottom: 0px;
   }

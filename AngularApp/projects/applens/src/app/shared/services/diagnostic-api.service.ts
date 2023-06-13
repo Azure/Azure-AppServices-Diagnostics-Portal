@@ -68,7 +68,7 @@ export class DiagnosticApiService {
   }
 
   public getDetector(version: string, resourceId: string, detector: string, startTime?: string, endTime?: string,
-    body?: any, refresh: boolean = false, internalView: boolean = true, additionalQueryParams?: string):
+    body?: any, refresh: boolean = false, internalView: boolean = true, additionalQueryParams?: string, additionalHeaders?: Map<string, string>):
     Observable<DetectorResponse> {
     let timeParameters = this._getTimeQueryParameters(startTime, endTime);
     let path = `${version}${resourceId}/detectors/${detector}?${timeParameters}`;
@@ -76,7 +76,7 @@ export class DiagnosticApiService {
     if (additionalQueryParams != undefined) {
       path += additionalQueryParams;
     }
-    return this.invoke<DetectorResponse>(path, HttpMethod.POST, body, true, refresh, true, internalView);
+    return this.invoke<DetectorResponse>(path, HttpMethod.POST, body, true, refresh, true, internalView, null, additionalHeaders);
   }
 
   public getWorkflowNode(version: string, resourceId: string, workflowId: string, workflowExecutionId: string, nodeId: string, startTime?: string, endTime?: string,
@@ -716,5 +716,17 @@ export class DiagnosticApiService {
     return this.post(path, useralias).pipe(map(res => {
       return res;
     }));
+  }
+
+  public validateResourceExistenceInArmCluster(resourceId: string, eventTime: string, targetResourceProvider: string, targetResourceType: string): Observable<any> {
+    let path: string = `userAuthorization/fetchresourcefromarmcluster`;
+    var body =
+    {
+      'ResourceId': resourceId,
+      'EventTime': eventTime,
+      'TargetResourceProvider': targetResourceProvider,
+      'TargetResourceType': targetResourceType
+    };
+    return this.invoke<any>(path, HttpMethod.POST, body, false, false, true, false);
   }
 }

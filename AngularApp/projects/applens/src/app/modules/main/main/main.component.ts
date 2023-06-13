@@ -15,9 +15,10 @@ import { ResourceDescriptor } from 'diagnostic-data'
 import { applensDocs } from '../../../shared/utilities/applens-docs-constant';
 import { defaultResourceTypes } from '../../../shared/utilities/main-page-menu-options';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
-import { UserAccessStatus } from '../../../shared/models/alerts';
+import { UserAccessStatus } from 'diagnostic-data';
 import { applensDashboards } from '../../../shared/utilities/applens-dashboards-constant';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
+import { TimeUtilities } from 'projects/diagnostic-data/src/lib/utilities/time-utilities';
 
 const moment = momentNs;
 
@@ -64,6 +65,10 @@ export class MainComponent implements OnInit {
   status = HealthStatus.Critical;
   targetPathBeforeError: string = "";
   isNoResource:boolean = false;
+  isArmResourceRelatedError : boolean = false;
+  isDeletedOrCreationFailedResource : boolean = false;
+  deletedOrCreationFailedResourceEventTime: momentNs.Moment;
+  queryParams: any;
 
   fabCheckBoxStyles: ICheckboxProps["styles"] = {
     text:{
@@ -111,8 +116,9 @@ export class MainComponent implements OnInit {
   }
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   timePickerStr: string = "";
+
   get disableSubmitButton(): boolean {
-    return !this.resourceName || this.resourceName.length === 0 ;
+    return (!this.isDeletedOrCreationFailedResource && (!this.resourceName || this.resourceName.length === 0)) || (this.isDeletedOrCreationFailedResource && this.deletedOrCreationFailedResourceEventTime == null);
   }
   troubleShootIcon: string = "../../../../assets/img/applens-skeleton/main/troubleshoot.svg";
   userGivenName: string = "";
@@ -269,6 +275,8 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.queryParams = this._activatedRoute.snapshot.queryParams;
+    this.isArmResourceRelatedError = this.selectedResourceType?.resourceType?.toLowerCase() === "armresourceid" && this.accessErrorMessage.toLowerCase().includes("resourcenotfound"); 
     this.fetchUserDetails();
     this.resourceTypes = [...this.defaultResourceTypes];
     if (!this.selectedResourceType) {
@@ -448,7 +456,7 @@ export class MainComponent implements OnInit {
     if(!!this.errorMessage) {
       return;
     }
-    
+  
     this._userSettingService.updateDefaultServiceType(this.selectedResourceType.id);
     let resourceUri = '';
     if (!(this.caseNumber == "internal") && this.caseNumberNeededForUser && (this.selectedResourceType && this.caseNumberNeededForRP)) {
@@ -473,8 +481,6 @@ export class MainComponent implements OnInit {
       resourceUri = this.resourceName.trim();
     }    
     
-    
-
     //If it is ARM resource id
     //if (this.defaultResourceTypes.findIndex(resource => this.selectedResourceType.displayName === resource.displayName) === -1) {
     if (this.selectedResourceType.displayName === "ARM Resource ID" || this.isNoResource) {
@@ -488,7 +494,6 @@ export class MainComponent implements OnInit {
     if (route === 'srid') {
       window.location.href = `https://azuresupportcenter.msftcloudes.com/caseoverview?srId=${resourceUri}`;
     }
-
 
     this._detectorControlService.setCustomStartEnd(this._detectorControlService.startTimeString, this._detectorControlService.endTimeString);
 
@@ -518,6 +523,64 @@ export class MainComponent implements OnInit {
     if (this.errorMessage === '') {
       this._router.navigate([route], navigationExtras);
     }
+  }
+
+  onClickDeletedOrCreationFailedResourceBtn(isResourceDeletedOrFailedToCreateRecent: boolean) {
+    if(isResourceDeletedOrFailedToCreateRecent) {
+      this.isDeletedOrCreationFailedResource = true;
+      this.accessErrorMessage = "";
+    } else {
+      this.isArmResourceRelatedError = false;
+    }
+  }
+
+  onGetDeletedOrCreationFailedResource() {
+    const { targetPathBeforeError } = this.queryParams;
+    const dateStringFormat : string = TimeUtilities.fullStringFormat;
+    const eventTime = this.deletedOrCreationFailedResourceEventTime.format(dateStringFormat);
+    const { urlPath, queryParams } = this.extractUrlPathAndQueryParams(targetPathBeforeError);
+    let navigationExtras: NavigationExtras = {
+      queryParams: {
+        ...queryParams
+      }
+    }
+    const resourceDescriptor = ResourceDescriptor.parseResourceUri(this.queryParams.resourceId);
+    const { provider: targetResourceProvider, type: targetResourceType } = resourceDescriptor || {}
+    if (targetResourceProvider && targetResourceType) {
+      this._diagnosticApiService.validateResourceExistenceInArmCluster(this.queryParams.resourceId, eventTime, targetResourceProvider, targetResourceType).subscribe(() => {
+        this.resetValuesAndNavigateToResource(urlPath, navigationExtras);
+      },
+      (error) => {
+        this.resetValuesAndNavigateToResource(urlPath, navigationExtras);
+      });
+    }
+  }
+
+  extractUrlPathAndQueryParams(urlString: string) : { urlPath: string, queryParams: any } {
+    const [ urlPath, queryParamsString] = urlString.split('?');
+    const params = new URLSearchParams(queryParamsString);
+    
+    const queryParams = Array.from(params.entries()).reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {});
+
+    return {
+      urlPath,
+      queryParams
+    }
+  }
+
+  updateMomentForDeletedOrCreationFailedResource(selectedMoment: moment.Moment) {
+    this.deletedOrCreationFailedResourceEventTime = selectedMoment != null ? selectedMoment.clone() : null;
+  }
+
+  resetValuesAndNavigateToResource(urlPath: string, navigationExtras: any) {
+    this.isArmResourceRelatedError = false;
+    this.isDeletedOrCreationFailedResource = false;
+    this.deletedOrCreationFailedResourceEventTime = null;
+
+    this._router.navigate([urlPath], navigationExtras);
   }
 
   caseCleansingNavigate() {

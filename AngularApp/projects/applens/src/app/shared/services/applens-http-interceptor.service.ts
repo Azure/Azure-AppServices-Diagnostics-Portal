@@ -4,7 +4,7 @@ import { Observable, of, pipe } from 'rxjs';
 import { map, catchError, mergeMap } from 'rxjs/operators';
 import { AlertService } from './alert.service';
 import { AdalService } from 'adal-angular4';
-import { AlertInfo, ConfirmationOption, UserAccessStatus } from '../models/alerts';
+import { AlertInfo, ConfirmationOption, UserAccessStatus } from 'diagnostic-data';
 import { HealthStatus } from "diagnostic-data";
 
 @Injectable({
@@ -20,6 +20,7 @@ export class AppLensInterceptorService implements HttpInterceptor {
     errormsg = errormsg.replace(/\"/g, '"');
     let errobj = JSON.parse(errormsg);
     let message = errobj.DetailText;
+    let userAccessStatus = JSON.parse(event.error).Status;
     message = message.trim();
     if (message) {
       if (message[message.length - 1] == '.') {
@@ -31,7 +32,8 @@ export class AppLensInterceptorService implements HttpInterceptor {
       details: `${message}. If you choose to proceed, we will be logging it for audit purposes.`,
       seekConfirmation: true,
       confirmationOptions: [{ label: 'Yes, proceed', value: 'yes' }, { label: 'No, take me back', value: 'no' }],
-      alertStatus: HealthStatus.Warning
+      alertStatus: HealthStatus.Warning,
+      userAccessStatus: userAccessStatus
     };
     this._alertService.sendAlert(alertInfo);
   }
@@ -46,9 +48,13 @@ export class AppLensInterceptorService implements HttpInterceptor {
 
       try {
         let errorObj = JSON.parse(error.error);
-
+        let consentRequiredHeader =  error.headers.get("x-ms-diag-consent-required");
         if (error.status === 403 && error.url.includes("api/invoke") && errorObj.Status == UserAccessStatus.ResourceNotRelatedToCase) {
           this.raiseAlert(error);
+        }
+        if (error.status == 403 && error.url.includes("api/invoke") && errorObj.Status == UserAccessStatus.ConsentRequired) {
+          // do not raise alert. Let us handle this in the detector container component.
+          return next.handle(req);
         }
         else if ((error.status === 401 || error.status === 403) && error.url.includes("api/invoke")) {
           if (errorObj.DetailText && errorObj.DetailText.includes("the token is expired")) {

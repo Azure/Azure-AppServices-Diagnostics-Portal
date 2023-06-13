@@ -30,7 +30,7 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.unrelatedResourceConfirmation(resourceId);
   }
 
-  getDetector(detector: string, startTime: string, endTime: string, refresh: boolean = false, internalView: boolean = true, formQueryParams?: string, overrideResourceUri?: string): Observable<DetectorResponse> {
+  getDetector(detector: string, startTime: string, endTime: string, refresh: boolean = false, internalView: boolean = true, formQueryParams?: string, overrideResourceUri?: string,  additionalHeaders?: Map<string, string>): Observable<DetectorResponse> {
     let resourceId = overrideResourceUri ? overrideResourceUri : this._resourceService.getCurrentResourceId(true);
     if (!resourceId.startsWith('/')) resourceId = '/' + resourceId;
 
@@ -45,7 +45,8 @@ export class ApplensDiagnosticService {
       null,
       refresh,
       internalView,
-      formQueryParams);
+      formQueryParams,
+      additionalHeaders);
   }
 
   getWorkflowNode(workflowId: string, workflowExecutionId: string, nodeId: string, startTime: string, endTime: string, internalView: boolean = true, formQueryParams?: string, overrideResourceUri?: string, userInputs?: any): Observable<workflowNodeResult> {

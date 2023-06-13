@@ -122,7 +122,7 @@ export class DynamicAnalysisComponent implements OnInit, AfterViewInit, IChatMes
             // Take maximum 4 insights
             numInsights = numInsights > 5 ? 5 : numInsights;
             let maxLengthEach = Math.floor(1000/numInsights);
-            return insightsToUse.slice(0, numInsights).map((insight) => { 
+            return insightsToUse.slice(0, numInsights).sort((a, b) => a.model.metadata.name - b.model.metadata.name).map((insight) => {
                 return insight.insightDescription && insight.insightDescription.length > 0
                 ? `Diagnostic Check: ${insight.model.metadata.name}\nFinding: ${insight.insightTitle}\nDescription: ${insight.insightDescription.substring(0, maxLengthEach)}`
                 : `Diagnostic Check: ${insight.model.metadata.name}\nFinding: ${insight.insightTitle}`;

@@ -237,7 +237,7 @@ export class DetectorControlService {
   }
 
   public refresh(instanceId: string = "") {
-    this._duration ? this.selectDuration(this._duration) : this._refreshData(instanceId);
+    this._refreshData(instanceId);
   }
 
   public toggleInternalExternal() {

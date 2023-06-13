@@ -58,6 +58,7 @@ export * from './lib/models/workflow';
 export * from './lib/models/openai-data-models';
 export * from './lib/models/chatbot-models';
 export * from './lib/models/optinsights';
+export * from './lib/models/alerts';
 
 export * from './lib/components/detector-list-analysis/detector-list-analysis.component'
 
@@ -87,6 +88,7 @@ export * from './lib/components/data-container/data-container.component'
 export * from './lib/components/data-render-base/data-render-base.component'
 export * from './lib/components/data-summary/data-summary.component'
 export * from './lib/components/data-table-v4/data-table-v4.component'
+export * from './lib/components/date-time-picker/date-time-picker.component'
 export * from './lib/components/detector-container/detector-container.component'
 export * from './lib/components/detector-control/detector-control.component'
 export * from './lib/components/detector-list/detector-list.component'

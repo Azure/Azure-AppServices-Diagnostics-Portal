@@ -76,6 +76,9 @@ namespace AppLensV3.Services
 
                 cacheValue = armId;
                 await redisService.SetKey(cacheKey, cacheValue);
+                
+                // Push the armId to durian cache as well to skip ACIS validation in runtimehost
+                await redisService.SetKey((armId.StartsWith("/") ? armId[1..] : armId).ToLower(), true.ToString());
             }
 
             return cacheValue;

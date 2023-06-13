@@ -20,6 +20,8 @@ import { IIconProps } from 'office-ui-fabric-react/lib/components/Icon';
 import { GenericUserSettingService } from '../../services/generic-user-setting.service';
 import { GenieGlobals } from '../../services/genie.service';
 import { BreadcrumbNavigationItem } from '../../services/generic-breadcrumb.service';
+import { UserAccessStatus } from '../../models/alerts';
+import { StringUtilities } from '../../utilities/string-utilities';
 
 const minSupportedDowntimeDuration: number = 10;
 const defaultDowntimeSelectionError: string = 'Downtimes less than 10 minutes are not supported. Select a time duration spanning at least 10 minutes.';
@@ -140,6 +142,7 @@ export class DetectorViewComponent implements OnInit {
   selectedDownTime: DownTime;
   downtimeSelectionErrorStr: string = '';
   downtimeFilterDisabled: boolean = false;
+  forbiddenError: boolean = false;
   public xAxisPlotBands: xAxisPlotBand[] = null;
   public zoomBehavior: zoomBehaviors = zoomBehaviors.Zoom;
   @Input() set downtimeZoomBehavior(zoomBehavior: zoomBehaviors) {
@@ -202,8 +205,11 @@ export class DetectorViewComponent implements OnInit {
         let errorDetails = {
           'isPublic': this.isPublic.toString(),
           'errorDetails': JSON.stringify(this.errorState)
-        };
-
+        };     
+         if (StringUtilities.isValidJSON(this.errorState.error)) {
+          let errorObj =JSON.parse(this.errorState.error);         
+          this.forbiddenError = this.errorState.status == 403 && errorObj.Status == UserAccessStatus.ConsentRequired; 
+        }        
         this.logEvent("DetectorLoadingError", errorDetails);
       }
     });
