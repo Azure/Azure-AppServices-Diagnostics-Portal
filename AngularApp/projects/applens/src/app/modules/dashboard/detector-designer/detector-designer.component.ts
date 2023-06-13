@@ -170,7 +170,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     }
   };
   detectorJson = "";
-  detectorNodes: NoCodeExpressionResponse[] = [];
+  detectorNodes: any = null;
   //#endregion Graduation branch picker variables
 
   //#region Time picker variables
@@ -316,8 +316,14 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   
   public runCompilation():void {
-    let djson = '['
+    let djson = '[';
+    let det: NoCodeDetectorJson = new NoCodeDetectorJson;
     this.elements.forEach(x => {
+      let newNode = new NoCodeExpressionBody;
+      newNode.NodeSettings = x.settings;
+      newNode.OperationName = x.queryName;
+      newNode.Text = x.code;
+      det.nodes.push(newNode);
       djson = djson.concat(x.GetJson(),',');
       //this.detectorJson.push(x.GetJson());
     });
@@ -326,7 +332,13 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
     this.detectorJson = djson;
 
-    this.diagnosticApiService.executeNoCodeDetector(djson, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe((x: NoCodeExpressionResponse[]) => {
+    det.author = "author";
+    det.id = "id";
+    det.description = "desc";
+    det.name = this.detectorName;
+    //det.nodes = JSON.parse(djson);
+
+    this.diagnosticApiService.executeNoCodeDetector(det, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe((x: any) => {
       this.detectorNodes = x;
       this.detectorPanelOpenObservable.next(true);
     });

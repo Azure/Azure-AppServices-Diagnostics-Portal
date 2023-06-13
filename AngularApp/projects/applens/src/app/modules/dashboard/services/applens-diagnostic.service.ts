@@ -11,7 +11,7 @@ import { dynamicExpressionBody } from '../workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../../../shared/models/devopsCommitStatus';
 import { ChatFeedbackPostBody } from '../../../shared/models/openAIChatFeedbackModel';
-import { NoCodeExpressionBody } from '../dynamic-node-settings/node-rendering-json-models';
+import { NoCodeDetectorJson, NoCodeExpressionBody } from '../dynamic-node-settings/node-rendering-json-models';
 
 
 @Injectable()
@@ -301,7 +301,7 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.evaluateNoCodeExpression(this._resourceService.getCurrentResourceId(true), expression, startTime, endTime);
   }
 
-  executeNoCodeDetector(expression: any, startTime: string, endTime: string): Observable<any> {
+  executeNoCodeDetector(expression: NoCodeDetectorJson, startTime: string, endTime: string): Observable<any> {
     return this._diagnosticApi.executeNoCodeDetector(this._resourceService.getCurrentResourceId(true), expression, startTime, endTime);
   }
 

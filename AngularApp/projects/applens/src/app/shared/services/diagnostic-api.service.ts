@@ -17,10 +17,14 @@ import { dynamicExpressionBody } from '../../modules/dashboard/workflow/models/k
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../models/devopsCommitStatus';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { ChatFeedbackPostBody } from '../models/openAIChatFeedbackModel';
 =======
 import { NoCodeExpressionBody } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
 >>>>>>> cddf9f3ef (templatizer, settings, send query to back end)
+=======
+import { NoCodeDetectorJson, NoCodeExpressionBody } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
+>>>>>>> 67b41f09d (getting detector view but it doesnt update. graph still not working)
 
 
 @Injectable()
@@ -374,7 +378,7 @@ export class DiagnosticApiService {
     return this.invoke<string>(path, HttpMethod.POST, body, false);
   }
 
-  public executeNoCodeDetector(resourceId: string, body: any, startTime: string, endTime: string): Observable<any> {
+  public executeNoCodeDetector(resourceId: string, body: NoCodeDetectorJson, startTime: string, endTime: string): Observable<any> {
     let timeParameters = this._getTimeQueryParameters(startTime, endTime);
     let path = `${resourceId}/executeNoCodeDetector?${timeParameters}`;
     return this.invoke<string>(path, HttpMethod.POST, body, false);

@@ -1,6 +1,9 @@
 <div>
-    <fab-panel *ngIf="true" [isOpen]="isOpen" [hasCloseButton]="true">
-        <no-code-detector-view [detectorNodes]="nodeList" [startTime]="startTime" [endTime]="endTime"></no-code-detector-view>
+    <fab-panel [isOpen]="isOpen" [hasCloseButton]="false" [customWidth]="'60%'">
+        <!-- <no-code-detector-view [detectorNodes]="detectorView" [startTime]="startTime" [endTime]="endTime"></no-code-detector-view> -->
+        <detector-view [detectorResponse]="detectorView"
+              [startTime]="startTime" [endTime]="endTime" [showEdit]="false"
+              [developmentMode]="true" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
 
         <fab-primary-button (onClick)="publishDetector()">publish</fab-primary-button>
         <fab-default-button (onClick)="closePanel()">edit</fab-default-button>
