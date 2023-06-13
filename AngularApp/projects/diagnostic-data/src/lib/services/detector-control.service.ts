@@ -132,7 +132,7 @@ export class DetectorControlService {
         return `Invalid ${timePlaceholder} time specified, expected format: ${this.stringFormat}.`;
       case TimeErrorType.TimeOutOfRange:
         const { minMoment, maxMoment } = this.getMinAndMaxMoment(timeType, moment.duration(15, 'minutes'));
-        return`${timePlaceholder} is not allowed, time must within ${minMoment.format(this.stringFormat)} to ${maxMoment.format(this.stringFormat)}.`;
+        return`${timePlaceholder} is not allowed, time must be within ${minMoment.format(this.stringFormat)} to ${maxMoment.format(this.stringFormat)}.`;
       case TimeErrorType.TimeRangeTooShort:
         return "Selected time duration must be at least 15 minutes.";
       case TimeErrorType.TimeRangeTooLong:
