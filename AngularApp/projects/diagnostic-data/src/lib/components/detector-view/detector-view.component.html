@@ -77,7 +77,7 @@
     </loader-detector-view>
   </ng-container>
   <ng-container *ngIf="errorState">
-    <span class="critical-color" *ngIf="errorState.error && !isPublic"> Error: {{errorState.error}}</span>
+    <span class="critical-color" *ngIf="errorState.error && !isPublic && !forbiddenError"> Error: {{errorState.error}}</span>
     <span class="critical-color" *ngIf="isPublic && errorState || !errorState.error">Sorry, an error occurred. Please
       refresh the page and try again.</span>
   </ng-container>

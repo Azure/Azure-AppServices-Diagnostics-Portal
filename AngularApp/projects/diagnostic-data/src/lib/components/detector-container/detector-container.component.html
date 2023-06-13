@@ -9,8 +9,7 @@
 
   <fab-dialog [hidden]="!isUserConsentRequired"  [styles]="alertDialogStyles" [modalProps]="alertDialogProps" [forceFocusInsideTrap]="true"  (onDismiss)="consentDialogCancel()" >
     <fab-dialog-content [title]="alertInfo.header" tabindex="1">  
-         <p> This detector has access to customer sensitive data.  
-        {{alertInfo.details}} </p>
+         <p> {{alertInfo.details}} </p>
     </fab-dialog-content>
     <fab-dialog-footer>
       <div class="mt-5">

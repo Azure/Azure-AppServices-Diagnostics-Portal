@@ -12,6 +12,7 @@ import { Inject } from '@angular/core';
 import { FeatureNavigationService } from '../../services/feature-navigation.service';
 import { AlertInfo, ConfirmationOption, UserAccessStatus } from '../../models/alerts';
 import { HealthStatus } from "../../models/detector";
+import { StringUtilities } from '../../utilities/string-utilities';
 
 const moment = momentNs;
 
@@ -223,14 +224,12 @@ export class DetectorContainerComponent implements OnInit {
       this._diagnosticService.getDetector(this.detectorName, startTime, endTime, invalidateCache, this.detectorControlService.isInternalView, additionalQueryString, null, additionalHeaders).subscribe((response: DetectorResponse) => {
         this.shouldHideTimePicker(response);
         this.detectorResponse = response;
-      }, (error: any) => {
-        let errorObj = JSON.parse(error.error);
-        if (error.status == 403 && error.url.includes("api/invoke") && errorObj.Status == UserAccessStatus.ConsentRequired) {
-          this.handleForbidden(errorObj);
-          this.setEmptyDetectorResponse();
-        } else {         
-           this.error = error;
-        }
+      }, (error: any) => {    
+        if (StringUtilities.isValidJSON(error.error) && error.status == 403 && error.url.includes("api/invoke")) {         
+            let errorObj = JSON.parse(error.error);
+            if (errorObj.Status == UserAccessStatus.ConsentRequired) { this.handleForbidden(errorObj); }          
+        }     
+        this.error = error;       
       });
     }
   }
@@ -280,10 +279,10 @@ export class DetectorContainerComponent implements OnInit {
       }
     }
     this.alertInfo = {
-      header: "Do you accept the risks?",
-      details: `${message}. If you choose to proceed, we will be logging it for audit purposes.`,
+      header: "You are accessing sensitive data",
+      details: `This detector contains sensitive data. Before proceeding, please attest that you have a valid business reason to view the sensitive data and will be handing data in compliance with GDPR. Your attestation will be valid for 7 days if you choose to proceed. Please note that all access attempts will be logged and audited for security purposes.`,
       seekConfirmation: true,
-      confirmationOptions: [{ label: 'Yes, I consent', value: 'yes' }, { label: 'No, I do not consent', value: 'no' }],
+      confirmationOptions: [{ label: 'Yes, I attest', value: 'yes' }, { label: 'No, I do not attest', value: 'no' }],
       alertStatus: HealthStatus.Warning,
       userAccessStatus: userAccessStatus
     };
@@ -302,15 +301,5 @@ export class DetectorContainerComponent implements OnInit {
   }
   consentDialogCancel() {
     this.isUserConsentRequired = false;
-  }
-
-  setEmptyDetectorResponse() {
-    this.detectorResponse = {
-      dataset: [],
-      metadata: null,
-      status: null,
-      dataProvidersMetadata: null,
-      suggestedUtterances: null
-    }
   }
 }

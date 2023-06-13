@@ -108,4 +108,14 @@ export class StringUtilities {
         input = StringUtilities.ReplaceNewlines(input);
         return input.replace(searchRegExp, replacement);
     }
+
+    public static isValidJSON(strJson:any): boolean {
+        try {
+            const parsed = JSON.parse(strJson)
+            if (parsed && typeof parsed === "object") {
+              return true
+            }
+          } catch { return false }
+          return false
+    }
 }
