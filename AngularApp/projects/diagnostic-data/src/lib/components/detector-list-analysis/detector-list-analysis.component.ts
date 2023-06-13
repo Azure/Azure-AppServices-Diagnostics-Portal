@@ -295,7 +295,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         return additionalQueryString;
     }
 
-    webSearchCompleted(event){
+    webSearchCompleted(event) {
         this.onWebSearchCompletion.emit();
     }
 
@@ -1009,7 +1009,8 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                     'ChildDetectorId': viewModel.model.metadata.id,
                     'IsExpanded': true,
                     'Status': viewModel.model.status,
-                    'SearchMode': this.searchMode
+                    'SearchMode': this.searchMode,
+                    'OpenInNewTab': false
                 };
 
                 // Log children detectors click
@@ -1101,6 +1102,15 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
             const queryParams = this._activatedRoute.snapshot.queryParams;
 
             if (detectorId !== "") {
+                const clickDetectorEventProperties = {
+                    'ChildDetectorName': viewModel.model.title,
+                    'ChildDetectorId': viewModel.model.metadata.id,
+                    'IsExpanded': true,
+                    'Status': viewModel.model.status,
+                    'OpenInNewTab': true
+                };
+                this.logEvent(TelemetryEventNames.ChildDetectorClicked, clickDetectorEventProperties);
+                
                 let paramString = "";
                 Object.keys(queryParams).forEach(x => {
                     paramString = paramString === "" ? `${paramString}${x}=${queryParams[x]}` : `${paramString}&${x}=${queryParams[x]}`;
