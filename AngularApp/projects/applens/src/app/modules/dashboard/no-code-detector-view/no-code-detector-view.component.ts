@@ -15,8 +15,10 @@ export class NoCodeDetectorViewComponent implements OnInit {
   @Input() startTime: string = "";
   @Input() endTime: string = "";
   @Input() set detectorNodes(nodes: any) {
+    this.showView = false;
     this.detectorNodesSubject.next(nodes);
   }
+  showView: boolean = false;
   detectorView = null;
 
   constructor() { }
@@ -24,6 +26,10 @@ export class NoCodeDetectorViewComponent implements OnInit {
   ngOnInit(): void {
     this.detectorNodesSubject.subscribe(x => {
       //this.nodeList = x;
+      setTimeout(() => {
+        this.showView = true;
+      }, 1000);
+      
       this.detectorView = x;
     });
   }

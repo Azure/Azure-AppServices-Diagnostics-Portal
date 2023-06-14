@@ -1,11 +1,19 @@
 <div>
     <fab-panel [isOpen]="isOpen" [hasCloseButton]="false" [customWidth]="'60%'">
         <!-- <no-code-detector-view [detectorNodes]="detectorView" [startTime]="startTime" [endTime]="endTime"></no-code-detector-view> -->
-        <detector-view [detectorResponse]="detectorView"
+        <!-- <no-code-detector-view [detectorNodes]="detectorView"
               [startTime]="startTime" [endTime]="endTime" [showEdit]="false"
-              [developmentMode]="true" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
+              [developmentMode]="true" [hideDetectorHeader]="true" [hideDetectorControl]="true"></no-code-detector-view> -->
+              <no-code-detector-view [detectorNodes]="detectorView"
+              [startTime]="startTime" [endTime]="endTime" ></no-code-detector-view>
+        <!-- <ng-container [ngTemplateOutlet]="noCodeDetectorView"></ng-container> -->
 
         <fab-primary-button (onClick)="publishDetector()">publish</fab-primary-button>
         <fab-default-button (onClick)="closePanel()">edit</fab-default-button>
     </fab-panel>
 </div>
+<!-- <ng-template #noCodeDetectorView>
+    <detector-view [detectorResponse]="detectorView"
+              [startTime]="startTime" [endTime]="endTime" [showEdit]="false"
+              [developmentMode]="true" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
+</ng-template> -->
