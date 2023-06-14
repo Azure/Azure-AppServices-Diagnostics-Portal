@@ -1,5 +1,8 @@
-<ng-container *ngFor="let node of nodeList">
+<!-- <ng-container *ngFor="let node of nodeList">
     <div>
         <dynamic-data [diagnosticData]="node.res[0]" [startTime]="startTime" [endTime]="endTime"></dynamic-data>
     </div>
-</ng-container>
+</ng-container> -->
+<detector-view *ngIf="showView" [detectorResponse]="detectorView"
+              [startTime]="startTime" [endTime]="endTime" [showEdit]="false"
+              [developmentMode]="true" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
