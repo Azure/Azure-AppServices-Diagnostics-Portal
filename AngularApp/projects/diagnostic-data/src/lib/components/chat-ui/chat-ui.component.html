@@ -19,15 +19,15 @@
         {{topErrorBarMessage}}
       </div>
       <div class="chatui-message-box-{{message.messageSource}}" [ngClass]="{'chatui-message-box': chatAlignment=='center', 'chatui-message-box-left-aligned': chatAlignment=='left'}" *ngFor="let message of messages">
-        <div [ngClass]="{'chatui-message-content': chatAlignment=='center', 'chatui-message-content-left-aligned': chatAlignment=='left'}">
+        <div class="chatui-message-content">
           <ng-container *ngIf="message.messageSource=='system'">
             <div class="chatui-message-icon">
-              <img *ngIf="systemPhotoSource !== '';else systemInitial" [src]="systemPhotoSource" alt="System Profile Photo" class="avatar">
+              <img *ngIf="systemPhotoSource !== '';else systemInitial" [src]="systemPhotoSource" alt="System Profile Photo" class="avatar system-avatar">
             </div>
           </ng-container>
           <ng-container *ngIf="message.messageSource=='user'">
             <div class="chatui-message-icon">
-              <img *ngIf="userPhotoSource !== '';else userInitial" [src]="userPhotoSource" alt="User Profile Photo" class="avatar">
+              <img *ngIf="userPhotoSource !== '';else userInitial" [src]="userPhotoSource" alt="User Profile Photo" class="avatar user-avatar">
             </div>
           </ng-container>
           <ng-container *ngIf="message.status==1">
@@ -36,12 +36,14 @@
               <p class="blinking-cursor">...</p>
             </div>
           </ng-container>
-          <ng-container *ngIf="message.status==2 || message.status==3">
+          <ng-container *ngIf="message.status==2 || message.status==3 || message.status==4">
             <div class="chatui-message-{{message.renderingType}}" [ngClass]="{'chatui-message': chatAlignment=='center', 'chatui-message-left-aligned': chatAlignment=='left'}">
               <div class="chat-message-timestamp">{{message.messageDisplayDate}}</div>
               <div style="white-space:pre-wrap">
-                <p [ngClass]="{'blinking-cursor': message.status==2}" [innerText]="message.displayMessage">
-                </p>
+                <markdown [ngClass]="{'blinking-cursor': message.status==2}" [data]="message.displayMessage">
+                  
+                </markdown>
+                
               </div>
               <ng-container *ngIf="showFeedbackOptions && message.messageSource=='system'">
                 <div class="chatui-feedback-icons">
@@ -61,20 +63,21 @@
       <div class="chatui-message-validation-warning" *ngIf="showValidationWarning">
         {{validationWarningMessage}}
       </div>
-      <div class="chatui-content-disclaimer" *ngIf="showContentDisclaimer">
-        {{contentDisclaimerMessage}}
-      </div>
+
       <div *ngIf="showSearchBox" class="chatui-textarea-wrapper">
-        <textarea [(ngModel)]="chatInputTextInternal" tabindex="0" class="chatui-textarea" rows="1" placeholder="Ask a question" (keyup.enter)="triggerChat()" id="chatUIInputBox" [disabled]="chatInputBoxDisabled"></textarea>
-        <button (click)="triggerChat()"
-            class="chatui-textarea-button"><svg
+        <textarea [(ngModel)]="chatInputTextInternal" tabindex="0" class="chatui-textarea" rows="1" placeholder="Ask a question" (keyup.enter)="triggerChat()" id="chatUIInputBox" [disabled]="chatInputBoxDisabled" autofocus></textarea>
+        <button (click)="triggerChat()" class="chatui-textarea-button" aria-label="Send message">
+            <svg
                 stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
                 stroke-linejoin="round" class="h-4 w-4 mr-1" height="1em" width="1em"
-                xmlns="http://www.w3.org/2000/svg">
+                xmlns="http://www.w3.org/2000/svg" style="margin-top:5px">
                 <line x1="22" y1="2" x2="11" y2="13"></line>
                 <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
             </svg>
           </button>
+
+      </div>
+      <div class="chatui-content-disclaimer" *ngIf="showContentDisclaimer" [innerHtml] = "contentDisclaimerMessage">
       </div>
     </div>
 </div>

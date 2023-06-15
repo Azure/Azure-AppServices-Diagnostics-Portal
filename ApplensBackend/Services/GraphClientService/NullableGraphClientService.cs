@@ -10,17 +10,17 @@ namespace AppLensV3.Services
     {
         Task<string> IGraphClientService.GetOrCreateUserImageAsync(string userId)
         {
-            return null;
+            return Task.FromResult<string>(null);
         }
 
         Task<string> IGraphClientService.GetUserImageAsync(string userId)
         {
-            return null;
+            return Task.FromResult<string>(null);
         }
 
         Task<AuthorInfo> IGraphClientService.GetUserInfoAsync(string userId)
         {
-            return null;
+            return Task.FromResult<AuthorInfo>(null);
         }
 
         Task<IDictionary<string, string>> IGraphClientService.GetUsers(string[] users)

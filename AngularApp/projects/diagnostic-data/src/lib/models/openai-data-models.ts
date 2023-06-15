@@ -1,3 +1,5 @@
+import { ChatModel } from "./chatbot-models";
+
 export interface TextCompletionModel {
     model: TextModels;
     prompt: string;
@@ -10,6 +12,19 @@ export interface CodeCompletionModel {
     prompt: string;
     temperature: number;
     max_tokens: number;
+}
+
+export interface ChatCompletionModel {
+    metadata: any;
+    messages: any[];
+}
+
+// This is a custom response object that chat service will pass to components
+// This is done to be compatible with both gpt-3 and gpt-4 api responses.
+export interface ChatResponse {
+    text: string,
+    truncated: boolean,
+    finishReason: string
 }
 
 export enum TextModels {
@@ -28,9 +43,9 @@ export enum CodeModels {
 
 export enum ResponseTokensSize {
     Small = 50,
-    Medium = 100,
+    Medium = 200,
     Large = 500,
-    XLarge = 1000
+    XLarge = 800    // Backend API also has a check. So if you decide to increase this number, do update the backend as well.  
 }
 
 /*
@@ -50,12 +65,26 @@ export enum QueryTemperature {
     Hot = 0.8
 }
 
+// used primarily for GPT3
 export function CreateTextCompletionModel(text: string, model: TextModels = TextModels.Default, responseSize: ResponseTokensSize = ResponseTokensSize.Small, queryTemperature: QueryTemperature = QueryTemperature.Low): TextCompletionModel {
     return {
         model: TextModels.Default,
         prompt: `${text}`,
         temperature: queryTemperature,
         max_tokens: responseSize
+    };
+}
+
+// used for GPT4
+export function CreateChatCompletionModel(chatMessages: any[], messageId: string, chatIdentifier: string, chatModel: ChatModel = ChatModel.GPT4, responseSize: ResponseTokensSize = ResponseTokensSize.Small): ChatCompletionModel {
+    return {
+        metadata : {
+            "chatIdentifier": chatIdentifier,
+            "chatModel": chatModel,
+            "maxTokens": responseSize,
+            "messageId": messageId
+        },
+        messages: chatMessages
     };
 }
 

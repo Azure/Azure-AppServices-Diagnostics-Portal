@@ -270,7 +270,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     const requests: Observable<any>[] = [];
 
     this.detectorMetaData = detectorList.filter(detector => this.renderingProperties.detectorIds.indexOf(detector.id) >= 0);
-    let detectorMetaData1 = this.renderingProperties.detectorIds.filter(id => this.detectorMetaData.findIndex(metaData => metaData.id == id) >= 0);
     detectorList.filter(detector => this.renderingProperties.detectorIds.indexOf(detector.id) >= 0);
     this.detectorViewModels = this.detectorMetaData.map(detector => this.getDetectorViewModel(detector, this.renderingProperties.additionalParams, this.overrideResourceUri));
     this.detectorViewModelsWaterfall = this.detectorViewModels;
@@ -281,7 +280,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
       requests.push((<Observable<DetectorResponse>>viewModel.request).pipe(
         map((response: DetectorResponse) => {
           this.detectorViewModels[index] = this.updateDetectorViewModelSuccess(viewModel, response);
-
           this.loading = this.detectorViewModels.findIndex(vm => vm.loadingStatus === LoadingStatus.Loading) > -1 ? LoadingStatus.Loading : LoadingStatus.Success;
 
           if (this.detectorViewModels[index].loadingStatus !== LoadingStatus.Failed) {
@@ -405,6 +403,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           'ChildDetectorId': viewModel.model.metadata.id,
           'IsExpanded': true,
           'Status': viewModel.model.status,
+          'OpenInNewTab': false
         };
 
         // Log children detectors click
@@ -441,6 +440,16 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   public selectDetectorNewTab(viewModel: DetectorViewModeWithInsightInfo) {
     if (viewModel != null && viewModel.model.metadata.id) {
       let targetDetector = viewModel.model.metadata.id;
+
+      const clickDetectorEventProperties = {
+        'ChildDetectorName': viewModel.model.title,
+        'ChildDetectorId': viewModel.model.metadata.id,
+        'IsExpanded': true,
+        'Status': viewModel.model.status,
+        'OpenInNewTab': true
+      };
+
+      this.logEvent(TelemetryEventNames.ChildDetectorClicked, clickDetectorEventProperties);
 
       if (targetDetector !== "") {
         const queryParams = this._activatedRoute.snapshot.queryParams;

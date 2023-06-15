@@ -20,7 +20,7 @@ export class CacheService {
 
     constructor() { }
 
-    get(key: string, fallback?: Observable<any>, invalidateCache: boolean = false, logDataForActualCall?: TelemetryPayload): Observable<any> | Subject<any> {
+    get(key: string, fallback?: Observable<any>, invalidateCache: boolean = false, ignoreInFlightCall: boolean = false, logDataForActualCall?: TelemetryPayload): Observable<any> | Subject<any> {
 
         if (this.has(key)) {
             if (invalidateCache) {
@@ -33,7 +33,8 @@ export class CacheService {
             }
         }
 
-        if (this.inFlightObservables.has(key)) {
+        if (this.inFlightObservables.has(key) && !ignoreInFlightCall) {
+            this.log(`%cGetting from InFlightObservable cache`, 'color: green');
             return this.inFlightObservables.get(key);
         } else if (fallback && fallback instanceof Observable) {
 

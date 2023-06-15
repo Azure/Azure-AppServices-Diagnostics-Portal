@@ -90,7 +90,8 @@
             "pesId": "16450",
             "staticSelfHelpContent": "microsoft.containerservice",
             "searchSuffix": "AZURE KUBERNETES CLUSTER",
-            "displayName": "Kubernetes Service (AKS)"
+            "displayName": "Kubernetes Service (AKS)",
+            "workflowsEnabled": true
         },
         {
             "service": "ResourceService",

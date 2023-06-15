@@ -182,16 +182,16 @@
     </fab-dialog-content>
   </fab-dialog>
 
-  <fab-dialog [hidden]="detectorReferencesDialogHidden" (onDismiss)="dismissDetectorRefDialog()"  [minWidth]="'80%'">
+  <fab-dialog [hidden]="detectorReferencesDialogHidden" (onDismiss)="dismissDetectorRefDialog()" [minWidth]="'80%'">
     <fab-dialog-content [title]="detectorReferencesTitle">
 
-        <update-detector-references [id] = "id" [Branch] = "Branch" [resourceId] = "resourceId" [mode] = "mode" 
-        [dataSource] = "dataSource"  [timeRange] = "timeRange"  [compilationPackage]  = "compilationPackage"
-        [queryResponse] = "queryResponse"  [userName] = "userName" [useAutoMergeText] = "useAutoMergeText"
-        [defaultBranch] = "defaultBranch" [owners] = "owners"  [DevopsConfig] = "DevopsConfig"
-        [detectorReferencesDialogHidden]  = "detectorReferencesDialogHidden" 
-        [detectorReferencesList] = "detectorReferencesList"
-        [gistCommitVersion] = "gistCommitVersion"></update-detector-references>
+      <update-detector-references [id]="id" [Branch]="Branch" [resourceId]="resourceId" [mode]="mode"
+        [dataSource]="dataSource" [timeRange]="timeRange" [compilationPackage]="compilationPackage"
+        [queryResponse]="queryResponse" [userName]="userName" [useAutoMergeText]="useAutoMergeText"
+        [defaultBranch]="defaultBranch" [owners]="owners" [DevopsConfig]="DevopsConfig"
+        [detectorReferencesDialogHidden]="detectorReferencesDialogHidden"
+        [detectorReferencesList]="detectorReferencesList"
+        [gistCommitVersion]="gistCommitVersion"></update-detector-references>
 
       <div class="mt-5">
         <fab-default-button text="Cancel" (onClick)="dismissDetectorRefDialog()"></fab-default-button>
@@ -322,9 +322,8 @@
         rel="noopener noreferrer" [href]="PRLink">here</a>.</div>
     <div *ngIf="saveFailed && saveIdFailure" style="margin-left: 4px;">This detector ID is already in use. Please try a
       new one</div>
-      <!-- <div *ngIf="(saveFailed || publishFailed) && badBranchNameFailure" style="margin-left: 4px;">The following characters are not allowed in 
-        detector ID: '<', '>'. Please edit the detector ID to remove these characters </div> -->
-        <div *ngIf="(saveFailed || publishFailed) && badBranchNameFailure" style="margin-left: 4px;">{{charWarningMessage}} Please edit the detector ID to remove these characters</div>
+    <div *ngIf="(saveFailed || publishFailed) && badBranchNameFailure" style="margin-left: 4px;">{{charWarningMessage}}
+      Please edit the detector ID to remove these characters</div>
   </fab-panel>
 
 
@@ -352,15 +351,6 @@
       <fab-command-bar-item key="publishGrad" [text]="modalPublishingButtonText" [iconProps]="publishIcon"
         (click)="publishButtonOnClick()" [disabled]="publishButtonDisabled">
       </fab-command-bar-item>
-
-      <!-- <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"
-        [buttonStyles]="runButtonStyle"></fab-command-bar-item>
-      <fab-command-bar-item key="publishGrad" [text]="modalPublishingButtonText" [iconProps]="publishIcon"
-          (click)="publishButtonOnClick()" [buttonStyles]="publishButtonStyle">
-        </fab-command-bar-item> -->
-
-      <!-- <fab-command-bar-item key="download" text="Download" [iconProps]="{ iconName: 'Download' }"
-        (click)="getDevOptions()"></fab-command-bar-item> -->
       <fab-command-bar-item *ngIf="isWorkflowDetector" text="Download" [iconProps]="{ iconName: 'Installation' }"
         (click)="downloadWorkflow()"></fab-command-bar-item>
       <fab-command-bar-item *ngIf="isWorkflowDetector" text="Upload" [iconProps]="{ iconName: 'PublishContent' }"
@@ -371,11 +361,12 @@
         [iconProps]="{iconName: 'ReadingMode'}" (click)="openCommitHistory()"></fab-command-bar-item>
       <fab-command-bar-item [disabled]="isWorkflowDetector" [style]="deleteVisibilityStyle" key="delete" text="Delete"
         [iconProps]="{iconName: 'Delete'}" (click)="showDeleteDialog()"></fab-command-bar-item>
-      <fab-command-bar-item *ngIf = "gistMode" [style]="detectorReferences" key="detectorRefs" text="Update Detector References" [iconProps]="{iconName: 'BackToWindow'}"
-      (click)="showUpdateDetectorReferencesDialog()">
+      <fab-command-bar-item *ngIf="gistMode" [style]="detectorReferences" key="detectorRefs"
+        text="Update Detector References" [iconProps]="{iconName: 'BackToWindow'}"
+        (click)="showUpdateDetectorReferencesDialog()">
       </fab-command-bar-item>
-      <!-- <fab-command-bar-item key="internal" [text]="internalExternalText" [iconProps]="{ iconName: 'View' }"
-        (click)="internalExternalToggle()"></fab-command-bar-item> -->
+      <fab-command-bar-item *ngIf="copilotEnabled" text="Detector Copilot (Preview)" [iconProps]="{ iconName: 'robot' }"
+        (click)="_detectorCopilotService.showCopilotPanel()" [disabled]="copilotServiceMembersInitialized == false"></fab-command-bar-item>
       <far-items>
         <fab-command-bar-item *ngIf="detectorGraduation" key="brachSelectorPill" text="custom text">
           <render>
@@ -439,40 +430,9 @@
       <split-area size="60">
         <split direction="vertical" gutterSize="8" gutterColor="rgb(249, 233, 212)">
           <split-area size="85">
-            <!-- <detector-control *ngIf="mode === DevelopMode.Create || mode === DevelopMode.Edit">
-            </detector-control> -->
-            <!-- <div class="code-container-header">
-
-              <div class="file-tab active">
-                {{fileName}}
-              </div>
-
-              <div (click)="showPublishDialog()" class="action-button publish-button"
-                [class.disabled]="publishButtonDisabled">
-                <i class="fa fa-cloud-upload"></i>
-                {{publishButtonText}}
-              </div>
-
-              <div (click)="runCompilation()" class="action-button run-button"
-                [ngClass]="{'disabled': runButtonDisabled }">
-                <i [ngClass]="runButtonIcon"></i>
-                {{runButtonText}}
-              </div>
-
-              <div (click)="getDevOptions()" *ngIf="!gistMode" class="action-button run-button"
-                [ngClass]="{'disabled': localDevButtonDisabled }">
-                <i [ngClass]="devOptionsIcon"></i>
-                {{localDevText}}
-              </div>
-
-              <div (click)="managePackage()" class="action-button run-button">
-                <i class="fa fa-cubes"></i>
-                Manage Package
-              </div>
-            </div> -->
 
             <ngx-monaco-editor (onInit)="onInit($event)" style="height:calc(98%)" [options]="editorOptions"
-              [(ngModel)]="code">
+              [ngModel]="code" (ngModelChange)="updateCodeEvent($event)">
             </ngx-monaco-editor>
 
           </split-area>
@@ -513,44 +473,18 @@
           </fab-pivot-item>
           <fab-pivot-item [headerText]="'Example'" (onClick)="loadExamples()">
             <p>Choose the example that best matches your detector</p>
-            <fab-dropdown placeholder="Select Document" [styles]="examplesDropdownStyle" [options]="examplesDropdownOptions" (onChange)="changeExampleDoc($event)"></fab-dropdown>
-            <applens-docs *ngIf="showExample" [mode]="DocumentMode.examplesTab" [doc]="exampleDoc" [category]="exampleCat"></applens-docs>
+            <fab-dropdown placeholder="Select Document" [styles]="examplesDropdownStyle"
+              [options]="examplesDropdownOptions" (onChange)="changeExampleDoc($event)"></fab-dropdown>
+            <applens-docs *ngIf="showExample" [mode]="DocumentMode.examplesTab" [doc]="exampleDoc"
+              [category]="exampleCat"></applens-docs>
           </fab-pivot-item>
         </fab-pivot>
-        <!-- <div class="invocation-output-title-container">
-
-          <div class="invocation-title" [ngClass]="[!showDataSources ? 'active' : '']"
-            (click)="queryResponse ? showDataSources=false : false">
-            Detector Output
-          </div>
-          <div class="invocation-title" [ngClass]="[showDataSources ? 'active' : '']"
-            (click)="queryResponse ? showDataSources=true : false">
-            Data Sources
-          </div>
-        </div> -->
-
-        <!-- <div style="padding:10px"> -->
-        <!-- <detector-view *ngIf="queryResponse && !showDataSources" [detectorResponse]="queryResponse.invocationOutput"
-            [startTime]="startTime" [endTime]="endTime" [error]="errorState" [showEdit]="false" [developmentMode]="true" [script]="code" [compilationPackage]="compilationPackage"></detector-view> -->
-
-        <!-- <tab-data-sources *ngIf="queryResponse && showDataSources" [onboardingMode]="true"
-            [detectorResponse]="queryResponse.invocationOutput">
-          </tab-data-sources> -->
-        <!-- <nav class="dev-options">
-            <a (click)="getDevOptions()" tooltip="Local VS Development" class="buttons">
-              <span>
-                <span class="rotate"></span>
-              </span>
-            </a>
-          </nav>
-        </div> -->
       </split-area>
     </split>
   </div>
   <div *ngIf="isWorkflowDetector" class="onboarding-container">
     <create-workflow [id]="id" [Branch]="Branch"></create-workflow>
   </div>
-
 </div>
 <ng-template #redirectBlock>
   <div *ngIf="isProd && detectorGraduation" style="display: flex;">
