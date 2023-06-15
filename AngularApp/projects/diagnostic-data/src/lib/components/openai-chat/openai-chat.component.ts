@@ -316,7 +316,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
           if (err.status && err.status == 400) {
             //Sometimes the chat context may become too long for the API to handle. In that case, we reduce the chat context length by 2 and retry
             this._telemetryService.logEvent("OpenAIChatBadRequestError", { ...err, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
-            this.chatContextLength = this.chatContextLength - 2 >= 0 ? this.chatContextLength - 2 : 0;
+            this.chatContextLength = this.chatContextLength - 2 >= 0? this.chatContextLength - 2 : 0;
             this.fetchOpenAIResultUsingRest(searchQuery, messageObj, retry = false);
           }
           else if (retry) {
