@@ -1,0 +1,66 @@
+<fab-command-bar [contentStyle]="'solid gray;font-size:12px'" [contentClass]="'fab-command-bar-class'">
+  <items>
+
+    <fab-command-bar-item key="clearchat" text="Clear Chat" [iconProps]="{ iconName: 'EraseTool' }"
+      [disabled]="_copilotService.operationInProgress" (click)="showClearChatDialog(true)">
+    </fab-command-bar-item>
+    <fab-command-bar-item key="stopcalls" text="Stop" [iconProps]="{ iconName: 'stop' }"
+      [disabled]="!_copilotService.operationInProgress" (click)="cancelOpenAICall()">
+    </fab-command-bar-item>
+    <fab-command-bar-item key="prevcode" text="Previous Code" [iconProps]="{ iconName: 'reply' }"
+      [disabled]="_copilotService.operationInProgress || _copilotService.codeHistoryNavigator <= 0"
+      (click)="_copilotService.navigateCodeHistory(true)">
+    </fab-command-bar-item>
+    <fab-command-bar-item key="nextcode" text="Next Code" [iconProps]="{ iconName: 'ReplyMirrored' }"
+      [disabled]="_copilotService.operationInProgress || _copilotService.codeHistoryNavigator >= _copilotService.codeHistory.length - 1"
+      (click)="_copilotService.navigateCodeHistory(false)">
+    </fab-command-bar-item>
+    <fab-command-bar-item key="clearcodehistory" text="Clear Code History"
+      [iconProps]="{ iconName: 'RemoveOccurrence' }"
+      [disabled]="_copilotService.operationInProgress || _copilotService.codeHistory.length <= 0"
+      (click)="_copilotService.clearCodeHistory()">
+    </fab-command-bar-item>
+    <fab-command-bar-item key="feedback" text="Feedback"
+      [iconProps]="{ iconName: 'mail' }"
+      (click)="sendFeedback()">
+    </fab-command-bar-item>
+
+  </items>
+</fab-command-bar>
+
+<div style="height:80vh;">
+
+  <openai-chat [chatAlignment]="'left'" [chatIdentifier]="_copilotService.chatComponentIdentifier"
+    [chatContextLength]="4" [chatModel]="chatModel" [chatQuerySamplesFileUri]="configFile" [apiProtocol]="apiProtocol"
+    [contentDisclaimerMessage]="contentDisclaimerMessage" [quotaEnforced]="true" [chatHeader]="chatHeader"
+    [systemPhotoSource]="'/assets/img/bot_sparkle_icon.svg'" [responseTokenSize]="responseTokenSize"
+    [preprocessUserMessage]="onUserMessageSend" [postProcessSystemMessage]="onSystemMessageReceived"
+    [postPrepareChatContext]="onPrepareChatContext" [stopMessageGeneration]="stopMessageGeneration">
+  </openai-chat>
+
+  <fab-dialog [hidden]="clearChatConfirmationHidden" (onDismiss)="showClearChatDialog(false)">
+    <fab-dialog-content [title]="'Are you sure?'">
+      <div style="font-size: 13px;">
+        Just Confirming. After all, I am a bot and "suppose to" obey all your commands <i class="fa fa-smile-o"
+          aria-hidden="true"></i>
+      </div>
+      <div class="mt-4" style="margin-top:10px">
+        <fab-primary-button text="Clear Chat" (onClick)="clearChat()" [contentClass]="'mr-3'"></fab-primary-button>
+        <fab-default-button text="Cancel" (onClick)="showClearChatDialog(false)"></fab-default-button>
+      </div>
+    </fab-dialog-content>
+  </fab-dialog>
+
+  <fab-dialog [hidden]="copilotExitConfirmationHidden" (onDismiss)="showExitConfirmationDialog(false)">
+    <fab-dialog-content [title]="'Are you sure?'">
+      <div style="font-size: 13px;">
+        Are you sure you want to exit? I'm in the midst of something epic!
+      </div>
+      <div class="mt-4" style="margin-top:10px">
+        <fab-primary-button text="Exit" (onClick)="exitCopilot()" [contentClass]="'mr-3'"></fab-primary-button>
+        <fab-default-button text="Cancel" (onClick)="showExitConfirmationDialog(false)"></fab-default-button>
+      </div>
+    </fab-dialog-content>
+  </fab-dialog>
+
+</div>

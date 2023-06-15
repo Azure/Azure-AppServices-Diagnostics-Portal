@@ -1,7 +1,7 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
 import { KeyValuePair } from '../../models/common-models';
 import { ChatMessage, ChatAlignment, MessageSource, MessageStatus, MessageRenderingType } from '../../models/chatbot-models';
-import {TelemetryService} from '../../services/telemetry/telemetry.service';
+import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { v4 as uuid } from 'uuid';
 import { TimeUtilities } from '../../utilities/time-utilities';
 import { StringUtilities } from '../../utilities/string-utilities';
@@ -18,22 +18,22 @@ export class ChatUIComponent implements OnInit {
     @Input() messages: string = '';
     @Input() showSearchBox: boolean = true;
     @Input() chatInputText: string = '';
-    @Input() onSendMessage: Function = (message: ChatMessage) => {};
+    @Input() onSendMessage: Function = (message: ChatMessage) => { };
     @Input() chatAlignment: ChatAlignment = ChatAlignment.Center;
     @Input() showFeedbackOptions: boolean = false;
-    @Input() onFeedbackClick: Function = (messageId: string, feedbackType: string) => {};
+    @Input() onFeedbackClick: Function = (messageId: string, feedbackType: string) => { };
 
     @Input() userNameInitial: string = '';
     @Input() userPhotoSource: string = '';
-    
+
     @Input() systemNameInitial: string = '';
     @Input() systemPhotoSource: string = '';
-    
+
     @Input() chatInputBoxDisabled: boolean = false;
-    
+
     @Input() topErrorBarMessage: string = '';
     @Input() showTopErrorBar: boolean = false;
-    
+
     @Input() chatQuerySamples: KeyValuePair[] = [];
 
     @Input() showContentDisclaimer: boolean = false;
@@ -54,20 +54,20 @@ export class ChatUIComponent implements OnInit {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes.chatInputText && !this.chatInputText || this.chatInputText.length==0) {
+        if (changes.chatInputText && !this.chatInputText || this.chatInputText.length == 0) {
             this.chatInputTextInternal = this.chatInputText;
         }
     }
-    
+
     constructor(private _telemetryService: TelemetryService) {
 
     }
 
     public scrollToBottom(initial = false) {
-        this.scrollToBottomOfChatContainer(initial? 2000: 200);
+        this.scrollToBottomOfChatContainer(initial ? 2000 : 200);
     }
 
-    public scrollToBottomOfChatContainer(timeout=200){
+    public scrollToBottomOfChatContainer(timeout = 200) {
         setTimeout(() => {
             var element = document.getElementById("chatui-all-messages-container-id");
             if (element) {
@@ -78,20 +78,23 @@ export class ChatUIComponent implements OnInit {
 
     triggerChat() {
         this.chatInputTextInternal = StringUtilities.TrimEnd(this.chatInputTextInternal);
-        this.chatInputBoxDisabled = true;
-        let message = {
-            id: uuid(),
-            displayMessage: this.chatInputTextInternal,
-            message: this.chatInputTextInternal,
-            messageSource: MessageSource.User,
-            timestamp: new Date().getTime(),
-            messageDisplayDate: TimeUtilities.displayMessageDate(new Date()),
-            status: MessageStatus.Finished,
-            userFeedback: "none",
-            renderingType: MessageRenderingType.Text
-        };
+        if (!this.chatInputBoxDisabled && this.chatInputTextInternal != undefined && this.chatInputTextInternal != '') {
+            this.chatInputBoxDisabled = true;
+            let message = {
+                id: uuid(),
+                displayMessage: this.chatInputTextInternal,
+                message: this.chatInputTextInternal,
+                messageSource: MessageSource.User,
+                timestamp: new Date().getTime(),
+                messageDisplayDate: TimeUtilities.displayMessageDate(new Date()),
+                status: MessageStatus.Finished,
+                userFeedback: "none",
+                renderingType: MessageRenderingType.Text
+            };
 
-        this.onSendMessage(message);
+            this.onSendMessage(message);
+            this.chatInputTextInternal = '';
+        }
     }
 
     feedbackClicked(message: ChatMessage, feedbackType: string) {
@@ -100,24 +103,24 @@ export class ChatUIComponent implements OnInit {
             this.onFeedbackClick(message.id, feedbackType);
         }
         //Default handling if no callback is provided
-        else{
+        else {
             if (feedbackType == 'like') {
-                this._telemetryService.logEvent(`ChatResponseUserFeedbackLike--${this.chatIdentifier}`, { messageId: message.id, messageText: message.displayMessage, ts: new Date().getTime().toString()});
+                this._telemetryService.logEvent(`ChatResponseUserFeedbackLike--${this.chatIdentifier}`, { messageId: message.id, messageText: message.displayMessage, ts: new Date().getTime().toString() });
             }
             else {
-                this._telemetryService.logEvent(`ChatResponseUserFeedbackDislike--${this.chatIdentifier}`, { messageId: message.id, messageText: message.displayMessage, ts: new Date().getTime().toString()});
+                this._telemetryService.logEvent(`ChatResponseUserFeedbackDislike--${this.chatIdentifier}`, { messageId: message.id, messageText: message.displayMessage, ts: new Date().getTime().toString() });
             }
         }
     }
 
-    onchatSampleClick(idx: number){
+    onchatSampleClick(idx: number) {
         this._telemetryService.logEvent(`SampleChatQueryClicked--${this.chatIdentifier}`, { idx: idx.toString(), clickedSample: this.chatQuerySamples[idx].key, ts: new Date().getTime().toString() });
         this.chatInputTextInternal = this.chatQuerySamples[idx].value;
         this.triggerChat();
     }
 
     ngOnInit() {
-        if (this.chatInputText && this.chatInputText.length>0)
-        this.chatInputTextInternal = this.chatInputText;
+        if (this.chatInputText && this.chatInputText.length > 0)
+            this.chatInputTextInternal = this.chatInputText;
     }
 }  

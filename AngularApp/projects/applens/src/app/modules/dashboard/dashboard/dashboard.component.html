@@ -31,7 +31,7 @@
   <fab-spinner [size]="loaderSize" [label]="'Loading...'"></fab-spinner>
 </div>
 <side-nav *ngIf="!stillLoading && showDashboardContent"></side-nav>
-<div *ngIf="!stillLoading && showGPTComponent" class="dashboard-container content-under-header" [ngStyle]="getContainerStyle()">
+<div *ngIf="!stillLoading && showGPTComponent" class="dashboard-container content-under-header" [ngStyle]="{'left' : dashboardContainerStyle.left, 'width' : dashboardContainerStyle.width}">
   <div class="dashboard-content">
     <applens-openai-chat></applens-openai-chat>
     <div [class.content-with-side-nav]="showL2SideNav" style="padding: 0px 20px;">
@@ -39,42 +39,8 @@
     </div>
   </div>
 </div>
-<!-- <l1-side-nav></l1-side-nav> -->
-<!-- <header class="main-header">
-  <nav class="navbar navbar-fixed-top" role="navigation">
-    <a (click)="reloadHome()" class="logo">
-      <span class="logo-lg">
-        <span class="app-title">App</span>Lens
-      </span>
-    </a>
-    <ul *ngIf="showUserInformation" class="nav navbar-nav navbar-right">
-      <li class="user-label">
-        <span *ngIf="userName">Hello, {{userName}}</span>
-      </li>
-      <li>
-        <img *ngIf="userPhotoSource != undefined && userPhotoSource !== ''" id="userPhoto" [src]="userPhotoSource"
-          class="avatar" alt="User Profile Photo" (click)="navigateToUserPage()" />
-        <ngx-avatar *ngIf="displayName != undefined && displayName !== '' && userPhotoSource === ''"
-          class="avatar avatar-initial" [round]="false" [name]=displayName initialsSize="2"
-          (click)="navigateToUserPage()"></ngx-avatar>
-        <div *ngIf="userPhotoSource == undefined" class="loading-element">
-          <span class="fa-li fa fa-spinner fa-spin fa-2x photo-loading"></span>
-        </div>
-      </li>
-    </ul>
-    <div *ngIf="_searchService.searchIsEnabled && !_searchService.resourceHomeOpen" class="search-box">
-      <i class="fa fa-search search-icon"></i>
-      <input placeholder="Describe your problem and hit enter" class="search-input"
-        [(ngModel)]="_searchService.searchTerm" (keyup.enter)="triggerSearch()">
-      <span class="icon-err"
-        [style.display]="_searchService.searchTerm?.trim().length>0 && _searchService.searchTerm?.trim().length<4? '': 'none'"
-        title="At least 4 characters">
-        <i class="fa fa-exclamation"></i>
-      </span>
-    </div>
-  </nav>
-</header> -->
-<div *ngIf="!stillLoading && showDashboardContent && !showGPTComponent" class="dashboard-container content-under-header" [ngStyle]="getContainerStyle()">
+
+<div *ngIf="!stillLoading && showDashboardContent && !showGPTComponent" class="dashboard-container content-under-header" [ngStyle]="{'left' : dashboardContainerStyle.left, 'width' : dashboardContainerStyle.width}">
   <div class="dashboard-content">
     <applens-preview-banner></applens-preview-banner>
     <comm-alert></comm-alert>
@@ -118,3 +84,10 @@
   </div>
 </div>
 </fab-panel>
+
+<fab-panel *ngIf="!stillLoading && detectorCopilotEnabled" [isOpen]="_detectorCopilotService.openPanel" [type]="_detectorCopilotService.panelType" [customWidth]="_detectorCopilotService.panelWidth" [isHiddenOnDismiss]="true"
+[hasCloseButton]="true" [closeButtonAriaLabel]="'close'" [isBlocking]="false" (onDismiss)="dismissCopilotPanel()"
+[headerText]="'Detector Copilot (Preview)'" [isLightDismiss]="false" (onLightDismissClick)="dismissCopilotPanel()">
+<detector-copilot></detector-copilot>
+</fab-panel>
+

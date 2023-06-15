@@ -1,291 +1,382 @@
-.chatui-bot-container{
-    height: 100%;
-    justify-content: center;
-    z-index: 9999;
-    display: flex;
+.chatui-bot-container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.chatui-top-error-container {
+  text-align: center;
+  color: red;
+  margin: auto;
+  width: 50%;
+  border: 1px solid #cec6c6;
+  background-color: #fff;
+  box-shadow: 0 2px 4px 0px rgb(0 0 0 / 20%);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.fade-in {
+  opacity: 0;
+  /* make the element invisible */
+  animation-name: fadeIn;
+  /* set the animation name */
+  animation-duration: 0.5s;
+  /* set the animation duration */
+  animation-fill-mode: forwards;
+  /* keep the final state of the animation */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
 
-  .chatui-top-error-container {
-    text-align: center;
-    color: red;
-    margin: auto;
-    width: 50%;
-    border: 1px solid #cec6c6;
-    background-color: #fff;
-    box-shadow: 0 2px 4px 0px rgb(0 0 0 / 20%);
-    border-radius: 8px;
-    padding: 14px;
+  /* start with opacity 0 */
+  to {
+    opacity: 1;
   }
 
-  .fade-in {
-    opacity: 0; /* make the element invisible */
-    animation-name: fadeIn; /* set the animation name */
-    animation-duration: 0.5s; /* set the animation duration */
-    animation-fill-mode: forwards; /* keep the final state of the animation */
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; } /* start with opacity 0 */
-    to { opacity: 1; } /* end with opacity 1 */
+  /* end with opacity 1 */
+}
+
+.fade-out {
+  animation-name: fadeOut;
+  /* set the animation name */
+  animation-duration: 0.5s;
+  /* set the animation duration */
+  animation-fill-mode: forwards;
+  /* keep the final state of the animation */
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
   }
 
-  .fade-out {
-    animation-name: fadeOut; /* set the animation name */
-    animation-duration: 0.5s; /* set the animation duration */
-    animation-fill-mode: forwards; /* keep the final state of the animation */
-  }
-  
-  @keyframes fadeOut {
-    from { opacity: 1; } /* start with opacity 1 */
-    to { opacity: 0; } /* end with opacity 0 */
+  /* start with opacity 1 */
+  to {
+    opacity: 0;
   }
 
-  .chatui-header-container{
-    position: absolute;
-    top: 0;
-    left: 0;
-    text-align: center;
-    width: 100%!important;
-    margin: 20vh auto!important;
+  /* end with opacity 0 */
+}
+
+.chatui-header-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-align: center;
+  width: 100% !important;
+  margin: 20vh auto !important;
+}
+
+.chatui-box-row-container {
+  width: 70%;
+  margin: auto;
+}
+
+.chatui-samples-container {
+  position: absolute;
+  top: 28vh;
+}
+
+.chatui-box-row {
+  display: flex;
+  width: 100%;
+  margin: auto;
+  float: left;
+}
+
+.chatui-box {
+  border: 1px solid #e7e7e7;
+  height: 86px;
+  margin: 5px 5px;
+  display: inline;
+  flex: 1;
+  background-color: rgba(247, 247, 248);
+  padding: 1.75rem;
+  border-radius: 0.375rem;
+}
+
+.chat-message-timestamp {
+  float: right;
+  font-size: 11px;
+  color: #6c5c50;
+}
+
+.chatui-box:hover {
+  background-color: rgba(247, 247, 248, 0.5);
+  cursor: pointer;
+}
+
+.chatui-textarea-container {
+  position: absolute;
+  bottom: 5px;
+}
+
+.chatui-textarea-wrapper {
+  display: flex;
+  position: absolute;
+  bottom: 37px;
+  width: 100%;
+  height: 40px;
+}
+
+.chatui-message-validation-warning {
+  color: orange;
+  position: absolute;
+  bottom: 85px;
+}
+
+.chatui-message-validation-error {
+  color: red;
+  position: absolute;
+  bottom: 85px;
+}
+
+.chatui-content-disclaimer {
+  font-weight: 400;
+  color: rgb(112, 112, 112);
+  position: absolute;
+  bottom: 5px;
+}
+
+.chatui-textarea {
+  max-height: 200px;
+  height: 100%;
+  overflow-y: hidden;
+  width: 100%;
+  font-size: 15px;
+  line-height: 30px;
+  resize: none;
+  padding-left: 9px;
+  padding-right: 1.75rem;
+  border-radius: 17px;
+}
+
+.chatui-textarea:focus {
+  outline: none !important;
+  border: 1px solid #27b6da;
+}
+
+.chatui-textarea-button {
+  border-radius: 50%;
+  color: white;
+  height: 38px;
+  width: 38px;
+  margin-left: 5px;
+  background-color: #27b6da;
+  border: none;
+  padding: 9px;
+  margin-top: 1px;
+}
+
+.chatui-chat-messages-container {
+  //position: absolute;
+  //top: 3vh;
+  width: 100%;
+  overflow-y: scroll;
+  height: 75vh;
+  border: 1px solid #f6f6f6;
+  border-bottom: 0px;
+  padding: 15px;
+}
+
+.chatui-message-icon {
+  width: 40px;
+  margin-right: 10px;
+  display: flex;
+  align-items: top;
+}
+
+.chatui-feedback-icons {
+  float: right;
+}
+
+.chatui-feedback-icon {
+  font-size: 16px;
+  margin: 2px 5px;
+  color: transparent;
+  cursor: pointer;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: gray;
+}
+
+.chatui-feedback-icon-selected {
+  font-size: 16px;
+  margin: 2px 5px;
+  color: gray !important;
+  cursor: pointer;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: gray !important;
+}
+
+.chatui-message-icon :hover {
+  cursor: pointer;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+}
+
+.avatar :hover {
+  cursor: pointer;
+}
+
+.user-avatar {
+  border-radius: 50%;
+}
+
+.system-avatar {
+  border-radius: none;
+}
+
+.user-initial {
+  background-color: #CDDAEA;
+  color: #0F3057;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.system-initial {
+  background-color: #CDDAEA;
+  color: #0F3057;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chatui-message-box {
+  padding: 8px;
+  position: relative;
+  margin: auto;
+  margin-top: 10px;
+  min-height: 30px;
+  display: flex;
+  padding-left: 15%;
+}
+
+.chatui-message-box-left-aligned {
+  padding: 8px;
+  position: relative;
+  margin: auto;
+  margin-top: 10px;
+  min-height: 30px;
+  display: flex;
+}
+
+.chatui-message-content {
+  margin: auto;
+  width: 100%;
+  display: flex;
+  font-size: 13px;
+}
+
+.chatui-message-content-left-aligned {
+  width: 100%;
+  margin: auto;
+  display: flex;
+}
+
+.chatui-message-box-user {
+  border: 1px solid #ebebed;
+  border-radius: 10px;
+}
+
+.chatui-message-box-system {
+  background-color: rgba(247, 247, 248);
+  border-radius: 10px;
+  border: 1px solid #e7e7e7;
+}
+
+.chatui-message {
+  width: 73%;
+  margin: auto;
+  margin-left: 10px;
+  overflow: auto;
+}
+
+.chatui-message-left-aligned {
+  width: 100%;
+  margin: auto;
+  margin-left: 10px;
+  overflow: auto;
+}
+
+.chatui-message-left-aligned div markdown p {
+  margin: 0;
+}
+
+.blinking-cursor {
+  display: inline-block;
+  position: relative;
+}
+
+.blinking-cursor:after {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 12px;
+  background-color: black;
+  position: relative;
+  right: -10px;
+  animation: cursor-blink 1s infinite;
+}
+
+@keyframes cursor-blink {
+  0% {
+    opacity: 0;
   }
 
-  .chatui-box-row-container{
-    width: 55%;
-    margin: auto;
+  50% {
+    opacity: 1;
   }
 
-  .chatui-samples-container{
-    position: absolute;
-    top: 28vh;
+  100% {
+    opacity: 0;
   }
+}
 
-  .chatui-box-row{
-    display: flex;
-    width: 100%;
-    margin: auto;
-    float: left;
-    padding: 10px 10px;
-  }
+.grow-wrap {
+  /* easy way to plop the elements on top of each other and have them both sized based on the tallest one's height */
+  display: grid;
+  width: 100%;
+  padding-left: 9px;
+  padding-right: 1.75rem;
+}
 
-  .chatui-box{
-    border: 0px solid black;
-    height: 86px;
-    margin: 5px 5px;
-    display: inline;
-    flex: 1;
-    background-color: rgba(247,247,248);
-    padding: 1.75rem;
-    border-radius: 0.375rem;
-  }
+.grow-wrap::after {
+  /* Note the weird space! Needed to preventy jumpy behavior */
+  content: attr(data-replicated-value) " ";
 
-  .chat-message-timestamp {
-    float: right;
-    font-size: 11px;
-  }
+  /* This is how textarea text behaves */
+  white-space: pre-wrap;
 
-  .chatui-box:hover{
-    background-color: rgba(247,247,248,0.5);
-    cursor: pointer;
-  }
+  /* Hidden from view, clicks, and screen readers */
+  visibility: hidden;
+}
 
-  .chatui-textarea-container{
-    bottom: 5px;
-  }
+.grow-wrap>textarea {
+  /* You could leave this, but after a user resizes, then it ruins the auto sizing */
+  resize: none;
 
-  .chatui-textarea-wrapper{
-    display: flex;
-    position: absolute;
-    bottom: 37px;
-    width: 49vw;
-    height: 40px;
-  }
+  /* Firefox shows scrollbar on growth, you can hide like this. */
+  overflow: hidden;
+}
 
-  .chatui-message-validation-warning{
-    color: orange;
-    position:absolute;
-    bottom:85px;
-  }
+.grow-wrap>textarea,
+.grow-wrap::after {
+  /* Identical styling required!! */
+  border: 1px solid black;
+  padding: 0.5rem;
+  font: inherit;
 
-  .chatui-message-validation-error{
-    color: red;
-    position:absolute;
-    bottom:85px;
-  }
-
-  .chatui-content-disclaimer{
-    font-weight: 400;
-    color: #740505;
-    position: absolute;
-    bottom: 0px;
-  }
-
-  .chatui-textarea{
-    max-height: 200px;
-    height: 100%;
-    overflow-y: hidden;
-    width: 100%;
-    font-size: 18px;
-    line-height: 30px;
-    resize: none;
-    padding-left: 9px;
-    padding-right: 1.75rem;
-  }
-
-  .chatui-textarea-button{
-    position: relative;
-    padding: 0.25rem;
-    border-radius: 0.375rem;
-    color: #8e8ea0;
-    height: 100%;
-    width: 30px;
-  }
-
-  .chatui-chat-messages-container{
-    position: absolute;
-    width: 100%;
-    overflow-y: scroll;
-    height: 83%;
-    border: 1px solid #f6f6f6;
-    border-bottom: 0px;
-  }
-
-  .chatui-message-icon {
-    width: 40px;
-    margin-right: 10px;
-    display: flex;
-    align-items: top;
-  }
-
-  .chatui-feedback-icons {
-    float: right;
-  }
-
-  .chatui-feedback-icon {
-    font-size: 16px;
-    margin: 2px 5px;
-    color: transparent;
-    cursor: pointer;
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: gray;
-  }
-
-  .chatui-feedback-icon-selected {
-    font-size: 16px;
-    margin: 2px 5px;
-    color: gray!important;
-    cursor: pointer;
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: gray!important;
-  }
-  
-  .chatui-message-icon :hover {
-    cursor: pointer;
-  }
-
-  .avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-  }
-  
-  .avatar :hover {
-    cursor: pointer;
-  }
-
-  .user-initial {
-    background-color: #CDDAEA;
-    color: #0F3057;
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .system-initial {
-    background-color: #CDDAEA;
-    color: #0F3057;
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .chatui-message-box {
-    padding: 8px;
-    position: relative;
-    margin: auto;
-    margin-top: 10px;
-    min-height: 30px;
-    display: flex;
-    padding-left: 15%;
-  }
-
-  .chatui-message-box-left-aligned {
-    padding: 8px;
-    position: relative;
-    margin: auto;
-    margin-top: 10px;
-    min-height: 30px;
-    display: flex;
-  }
-
-  .chatui-message-content{
-    width: 80%;
-    margin: auto;
-    display: flex;
-  }
-
-  .chatui-message-content-left-aligned{
-    width: 100%;
-    margin: auto;
-    display: flex;
-  }
-  
-  .chatui-message-box-user {
-    border: 1px solid rgba(247,247,248);
-  }
-
-  .chatui-message-box-system {
-    background-color: rgba(247,247,248);
-  }
-
-
-  .chatui-message {
-    width: 73%;
-    margin: auto;
-    margin-left: 10px;
-  }
-
-  .chatui-message-left-aligned {
-    width: 100%;
-    margin: auto;
-    margin-left: 10px;
-  }
-
-  .blinking-cursor {
-    display: inline-block;
-    position: relative;
-  }
-  
-  .blinking-cursor:after {
-    content: "";
-    display: inline-block;
-    width: 10px;
-    height: 12px;
-    background-color: black;
-    position: relative;
-    right: -10px;
-    animation: cursor-blink 1s infinite;
-  }
-  
-  @keyframes cursor-blink {
-    0% {
-      opacity: 0;
-    }
-    50% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
+  /* Place on top of each other */
+  grid-area: 1 / 1 / 2 / 2;
+}

@@ -13,7 +13,7 @@ body {
   font-family: 'Segoe UI' !important;
 }
 
-.chatui-header-text{
+.chatui-header-text {
   font-weight: 600;
   font-size: 2.75rem;
   line-height: 2.75rem;
@@ -22,14 +22,27 @@ body {
   margin-bottom: 4rem;
   margin-left: auto;
   margin-right: auto;
-  font-family: Söhne,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif,Helvetica Neue,Arial,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+  font-family: Söhne, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif, Helvetica Neue, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 }
 
-.chatui-center-logo{
+.chatui-center-logo {
   width: 50px;
   height: 50px;
 }
 
+.copilot-header {
+  color: #289dc2;
+}
+
+.copilot-header-img {
+  width: 35px;
+  height: 35px;
+}
+
+.copilot-header-img-secondary {
+  width: 20px;
+  height: 20px;
+}
 
 a {
   color: var(--link);
@@ -86,7 +99,7 @@ a:hover {
   max-width: 100% !important;
   max-height: 90%;
   overflow-y: scroll !important;
-  background-color: var(--bodyBackground)!important;
+  background-color: var(--bodyBackground) !important;
 }
 
 .panel.with-nav-tabs .panel-heading.app-nav-bar {
@@ -181,13 +194,13 @@ a:hover {
 .publish-dialog {
   min-width: 70vw !important;
   min-height: 70vh !important;
-  background-color: var(--bodyBackground)!important;
+  background-color: var(--bodyBackground) !important;
 }
 
 .icm-template-permissions-dialog {
   min-width: 50vw !important;
   min-height: 20vh !important;
-  background-color: var(--bodyBackground)!important;
+  background-color: var(--bodyBackground) !important;
 }
 
 /* highchart container configuration */
@@ -206,9 +219,9 @@ highcharts-chart {
 }
 
 .highcharts-tooltip-container span {
-    font-size: "12px";
-    font-weight: "normal";
-    font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif!important;
+  font-size: "12px";
+  font-weight: "normal";
+  font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, sans-serif !important;
 }
 
 fab-command-bar .ms-SearchBox {
@@ -286,39 +299,40 @@ button.ms-Link:focus {
 // https://github.com/jfcere/ngx-markdown/pull/108
 
 
-markdown, .markdown {
+markdown,
+.markdown {
   table {
-      border-spacing: 0;
-      border-collapse: collapse;
-      margin-bottom: 16px;
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin-bottom: 16px;
 
-      th,
-      td {
-          padding: 6px 13px;
-          border: 1px solid #ddd;
+    th,
+    td {
+      padding: 6px 13px;
+      border: 1px solid #ddd;
 
-          &[align="left"] {
-              text-align: left;
-          }
-
-          &[align="center"] {
-              text-align: center;
-          }
-
-          &[align="right"] {
-              text-align: right;
-          }
+      &[align="left"] {
+        text-align: left;
       }
 
-      tr:nth-child(2n) {
-          background-color: rgba(0, 0, 0, 0.03);
+      &[align="center"] {
+        text-align: center;
       }
+
+      &[align="right"] {
+        text-align: right;
+      }
+    }
+
+    tr:nth-child(2n) {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
   }
 
   blockquote {
-      padding: 0 1em;
-      color: rgba(0, 0, 0, 0.535);
-      border-left: 0.25em solid rgba(0, 0, 0, 0.11);
+    padding: 0 1em;
+    color: rgba(0, 0, 0, 0.535);
+    border-left: 0.25em solid rgba(0, 0, 0, 0.11);
   }
 }
 
@@ -335,6 +349,7 @@ markdown, .markdown {
 // For all message boxes launched for workflows
 //
 
-.swal2-html-container, .swal2-footer {
+.swal2-html-container,
+.swal2-footer {
   font-size: large !important;
 }

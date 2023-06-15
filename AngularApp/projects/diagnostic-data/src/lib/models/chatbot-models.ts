@@ -28,13 +28,8 @@ export enum MessageStatus {
     Waiting = 1,
     InProgress = 2,
     Finished = 3,
+    Cancelled = 4
 }
-
-/*export enum UserFeedbackType {
-    Like = "like",
-    Dislike = "dislike",
-    None = "none"
-}*/
 
 export enum MessageSource {
     User = "user",
@@ -44,4 +39,14 @@ export enum MessageSource {
 export enum ChatAlignment {
     Left = "left",
     Center = "center"
+}
+
+export enum ChatModel {
+    GPT3 = "gpt3",
+    GPT4 = "gpt4"
+}
+
+export enum APIProtocol {
+    Rest = "rest",
+    WebSocket = "websocket"
 }

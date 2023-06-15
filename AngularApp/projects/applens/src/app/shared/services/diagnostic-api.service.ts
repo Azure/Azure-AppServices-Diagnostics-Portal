@@ -392,7 +392,7 @@ export class DiagnosticApiService {
 
     let keyPostfix = internalClient === true ? "-true" : "-false";
     if (useCache) {
-      return this._cacheService.get(this.getCacheKey(method, path + keyPostfix), request, invalidateCache, logData);
+      return this._cacheService.get(this.getCacheKey(method, path + keyPostfix), request, invalidateCache, false, logData);
     }
     else {
       this._telemetryService.logEvent(logData.eventIdentifier, logData.eventPayload);
@@ -409,7 +409,7 @@ export class DiagnosticApiService {
     return this._cacheService.get(path, request, invalidateCache);
   }
 
-  public post<T, S>(path: string, body?: S, additionalHeaders: HttpHeaders = null): Observable<T> {
+  public post<T, S>(path: string, body?: S, additionalHeaders: HttpHeaders = null, invalidateCache: boolean = true, ignoreInFlightCall: boolean = false): Observable<T> {
     const url = `${this.diagnosticApi}${path}`;
     let bodyString: string = '';
     if (body) {
@@ -429,7 +429,7 @@ export class DiagnosticApiService {
       headers: requestHeaders,
     });
 
-    return this._cacheService.get(path, request, true);
+    return this._cacheService.get(path, request, invalidateCache, ignoreInFlightCall);
   }
 
   public hasApplensAccess(): Observable<any> {

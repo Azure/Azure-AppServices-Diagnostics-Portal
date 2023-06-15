@@ -1,16 +1,15 @@
 import { AdalService } from 'adal-angular4';
 import {
-  CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, TableColumnOption, TableFilterSelectionOption, DataTableResponseObject, DataTableResponseColumn, FabDataTableComponent, QueryResponseService
+  CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, QueryResponseService, ChatUIContextService
 } from 'diagnostic-data';
 import * as moment from 'moment';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import {
-  concat,
   forkJoin
   , Observable, of
 } from 'rxjs';
-import { catchError, finalize, flatMap, last, map, mergeMap, retryWhen, switchMap, retry, delay, tap } from 'rxjs/operators'
-import { ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentRef, Injectable, Input, OnChanges, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { flatMap, map } from 'rxjs/operators'
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Package } from '../../../shared/models/package';
 import { GithubApiService } from '../../../shared/services/github-api.service';
 import { DetectorGistApiService } from '../../../shared/services/detectorgist-template-api.service';
@@ -19,13 +18,12 @@ import { ApplensDiagnosticService } from '../services/applens-diagnostic.service
 import { RecommendedUtterance, RenderingType } from '../../../../../../diagnostic-data/src/public_api';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
-import { ActivatedRoute, ActivatedRouteSnapshot, CanDeactivate, Params, Router, RouterStateSnapshot } from "@angular/router";
+import { ActivatedRoute, Params, Router } from "@angular/router";
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
 import { listen, MessageConnection } from 'vscode-ws-jsonrpc';
-import ReconnectingWebSocket from 'reconnecting-websocket';
-import { MonacoLanguageClient, CloseAction, ErrorAction, MonacoServices, createConnection, ReferencesRequest } from 'monaco-languageclient';
+import { MonacoLanguageClient, CloseAction, ErrorAction, MonacoServices, createConnection } from 'monaco-languageclient';
 import { v4 as uuid } from 'uuid';
-import { IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IPanelProps, IPivotProps, MessageBarType, PanelType, TagItemSuggestion } from 'office-ui-fabric-react';
+import { IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDropdownOption, IDropdownProps, IPanelProps, IPivotProps, MessageBarType, PanelType } from 'office-ui-fabric-react';
 import { BehaviorSubject } from 'rxjs';
 import { Commit } from '../../../shared/models/commit';
 import { ApplensCommandBarService } from '../services/applens-command-bar.service';
@@ -40,6 +38,7 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { WorkflowRunDialogComponent } from '../workflow/workflow-run-dialog/workflow-run-dialog.component';
 import { UserSettingService } from '../services/user-setting.service';
 import { WorkflowService } from '../workflow/services/workflow.service';
+import { DetectorCopilotService } from '../services/detector-copilot.service';
 
 const codePrefix = `// *****PLEASE DO NOT MODIFY THIS PART*****
 using Diagnostics.DataProviders;
@@ -52,50 +51,7 @@ using Kusto.Data;
 //*****END OF DO NOT MODIFY PART*****
 `;
 
-
 const newDetectorId: string = "NEW_DETECTOR";
-
-// const commandbaritems: ICommandBarItemProps[] = [
-//   {
-//     key: 'newItem',
-//     text: 'New',
-//     cacheKey: 'myCacheKey', // changing this key will invalidate this item's cache
-//     iconProps: { iconName: 'Add' },
-//     subMenuProps: {
-//       items: [
-//         {
-//           key: 'emailMessage',
-//           text: 'Email message',
-//           iconProps: { iconName: 'Mail' },
-//           ['data-automation-id']: 'newEmailButton', // optional
-//         },
-//         {
-//           key: 'calendarEvent',
-//           text: 'Calendar event',
-//           iconProps: { iconName: 'Calendar' },
-//         },
-//       ],
-//     },
-//   },
-//   {
-//     key: 'upload',
-//     text: 'Upload',
-//     iconProps: { iconName: 'Upload' },
-//     href: 'https://developer.microsoft.com/en-us/fluentui',
-//   },
-//   {
-//     key: 'share',
-//     text: 'Share',
-//     iconProps: { iconName: 'Share' },
-//     onClick: () => console.log('Share'),
-//   },
-//   {
-//     key: 'download',
-//     text: 'Download',
-//     iconProps: { iconName: 'Download' },
-//     onClick: () => console.log('Download'),
-//   },
-// ];
 
 export enum DevelopMode {
   Create,
@@ -109,7 +65,7 @@ export enum DevelopMode {
   templateUrl: './onboarding-flow.component.html',
   styleUrls: ['./onboarding-flow.component.scss']
 })
-export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
+export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateComponent {
 
   @ViewChild(CreateWorkflowComponent) createWorkflow: CreateWorkflowComponent;
 
@@ -195,7 +151,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   refreshGistListButtonIcon: any = { iconName: 'Refresh' };
   gistsDropdownOptions: IDropdownOption[] = [];
   gistVersionOptions: IDropdownOption[] = [];
-  gistUpdateTitle
+  gistUpdateTitle: string = '';
   internalExternalText: string = "";
   internalViewText: string = "Internal view";
   externalViewText: string = "Customer view";
@@ -228,6 +184,12 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   charWarningMessage: string = '';
   detectorLoaded: boolean = false;
   workflowPackage: Package;
+
+  // copilot variables
+  copilotEnabled: boolean = true;
+  copilotCodeSuggestionObservable: any;
+  copilotCodeUpdateProgressStateObservable: any;
+  copilotServiceMembersInitialized: boolean = false;
 
   runButtonStyle: any = {
     root: { cursor: "default" }
@@ -380,7 +342,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute,
     private _applensCommandBarService: ApplensCommandBarService, private _router: Router, private _themeService: GenericThemeService, private _applensGlobal: ApplensGlobal,
     private matDialog: MatDialog, private _queryResponseService: QueryResponseService, private _userSettingService: UserSettingService,
-    private _workflowService: WorkflowService) {
+    private _workflowService: WorkflowService, public _chatContextService: ChatUIContextService, public _detectorCopilotService: DetectorCopilotService) {
     this.lightOptions = {
       theme: 'vs',
       language: 'csharp',
@@ -390,7 +352,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       minimap: {
         enabled: false
       },
-      folding: true
+      folding: true,
+      readOnly: false
     };
 
     this.darkOptions = {
@@ -402,7 +365,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
       minimap: {
         enabled: false
       },
-      folding: true
+      folding: true,
+      readOnly: false
     };
 
     this.editorOptions = this.lightOptions;
@@ -426,12 +390,45 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.emailRecipients = this.userName.replace('@microsoft.com', '');
     this.userId = this.userName.replace('@microsoft.com', '');
     this.publishAccessControlResponse = {};
+    this._detectorCopilotService.detectorAuthor = this.userId;
+  }
+
+  ngOnInit() {
+    this.copilotServiceMembersInitialized = false;
+    this._activatedRoute.params.subscribe((params: Params) => {
+      this.initialized = false;
+      this.startUp();
+    });
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.redirectTimer);
+    this._router.navigate([], {
+      queryParams: {
+        'branchInput': null,
+      },
+      queryParamsHandling: 'merge'
+    });
+
+    if (this.copilotServiceMembersInitialized) {
+
+      if (this.copilotCodeSuggestionObservable) {
+        this.copilotCodeSuggestionObservable.unsubscribe();
+      }
+
+      if (this.copilotCodeUpdateProgressStateObservable) {
+        this.copilotCodeUpdateProgressStateObservable.unsubscribe();
+      }
+
+      this._detectorCopilotService.onCloseCopilotPanelEvent.next({ showConfirmation: false, resetCopilot: true });
+
+    }
   }
 
   canExit(): boolean {
     if (this.detectorDeleted)
       return true;
-    else if (!!this.lastSavedVersion && this.code != this.lastSavedVersion) {
+    else if (!!this.lastSavedVersion && !StringUtilities.Equals(this.code, this.lastSavedVersion)) {
       if (confirm("Are you sure you want to leave? You have some unsaved changes.")) {
         return true;
       }
@@ -439,9 +436,16 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
         return false;
       }
     }
-    else {
-      return true;
+    else if (this._detectorCopilotService.operationInProgress) {
+      if (confirm("Are you sure you want to leave? Looks like Copilot operation is in progress.")) {
+        return true;
+      }
+      else {
+        return false;
+      }
     }
+    else
+      return true;
   }
 
   updateDataSources(event: string) {
@@ -565,13 +569,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   PPEHostname: string;
   redirectTimer: NodeJS.Timer;
 
-  ngOnInit() {
-    this._activatedRoute.params.subscribe((params: Params) => {
-      this.initialized = false;
-      this.startUp();
-    });
-  }
-
   startUp() {
     this._queryResponseService.getQueryResponse().subscribe(qr => {
       this.queryResponse = qr;
@@ -660,6 +657,14 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
         this.internalExternalText = this.externalViewText;
       }
     });
+
+    this._diagnosticApi.get<boolean>('api/openai/detectorcopilot/enabled').subscribe(res => {
+
+      this.copilotEnabled = res &&
+        isSystemInvoker == false &&
+        this.gistMode == false &&
+        this.isWorkflowDetector == false;
+    });
   }
 
   getSystemInvokerBranchList() {
@@ -733,7 +738,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
         if (this.mode != DevelopMode.Create) {
           var branchRegEx = this.gistMode ? new RegExp(`^dev\/.*\/gist\/${this.id}$`, "i") : new RegExp(`^dev\/.*\/detector\/${this.id}$`, "i");
-          if (this.isWorkflowDetector){
+          if (this.isWorkflowDetector) {
             branchRegEx = new RegExp(`^dev\/.*\/workflow\/${this.id}$`, "i")
           }
           branches.forEach(option => {
@@ -752,7 +757,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
         }
         else {
           var branchRegEx = this.gistMode ? new RegExp(`^dev\/.*\/gist\/.*$`, "i") : new RegExp(`^dev\/.*\/detector\/.*$`, "i");
-          if (this.isWorkflowDetector){
+          if (this.isWorkflowDetector) {
             branchRegEx = new RegExp(`^dev\/.*\/workflow\/.*$`, "i")
           }
 
@@ -818,7 +823,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
 
       });
     });
-
   }
 
   internalExternalToggle() {
@@ -872,7 +876,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
           if (this.codeCompletionEnabled && this.languageServerUrl && this.languageServerUrl.length > 0) {
             if (this.code.indexOf(codePrefix) < 0) {
               this.code = this.addCodePrefix(this.code);
-              this.lastSavedVersion = this.code
+              this.lastSavedVersion = this.code;
+              this.initalizeCoPilotServiceMembers();
             }
             let fileName = uuid();
             let editorModel = monaco.editor.createModel(this.code, 'csharp', monaco.Uri.parse(`file:///workspace/${fileName}.cs`));
@@ -979,9 +984,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     window.open(this.commitHistoryLink);
   }
 
-
-
-
   showUpdateDetectorReferencesDialog() {
     this.detectorReferencesDialogHidden = false;
     this._telemetryService.logEvent(TelemetryEventNames.SuperGistUpdateDetectorReferencesButtonClicked, {
@@ -990,13 +992,9 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     });
   }
 
-
   dismissDetectorRefDialog() {
     this.detectorReferencesDialogHidden = true;
   }
-
-
-
 
   updateGistVersionOptions(event: string) {
     this.loadingGistVersions = true;
@@ -1133,6 +1131,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   }
 
   showGistDialog() {
+    this._detectorCopilotService.hideCopilotPanel();
     this.gistsDropdownOptions = [];
     this.gists = Object.keys(this.configuration['dependencies']);
     this.gists.forEach(g => {
@@ -1249,13 +1248,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     this.ngxSmartModalService.getModal('packageModal').open();
   }
 
-  /*downloadCode(){
-    var a = document.getElementById("a");
-    var file = new Blob([this.id.toLowerCase()], {type: type});
-    a.href = URL.createObjectURL(file);
-    a.download = name;
-  }*/
-
   saveProgress() {
     localStorage.setItem(`${this.id.toLowerCase()}_code`, this.code);
   }
@@ -1344,6 +1336,8 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     } else {
       this.runDetectorCompilation();
     }
+
+    this._detectorCopilotService.hideCopilotPanel();
   }
 
   runWorkflowCompilation() {
@@ -1982,6 +1976,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
   }
 
   saveDetectorCode() {
+    this._detectorCopilotService.hideCopilotPanel();
     this.updatePublishingPackageIfWorkflow();
 
     this.saveTempId = this.getIdFromCodeString();
@@ -2343,9 +2338,10 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     detectorFile.subscribe(res => {
       // if (!this.code)
       this.code = this.addCodePrefix(res);
-      this.lastSavedVersion = this.code
+      this.lastSavedVersion = this.code;
       this.originalCode = this.code;
       this.codeLoaded = true;
+      this.initalizeCoPilotServiceMembers();
     }, err => {
       if (isGradEdit && this.Branch === this.defaultBranch && this.showBranches.length > 1) {
         this.Branch = this.showBranches.filter(branch => { return branch.key != this.defaultBranch })[0].key;
@@ -2356,6 +2352,7 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
           this.lastSavedVersion = this.code
           this.originalCode = this.code;
           this.codeLoaded = true;
+          this.initalizeCoPilotServiceMembers();
         });
       }
     });
@@ -2374,10 +2371,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
           this.allGists.push(m.id);
         });
       }
-
-      // if (!this.hideModal && !this.gistMode) {
-      //   this.ngxSmartModalService.getModal('devModeModal').open();
-      // }
     });
   }
 
@@ -2402,16 +2395,6 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     return this.diagnosticApiService.getDevopsCommitContent(`${this.DevopsConfig.folderPath}/${gistId}/${gistId}.csx`, gistCommitVersion, this.resourceId);
   };
 
-  ngOnDestroy() {
-    clearInterval(this.redirectTimer);
-    this._router.navigate([], {
-      queryParams: {
-        'branchInput': null,
-      },
-      queryParamsHandling: 'merge'
-    })
-  }
-
   updatePRTitle(e: { event: Event, newValue?: string }) {
     this.PRTitle = e.newValue.toString();
   }
@@ -2435,4 +2418,83 @@ export class OnboardingFlowComponent implements OnInit, IDeactivateComponent {
     const text = await file.text();
     this.createWorkflow.uploadFlowData(text);
   }
+
+  //#region Copilot Methods
+
+  initalizeCoPilotServiceMembers() {
+    this._detectorCopilotService.azureServiceType = this.resourceService.displayName;
+    this._detectorCopilotService.detectorDevelopMode = this.mode;
+    this._detectorCopilotService.detectorCode = StringUtilities.ReplaceNewlines(this.code);
+    if (this.mode == DevelopMode.Create) {
+      this._detectorCopilotService.detectorTemplate = StringUtilities.ReplaceNewlines(this.code);
+    }
+    else {
+      this._detectorCopilotService.detectorTemplate = '';
+    }
+
+    setTimeout(() => {
+      if (this.copilotCodeSuggestionObservable == undefined) {
+        this.copilotCodeSuggestionObservable = this._detectorCopilotService.onCodeSuggestion.subscribe(event => {
+          if (event == null || event == undefined || event.code == null || event.code == undefined)
+            return;
+
+          if (!event.append) {
+            this.code = '';
+          }
+
+          if (event.source && event.source.toLowerCase() == 'openai') {
+            this.triggerCodeCopyFromCopilot(event.code);
+          }
+          else {
+            this.code = `${this.code}${event.code}`;
+          }
+        });
+      }
+
+      if (this.copilotCodeUpdateProgressStateObservable == undefined) {
+        this.copilotCodeUpdateProgressStateObservable = this._detectorCopilotService.onCodeOperationProgressState.subscribe(res => {
+          if (res) {
+            this._monacoEditor.updateOptions({ readOnly: res.inProgress });
+          }
+        }, err => {
+          this._monacoEditor.updateOptions({ readOnly: false });
+        });
+      }
+
+    }, 2000);
+
+    this.copilotServiceMembersInitialized = true;
+  }
+
+  triggerCodeCopyFromCopilot(codeSuggestionFromCopilot: string, index: number = 0) {
+
+    let minChunkSize: number = 50;
+    if (index >= codeSuggestionFromCopilot.length) {
+      return;
+    }
+
+    let chunkSize = Math.floor(Math.random() * (codeSuggestionFromCopilot.length - index)) + 1;
+
+    if (chunkSize < minChunkSize) {
+      chunkSize = minChunkSize;
+    }
+
+    let upperIndex = index + chunkSize >= codeSuggestionFromCopilot.length ? codeSuggestionFromCopilot.length : index + chunkSize;
+    this.code = `${this.code}${codeSuggestionFromCopilot.substring(index, upperIndex)}`;
+
+    index += chunkSize;
+    const delayTime = codeSuggestionFromCopilot.length <= 2 * minChunkSize ? 300 : 200;
+    setTimeout(() => {
+      this.triggerCodeCopyFromCopilot(codeSuggestionFromCopilot, index);
+    }, delayTime);
+  }
+
+  // Whenever the detector code changes, we need to keep code copilot service in sync
+  updateCodeEvent(event: any) {
+    this.code = event;
+    this._detectorCopilotService.detectorCode = event;
+  }
+
+  //#endregion
+
 }

@@ -1,14 +1,18 @@
-﻿using AppLensV3.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AppLensV3.Helpers;
+using AppLensV3.Hubs;
+using AppLensV3.Models;
+using AppLensV3.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Xml;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace AppLensV3.Controllers
 {
@@ -19,10 +23,15 @@ namespace AppLensV3.Controllers
     {
         private IOpenAIService _openAIService;
         private ILogger<OpenAIController> _logger;
-        public OpenAIController(IOpenAIService openAIService, ILogger<OpenAIController> logger)
+        private readonly IConfiguration _configuration;
+        private readonly IHubContext<OpenAIChatCompletionHub> _hubContext;
+
+        public OpenAIController(IOpenAIService openAIService, ILogger<OpenAIController> logger, IConfiguration config, IHubContext<OpenAIChatCompletionHub> hubContext)
         {
             _logger = logger;
             _openAIService = openAIService;
+            _configuration = config;
+            _hubContext = hubContext;
         }
 
         [HttpGet("enabled")]
@@ -47,7 +56,7 @@ namespace AppLensV3.Controllers
             try
             {
                 // Check if client has requested cache to be disabled
-                bool cachingEnabled = bool.TryParse(GetHeaderOrDefault(Request.Headers, HeaderConstants.OpenAICacheHeader, true.ToString()), out var cacheHeader)? cacheHeader: true;
+                bool cachingEnabled = bool.TryParse(GetHeaderOrDefault(Request.Headers, HeaderConstants.OpenAICacheHeader, true.ToString()), out var cacheHeader) ? cacheHeader : true;
                 var response = await _openAIService.RunTextCompletion(completionModel, cachingEnabled);
                 if (response.IsSuccessStatusCode)
                 {
@@ -71,10 +80,73 @@ namespace AppLensV3.Controllers
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
                 return StatusCode(500, "An error occurred while processing the text completion request.");
+            }
+        }
+
+        [HttpPost("runChatCompletion")]
+        public async Task<IActionResult> RunChatCompletion([FromBody] RequestChatPayload chatPayload)
+        {
+            if (!_openAIService.IsEnabled())
+            {
+                return StatusCode(422, "Chat Completion Feature is currently disabled.");
+            }
+
+            if (chatPayload == null)
+            {
+                return BadRequest("Request body cannot be null or empty");
+            }
+
+            if (chatPayload.Messages == null || chatPayload.Messages.Length == 0)
+            {
+                return BadRequest("Please provide list of chat messages in the request body");
+            }
+
+            try
+            {
+                var chatCompletions = await _openAIService.RunChatCompletion(chatPayload.Messages.ToList(), chatPayload.MetaData);
+
+                if (chatCompletions != null)
+                {
+                    return Ok(chatCompletions);
+                }
+                else
+                {
+                    _logger.LogError("OpenAIChatCompletionError: chatCompletions are null.");
+                    return StatusCode(500, "chatCompletions are null");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"OpenAIChatCompletionError: {ex}");
+                return StatusCode(500, "An error occurred while processing the chat completion request.");
+            }
+        }
+
+        [HttpGet("detectorcopilot/enabled")]
+        public async Task<IActionResult> IsDetectorCopilotEnabled()
+        {
+            try
+            {
+                if (!bool.TryParse(_configuration["DetectorCopilot:Enabled"], out bool isCopilotEnabled))
+                {
+                    isCopilotEnabled = false;
+                }
+
+                var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
+                var allowedUsers = _configuration["DetectorCopilot:AllowedUserAliases"].Trim()
+                    .Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                isCopilotEnabled &= allowedUsers.Length == 0 || allowedUsers.Any(p => p.Trim().ToLower().Equals(userAlias));
+
+                return Ok(isCopilotEnabled);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"IsDetectorCopilotEnabled() Failed. Exception : {ex}");
+                return Ok(false);
             }
         }
 

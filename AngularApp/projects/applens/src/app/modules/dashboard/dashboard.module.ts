@@ -17,6 +17,7 @@ import { ResourceService } from '../../shared/services/resource.service';
 import { ResourceServiceFactory } from '../../shared/providers/resource.service.provider';
 import { ResourceHomeComponent } from './resource-home/resource-home.component';
 import { OnboardingFlowComponent } from './onboarding-flow/onboarding-flow.component';
+import { DetectorCopilotComponent } from './detector-copilot/detector-copilot.component';
 import { TabCommonComponent } from './tabs/tab-common/tab-common.component';
 import { TabDataComponent } from './tabs/tab-data/tab-data.component';
 import { TabDevelopComponent } from './tabs/tab-develop/tab-develop.component';
@@ -136,6 +137,7 @@ import { InputNodeComponent } from './workflow/input-node/input-node.component';
 import { NetworkTraceAnalysisComponent } from './network-trace-analysis/network-trace-analysis.component';
 import * as moment from 'moment';
 import { ApplensOpenAIChatComponent } from './applens-openai-chat/applens-openai-chat.component';
+import { DetectorCopilotService } from 'projects/applens/src/app/modules/dashboard/services/detector-copilot.service';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -578,6 +580,7 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         BreadcrumbService,
         ClientScriptService,
         WorkflowService,
+        DetectorCopilotService,
         {
             provide: ResourceService,
             useFactory: ResourceServiceFactory,
@@ -597,7 +600,7 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         { provide: GenericClientScriptService, useExisting: ClientScriptService },
         { provide: GenericOpenAIChatService, useExisting: ApplensOpenAIChatService }
     ],
-    declarations: [DashboardComponent, SideNavComponent, ResourceMenuItemComponent, ResourceHomeComponent, OnboardingFlowComponent, SearchTermAdditionComponent,
+    declarations: [DashboardComponent, SideNavComponent, ResourceMenuItemComponent, ResourceHomeComponent, OnboardingFlowComponent, DetectorCopilotComponent, SearchTermAdditionComponent,
         SearchMenuPipe, TabDataComponent, TabDevelopComponent, TabCommonComponent, TabDataSourcesComponent, TabMonitoringComponent,
         TabMonitoringDevelopComponent, TabAnalyticsDevelopComponent, TabAnalyticsDashboardComponent, GistComponent, TabGistCommonComponent,
         TabGistDevelopComponent, TabChangelistComponent, GistChangelistComponent, TabAnalysisComponent, CategoryPageComponent, SupportTopicPageComponent,

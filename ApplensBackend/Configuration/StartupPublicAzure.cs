@@ -1,7 +1,6 @@
-﻿using System;
-using System.Configuration;
-using System.IO;
+﻿using System.IO;
 using AppLensV3.Helpers;
+using AppLensV3.Hubs;
 using AppLensV3.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,15 +31,17 @@ namespace AppLensV3
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors("CorsPolicy");
             }
-
-            app.UseCors(cors =>
-                cors
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin()
-                .WithExposedHeaders(new string[] { HeaderConstants.ScriptEtagHeader })
-            );
+            else
+            {
+                app.UseCors(cors =>
+                    cors
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin()
+                    .WithExposedHeaders(new string[] { HeaderConstants.ScriptEtagHeader }));
+            }
 
             app.UseRouting();
             app.UseAuthentication();
@@ -49,9 +50,8 @@ namespace AppLensV3
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<OpenAIChatCompletionHub>("/chatcompletionHub");
             });
-
-
 
             app.Use(async (context, next) =>
             {
