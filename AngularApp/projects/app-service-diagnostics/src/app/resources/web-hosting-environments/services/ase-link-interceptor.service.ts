@@ -3,9 +3,7 @@ import { LinkInterceptorService } from '../../../shared-v2/services/link-interce
 import { DiagnosticService } from 'diagnostic-data';
 import { AseCategoryService } from './ase-category.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AseLinkInterceptorService extends LinkInterceptorService {
 
   constructor(private _diagnosticServicePrivate: DiagnosticService, private _categoryServicePrivate: AseCategoryService) {
