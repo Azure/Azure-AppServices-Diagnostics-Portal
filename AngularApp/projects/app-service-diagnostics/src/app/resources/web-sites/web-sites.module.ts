@@ -21,7 +21,9 @@ import { QuickLinkService } from '../../shared-v2/services/quick-link.service';
 import { SiteQuickLinkService } from './services/site-quick-link.service';
 import { RiskAlertService } from '../../shared-v2/services/risk-alert.service';
 import { SiteRiskAlertService } from './services/site-risk-alert.service';
-import { DiagnosticDataModule } from 'diagnostic-data';
+import { DiagnosticDataModule, GenericLinkInterceptorService } from 'diagnostic-data';
+import { SiteLinkInspectorService } from './services/site-link-inspector.service';
+import { LinkInterceptorService } from '../../shared-v2/services/link-interceptor.service';
 
 const ResourceRoutes = RouterModule.forChild([
   {
@@ -62,12 +64,15 @@ const ResourceRoutes = RouterModule.forChild([
   providers: [
     ContentService,
     SiteFeatureService,
+    SitesCategoryService,
+    SiteLinkInspectorService,
     LoggingV2Service,
     CXPChatCallerService,
     { provide: ResourceService, useExisting: WebSitesService },
     { provide: CategoryService, useClass: SitesCategoryService },
     { provide: FeatureService, useExisting: SiteFeatureService },
     { provide: SupportTopicService, useClass: SiteSupportTopicService },
+    { provide: LinkInterceptorService, useExisting: SiteLinkInspectorService },
     ResourceResolver,
     WebSiteFilter,
     { provide: QuickLinkService, useExisting: SiteQuickLinkService },

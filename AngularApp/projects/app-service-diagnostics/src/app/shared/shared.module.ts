@@ -127,7 +127,6 @@ import { FabLinkModule } from '@angular-react/fabric/lib/components/link';
 import { FabPivotModule } from '@angular-react/fabric/lib/components/pivot';
 import { DownloadReportComponent } from './components/download-report/download-report.component';
 import { OptInsightsService } from './services/optinsights/optinsights.service';
-import { LinkInterceptorService } from './services/link-interceptor.service';
 
 @NgModule({
     declarations: [
@@ -310,7 +309,6 @@ export class SharedModule {
                 DetectorViewStateService,
                 AppInsightsService,
                 AppInsightsQueryService,
-                LinkInterceptorService,
                 CacheService,
                 SolutionFactoryService,
                 DaasService,

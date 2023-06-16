@@ -1,33 +1,40 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { CategoryService } from './category.service';
 import { DiagnosticService, TelemetryEventNames, TelemetryService } from 'diagnostic-data';
-import { CategoryService } from '../../shared-v2/services/category.service';
-import { Category } from '../../shared-v2/models/category';
-import { ResourceService } from '../../shared-v2/services/resource.service';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { Category } from '../models/category';
 
 const isAbsolute = new RegExp('(?:^[a-z][a-z0-9+.-]*:|\/\/)', 'i');
 
 @Injectable()
 export class LinkInterceptorService {
 
-  private categories: Category[] = [];
-  constructor(private _diagnosticService: DiagnosticService, private _categoryService: CategoryService, private _resourceService: ResourceService) {
-    this._diagnosticService.getDetectors().subscribe(detectors => {
-      detectors.forEach(d => {
-        console.log(d.id + ' = ' + d.category);
-      });
-    });
+  protected categories: Category[] = [];
+  protected detectorCategoryMapping: any[] = [];
 
-    this._categoryService.categories.subscribe(categories => {
-      if (categories.length > 0) {
-        this.categories = categories;
-        this.categories.forEach(c => { console.log(c.name + " ---- " + c.id) });
-      }
+  constructor(private _diagnosticService: DiagnosticService, private _categoryService: CategoryService) {
+
+    this._diagnosticService.getDetectors().subscribe(detectors => {
+      this._categoryService.categories.subscribe(categories => {
+        if (categories.length > 0) {
+          this.categories = categories;
+          detectors.forEach(detector => {
+            let categoryId = this.getCategoryId(detector.category);
+            if (categoryId && detector.id) {
+              this.detectorCategoryMapping.push({ detectorId: detector.id.toLowerCase(), categoryId: categoryId.toLowerCase() });
+            }
+          });
+        }
+      });
     });
   }
 
   interceptLinkClick(e: Event, router: Router, detector: string, telemetryService: TelemetryService, activatedRoute: ActivatedRoute) {
     if (e.target && (e.target as any).tagName === 'A') {
+
+      this.detectorCategoryMapping.forEach(element => {
+        console.log(JSON.stringify(element));
+      })
 
       const el = (e.target as HTMLElement);
       const linkURL = el.getAttribute && el.getAttribute('href');
@@ -62,6 +69,13 @@ export class LinkInterceptorService {
       } else {
         el.setAttribute('target', '_blank');
       }
+    }
+  }
+
+  getCategoryId(categoryName: string): string {
+    let category = this.categories.find(x => x.name === categoryName);
+    if (category) {
+      return category.id;
     }
   }
 }

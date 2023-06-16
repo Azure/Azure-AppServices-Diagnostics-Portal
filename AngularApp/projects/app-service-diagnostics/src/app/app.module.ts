@@ -50,7 +50,7 @@ import { GenericThemeService } from 'diagnostic-data';
 import { ClientScriptService } from './shared-v2/services/client-script.service';
 import { OpenAIArmService } from 'diagnostic-data';
 import { OptInsightsService } from './shared/services/optinsights/optinsights.service';
-import { LinkInterceptorService } from './shared/services/link-interceptor.service';
+import { LinkInterceptorService } from './shared-v2/services/link-interceptor.service';
 
 @NgModule({
   imports: [
@@ -93,7 +93,6 @@ import { LinkInterceptorService } from './shared/services/link-interceptor.servi
     },
     { provide: CommsService, useExisting: GenericCommsService },
     { provide: AppInsightsQueryService, useExisting: AppInsightsService },
-    { provide: GenericLinkInterceptorService, useExisting: LinkInterceptorService },
     { provide: DiagnosticSiteService, useExisting: SiteService },
     {
       provide: ErrorHandler,
@@ -108,6 +107,7 @@ import { LinkInterceptorService } from './shared/services/link-interceptor.servi
     ClientScriptService,
     CategoryService,
     { provide: GenericFeatureService, useExisting: FeatureService },
+    { provide: GenericLinkInterceptorService, useExisting: LinkInterceptorService },
     LoggingV2Service,
     SupportTopicService,
     ResourceResolver,
