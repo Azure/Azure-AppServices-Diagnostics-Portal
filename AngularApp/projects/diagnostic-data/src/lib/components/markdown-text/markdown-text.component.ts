@@ -1,6 +1,6 @@
 import { Component, AfterViewInit, OnDestroy, ViewChild, Renderer2, Input } from '@angular/core';
 import { MarkdownComponent } from 'ngx-markdown';
-import { LinkInterceptorService } from '../../services/link-interceptor.service';
+import { GenericLinkInterceptorService } from '../../services/generic-link-interceptor.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 
@@ -20,7 +20,7 @@ export class MarkdownTextComponent implements AfterViewInit, OnDestroy {
   //Only <markdown-view> don't need to check whether it is markdown format 
   @Input() isMarkdownView:boolean = false;
 
-  constructor(private renderer: Renderer2, private linkInterceptorService: LinkInterceptorService, private router: Router, private telemetryService: TelemetryService,private activatedRoute:ActivatedRoute) { }
+  constructor(private renderer: Renderer2, private linkInterceptorService: GenericLinkInterceptorService, private router: Router, private telemetryService: TelemetryService,private activatedRoute:ActivatedRoute) { }
 
   isMarkdown(str: any) {
     return `${str}`.trim().startsWith('<markdown>') && str.endsWith('</markdown>');

@@ -2,7 +2,8 @@ import {
   CommsService, DiagnosticDataModule, DiagnosticService, DiagnosticSiteService,
   PUBLIC_DEV_CONFIGURATION, PUBLIC_PROD_CONFIGURATION, SolutionService, SettingsService,
   BackendCtrlQueryService, GenieGlobals, PortalActionGenericService,
-  KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService, GenericFeatureService, OptInsightsGenericService
+  KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService,
+  GenericFeatureService, OptInsightsGenericService, GenericLinkInterceptorService
 } from 'diagnostic-data';
 import { SiteService } from 'projects/app-service-diagnostics/src/app/shared/services/site.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -49,6 +50,7 @@ import { GenericThemeService } from 'diagnostic-data';
 import { ClientScriptService } from './shared-v2/services/client-script.service';
 import { OpenAIArmService } from 'diagnostic-data';
 import { OptInsightsService } from './shared/services/optinsights/optinsights.service';
+import { LinkInterceptorService } from './shared/services/link-interceptor.service';
 
 @NgModule({
   imports: [
@@ -91,6 +93,7 @@ import { OptInsightsService } from './shared/services/optinsights/optinsights.se
     },
     { provide: CommsService, useExisting: GenericCommsService },
     { provide: AppInsightsQueryService, useExisting: AppInsightsService },
+    { provide: GenericLinkInterceptorService, useExisting: LinkInterceptorService },
     { provide: DiagnosticSiteService, useExisting: SiteService },
     {
       provide: ErrorHandler,

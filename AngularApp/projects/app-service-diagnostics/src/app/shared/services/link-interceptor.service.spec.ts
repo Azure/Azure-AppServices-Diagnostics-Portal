@@ -3,10 +3,14 @@ import { TestBed } from '@angular/core/testing';
 import { LinkInterceptorService } from './link-interceptor.service';
 
 describe('LinkInterceptorService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  let service: LinkInterceptorService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(LinkInterceptorService);
+  });
 
   it('should be created', () => {
-    const service: LinkInterceptorService = TestBed.get(LinkInterceptorService);
     expect(service).toBeTruthy();
   });
 });
