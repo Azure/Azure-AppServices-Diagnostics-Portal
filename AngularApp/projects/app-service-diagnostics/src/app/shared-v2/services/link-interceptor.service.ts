@@ -9,8 +9,8 @@ const isAbsolute = new RegExp('(?:^[a-z][a-z0-9+.-]*:|\/\/)', 'i');
 @Injectable()
 export class LinkInterceptorService {
 
-  protected categories: Category[] = [];
-  protected detectorCategoryMapping: any[] = [];
+  private categories: Category[] = [];
+  private detectorCategoryMapping: any[] = [];
 
   constructor(private _diagnosticService: DiagnosticService, private _categoryService: CategoryService) {
 
@@ -81,33 +81,43 @@ export class LinkInterceptorService {
     }
   }
 
+  //
+  // This function appends 'category/{categoryId}' to the linkURL if
+  // we manage to find a category for this detector or analysis and
+  // if the existing url does not contain '/category/' at the right
+  // location.
+  //
+
   addCategoryIdIfNeeded(linkURL: string) {
-    let entity = this.getEntityIdAndPathFromUrl(linkURL);
-    if (entity && entity.detectorId && entity.urlPath) {
-      let mapping = this.detectorCategoryMapping.find(x => x.detectorId === entity.detectorId);
-      if (mapping && mapping.categoryId) {
-        let matchingCategoryId = mapping.categoryId;
-        linkURL = linkURL.replace(entity.urlPath, "/categories/" + matchingCategoryId + entity.urlPath);
+    const entityTypes = ['detectors', 'analysis', 'workflows'];
+    for (let index = 0; index < entityTypes.length; index++) {
+      const entityType = entityTypes[index];
+      if (linkURL.indexOf('/' + entityType + '/') > -1) {
+        let linkURLArray = linkURL.split('/');
+        let entityTypeIndex = linkURLArray.findIndex(x => x === entityType);
+        let entityIdIndex = entityTypeIndex + 1;
+
+        //
+        // Check of existense of '/categories/' just two indexes before the
+        // entity type. If it exists, no need to append the categoryId as
+        // the detector has already passed the right categoryId to the function.
+        //
+        let categoriesIndex = entityTypeIndex - 2;
+        if (categoriesIndex > 0 && linkURLArray[categoriesIndex] === 'categories') {
+          return linkURL;
+        }
+
+        if (entityTypeIndex > -1 && entityIdIndex < linkURLArray.length) {
+          let entityId: string = linkURLArray[entityIdIndex];
+          let mapping = this.detectorCategoryMapping.find(x => x.detectorId === entityId);
+          if (mapping && mapping.categoryId) {
+            let matchingCategoryId = mapping.categoryId;
+            linkURLArray.splice(entityTypeIndex, 0, 'categories', matchingCategoryId);
+            return linkURLArray.join('/');
+          }
+        }
       }
     }
-
     return linkURL;
   }
-
-  getEntityIdAndPathFromUrl(linkURL: string): any {
-    let retVal = { detectorId: '', urlPath: '' };
-    if (linkURL.indexOf('/detectors/') > -1) {
-      retVal.detectorId = linkURL.split('/detectors/')[1];
-      retVal.urlPath = "/detectors/" + linkURL.split('/detectors/')[1];
-    } else if (linkURL.indexOf('/analysis/') > -1) {
-      retVal.detectorId = linkURL.split('/analysis/')[1];
-      retVal.urlPath = "/analysis/" + linkURL.split('/analysis/')[1];
-    } else if (linkURL.indexOf('/workflows/') > -1) {
-      retVal.detectorId = linkURL.split('/workflows/')[1];
-      retVal.urlPath = "/workflows/" + linkURL.split('/workflows/')[1];
-    }
-
-    return retVal;
-  }
-
 }
