@@ -54,8 +54,8 @@ export class LinkInterceptorService {
       };
 
       //
-      // Don't treat the url as relative to the current URL if the 
-      // hyper link passed is a full resourceId
+      // Don't treat url as relative to the current URL if the 
+      // hyper link passed contains a full resourceId
       //
 
       if (linkURL.toLowerCase().indexOf('subscriptions/') === -1
@@ -63,14 +63,7 @@ export class LinkInterceptorService {
         navigationExtras.relativeTo = activatedRoute;
       }
 
-      let entity = this.getEntityIdAndPathFromUrl(linkURL);
-      if (entity && entity.detectorId && entity.urlPath) {
-        let mapping = this.detectorCategoryMapping.find(x => x.detectorId === entity.detectorId);
-        if (mapping && mapping.categoryId) {
-          let matchingCategoryId = mapping.categoryId;
-          linkURL = linkURL.replace(entity.urlPath, "/categories/" + matchingCategoryId + entity.urlPath);
-        }
-      }
+      linkURL = this.addCategoryIdIfNeeded(linkURL);
 
       if (linkURL && (!isAbsolute.test(linkURL) || linkURL.startsWith('./') || linkURL.startsWith('../'))) {
         e.preventDefault();
@@ -88,16 +81,33 @@ export class LinkInterceptorService {
     }
   }
 
-  getEntityIdAndPathFromUrl(linkURL: string): any {
-    let returnValue = { detectorId: '', urlPath: '' };
-    if (linkURL.indexOf('/detectors/') > -1) {
-      returnValue.detectorId = linkURL.split('/detectors/')[1];
-      returnValue.urlPath = "/detectors/" + linkURL.split('/detectors/')[1];
-    } else if (linkURL.indexOf('/analysis/') > -1) {
-      returnValue.detectorId = linkURL.split('/analysis/')[1];
-      returnValue.urlPath = "/analysis/" + linkURL.split('/analysis/')[1];
+  addCategoryIdIfNeeded(linkURL: string) {
+    let entity = this.getEntityIdAndPathFromUrl(linkURL);
+    if (entity && entity.detectorId && entity.urlPath) {
+      let mapping = this.detectorCategoryMapping.find(x => x.detectorId === entity.detectorId);
+      if (mapping && mapping.categoryId) {
+        let matchingCategoryId = mapping.categoryId;
+        linkURL = linkURL.replace(entity.urlPath, "/categories/" + matchingCategoryId + entity.urlPath);
+      }
     }
 
-    return returnValue;
+    return linkURL;
   }
+
+  getEntityIdAndPathFromUrl(linkURL: string): any {
+    let retVal = { detectorId: '', urlPath: '' };
+    if (linkURL.indexOf('/detectors/') > -1) {
+      retVal.detectorId = linkURL.split('/detectors/')[1];
+      retVal.urlPath = "/detectors/" + linkURL.split('/detectors/')[1];
+    } else if (linkURL.indexOf('/analysis/') > -1) {
+      retVal.detectorId = linkURL.split('/analysis/')[1];
+      retVal.urlPath = "/analysis/" + linkURL.split('/analysis/')[1];
+    } else if (linkURL.indexOf('/workflows/') > -1) {
+      retVal.detectorId = linkURL.split('/workflows/')[1];
+      retVal.urlPath = "/workflows/" + linkURL.split('/workflows/')[1];
+    }
+
+    return retVal;
+  }
+
 }
