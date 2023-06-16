@@ -21,7 +21,7 @@ export class LinkInterceptorService {
           detectors.forEach(detector => {
             let categoryId = this.getCategoryId(detector.category);
             if (categoryId && detector.id) {
-              this.detectorCategoryMapping.push({ detectorId: detector.id.toLowerCase(), categoryId: categoryId.toLowerCase() });
+              this.detectorCategoryMapping.push({ detectorId: detector.id, categoryId: categoryId });
             }
           });
         }
@@ -37,7 +37,7 @@ export class LinkInterceptorService {
       })
 
       const el = (e.target as HTMLElement);
-      const linkURL = el.getAttribute && el.getAttribute('href');
+      let linkURL = el.getAttribute && el.getAttribute('href');
       const linkText = el && el.innerText;
 
       // Send telemetry event for clicking hyerlink
@@ -63,6 +63,15 @@ export class LinkInterceptorService {
         navigationExtras.relativeTo = activatedRoute;
       }
 
+      let entity = this.getEntityIdAndPathFromUrl(linkURL);
+      if (entity && entity.detectorId && entity.urlPath) {
+        let mapping = this.detectorCategoryMapping.find(x => x.detectorId === entity.detectorId);
+        if (mapping && mapping.categoryId) {
+          let matchingCategoryId = mapping.categoryId;
+          linkURL = linkURL.replace(entity.urlPath,"/categories/" + matchingCategoryId + entity.urlPath);
+        }
+      }
+
       if (linkURL && (!isAbsolute.test(linkURL) || linkURL.startsWith('./') || linkURL.startsWith('../'))) {
         e.preventDefault();
         router.navigate([linkURL], navigationExtras);
@@ -76,6 +85,17 @@ export class LinkInterceptorService {
     let category = this.categories.find(x => x.name === categoryName);
     if (category) {
       return category.id;
+    }
+  }
+
+  getEntityIdAndPathFromUrl(linkURL: string): any {
+    let returnValue = { detectorId: '', urlPath: '' };
+    if (linkURL.indexOf('/detectors/') > -1) {
+      returnValue.detectorId = linkURL.split('/detectors/')[1];
+      returnValue.urlPath = "/detectors/" + linkURL.split('/detectors/')[1];
+    } else if (linkURL.indexOf('/analysis/') > -1) {
+      returnValue.detectorId = linkURL.split('/analysis/')[1];
+      returnValue.urlPath = "/analysis/" + linkURL.split('/analysis/')[1];
     }
   }
 }
