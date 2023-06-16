@@ -68,7 +68,7 @@ export class LinkInterceptorService {
         let mapping = this.detectorCategoryMapping.find(x => x.detectorId === entity.detectorId);
         if (mapping && mapping.categoryId) {
           let matchingCategoryId = mapping.categoryId;
-          linkURL = linkURL.replace(entity.urlPath,"/categories/" + matchingCategoryId + entity.urlPath);
+          linkURL = linkURL.replace(entity.urlPath, "/categories/" + matchingCategoryId + entity.urlPath);
         }
       }
 
@@ -97,5 +97,7 @@ export class LinkInterceptorService {
       returnValue.detectorId = linkURL.split('/analysis/')[1];
       returnValue.urlPath = "/analysis/" + linkURL.split('/analysis/')[1];
     }
+
+    return returnValue;
   }
 }
