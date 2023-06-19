@@ -112,6 +112,11 @@ export class LinkInterceptorService {
           let mapping = this.detectorCategoryMapping.find(x => x.detectorId === entityId);
           if (mapping && mapping.categoryId) {
             let matchingCategoryId = mapping.categoryId;
+
+            //
+            // insert /categories/{CategoryId} just before /detectors/{detectorId}
+            //
+
             linkURLArray.splice(entityTypeIndex, 0, 'categories', matchingCategoryId);
             return linkURLArray.join('/');
           }
