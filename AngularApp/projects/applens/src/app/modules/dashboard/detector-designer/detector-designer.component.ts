@@ -28,6 +28,7 @@ import { ComposerNodeModel } from '../models/detector-designer-models/node-model
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 import { INodeModelChangeEventProps } from '../node-composer/node-composer.component';
 import { NoCodeDetectorJson, NoCodeExpressionBody, NoCodeExpressionResponse, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
+import * as moment from 'moment';
 
 
 @Component({
@@ -261,7 +262,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   constructor(private cdRef: ChangeDetectorRef, private githubService: GithubApiService, private detectorGistApiService: DetectorGistApiService,
     public diagnosticApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService, private resourceService: ResourceService,
-    public _detectorControlService: DetectorControlService, private _adalService: AdalService,
+    private _detectorControlService: DetectorControlService, private _adalService: AdalService,
     public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute,
     private _applensCommandBarService: ApplensCommandBarService, private _router: Router, private _themeService: GenericThemeService, private _applensGlobal: ApplensGlobal ) {
     this._applensGlobal.updateHeader('');
@@ -269,7 +270,12 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     this.resetGlobals();
   }
 
+  // startTime: moment.Moment;
+  // endTime: moment.Moment;
+
   ngOnInit() {
+    // this.startTime = this._detectorControlService.startTime;
+    // this.endTime = this._detectorControlService.endTime;
     this._activatedRoute.params.subscribe((params: Params) => {
       this.initialized = false;
       this._detectorControlService.timePickerStrSub.subscribe(s => {

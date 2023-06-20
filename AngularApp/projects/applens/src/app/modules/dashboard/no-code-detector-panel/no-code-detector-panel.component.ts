@@ -16,8 +16,8 @@ export class NoCodeDetectorPanelComponent implements OnInit {
   }
   nodeList: NoCodeExpressionResponse[] = [];
   @Input() detectorJson: string = "";
-  @Input() startTime: string = "";
-  @Input() endTime: string = "";
+  // @Input() startTime: moment.Moment;
+  // @Input() endTime: moment.Moment;
   @Input() isOpenObservable: Observable<boolean>;
   isOpen: boolean = false;
   detectorView: any;
