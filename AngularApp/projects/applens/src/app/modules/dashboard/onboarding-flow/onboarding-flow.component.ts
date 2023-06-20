@@ -551,11 +551,6 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
   }
 
   publishButtonOnClick() {
-    if (this.isWorkflowDetector) {
-      this.publishWorkflow();
-      return;
-    }
-
     if (this.detectorGraduation) {
       this.showPublishDialog();
     }
@@ -601,7 +596,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     }
 
     this.diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(devopsConfig => {
-      this.detectorGraduation = devopsConfig.graduationEnabled && !this.isWorkflowDetector;
+      this.detectorGraduation = devopsConfig.graduationEnabled;
       this.DevopsConfig = new DevopsConfig(devopsConfig);
 
       this.commitHistoryLink = (devopsConfig.folderPath === "/") ? `https://dev.azure.com/${devopsConfig.organization}/${devopsConfig.project}/_git/${devopsConfig.repository}?path=${devopsConfig.folderPath}${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&_a=history` : `https://dev.azure.com/${devopsConfig.organization}/${devopsConfig.project}/_git/${devopsConfig.repository}?path=${devopsConfig.folderPath}/${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx&_a=history`;
