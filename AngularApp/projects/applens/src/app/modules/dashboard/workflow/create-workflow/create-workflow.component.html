@@ -31,6 +31,20 @@
       </div>
 
     </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="internalOnly">Internal Only</label>
+        <select name="internalOnly" class="form-control input-sm" [(ngModel)]="publishBody.IsInternal">
+          <option [ngValue]="false">false</option>
+          <option [ngValue]="true">true</option>
+        </select>
+      </div>
+      <div class="form-group col-md-6">
+        <label for="category">Category</label>
+        <input name="category" class="form-control input-sm" [(ngModel)]="publishBody.Category">
+      </div>
+    </div>
     <div class="form-row">
       <ng-container *ngIf="service === 'SiteService'">
         <div class="form-group col-md-3">

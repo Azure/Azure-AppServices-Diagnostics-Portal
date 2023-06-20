@@ -133,6 +133,7 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
       this.publishBody.Description = packageJson.Description;
       this.publishBody.IsInternal = packageJson.IsInternal;
       this.publishBody.WorkflowName = packageJson.name;
+      this.publishBody.Category = packageJson.Category;
 
       if (this.resourceService.service === 'SiteService') {
         this.publishBody.AppType = packageJson.AppType;

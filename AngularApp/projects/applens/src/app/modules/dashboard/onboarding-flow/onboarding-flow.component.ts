@@ -1968,6 +1968,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
   updatePublishingPackageIfWorkflow() {
     if (this.isWorkflowDetector) {
       this.publishingPackage = this.workflowPackage;
+      this.code = this.publishingPackage.codeString;
       if (this.publishingPackage.metadata == null) {
         this.publishingPackage.metadata = "{}";
       }

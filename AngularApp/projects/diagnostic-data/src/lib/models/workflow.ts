@@ -126,6 +126,7 @@ export class workflowPublishBody {
   StackType: string;
   ResourceType: string;
   ResourceProvider: string;
+  Category: string;
 }
 
 export interface workflowNodeResult {
