@@ -1,11 +1,18 @@
 <div>
     <fab-panel [isOpen]="isOpen" [hasCloseButton]="false" [customWidth]="'60%'">
+        <fab-pivot>
+            <fab-pivot-item [headerText]="'Data'">
+                <no-code-detector-view [detectorNodes]="detectorView"></no-code-detector-view>
+            </fab-pivot-item>
+            <fab-pivot-item [headerText]="'Data source'">
+                <tab-data-sources [onboardingMode]="true" [detectorResponse]="detectorView"></tab-data-sources>
+            </fab-pivot-item>
+        </fab-pivot>
         <!-- <no-code-detector-view [detectorNodes]="detectorView" [startTime]="startTime" [endTime]="endTime"></no-code-detector-view> -->
         <!-- <no-code-detector-view [detectorNodes]="detectorView"
               [startTime]="startTime" [endTime]="endTime" [showEdit]="false"
               [developmentMode]="true" [hideDetectorHeader]="true" [hideDetectorControl]="true"></no-code-detector-view> -->
-              <no-code-detector-view [detectorNodes]="detectorView"
-              [startTime]="startTime" [endTime]="endTime" ></no-code-detector-view>
+              <!-- <no-code-detector-view [detectorNodes]="detectorView"></no-code-detector-view> -->
         <!-- <ng-container [ngTemplateOutlet]="noCodeDetectorView"></ng-container> -->
 
         <fab-primary-button (onClick)="publishDetector()">publish</fab-primary-button>

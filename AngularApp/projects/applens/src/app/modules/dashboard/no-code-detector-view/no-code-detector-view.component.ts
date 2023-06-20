@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { NoCodeExpressionResponse } from '../dynamic-node-settings/node-rendering-json-models';
+import { DetectorControlService } from 'diagnostic-data';
 
 @Component({
   selector: 'no-code-detector-view',
@@ -12,23 +13,27 @@ export class NoCodeDetectorViewComponent implements OnInit {
   nodeList: NoCodeExpressionResponse[] = [];
   // testArray = ["to", "be", "continued"];
 
-  @Input() startTime: string = "";
-  @Input() endTime: string = "";
+  //@Input() startTime: moment.Moment;
+  //@Input() endTime: moment.Moment;
   @Input() set detectorNodes(nodes: any) {
-    this.showView = false;
+    // this.showView = false;
     this.detectorNodesSubject.next(nodes);
   }
-  showView: boolean = false;
+  showView: boolean = true;
   detectorView = null;
+  startTime: moment.Moment;
+  endTime: moment.Moment;
 
-  constructor() { }
+  constructor(private _detectorControlService: DetectorControlService) { }
 
   ngOnInit(): void {
+    this.startTime = this._detectorControlService.startTime;
+    this.endTime = this._detectorControlService.endTime;
     this.detectorNodesSubject.subscribe(x => {
       //this.nodeList = x;
-      setTimeout(() => {
-        this.showView = true;
-      }, 1000);
+      // setTimeout(() => {
+      //   this.showView = true;
+      // }, 1000);
       
       this.detectorView = x;
     });
