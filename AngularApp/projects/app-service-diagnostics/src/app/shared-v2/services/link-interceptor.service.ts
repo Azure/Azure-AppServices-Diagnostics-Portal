@@ -89,6 +89,12 @@ export class LinkInterceptorService {
   //
 
   addCategoryIdIfNeeded(linkURL: string) {
+    //
+    // Do not modify URLs with relative URL paths
+    //
+    if (linkURL.startsWith('..')) {
+      return linkURL;
+    }
     const entityTypes = ['detectors', 'analysis', 'workflows'];
     for (let index = 0; index < entityTypes.length; index++) {
       const entityType = entityTypes[index];
