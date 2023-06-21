@@ -1572,11 +1572,11 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
           this.localDevButtonDisabled = false;
           this.runButtonText = "Run";
           this.runButtonIcon = "fa fa-play";
-          this.buildOutput.push(error?.status === 401 ? errorMessage : "Something went wrong during detector invocation.");
+          this.buildOutput.push(errorMessage?.length > 0 ? errorMessage : "Something went wrong during detector invocation.");
           this.buildOutput.push("========== Build: 0 succeeded, 1 failed ==========");
           this.detailedCompilationTraces.push({
             severity: HealthStatus.Critical,
-            message: `${error?.status === 401 ? errorMessage : 'Something went wrong during detector invocation.'}`,
+            message: `${errorMessage?.length > 0 ? errorMessage : "Something went wrong during detector invocation."}`,
             location: {
               start: {
                 linePos: 0,
