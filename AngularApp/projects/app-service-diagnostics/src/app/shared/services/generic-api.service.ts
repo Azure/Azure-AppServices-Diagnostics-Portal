@@ -40,14 +40,10 @@ export class GenericApiService {
     public getDetectors(overrideResourceUri: string = ""): Observable<DetectorMetaData[]> {
 
         //
-        // Flag to fetch both Detectors and Workflows. This should stay as
-        //  'false' and should be enabled only when the UI code needs to be
-        // tested against both  detectors and workflows. Enabling this flag
-        // will double the latency of getting the detectors and the side panels
-        // will take too long to load.
+        // Enabling this flag to call both detectors and workflows
         //
 
-        let fetchDetectorsAndWorkflows = false;
+        let fetchDetectorsAndWorkflows = true;
         if (fetchDetectorsAndWorkflows) {
             return this.getDetectorsAndWorkflows(overrideResourceUri);
         }
