@@ -4,13 +4,14 @@
 
       <div class="node-heading">
         <status-icon class="mr-3" [status]="status"></status-icon>
-        <div class="mr-3"><strong>{{ data.title }}</strong></div>
+        <div class="mr-3" tabindex="0"><strong [attr.aria-label]="data.title" >{{ data.title }}</strong></div>
         <div class="tool-tip-icon">
           <div class="mr-2">
             <i *ngIf="isLoading && ((data.children && data.children.length > 0) || data.type.toLowerCase() === 'input')"
               class="fa fa-circle-o-notch fa-spin spin-icon mr-2" style="color:#0058ad" aria-hidden="true"></i>
             <img class="kusto-icon mr-2" *ngIf="data.metadataPropertyBag && data.metadataPropertyBag.length > 0"
-              src="assets/img/kusto.png" (click)="showMetadata()" />
+              src="assets/img/kusto.png" (click)="showMetadata()" tabindex="0" (keyup.space)="showMetadata()"
+              (keyup.enter)="showMetadata()" alt="Kusto Query hyperlink" />
             <div *ngIf="data.executionTraces && data.executionTraces.length > 0" class="hover-text">
               <i class="fa fa-tasks" aria-hidden="true"></i>
               <span class="tooltip-text" id="right">
@@ -36,15 +37,16 @@
     </div>
 
     <div class="panel-body">
-      <div class="description-text">{{ data.description }}</div>
-      <div class="markdown-text">
+      <div *ngIf="data.description" tabindex="0" class="description-text">{{ data.description }}</div>
+      <div *ngIf="data.markdownText" tabindex="0" class="markdown-text">
         <markdown [data]="data.markdownText"></markdown>
       </div>
       <workflow-accept-userinput *ngIf="data.inputNodeSettings" [data]="data"
         #acceptUserInput></workflow-accept-userinput>
       <div class="run-button">
         <button *ngIf="showNextButton()" [disabled]="runButtonClicked" class="btn btn-primary btn-sm mb-2"
-          (click)="runNext(data.children)">{{ isLoading ? 'Running...' : 'Next' }}</button>
+          (click)="runNext(data.children)" (keyup.space)="runNext(data.children)"
+          (keyup.enter)="runNext(data.children)">{{ isLoading ? 'Running...' : 'Next' }}</button>
       </div>
 
     </div>
