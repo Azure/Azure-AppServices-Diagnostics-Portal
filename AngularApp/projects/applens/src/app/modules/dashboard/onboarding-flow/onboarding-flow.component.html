@@ -359,14 +359,14 @@
         [iconProps]="{ iconName: 'BackToWindow' }" (click)="showGistDialog()"></fab-command-bar-item>
       <fab-command-bar-item [style]="commitHistoryVisibilityStyle" key="commitHistory" text="Commit History"
         [iconProps]="{iconName: 'ReadingMode'}" (click)="openCommitHistory()"></fab-command-bar-item>
-      <fab-command-bar-item [disabled]="isWorkflowDetector" [style]="deleteVisibilityStyle" key="delete" text="Delete"
+      <fab-command-bar-item [style]="deleteVisibilityStyle" key="delete" text="Delete"
         [iconProps]="{iconName: 'Delete'}" (click)="showDeleteDialog()"></fab-command-bar-item>
       <fab-command-bar-item *ngIf="gistMode" [style]="detectorReferences" key="detectorRefs"
         text="Update Detector References" [iconProps]="{iconName: 'BackToWindow'}"
         (click)="showUpdateDetectorReferencesDialog()">
       </fab-command-bar-item>
       <fab-command-bar-item *ngIf="copilotEnabled" text="Detector Copilot (Preview)" [iconProps]="{ iconName: 'robot' }"
-        (click)="_detectorCopilotService.showCopilotPanel()" [disabled]="copilotServiceMembersInitialized == false"></fab-command-bar-item>
+        (click)="_detectorCopilotService.showCopilotPanel()" [disabled]="copilotServiceMembersInitialized == false || isWorkflowDetector"></fab-command-bar-item>
       <far-items>
         <fab-command-bar-item *ngIf="detectorGraduation" key="brachSelectorPill" text="custom text">
           <render>

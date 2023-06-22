@@ -1364,6 +1364,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       if (modelData != null) {
         if (modelData.workflowSucceeded === true) {
           this.workflowPackage = modelData.workflowPackage;
+          this.code = this.workflowPackage.codeString;
           this.useAutoMergeText = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.code) && !this.IsDetectorMarkedPublic(this.originalCode));
           this.modalPublishingButtonText = !this.useAutoMergeText ? "Create PR" : "Publish";
           this.enablePublishButton();
@@ -1921,6 +1922,11 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       `/${this.id.toLowerCase()}/metadata.json`,
       `/${this.id.toLowerCase()}/package.json`
     ];
+
+    if (this.isWorkflowDetector) {
+      gradPublishFiles.push("delete workflowjson");
+      gradPublishFileTitles.push(`/${this.id.toLowerCase()}/workflow.json`);
+    }
 
     if (Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0) {
       gradPublishFiles.push("delete owners.txt");
