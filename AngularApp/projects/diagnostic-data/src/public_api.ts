@@ -34,7 +34,6 @@ export * from './lib/config/diagnostic-data-config';
 export * from './lib/diagnostic-data.module';
 export * from './lib/services/optinsights.service';
 export * from './lib/services/chatui-context.service';
-export * from './lib/services/generic-link-interceptor.service';
 
 
 export * from './lib/models/detector';
