@@ -449,7 +449,7 @@
                     <span class="fa status-icon" [ngClass]="getfaIconClass(item)"></span>
                   </div>
                   <div class="compilation-detailed-output-entryCell">
-                    <span>{{item.message}}</span>
+                    <span [innerHTML]="item.message"></span>
                   </div>
                 </div>
               </div>
