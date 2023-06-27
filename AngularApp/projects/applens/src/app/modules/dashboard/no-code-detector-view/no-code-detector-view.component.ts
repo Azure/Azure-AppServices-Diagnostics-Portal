@@ -23,6 +23,7 @@ export class NoCodeDetectorViewComponent implements OnInit {
   detectorView = null;
   startTime: moment.Moment;
   endTime: moment.Moment;
+  pivotKey: string = "data";
 
   constructor(private _detectorControlService: DetectorControlService) { }
 
@@ -37,6 +38,10 @@ export class NoCodeDetectorViewComponent implements OnInit {
       
       this.detectorView = x;
     });
+  }
+
+  changeTab(ev: any){
+    this.pivotKey = ev.item.props.itemKey;
   }
 
 }

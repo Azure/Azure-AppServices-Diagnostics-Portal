@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { PanelType } from 'office-ui-fabric-react';
 import { NoCodeExpressionResponse } from 'projects/applens/src/app/modules/dashboard/dynamic-node-settings/node-rendering-json-models';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 
@@ -21,6 +22,7 @@ export class NoCodeDetectorPanelComponent implements OnInit {
   @Input() isOpenObservable: Observable<boolean>;
   isOpen: boolean = false;
   detectorView: any;
+  type: PanelType = PanelType.custom;
 
   constructor(private changeDetection: ChangeDetectorRef) { }
 

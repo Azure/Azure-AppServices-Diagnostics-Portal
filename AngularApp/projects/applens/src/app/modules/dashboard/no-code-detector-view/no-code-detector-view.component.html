@@ -3,6 +3,18 @@
         <dynamic-data [diagnosticData]="node.res[0]" [startTime]="startTime" [endTime]="endTime"></dynamic-data>
     </div>
 </ng-container> -->
-<detector-view *ngIf="showView" [detectorResponse]="detectorView"
+
+<fab-pivot (onLinkClick)="changeTab($event)">
+    <fab-pivot-item [headerText]="'Data'" [itemKey]="'data'">
+        <detector-view [detectorResponse]="detectorView"
               [startTime]="startTime" [endTime]="endTime" [showEdit]="false"
-              [developmentMode]="false" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
+              [developmentMode]="true" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
+    </fab-pivot-item>
+    <fab-pivot-item [headerText]="'Data source'" [itemKey]="'dataSource'">
+        <tab-data-sources *ngIf="pivotKey=='dataSource'" [onboardingMode]="true" [detectorResponse]="detectorView"></tab-data-sources>
+    </fab-pivot-item>
+</fab-pivot>
+<!-- <detector-view *ngIf="showView && pivotKey=='data'" [detectorResponse]="detectorView"
+              [startTime]="startTime" [endTime]="endTime" [showEdit]="false"
+              [developmentMode]="true" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
+<tab-data-sources *ngIf="pivotKey=='dataSource'" [onboardingMode]="true" [detectorResponse]="detectorView"></tab-data-sources> -->

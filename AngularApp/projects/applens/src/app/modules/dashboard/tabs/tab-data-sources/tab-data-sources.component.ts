@@ -123,4 +123,8 @@ export class TabDataSourcesComponent {
       return "Link";
     }
   }
+
+  ngOnChanges(){
+    this.ngOnInit();
+  }
 }
