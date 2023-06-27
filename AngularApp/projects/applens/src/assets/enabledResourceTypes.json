@@ -437,6 +437,16 @@
             "displayName": "Virtual Machine"
         },
         {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.ClassicCompute/domainNames",
+            "templateFileName": "CloudService",
+            "imgSrc": "assets/img/Cloud-Service-Logo.svg",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "Azure Classic Cloud Service",
+            "searchSuffix": "AZURE CLASSIC CLOUD SERVICE",
+            "displayName": "Classic Cloud Service"
+        },
+        {
              "service": "ResourceService",
              "resourceType": "Microsoft.AzurePortal/sessions",
              "templateFileName": "AzurePortal",
