@@ -1,13 +1,21 @@
 <div>
-    <fab-panel [isOpen]="isOpen" [hasCloseButton]="false" [customWidth]="'60%'">
-        <fab-pivot>
-            <fab-pivot-item [headerText]="'Data'">
-                <no-code-detector-view [detectorNodes]="detectorView"></no-code-detector-view>
+    <fab-panel [type]="type" [isOpen]="isOpen" [hasCloseButton]="false" [customWidth]="'60%'">
+        <no-code-detector-view [detectorNodes]="detectorView"></no-code-detector-view>
+        <!-- <fab-pivot>
+            <fab-pivot-item [headerText]="'Data'" >
+                <div>
+                    <no-code-detector-view [detectorNodes]="detectorView"></no-code-detector-view>
+                </div>
             </fab-pivot-item>
             <fab-pivot-item [headerText]="'Data source'">
-                <tab-data-sources [onboardingMode]="true" [detectorResponse]="detectorView"></tab-data-sources>
+                <div>
+                    <tab-data-sources [onboardingMode]="true" [detectorResponse]="detectorView"></tab-data-sources>
+                </div>
             </fab-pivot-item>
-        </fab-pivot>
+            <fab-pivot-item [headerText]="'test'">
+                <p>test</p>
+            </fab-pivot-item>
+        </fab-pivot> -->
         <!-- <no-code-detector-view [detectorNodes]="detectorView" [startTime]="startTime" [endTime]="endTime"></no-code-detector-view> -->
         <!-- <no-code-detector-view [detectorNodes]="detectorView"
               [startTime]="startTime" [endTime]="endTime" [showEdit]="false"

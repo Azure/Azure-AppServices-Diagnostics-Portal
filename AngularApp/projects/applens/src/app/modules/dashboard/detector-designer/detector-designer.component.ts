@@ -41,8 +41,8 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   @Input() mode: DevelopMode = DevelopMode.Create;
 
   detectorName:string = 'Settings Panel Name';//'Auto Generated Detector Name';
-  detectorPanelOpen:boolean = true;
-  detectorPanelOpenObservable: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  //detectorPanelOpen:boolean = true;
+  detectorPanelOpenObservable: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   PanelType = PanelType;
   RenderingType = RenderingType;
