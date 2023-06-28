@@ -10,7 +10,6 @@ import {
 } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators'
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { Package } from '../../../shared/models/package';
 import { GithubApiService } from '../../../shared/services/github-api.service';
 import { DetectorGistApiService } from '../../../shared/services/detectorgist-template-api.service';
@@ -343,7 +342,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute,
     private _applensCommandBarService: ApplensCommandBarService, private _router: Router, private _themeService: GenericThemeService, private _applensGlobal: ApplensGlobal,
     private matDialog: MatDialog, private _queryResponseService: QueryResponseService, private _userSettingService: UserSettingService,
-    private _workflowService: WorkflowService, public _chatContextService: ChatUIContextService, public _detectorCopilotService: DetectorCopilotService, public _sanitizer:DomSanitizer) {
+    private _workflowService: WorkflowService, public _chatContextService: ChatUIContextService, public _detectorCopilotService: DetectorCopilotService) {
     this.lightOptions = {
       theme: 'vs',
       language: 'csharp',
@@ -2419,10 +2418,6 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     let file = $event.target.files[0];
     const text = await file.text();
     this.createWorkflow.uploadFlowData(text);
-  }
-
-  safeHtml(html: string) {
-    return this._sanitizer.bypassSecurityTrustHtml(html);
   }
   //#region Copilot Methods
 
