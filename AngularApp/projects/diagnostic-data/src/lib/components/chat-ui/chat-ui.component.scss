@@ -17,6 +17,14 @@
   padding: 14px;
 }
 
+.chatui-copy-button {
+  opacity: 0.8;
+  padding:10px;
+  cursor:pointer;
+}:hover {
+  opacity: 1;
+}
+
 .fade-in {
   opacity: 0;
   /* make the element invisible */
@@ -171,6 +179,11 @@
   border: none;
   padding: 9px;
   margin-top: 1px;
+}
+
+#sendChatButton:disabled,
+#sendChatButton[disabled] {
+  background-color: #b1b1b1;
 }
 
 .chatui-chat-messages-container {

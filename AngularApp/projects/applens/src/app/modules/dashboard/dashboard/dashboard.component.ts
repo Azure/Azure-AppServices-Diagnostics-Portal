@@ -251,6 +251,11 @@ export class DashboardComponent implements OnDestroy {
     this._router.navigate(['unauthorized'], { queryParams: { isDurianEnabled: true } });
   }
 
+  isValidAzureResource(resourceId: string): boolean {
+    const azureResourceIdRegex = /^subscriptions\/[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}\/resourceGroups\/[^/]+\/providers\/Microsoft\.[^/]+\/[^/]+\/[^/]+$/i;  
+    return azureResourceIdRegex.test(resourceId);
+  }
+
   handleUserResponse(userResponse: ConfirmationOption) {
     let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
     if (userResponse.value === 'yes') {
@@ -259,9 +264,10 @@ export class DashboardComponent implements OnDestroy {
         this.displayErrorInDialog = true;
         return;
       }
-      this._telemetryService.logEvent(TelemetryEventNames.ResourceOutOfScopeUserResponse, { userId: alias, url: this._router.url, userResponse: userResponse.label, userJustification: this.crossSubJustification, caseNumber: this._diagnosticApiService.CustomerCaseNumber });
+      let resourceId = this.isValidAzureResource(this.alertInfo.resourceId)? this.alertInfo.resourceId: undefined      
+      this._telemetryService.logEvent(TelemetryEventNames.ResourceOutOfScopeUserResponse, { userId: alias, url: this._router.url, resourceId: resourceId, userResponse: userResponse.label, userJustification: this.crossSubJustification, caseNumber: this._diagnosticApiService.CustomerCaseNumber });
       this.showLoaderInDialog = true;
-      this._diagnosticService.unrelatedResourceConfirmation().subscribe(() => {
+      this._diagnosticService.unrelatedResourceConfirmation(resourceId).subscribe(() => {
         this.showLoaderInDialog = false;
         this.displayAlertDialog = false;
         this.alertInfo = null;

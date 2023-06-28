@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import {
   Component, Input, OnInit, ViewChild, ViewContainerRef, Output, EventEmitter
 } from '@angular/core';
-import { DiagnosticData, Rendering, RenderingType } from '../../models/detector';
+import { DiagnosticData, DownTime, Rendering, RenderingType } from '../../models/detector';
 import { AppInsightsMarkdownComponent } from '../app-insights-markdown/app-insights-markdown.component';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
 import { DataSummaryComponent } from '../data-summary/data-summary.component';
@@ -27,7 +27,7 @@ import { DropdownV4Component } from '../dropdown-v4/dropdown-v4.component';
 import { CardSelectionV4Component } from '../card-selection-v4/card-selection-v4.component';
 import { ConnectAppInsightsComponent } from '../connect-app-insights/connect-app-insights.component';
 import { DetectorSearchComponent } from '../detector-search/detector-search.component';
-import { xAxisPlotBand, zoomBehaviors, XAxisSelection } from '../../models/time-series';
+import { xAxisPlotBand, zoomBehaviors, XAxisSelection, xAxisPlotBandStyles } from '../../models/time-series';
 import { DynamicInsightV4Component } from '../dynamic-insight-v4/dynamic-insight-v4.component';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { DataTableV4Component } from '../data-table-v4/data-table-v4.component';
@@ -44,6 +44,7 @@ import { ClientScriptViewComponent } from '../client-script-view/client-script-v
 import { WorkflowResultComponent } from '../workflow-result/workflow-result.component';
 import { ArchitectureDiagramComponent } from '../architecture-diagram/architecture-diagram.component';
 import { VideoComponent } from '../video/video.component';
+import * as moment from 'moment';
 
 @Component({
   selector: 'dynamic-data',
@@ -127,6 +128,10 @@ export class DynamicDataComponent implements OnInit {
       instance.detector = this.detector;
       instance.compilationPackage = this.compilationPackage;
       instance.isAnalysisView = this.isAnalysisView;
+      if(diagnosticData.renderingProperties?.graphOptions?.timeBands != null){
+        var bands = diagnosticData.renderingProperties.graphOptions.timeBands;
+        this.xAxisPlotBands = this.generateXAxisPlotBands(bands);
+      }
       instance.xAxisPlotBands = this.xAxisPlotBands;
       instance.zoomBehavior = this.zoomBehavior;
       instance.XAxisSelection.subscribe(XAxisSelectionEventArgs => {
@@ -206,6 +211,25 @@ export class DynamicDataComponent implements OnInit {
       default:
         return null;
     }
+  }
+
+  private generateXAxisPlotBands(downTimes: {startTime:string, endTime:string, isSelected:boolean}[]): xAxisPlotBand[] {
+    var xAxisPlotBands:xAxisPlotBand[] = [];
+    downTimes.forEach(downtime => {
+      if (!!downtime && !!downtime.startTime && !!downtime.endTime) {
+        var currentPlotBand: xAxisPlotBand = {
+          color: downtime.isSelected ? '#FFCAC4' : '#e5f9fe',
+          from: moment(downtime.startTime).utc(),
+          to: moment(downtime.endTime).utc(),
+          style: xAxisPlotBandStyles.BehindPlotLines,
+          borderWidth: 1,
+          borderColor: '#015cda'
+        };
+        xAxisPlotBands.push(currentPlotBand);
+      }
+    });
+
+    return xAxisPlotBands;
   }
 
 }

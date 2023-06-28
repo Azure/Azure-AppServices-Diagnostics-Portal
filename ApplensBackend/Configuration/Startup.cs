@@ -123,20 +123,32 @@ namespace AppLensV3
                     services.AddSingleton<IOpenAIRedisService, OpenAIRedisServiceDisabled>();
                 }
 
-                var connString = Configuration.GetValue<string>("OpenAIService:SignalRConnectionString");
-                if (string.IsNullOrWhiteSpace(connString))
+                if (!Environment.IsDevelopment())
                 {
-                    throw new Exception("OpenAI enabled but SignalR connection string not found");
-                }
+                    var connString = Configuration.GetValue<string>("OpenAIService:SignalRConnectionString");
+                    if (string.IsNullOrWhiteSpace(connString))
+                    {
+                        throw new Exception("OpenAI enabled but SignalR connection string not found");
+                    }
 
-                services
+                    services
                     .AddSignalR(options =>
                     {
                         // Max message size = 2MB
                         options.MaximumReceiveMessageSize = 2 * 1024 * 1024;
                         options.MaximumParallelInvocationsPerClient = 2;
-                    })
-                    .AddAzureSignalR(connString);
+                    }).AddAzureSignalR(connString);
+                }
+                else
+                {
+                    services
+                    .AddSignalR(options =>
+                    {
+                        // Max message size = 2MB
+                        options.MaximumReceiveMessageSize = 2 * 1024 * 1024;
+                        options.MaximumParallelInvocationsPerClient = 2;
+                    });
+                }
             }
             else
             {

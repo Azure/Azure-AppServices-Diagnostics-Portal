@@ -15,3 +15,22 @@ div#canvas[disabled="true"] {
 div#canvas[disabled="true"] ::ng-deep.ngflowchart-step-wrapper {
   opacity: 1;
 }
+
+.control-pill-text {
+  font-size: 13px;
+  color: var(--bodyText);
+}
+
+.control-pill-text:hover{
+  color: var(--bodyBackground);
+}
+
+.control-pill-text :first-child {
+  font-weight: 400;
+}
+
+.detector-control {
+  display: flex;
+  align-items: baseline;
+  margin: 16px 0px 12px 0px;
+}

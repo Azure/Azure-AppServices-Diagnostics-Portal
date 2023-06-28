@@ -237,6 +237,10 @@ export class DaasSessionsComponent implements OnChanges, OnDestroy {
           logFiles = logFiles.concat(activeInstance.Logs);
         }
 
+        if (this.isArrayWithItems(activeInstance.Errors)) {
+          sessionMaster.collectorErrors = sessionMaster.collectorErrors.concat(activeInstance.Errors);
+          sessionMaster.status = SessionStatus.Error;
+        }
         if (this.isArrayWithItems(activeInstance.CollectorErrors)) {
           sessionMaster.collectorErrors = sessionMaster.collectorErrors.concat(activeInstance.CollectorErrors);
           sessionMaster.status = SessionStatus.Error;

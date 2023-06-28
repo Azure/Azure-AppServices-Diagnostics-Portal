@@ -1,8 +1,8 @@
 import { Component, AfterViewInit, OnDestroy, ViewChild, Renderer2, Input } from '@angular/core';
 import { MarkdownComponent } from 'ngx-markdown';
-import { LinkInterceptorService } from '../../services/link-interceptor.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
+import { LinkInterceptorService } from '../../services/link-interceptor.service';
 
 
 @Component({

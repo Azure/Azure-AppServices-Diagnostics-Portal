@@ -65,6 +65,7 @@ export class SideNavComponent implements OnInit {
   isProd: boolean = false;
   workflowsEnabled: boolean = false;
   showChatGPT: boolean = false;
+  
 
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService,
     private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService,
@@ -199,11 +200,28 @@ export class SideNavComponent implements OnInit {
         return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `networkTraceAnalysis`.toLowerCase();
       },
       icon: null
-    }];
+    },
+    {
+      label: 'Kusto Copilot for Analytics',
+      id: "kustocopilot",
+      onClick: () => {
+        this.navigateTo("kustogpt");
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `kustogpt`;
+      },
+      icon: null
+    }
+  ];
 
   ngOnInit() {
     this._openAIService.CheckEnabled().subscribe(enabled => {
       this.showChatGPT = this._openAIService.isEnabled;
+      this._diagnosticApi.get<boolean>('api/openai/kustocopilot/enabled').subscribe(kustoGPTEnabledStatus => {
+        this.tools.find(tool => tool.id === 'kustocopilot').visible = kustoGPTEnabledStatus;
+      });
     });
     this._documentationService.getDocsRepoSettings().subscribe(settings => {
       this.documentationRepoSettings = settings;

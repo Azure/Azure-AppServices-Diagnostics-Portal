@@ -14,7 +14,33 @@ export class AppLensInterceptorService implements HttpInterceptor {
   tokenRefreshRetry: boolean = true;
   constructor(private _alertService: AlertService, private _adalService: AdalService) { }
 
-  raiseAlert(event) {
+  extractResourceIdFromPath(pathQuery: string | null): string {
+    if (!pathQuery) {
+      return "";
+    }
+    let pathQueryParts = pathQuery.split("?");
+    let pathParts = pathQueryParts[0];
+    if (!pathParts.startsWith("/")) {
+      pathParts = "/" + pathParts;
+    }
+    let regex;
+    if (pathParts.includes("/v4/"))
+    {
+      regex = pathParts.includes("/gists")? /\/v4\/(.*)\/gists/: /\/v4\/(.*)\/detectors/;  
+    }
+    else if (!pathParts.includes("/v4/"))
+    {
+      regex = pathParts.includes("/gists")? /\/(.*)\/gists/: /\/(.*)\/detectors/; 
+    }
+    const result = regex? pathParts.match(regex): undefined;
+    let resourceId = result && result[1]? result[1] : "";
+    return resourceId;
+  }
+
+  raiseAlert(event, req: HttpRequest<any>) {
+    let headers = req.headers;
+    let pathQuery = headers.get("x-ms-path-query");
+    let resourceId = this.extractResourceIdFromPath(pathQuery);
     let errormsg = event.error;
     errormsg = errormsg.replace(/\\"/g, '"');
     errormsg = errormsg.replace(/\"/g, '"');
@@ -33,7 +59,8 @@ export class AppLensInterceptorService implements HttpInterceptor {
       seekConfirmation: true,
       confirmationOptions: [{ label: 'Yes, proceed', value: 'yes' }, { label: 'No, take me back', value: 'no' }],
       alertStatus: HealthStatus.Warning,
-      userAccessStatus: userAccessStatus
+      userAccessStatus: userAccessStatus,
+      resourceId: resourceId
     };
     this._alertService.sendAlert(alertInfo);
   }
@@ -50,7 +77,11 @@ export class AppLensInterceptorService implements HttpInterceptor {
         let errorObj = JSON.parse(error.error);
         let consentRequiredHeader =  error.headers.get("x-ms-diag-consent-required");
         if (error.status === 403 && error.url.includes("api/invoke") && errorObj.Status == UserAccessStatus.ResourceNotRelatedToCase) {
-          this.raiseAlert(error);
+          this.raiseAlert(error, req);
+        }
+        else if (error.status == 403 && error.url.includes("api/invoke") && errorObj.Status == UserAccessStatus.ConsentRequired) {
+          // do not raise alert. Let us handle this in the detector container component.
+          return next.handle(req);
         }
         else if (error.status == 403 && error.url.includes("api/invoke") && errorObj.Status == UserAccessStatus.ConsentRequired) {
           // do not raise alert. Let us handle this in the detector container component.

@@ -41,6 +41,7 @@ export interface ActiveInstance {
     Status: string;
     CollectorStatusMessages: string[];
     AnalyzerStatusMessages: string[];
+    Errors: string[];
 }
 
 export class LogFile {

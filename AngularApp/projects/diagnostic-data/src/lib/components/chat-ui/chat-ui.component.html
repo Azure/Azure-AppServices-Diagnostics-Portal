@@ -38,7 +38,7 @@
           </ng-container>
           <ng-container *ngIf="message.status==2 || message.status==3 || message.status==4">
             <div class="chatui-message-{{message.renderingType}}" [ngClass]="{'chatui-message': chatAlignment=='center', 'chatui-message-left-aligned': chatAlignment=='left'}">
-              <div class="chat-message-timestamp">{{message.messageDisplayDate}}</div>
+              <div class="chat-message-timestamp"><span *ngIf="showCopyOption" class="chatui-copy-button" (click)="copySystemMessageToClipboard(message.displayMessage)"><i class="fa fa-lg fa-files-o"></i></span>{{message.messageDisplayDate}}</div>
               <div style="white-space:pre-wrap">
                 <markdown [ngClass]="{'blinking-cursor': message.status==2}" [data]="message.displayMessage">
                   
@@ -57,8 +57,9 @@
       </div>
     </div>
     <div class="chatui-box-row-container chatui-textarea-container">
-      <div class="chatui-message-validation-error" *ngIf="showValidationError">
-        {{validationErrorMessage}}
+      <div class="chatui-message-validation-error" *ngIf="showValidationError || chatInputTextInternal.length > inputTextLimit">
+        <span *ngIf="showValidationError">{{validationErrorMessage}}</span>
+        <span *ngIf="chatInputTextInternal.length > inputTextLimit">Input limit of {{inputTextLimit}} characters exceeded.</span>
       </div>
       <div class="chatui-message-validation-warning" *ngIf="showValidationWarning">
         {{validationWarningMessage}}
@@ -66,7 +67,7 @@
 
       <div *ngIf="showSearchBox" class="chatui-textarea-wrapper">
         <textarea [(ngModel)]="chatInputTextInternal" tabindex="0" class="chatui-textarea" rows="1" placeholder="Ask a question" (keyup.enter)="triggerChat()" id="chatUIInputBox" [disabled]="chatInputBoxDisabled" autofocus></textarea>
-        <button (click)="triggerChat()" class="chatui-textarea-button" aria-label="Send message">
+        <button id="sendChatButton" (click)="triggerChat()" class="chatui-textarea-button" aria-label="Send message" [disabled]="chatInputTextInternal.length > inputTextLimit">
             <svg
                 stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
                 stroke-linejoin="round" class="h-4 w-4 mr-1" height="1em" width="1em"

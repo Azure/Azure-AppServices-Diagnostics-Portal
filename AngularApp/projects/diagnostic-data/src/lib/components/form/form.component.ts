@@ -232,13 +232,6 @@ export class FormComponent extends DataRenderBaseComponent {
             }
           }
         });
-        this.activatedRoute.queryParams.subscribe(allRouteParams => {
-          for (let key of Object.keys(allRouteParams)) {
-            if (!detectorParams.hasOwnProperty(key)) {
-              detectorParams[key] = allRouteParams[key];
-            }
-          }
-        });
         let detectorQueryParamsString = JSON.stringify(detectorParams);
         if (!this.isPublic) {
           let currentURL = new URL(window.location.href);

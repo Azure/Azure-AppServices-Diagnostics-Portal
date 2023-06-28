@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 using AppLensV3.Models;
 using Azure;
 using Azure.AI.OpenAI;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -24,9 +26,9 @@ namespace AppLensV3.Services
 
     public interface IOpenAIService : IDisposable
     {
-        Task<HttpResponseMessage> RunTextCompletion(CompletionModel requestBody, bool cacheEnabledOnRequest);
+        Task<ChatResponse> RunTextCompletion(CompletionModel requestBody, bool cacheEnabledOnRequest);
 
-        Task<dynamic> RunChatCompletion(List<ChatMessage> chatMessages, ChatMetaData metadata);
+        Task<ChatResponse> RunChatCompletion(List<ChatMessage> chatMessages, ChatMetaData metadata);
 
         Task StreamChatCompletion(List<ChatMessage> chatMessages, ChatMetaData metadata, Func<ChatStreamResponse, Task> onMessageStreamAsyncCallback, CancellationToken cancellationToken = default);
 
@@ -37,11 +39,11 @@ namespace AppLensV3.Services
     {
         public bool IsEnabled() { return false; }
 
-        public async Task<HttpResponseMessage> RunTextCompletion(CompletionModel requestBody, bool cacheEnabledOnRequest) { return null; }
+        public async Task<ChatResponse> RunTextCompletion(CompletionModel requestBody, bool cacheEnabledOnRequest) { return null; }
 
         public void Dispose() { }
 
-        public Task<dynamic> RunChatCompletion(List<ChatMessage> chatMessages, ChatMetaData metadata)
+        public Task<ChatResponse> RunChatCompletion(List<ChatMessage> chatMessages, ChatMetaData metadata)
         {
             return null;
         }
@@ -50,6 +52,24 @@ namespace AppLensV3.Services
         {
             return Task.CompletedTask;
         }
+    }
+
+    public class OpenAIChainResponse
+    {
+        /// <summary>
+        /// Gets or sets a value that should be returned back to the client in case of a short circuit is desired, must be null otherwise.
+        /// </summary>
+        public ChatResponse ChatResponseToUseInShortCircuit { get; set; } = null;
+
+        /// <summary>
+        /// Gets or sets a value indicating the reason why the response should be short circuited. Optional.
+        /// </summary>
+        public string ShortCircuitReason { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets a value that will be used to make a call to OpenAI service as a part of chaining operation.
+        /// </summary>
+        public ChatCompletionsOptions ChatCompletionsOptionsToUseInChain { get; set; } = null;
     }
 
     public class OpenAIService : IOpenAIService
@@ -66,14 +86,20 @@ namespace AppLensV3.Services
         private IOpenAIRedisService redisCache;
         private IConfiguration configuration;
         private static OpenAIClient openAIClient;
-        private Dictionary<string, Task<string>> chatTemplateFileCache;
+        private ConcurrentDictionary<string, Task<string>> chatTemplateFileCache;
         private string chatHubRedisKeyPrefix;
+        private Dictionary<string, AnalyticsKustoTableDetails> analyticsKustoTables = new Dictionary<string, AnalyticsKustoTableDetails>(StringComparer.OrdinalIgnoreCase);
+        private ConcurrentDictionary<string, ChatCompletionCustomHandler> customHandlerForChatCompletion = new ConcurrentDictionary<string, ChatCompletionCustomHandler>(StringComparer.OrdinalIgnoreCase);
+
+        // Delegate gets chatCompletionOptions which will have the corresponding template file and past user messages already loaded.
+        // It also gets the chatMessages and the chatMetaData in case the custom logic needs to prepare its independent set of messages.
+        private delegate Task<OpenAIChainResponse> ChatCompletionCustomHandler(List<ChatMessage> chatMessages, ChatMetaData metadata, ChatCompletionsOptions chatCompletionsOptions, ILogger<OpenAIService> logger);
 
         public OpenAIService(IConfiguration config, IOpenAIRedisService redisService, ILogger<OpenAIService> logger)
         {
             configuration = config;
             isOpenAIAPIEnabled = Convert.ToBoolean(configuration["OpenAIService:Enabled"]);
-            chatTemplateFileCache = new Dictionary<string, Task<string>>();
+            chatTemplateFileCache = new ConcurrentDictionary<string, Task<string>>(StringComparer.OrdinalIgnoreCase) ;
             if (isOpenAIAPIEnabled)
             {
                 this.logger = logger;
@@ -88,6 +114,9 @@ namespace AppLensV3.Services
                 InitializeHttpClient();
                 InitializeOpenAIClient();
                 InitializeChatTemplateFileCache();
+
+                // Initialize custom handlers for chat completion API. This allows for chaining GPT responses.
+                customHandlerForChatCompletion["analyticskustocopilot"] = HandleAnalyticsKustoCopilot;
             }
         }
 
@@ -109,7 +138,7 @@ namespace AppLensV3.Services
             return await redisCache.SetKey(key, value);
         }
 
-        public async Task<HttpResponseMessage> RunTextCompletion(CompletionModel requestBody, bool cacheEnabledOnRequest)
+        public async Task<ChatResponse> RunTextCompletion(CompletionModel requestBody, bool cacheEnabledOnRequest)
         {
             var cacheKey = JsonConvert.SerializeObject(requestBody);
             if (cacheEnabledOnRequest)
@@ -117,40 +146,44 @@ namespace AppLensV3.Services
                 var getFromCache = await GetFromRedisCache(cacheKey);
                 if (!string.IsNullOrEmpty(getFromCache))
                 {
-                    return new HttpResponseMessage()
-                    {
-                        StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(getFromCache)
-                    };
+                    return JsonConvert.DeserializeObject<ChatResponse>(getFromCache);
                 }
             }
+
             try
             {
                 var endpoint = $"{openAIEndpoint}{openAIGPT3APIUrl}";
                 var requestMessage = new HttpRequestMessage(HttpMethod.Post, endpoint);
                 requestMessage.Content = new StringContent(JsonConvert.SerializeObject(requestBody.Payload), Encoding.UTF8, "application/json");
                 var response = await httpClient.SendAsync(requestMessage);
-                if (cacheEnabledOnRequest)
+                if (response.IsSuccessStatusCode)
                 {
-                    try
+                    var content = await response.Content.ReadAsStringAsync();
+                    OpenAIAPIResponse openAIApiResponse = JsonConvert.DeserializeObject<OpenAIAPIResponse>(content);
+                    ChatResponse responseToReturn = new ChatResponse(openAIApiResponse);
+                    if (cacheEnabledOnRequest)
                     {
-                        if (response.IsSuccessStatusCode)
+                        try
                         {
-                            var content = await response.Content.ReadAsStringAsync();
-                            if (!string.IsNullOrWhiteSpace(content))
+                            if (!string.IsNullOrWhiteSpace(responseToReturn.Text))
                             {
-                                var saveStatus = await SaveToRedisCache(cacheKey, content);
+                                var saveStatus = await SaveToRedisCache(cacheKey, JsonConvert.SerializeObject(responseToReturn));
                                 logger.LogInformation($"Status of OpenAISaveToRedisCache: {saveStatus}");
                             }
                         }
+                        catch (Exception ex)
+                        {
+                            // No big deal if save to cache fails, log and succeed the request
+                            logger.LogWarning($"Failed to save OpenAI response to Redis Cache: {ex}");
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        // No big deal if save to cache fails, log and succeed the request
-                        logger.LogWarning($"Failed to save OpenAI response to Redis Cache: {ex}");
-                    }
+
+                    return responseToReturn;
                 }
-                return response;
+                else
+                {
+                    throw new HttpRequestException(message: await response.Content.ReadAsStringAsync(), inner: null, statusCode: response.StatusCode);
+                }
             }
             catch (Exception ex)
             {
@@ -159,7 +192,7 @@ namespace AppLensV3.Services
             }
         }
 
-        public async Task<dynamic> RunChatCompletion(List<ChatMessage> chatMessages, ChatMetaData metadata)
+        public async Task<ChatResponse> RunChatCompletion(List<ChatMessage> chatMessages, ChatMetaData metadata)
         {
             if (chatMessages == null || chatMessages.Count == 0)
             {
@@ -167,10 +200,25 @@ namespace AppLensV3.Services
             }
 
             ChatCompletionsOptions chatCompletionsOptions = await PrepareChatCompletionOptions(chatMessages, metadata);
-            Response<ChatCompletions> response = await openAIClient.GetChatCompletionsAsync(
-                openAIGPT4Model, chatCompletionsOptions);
 
-            return response.Value;
+            Response<ChatCompletions> response = null;
+            OpenAIChainResponse chainResponse = null;
+
+            if (!string.IsNullOrWhiteSpace(metadata.ChatIdentifier) && customHandlerForChatCompletion.TryGetValue(metadata.ChatIdentifier, out ChatCompletionCustomHandler customHandler))
+            {
+                chainResponse = await customHandler.Invoke(chatMessages, metadata, chatCompletionsOptions, logger);
+            }
+
+            if (chainResponse?.ChatResponseToUseInShortCircuit != null)
+            {
+                return chainResponse.ChatResponseToUseInShortCircuit;
+            }
+            else
+            {
+                response = await openAIClient.GetChatCompletionsAsync(openAIGPT4Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
+            }
+
+            return new ChatResponse(response);
         }
 
         /// <inheritdoc/>
@@ -184,35 +232,54 @@ namespace AppLensV3.Services
             string finishReason = string.Empty;
 
             ChatCompletionsOptions chatCompletionsOptions = await PrepareChatCompletionOptions(chatMessages, metadata);
-            chatCompletionsOptions.MaxTokens = MaxTokensAllowedForStreaming;
-
-            Response<StreamingChatCompletions> response = await openAIClient.GetChatCompletionsStreamingAsync(
-               openAIGPT4Model, chatCompletionsOptions);
-
-            using StreamingChatCompletions streamingChatCompletions = response.Value;
-
-            await foreach (StreamingChatChoice choice in streamingChatCompletions.GetChoicesStreaming(cancellationToken))
+            OpenAIChainResponse chainResponse = null;
+            if (!string.IsNullOrWhiteSpace(metadata.ChatIdentifier) && customHandlerForChatCompletion.TryGetValue(metadata.ChatIdentifier, out ChatCompletionCustomHandler customHandler))
             {
-                await foreach (ChatMessage message in choice.GetMessageStreaming(cancellationToken))
-                {
-                    string messageState = await GetFromRedisCache($"{chatHubRedisKeyPrefix}{metadata.MessageId}");
-                    if (messageState != null && messageState.Equals("cancelled", StringComparison.OrdinalIgnoreCase))
-                    {
-                        throw new OperationCanceledException("message marked for cancellation in redis cache");
-                    }
-
-                    if (onMessageStreamAsyncCallback != default && message != null)
-                    {
-                        await onMessageStreamAsyncCallback(new ChatStreamResponse(content: message.Content));
-                    }
-                }
-
-                finishReason = choice.FinishReason;
+                chainResponse = await customHandler.Invoke(chatMessages, metadata, chatCompletionsOptions, logger);
             }
 
-            if (onMessageStreamAsyncCallback != default)
+            chatCompletionsOptions.MaxTokens = MaxTokensAllowedForStreaming;
+
+            if (chainResponse?.ChatResponseToUseInShortCircuit != null)
             {
-                await onMessageStreamAsyncCallback(new ChatStreamResponse(finishReason: finishReason));
+                if (onMessageStreamAsyncCallback != default)
+                {
+                    if (!string.IsNullOrWhiteSpace(chainResponse.ChatResponseToUseInShortCircuit.Text))
+                    {
+                        await onMessageStreamAsyncCallback(new ChatStreamResponse(content: chainResponse.ChatResponseToUseInShortCircuit.Text));
+                    }
+
+                    await onMessageStreamAsyncCallback(new ChatStreamResponse(finishReason: "stop"));
+                }
+            }
+            else
+            {
+                Response<StreamingChatCompletions> response = await openAIClient.GetChatCompletionsStreamingAsync(
+                    openAIGPT4Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
+                using StreamingChatCompletions streamingChatCompletions = response.Value;
+                await foreach (StreamingChatChoice choice in streamingChatCompletions.GetChoicesStreaming(cancellationToken))
+                {
+                    await foreach (ChatMessage message in choice.GetMessageStreaming(cancellationToken))
+                    {
+                        string messageState = await GetFromRedisCache($"{chatHubRedisKeyPrefix}{metadata.MessageId}");
+                        if (messageState != null && messageState.Equals("cancelled", StringComparison.OrdinalIgnoreCase))
+                        {
+                            throw new OperationCanceledException("message marked for cancellation in redis cache");
+                        }
+
+                        if (onMessageStreamAsyncCallback != default && message != null)
+                        {
+                            await onMessageStreamAsyncCallback(new ChatStreamResponse(content: message.Content));
+                        }
+                    }
+
+                    finishReason = choice.FinishReason;
+                }
+
+                if (onMessageStreamAsyncCallback != default)
+                {
+                    await onMessageStreamAsyncCallback(new ChatStreamResponse(finishReason: finishReason));
+                }
             }
         }
 
@@ -254,8 +321,12 @@ namespace AppLensV3.Services
 
         private async Task<string> GetChatTemplateContent(string chatIdentifier)
         {
-            await InitializeChatTemplateFileCache();
-            string templateCacheKey = $"{chatIdentifier ?? string.Empty}.json".ToLower();
+            string templateCacheKey = $"{chatIdentifier ?? string.Empty}.json";
+            if (!chatTemplateFileCache.ContainsKey(templateCacheKey))
+            {
+                await InitializeChatTemplateFileCache();
+            }
+
             if (string.IsNullOrWhiteSpace(chatIdentifier) || !chatTemplateFileCache.TryGetValue(templateCacheKey, out _))
             {
                 templateCacheKey = "_default.json";
@@ -263,6 +334,109 @@ namespace AppLensV3.Services
 
             return await chatTemplateFileCache[templateCacheKey];
         }
+
+        #region Delegate implementation for custom chat completion handlers
+        private async Task<OpenAIChainResponse> HandleAnalyticsKustoCopilot(List<ChatMessage> chatMessages, ChatMetaData metadata, ChatCompletionsOptions chatCompletionsOptions, ILogger<OpenAIService> logger)
+        {
+            try
+            {
+                ChatCompletionsOptions tempChatCompletionsOptions = new ChatCompletionsOptions();
+                tempChatCompletionsOptions.Temperature = chatCompletionsOptions.Temperature;
+                tempChatCompletionsOptions.MaxTokens = chatCompletionsOptions.MaxTokens;
+                tempChatCompletionsOptions.NucleusSamplingFactor = chatCompletionsOptions.NucleusSamplingFactor;
+                tempChatCompletionsOptions.FrequencyPenalty = chatCompletionsOptions.FrequencyPenalty;
+                tempChatCompletionsOptions.PresencePenalty = chatCompletionsOptions.PresencePenalty;
+                tempChatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.System, chatCompletionsOptions.Messages.First(m => m.Role == ChatRole.System).Content));
+
+                string userQuestion = chatMessages.Last(m => m.Role == ChatRole.User).Content;
+                string chainingQuestion = $"Which table(s) will help answer the following question? If more than one table is found, return a comma seperated list.{Environment.NewLine}{userQuestion}";
+                tempChatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.User, chainingQuestion));
+
+                Response<ChatCompletions> intermediateResponse = await openAIClient.GetChatCompletionsAsync(openAIGPT4Model, tempChatCompletionsOptions);
+
+                string tableNamesCSV = intermediateResponse?.Value?.Choices?.Count > 0 && !string.IsNullOrWhiteSpace(intermediateResponse.Value.Choices[0]?.Message?.Content) 
+                    ? intermediateResponse.Value.Choices[0].Message.Content : string.Empty;
+
+                if (tableNamesCSV.Equals(string.Empty))
+                {
+                    return new OpenAIChainResponse()
+                    {
+                        ShortCircuitReason = "Unable to identify tables necessary to construct the query",
+                        ChatResponseToUseInShortCircuit = new ChatResponse("Sorry, I could not identify the related tables. Please help me learn, submit the expected query to Applens team."),
+                        ChatCompletionsOptionsToUseInChain = null
+                    };
+                }
+
+                StringBuilder secondQuestion = new StringBuilder();
+                foreach (string tableName in tableNamesCSV.Split(","))
+                {
+                    if (analyticsKustoTables.Count == 0)
+                    {
+                        string configString = await GetChatTemplateContent("analyticskustotableconfig");
+                        JObject jObject = JObject.Parse(configString);
+                        JArray tablesList = (jObject["Tables"] ?? new JObject()).ToObject<JArray>();
+                        foreach (var element in tablesList)
+                        {
+                            if (!string.IsNullOrWhiteSpace((element["TableName"] ?? string.Empty).ToString()) && !string.IsNullOrWhiteSpace((element["SchemaWithNotes"] ?? string.Empty).ToString()))
+                            {
+                                analyticsKustoTables.Add(element["TableName"].ToString().Trim(),
+                                    new AnalyticsKustoTableDetails()
+                                    {
+                                        TableName = element["TableName"].ToString().Trim(),
+                                        Description = (element["Description"] ?? string.Empty).ToString(),
+                                        SchemaWithNotes = (string)element["SchemaWithNotes"]
+                                    }
+                                 );
+                            }
+                        }
+                    }
+
+                    if (analyticsKustoTables.TryGetValue(tableName.Trim(), out AnalyticsKustoTableDetails tableDetails))
+                    {
+                        secondQuestion.AppendLine($"Table:{tableDetails.TableName}");
+                        if (!string.IsNullOrWhiteSpace(tableDetails.Description))
+                        {
+                            secondQuestion.AppendLine($"Description:{tableDetails.Description}");
+                        }
+
+                        secondQuestion.AppendLine($"SchemaWithNotes:{tableDetails.SchemaWithNotes}");
+                        secondQuestion.AppendLine();
+                    }
+                }
+
+                if (secondQuestion.Length < 5)
+                {
+                    // We could not identify the table or the attempted question does not adhere to the rules set for the copilot. Terminate processing and return a response.
+                    OpenAIChainResponse returnResponse = new OpenAIChainResponse()
+                    {
+                        ShortCircuitReason = "Unable to identify tables necessary to construct the query",
+                        ChatResponseToUseInShortCircuit = new ChatResponse(tableNamesCSV),
+                        ChatCompletionsOptionsToUseInChain = null
+                    };
+
+                    return returnResponse;
+                }
+
+                secondQuestion.AppendLine("Using the above details, answer the following question");
+                secondQuestion.AppendLine(userQuestion);
+                secondQuestion.AppendLine($"Note: The current year is {DateTime.UtcNow.Year}");
+
+                int lastUserMessage = chatCompletionsOptions.Messages.Select((message, index) => new { Message = message, Index = index }).LastOrDefault(item => item.Message.Role == ChatRole.User)?.Index ?? -1;
+                chatCompletionsOptions.Messages.RemoveAt(lastUserMessage);
+                chatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.User, secondQuestion.ToString()));
+                return new OpenAIChainResponse()
+                {
+                    ChatResponseToUseInShortCircuit = null,
+                    ChatCompletionsOptionsToUseInChain = chatCompletionsOptions
+                };
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Error preparing chat completion options : {ex}");
+                throw;
+            }
+        }
+        #endregion
 
         private async Task<ChatCompletionsOptions> PrepareChatCompletionOptions(List<ChatMessage> chatMessages, ChatMetaData metadata)
         {

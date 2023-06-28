@@ -1,0 +1,63 @@
+<fab-command-bar [contentStyle]="'solid gray;font-size:12px'" [contentClass]="'fab-command-bar-class'">
+  <items>
+    <fab-command-bar-item key="clearchat" text="Clear Chat" [iconProps]="{ iconName: 'EraseTool' }"
+      [disabled]="chatInProgress" (click)="showClearChatDialog(true)">
+    </fab-command-bar-item>
+    <fab-command-bar-item key="stopcalls" text="Stop" [iconProps]="{ iconName: 'stop' }"
+      [disabled]="!chatInProgress" (click)="cancelOpenAICall()">
+    </fab-command-bar-item>    
+    <fab-command-bar-item key="feedback" text="Feedback"
+      [iconProps]="{ iconName: 'mail' }"
+      (click)="sendFeedback()">
+    </fab-command-bar-item>
+    <fab-command-bar-item  *ngFor="let customButton of customCommandBarButtons" key="'custom_' + customButton.displayText" [text]="customButton.displayText"
+      [iconProps]="getCustomButtonIconProps(customButton)" [disabled]="customButton.disabled"
+      (click)="customButton.onClick()"></fab-command-bar-item>
+  </items>
+</fab-command-bar>
+
+
+<div *ngIf="isEnabled" style="height:80vh;">
+  <openai-chat
+    [customInitialPrompt] = "customInitialPrompt"
+    [customFirstMessage] = "customFirstMessage"
+    [chatIdentifier] = "chatIdentifier"
+    [persistChat] = "persistChat"
+    [chatHeader] = "chatHeader"
+    [chatContextLength] = "chatContextLength"
+    [chatQuerySamplesFileUri] = "chatQuerySamplesFileUri"
+    [fetchChat] = "fetchChat"
+    [saveChat] = "saveChat"
+    [chatAlignment] = "chatAlignment"
+    [chatModel] = "chatModel"
+    [responseTokenSize] = "responseTokenSize"
+    [stopMessageGeneration] = "stopMessageGeneration"
+    [systemInitial] = "systemInitial"
+    [systemPhotoSource] = "systemPhotoSource"
+    [showCopyOption] = "showCopyOption"
+    [apiProtocol] = "apiProtocol"
+    [preprocessUserMessage] = "updateStatusAndPreProcessUserMessage"
+    [postProcessSystemMessage] = "updateStatusAndPostProcessSystemMessage"
+    [postPrepareChatContext] = "onPrepareChatContext"
+    [showFeedbackOptions] = "showFeedbackOptions"
+    [showContentDisclaimer] = "showContentDisclaimer"
+    [contentDisclaimerMessage] = "contentDisclaimerMessage"
+    [quotaEnforced] = "quotaEnforced"
+    [dailyMessageQuota] = "dailyMessageQuota"
+    [messageQuotaWarningThreshold] = "messageQuotaWarningThreshold"
+    [inputTextLimit] = "inputTextLimit"
+    ></openai-chat>
+
+    <fab-dialog [hidden]="clearChatConfirmationHidden" (onDismiss)="showClearChatDialog(false)">
+      <fab-dialog-content [title]="'Are you sure?'">
+        <div style="font-size: 13px;">
+          Just Confirming. You can still change your mind <i class="fa fa-smile-o"
+            aria-hidden="true"></i>
+        </div>
+        <div class="mt-4" style="margin-top:10px">
+          <fab-primary-button text="Clear Chat" (onClick)="clearChat()" [contentClass]="'mr-3'"></fab-primary-button>
+          <fab-default-button text="Cancel" (onClick)="showClearChatDialog(false)"></fab-default-button>
+        </div>
+      </fab-dialog-content>
+    </fab-dialog>  
+</div>

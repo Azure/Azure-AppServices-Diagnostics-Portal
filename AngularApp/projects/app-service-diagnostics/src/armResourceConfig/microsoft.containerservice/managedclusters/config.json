@@ -76,6 +76,16 @@
             "createFlowForCategory": true,
             "chatEnabled": false,
             "overviewDetectorId": "aks-category-node-health"
+        },
+        {
+            "id": "storageaks",
+            "name": "Storage",
+            "description": "Diagnose any problems related to storage issues.",
+            "keywords": [ "Disk Mount", "Node Disk Pressure", "Storage"],
+            "color": "rgb(186, 211, 245)",
+            "createFlowForCategory": true,
+            "chatEnabled": false,
+            "overviewDetectorId": "aks-category-storage"
         }
     ],
 

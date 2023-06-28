@@ -12,9 +12,11 @@ namespace AppLensV3
 {
     public sealed class StartupPublicAzure: IStartup
     {
+        private IConfiguration _configuration;
         public void AddCloudSpecificServices(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             services.AddBearerAuthFlow(configuration, environment);
+            _configuration = configuration;
         }
 
         public void AddConfigurations(ConfigurationBuilder builder, IWebHostEnvironment env, string cloudDomain)
@@ -50,7 +52,10 @@ namespace AppLensV3
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<OpenAIChatCompletionHub>("/chatcompletionHub");
+                if (_configuration.GetValue("OpenAIService:Enabled", false))
+                {
+                    endpoints.MapHub<OpenAIChatCompletionHub>("/chatcompletionHub");
+                }
             });
 
             app.Use(async (context, next) =>

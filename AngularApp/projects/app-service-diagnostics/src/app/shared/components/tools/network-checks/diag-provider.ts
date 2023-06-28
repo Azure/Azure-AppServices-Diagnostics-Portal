@@ -85,7 +85,7 @@ export class DiagProvider {
     }
 
     public getResource<T>(resourceUri: string, apiVersion: string): Promise<HttpResponse<T>> {
-        return this._armService.getResourceFullResponse<T>(resourceUri, null, apiVersion).toPromise();
+        return this._armService.getResourceFullResponse<T>(resourceUri, null, apiVersion, false).toPromise();
     }
 
     public getPlain<T>(uri: string): Observable<HttpResponse<T>> {
@@ -102,7 +102,7 @@ export class DiagProvider {
         if (!invalidateCache && this._dict.has(key)) {
             return this._dict.get(key);
         }
-        var result = this._armService.requestResource<DiagResponse, any>("GET", resourceUri, null, apiVersion)
+        var result = this._armService.requestResource<DiagResponse, any>("GET", resourceUri, null, apiVersion, false)
             .toPromise()
             .then(t => {
                 let responseResult: DiagResponse;
@@ -136,7 +136,7 @@ export class DiagProvider {
 
     public postArmResourceAsync<T, S>(resourceUri: string, body?: S, apiVersion?: string, invalidateCache: boolean = false, appendBodyToCacheKey: boolean = false): Promise<boolean | {} | ResponseMessageEnvelope<T>> {
         var stack = new Error("error_message_placeholder").stack;
-        return this._armService.postResource<T, S>(resourceUri, body, apiVersion, invalidateCache, appendBodyToCacheKey)
+        return this._armService.postResource<T, S>(resourceUri, body, apiVersion, invalidateCache, appendBodyToCacheKey, false)
             .toPromise()
             .catch(e => {
                 e.stack = stack.replace("error_message_placeholder", e.message || "");
@@ -146,7 +146,7 @@ export class DiagProvider {
 
     public requestResourceAsync<T, S>(method: string, resourceUri: string, body?: S, apiVersion?: string): Promise<boolean | {} | ResponseMessageEnvelope<T>> {
         var stack = new Error("error_message_placeholder").stack;
-        return this._armService.requestResource<T, S>(method, resourceUri, body, apiVersion)
+        return this._armService.requestResource<T, S>(method, resourceUri, body, apiVersion, false)
             .toPromise()
             .catch(e => {
                 if (e.status != null) {

@@ -65,6 +65,12 @@
                   </a>
                 </li>
               </ul>
+              <div *ngIf="isArrayWithItems(session.collectorErrors)">
+                <fab-tooltip-host content="{{session.collectorErrors[0]}}" [directionalHint]="directionalHint"
+                  [tooltipOptions]="toolTipOptionsValue">
+                  <i class="fa fa-exclamation-triangle" style="color:rgb(180, 10, 10)"></i>
+                </fab-tooltip-host>
+              </div>
             </div>
           </td>
         </tr>

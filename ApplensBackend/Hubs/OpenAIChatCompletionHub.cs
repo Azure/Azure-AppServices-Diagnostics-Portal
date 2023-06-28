@@ -59,7 +59,7 @@ namespace AppLensV3.Hubs
 
                 redisKey = $"{redisKeyPrefix}{chatPayload.MetaData.MessageId}";
 
-                _ = this.openAIRedisService.SetKey(redisKey, "inprogress", TimeSpan.FromMinutes(5));
+                _ = await this.openAIRedisService.SetKey(redisKey, "inprogress", TimeSpan.FromMinutes(5));
 
                 Func<ChatStreamResponse, Task> onMessageStreamAsyncCallback = async (response) =>
                 {
@@ -77,7 +77,7 @@ namespace AppLensV3.Hubs
             {
                 if (!string.IsNullOrWhiteSpace(redisKey))
                 {
-                    _ = this.openAIRedisService.DeleteKey(redisKey);
+                    _ = await this.openAIRedisService.DeleteKey(redisKey);
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace AppLensV3.Hubs
             }
 
             string redisKey = $"{redisKeyPrefix}{messageId}";
-            _ = this.openAIRedisService.SetKey(redisKey, "cancelled");
+            _ = await this.openAIRedisService.SetKey(redisKey, "cancelled");
         }
     }
 }

@@ -7,6 +7,7 @@
   [messages]="_chatContextService.messageStore[chatIdentifier]"
   [onSendMessage]="onUserSendMessage"
   [showFeedbackOptions]="showFeedbackOptions"
+  [showCopyOption]="showCopyOption"
   [onFeedbackClick]="logUserFeedback"
   [userPhotoSource]="_chatContextService.userPhotoSource"
   [userNameInitial]="_chatContextService.userNameInitial"
@@ -22,5 +23,6 @@
   [validationWarningMessage]="messageQuotaWarningMessage"
   [showValidationError]="showMessageQuotaError"
   [validationErrorMessage]="messageQuotaErrorMessage"
+  [inputTextLimit]="inputTextLimit"
   ></chat-ui>
 </div>

@@ -1,11 +1,38 @@
-<div *ngIf="isLoading" class="mt-5 mb-2">
-    <fab-spinner [label]="'Loading...'"></fab-spinner>
+<div class="detector-control" *ngIf="!onboardingFlow">
+  <div>
+    <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>
+  </div>
 </div>
+
+<detector-time-picker [target]="'#time-picker-button'" [openTimePickerCalloutObservable]="openTimePickerSubject"
+  (updateTimerErrorMessage)="updateTimePickerErrorMessage($event)">
+</detector-time-picker>
+
+<div *ngIf="isLoading">
+  <loader-detector-view style="margin-top:300px" [Source]="'DetectorView'" [LoadingMessage1]="loadingMessage"
+    [LoadingMessage2]="loadingMessage" [LoadingMessage3]="loadingMessage" [LoadingMessage4]="loadingMessage">
+  </loader-detector-view>
+</div>
+
 <div *ngIf="error">
-    <strong>An error occurred </strong>
-    <pre>{{ error }}</pre>
+  <strong>An error occurred </strong>
+  <pre>{{ error }}</pre>
 </div>
 
 <div *ngIf="!error" [hidden]="isLoading" class="mt-4">
-    <div id="canvas" ngFlowchartCanvas [ngFlowchartOptions]="options" [disabled]="disabled"></div>
+  <div id="canvas" ngFlowchartCanvas [ngFlowchartOptions]="options" [disabled]="disabled"></div>
 </div>
+
+<ng-template #detectorTimePickerPill>
+  <div>
+    <fab-primary-button [id]="'time-picker-button'" [styles]="buttonStyle"
+      (onClick)="openTimePickerSubject.next(true);">
+      <fab-icon [iconName]="'Clock'" [styles]="iconStyles"></fab-icon>
+      <span class="ml-3 control-pill-text">
+        <span>Time Range (UTC): </span>
+        {{timePickerButtonStr}}
+      </span>
+    </fab-primary-button>
+  </div>
+  <div *ngIf="timePickerErrorStr !==''" class="mt-3 error-time-picker-message">{{timePickerErrorStr}}</div>
+</ng-template>

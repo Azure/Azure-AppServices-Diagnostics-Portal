@@ -1364,6 +1364,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       if (modelData != null) {
         if (modelData.workflowSucceeded === true) {
           this.workflowPackage = modelData.workflowPackage;
+          this.code = this.workflowPackage.codeString;
           this.useAutoMergeText = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.code) && !this.IsDetectorMarkedPublic(this.originalCode));
           this.modalPublishingButtonText = !this.useAutoMergeText ? "Create PR" : "Publish";
           this.enablePublishButton();
@@ -1566,16 +1567,17 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
           this.localDevButtonDisabled = false;
           this.markCodeLinesInEditor(this.detailedCompilationTraces);
         }, ((error: any) => {
+          const errorMessage = error?.error?.replace(/"/g, '');
           this.enableRunButton();
           this.publishingPackage = null;
           this.localDevButtonDisabled = false;
           this.runButtonText = "Run";
           this.runButtonIcon = "fa fa-play";
-          this.buildOutput.push("Something went wrong during detector invocation.");
+          this.buildOutput.push(errorMessage?.length > 0 ? errorMessage : "Something went wrong during detector invocation.");
           this.buildOutput.push("========== Build: 0 succeeded, 1 failed ==========");
           this.detailedCompilationTraces.push({
             severity: HealthStatus.Critical,
-            message: 'Something went wrong during detector invocation.',
+            message: `${errorMessage?.length > 0 ? errorMessage : "Something went wrong during detector invocation."}`,
             location: {
               start: {
                 linePos: 0,
@@ -1921,6 +1923,11 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       `/${this.id.toLowerCase()}/package.json`
     ];
 
+    if (this.isWorkflowDetector) {
+      gradPublishFiles.push("delete workflowjson");
+      gradPublishFileTitles.push(`/${this.id.toLowerCase()}/workflow.json`);
+    }
+
     if (Object.keys(this.DevopsConfig.appTypeReviewers).length > 0 || Object.keys(this.DevopsConfig.platformReviewers).length > 0) {
       gradPublishFiles.push("delete owners.txt");
       gradPublishFileTitles.push(`/${this.id.toLowerCase()}/owners.txt`);
@@ -1968,6 +1975,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
   updatePublishingPackageIfWorkflow() {
     if (this.isWorkflowDetector) {
       this.publishingPackage = this.workflowPackage;
+      this.code = this.publishingPackage.codeString;
       if (this.publishingPackage.metadata == null) {
         this.publishingPackage.metadata = "{}";
       }
@@ -2379,7 +2387,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
   private IsDetectorMarkedPublic(codeString: string): boolean {
     if (codeString) {
       var trimmedCode = codeString.toLowerCase().replace(/\s/g, "");
-      return trimmedCode.includes('internalonly=false)') || trimmedCode.includes('internalonly:false)');
+      return trimmedCode.includes('internalonly=false') || trimmedCode.includes('internalonly:false');
     }
 
     return false;

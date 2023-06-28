@@ -21,6 +21,7 @@ export class ChatUIComponent implements OnInit {
     @Input() onSendMessage: Function = (message: ChatMessage) => { };
     @Input() chatAlignment: ChatAlignment = ChatAlignment.Center;
     @Input() showFeedbackOptions: boolean = false;
+    @Input() showCopyOption: boolean = false;
     @Input() onFeedbackClick: Function = (messageId: string, feedbackType: string) => { };
 
     @Input() userNameInitial: string = '';
@@ -44,6 +45,8 @@ export class ChatUIComponent implements OnInit {
 
     @Input() showValidationError: boolean = false;
     @Input() validationErrorMessage: string = '';
+
+    @Input() inputTextLimit: number = 500;
 
     chatInputTextInternal: string = '';
 
@@ -78,7 +81,7 @@ export class ChatUIComponent implements OnInit {
 
     triggerChat() {
         this.chatInputTextInternal = StringUtilities.TrimEnd(this.chatInputTextInternal);
-        if (!this.chatInputBoxDisabled && this.chatInputTextInternal != undefined && this.chatInputTextInternal != '') {
+        if (!this.chatInputBoxDisabled && this.chatInputTextInternal != undefined && this.chatInputTextInternal != '' && this.chatInputTextInternal.length <= this.inputTextLimit) {
             this.chatInputBoxDisabled = true;
             let message = {
                 id: uuid(),
@@ -122,5 +125,9 @@ export class ChatUIComponent implements OnInit {
     ngOnInit() {
         if (this.chatInputText && this.chatInputText.length > 0)
             this.chatInputTextInternal = this.chatInputText;
+    }
+
+    copySystemMessageToClipboard(textToCopy:string) {
+        navigator.clipboard.writeText(textToCopy);
     }
 }  

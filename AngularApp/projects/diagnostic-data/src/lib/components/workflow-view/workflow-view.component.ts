@@ -8,6 +8,8 @@ import { DiagnosticService } from '../../services/diagnostic.service';
 import { WorkflowHelperService } from "../../services/workflow-helper.service";
 import { WorkflowConditionNodeComponent } from '../workflow-condition-node/workflow-condition-node.component';
 import { WorkflowNodeComponent } from '../workflow-node/workflow-node.component';
+import { BehaviorSubject } from 'rxjs';
+import { IButtonStyles, IIconProps } from 'office-ui-fabric-react';
 
 @Component({
   selector: 'workflow-view',
@@ -33,6 +35,29 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
   compilationTraces: string[] = [];
   compilationSucceeded: boolean = false;
   nodeResults: workflowNodeResult[] = [];
+  timePickerErrorStr: string = '';
+  timePickerButtonStr:string = '';
+  openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+  buttonStyle: IButtonStyles = {
+    root: {
+      // color: "#323130",
+      borderRadius: "12px",
+      margin: " 0px 5px",
+      background: "rgba(0, 120, 212, 0.1)",
+      fontSize: "13",
+      fontWeight: "600",
+      height: "80%"
+    },
+    rootFocused: {
+      border: "2px solid black",
+    }
+  }
+  iconStyles: IIconProps["styles"] = {
+    root: {
+      color: "#0078d4"
+    }
+  }
 
   options: NgFlowchart.Options = {
     stepGap: 40,
@@ -42,12 +67,16 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
     }
   };
 
+  get loadingMessage(){
+    return `Analyzing data ${this.timePickerButtonStr.includes("to") ? "from" : "in"} ${this.timePickerButtonStr}, to change, use the time range picker`;
+  }
+
   @ViewChild(NgFlowchartCanvasDirective)
   canvas: NgFlowchartCanvasDirective;
 
   constructor(private _route: ActivatedRoute, private _detectorControlService: DetectorControlService,
     private _diagnosticService: DiagnosticService, private stepRegistry: NgFlowchartStepRegistry,
-    private _workWorkflowService: WorkflowHelperService) {
+    private _workWorkflowService: WorkflowHelperService, private detectorControlService: DetectorControlService) {
   }
 
   ngOnInit(): void {
@@ -114,6 +143,10 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
     } else {
       this.run(null);
     }
+
+    this.detectorControlService.timePickerStrSub.subscribe(s => {
+      this.timePickerButtonStr = s;
+    });
   }
 
   run(childNode: workflowNodeState) {
@@ -162,5 +195,9 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
     if (error != null) {
       this.onError.emit(error);
     }
+  }
+
+  updateTimePickerErrorMessage(message: string) {
+    this.timePickerErrorStr = message;
   }
 }

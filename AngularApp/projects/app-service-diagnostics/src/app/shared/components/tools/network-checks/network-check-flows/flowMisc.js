@@ -505,7 +505,7 @@ export async function checkDnsSettingV2Async(siteInfo, diagProvider, flowMgr, is
                         if (vnetData.status == 401) {
                             views.push(wordings.noAccessToResource(vnetId));
                         } else {
-                            views.push(wordings.unexpectedError());
+                            views.push(wordings.unexpectedError.get());
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AppLensV3.Helpers;
 using AppLensV3.Hubs;
@@ -57,27 +58,24 @@ namespace AppLensV3.Controllers
             {
                 // Check if client has requested cache to be disabled
                 bool cachingEnabled = bool.TryParse(GetHeaderOrDefault(Request.Headers, HeaderConstants.OpenAICacheHeader, true.ToString()), out var cacheHeader) ? cacheHeader : true;
-                var response = await _openAIService.RunTextCompletion(completionModel, cachingEnabled);
-                if (response.IsSuccessStatusCode)
+                var chatResponse = await _openAIService.RunTextCompletion(completionModel, cachingEnabled);
+
+                return Ok(chatResponse);
+            }
+            catch (HttpRequestException reqEx)
+            {
+                _logger.LogError($"OpenAICallError: {reqEx.StatusCode} {reqEx.Message}");
+                switch (reqEx.StatusCode)
                 {
-                    var result = await response.Content.ReadAsStringAsync();
-                    return Ok(JsonConvert.DeserializeObject(result));
-                }
-                else
-                {
-                    _logger.LogError($"OpenAICallError: {response.StatusCode} {await response.Content.ReadAsStringAsync()}");
-                    switch (response.StatusCode)
-                    {
-                        case HttpStatusCode.Unauthorized:
-                        case HttpStatusCode.Forbidden:
-                        case HttpStatusCode.NotFound:
-                        case HttpStatusCode.InternalServerError:
-                            return new StatusCodeResult(500);
-                        case HttpStatusCode.BadRequest:
-                            return BadRequest("Malformed request");
-                        default:
-                            return new StatusCodeResult((int)response.StatusCode);
-                    }
+                    case HttpStatusCode.Unauthorized:
+                    case HttpStatusCode.Forbidden:
+                    case HttpStatusCode.NotFound:
+                    case HttpStatusCode.InternalServerError:
+                        return new StatusCodeResult(500);
+                    case HttpStatusCode.BadRequest:
+                        return BadRequest("Malformed request");
+                    default:
+                        return new StatusCodeResult((int)reqEx.StatusCode);
                 }
             }
             catch (Exception ex)
@@ -107,16 +105,16 @@ namespace AppLensV3.Controllers
 
             try
             {
-                var chatCompletions = await _openAIService.RunChatCompletion(chatPayload.Messages.ToList(), chatPayload.MetaData);
+                var chatResponse = await _openAIService.RunChatCompletion(chatPayload.Messages.ToList(), chatPayload.MetaData);
 
-                if (chatCompletions != null)
+                if (chatResponse != null)
                 {
-                    return Ok(chatCompletions);
+                    return Ok(chatResponse);
                 }
                 else
                 {
-                    _logger.LogError("OpenAIChatCompletionError: chatCompletions are null.");
-                    return StatusCode(500, "chatCompletions are null");
+                    _logger.LogError("OpenAIChatCompletionError: chatResponse is null.");
+                    return StatusCode(500, "chatResponse is null");
                 }
             }
             catch (Exception ex)
@@ -146,6 +144,30 @@ namespace AppLensV3.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"IsDetectorCopilotEnabled() Failed. Exception : {ex}");
+                return Ok(false);
+            }
+        }
+
+        [HttpGet("kustocopilot/enabled")]
+        public async Task<IActionResult> IsKustoCopilotEnabled()
+        {
+            try
+            {
+                if (!bool.TryParse(_configuration["KustoCopilot:Enabled"], out bool isKustoCopilotEnabled))
+                {
+                    isKustoCopilotEnabled = false;
+                }
+
+                var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
+                var allowedUsers = _configuration["KustoCopilot:AllowedUserAliases"].Trim()
+                    .Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                isKustoCopilotEnabled &= allowedUsers.Length == 0 || allowedUsers.Any(p => p.Trim().ToLower().Equals(userAlias));
+
+                return Ok(isKustoCopilotEnabled);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"IsKustoCopilotEnabled() Failed. Exception : {ex}");
                 return Ok(false);
             }
         }

@@ -50,16 +50,7 @@ export class ApplensOpenAIChatService {
       queryModel.prompt = `You are helping eningeers to debug issues related to ${this.productName}. Do not be repetitive when providing steps in your answer. Please answer the below question\n${queryModel.prompt}`;
     }
 
-    return this._backendApi.post(this.textCompletionApiPath, { payload: queryModel }, new HttpHeaders({ "x-ms-openai-cache": caching.toString() })).pipe(map((res: OpenAIAPIResponse) => {
-
-      let chatResponse: ChatResponse = {
-        text: res?.choices[0].text,
-        truncated: res?.choices[0].finish_reason == "length",
-        finishReason: res?.choices[0].finish_reason
-      };
-
-      return chatResponse;
-    }));
+    return this._backendApi.post(this.textCompletionApiPath, { payload: queryModel }, new HttpHeaders({ "x-ms-openai-cache": caching.toString() })).pipe(map((res: ChatResponse) => {return res;}));
   }
 
   public getChatCompletion(queryModel: ChatCompletionModel, customPrompt: string = ''): Observable<ChatResponse> {
@@ -73,16 +64,7 @@ export class ApplensOpenAIChatService {
 
     queryModel.metadata["azureServiceName"] = this.productName;
 
-    return this._backendApi.post(this.chatCompletionApiPath, queryModel, null, true, true).pipe(map((res: any) => {
-
-      let chatResponse: ChatResponse = {
-        text: res?.choices[0].message.content,
-        truncated: res?.choices[0].finishReason == "length",
-        finishReason: res?.choices[0].finishReason
-      };
-
-      return chatResponse;
-    }));
+    return this._backendApi.post(this.chatCompletionApiPath, queryModel, null, true, true).pipe(map((res: ChatResponse) => {return res;}));
   }
 
   public sendChatMessage(queryModel: ChatCompletionModel, customPrompt: string = ''): Observable<{ sent: boolean, failureReason: string }> {
