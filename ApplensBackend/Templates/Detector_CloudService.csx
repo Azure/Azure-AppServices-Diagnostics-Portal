@@ -14,13 +14,13 @@ private static string GetQuery(OperationContext<ArmResource> cxt)
 }
 
 
-[ArmResourceFilter(provider: "Microsoft.MachineLearningServices", resourceTypeName: "workspaces")]
+[ArmResourceFilter(provider: "Microsoft.ClassicCompute", resourceTypeName: "domainNames")]
 [Definition(Id = "YOUR_DETECTOR_ID", Name = "", Author = "YOUR_ALIAS", Description = "")]
 public async static Task<Response> Run(DataProviders dp, OperationContext<ArmResource> cxt, Response res)
 {
     res.Dataset.Add(new DiagnosticData()
     {
-        Table = await dp.Kusto.ExecuteClusterQuery(GetQuery(cxt), "KustoClusterName", "KustoDatabaseName", null, "GetQuery"), 
+        Table = await dp.Kusto.ExecuteClusterQuery(GetQuery(cxt), "azcore.centralus", "Fa", null, "DescriptionOfQuerySingleWordCamelCase"), 
         RenderingProperties = new Rendering(RenderingType.Table){
             Title = "Sample Table", 
             Description = "Some description here"
