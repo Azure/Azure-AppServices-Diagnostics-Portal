@@ -19,7 +19,7 @@ export class NetworkTraceAnalysisComponent implements OnInit {
       let alias: string = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
       this.userId = alias.replace('@microsoft.com', '');
     }
-    this._applensGlobal.updateHeader("Network Trace Analysis Tool");
+    this._applensGlobal.updateHeader("Network Trace Analysis");
    }
 
   ngOnInit(): void {
