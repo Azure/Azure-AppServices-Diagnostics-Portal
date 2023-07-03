@@ -9,6 +9,7 @@ import { ArmService } from './arm.service';
 import { DetectorResponse, DetectorMetaData, workflowNodeResult, UriUtilities } from 'diagnostic-data';
 import { ArmResource } from '../../shared-v2/models/arm';
 import { GenericArmConfigService } from './generic-arm-config.service';
+import { ResourceService } from '../../shared-v2/services/resource.service';
 
 @Injectable()
 export class GenericApiService {
@@ -24,7 +25,7 @@ export class GenericApiService {
 
     effectiveLocale: string = "";
 
-    constructor(private _http: HttpClient, private _armService: ArmService, private _authService: AuthService, private _genericArmConfigService: GenericArmConfigService) {
+    constructor(private _http: HttpClient, private _armService: ArmService, private _authService: AuthService, private _genericArmConfigService: GenericArmConfigService, private _resourceService: ResourceService) {
         this._authService.getStartupInfo().subscribe(info => {
             this.resourceId = info.resourceId;
             this.effectiveLocale = !!info.effectiveLocale ? info.effectiveLocale.toLowerCase() : "";
@@ -38,12 +39,7 @@ export class GenericApiService {
     }
 
     public getDetectors(overrideResourceUri: string = ""): Observable<DetectorMetaData[]> {
-
-        //
-        // Enabling this flag to call both detectors and workflows
-        //
-
-        let fetchDetectorsAndWorkflows = true;
+        let fetchDetectorsAndWorkflows = this._shouldFetchWorkflows();
         if (fetchDetectorsAndWorkflows) {
             return this.getDetectorsAndWorkflows(overrideResourceUri);
         }
@@ -263,6 +259,18 @@ export class GenericApiService {
         }
 
         return headers;
+    }
+
+    //
+    // Enable workflows only for Microsoft.Web/sites type
+    //
+
+    private _shouldFetchWorkflows(): boolean {
+        if (this._resourceService.resource && this._resourceService.resource.type && this._resourceService.resource.type.toLowerCase().startsWith("microsoft.web/sites")) {
+            return true;
+        }
+
+        return false;
     }
 
 }
