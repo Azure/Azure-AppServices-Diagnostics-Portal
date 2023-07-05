@@ -190,7 +190,8 @@ namespace AppLensV3
                         builder => builder.WithOrigins("http://localhost:4200")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                        .AllowCredentials());
+                        .AllowCredentials()
+                        .WithExposedHeaders("*"));
                 });
             }
         }
