@@ -188,7 +188,7 @@ export class TelemetryUtilities {
                 productName = "Azure Linux Function App";
             }
             else if (kind.indexOf("workflowapp") >= 0) {
-                productName = "Azure Logic App(Standard)";
+                productName = "Azure Logic App Standard";
             }
             else if (kind.indexOf('linux') >= 0) {
                 productName = "Azure Linux App";
