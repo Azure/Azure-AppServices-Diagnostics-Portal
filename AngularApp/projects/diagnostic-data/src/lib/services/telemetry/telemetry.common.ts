@@ -195,9 +195,6 @@ export class TelemetryUtilities {
             } else if (kind.indexOf('functionapp') >= 0) {
                 productName = "Azure Function App";
             }
-        } 
-        else if (type.toLowerCase() == "microsoft.logic/workflows") {
-            productName = "Azure Logic App";
         }
         return productName;
     }

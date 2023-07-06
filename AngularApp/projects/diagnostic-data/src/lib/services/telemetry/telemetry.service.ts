@@ -145,7 +145,9 @@ export class TelemetryService {
 
         //If it's a web app, Check the kind of web app(Function/Linux)
         //If it's not Function/Linux, keep productNamse as it is
-        productName = TelemetryUtilities.getProductNameByTypeAndKind(type, this._diagnosticSiteService.currentSite.value?.kind)
+        if (type.toLowerCase() === "microsoft.web/sites") {
+            productName = TelemetryUtilities.getProductNameByTypeAndKind(type, this._diagnosticSiteService.currentSite.value?.kind);
+        }
 
         return productName;
     }
@@ -168,6 +170,6 @@ export class TelemetryService {
     }
 
     public updateCommonProperties(properties: { [name: string]: string }) {
-        this.commonProperties = {...this.commonProperties, ...properties};
+        this.commonProperties = { ...this.commonProperties, ...properties };
     }
 }
