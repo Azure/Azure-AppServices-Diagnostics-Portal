@@ -140,11 +140,7 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
         this.publishBody.Platform = packageJson.PlatForm;
         this.publishBody.StackType = packageJson.StackType;
 
-        if (this.publishBody) {
-          this.updateMultiSelect(this.publishBody.StackType, this.selectStackType, this.stackTypes);
-          this.updateMultiSelect(this.publishBody.Platform, this.selectPlatformType, this.platformTypes);
-          this.updateMultiSelect(this.publishBody.AppType, this.selectAppType, this.appTypes);
-        }
+        this.updateMultiSelects();
       }
     }
   }
@@ -182,11 +178,13 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
       this.canvas.getFlow().upload(this.workflowJsonString);
     }
 
-    if (this.publishBody) {
-      this.updateMultiSelect(this.publishBody.StackType, this.selectStackType, this.stackTypes);
-      this.updateMultiSelect(this.publishBody.Platform, this.selectPlatformType, this.platformTypes);
-      this.updateMultiSelect(this.publishBody.AppType, this.selectAppType, this.appTypes);
-    }
+    this.updateMultiSelects();
+  }
+
+  updateMultiSelects() {
+    this.updateMultiSelect(this.publishBody.StackType, this.selectStackType, this.stackTypes);
+    this.updateMultiSelect(this.publishBody.Platform, this.selectPlatformType, this.platformTypes);
+    this.updateMultiSelect(this.publishBody.AppType, this.selectAppType, this.appTypes);
   }
 
   afterRender() {
@@ -313,6 +311,10 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
   }
 
   updateMultiSelect(selectedValues: string, selectComponent: NgSelectComponent, allValues: string[]) {
+    if (selectedValues == null) {
+      return;
+    }
+
     selectedValues.split(',').forEach(selectedItem => {
       if (allValues.indexOf(selectedItem) > -1) {
         let option = selectComponent.itemsList.findItem(selectedItem);
