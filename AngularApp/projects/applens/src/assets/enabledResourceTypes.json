@@ -296,30 +296,6 @@
         },
         {
             "service": "ResourceService",
-            "resourceType": "Microsoft.Storage/storageAccounts",
-            "templateFileName": "StorageAccount",
-            "imgSrc": "assets/img/StorageAccount.png",
-            "versionPrefix": "",
-            "azureCommImpactedServicesList": "StorageAccounts",
-            "pesId": "15629",
-            "staticSelfHelpContent": "",
-            "searchSuffix": "AZURE STORAGE ACCOUNT",
-            "displayName": "Storage Account"
-        },
-        {
-            "service": "ResourceService",
-            "resourceType": "Microsoft.ClassicStorage/storageAccounts",
-            "templateFileName": "ClassicStorageAccount",
-            "imgSrc": "assets/img/ClassicStorageAccount.png",
-            "versionPrefix": "",
-            "azureCommImpactedServicesList": "ClassicStorageAccounts",
-            "pesId": "15629",
-            "staticSelfHelpContent": "",
-            "searchSuffix": "AZURE CLASSIC STORAGE ACCOUNT",
-            "displayName": "Classic Storage Account"
-        },
-        {
-            "service": "ResourceService",
             "resourceType": "Microsoft.Network/applicationGateways",
             "templateFileName": "ApplicationGateway",
             "imgSrc": "assets/img/ApplicationGateway-Logo.png",
@@ -725,7 +701,8 @@
             "pesId": "15659",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE COST MANAGEMENT",
-            "displayName": "Azure Cost Management"
+            "displayName": "Azure Cost Management",
+            "workflowsEnabled": true
         },
         {
             "service": "ResourceService",
