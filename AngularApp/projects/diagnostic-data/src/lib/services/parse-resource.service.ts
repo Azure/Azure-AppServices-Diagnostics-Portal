@@ -4,6 +4,7 @@ import { Observable, of } from "rxjs";
 import { map } from "rxjs/operators";
 import { DiagnosticSiteService } from "./diagnostic-site.service";
 import { ResourceDescriptor } from "../models/resource-descriptor";
+import { TelemetryUtilities } from "./telemetry/telemetry.common";
 
 @Injectable()
 export class ParseResourceService {
@@ -47,27 +48,8 @@ export class ParseResourceService {
         }
 
         if (isPrimaryResource) {
-            this.checkIsFunctionOrLinux(type);
+            this.resourceType = TelemetryUtilities.getProductNameByTypeAndKind(type, this._diagnosticSiteService.currentSite.value?.kind);
         }
         return "";
-    }
-    
-    //Not working for resource integration,since diagnostic service will only fetch for main app,but can be used in telemetry
-    private checkIsFunctionOrLinux(type: string): void {
-        if (type.toLowerCase() === "microsoft.web/sites") {
-            if (!this._diagnosticSiteService.currentSite.value || !this._diagnosticSiteService.currentSite.value.kind) {
-                return;
-            }
-            const kind = this._diagnosticSiteService.currentSite.value.kind;
-
-            if (kind.indexOf('linux') >= 0 && kind.indexOf('functionapp') >= 0) {
-                this.resourceType = "Azure Linux Function App";
-            }
-            else if (kind.indexOf('linux') >= 0) {
-                this.resourceType = "Azure Linux App";
-            } else if (kind.indexOf('functionapp') >= 0) {
-                this.resourceType = "Azure Function App";
-            }
-        }
     }
 }
