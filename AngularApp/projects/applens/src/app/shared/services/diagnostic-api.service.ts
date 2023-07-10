@@ -18,6 +18,7 @@ import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-dat
 import { CommitStatus } from '../models/devopsCommitStatus';
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { ChatFeedbackPostBody } from '../models/openAIChatFeedbackModel';
 =======
 import { NoCodeExpressionBody } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
@@ -25,6 +26,9 @@ import { NoCodeExpressionBody } from '../../modules/dashboard/dynamic-node-setti
 =======
 import { NoCodeDetectorJson, NoCodeExpressionBody } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
 >>>>>>> 67b41f09d (getting detector view but it doesnt update. graph still not working)
+=======
+import { NoCodeDetectorJson, NoCodeExpressionBody, NoCodePackage } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
+>>>>>>> f08874e98 (publishing is getting there)
 
 
 @Injectable()
@@ -386,6 +390,11 @@ export class DiagnosticApiService {
 
   public publishWorkflow(resourceId: string, publishBody: workflowPublishBody): Observable<any> {
     let path = `${resourceId}/diagnostics/publishworkflow`;
+    return this.invoke<string>(path, HttpMethod.POST, publishBody, false);
+  }
+
+  public publishNoCode(resourceId: string, publishBody: NoCodePackage): Observable<any> {
+    let path = `${resourceId}/diagnostics/publishnocodedetector`;
     return this.invoke<string>(path, HttpMethod.POST, publishBody, false);
   }
 

@@ -11,7 +11,7 @@ import { dynamicExpressionBody } from '../workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../../../shared/models/devopsCommitStatus';
 import { ChatFeedbackPostBody } from '../../../shared/models/openAIChatFeedbackModel';
-import { NoCodeDetectorJson, NoCodeExpressionBody } from '../dynamic-node-settings/node-rendering-json-models';
+import { NoCodeDetectorJson, NoCodeExpressionBody, NoCodePackage } from '../dynamic-node-settings/node-rendering-json-models';
 
 
 @Injectable()
@@ -308,6 +308,11 @@ export class ApplensDiagnosticService {
   publishWorkflow(publishBody: workflowPublishBody) {
     this._resourceService.getCurrentResourceId(true)
     return this._diagnosticApi.publishWorkflow(this._resourceService.getCurrentResourceId(true), publishBody);
+  }
+
+  publishNoCode(publishBody: NoCodePackage) {
+    this._resourceService.getCurrentResourceId(true)
+    return this._diagnosticApi.publishNoCode(this._resourceService.getCurrentResourceId(true), publishBody);
   }
 
   getDetectorCode(detectorPath: string, branch: string, resourceUri: string): Observable<string> {
