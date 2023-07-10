@@ -27,7 +27,7 @@ import { DetectorSettingsModel } from '../models/detector-designer-models/detect
 import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 import { INodeModelChangeEventProps } from '../node-composer/node-composer.component';
-import { NoCodeDetectorJson, NoCodeExpressionBody, NoCodeExpressionResponse, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
+import { NoCodeDetectorJson, NoCodeExpressionBody, NoCodeExpressionResponse, NoCodePackage, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
 import * as moment from 'moment';
 
 
@@ -171,6 +171,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     }
   };
   detectorJson = "";
+  nodeExpressionList: NoCodeExpressionBody[] = [];
   detectorNodes: any = null;
   //#endregion Graduation branch picker variables
 
@@ -342,6 +343,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     det.id = "id";
     det.description = "desc";
     det.name = this.detectorName;
+    this.nodeExpressionList = det.nodes;
     //det.nodes = JSON.parse(djson);
 
     this.diagnosticApiService.executeNoCodeDetector(det, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe((x: any) => {
@@ -358,6 +360,19 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   public publishButtonOnClick():void {
     console.log('Publish Button On Click');
+    var pkg = new NoCodePackage();
+    pkg.NoCodeJson = this.detectorJson;
+    pkg.AppType = "All";
+    pkg.Platform = "Windows";
+    pkg.StackType = "All";
+    pkg.Id = "testNoCodeId";
+    pkg.Nodes = this.nodeExpressionList;
+    pkg.Author = "darreldonald";
+    pkg.DetectorName = this.detectorName;
+    pkg.Description = "describe yourself in 150 characters or fewer"
+    this.diagnosticApiService.publishNoCode(pkg).subscribe(x => {
+      console.log("subscribe");
+    });
   }
 
   public getRequiredErrorMessageOnTextField(value: string): string {

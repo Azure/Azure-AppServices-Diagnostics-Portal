@@ -1,5 +1,5 @@
 <div>
-  <no-code-detector-panel [isOpenObservable]="detectorPanelOpenObservable" [detectorNodes]="detectorNodes" [detectorJson]="detectorJson"></no-code-detector-panel>
+  <no-code-detector-panel [isOpenObservable]="detectorPanelOpenObservable" [detectorNodes]="detectorNodes" [detectorJson]="detectorJson" (publish)="publishButtonOnClick()"></no-code-detector-panel>
 </div>
 <div style="width: 100%;">
     <div style = "display: flex; justify-content: left;align-items: baseline;">

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, In
 import { PanelType } from 'office-ui-fabric-react';
 import { NoCodeExpressionResponse } from 'projects/applens/src/app/modules/dashboard/dynamic-node-settings/node-rendering-json-models';
 import { BehaviorSubject, Observable, of } from 'rxjs';
+import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 
 
 @Component({
@@ -20,11 +21,12 @@ export class NoCodeDetectorPanelComponent implements OnInit {
   // @Input() startTime: moment.Moment;
   // @Input() endTime: moment.Moment;
   @Input() isOpenObservable: Observable<boolean>;
+  @Output() publish = new EventEmitter<any>();
   isOpen: boolean = false;
   detectorView: any;
   type: PanelType = PanelType.custom;
 
-  constructor(private changeDetection: ChangeDetectorRef) { }
+  constructor(private changeDetection: ChangeDetectorRef, public diagnosticApiService: ApplensDiagnosticService) { }
 
   ngOnInit(): void {
     this.detectorNodesSubject.subscribe(x => {
@@ -38,6 +40,7 @@ export class NoCodeDetectorPanelComponent implements OnInit {
 
   publishDetector(){
     console.log("publish");
+    this.publish.emit("");
   }
 
   backToEditor(){
