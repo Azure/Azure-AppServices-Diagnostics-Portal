@@ -100,7 +100,7 @@ namespace AppLensV3.Services
         {
             configuration = config;
             isOpenAIAPIEnabled = Convert.ToBoolean(configuration["OpenAIService:Enabled"]);
-            chatTemplateFileCache = new ConcurrentDictionary<string, Task<string>>(StringComparer.OrdinalIgnoreCase) ;
+            chatTemplateFileCache = new ConcurrentDictionary<string, Task<string>>(StringComparer.OrdinalIgnoreCase);
             if (isOpenAIAPIEnabled)
             {
                 this.logger = logger;
@@ -387,11 +387,6 @@ namespace AppLensV3.Services
                                  );
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            // No big deal if save to cache fails, log and succeed the request
-                            logger.LogWarning($"Failed to save OpenAI response to Redis Cache: {ex}");
-                        }
                     }
 
                     if (analyticsKustoTables.TryGetValue(tableName.Trim(), out AnalyticsKustoTableDetails tableDetails))
@@ -405,8 +400,6 @@ namespace AppLensV3.Services
                         secondQuestion.AppendLine($"SchemaWithNotes:{tableDetails.SchemaWithNotes}");
                         secondQuestion.AppendLine();
                     }
-
-                    await onMessageStreamAsyncCallback(new ChatStreamResponse(finishReason: "stop"));
                 }
 
                 #endregion
