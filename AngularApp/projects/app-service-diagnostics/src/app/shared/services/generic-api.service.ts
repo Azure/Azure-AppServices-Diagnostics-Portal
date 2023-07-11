@@ -9,6 +9,7 @@ import { ArmService } from './arm.service';
 import { DetectorResponse, DetectorMetaData, workflowNodeResult, UriUtilities } from 'diagnostic-data';
 import { ArmResource } from '../../shared-v2/models/arm';
 import { GenericArmConfigService } from './generic-arm-config.service';
+import { ResourceService } from '../../shared-v2/services/resource.service';
 
 @Injectable()
 export class GenericApiService {
@@ -20,11 +21,11 @@ export class GenericApiService {
 
     useLocal: boolean = false;
 
-    useApolloApi:boolean = false;
+    useApolloApi: boolean = false;
 
     effectiveLocale: string = "";
 
-    constructor(private _http: HttpClient, private _armService: ArmService, private _authService: AuthService, private _genericArmConfigService : GenericArmConfigService) {
+    constructor(private _http: HttpClient, private _armService: ArmService, private _authService: AuthService, private _genericArmConfigService: GenericArmConfigService, private _resourceService: ResourceService) {
         this._authService.getStartupInfo().subscribe(info => {
             this.resourceId = info.resourceId;
             this.effectiveLocale = !!info.effectiveLocale ? info.effectiveLocale.toLowerCase() : "";
@@ -38,12 +39,7 @@ export class GenericApiService {
     }
 
     public getDetectors(overrideResourceUri: string = ""): Observable<DetectorMetaData[]> {
-
-        //
-        // Enabling this flag to call both detectors and workflows
-        //
-
-        let fetchDetectorsAndWorkflows = true;
+        let fetchDetectorsAndWorkflows = this._shouldFetchWorkflows();
         if (fetchDetectorsAndWorkflows) {
             return this.getDetectorsAndWorkflows(overrideResourceUri);
         }
@@ -55,8 +51,8 @@ export class GenericApiService {
             return this.invoke<DetectorResponse[]>(path, 'POST').pipe(map(response => response.map(detector => detector.metadata)));
         } else {
             const path = `${resourceId}/detectors`;
-            if(this.useApolloApi) {
-                return this._armService.invokeApolloApiForPassThrough<DetectorResponse[]>(path, resourceId, ApolloDiagApiMap.ListDetectors, null, false, queryParams).pipe(map( (response:DetectorResponse[]) => {
+            if (this.useApolloApi) {
+                return this._armService.invokeApolloApiForPassThrough<DetectorResponse[]>(path, resourceId, ApolloDiagApiMap.ListDetectors, null, false, queryParams).pipe(map((response: DetectorResponse[]) => {
                     this.detectorList = response?.map(listItem => listItem.metadata);
                     return this.detectorList;
                 }));
@@ -77,7 +73,7 @@ export class GenericApiService {
         } else {
             const path = `${this.resourceId}/detectors`;
             var queryParams = [{ "key": "text", "value": searchTerm }];
-            if(this.useApolloApi) {
+            if (this.useApolloApi) {
                 return this._armService.invokeApolloApiForPassThrough<DetectorResponse[]>(path, this.resourceId, ApolloDiagApiMap.ListDetectors, null, false, queryParams).pipe(map((response: DetectorResponse[]) => {
                     var searchResults = response.map(listItem => listItem.metadata).sort((a, b) => { return b.score > a.score ? 1 : -1; });
                     return searchResults;
@@ -88,7 +84,7 @@ export class GenericApiService {
                     var searchResults = response.map(listItem => listItem.properties.metadata).sort((a, b) => { return b.score > a.score ? 1 : -1; });
                     return searchResults;
                 }));
-            }            
+            }
         }
     }
 
@@ -105,8 +101,8 @@ export class GenericApiService {
                 path += additionalQueryParams;
             }
 
-            if(this.useApolloApi) {
-                if(resourceId.toLowerCase().indexOf('/resourcegroup/') > -1 ) {
+            if (this.useApolloApi) {
+                if (resourceId.toLowerCase().indexOf('/resourcegroup/') > -1) {
                     return this._armService.getArmResource<ArmResource>(resourceId).pipe(
                         concatMap(resource => {
                             let requestHeaders = new Map<string, string>();
@@ -221,7 +217,21 @@ export class GenericApiService {
                     allEntities = allEntities.concat(list);
                 });
 
-                this.detectorList = allEntities;
+                //
+                // For some resource types (e.g. AKS), the query strings are not passed
+                // to applens backend. They will up making 2 ListDetectors call. Till the
+                // time this is fixed, just remove duplicates from the collection to
+                // ensure that rest of the UI is not breaking or getting confused
+                //
+
+                let uniqueEntityList: DetectorMetaData[] = [];
+                for (let i of allEntities) {
+                    if (uniqueEntityList.findIndex(entity => entity.id === i.id) === -1) {
+                        uniqueEntityList.push(i);
+                    }
+                }
+
+                this.detectorList = uniqueEntityList;
                 return this.detectorList;
             }));
         }
@@ -249,6 +259,18 @@ export class GenericApiService {
         }
 
         return headers;
+    }
+
+    //
+    // Enable workflows only for Microsoft.Web/sites type
+    //
+
+    private _shouldFetchWorkflows(): boolean {
+        if (this._resourceService.resource && this._resourceService.resource.type && this._resourceService.resource.type.toLowerCase().startsWith("microsoft.web/sites")) {
+            return true;
+        }
+
+        return false;
     }
 
 }

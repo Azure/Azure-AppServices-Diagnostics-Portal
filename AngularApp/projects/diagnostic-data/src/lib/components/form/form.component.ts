@@ -118,6 +118,11 @@ export class FormComponent extends DataRenderBaseComponent {
               formInputs[ip]["children"] != undefined ? formInputs[ip]["children"] : [],
               formInputs[ip]["isVisible"] != undefined ? formInputs[ip]["isVisible"] : true
             ));
+            if(formInputs[ip]["submitOnSelection"] !=null && JSON.parse(formInputs[ip]["submitOnSelection"]) == true){
+              if(formInputs[ip]["defaultSelectedKey"] != null && formInputs[ip]["defaultSelectedKey"] != ""){
+                this.OnSubmitFormAction(this.detectorForms[i].formId, -1);
+              }
+            }
           }
           else if(this.isDateTimePicker(formInputs[ip]["inputType"])) {
             this.detectorForms[i].formInputs.push(new DateTimePicker(
@@ -351,6 +356,7 @@ export class FormComponent extends DataRenderBaseComponent {
     let data = event.option["data"];
     let isMultiSelect = data["isMultiSelect"];
     let internalId = data["internalId"];
+    let submitOnSelection = data["submitOnSelection"] == null ? false : <boolean>JSON.parse(data["internalId"]);
     let formId = internalId.split("-")[1];
     let inputId = internalId.split("-")[2];
     // Find matching form
@@ -367,6 +373,11 @@ export class FormComponent extends DataRenderBaseComponent {
         this.changeVisibility(children, form.formInputs, formInput);
       }
     }
+
+    if(submitOnSelection){
+      this.OnSubmitFormAction(formId, -1);
+    }
+
   }
 
   getQueryParamForDropdown(formInput: FormInput): string {

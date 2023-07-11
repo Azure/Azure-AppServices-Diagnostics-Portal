@@ -24,7 +24,8 @@ export interface ChatCompletionModel {
 export interface ChatResponse {
     text: string,
     truncated: boolean,
-    finishReason: string
+    finishReason: string,
+    exception: string
 }
 
 export enum TextModels {

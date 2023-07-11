@@ -39,7 +39,7 @@
     <div class="panel-body">
       <div *ngIf="data.description" tabindex="0" class="description-text">{{ data.description }}</div>
       <div *ngIf="data.markdownText" tabindex="0" class="markdown-text">
-        <markdown [data]="data.markdownText"></markdown>
+        <markdown-text [markdownData]="data.markdownText" [isMarkdownView]="true"></markdown-text>
       </div>
       <workflow-accept-userinput *ngIf="data.inputNodeSettings" [data]="data"
         #acceptUserInput></workflow-accept-userinput>

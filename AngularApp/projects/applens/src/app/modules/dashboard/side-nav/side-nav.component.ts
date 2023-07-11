@@ -202,17 +202,18 @@ export class SideNavComponent implements OnInit {
       icon: null
     },
     {
-      label: 'Kusto Copilot for Analytics',
+      label: 'KQL for Antares Analytics',
       id: "kustocopilot",
       onClick: () => {
-        this.navigateTo("kustogpt");
+        this.navigateTo("kustoQueryGenerator");
       },
       expanded: false,
       subItems: null,
       isSelected: () => {
-        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `kustogpt`;
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `kustoQueryGenerator`;
       },
-      icon: null
+      icon: null,
+      visible: false
     }
   ];
 
@@ -220,7 +221,7 @@ export class SideNavComponent implements OnInit {
     this._openAIService.CheckEnabled().subscribe(enabled => {
       this.showChatGPT = this._openAIService.isEnabled;
       this._diagnosticApi.get<boolean>('api/openai/kustocopilot/enabled').subscribe(kustoGPTEnabledStatus => {
-        this.tools.find(tool => tool.id === 'kustocopilot').visible = kustoGPTEnabledStatus;
+        this.tools.find(tool => tool.id === 'kustocopilot').visible = kustoGPTEnabledStatus && `${this.resourceService.ArmResource.provider}`.toLowerCase().indexOf('microsoft.web') > -1;
       });
     });
     this._documentationService.getDocsRepoSettings().subscribe(settings => {
@@ -379,6 +380,7 @@ export class SideNavComponent implements OnInit {
 
             categoryMenuItem.subItems.push(menuItem);
           });
+          this.gists = this.gists.sort((a, b) => a.label === 'Uncategorized' ? 1 : (a.label > b.label ? 1 : -1));
         });
         this.gistsCopy = this.deepCopyArray(this.gists);
       }

@@ -1,11 +1,11 @@
 <div style="height:80vh;">
   <openai-chat-container [chatIdentifier]="'analyticskustocopilot'"
-      [chatContextLength]="2" 
+      [chatContextLength]="10" 
       [chatModel] = "chatModel"
       [chatQuerySamplesFileUri]="'assets/chatConfigs/analyticskustocopilot.json'"
       [chatHeader]="chatHeader"
       [systemPhotoSource]="'/assets/img/bot_sparkle_icon.svg'"
-      [contentDisclaimerMessage] = "'* This is a preview of the Kusto Copilot for Analytics. The model is still in training and may not be accurate. Please submit feedback via 👍 and 👎 to help us improve the model.'"
+      [contentDisclaimerMessage] = "'* The model is still in training and may not be accurate. Please submit feedback via 👍 and 👎 to help us improve the model.'"
       [showCopyOption]= "true"
       [apiProtocol] = "apiProtocol"
       [feedbackEmailAlias] = "feedbackEmailAlias"
