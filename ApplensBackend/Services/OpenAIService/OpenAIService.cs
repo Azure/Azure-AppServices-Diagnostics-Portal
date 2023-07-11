@@ -89,6 +89,7 @@ namespace AppLensV3.Services
         private ConcurrentDictionary<string, Task<string>> chatTemplateFileCache;
         private string chatHubRedisKeyPrefix;
         private Dictionary<string, AnalyticsKustoTableDetails> analyticsKustoTables = new Dictionary<string, AnalyticsKustoTableDetails>(StringComparer.OrdinalIgnoreCase);
+        private string analyticsKustoSecondPrompt = string.Empty;
         private ConcurrentDictionary<string, ChatCompletionCustomHandler> customHandlerForChatCompletion = new ConcurrentDictionary<string, ChatCompletionCustomHandler>(StringComparer.OrdinalIgnoreCase);
 
         // Delegate gets chatCompletionOptions which will have the corresponding template file and past user messages already loaded.
@@ -99,7 +100,7 @@ namespace AppLensV3.Services
         {
             configuration = config;
             isOpenAIAPIEnabled = Convert.ToBoolean(configuration["OpenAIService:Enabled"]);
-            chatTemplateFileCache = new ConcurrentDictionary<string, Task<string>>(StringComparer.OrdinalIgnoreCase) ;
+            chatTemplateFileCache = new ConcurrentDictionary<string, Task<string>>(StringComparer.OrdinalIgnoreCase);
             if (isOpenAIAPIEnabled)
             {
                 this.logger = logger;
@@ -340,32 +341,29 @@ namespace AppLensV3.Services
         {
             try
             {
-                ChatCompletionsOptions tempChatCompletionsOptions = new ChatCompletionsOptions();
-                tempChatCompletionsOptions.Temperature = chatCompletionsOptions.Temperature;
-                tempChatCompletionsOptions.MaxTokens = chatCompletionsOptions.MaxTokens;
-                tempChatCompletionsOptions.NucleusSamplingFactor = chatCompletionsOptions.NucleusSamplingFactor;
-                tempChatCompletionsOptions.FrequencyPenalty = chatCompletionsOptions.FrequencyPenalty;
-                tempChatCompletionsOptions.PresencePenalty = chatCompletionsOptions.PresencePenalty;
-                tempChatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.System, chatCompletionsOptions.Messages.First(m => m.Role == ChatRole.System).Content));
+                string latestUserQuestion = chatMessages.Last(m => m.Role == ChatRole.User).Content;
+                string chainingQuestion = $"Which table(s) will help answer the following question? If more than one table is found, return a comma seperated list.{Environment.NewLine}{latestUserQuestion}";
 
-                string userQuestion = chatMessages.Last(m => m.Role == ChatRole.User).Content;
-                string chainingQuestion = $"Which table(s) will help answer the following question? If more than one table is found, return a comma seperated list.{Environment.NewLine}{userQuestion}";
-                tempChatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.User, chainingQuestion));
+                // Replace the users question with a synthethic intermediate question.
+                chatCompletionsOptions.Messages.Remove(chatCompletionsOptions.Messages.Last(m => m.Role == ChatRole.User));
+                chatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.User, chainingQuestion));
 
-                Response<ChatCompletions> intermediateResponse = await openAIClient.GetChatCompletionsAsync(openAIGPT4Model, tempChatCompletionsOptions);
+                Response<ChatCompletions> intermediateResponse = await openAIClient.GetChatCompletionsAsync(openAIGPT4Model, chatCompletionsOptions);
 
-                string tableNamesCSV = intermediateResponse?.Value?.Choices?.Count > 0 && !string.IsNullOrWhiteSpace(intermediateResponse.Value.Choices[0]?.Message?.Content) 
+                string tableNamesCSV = intermediateResponse?.Value?.Choices?.Count > 0 && !string.IsNullOrWhiteSpace(intermediateResponse.Value.Choices[0]?.Message?.Content)
                     ? intermediateResponse.Value.Choices[0].Message.Content : string.Empty;
 
-                if (tableNamesCSV.Equals(string.Empty))
+                if (string.IsNullOrWhiteSpace(tableNamesCSV))
                 {
                     return new OpenAIChainResponse()
                     {
                         ShortCircuitReason = "Unable to identify tables necessary to construct the query",
-                        ChatResponseToUseInShortCircuit = new ChatResponse("Sorry, I could not identify the related tables. Please help me learn, submit the expected query to Applens team."),
+                        ChatResponseToUseInShortCircuit = new ChatResponse("Unable to identify related tables. Please help me learn, submit the expected query along with your question to Applens team."),
                         ChatCompletionsOptionsToUseInChain = null
                     };
                 }
+
+                #region Fetch details of relevent tables
 
                 StringBuilder secondQuestion = new StringBuilder();
                 foreach (string tableName in tableNamesCSV.Split(","))
@@ -404,6 +402,8 @@ namespace AppLensV3.Services
                     }
                 }
 
+                #endregion
+
                 if (secondQuestion.Length < 5)
                 {
                     // We could not identify the table or the attempted question does not adhere to the rules set for the copilot. Terminate processing and return a response.
@@ -417,13 +417,24 @@ namespace AppLensV3.Services
                     return returnResponse;
                 }
 
-                secondQuestion.AppendLine("Using the above details, answer the following question");
-                secondQuestion.AppendLine(userQuestion);
-                secondQuestion.AppendLine($"Note: The current year is {DateTime.UtcNow.Year}");
+                if (string.IsNullOrWhiteSpace(analyticsKustoSecondPrompt))
+                {
+                    analyticsKustoSecondPrompt = await GetChatTemplateContent("analyticskustocopilotsecondprompt");
+                    JObject jObject = JObject.Parse(analyticsKustoSecondPrompt);
+                    analyticsKustoSecondPrompt = (jObject["systemPrompt"] ?? string.Empty).ToString();
+                }
 
-                int lastUserMessage = chatCompletionsOptions.Messages.Select((message, index) => new { Message = message, Index = index }).LastOrDefault(item => item.Message.Role == ChatRole.User)?.Index ?? -1;
-                chatCompletionsOptions.Messages.RemoveAt(lastUserMessage);
-                chatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.User, secondQuestion.ToString()));
+                secondQuestion.AppendLine(analyticsKustoSecondPrompt);
+                secondQuestion.AppendLine($"Note: The current timestamp is {DateTime.UtcNow.ToString("yyyy-MM-dd HH:MM:SS")} UTC");
+
+                // Remove the original system prompt and replace it with the newly constructed system prompt.
+                chatCompletionsOptions.Messages.RemoveAt(0);
+                chatCompletionsOptions.Messages.Insert(0, new ChatMessage(ChatRole.System, secondQuestion.ToString()));
+
+                // Remove the synthetic question that was added earlier and add the users question back.
+                chatCompletionsOptions.Messages.Remove(chatCompletionsOptions.Messages.Last(m => m.Role == ChatRole.User));
+                chatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.User, latestUserQuestion));
+
                 return new OpenAIChainResponse()
                 {
                     ChatResponseToUseInShortCircuit = null,
@@ -432,7 +443,7 @@ namespace AppLensV3.Services
             }
             catch (Exception ex)
             {
-                logger.LogError($"Error preparing chat completion options : {ex}");
+                logger.LogError(ex.Message);
                 throw;
             }
         }

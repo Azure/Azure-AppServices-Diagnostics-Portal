@@ -177,6 +177,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           queryString += `&${key}=${encodeURIComponent(contextToPass[key])}`;
         }
       }
+      queryString += '&childDetector=true';
     }
     const viewModel: DetectorViewModel = {
       title: detector.name,

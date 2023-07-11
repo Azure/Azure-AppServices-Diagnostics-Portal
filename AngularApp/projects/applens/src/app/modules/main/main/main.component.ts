@@ -362,6 +362,7 @@ export class MainComponent implements OnInit {
   }
 
   selectDropdownKey(e: { option: IDropdownOption, index: number }) {
+    this.errorMessage = '';
     const resourceType = this.defaultResourceTypes.find(resource => resource.displayName === e.option.text);
     this.selectResourceType(resourceType);
     this.hasResourceCaseNumberEnforced();
@@ -680,6 +681,7 @@ export class MainComponent implements OnInit {
   }
 
   updateResourceName(e: { event: Event, newValue?: string }) {
+    this.errorMessage = '';
     this.resourceName = e.newValue.toString();
     if(this.isNoResource) {
       if(!Guid.isGuid(this.resourceName.trim())) {

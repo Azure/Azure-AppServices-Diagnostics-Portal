@@ -72,6 +72,8 @@ export class SupportTopicService {
 
             // To generate a unique apollo search Id, we use resource name, current timestamp and a guid.
             let apolloResourceId = `${this._resourceService.resource.name}-${Math.floor(Date.now() / 1000)}-${uuid()}`;
+            let fullResourceUri = this._resourceService.resource.id;
+            let partialResourceUri = `/subscriptions/${fullResourceUri.split("subscriptions/")[1].split("/")[0]}/providers/${fullResourceUri.split("/providers/")[1].split("/")[0]}/${fullResourceUri.split("/providers/")[1].split("/")[1].split("?")[0]}`;
             let requestBody =
             {
                 "properties": {
@@ -84,11 +86,12 @@ export class SupportTopicService {
                     "parameters": {
                         "SearchText": "error found",
                         "ProductId": this.pesId,
-                        "LegacyTopicId": this.supportTopicId
+                        "LegacyTopicId": this.supportTopicId,
+                        "PartialResourceUri": partialResourceUri
                     }
                 }
             };
-            let resourceUri = `${this._resourceService.resource.id}/${this.apolloApiConfig.apolloResourceProvider}/${apolloResourceId}`;
+            let resourceUri = `/subscriptions/${this._resourceService.subscriptionId}/${this.apolloApiConfig.apolloResourceProvider}/${apolloResourceId}`;
             let apolloHeaders = new Map<string, string>();
             apolloHeaders.set("x-ms-client-agent", "AppServiceDiagnostics");
             return this._armService.putResource(resourceUri, requestBody, this.apolloApiConfig.apiVersion, true, apolloHeaders).pipe(map((response: ResponseMessageEnvelope<any>) => {
@@ -246,6 +249,19 @@ export class SupportTopicService {
                     }
                     
                     if (matchingDetectors && matchingDetectors.length > 0) {
+                        this._telemetryService.logEvent("MatchingDetectorsInCaseSubmission", {
+                            "MatchingDetectors": JSON.stringify(matchingDetectors.map(detector => {
+                                return { 
+                                    id: detector.id, 
+                                    type: detector.type
+                                };
+                            })),
+                            "SapSupportTopicId": sapSupportTopicId,
+                            "SupportTopicId": supportTopicId,
+                            "PesId": pesId,
+                            "SapProductId": sapProductId,
+                            "CaseSubject": searchTerm
+                        });
                         if (matchingDetectors.length === 1 && matchingDetectors[0] && matchingDetectors[0].id) {
                             if (matchingDetectors[0].type === DetectorType.Analysis) {
                                 detectorPath = `/analysis/${matchingDetectors[0].id}`;
@@ -260,6 +276,14 @@ export class SupportTopicService {
                         }
                     }
                     else {
+                        this._telemetryService.logEvent("MatchingDetectorsInCaseSubmission", {
+                            "MatchingDetectors": '[]',
+                            "SapSupportTopicId": sapSupportTopicId,
+                            "SupportTopicId": supportTopicId,
+                            "PesId": pesId,
+                            "SapProductId": sapProductId,
+                            "CaseSubject": searchTerm
+                        });
                         detectorPath = `/analysis/searchResultsAnalysis/search`;
                     }
                 }

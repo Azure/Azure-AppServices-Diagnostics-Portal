@@ -48,6 +48,7 @@
     "@microsoft/applicationinsights-web": "^2.5.4",
     "@microsoft/signalr": "^7.0.5",
     "@ng-select/ng-select": "^8.3.0",
+    "@opi-perf/json": "^1.0.0-alpha10",
     "@types/highcharts": "^7.0.0",
     "@types/react": "~16.8.6",
     "@types/react-dom": "^16.8.6",

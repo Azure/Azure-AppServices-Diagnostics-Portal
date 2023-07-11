@@ -322,6 +322,8 @@
         rel="noopener noreferrer" [href]="PRLink">here</a>.</div>
     <div *ngIf="saveFailed && saveIdFailure" style="margin-left: 4px;">This detector ID is already in use. Please try a
       new one</div>
+      <div *ngIf="(saveFailed || publishFailed) && !idMatches" style="margin-left: 4px;">Detector IDs cannot be changed once saved. Please 
+        revert the ID back to {{lastSavedId}}. You may need to rerun the detector to clear this error.</div>
     <div *ngIf="(saveFailed || publishFailed) && badBranchNameFailure" style="margin-left: 4px;">{{charWarningMessage}}
       Please edit the detector ID to remove these characters</div>
   </fab-panel>
@@ -365,7 +367,7 @@
         text="Update Detector References" [iconProps]="{iconName: 'BackToWindow'}"
         (click)="showUpdateDetectorReferencesDialog()">
       </fab-command-bar-item>
-      <fab-command-bar-item *ngIf="copilotEnabled" text="Detector Copilot (Preview)" [iconProps]="{ iconName: 'robot' }"
+      <fab-command-bar-item *ngIf="copilotEnabled" [text]="_detectorCopilotService.copilotHeaderTitle" [iconProps]="{ iconName: 'robot' }"
         (click)="_detectorCopilotService.showCopilotPanel()" [disabled]="copilotServiceMembersInitialized == false || isWorkflowDetector"></fab-command-bar-item>
       <far-items>
         <fab-command-bar-item *ngIf="detectorGraduation" key="brachSelectorPill" text="custom text">
@@ -449,7 +451,7 @@
                     <span class="fa status-icon" [ngClass]="getfaIconClass(item)"></span>
                   </div>
                   <div class="compilation-detailed-output-entryCell">
-                    <span>{{item.message}}</span>
+                    <span [innerHTML]="item.message"></span>
                   </div>
                 </div>
               </div>

@@ -307,6 +307,9 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
   lastSavedVersion: string;
   detectorDeleted: boolean = false;
 
+  lastSavedId: string = "";
+  idMatches: boolean = false;
+
   codeCompletionEnabled: boolean = false;
   languageServerUrl: any = null;
 
@@ -485,6 +488,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       if (this.mode === DevelopMode.Create) this.diagnosticApiService.getDetectorCode(`${this.Branch.split('/')[3].toLowerCase()}/${this.Branch.split('/')[3].toLowerCase()}.csx`, this.Branch, this.resourceId).subscribe(x => {
         this.code = x;
         this.lastSavedVersion = this.code;
+        this.lastSavedId = this.Branch.split('/')[3].toLowerCase();
         this.detectorLoaded = true;
       });
       else this.diagnosticApiService.getDetectorCode(`${this.id.toLowerCase()}/${this.id.toLowerCase()}.csx`, this.Branch, this.resourceId).subscribe(x => {
@@ -662,7 +666,6 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
 
       this.copilotEnabled = res &&
         isSystemInvoker == false &&
-        this.gistMode == false &&
         this.isWorkflowDetector == false;
     });
   }
@@ -1988,7 +1991,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     this.updatePublishingPackageIfWorkflow();
 
     this.saveTempId = this.getIdFromCodeString();
-    this.setTargetBranch(this.saveTempId);
+    this.setTargetBranch(!!this.publishingPackage ? this.publishingPackage.id.toLowerCase() : this.saveTempId);
     this.publishDialogHidden = true;
 
     let isSystemInvoker: boolean = this.mode === DevelopMode.EditMonitoring || this.mode === DevelopMode.EditAnalytics;
@@ -2028,6 +2031,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       gradPublishFiles.push(reviewers);
     }
 
+    this.idMatches = idForSave == this.lastSavedId;
     const DetectorObservable = this.diagnosticApiService.pushDetectorChanges(this.Branch, gradPublishFiles, gradPublishFileTitles, `${commitMessageStart} ${idForSave} Author : ${this.userName}`, commitType, this.resourceId);
 
     this.saveButtonText = "Saving";
@@ -2035,12 +2039,13 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     this.disableSaveButton();
 
     // successfully ran or edit mode
-    if (!!this.publishingPackage || this.mode == DevelopMode.Edit) {
+    if ((this.idMatches && !!this.publishingPackage) || this.mode == DevelopMode.Edit) {
       DetectorObservable.subscribe(_ => {
         this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${this.Branch}`;
         this.saveSuccess = true;
         this.lastSavedVersion = gradPublishFiles[0]
         this.postSave();
+        this.lastSavedId = idForSave;
         this.isSaved = true;
         //this._applensCommandBarService.refreshPage();
       }, err => {
@@ -2055,11 +2060,12 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     }
     else {
       this._diagnosticApi.idExists(this.saveTempId).subscribe(idExists => {
-        if (!idExists || this.detectorLoaded) {
+        if (!idExists || (this.detectorLoaded && this.idMatches)) {
           DetectorObservable.subscribe(_ => {
             this.PRLink = (this.DevopsConfig.folderPath === "/") ? `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${this.Branch}` : `https://dev.azure.com/${this.DevopsConfig.organization}/${this.DevopsConfig.project}/_git/${this.DevopsConfig.repository}?path=${this.DevopsConfig.folderPath}/${idForSave.toLowerCase()}/${idForSave.toLowerCase()}.csx&version=GB${this.Branch}`;
             this.saveSuccess = true;
             this.postSave();
+            this.lastSavedId = idForSave;
             this.isSaved = true;
             //this._applensCommandBarService.refreshPage();
           }, err => {
@@ -2072,7 +2078,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
           });
         }
         else {
-          this.saveIdFailure = true;
+          this.saveIdFailure = idExists;
           this.saveFailed = true;
           this.postSave();
         }
@@ -2426,13 +2432,13 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     const text = await file.text();
     this.createWorkflow.uploadFlowData(text);
   }
-
   //#region Copilot Methods
 
   initalizeCoPilotServiceMembers() {
     this._detectorCopilotService.azureServiceType = this.resourceService.displayName;
     this._detectorCopilotService.detectorDevelopMode = this.mode;
     this._detectorCopilotService.detectorCode = StringUtilities.ReplaceNewlines(this.code);
+    this._detectorCopilotService.initializeMembers(this.gistMode);
     if (this.mode == DevelopMode.Create) {
       this._detectorCopilotService.detectorTemplate = StringUtilities.ReplaceNewlines(this.code);
     }

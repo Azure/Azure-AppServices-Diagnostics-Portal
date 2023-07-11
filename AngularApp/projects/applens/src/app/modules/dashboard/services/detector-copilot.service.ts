@@ -12,6 +12,7 @@ export class DetectorCopilotService {
   public openPanel: boolean;
   public panelType: PanelType = PanelType.custom;
   public panelWidth: string = "720px";
+  public isGist: boolean = false;
   public detectorCode: string = '';
   public detectorTemplate: string = '';
   public detectorDevelopMode: DevelopMode;
@@ -23,7 +24,11 @@ export class DetectorCopilotService {
   public onCodeSuggestion: BehaviorSubject<{ code: string, append: boolean, source: string }>;
   public onCloseCopilotPanelEvent: BehaviorSubject<{ showConfirmation: boolean, resetCopilot: boolean }>;
   public onCodeOperationProgressState: BehaviorSubject<{ inProgress: boolean }>;
-  public chatComponentIdentifier: string = "detectorcopilot";
+  public chatComponentIdentifier: string = 'detectorcopilot';
+  public copilotHeaderTitle: string;
+  public copilotChatHeader: string;
+  public chatConfigFile: string = 'assets/chatConfigs/detectorcopilot.json';
+  public logPrefix: string = 'DetectorCopilot';
 
   constructor(private _chatContextService: ChatUIContextService) {
     this.onCodeSuggestion = new BehaviorSubject<{ code: string, append: boolean, source: string }>(null);
@@ -92,5 +97,30 @@ export class DetectorCopilotService {
     });
 
     return outputMessage;
+  }
+
+  initializeMembers(isGistMode: boolean) {
+
+    this.isGist = isGistMode;
+    
+    if (isGistMode) {
+      this.chatComponentIdentifier = 'gistcopilot';
+      this.copilotHeaderTitle = 'Gist Copilot (Preview)';
+    }
+    else {
+      this.chatComponentIdentifier = 'detectorcopilot';
+      this.copilotHeaderTitle = 'Detector Copilot (Preview)';
+    }
+
+    this.chatConfigFile = `assets/chatConfigs/${this.chatComponentIdentifier}.json`;
+    this.logPrefix = this.chatComponentIdentifier;
+
+    this.copilotChatHeader = `
+    <h1 class='copilot-header chatui-header-text'>
+      <img  class='copilot-header-img' src="/assets/img/bot_sparkle_icon.svg" alt = ''>
+      ${this.copilotHeaderTitle}
+      <img class='copilot-header-img-secondary' src='/assets/img/rocket.png' alt=''>
+      <img class='copilot-header-img-secondary' src='/assets/img/rocket.png' alt=''">
+    </h1>`;
   }
 }
