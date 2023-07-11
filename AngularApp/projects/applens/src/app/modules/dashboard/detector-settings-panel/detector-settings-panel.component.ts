@@ -932,18 +932,14 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  public detectorSupportTopicPickerSuggestionsResolverClosure = (data:any):any => {
+  public detectorSupportTopicPickerSuggestionsResolverClosure = (data: any): ITagItemProps[] | Promise<ITagItemProps[]>  => {
     const _this = this;
-    return _this.detectorSupportTopicPickerSuggestionsResolver(data, _this);
-  }
-
-  public detectorSupportTopicPickerSuggestionsResolver(data: any, _this:this): ITagItemProps[] | Promise<ITagItemProps[]> {
-      return Promise.resolve(_this.resourceService.getPesId().map<string, Promise<ITagItemProps[]>>(pesId => {
+    return Promise.resolve(_this.resourceService.getPesId().map<string, Promise<ITagItemProps[]>>(pesId => {
       if (pesId) {
         return Promise.resolve(
           _this.diagnosticApiService.getSupportTopics(pesId).map<SupportTopicResponseModel[], ITagItemProps[]>(supportTopicList => {
-            const supportTopicPickerOptions: SupportTopicPickerModel[] = supportTopicList.filter(supportTopic => supportTopic.supportTopicPath.toLowerCase().indexOf(data.toLowerCase()) > -1 ||
-              supportTopic.supportTopicId.toString().startsWith(data) || supportTopic.sapSupportTopicId.toString().startsWith(data)
+            const supportTopicPickerOptions: SupportTopicPickerModel[] = supportTopicList.filter(supportTopic => `${supportTopic.supportTopicPath}`.toLowerCase().indexOf(data.toLowerCase()) > -1 ||
+              `${supportTopic.supportTopicId}`.toString().startsWith(data) || `${supportTopic.sapSupportTopicId}`.toString().startsWith(data)
             )
               .map(supportTopic => <SupportTopicPickerModel>{
                 pesId: pesId,
