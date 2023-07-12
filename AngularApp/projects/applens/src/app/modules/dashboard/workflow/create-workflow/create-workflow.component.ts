@@ -6,7 +6,7 @@ import { NgFlowchart, NgFlowchartCanvasDirective, NgFlowchartStepRegistry } from
 import { DetectorNodeComponent } from '../detector-node/detector-node.component';
 import { KustoNodeComponent } from '../kusto-node/kusto-node.component';
 import { MarkdownNodeComponent } from '../markdown-node/markdown-node.component';
-import { kustoNode, nodeType, workflow, workflowNode, workflowNodeData, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
+import { kustoNode, nodeType, workflow, workflowNode, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { IfElseConditionStepComponent } from '../ifelse-condition-step/ifelse-condition-step.component';
 import { ConditionIffalseStepComponent } from '../condition-iffalse-step/condition-iffalse-step.component';
 import { ConditionIftrueStepComponent } from '../condition-iftrue-step/condition-iftrue-step.component';
@@ -20,6 +20,9 @@ import { WorkflowRootNodeComponent } from '../workflow-root-node/workflow-root-n
 import { ForeachNodeComponent } from '../foreach-node/foreach-node.component';
 import { InputNodeComponent } from '../input-node/input-node.component';
 import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
+import { ApplensSupportTopicService } from '../../services/applens-support-topic.service';
+import { SupportTopicResult } from '../../resource-home/resource-home.component';
+import { DetectorMetaData, SupportTopic } from 'diagnostic-data';
 
 @Component({
   selector: 'create-workflow',
@@ -57,18 +60,41 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
   nodeType = nodeType;
   chosenNodeType: nodeType = nodeType.kustoQuery;
   workflowJsonString: string = '';
+  addingSupportTopic: boolean = false;
+  supportTopicPaths: string[] = [];
+  chosenSupportTopic: string = '';
+  allSupportTopics: SupportTopicResult[] = [];
+  supportTopicsInUse: any[] = [];
+  loadingExistingSupportTopics: boolean = true;
 
   @Input() id: string = '';
   @Input() Branch: string = '';
 
   constructor(private stepRegistry: NgFlowchartStepRegistry, private _workflowService: WorkflowService,
     private _route: ActivatedRoute, private resourceService: ResourceService, private _adalService: AdalService,
-    private githubService: GithubApiService, private diagnosticApiService: ApplensDiagnosticService) {
+    private githubService: GithubApiService, private diagnosticApiService: ApplensDiagnosticService,
+    private _supportTopicService: ApplensSupportTopicService) {
     this.callbacks.afterRender = this.afterRender.bind(this);
   }
 
   ngOnInit(): void {
-    this.initialize();
+    this.service = this.resourceService.service;
+
+    //
+    // Populate all Support Topics mapping in an in-memory object. This
+    // allows us to map sapSupportTopicId to a friendly name later in UI
+    // which someone wants to map support topics after marking detector public
+    //
+
+    this._supportTopicService.getSupportTopics().subscribe((allSupportTopics: SupportTopicResult[]) => {
+      this.allSupportTopics = allSupportTopics;
+      allSupportTopics.forEach(st => {
+        this.supportTopicPaths.push(this.correctSupportTopicPath(st.supportTopicPath));
+      });
+      this.chosenSupportTopic = this.supportTopicPaths[0];
+      this.populateSupportTopicsInUse();
+      this.initialize();
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -86,7 +112,6 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
   }
 
   initialize() {
-    this.service = this.resourceService.service;
     if (this.id === '') {
       this.publishBody.IsInternal = true;
       let alias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '';
@@ -134,6 +159,7 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
       this.publishBody.IsInternal = packageJson.IsInternal;
       this.publishBody.WorkflowName = packageJson.name;
       this.publishBody.Category = packageJson.Category;
+      this.publishBody.SupportTopicPaths = this.getSupportTopicPaths(packageJson.SupportTopicList);
 
       if (this.resourceService.service === 'SiteService') {
         this.publishBody.AppType = packageJson.AppType;
@@ -160,7 +186,7 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
     this.stepRegistry.registerStep('rootNode', WorkflowRootNodeComponent);
 
     if (this.id === '') {
-      if (this.service === 'SiteService') {
+      if (this.resourceService.service === 'SiteService') {
         let item = this.selectAppType.itemsList.findByLabel('WebApp');
         this.selectAppType.select(item);
 
@@ -325,5 +351,113 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
 
   addRootNode() {
     this._workflowService.addRootNode(this.canvas.getFlow());
+  }
+
+  addSupportTopic() {
+
+    //
+    // Make sure that the chosenSupportTopic is not mapped to an already existing
+    // detector or workflow. If it is, bail out and throw error to end user
+    //
+
+    let existingIndex = this.supportTopicsInUse.findIndex(x => x.supportTopicPath === this.chosenSupportTopic);
+    if (existingIndex > -1) {
+      let existingEntity = this.supportTopicsInUse[existingIndex].id;
+      this._workflowService.showMessageBox("Error", `The support topic <strong>${this.chosenSupportTopic}</strong> cannot be used as it is already mapped to an existing detector or workflow - <strong>${existingEntity}</strong>. Please first remove the support topic mapping for the existing detector or choose a different support topic.`);
+      return;
+    }
+
+
+    //
+    // Ensure user is not choosing a support topic that already exists in the list
+    //
+
+    let idx = this.publishBody.SupportTopicPaths.findIndex(x => x === this.chosenSupportTopic);
+    if (idx === -1) {
+      this.publishBody.SupportTopicPaths.push(this.chosenSupportTopic);
+      this.addingSupportTopic = false
+    } else {
+      this._workflowService.showMessageBox("Error", `The Support Topic '${this.chosenSupportTopic}' is already selected for this workflow`);
+    }
+  }
+
+  deleteSupportTopic(supportTopicPath: string) {
+    let idx = this.publishBody.SupportTopicPaths.findIndex(x => x === supportTopicPath);
+    if (idx > -1) {
+      this.publishBody.SupportTopicPaths.splice(idx, 1);
+    }
+  }
+
+  //
+  // Existing workflows will fetch Support Topic mapping from package.json. That mapping
+  // does not have the friendly SupportTopicPath. Do the hard work of getting supportTopicPath
+  // from sapProductId and sapSupportTopicId from an in-memory cache 
+  //
+
+  getSupportTopicPaths(supportTopicList: []): string[] {
+    let supportTopicPaths: string[] = [];
+    supportTopicList.forEach((supportTopic: any) => {
+      let idx = this.allSupportTopics.findIndex(x => x.sapProductId === supportTopic.SapProductId && x.sapSupportTopicId === supportTopic.SapSupportTopicId);
+      if (idx > -1) {
+        supportTopicPaths.push(this.correctSupportTopicPath(this.allSupportTopics[idx].supportTopicPath));
+      }
+    });
+    return supportTopicPaths;
+  }
+
+  //
+  // Replace '/' in Support Topic paths with '\'
+  //
+
+  correctSupportTopicPath(supportTopicPath: string): string {
+    const pieces = supportTopicPath.split('/');
+    return pieces.join('\\');
+  }
+
+
+  //
+  // Populate the supportTopicPath used in existing detectors and workflows in an
+  // in-memory cache to ensure that they are not re-used.
+  //
+
+  populateSupportTopicsInUse() {
+    this.diagnosticApiService.getDetectors().subscribe(detectors => {
+      this.addSupportTopicEntitiesToCache(detectors);
+      this.diagnosticApiService.getWorkflows().subscribe(workflows => {
+        this.addSupportTopicEntitiesToCache(workflows);
+
+        //
+        // set this flag to true to ensure the dropdown is
+        // visible. Till then, a loading animation will show
+        //
+
+        this.loadingExistingSupportTopics = false;
+      });
+    });
+  }
+
+  addSupportTopicEntitiesToCache(entities: DetectorMetaData[]) {
+    if (entities && entities.length > 0) {
+      entities.forEach(entity => {
+        if (entity.supportTopicList && entity.supportTopicList.length > 0 && entity.id != this.id) {
+          entity.supportTopicList.forEach(st => {
+            this.addExistingSupportTopic(entity.id, st);
+          });
+        }
+      });
+    }
+  }
+
+  addExistingSupportTopic(id: string, st: SupportTopic) {
+    let idx = this.allSupportTopics.findIndex(x => x.sapSupportTopicId === st.sapSupportTopicId && x.sapProductId === st.sapProductId);
+    if (idx > -1) {
+
+      //
+      // Fetch supportTopicPath and entityId and save it to cache
+      // to validate later when choosing support topics.
+      //
+
+      this.supportTopicsInUse.push({ id: id, supportTopicPath: this.correctSupportTopicPath(this.allSupportTopics[idx].supportTopicPath) });
+    }
   }
 }
