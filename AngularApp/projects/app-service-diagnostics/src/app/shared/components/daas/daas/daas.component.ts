@@ -269,14 +269,45 @@ export class DaasComponent implements OnInit, OnDestroy {
   populateInstancesToDiagnose() {
     this.instancesSelected = new Array();
 
-    if (this.instances && this.instances.length > 0) {
-      this.instances.forEach(x => {
-        const s = new InstanceSelection();
-        s.InstanceName = x.machineName;
-        s.Selected = false;
-        s.InstanceId = x.instanceId;
-        this.instancesSelected.push(s);
-      });
+    //
+    // ElasticPremium instances have alloted and pre-warmed instances and app may not be allocated to
+    // run on pre-warmed instances. We get all processes from all instances (pre-warmed and allocated) and
+    // we check the machineName to identify which instance is "really" alloted to the app. This could
+    // slow down the populating instances part but this is a workaround we follow till we come up with
+    // something better.
+    //
+
+    if (this.validationResult.ServerFarmSku && this.validationResult.ServerFarmSku.toLowerCase().startsWith('elastic')) {
+      if (this.instances && this.instances.length > 0) {
+        let getProcessTasks = this.instances.map(x => {
+          return this._daasService.getInstanceProcesses(this.siteToBeDiagnosed, x.instanceId);
+        });
+
+        forkJoin(getProcessTasks).subscribe(results => {
+          results.forEach(instanceProcesses => {
+            if (instanceProcesses && instanceProcesses.length > 0) {
+              let firstEntry = instanceProcesses[0];
+              if (this.instancesSelected.findIndex(x => x.InstanceName === firstEntry.machineName) === -1) {
+                this.instancesSelected.push({
+                  InstanceId: firstEntry.instanceId,
+                  InstanceName: firstEntry.machineName,
+                  Selected: false,
+                })
+              }
+            }
+          })
+        });
+      }
+    } else {
+      if (this.instances && this.instances.length > 0) {
+        this.instances.forEach(x => {
+          const s = new InstanceSelection();
+          s.InstanceName = x.machineName;
+          s.Selected = false;
+          s.InstanceId = x.instanceId;
+          this.instancesSelected.push(s);
+        });
+      }
     }
   }
 
