@@ -1,0 +1,40 @@
+{
+    "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/scopeBindings.json",
+    "contentVersion": "0.0.0.1",
+    "scopeBindings": [
+        {
+            "scopeTagName": "General",
+            "bindings": [
+                {
+                    "find": "__TENANT_ID__",
+                    "replaceWith": "$callerTenantId()"
+                },
+                {
+                    "find": "__CLOUD_ENVIRONMENT__",
+                    "replaceWith": "$rolloutInfra()"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "PAR",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-par"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "France Central"
+                }
+            ]
+        }
+    ]
+}

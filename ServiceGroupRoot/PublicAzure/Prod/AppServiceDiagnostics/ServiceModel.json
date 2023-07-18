@@ -1,8 +1,8 @@
 ﻿{
   "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/serviceModel.json",
   "serviceMetadata": {
-    "serviceGroup": "DiagnosticsBackend",
-    "environment": "Test"
+    "serviceGroup": "DiagnosticsFrontend",
+    "environment": "Prod"
   },
   "serviceResourceGroupDefinitions": [
     {
@@ -41,72 +41,23 @@
               "templatePath": "Templates\\AppServiceDiagnosticsAppSettings.Template.json"
             }
           }
+        },
+        {
+          "name": "AutoSwapDefinition",
+          "composedOf": {
+            "arm": {
+              "templatePath": "Templates\\AutoSwap.json",
+              "parametersPath": "Parameters\\AutoSwap.Parameters.json"
+            }
+          }
         }
       ]
     }
   ],
   "serviceResourceGroups": [
     {
-      "azureResourceGroupName": "DiagnosticBackendPublicAzure",
-      "location": "West US",
-      "instanceOf": "WebAppResourceGroupDefinitions",
-      "azureSubscriptionId": "6a205b0a-6b5a-4346-8468-f4b6367f7efa",
-      "scopeTags": [
-        {
-          "name": "General"
-        },
-        {
-          "name": "PublicAzure"
-        },
-        {
-          "name": "WestUSRegion"
-        }
-      ],
-      "serviceResources": [
-        {
-          "name": "ApplensPublic",
-          "instanceOf": "WebAppDefinition",
-          "scopeTags": [
-            {
-              "name": "ApplensWestUs"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsPublicWebAppCreate",
-          "instanceOf": "WebAppDefinitionV2",
-          "armParametersPath": "Parameters\\MultiRegion.WebApp.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsPublicAppSettings",
-          "instanceOf": "AppServiceDiagnosticsAppSettingsDefintion",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsAppSettings.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsPublicZipDeploy",
-          "instanceOf": "ZipDeployDefinition",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsZipDeploy.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "azureResourceGroupName": "applens-mwh",
-      "location": "West US 2",
+      "azureResourceGroupName": "appservice-diagnostics-par",
+      "location": "France Central",
       "instanceOf": "WebAppResourceGroupDefinitions",
       "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
       "scopeTags": [
@@ -114,142 +65,17 @@
           "name": "General"
         },
         {
-          "name": "PublicAzure"
-        },
-        {
-          "name": "MWH"
+          "name": "PAR"
         }
       ],
       "serviceResources": [
         {
-          "name": "ApplensZipDeployMWH",
+          "name": "AppServiceDiagnosticsZipDeployPar",
           "instanceOf": "ZipDeployDefinition"
-        }
-        {
-          "name": "AppServiceDiagnosticsPublicZipDeploy",
-          "instanceOf": "ZipDeployDefinition",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsZipDeploy.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "azureResourceGroupName": "DiagnosticBackendUsSecWest",
-      "location": "USSec West",
-      "instanceOf": "WebAppResourceGroupDefinitions",
-      "azureSubscriptionId": "0a36a8bc-5ae8-4cb1-becc-f3f76ad6419c",
-      "scopeTags": [
-        {
-          "name": "General"
         },
         {
-          "name": "USSEC"
-        },
-        {
-          "name": "USSecWestRegion"
-        }
-      ],
-      "serviceResources": [
-        {
-          "name": "ApplensUsSec",
-          "instanceOf": "WebAppDefinition",
-          "scopeTags": [
-            {
-              "name": "Applens"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsWebAppCreateUSSec",
-          "instanceOf": "WebAppDefinitionV2",
-          "armParametersPath": "Parameters\\MultiRegion.WebApp.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsAppSettingsUSSec",
-          "instanceOf": "AppServiceDiagnosticsAppSettingsDefintion",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsAppSettings.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsZipDeployUSSec",
-          "instanceOf": "ZipDeployDefinition",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsZipDeploy.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "azureResourceGroupName": "Support-RG",
-      "location": "USGov Virginia",
-      "instanceOf": "WebAppResourceGroupDefinitions",
-      "azureSubscriptionId": "86067b54-e1da-4079-96bb-4c4b5e1be1b6",
-      "scopeTags": [
-        {
-          "name": "General"
-        },
-        {
-          "name": "Fairfax"
-        },
-        {
-          "name": "USSecWestRegion"
-        }
-      ],
-      "serviceResources": [
-        {
-          "name": "ApplensFairfax",
-          "instanceOf": "WebAppDefinition",
-          "scopeTags": [
-            {
-              "name": "Applens"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsFairfax",
-          "instanceOf": "WebAppDefinitionV2",
-          "armParametersPath": "Parameters\\MultiRegion.WebApp.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsAppSettingsFairfax",
-          "instanceOf": "AppServiceDiagnosticsAppSettingsDefintion",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsAppSettings.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
-        },
-        {
-          "name": "AppServiceDiagnosticsZipDeployFairfax",
-          "instanceOf": "ZipDeployDefinition",
-          "armParametersPath": "Parameters\\AppServiceDiagnosticsZipDeploy.Parameters.json",
-          "scopeTags": [
-            {
-              "name": "AppServiceDiagnostics"
-            }
-          ]
+          "name": "PARSWAP",
+          "instanceOf": "AutoSwapDefinition"
         }
       ]
     }
