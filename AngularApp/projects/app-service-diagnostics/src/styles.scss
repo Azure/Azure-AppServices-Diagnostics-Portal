@@ -121,7 +121,7 @@ fab-command-bar {
 .ms-Panel-main {
     border: 1px solid var(--panelBorder);
     //Add board on top to differentiate between panel and main context
-    border-top: 1px solid var(--bodyText);
+    border-top: 1px solid #cccccc;
 }
 
 blockquote p{
