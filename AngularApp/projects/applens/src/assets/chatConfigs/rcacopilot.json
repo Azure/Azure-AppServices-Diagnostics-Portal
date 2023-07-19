@@ -1,0 +1,36 @@
+{
+    "samples": [
+        {
+            "key": "Health Check Issues RCA",
+            "value": "Write an RCA about Health Check issues"
+        },
+        {
+            "key": "Customer Code Issues RCA",
+            "value": "Write an RCA about Customer Code issues"
+        },
+        {
+            "key": "Platform (Storage Volume) Issues RCA",
+            "value": "Write an RCA about Platform (Storage Volume) Issues"
+        },
+        {
+            "key": "File Server Upgrade Issues RCA",
+            "value": "Write an RCA about File Server Upgrade Issues"
+        },
+        {
+            "key": "File Server High CPU Issues RCA",
+            "value": "Write an RCA about File Server High CPU Issues"
+        },
+        {
+            "key": "Tips on communicating with the customer",
+            "value": "Can you give me tips on communicating with the customer."
+        },
+        {
+            "key": "Write an RCA about my custom issue",
+            "value": "Write an RCA about the following issue. I will provide the context in the next message."
+        },
+        {
+            "key":"Modify/Edit my existing RCA to make it more customer-friendly",
+            "value": "Modify/Edit my existing RCA to make it more customer-friendly. I will enter it in the next message"
+        }
+    ]
+}

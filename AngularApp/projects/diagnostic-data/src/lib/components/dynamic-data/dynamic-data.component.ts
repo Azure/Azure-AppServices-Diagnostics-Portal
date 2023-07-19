@@ -109,7 +109,7 @@ export class DynamicDataComponent implements OnInit {
       }
       const component = this._findInputComponent((<Rendering>diagnosticData?.renderingProperties)?.type);
       if (component == null) {
-        const rendering = (<Rendering>diagnosticData.renderingProperties).type;
+        const rendering = (<Rendering>diagnosticData?.renderingProperties)?.type;
         this.telemetryService.logTrace(`No component found for rendering type : ${RenderingType[rendering]}`);
         return;
       }

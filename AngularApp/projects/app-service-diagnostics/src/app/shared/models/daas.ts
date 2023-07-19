@@ -216,6 +216,7 @@ export class DaasValidationResult {
     BlobSasUri: string = "";
     ConnectionString: string = "";
     UseDiagServerForLinux: boolean = false;
+    ServerFarmSku: string = '';
 }
 
 export class CrashMonitoringSettings {
@@ -278,6 +279,15 @@ export interface LinuxDaasSettings {
 export interface Instance {
     machineName: string;
     instanceId: string;
+}
+
+export interface InstanceProcess {
+    id: string;
+    name: string;
+    machineName: string;
+    instanceId: string;
+    href: string;
+    user_name: string;
 }
 
 export interface LinuxCommand {

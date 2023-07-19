@@ -34,7 +34,29 @@ textarea {
   margin-bottom: 10px;
 }
 
-::ng-deep .ng-select .ng-select-container , ::ng-deep .ng-select.ng-select-multiple .ng-select-container{
+::ng-deep .ng-select .ng-select-container,
+::ng-deep .ng-select.ng-select-multiple .ng-select-container {
   min-height: 6px;
   font-size: 0.9em;
+}
+
+.table-condensed>thead>tr>th,
+.table-condensed>tbody>tr>th,
+.table-condensed>tfoot>tr>th,
+.table-condensed>thead>tr>td,
+.table-condensed>tbody>tr>td,
+.table-condensed>tfoot>tr>td {
+  padding: 5px;
+}
+
+.btn {
+  background: none;
+}
+
+.table {
+  font-size: smaller;
+}
+
+th {
+  vertical-align: middle !important;
 }

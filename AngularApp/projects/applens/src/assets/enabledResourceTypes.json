@@ -176,6 +176,18 @@
         },
         {
             "service": "ResourceService",
+            "resourceType": "Microsoft.ApiCenter/services",
+            "templateFileName": "ApiCenterService",
+            "imgSrc": "assets/img/Azure-ApiCenter-Logo.png",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "API Center",
+            "pesId": "18144",
+            "staticSelfHelpContent": "microsoft.apicenter",
+            "searchSuffix": "AZURE API CENTER",
+            "displayName": "Azure API Center"
+        },
+        {
+            "service": "ResourceService",
             "resourceType": "Microsoft.CertificateRegistration/certificateOrders",
             "templateFileName": "AppServiceCertificate",
             "imgSrc": "assets/img/Azure-AppServiceCertificate-Logo.png",

@@ -37,6 +37,7 @@ export class ConfigureStorageAccountComponent implements OnInit {
   @Input() siteToBeDiagnosed: SiteDaasInfo;
   @Input() sessionInProgress: boolean;
   @Input() useDiagServerForLinux: boolean = false;
+  @Input() serverFarmSku: string;
   @Output() StorageAccountValidated: EventEmitter<DaasValidationResult> = new EventEmitter<DaasValidationResult>();
 
   chosenStorageAccount: string;
@@ -55,6 +56,7 @@ export class ConfigureStorageAccountComponent implements OnInit {
   ngOnInit() {
 
     this.checkingBlobSasUriConfigured = true;
+    this.validationResult.ServerFarmSku = this.serverFarmSku;
 
     this._daasService.getStorageConfiguration(this.siteToBeDiagnosed, this.useDiagServerForLinux).subscribe(daasStorageConfiguration => {
       if (!this.useDiagServerForLinux && (daasStorageConfiguration.ConnectionString || daasStorageConfiguration.SasUri)) {

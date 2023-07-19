@@ -3,16 +3,13 @@
         <div [innerHTML]="chatHeader"></div>
     </div>
     <div class="chatui-box-row-container chatui-samples-container" *ngIf="!messages || messages.length==0">
-        <div class="chatui-box-row">
-            <ng-container *ngFor="let querySample of chatQuerySamples; let i = index">
-              <div class="chatui-box" *ngIf="i<=2" (click)="onchatSampleClick(i)" [innerHTML]="chatQuerySamples[i].key"></div>
-            </ng-container>
-        </div>
-        <div class="chatui-box-row">
-          <ng-container *ngFor="let querySample of chatQuerySamples; let i = index">
-            <div class="chatui-box" *ngIf="i>=3" (click)="onchatSampleClick(i)" [innerHTML]="chatQuerySamples[i].key"></div>
-          </ng-container>
-        </div>
+      <ng-container *ngFor="let querySample of chatQuerySamples; let i = index">
+        <ng-container *ngIf="(i % 3) === 0">
+          <div class="chatui-box-row">
+            <div class="chatui-box" *ngFor="let innerSample of chatQuerySamples.slice(i, i + 3); let j = index" (click)="onchatSampleClick(i + j)" [innerHTML]="innerSample.key"></div>
+          </div>
+        </ng-container>
+      </ng-container>
     </div>
     <div id="chatui-all-messages-container-id" class="chatui-box-row-container chatui-chat-messages-container" *ngIf="messages && messages.length>0">
       <div class="chatui-top-error-container" *ngIf="showTopErrorBar" [ngClass]="{'fade-in': showTopErrorBar, 'fade-out': !showTopErrorBar}">

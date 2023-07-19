@@ -1,3 +1,6 @@
+import { TelemetryService } from 'diagnostic-data';
+import { environment } from 'projects/applens/src/environments/environment';
+
 export class PortalUtils {
     
     static getBrowserType = () => {  
@@ -18,5 +21,16 @@ export class PortalUtils {
         } else {  
           return "Unknown Browser";  
         }  
+      }
+
+      static logEvent = (eventStr: string, message: string, telemetryService: TelemetryService) => {
+
+        let time = new Date().getTime().toString();
+        if (environment.production) {
+          telemetryService.logEvent(eventStr, { message: message, ts: time });
+        }
+        else {
+          console.log(`event: ${eventStr}, message: ${message}, ts: ${time}`);
+        }
       }
 }

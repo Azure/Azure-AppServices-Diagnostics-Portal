@@ -466,6 +466,8 @@ namespace AppLensV3.Services
 
                 JObject jObject = JObject.Parse(chatTemplateContent);
                 string systemPrompt = (jObject["systemPrompt"] ?? string.Empty).ToString();
+                // replace <<CURRENT_DATETIME>> with the current UTC Date time
+                systemPrompt = systemPrompt.Replace("<<CURRENT_DATETIME>>", DateTime.UtcNow.ToString() + "UTC");
                 chatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.System, systemPrompt));
                 JArray fewShotExamples = (jObject["fewShotExamples"] ?? new JObject()).ToObject<JArray>();
 
