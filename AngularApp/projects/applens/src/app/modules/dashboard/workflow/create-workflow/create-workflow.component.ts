@@ -395,6 +395,10 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
   //
 
   getSupportTopicPaths(supportTopicList: []): string[] {
+    if (supportTopicList == null) {
+      return [];
+    }
+
     let supportTopicPaths: string[] = [];
     supportTopicList.forEach((supportTopic: any) => {
       let idx = this.allSupportTopics.findIndex(x => x.sapProductId === supportTopic.SapProductId && x.sapSupportTopicId === supportTopic.SapSupportTopicId);
