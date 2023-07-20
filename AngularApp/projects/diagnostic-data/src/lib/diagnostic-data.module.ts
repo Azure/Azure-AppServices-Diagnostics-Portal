@@ -167,6 +167,7 @@ import { ChatUIContextService } from './services/chatui-context.service';
 import {OpenAIChatComponent} from './components/openai-chat/openai-chat.component';
 import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.component';
 import {OpenAIChatContainerComponent} from './components/openai-chat-container/openai-chat-container.component';
+import { DiagChatContainerComponent } from './components/diag-chat-container/diag-chat-container.component';
 
 import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
 
@@ -285,7 +286,8 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         ChatUIComponent,
         OpenAIChatComponent,
         OpenAIGenieComponent,
-        OpenAIChatContainerComponent
+        OpenAIChatContainerComponent,
+        DiagChatContainerComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -334,7 +336,8 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         OpenAIChatComponent,
         OpenAIGenieComponent,
         DateTimePickerComponent,
-        OpenAIChatContainerComponent
+        OpenAIChatContainerComponent,
+        DiagChatContainerComponent
     ]
 })
 export class DiagnosticDataModule {

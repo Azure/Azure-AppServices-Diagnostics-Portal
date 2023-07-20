@@ -1,0 +1,16 @@
+<div>
+    <h2>Welcome to Conversational Diagnostics</h2>
+    <chat-ui #chatUIComponent
+    [chatIdentifier]="chatIdentifier"
+    [chatInputText]="userInput"
+    [chatHeader]="chatHeader"
+    [chatAlignment]="'center'"
+    [onSendMessage]="onUserSendMessage"
+    [messages]="_chatContextService.messageStore[chatIdentifier]"
+    [userPhotoSource]="_chatContextService.userPhotoSource"
+    [userNameInitial]="_chatContextService.userNameInitial"
+    [chatInputBoxDisabled]="_chatContextService.chatInputBoxDisabled"
+    [chatQuerySamples]="chatQuerySamples"
+    [inputTextLimit]="inputTextLimit"
+    ></chat-ui>
+</div>
