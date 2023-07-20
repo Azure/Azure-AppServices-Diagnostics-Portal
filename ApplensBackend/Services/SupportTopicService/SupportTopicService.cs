@@ -64,9 +64,7 @@ namespace AppLensV3.Services
                     ProductName = row["ProductName"].ToString(),
                     SupportTopicL2Name = row["SupportTopicL2Name"].ToString(),
                     SupportTopicL3Name = row["SupportTopicL3Name"].ToString(),
-                    SupportTopicPath = row["SupportTopicPath"].ToString(),
-                    SapSupportTopicId = row["SapSupportTopicId"].ToString(),
-                    SapProductId = row["SapProductId"].ToString(),
+                    SupportTopicPath = row["SupportTopicPath"].ToString()
                 };
 
                 supportTopicsList.Add(supportTopic);
