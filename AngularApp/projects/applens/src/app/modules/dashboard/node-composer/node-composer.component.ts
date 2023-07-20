@@ -334,7 +334,7 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   getProjectStatement(renderingType: NoCodeSupportedRenderingTypes){
     switch(renderingType){
       case RenderingType.Insights:
-        return '| project Status, Message, Description, Recommended Action, CustomerReadyContent';
+        return `| project Status, Message, Description, ['Recommended Action'], ['Customer Ready Content']`;
       case RenderingType.Markdown:
         return '| project Title, MarkdownString';
       default:
