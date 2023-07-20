@@ -173,6 +173,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
         })
     }
 
+    openDiagChat(){
+        this._router.navigate(['/diagnosticChat'], { queryParams: { 'category': 'diagnostics' } });
+    }
+
     ngOnInit() {
         this.providerRegisterUrl = `/subscriptions/${this.subscriptionId}/providers/Microsoft.ChangeAnalysis/register`;
         if (!this._detectorControlService.startTime) {

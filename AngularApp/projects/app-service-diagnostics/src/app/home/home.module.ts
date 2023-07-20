@@ -63,7 +63,8 @@ import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
 import { DownloadReportComponent } from '../shared/components/download-report/download-report.component';
 import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
 import { ClientScriptService } from '../shared-v2/services/client-script.service';
-import { OpenAIArmService } from '../../../../diagnostic-data/src/public_api';
+import { ChatUIContextService, OpenAIArmService } from '../../../../diagnostic-data/src/public_api';
+import { DiagChatContainerComponent } from '../../../../diagnostic-data/src/lib/components/diag-chat-container/diag-chat-container.component';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -78,6 +79,15 @@ export const HomeRoutes = RouterModule.forChild([
                 component: HomeComponent,
                 data: {
                     navigationTitle: 'Home',
+                    cacheComponent: true
+                },
+                pathMatch: 'full',
+            },
+            {
+                path: 'diagnosticChat',
+                component: DiagChatContainerComponent,
+                data: {
+                    navigationTitle: 'DiagChat',
                     cacheComponent: true
                 },
                 pathMatch: 'full',
@@ -792,6 +802,7 @@ export const HomeRoutes = RouterModule.forChild([
             MetricsPerInstanceAppsResolver,
             MetricsPerInstanceAppServicePlanResolver,
             AdvanceApplicationRestartResolver,
+            ChatUIContextService,
             SecurityScanningResolver,
             { provide: GenericSupportTopicService, useExisting: SupportTopicService },
             { provide: GenericContentService, useExisting: ContentService },

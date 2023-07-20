@@ -169,6 +169,8 @@ import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.compo
 import {OpenAIChatContainerComponent} from './components/openai-chat-container/openai-chat-container.component';
 import { ChatUIMarkdownWrapperComponent } from './components/chat-ui-markdown-wrapper/chat-ui-markdown-wrapper.component';
 import { GenericDetectorCopilotService } from './services/generic-detector-copilot.service';
+import { DiagChatContainerComponent } from './components/diag-chat-container/diag-chat-container.component';
+
 import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
 
 
@@ -288,7 +290,8 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         OpenAIChatComponent,
         OpenAIGenieComponent,
         OpenAIChatContainerComponent,
-        ChatUIMarkdownWrapperComponent
+        ChatUIMarkdownWrapperComponent,
+        DiagChatContainerComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -338,7 +341,8 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         OpenAIGenieComponent,
         DateTimePickerComponent,
         OpenAIChatContainerComponent,
-        ChatUIMarkdownWrapperComponent
+        ChatUIMarkdownWrapperComponent,
+        DiagChatContainerComponent
     ]
 })
 export class DiagnosticDataModule {
