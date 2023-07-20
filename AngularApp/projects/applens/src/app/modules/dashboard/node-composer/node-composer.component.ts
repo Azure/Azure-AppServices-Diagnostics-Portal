@@ -493,7 +493,7 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
     let prompt = isMicrosoftWeb ? CreateTextCompletionModel(`${this.microsoftWebPrompt}\n\nfor an app named ${appName}\n\n${this.nodeModel.code}\n\noutput:\n`, TextModels.Default, ResponseTokensSize.Large) : CreateTextCompletionModel(`prompt2`);
     
     this._openAIService.generateTextCompletion(prompt, null, true).subscribe(template => {
-      this.nodeModel.code = template.choices[0].text;
+      this.nodeModel.code = template.text;
       this.previewResults(event);
     });
   }

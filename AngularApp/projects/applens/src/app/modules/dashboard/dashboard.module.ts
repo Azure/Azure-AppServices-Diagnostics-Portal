@@ -155,8 +155,6 @@ import { DynamicNodeSettings } from './dynamic-node-settings/dynamic-node-settin
 import { RenderingSettingsBaseComponent } from './rendering-settings-components/rendering-settings-base/rendering-settings-base.component';
 import { TableRenderingSettingsComponent } from './rendering-settings-components/table-rendering-settings/table-rendering-settings.component';
 import { InsightRenderingSettingsComponent } from './rendering-settings-components/insight-rendering-settings/insight-rendering-settings.component';
-import * as moment from 'moment';
-import { NetworkTraceAnalysisComponent } from './network-trace-analysis/network-trace-analysis.component';
 import { NoCodeDetectorPanelComponent } from './no-code-detector-panel/no-code-detector-panel.component';
 import { NoCodeDetectorViewComponent } from './no-code-detector-view/no-code-detector-view.component';
 @Injectable()
@@ -528,6 +526,7 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
             {
                 path: 'deployments',
                 component: DevopsDeploymentsComponent
+            },
             {
                 path: 'networkTraceAnalysis',
                 component: NetworkTraceAnalysisComponent
