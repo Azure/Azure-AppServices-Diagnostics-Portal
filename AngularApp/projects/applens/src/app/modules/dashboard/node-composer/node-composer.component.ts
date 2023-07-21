@@ -61,7 +61,7 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   output:
   StatsDWASWorkerProcessTenMinuteTable
   
-  | where {Utilities.TimeAndTenantFilterQuery(cxt.StartTime, cxt.EndTime, "TIMESTAMP")}
+  | where {Utilities.TimeAndTenantFilterQuery(cxt.StartTime, cxt.EndTime, cxt.Resource, "TIMESTAMP")}
   | where ApplicationPool startswith '{cxt.Resource.Name}_' or ApplicationPool == '{cxt.Resource.Name}'
   | summarize by RoleInstance, Tenant, EventPrimaryStampName
   | join kind = inner (RoleInstanceHeartbeat
@@ -80,7 +80,7 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   
   output:
   AntaresIISLogFrontEndTable
-  | where {Utilities.TimeAndTenantFilterQuery(cxt.StartTime, cxt.EndTime, "PreciseTimeStamp")}
+  | where {Utilities.TimeAndTenantFilterQuery(cxt.StartTime, cxt.EndTime, cxt.Resource, "PreciseTimeStamp")}
   | where {Utilities.HostNamesFilterQuery(cxt.Resource.Hostnames)}
   | where User_agent == 'AlwaysOn'
   | where Sc_status != 200
