@@ -167,6 +167,7 @@ import { ChatUIContextService } from './services/chatui-context.service';
 import {OpenAIChatComponent} from './components/openai-chat/openai-chat.component';
 import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.component';
 import {OpenAIChatContainerComponent} from './components/openai-chat-container/openai-chat-container.component';
+import { GenericDetectorCopilotService } from './services/generic-detector-copilot.service';
 
 import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
 
@@ -368,7 +369,8 @@ export class DiagnosticDataModule {
                 QueryResponseService,
                 OptInsightsGenericService,
                 DemoSubscriptions,
-                ChatUIContextService
+                ChatUIContextService,
+                GenericDetectorCopilotService
             ]
         };
     }

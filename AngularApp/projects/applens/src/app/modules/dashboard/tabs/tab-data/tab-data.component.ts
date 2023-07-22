@@ -1,5 +1,5 @@
 import { DetectorMetaData, DetectorResponse, DetectorType, ResiliencyScoreReportHelper, HealthStatus, TelemetryEventNames, TelemetryService } from 'diagnostic-data';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
 import { DetectorControlService } from 'diagnostic-data';
@@ -13,15 +13,16 @@ import { SeverityLevel } from '@microsoft/applicationinsights-web';
 import { DirectionalHint } from 'office-ui-fabric-react';
 import { HttpClient } from '@angular/common/http';
 import { ObserverSiteSku, ObserverSkuType } from '../../../../shared/models/observer';
+import { ApplensCopilotContainerService } from '../../services/copilot/applens-copilot-container.service';
+import { ApplensDetectorCopilotService } from '../../services/copilot/applens-detector-copilot.service';
+import { DiagnosticApiService } from '../../../../shared/services/diagnostic-api.service';
 
 @Component({
   selector: 'tab-data',
   templateUrl: './tab-data.component.html',
   styleUrls: ['./tab-data.component.scss']
 })
-export class TabDataComponent implements OnInit {
-
-  constructor(private _route: ActivatedRoute, public resourceService: ResourceService, private _observerService: ObserverService, private _diagnosticApiService: ApplensDiagnosticService, private _detectorControlService: DetectorControlService, private _applensCommandBarService: ApplensCommandBarService, private _applensGlobal: ApplensGlobal, private _telemetryService: TelemetryService, private _http: HttpClient) { }
+export class TabDataComponent implements OnInit, OnDestroy {
 
   detectorResponse: DetectorResponse;
 
@@ -29,9 +30,7 @@ export class TabDataComponent implements OnInit {
   workflowId: string;
   detectorMetaData: DetectorMetaData;
   isWorkflowDetector: boolean = false;
-
   analysisMode: boolean = false;
-
   hideDetectorControl: boolean = false;
 
   internalExternalText: string = "";
@@ -85,8 +84,19 @@ export class TabDataComponent implements OnInit {
   };
   vfsFonts: any;
 
+  // copilot variables
+  copilotEnabled: boolean = true;
+  copilotServiceMembersInitialized: boolean = false;
+
+  constructor(public resourceService: ResourceService, public _copilotContainerService: ApplensCopilotContainerService, private _detectorCopilotService: ApplensDetectorCopilotService,
+    private _route: ActivatedRoute, private _observerService: ObserverService, private _applensApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService,
+    private _detectorControlService: DetectorControlService, private _applensCommandBarService: ApplensCommandBarService, private _applensGlobal: ApplensGlobal,
+    private _telemetryService: TelemetryService, private _http: HttpClient) { }
 
   ngOnInit() {
+
+    this.copilotServiceMembersInitialized = false;
+
     // If route query params contains detectorQueryParams, setting the values in shared service so it is accessible in all components
     this._route.queryParams.subscribe((queryParams: Params) => {
       if (queryParams.detectorQueryParams != undefined) {
@@ -96,7 +106,10 @@ export class TabDataComponent implements OnInit {
       }
       this.analysisMode = this._route.snapshot.data['analysisMode'];
       this.detector = this._route.snapshot.params['detector'] ? this._route.snapshot.params['detector'] : null;
-      this._telemetryService.logEvent(TelemetryEventNames.DownloadReportButtonDisplayed, { 'DownloadReportButtonDisplayed': this.displayDownloadReportButton.toString(), 'Detector:': this.detector, 'SubscriptionId': this._route.parent.snapshot.params['subscriptionid'], 'Resource': this.resource?.SiteName?? 'NoResource' });
+      this._telemetryService.logEvent(TelemetryEventNames.DownloadReportButtonDisplayed, { 'DownloadReportButtonDisplayed': this.displayDownloadReportButton.toString(), 'Detector:': this.detector, 'SubscriptionId': this._route.parent.snapshot.params['subscriptionid'], 'Resource': this.resource?.SiteName ?? 'NoResource' });
+
+      this._detectorCopilotService.initializeMembers(this.analysisMode);
+      this.copilotServiceMembersInitialized = true;
     });
 
     if (this._detectorControlService.isInternalView) {
@@ -113,13 +126,13 @@ export class TabDataComponent implements OnInit {
     });
     // Retrieving info about the site 
     // Sample response: {"kind":"app","is_linux":false,"sku":"Standard","actual_number_of_workers":3,"current_worker_size":1}    
-    if(!!this.resource?.InternalStampName && !!this.resource?.SiteName) {
+    if (!!this.resource?.InternalStampName && !!this.resource?.SiteName) {
       this._observerService.getSiteSku(this.resource.InternalStampName, this.resource.SiteName).subscribe(siteSku => {
         if (siteSku) {
           this.siteSku = siteSku;
         }
       });
-    }    
+    }
 
     this._route.params.subscribe((params: Params) => {
       this.subscriptionId = params["subscriptionId"];
@@ -159,6 +172,19 @@ export class TabDataComponent implements OnInit {
     // as this file caused problems when being compiled in a library project like diagnostic-data
     //
     this._http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => { this.vfsFonts = data });
+
+    this._diagnosticApi.get<boolean>('api/openai/detectorcopilot/enabled').subscribe(res => {
+
+      this.copilotEnabled = res &&
+        this.isWorkflowDetector == false;
+    });
+  }
+
+  ngOnDestroy(): void {
+
+    if (this.copilotServiceMembersInitialized) {
+      this._copilotContainerService.onCloseCopilotPanelEvent.next({ showConfirmation: false, resetCopilot: true });
+    }
   }
 
   refresh() {
@@ -170,10 +196,10 @@ export class TabDataComponent implements OnInit {
     }
 
 
-    this._diagnosticApiService.getDetectorMetaDataById(this.detector, this.isWorkflowDetector).subscribe(metaData => {
+    this._applensApiService.getDetectorMetaDataById(this.detector, this.isWorkflowDetector).subscribe(metaData => {
       if (metaData) {
         this._applensGlobal.updateHeader(metaData.name);
-        this._applensGlobal.updateAuthorAndDescription(metaData.author,metaData.description);
+        this._applensGlobal.updateAuthorAndDescription(metaData.author, metaData.description);
         this.detectorMetaData = metaData;
       }
     });
@@ -239,7 +265,6 @@ export class TabDataComponent implements OnInit {
       this.addFavoriteDetector();
     }
   }
-
 
   private addFavoriteDetector() {
     //Pinned detector can be analysis
@@ -394,7 +419,7 @@ export class TabDataComponent implements OnInit {
     });
 
 
-    this._diagnosticApiService.getDetector("ResiliencyScore", this._detectorControlService.startTimeString, this._detectorControlService.endTimeString, this._detectorControlService.shouldRefresh, this._detectorControlService.isInternalView, additionalQueryString)
+    this._applensApiService.getDetector("ResiliencyScore", this._detectorControlService.startTimeString, this._detectorControlService.endTimeString, this._detectorControlService.shouldRefresh, this._detectorControlService.isInternalView, additionalQueryString)
       .subscribe((httpResponse: DetectorResponse) => {
         //If the page hasn't been refreshed this will use a cached request, so changing File Name to use the same name + "(cached)" to let them know they are seeing a cached version.
         let eT = new Date();
@@ -432,7 +457,6 @@ export class TabDataComponent implements OnInit {
         this._telemetryService.logException(loggingError);
       });
   }
-
 
   coachMarkViewed() {
     if (!this.showTeachingBubble) {

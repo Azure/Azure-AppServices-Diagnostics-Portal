@@ -18,7 +18,7 @@ namespace AppLensV3.Models
         public string ChatIdentifier;
         public string ChatModel;
         public int MaxTokens;
-        public string AzureServiceName;
+        public string CustomPrompt;
     }
 
     public class ChatStreamResponse

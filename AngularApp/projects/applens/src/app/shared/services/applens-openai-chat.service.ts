@@ -1,13 +1,12 @@
 import { catchError, map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from, of } from 'rxjs';
-import { TextCompletionModel, ChatCompletionModel, OpenAIAPIResponse, ChatResponse, TelemetryService } from "diagnostic-data";
+import { TextCompletionModel, ChatCompletionModel, ChatResponse, TelemetryService } from "diagnostic-data";
 import { DiagnosticApiService } from './diagnostic-api.service';
 import { HttpHeaders } from "@angular/common/http";
 import { ResourceService } from './resource.service';
 import { environment } from '../../../environments/environment';
 import * as signalR from "@microsoft/signalr";
-import { error } from 'console';
 
 @Injectable()
 export class ApplensOpenAIChatService {
@@ -28,7 +27,6 @@ export class ApplensOpenAIChatService {
 
   constructor(private _backendApi: DiagnosticApiService, private _resourceService: ResourceService, private telemetryService: TelemetryService) {
     this.resourceProvider = `${this._resourceService.ArmResource.provider}/${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase();
-    this.productName = this._resourceService.searchSuffix + ((this.resourceProvider === 'microsoft.web/sites') ? ` ${this._resourceService.displayName}` : '');
     this.onMessageReceive = new BehaviorSubject<ChatResponse>(null);
     this.signalRLogLevel = signalR.LogLevel.Information;
 
@@ -62,21 +60,14 @@ export class ApplensOpenAIChatService {
       });
     }
 
-    queryModel.metadata["azureServiceName"] = this.productName;
-
     return this._backendApi.post(this.chatCompletionApiPath, queryModel, null, true, true).pipe(map((res: ChatResponse) => {return res;}));
   }
 
   public sendChatMessage(queryModel: ChatCompletionModel, customPrompt: string = ''): Observable<{ sent: boolean, failureReason: string }> {
 
     if (customPrompt && customPrompt.length > 0) {
-      queryModel.messages.unshift({
-        "role": "user",
-        "content": customPrompt
-      });
+      queryModel.metadata['customPrompt'] = customPrompt;
     }
-
-    queryModel.metadata["azureServiceName"] = this.productName;
 
     return from(this.signalRConnection.send("sendMessage", JSON.stringify(queryModel))).pipe(
       map(() => ({ sent: true, failureReason: '' })),

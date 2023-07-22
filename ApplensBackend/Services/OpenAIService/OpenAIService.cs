@@ -463,9 +463,11 @@ namespace AppLensV3.Services
             try
             {
                 string chatTemplateContent = await GetChatTemplateContent(metadata.ChatIdentifier);
+                string customPrompt = metadata.CustomPrompt ?? string.Empty;
 
                 JObject jObject = JObject.Parse(chatTemplateContent);
-                string systemPrompt = (jObject["systemPrompt"] ?? string.Empty).ToString();
+                string systemPrompt = $"{(jObject["systemPrompt"] ?? string.Empty).ToString()}{customPrompt}";
+
                 // replace <<CURRENT_DATETIME>> with the current UTC Date time
                 systemPrompt = systemPrompt.Replace("<<CURRENT_DATETIME>>", DateTime.UtcNow.ToString() + "UTC");
                 chatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.System, systemPrompt));
