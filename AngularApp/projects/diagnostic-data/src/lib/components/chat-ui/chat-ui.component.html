@@ -1,51 +1,66 @@
 <div class="chatui-bot-container">
-    <div class="chatui-box-row-container chatui-header-container" *ngIf="!messages || messages.length==0">
-        <div [innerHTML]="chatHeader"></div>
-    </div>
-    <div class="chatui-box-row-container chatui-samples-container" *ngIf="!messages || messages.length==0">
-      <ng-container *ngFor="let querySample of chatQuerySamples; let i = index">
-        <ng-container *ngIf="(i % 3) === 0">
-          <div class="chatui-box-row">
-            <div class="chatui-box" *ngFor="let innerSample of chatQuerySamples.slice(i, i + 3); let j = index" (click)="onchatSampleClick(i + j)" [innerHTML]="innerSample.key"></div>
-          </div>
-        </ng-container>
+  <div class="chatui-box-row-container chatui-header-container" *ngIf="!messages || messages.length==0">
+    <div [innerHTML]="chatHeader"></div>
+  </div>
+  <div class="chatui-box-row-container chatui-samples-container" *ngIf="!messages || messages.length==0">
+    <ng-container *ngFor="let querySample of chatQuerySamples; let i = index">
+      <ng-container *ngIf="(i % 3) === 0">
+        <div class="chatui-box-row">
+          <div class="chatui-box" *ngFor="let innerSample of chatQuerySamples.slice(i, i + 3); let j = index"
+            (click)="onchatSampleClick(i + j)" [innerHTML]="innerSample.key"></div>
+        </div>
       </ng-container>
+    </ng-container>
+  </div>
+  <div id="chatui-all-messages-container-id" class="chatui-box-row-container chatui-chat-messages-container"
+    *ngIf="messages && messages.length>0">
+    <div class="chatui-top-error-container" *ngIf="showTopErrorBar"
+      [ngClass]="{'fade-in': showTopErrorBar, 'fade-out': !showTopErrorBar}">
+      {{topErrorBarMessage}}
     </div>
-    <div id="chatui-all-messages-container-id" class="chatui-box-row-container chatui-chat-messages-container" *ngIf="messages && messages.length>0">
-      <div class="chatui-top-error-container" *ngIf="showTopErrorBar" [ngClass]="{'fade-in': showTopErrorBar, 'fade-out': !showTopErrorBar}">
-        {{topErrorBarMessage}}
-      </div>
-      <div class="chatui-message-box-{{message.messageSource}}" [ngClass]="{'chatui-message-box': chatAlignment=='center', 'chatui-message-box-left-aligned': chatAlignment=='left'}" *ngFor="let message of messages">
+    <div class="row no-margin" *ngFor="let message of messages">
+      <div class="chatui-message-box-left-aligned chatui-message-box-{{message.messageSource}}">
         <div class="chatui-message-content">
           <ng-container *ngIf="message.messageSource=='system'">
             <div class="chatui-message-icon">
-              <img *ngIf="systemPhotoSource !== '';else systemInitial" [src]="systemPhotoSource" alt="System Profile Photo" class="avatar system-avatar">
+              <img *ngIf="systemPhotoSource !== '';else systemInitial" [src]="systemPhotoSource"
+                alt="System Profile Photo" class="avatar system-avatar">
             </div>
           </ng-container>
           <ng-container *ngIf="message.messageSource=='user'">
             <div class="chatui-message-icon">
-              <img *ngIf="userPhotoSource !== '';else userInitial" [src]="userPhotoSource" alt="User Profile Photo" class="avatar user-avatar">
+              <img *ngIf="userPhotoSource !== '';else userInitial" [src]="userPhotoSource" alt="User Profile Photo"
+                class="avatar user-avatar">
             </div>
           </ng-container>
           <ng-container *ngIf="message.status==1">
-            <div class="chatui-message-{{message.renderingType}}" [ngClass]="{'chatui-message': chatAlignment=='center', 'chatui-message-left-aligned': chatAlignment=='left'}">
-              <div class="chat-message-timestamp">{{message.messageDisplayDate}}</div>
+            <div class="chatui-message-left-aligned chatui-message-{{message.renderingType}}">
+              <!-- <div class="chat-message-timestamp">{{message.messageDisplayDate}}</div> -->
               <p class="blinking-cursor">...</p>
             </div>
           </ng-container>
           <ng-container *ngIf="message.status==2 || message.status==3 || message.status==4">
-            <div class="chatui-message-{{message.renderingType}}" [ngClass]="{'chatui-message': chatAlignment=='center', 'chatui-message-left-aligned': chatAlignment=='left'}">
-              <div class="chat-message-timestamp"><span *ngIf="showCopyOption" class="chatui-copy-button" (click)="copySystemMessageToClipboard(message.displayMessage)"><i class="fa fa-lg fa-files-o"></i></span>{{message.messageDisplayDate}}</div>
+            <div class="chatui-message-left-aligned chatui-message-{{message.renderingType}}">
+              <div class="chat-message-timestamp">
+                <span *ngIf="showCopyOption" class="chatui-copy-button"
+                  (click)="copySystemMessageToClipboard(message.displayMessage)"><i
+                    class="fa fa-lg fa-files-o"></i></span>
+                <!-- {{message.messageDisplayDate}} -->
+              </div>
               <div style="white-space:pre-wrap">
                 <markdown [ngClass]="{'blinking-cursor': message.status==2}" [data]="message.displayMessage">
-                  
+
                 </markdown>
-                
+
               </div>
               <ng-container *ngIf="showFeedbackOptions && message.messageSource=='system'">
                 <div class="chatui-feedback-icons">
-                  <i class="fa fa-thumbs-up chatui-feedback-icon" [ngClass]="{'chatui-feedback-icon-selected': message.userFeedback=='like'}" (click)="feedbackClicked(message, 'like')"></i>
-                  <i class="fa fa-thumbs-down chatui-feedback-icon" [ngClass]="{'chatui-feedback-icon-selected': message.userFeedback=='dislike'}" (click)="feedbackClicked(message, 'dislike')"></i>
+                  <i class="fa fa-thumbs-up chatui-feedback-icon"
+                    [ngClass]="{'chatui-feedback-icon-selected': message.userFeedback=='like'}"
+                    (click)="feedbackClicked(message, 'like')"></i>
+                  <i class="fa fa-thumbs-down chatui-feedback-icon"
+                    [ngClass]="{'chatui-feedback-icon-selected': message.userFeedback=='dislike'}"
+                    (click)="feedbackClicked(message, 'dislike')"></i>
                 </div>
               </ng-container>
             </div>
@@ -53,31 +68,37 @@
         </div>
       </div>
     </div>
-    <div class="chatui-box-row-container chatui-textarea-container">
-      <div class="chatui-message-validation-error" *ngIf="showValidationError || chatInputTextInternal.length > inputTextLimit">
-        <span *ngIf="showValidationError">{{validationErrorMessage}}</span>
-        <span *ngIf="chatInputTextInternal.length > inputTextLimit">Input limit of {{inputTextLimit}} characters exceeded.</span>
-      </div>
-      <div class="chatui-message-validation-warning" *ngIf="showValidationWarning">
-        {{validationWarningMessage}}
-      </div>
 
-      <div *ngIf="showSearchBox" class="chatui-textarea-wrapper">
-        <textarea [(ngModel)]="chatInputTextInternal" tabindex="0" class="chatui-textarea" rows="1" placeholder="Ask a question" (keyup.enter)="triggerChat()" id="chatUIInputBox" [disabled]="chatInputBoxDisabled" autofocus></textarea>
-        <button id="sendChatButton" (click)="triggerChat()" class="chatui-textarea-button" aria-label="Send message" [disabled]="chatInputTextInternal.length > inputTextLimit">
-            <svg
-                stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
-                stroke-linejoin="round" class="h-4 w-4 mr-1" height="1em" width="1em"
-                xmlns="http://www.w3.org/2000/svg" style="margin-top:5px">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-            </svg>
-          </button>
-
-      </div>
-      <div class="chatui-content-disclaimer" *ngIf="showContentDisclaimer" [innerHtml] = "contentDisclaimerMessage">
-      </div>
+  </div>
+  <div class="chatui-box-row-container chatui-textarea-container">
+    <div class="chatui-message-validation-error"
+      *ngIf="showValidationError || chatInputTextInternal.length > inputTextLimit">
+      <span *ngIf="showValidationError">{{validationErrorMessage}}</span>
+      <span *ngIf="chatInputTextInternal.length > inputTextLimit">Input limit of {{inputTextLimit}} characters
+        exceeded.</span>
     </div>
+    <div class="chatui-message-validation-warning" *ngIf="showValidationWarning">
+      {{validationWarningMessage}}
+    </div>
+
+    <div *ngIf="showSearchBox" class="chatui-textarea-wrapper">
+      <textarea [(ngModel)]="chatInputTextInternal" tabindex="0" class="chatui-textarea" rows="1"
+        placeholder="Ask a question" (keyup.enter)="triggerChat()" id="chatUIInputBox" [disabled]="chatInputBoxDisabled"
+        autofocus></textarea>
+      <button id="sendChatButton" (click)="triggerChat()" class="chatui-textarea-button" aria-label="Send message"
+        [disabled]="chatInputTextInternal.length > inputTextLimit">
+        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"
+          stroke-linejoin="round" class="h-4 w-4 mr-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"
+          style="margin-top:5px">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+
+    </div>
+    <div class="chatui-content-disclaimer" *ngIf="showContentDisclaimer" [innerHtml]="contentDisclaimerMessage">
+    </div>
+  </div>
 </div>
 
 <ng-template #userInitial>

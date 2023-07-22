@@ -273,6 +273,7 @@
   min-height: 30px;
   display: flex;
   padding-left: 15%;
+  box-shadow: 0 1px 2px #00000024, 0 0 2px #0000001f;
 }
 
 .chatui-message-box-left-aligned {
@@ -282,6 +283,7 @@
   margin-top: 10px;
   min-height: 30px;
   display: flex;
+  box-shadow: 0 1px 2px #00000024, 0 0 2px #0000001f;
 }
 
 .chatui-message-content {
@@ -298,14 +300,23 @@
 }
 
 .chatui-message-box-user {
-  border: 1px solid #ebebed;
-  border-radius: 10px;
+  background: #EDF5FD;
+  border-radius: 5px;
+  max-width: 60%;
+  min-width: 15%;
+  margin-right: 0;
+  float: right;
 }
 
 .chatui-message-box-system {
-  background-color: rgba(247, 247, 248);
-  border-radius: 10px;
-  border: 1px solid #e7e7e7;
+  background: #ffffff;
+  border-radius: 5px;
+  max-width: 80%;
+  min-width: 15%;
+  margin-left: 0;
+  display: flex;
+  float: left;
+
 }
 
 .chatui-message {
@@ -354,6 +365,11 @@
   100% {
     opacity: 0;
   }
+}
+
+.no-margin {
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .grow-wrap {
