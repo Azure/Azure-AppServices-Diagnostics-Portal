@@ -103,10 +103,8 @@ export class ApplensDetectorDevelopmentCopilotService {
 
     this.copilotChatHeader = `
     <h1 class='copilot-header chatui-header-text'>
-      <img  class='copilot-header-img' src="/assets/img/bot_sparkle_icon.svg" alt = ''>
       ${this._copilotContainerService.copilotHeaderTitle}
       <img class='copilot-header-img-secondary' src='/assets/img/rocket.png' alt=''>
-      <img class='copilot-header-img-secondary' src='/assets/img/rocket.png' alt=''">
     </h1>`;
   }
 }
