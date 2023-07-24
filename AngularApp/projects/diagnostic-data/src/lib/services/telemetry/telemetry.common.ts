@@ -132,6 +132,7 @@ export const TelemetryEventNames = {
     AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeSuccessful: 'AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeSuccessful',
     AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeFailure: 'AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeFailure',
     AICodeOptimizerInsightsFailureGettingOPIResources: 'AICodeOptimizerInsightsFailureGettingOPIResources',
+    AICodeOptimizerOpenOptInsightsBladewithTimeRange: 'AICodeOptimizerOpenOptInsightsBladewithTimeRange',
     LoadingTimeOut: 'LoadingTimeOut',
     EmptySearchTerm: 'EmptySearchTerm',
     ChatGPTARMQueryResults: 'ChatGPTARMQueryResults',

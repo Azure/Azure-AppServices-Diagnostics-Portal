@@ -82,13 +82,18 @@ export class OptInsightsEnablementComponent implements OnInit {
   }
 
   public openOptInsightsBladewithTimeRange() {
-    //const currentMoment = moment.utc();
-    var durationMs = this._detectorControlService.endTime.diff(this._detectorControlService.startTime, 'milliseconds');
+    const currentMoment = moment.utc();
+    var durationMs = currentMoment.diff(this._detectorControlService.startTime, 'milliseconds');
     let optInsightsResource: OptInsightsResource = this.parseOptInsightsResource(this.appInsightsResourceUri, 0, 'microsoft.insights/components', false);
     let optInsightsTimeContext: OptInsightsTimeContext = { durationMs: durationMs, endTime: this._detectorControlService.endTime.toISOString(), createdTime: this._detectorControlService.startTime.toISOString(), isInitialTime: false, grain: 1, useDashboardTimeRange: false};
     this.portalActionService.openOptInsightsBladewithTimeRange(optInsightsResource, optInsightsTimeContext, this._route.parent.snapshot.parent.params['resourcename']);
+    let codeOptimizationsLogEvent: CodeOptimizationsLogEvent = {
+      resourceUri: this.appInsightsResourceUri,
+      telemetryEvent: TelemetryEventNames.AICodeOptimizerOpenOptInsightsBladewithTimeRange,
+      site: this._route.parent.snapshot.parent.params['resourcename']
+    };
+    this._optInsightsService.logOptInsightsEvent(codeOptimizationsLogEvent);
   }
-
 
   parseOptInsightsResource(resourceUri: string, linkedApplicationType: number, resourceType: string, isAzureFirst: boolean): OptInsightsResource {
     var output: OptInsightsResource = {

@@ -800,6 +800,19 @@
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE CHAOS STUDIO",
             "displayName": "Azure Chaos Studio"
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.Visualstudio/devops",
+            "templateFileName": "DevOps",
+            "imgSrc": "assets/img/Azure-DevOps-Logo.svg",
+            "versionPrefix": "",
+            "isNoResourceFlow": true,
+            "azureCommImpactedServicesList": "",
+            "pesId": "15543",
+            "staticSelfHelpContent": "",
+            "searchSuffix": "AZURE DEVOPS SERVICES",
+            "displayName": "Azure DevOps Services"
         }        
     ]
 }
