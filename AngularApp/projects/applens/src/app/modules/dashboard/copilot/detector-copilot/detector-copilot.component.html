@@ -1,44 +1,14 @@
-<!-- <div style="height:80vh;">
-  <openai-chat-container [chatIdentifier]="'detectorcopilot'"
-      [chatContextLength]="10" 
-      [chatModel] = "chatModel"
-      [chatQuerySamplesFileUri]="'assets/chatConfigs/detectorcopilot.json'"
-      [chatHeader]="chatHeader"
-      [systemPhotoSource]="'/assets/img/bot_sparkle_icon.svg'"
-      [contentDisclaimerMessage] = "contentDisclaimerMessage"
-      [showCopyOption]= "true"
-      [apiProtocol] = "apiProtocol"
-      >
-    </openai-chat-container>
-</div> -->
-
-<!-- 
-<openai-chat 
-[chatIdentifier]="'demo'" 
-[chatHeader]="'DEMO BOT'">
-</openai-chat> -->
-
-
-
-<!-- <openai-chat-container [chatIdentifier]="'detectorcopilot'" [chatContextLength]="10" [chatModel]="chatModel"
-  [chatQuerySamplesFileUri]="'assets/chatConfigs/detectorcopilot.json'" [chatHeader]="chatHeader"
-  [systemPhotoSource]="'/assets/img/bot_sparkle_icon.svg'" [contentDisclaimerMessage]="contentDisclaimerMessage"
-  [preprocessUserMessage]="onUserMessageSend" [showCopyOption]="true" [apiProtocol]="apiProtocol">
-</openai-chat-container> -->
-
-
 <fab-command-bar [contentStyle]="'solid gray;font-size:12px'" [contentClass]="'fab-command-bar-class'">
   <items>
 
     <fab-command-bar-item key="clearchat" text="Clear Chat" [iconProps]="{ iconName: 'EraseTool' }"
-      [disabled]="_copilotService.operationInProgress" (click)="testFn()">
+      [disabled]="_copilotService.operationInProgress" (click)="clearChat()">
     </fab-command-bar-item>
     <fab-command-bar-item key="stopcalls" text="Stop" [iconProps]="{ iconName: 'stop' }"
-      [disabled]="!_copilotService.operationInProgress" (click)="testFn()">
+      [disabled]="!_copilotService.operationInProgress" (click)="cancelOpenAICall()">
     </fab-command-bar-item>
-    <fab-command-bar-item key="feedback" text="Feedback" [iconProps]="{ iconName: 'mail' }" (click)="testFn()">
+    <fab-command-bar-item key="feedback" text="Feedback" [iconProps]="{ iconName: 'mail' }" (click)="sendFeedback()">
     </fab-command-bar-item>
-
   </items>
 </fab-command-bar>
 
@@ -62,10 +32,10 @@
 
 </div>
 
-<openai-chat [chatAlignment]="'left'" [chatIdentifier]="'detectorcopilot'" [chatContextLength]="6"
+<openai-chat [chatAlignment]="'left'" [chatIdentifier]="_copilotService.detectorCopilotChatIdentifier" [chatContextLength]="6"
   [chatModel]="chatModel" [chatQuerySamplesFileUri]="'assets/chatConfigs/detectorcopilot.json'"
   [customInitialPrompt]="_copilotService.customPrompt" [apiProtocol]="apiProtocol"
   [contentDisclaimerMessage]="contentDisclaimerMessage" [quotaEnforced]="true" [chatHeader]="chatHeader"
   [systemPhotoSource]="'/assets/img/bot_sparkle_icon.svg'" [preprocessUserMessage]="onUserMessageSend"
-  [postProcessSystemMessage]="onSystemMessageReceived">
+  [postProcessSystemMessage]="onSystemMessageReceived"  [stopMessageGeneration]="stopMessageGeneration">
 </openai-chat>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApplensCopilotContainerService, CopilotSupportedFeature } from './applens-copilot-container.service';
-import { DetectorResponse, DiagnosticData, RenderingType } from 'diagnostic-data';
+import { ChatUIContextService, DetectorResponse, DiagnosticData, RenderingType } from 'diagnostic-data';
 import { ResponseUtilities } from 'projects/diagnostic-data/src/lib/utilities/response-utilities';
 import { ResourceService } from 'projects/applens/src/app/shared/services/resource.service';
 
@@ -20,13 +20,15 @@ export enum DetectorCopilotSupportedRenderings {
 @Injectable()
 export class ApplensDetectorCopilotService {
 
+    public detectorCopilotChatIdentifier = 'detectorcopilot';
     public detectorResponse: DetectorResponse;
     public wellFormattedDetectorOutput: any;
     public selectedComponent: any;
     public operationInProgress: boolean = false;
     public customPrompt: string = '';
 
-    constructor(private _copilotContainerService: ApplensCopilotContainerService, private _resourceService: ResourceService) {
+    constructor(private _copilotContainerService: ApplensCopilotContainerService, private _resourceService: ResourceService,
+        private _chatContextService: ChatUIContextService) {
         this.reset();
     }
 
@@ -85,6 +87,7 @@ export class ApplensDetectorCopilotService {
         this.customPrompt = '';
         this.operationInProgress = false;
         this._copilotContainerService.feature = CopilotSupportedFeature.Other;
+        this._chatContextService.clearChat(this.detectorCopilotChatIdentifier);
     }
 
     private prepareCustomPrompt(wellFormattedDetectorOutput: any): string {
