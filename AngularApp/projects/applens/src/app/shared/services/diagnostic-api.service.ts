@@ -442,6 +442,11 @@ export class DiagnosticApiService {
     return request;
   }
 
+  public getAllowedAppId(): Observable<string> {
+    let path = "api/appsettings/AllowedAppId";
+    return this.get<string>(path);
+  }
+
   private getCacheKey(method: HttpMethod, path: string) {
     return `${HttpMethod[method]}-${path}`;
   }

@@ -18,7 +18,7 @@ export class AadAuthGuard implements CanActivate {
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> {
         this._adalService.handleWindowCallback();
-
+        const appIdNotMatchErrorMsg = "appId cannot match with allowedAppId";
         if (!this._adalService.userInfo.authenticated) {
             if (state.url.indexOf('#') === -1) {
                 localStorage.setItem(loginRedirectKey, state.url);
@@ -35,11 +35,18 @@ export class AadAuthGuard implements CanActivate {
             if (this.isAuthorized || state.url.startsWith("/icm/")) {
                 return true;
             }
-            return this._diagnosticApiService.hasApplensAccess().pipe(map(res => {
-                // Application insights initialization call requires user to be authorized first.
-                this._applensAITelemetry.initialize();
-                this.isAuthorized = true;
-                return true;
+            return this._diagnosticApiService.getAllowedAppId().pipe(map(allowedAppId => {
+                const appId: string = this._adalService.userInfo.profile?.aud;
+                const isAllowed = allowedAppId.toLowerCase() === appId.toLowerCase();
+                if (isAllowed) {
+                    // Application insights initialization call requires user to be authorized first.
+                    this._applensAITelemetry.initialize();
+                    this.isAuthorized = true;
+                    return true;
+                } else {
+                    throw new Error(appIdNotMatchErrorMsg);
+                }
+
             }),
                 catchError(err => {
                     this.isAuthorized = false;
