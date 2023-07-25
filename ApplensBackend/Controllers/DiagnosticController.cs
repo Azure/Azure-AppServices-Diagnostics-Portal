@@ -45,7 +45,7 @@ namespace AppLensV3.Controllers
         private readonly bool detectorDevelopmentEnabled;
         private readonly IList<string> apiEndpointsForDetectorDevelopment;
         private readonly string[] allowedUsers;
-        private readonly string[] AllowedSections = new string[] { "ApplicationInsights", "AcceptOriginSuffix:Origins", "CodeCompletion", "DetectorDevelopmentEnabled", "DetectorDevelopmentEnv", "PPEHostname", "APPLENS_ENVIRONMENT", "APPLENS_HOST", "SystemInvokers:ResourceIDString", "SystemInvokers:DocumentationStagingBranch", "SystemInvokers:DocumentationRoot", "SystemInvokers:DiagnosticsMainBranch", "NetworkTraceAnalysisTool", "AllowedAppId" };
+        private readonly string[] AllowedSections = new string[] { "ApplicationInsights", "AcceptOriginSuffix:Origins", "CodeCompletion", "DetectorDevelopmentEnabled", "DetectorDevelopmentEnv", "PPEHostname", "APPLENS_ENVIRONMENT", "APPLENS_HOST", "SystemInvokers:ResourceIDString", "SystemInvokers:DocumentationStagingBranch", "SystemInvokers:DocumentationRoot", "SystemInvokers:DiagnosticsMainBranch", "NetworkTraceAnalysisTool" };
 
         private class InvokeHeaders
         {
@@ -127,6 +127,26 @@ namespace AppLensV3.Controllers
             else
             {
                 return NotFound($"App setting with the name '{name}' is not found");
+            }
+        }
+
+        [HttpGet("isappidallowed/{appId}")]
+        public IActionResult ValidateAppId(string appId)
+        {
+            string allowedAppId = config["AllowedAppId"];
+
+            if(string.IsNullOrEmpty(appId))
+            {
+                return BadRequest();
+            }
+
+            if (allowedAppId.Equals(appId, StringComparison.OrdinalIgnoreCase))
+            {
+                return Ok();
+            }
+            else
+            {
+                return Unauthorized($"AppId {appId} is not allowed");
             }
         }
 
@@ -225,7 +245,7 @@ namespace AppLensV3.Controllers
             }
 
             headers.Add("x-ms-user-token", Request.Headers["Authorization"].ToString());
-            
+
             // For Publishing Detector Calls, validate if user has access to publish the detector
             if (invokeHeaders.Path.EndsWith("/diagnostics/publish", StringComparison.OrdinalIgnoreCase))
             {
