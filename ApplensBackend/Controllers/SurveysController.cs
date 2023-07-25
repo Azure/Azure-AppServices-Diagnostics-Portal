@@ -15,7 +15,7 @@ using Microsoft.Extensions.Caching.Memory;
 namespace AppLensV3.Controllers
 {
     [Route("api/surveys/")]
-    [Authorize(Policy = "DefaultAccess")]
+    [Authorize(Policy = "ApplensAccess")]
     public class SurveysController : Controller
     {
         private readonly ISurveysService _surveysService;
