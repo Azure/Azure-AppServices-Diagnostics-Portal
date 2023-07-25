@@ -133,14 +133,15 @@ namespace AppLensV3.Controllers
         [HttpGet("isappidallowed/{appId}")]
         public IActionResult ValidateAppId(string appId)
         {
-            string allowedAppId = config["AllowedAppId"];
 
-            if(string.IsNullOrEmpty(appId))
+            if (string.IsNullOrEmpty(appId))
             {
                 return BadRequest();
             }
 
-            if (allowedAppId.Equals(appId, StringComparison.OrdinalIgnoreCase))
+            var allowedAppIds = config["AzureAd:AllowedAppId"].Split(',');
+
+            if (allowedAppIds.Any(allowedAppId => allowedAppId.Equals(appId,StringComparison.OrdinalIgnoreCase)))
             {
                 return Ok();
             }
