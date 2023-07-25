@@ -16,7 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 namespace AppLensV3.Controllers
 {
     [Route("api/icm/")]
-    [Authorize(Policy = "DefaultAccess")]
+    [Authorize(Policy = "ApplensAccess")]
     public class IncidentAssistanceController : Controller
     {
         private readonly IIncidentAssistanceService _incidentAssistanceService;
@@ -58,10 +58,10 @@ namespace AppLensV3.Controllers
             {
                 return BadRequest("incidentId cannot be empty");
             }
-            return Unauthorized();
-            // var response = await _incidentAssistanceService.GetIncidentInfo(incidentId);
-            // var responseTask = response.Content.ReadAsStringAsync();
-            // return StatusCode((int)response.StatusCode, await responseTask);
+
+            var response = await _incidentAssistanceService.GetIncidentInfo(incidentId);
+            var responseTask = response.Content.ReadAsStringAsync();
+            return StatusCode((int)response.StatusCode, await responseTask);
         }
 
         [HttpPost("validateAndUpdateIncident")]
@@ -78,10 +78,9 @@ namespace AppLensV3.Controllers
                 return BadRequest("IncidentId cannot be empty");
             }
 
-            return Unauthorized();
-            // var response = await _incidentAssistanceService.ValidateAndUpdateIncident(incidentId, body, update);
-            // var responseTask = response.Content.ReadAsStringAsync();
-            // return StatusCode((int)response.StatusCode, await responseTask);
+            var response = await _incidentAssistanceService.ValidateAndUpdateIncident(incidentId, body, update);
+            var responseTask = response.Content.ReadAsStringAsync();
+            return StatusCode((int)response.StatusCode, await responseTask);
         }
 
         [HttpGet("getOnboardedTeams")]
