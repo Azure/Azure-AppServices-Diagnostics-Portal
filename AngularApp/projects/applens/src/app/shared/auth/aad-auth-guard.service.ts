@@ -34,7 +34,7 @@ export class AadAuthGuard implements CanActivate {
             if (this.isAuthorized || state.url.startsWith("/icm/")) {
                 return true;
             }
-            const appId: string = this._adalService.userInfo.profile?.aud;
+            const appId: string = this._adalService?.userInfo?.profile?.aud;
             return this._diagnosticApiService.validateAppId(appId).pipe(map(res => {
                 this._applensAITelemetry.initialize();
                 this.isAuthorized = true;
