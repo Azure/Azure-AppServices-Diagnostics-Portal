@@ -133,6 +133,12 @@ namespace AppLensV3.Controllers
         [HttpGet("isappidallowed/{appId}")]
         public IActionResult ValidateAppId(string appId)
         {
+            //For NCloud it's using DSTS, so always return 200
+            if(!config.IsPublicAzure())
+            {
+                return Ok();
+            }
+
             if (string.IsNullOrEmpty(appId))
             {
                 return BadRequest();
