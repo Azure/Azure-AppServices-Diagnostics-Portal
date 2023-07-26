@@ -192,7 +192,7 @@ namespace AppLensV3.Services
                 InitializeChatTemplateFileCache();
 
                 // Initialize custom handlers for chat completion API. This allows for chaining GPT responses.
-                customHandlerForChatCompletion["analyticskustocopilot"] = HandleAnalyticsKustoCopilot;
+                //customHandlerForChatCompletion["analyticskustocopilot"] = HandleAnalyticsKustoCopilot;
             }
         }
 
@@ -697,7 +697,7 @@ namespace AppLensV3.Services
                     Task<string> documentContentTask = null;
                     DocumentSearchSettings documentSearchSettings = null;
                     Task<List<ChatFeedback>> getFeedbackListRawTask = null;
-                    ChatFeedbackSearchSettings feedbackSearchSettings = null;
+                    ChatFeedbackSearchSettings feedbackSearchSettings = new ChatFeedbackSearchSettings();
                     try
                     {
                         compsiteUserQuestion = await PrepareCompositeUserQuestion(chatMessages);
@@ -707,9 +707,10 @@ namespace AppLensV3.Services
                             documentContentTask = PrepareDocumentContent(documentSearchSettings, compsiteUserQuestion);
                         }
 
-                        if (jObject["ChatFeedbackSearchSettings"] != null)
+                        if (jObject["ChatFeedbackSearchSettings"] != null || systemPrompt.Contains(feedbackSearchSettings.ContentPlaceholder))
                         {
-                            feedbackSearchSettings = jObject["ChatFeedbackSearchSettings"].ToObject<ChatFeedbackSearchSettings>();
+                            feedbackSearchSettings = jObject["ChatFeedbackSearchSettings"] != null ? (jObject["ChatFeedbackSearchSettings"].ToObject<ChatFeedbackSearchSettings>() ?? feedbackSearchSettings) : feedbackSearchSettings;
+
                             if (systemPrompt.Contains(feedbackSearchSettings.ContentPlaceholder))
                             {
                                 ChatFeedbackSearchSettings clonedFeedbackSearchSettings = feedbackSearchSettings.Clone();
@@ -734,7 +735,7 @@ namespace AppLensV3.Services
                             }
                         }
 
-                        if (getFeedbackListRawTask != null && feedbackSearchSettings != null)
+                        if (getFeedbackListRawTask != null)
                         {
                             List<ChatFeedback> feedbackList = await getFeedbackListRawTask;
 
