@@ -762,6 +762,17 @@ namespace AppLensV3.Services
                             {
                                 feedbackSb.AppendLine($"Q:{feedback.UserQuestion}");
                                 feedbackSb.AppendLine($"A:{feedback.ExpectedResponse}");
+                                if (feedback.AdditionalFields?.Count > 0)
+                                {
+                                    foreach (KeyValuePair<string, string> kvp in feedback.AdditionalFields)
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(kvp.Value))
+                                        {
+                                            feedbackSb.AppendLine($"{kvp.Key}:{kvp.Value}");
+                                        }
+                                    }
+                                }
+
                                 feedbackSb.AppendLine();
                                 chatCompletionsOptions.FeedbackIdsUsed.Add(feedback.Id);
                             }
