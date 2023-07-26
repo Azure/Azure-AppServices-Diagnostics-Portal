@@ -10,6 +10,7 @@ import { WorkflowConditionNodeComponent } from '../workflow-condition-node/workf
 import { WorkflowNodeComponent } from '../workflow-node/workflow-node.component';
 import { BehaviorSubject } from 'rxjs';
 import { IButtonStyles, IIconProps } from 'office-ui-fabric-react';
+import { GenericSupportTopicService } from '../../services/generic-support-topic.service';
 
 @Component({
   selector: 'workflow-view',
@@ -36,8 +37,12 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
   compilationSucceeded: boolean = false;
   nodeResults: workflowNodeResult[] = [];
   timePickerErrorStr: string = '';
-  timePickerButtonStr:string = '';
+  timePickerButtonStr: string = '';
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  supportDocumentContent: string = "";
+  supportDocumentRendered: boolean = false;
+  firstNodeLoaded: boolean = false;
+  inCaseSubmission:boolean = false;
 
   buttonStyle: IButtonStyles = {
     root: {
@@ -67,7 +72,7 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
     }
   };
 
-  get loadingMessage(){
+  get loadingMessage() {
     return `Analyzing data ${this.timePickerButtonStr.includes("to") ? "from" : "in"} ${this.timePickerButtonStr}, to change, use the time range picker`;
   }
 
@@ -76,7 +81,8 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
 
   constructor(private _route: ActivatedRoute, private _detectorControlService: DetectorControlService,
     private _diagnosticService: DiagnosticService, private stepRegistry: NgFlowchartStepRegistry,
-    private _workWorkflowService: WorkflowHelperService, private detectorControlService: DetectorControlService) {
+    private _workWorkflowService: WorkflowHelperService, private detectorControlService: DetectorControlService,
+    private _supportTopicService: GenericSupportTopicService) {
   }
 
   ngOnInit(): void {
@@ -168,6 +174,15 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
         if (this.workflowExecution == null) {
           this.createRootNode(response);
         }
+
+        if (!this.firstNodeLoaded) {
+          this.firstNodeLoaded = true;
+          if (this.isInCaseSubmission()) {
+            this.inCaseSubmission = true;
+            this.populateSupportTopicDocument();
+          }
+        }
+
       }, (error: any) => {
         this.emitError(error);
       });
@@ -199,5 +214,20 @@ export class WorkflowViewComponent implements OnInit, AfterViewInit, OnChanges {
 
   updateTimePickerErrorMessage(message: string) {
     this.timePickerErrorStr = message;
+  }
+
+  populateSupportTopicDocument() {
+    if (!this.supportDocumentRendered) {
+      this._supportTopicService.getSelfHelpContentDocument().subscribe(res => {
+        if (res && res.length > 0) {
+          this.supportDocumentContent = res;
+          this.supportDocumentRendered = true;
+        }
+      });
+    }
+  }
+
+  isInCaseSubmission(): boolean {
+    return !!this._supportTopicService && !!this._supportTopicService.supportTopicId && this._supportTopicService.supportTopicId != '';
   }
 }
