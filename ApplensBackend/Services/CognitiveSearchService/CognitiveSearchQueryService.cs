@@ -34,7 +34,7 @@ namespace AppLensV3.Services
                 SearchResults<CognitiveSearchDocumentWrapper> results = await queryClient.SearchAsync<CognitiveSearchDocumentWrapper>(query, options);
                 if (results != null && results.TotalCount > 0)
                 {
-                    return results.GetResults().ToList().Where(result => result.Score >= minScore).Select(x => JsonConvert.DeserializeObject<CognitiveSearchDocument>(x.Document.AdditionalMetadata)).ToList();
+                    return results.GetResults().ToList().Where(result => result.Score >= minScore).OrderByDescending(o => o.Score).Select(x => JsonConvert.DeserializeObject<CognitiveSearchDocument>(x.Document.AdditionalMetadata)).ToList();
                 }
             }
             return new List<CognitiveSearchDocument>();
