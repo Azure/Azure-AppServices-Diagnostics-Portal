@@ -24,32 +24,20 @@ namespace AppLensV3.Services.CognitiveSearchService
             _baseService = baseService;
         }
 
-        private CognitiveSearchDocumentWrapper CreateDocumentModel(CognitiveSearchDocument document)
+        public async Task<bool> DeleteDocuments(List<CognitiveSearchDocument> documents, string indexName)
         {
-            return new CognitiveSearchDocumentWrapper()
-            {
-                Text = document.Content,
-                Description = document.Title,
-                Id = document.Id,
-                AdditionalMetadata = JsonConvert.SerializeObject(document)
-            };
+            var searchClient = await _baseService.GetIndexClientForAdmin(indexName);
+            IndexDocumentsResult result = await searchClient.DeleteDocumentsAsync(documents.Select(document => CreateDocumentModel(document)));
+            return !(result.Results.Any(r => r.Succeeded == false) == true);
         }
 
         public async Task<bool> AddDocuments(List<CognitiveSearchDocument> documents, string indexName)
         {
             IndexDocumentsBatch<CognitiveSearchDocumentWrapper> batch = IndexDocumentsBatch.Create(
                 documents.Select(document => IndexDocumentsAction.Upload(CreateDocumentModel(document))).ToArray());
-            try
-            {
-                var searchClient = await _baseService.GetIndexClientForAdmin(indexName);
-                IndexDocumentsResult result = searchClient.IndexDocuments(batch);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                //TODO: Handle this
-                throw ex;
-            }
+            var searchClient = await _baseService.GetIndexClientForAdmin(indexName);
+            IndexDocumentsResult result = searchClient.IndexDocuments(batch);
+            return !(result.Results.Any(r => r.Succeeded == false) == true);
         }
 
         public async Task<bool> DeleteIndex(string indexName)
@@ -65,6 +53,17 @@ namespace AppLensV3.Services.CognitiveSearchService
         public async Task<List<string>> ListIndices()
         {
             return (await _baseService.ListIndices()).Select(x => x.Name).ToList();
+        }
+
+        private CognitiveSearchDocumentWrapper CreateDocumentModel(CognitiveSearchDocument document)
+        {
+            return new CognitiveSearchDocumentWrapper()
+            {
+                Text = document.Content,
+                Description = document.Title,
+                Id = document.Id,
+                AdditionalMetadata = JsonConvert.SerializeObject(document)
+            };
         }
     }
 }
