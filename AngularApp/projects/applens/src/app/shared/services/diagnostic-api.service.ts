@@ -1,5 +1,5 @@
 import { AdalService } from 'adal-angular4';
-import { DetectorMetaData, DetectorResponse, ExtendDetectorMetaData, QueryResponse, TelemetryService } from 'diagnostic-data';
+import { ChatCompletionModel, DetectorMetaData, DetectorResponse, ExtendDetectorMetaData, QueryResponse, TelemetryService } from 'diagnostic-data';
 import { map, retry, catchError, tap } from 'rxjs/operators';
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
@@ -731,9 +731,16 @@ export class DiagnosticApiService {
     return this.invoke<any>(path, HttpMethod.POST, body, false, false, true, false);
   }
 
-  public saveChatFeedback(chatFeedback: ChatFeedbackPostBody): Observable<any> {
+  public saveChatFeedback(chatFeedback: ChatFeedbackPostBody): Observable<ChatFeedbackPostBody> {
     let path = 'api/openai/saveChatFeedback';
-    return this.post<any, ChatFeedbackPostBody>(path, chatFeedback).pipe(map(res => {
+    return this.post<ChatFeedbackPostBody, ChatFeedbackPostBody>(path, chatFeedback).pipe(map(res => {
+      return res;
+    }));
+  }
+
+  public getRelatedFeedbackListFromChatHistory(chatCompletionModel: ChatCompletionModel): Observable<ChatFeedbackPostBody[]> {
+    let path = 'api/openai/getRelatedFeedbackListFromChatHistory';
+    return this.post<ChatFeedbackPostBody[], ChatCompletionModel>(path, chatCompletionModel).pipe(map(res => {
       return res;
     }));
   }

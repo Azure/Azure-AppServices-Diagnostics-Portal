@@ -149,7 +149,8 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
         messageDisplayDate: TimeUtilities.displayMessageDate(new Date()),
         status: MessageStatus.Finished,
         userFeedback: FeedbackOptions.None,
-        renderingType: MessageRenderingType.Text
+        renderingType: MessageRenderingType.Text,
+        feedbackDocumentIds:[]
       };
       this.onUserSendMessage(message);
     }
@@ -307,6 +308,15 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
         messageObj.message = StringUtilities.mergeOverlappingStrings(messageObj.message, trimmedText);
         messageObj.status = response.truncated === true ? MessageStatus.InProgress : MessageStatus.Finished;
 
+        // Check if the ids in response.feedbackIds are already present in messageObj.feedbackDocumentIds. If not, add them to messageObj.feedbackDocumentIds
+        if (response.feedbackIds && response.feedbackIds.length > 0) {
+          response.feedbackIds.forEach((id) => {
+            if (messageObj.feedbackDocumentIds.indexOf(id) == -1) {
+              messageObj.feedbackDocumentIds.push(id);
+            }
+          });
+        }
+
         if (this.postProcessSystemMessage == undefined) {
           messageObj.displayMessage = StringUtilities.mergeOverlappingStrings(messageObj.displayMessage, trimmedText);
         }
@@ -321,7 +331,6 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
         }
 
         else {
-
           this.markMessageCompleted(messageObj);
           this.reenableChatBox();
 
@@ -372,6 +381,15 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
 
           messageObj.status = MessageStatus.InProgress;
           messageObj.message = `${messageObj.message}${chatResponse.text}`;
+
+          // Check if the ids in chatResponse.feedbackIds are already present in messageObj.feedbackDocumentIds. If not, add them to messageObj.feedbackDocumentIds
+          if (chatResponse.feedbackIds && chatResponse.feedbackIds.length > 0) {
+            chatResponse.feedbackIds.forEach((id) => {
+              if (messageObj.feedbackDocumentIds.indexOf(id) == -1) {
+                messageObj.feedbackDocumentIds.push(id);
+              }
+            });
+          }
 
           if (this.postProcessSystemMessage == undefined) {
             messageObj.displayMessage = `${messageObj.displayMessage}${chatResponse.text}`;
@@ -503,7 +521,8 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
         messageDisplayDate: TimeUtilities.displayMessageDate(new Date()),
         status: MessageStatus.Created,
         userFeedback: FeedbackOptions.None,
-        renderingType: MessageRenderingType.Text
+        renderingType: MessageRenderingType.Text,
+        feedbackDocumentIds:[]
       };
 
       this._chatContextService.messageStore[this.chatIdentifier].push(chatMessage);

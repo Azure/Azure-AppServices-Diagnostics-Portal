@@ -11,7 +11,7 @@ export class GenericOpenAIChatService {
     return of(false);
   }
 
-  public generateTextCompletion(queryModel: TextCompletionModel, customPrompt: string = '', caching: boolean = true): Observable<ChatResponse> {
+  public generateTextCompletion(queryModel: TextCompletionModel, customPrompt: string = '', caching: boolean = true, insertCustomPromptAtEnd:boolean = false): Observable<ChatResponse> {
     return null;
   }
 

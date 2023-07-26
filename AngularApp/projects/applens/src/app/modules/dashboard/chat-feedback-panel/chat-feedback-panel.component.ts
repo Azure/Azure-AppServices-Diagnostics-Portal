@@ -154,6 +154,7 @@ mostUsedOutputBinding
         succeeded:true,
         validationStatusResponse: ''
       };
+      chatFeedbackModel.linkedFeedbackIds = this.systemResponse.feedbackDocumentIds?.length > 0 ? this.systemResponse.feedbackDocumentIds : [];
       return chatFeedbackModel;
   }
 
@@ -203,7 +204,7 @@ mostUsedOutputBinding
     this.addOrUpdateResourceSpecificInfo('resourceTypeName', this.resourceType );
 
     let resourceReady: Observable<any>;
-    resourceReady = !!this._resourceService.ArmResource.resourceGroup && !!this._resourceService.ArmResource.resourceName? this._resourceService.getCurrentResource() : of(null);    
+    resourceReady =  (this._resourceService.ArmResource?.resourceGroup && this._resourceService.ArmResource?.resourceName) ? this._resourceService.getCurrentResource() : of(null);    
     resourceReady.subscribe(resource => {
       if (resource) {
         this.resource = resource;
@@ -228,7 +229,8 @@ mostUsedOutputBinding
       timestamp: 1,
       messageDisplayDate: "",
       renderingType: MessageRenderingType.Text,
-      status: MessageStatus.Finished
+      status: MessageStatus.Finished,
+      feedbackDocumentIds: []
     });
 
     this.chatMessages.push({
@@ -256,7 +258,8 @@ mostUsedOutputBinding
       timestamp: 2,
       messageDisplayDate: "",
       renderingType: MessageRenderingType.Markdown,
-      status: MessageStatus.Finished
+      status: MessageStatus.Finished,
+      feedbackDocumentIds: []
     });
 
     this.chatMessages.push({
@@ -268,7 +271,8 @@ mostUsedOutputBinding
       timestamp: 1,
       messageDisplayDate: "",
       renderingType: MessageRenderingType.Text,
-      status: MessageStatus.Finished
+      status: MessageStatus.Finished,
+      feedbackDocumentIds: []
     });
 
     this.chatMessages.push({
@@ -280,7 +284,8 @@ mostUsedOutputBinding
       timestamp: 1,
       messageDisplayDate: "",
       renderingType: MessageRenderingType.Markdown,
-      status: MessageStatus.Finished
+      status: MessageStatus.Finished,
+      feedbackDocumentIds: []
     });
   }
 
@@ -345,8 +350,12 @@ mostUsedOutputBinding
             if(enabled) {
               this.currentApiCallCount = 0;
 
-              this.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom), this.GetEmptyChatMessage(), true, true, this.chatModel, 
-                'You are a chat assistant that helps consolidate the users final message in the form of a question. Given the current chat history, help construct a question for the user that can be answered by the system. Do not answer the users question, the goal is to only contruct a consolidated user question.')
+              // this.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom, ChatModel.GPT3), this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
+//                 'You are a chat assistant that helps consolidate the users final message in the form of a question. Given the current chat history, help construct a question for the user that can be answered by the system. Do not answer the users question, the goal is to only contruct a consolidated user question.'
+                // , '')
+              this.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom, ChatModel.GPT3), this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
+                "Given the chat history, please generate a statement that accurately captures the user's intent in the last message. Do not attempt to answer the user's question, the goal is to construct a question that conveys the user's most recent intent as if the user were talking with the AI assistant in first person."
+                , '', true)
                 .subscribe((messageObj) => {
                   if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
                     this.feedbackUserQuestion = messageObj;
@@ -370,11 +379,13 @@ mostUsedOutputBinding
       messageDisplayDate: TimeUtilities.displayMessageDate(new Date()),
       status: MessageStatus.Created,
       userFeedback: FeedbackOptions.None,
-      renderingType: MessageRenderingType.Text
+      renderingType: MessageRenderingType.Text,
+      feedbackDocumentIds: []
     };
   }
 
-  private fetchOpenAIResultAsChatMessageUsingRest(chatHistory: any, messageObj: ChatMessage, retry: boolean = true, trimnewline: boolean = false, chatModel:ChatModel, customInitialPrompt:string): Observable<ChatMessage> {
+  private fetchOpenAIResultAsChatMessageUsingRest(chatHistory: any, messageObj: ChatMessage, retry: boolean = true, trimnewline: boolean = false, chatModel:ChatModel, 
+    customInitialPrompt:string, chatIdentifier:string, insertCustomPromptAtEnd:boolean = false): Observable<ChatMessage> {
     if (this.currentApiCallCount >= this.openAIApiCallLimit) {
       this.statusMessage = "Error: OpenAI API call limit reached.";
       this.currentApiCallCount = 0;
@@ -396,9 +407,9 @@ mostUsedOutputBinding
   
     if (chatModel == ChatModel.GPT3) {
       let openAIQueryModel = CreateTextCompletionModel(chatHistory, TextModels.Default, this.responseTokenSize);
-      openAIAPICall = this._openAIService.generateTextCompletion(openAIQueryModel, customInitialPrompt, true);
+      openAIAPICall = this._openAIService.generateTextCompletion(openAIQueryModel, customInitialPrompt, true, insertCustomPromptAtEnd);
     } else {
-      let chatCompletionQueryModel = CreateChatCompletionModel(chatHistory, messageObj.id, this.chatIdentifier, chatModel, this.responseTokenSize);
+      let chatCompletionQueryModel = CreateChatCompletionModel(chatHistory, messageObj.id, chatIdentifier, chatModel, this.responseTokenSize);
       openAIAPICall = this._openAIService.getChatCompletion(chatCompletionQueryModel, customInitialPrompt);
     }
   
@@ -420,7 +431,7 @@ mostUsedOutputBinding
   
           if (response.truncated) {
             // Do not trim newline for the next query
-            this.fetchOpenAIResultAsChatMessageUsingRest(chatHistory, messageObj, retry, false, chatModel, customInitialPrompt).subscribe( (result: ChatMessage) => {
+            this.fetchOpenAIResultAsChatMessageUsingRest(chatHistory, messageObj, retry, false, chatModel, customInitialPrompt, chatIdentifier, insertCustomPromptAtEnd).subscribe( (result: ChatMessage) => {
                 observer.next(result);
                 observer.complete();
               },
@@ -443,7 +454,7 @@ mostUsedOutputBinding
         },
         (error: any) => {
           if (retry) {
-            this.fetchOpenAIResultAsChatMessageUsingRest(chatHistory, messageObj, false, trimnewline, chatModel, customInitialPrompt).subscribe(
+            this.fetchOpenAIResultAsChatMessageUsingRest(chatHistory, messageObj, false, trimnewline, chatModel, customInitialPrompt, chatIdentifier, insertCustomPromptAtEnd).subscribe(
               (result: ChatMessage) => {
                 this.currentApiCallCount = 0;
                 observer.next(result);
@@ -466,7 +477,8 @@ mostUsedOutputBinding
   }
   
 
-  private fetchOpenAIResultUsingRest(chatHistory: any, messageObj: ChatMessage, retry: boolean = true, trimnewline: boolean = false, chatModel:ChatModel, customInitialPrompt:string):Observable<ChatMessage> {
+  private fetchOpenAIResultUsingRest(chatHistory: any, messageObj: ChatMessage, retry: boolean = true, trimnewline: boolean = false, chatModel:ChatModel, customInitialPrompt:string, 
+    chatIdentifier:string, insertCustomPromptAtEnd:boolean = false):Observable<ChatMessage> {
     if (this.currentApiCallCount >= this.openAIApiCallLimit) {
       this.statusMessage = "Error: OpenAI API call limit reached.";
       this.currentApiCallCount = 0;
@@ -488,10 +500,10 @@ mostUsedOutputBinding
 
       if (chatModel == ChatModel.GPT3) {
         let openAIQueryModel = CreateTextCompletionModel(chatHistory, TextModels.Default, this.responseTokenSize);
-        openAIAPICall = this._openAIService.generateTextCompletion(openAIQueryModel, customInitialPrompt, true);
+        openAIAPICall = this._openAIService.generateTextCompletion(openAIQueryModel, customInitialPrompt, true, insertCustomPromptAtEnd);
       }
       else {
-        let chatCompletionQueryModel = CreateChatCompletionModel(chatHistory, messageObj.id, this.chatIdentifier, chatModel, this.responseTokenSize);
+        let chatCompletionQueryModel = CreateChatCompletionModel(chatHistory, messageObj.id, chatIdentifier, chatModel, this.responseTokenSize);
         openAIAPICall = this._openAIService.getChatCompletion(chatCompletionQueryModel, customInitialPrompt);
       }
 
@@ -508,7 +520,7 @@ mostUsedOutputBinding
 
         if (response.truncated) {
           //Do not trim newline for the next query
-          this.fetchOpenAIResultUsingRest(chatHistory, messageObj, retry, trimnewline = false, chatModel, customInitialPrompt);
+          this.fetchOpenAIResultUsingRest(chatHistory, messageObj, retry, trimnewline = false, chatModel, customInitialPrompt, chatIdentifier, insertCustomPromptAtEnd);
         }
         else {
           messageObj.status =  MessageStatus.Finished;
@@ -528,10 +540,10 @@ mostUsedOutputBinding
           //Sometimes the chat context may become too long for the API to handle. In that case, we reduce the chat context length by 2 and retry
           //this._telemetryService.logEvent("OpenAIChatBadRequestError", { ...err, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
           this.chatContextLength = this.chatContextLength - 2 >= 0? this.chatContextLength - 2 : 0;
-          this.fetchOpenAIResultUsingRest(chatHistory, messageObj, retry = false, false, chatModel, customInitialPrompt);
+          this.fetchOpenAIResultUsingRest(chatHistory, messageObj, retry = false, false, chatModel, customInitialPrompt, chatIdentifier, insertCustomPromptAtEnd);
         }
         else if (retry) {
-          this.fetchOpenAIResultUsingRest(chatHistory, messageObj, retry = false, false, chatModel, customInitialPrompt);
+          this.fetchOpenAIResultUsingRest(chatHistory, messageObj, retry = false, false, chatModel, customInitialPrompt, chatIdentifier, insertCustomPromptAtEnd);
         }
         else {
           this.statusMessage = "Error: " + err;
@@ -560,11 +572,11 @@ mostUsedOutputBinding
 
   }
 
-  private prepareChatHistory(messagesToConsider: ChatMessage[]) {
+  private prepareChatHistory(messagesToConsider: ChatMessage[], chatModel: ChatModel) {
     //Take last 'chatContextLength' messages to build context    
     if (messagesToConsider && messagesToConsider.length > 0) {
       var context;
-      if (this.chatModel == ChatModel.GPT3) {
+      if (chatModel == ChatModel.GPT3) {
         context = messagesToConsider.map((x: ChatMessage, index: number) => {
           return `${x.messageSource}: ${ (x.displayMessage? x.displayMessage: x.message)}`;
         }).join('\n');
@@ -654,18 +666,19 @@ mostUsedOutputBinding
           }
           else {
             this.statusMessage = '';
-            this.savingProgressText = 'Fetching feedback explanation...';
+            this.savingProgressText = 'Constructing feedback explanation...';
             this._openAIService.CheckEnabled().subscribe((enabled) => {
               if(enabled && this.feedbackUserQuestion.displayMessage && this.systemResponse.displayMessage && this.correctResponseFeedback) {            
                 this.currentApiCallCount = 0;
-                this.fetchOpenAIResultAsChatMessageUsingRest((this.chatModel == ChatModel.GPT3? null : []), this.GetEmptyChatMessage(), true, true, this.chatModel,
+                this.fetchOpenAIResultAsChatMessageUsingRest( null, this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
                   `You are a chat assistant that helps reason why an answer to a question is incorrect and generates a summary reasoning about why the answer is incorrect. Given the following UserQuestion, IncorrectAnswer and CorrectAnswer, compare the correct and incorrect answers. Please provide a detailed explanation of why the correct response is indeed correct and why the incorrect response is wrong. Break down the reasoning step by step to help the user understand the concepts better. You can also highlight any key points or examples that illustrate the differences between the two responses. Make the explanation clear, concise, and informative so that the user gains a deeper understanding of the topic.
                   UserQuestion: ${this.feedbackUserQuestion.displayMessage}
     
                   IncorrectAnswer: ${this.systemResponse.displayMessage}
     
                   CorrectAnswer: ${this.correctResponseFeedback}
-                  `).subscribe((messageObj) => {
+                  `,
+                  '').subscribe((messageObj) => {
                     if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
                       this.correctResponseFeedbackReasoning = messageObj.displayMessage;
                     }

@@ -8,6 +8,7 @@ import { ResourceService } from './resource.service';
 import { environment } from '../../../environments/environment';
 import * as signalR from "@microsoft/signalr";
 import { error } from 'console';
+import { KeyValuePair } from 'dist/diagnostic-data/lib/models/common-models';
 
 @Injectable()
 export class ApplensOpenAIChatService {
@@ -21,13 +22,34 @@ export class ApplensOpenAIChatService {
   private chatCompletionApiPath: string = "api/openai/runChatCompletion";
   private signalRChatEndpoint: string = "/chatcompletionHub";
   private resourceProvider: string;
+  private providerName:string;
+  private resourceTypeName: string;
   private productName: string;
   private signalRConnection: any;
   private signalRLogLevel: any;
   private messageBuilder: string;
+  private resourceSpecificInfo: KeyValuePair[] = [];
+  private resource:any;
+
+  private addOrUpdateResourceSpecificInfo(key:string, value:string) {
+    if(key) {
+      let existing =  this.resourceSpecificInfo.find(kvp => kvp.key === key);
+      if(existing) {
+        existing.value = value;
+      }
+      else {
+        this.resourceSpecificInfo.push(<KeyValuePair>{
+          key: key,
+          value: value
+        });
+      }
+    }
+  }
 
   constructor(private _backendApi: DiagnosticApiService, private _resourceService: ResourceService, private telemetryService: TelemetryService) {
     this.resourceProvider = `${this._resourceService.ArmResource.provider}/${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase();
+    this.providerName = `${this._resourceService.ArmResource.provider}`.toLowerCase();
+    this.resourceTypeName = `${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase();
     this.productName = this._resourceService.searchSuffix + ((this.resourceProvider === 'microsoft.web/sites') ? ` ${this._resourceService.displayName}` : '');
     this.onMessageReceive = new BehaviorSubject<ChatResponse>(null);
     this.signalRLogLevel = signalR.LogLevel.Information;
@@ -36,15 +58,31 @@ export class ApplensOpenAIChatService {
       this.signalRChatEndpoint = "http://localhost:5000/chatcompletionHub";
       this.signalRLogLevel = signalR.LogLevel.Debug;
     }
+    this.addOrUpdateResourceSpecificInfo('provider', this.providerName);
+    this.addOrUpdateResourceSpecificInfo('resourceTypeName', this.resourceTypeName );
+
+    let resourceReady: Observable<any>;
+    resourceReady = (this._resourceService.ArmResource?.resourceGroup && this._resourceService.ArmResource?.resourceName) ? this._resourceService.getCurrentResource() : of(null);    
+    resourceReady.subscribe(resource => {
+      if (resource) {
+        this.resource = resource;
+        let valuesToAdd = ['IsLinux', 'Kind', 'IsXenon'];
+        valuesToAdd.forEach(key => {
+          if(this.resource[key]) {
+            this.addOrUpdateResourceSpecificInfo(key, this.resource[key]);
+          }
+        });
+      }
+    });
   }
 
   public CheckEnabled(): Observable<boolean> {
     return this._backendApi.get<boolean>(`api/openai/enabled`).pipe(map((value: boolean) => { this.isEnabled = value; return value; }), catchError((err) => of(false)));
   }
 
-  public generateTextCompletion(queryModel: TextCompletionModel, customPrompt: string = '', caching: boolean = true): Observable<ChatResponse> {
+  public generateTextCompletion(queryModel: TextCompletionModel, customPrompt: string = '', caching: boolean = true, insertCustomPromptAtEnd:boolean = false): Observable<ChatResponse> {
     if (customPrompt && customPrompt.length > 0) {
-      queryModel.prompt = `${customPrompt}\n${queryModel.prompt}`;
+      queryModel.prompt = insertCustomPromptAtEnd? `${queryModel.prompt}\n${customPrompt}` : `${customPrompt}\n${queryModel.prompt}`;
     }
     else {
       queryModel.prompt = `You are helping eningeers to debug issues related to ${this.productName}. Do not be repetitive when providing steps in your answer. Please answer the below question\n${queryModel.prompt}`;
@@ -63,6 +101,9 @@ export class ApplensOpenAIChatService {
     }
 
     queryModel.metadata["azureServiceName"] = this.productName;
+    queryModel.metadata["provider"] = this.providerName;
+    queryModel.metadata["resourceType"] = this.resourceTypeName;
+    queryModel.metadata["resourceSpecificInfo"] = this.resourceSpecificInfo;
 
     return this._backendApi.post(this.chatCompletionApiPath, queryModel, null, true, true).pipe(map((res: ChatResponse) => {return res;}));
   }
@@ -77,6 +118,9 @@ export class ApplensOpenAIChatService {
     }
 
     queryModel.metadata["azureServiceName"] = this.productName;
+    queryModel.metadata["provider"] = this.providerName;
+    queryModel.metadata["resourceType"] = this.resourceTypeName;
+    queryModel.metadata["resourceSpecificInfo"] = this.resourceSpecificInfo;
 
     return from(this.signalRConnection.send("sendMessage", JSON.stringify(queryModel))).pipe(
       map(() => ({ sent: true, failureReason: '' })),
@@ -143,7 +187,8 @@ export class ApplensOpenAIChatService {
             text: this.messageBuilder,
             truncated: null,
             finishReason: messageJson.FinishReason,
-            exception: ''
+            exception: '',
+            feedbackIds: messageJson.FinishReason && messageJson.Content? JSON.parse(messageJson.Content) : []
           };
 
           this.onMessageReceive.next(chatResponse);
@@ -168,7 +213,8 @@ export class ApplensOpenAIChatService {
         text: '',
         truncated: null,
         finishReason: 'cancelled',
-        exception: reason
+        exception: reason,
+        feedbackIds: []
       };
 
       this.onMessageReceive.next(chatResponse);

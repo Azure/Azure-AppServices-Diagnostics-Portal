@@ -20,6 +20,7 @@ export class KustoGPTComponent {
   public apiProtocol = APIProtocol.WebSocket;
   public chatModel = ChatModel.GPT4;
   public feedbackPanelVisible: boolean = true;
+  public chatIdentifier: string = 'analyticskustocopilot';
 
   public clusterName: string = '@AntaresStampKustoCluster';
   public databaseName: string = '@AnataresStampKustoDB';

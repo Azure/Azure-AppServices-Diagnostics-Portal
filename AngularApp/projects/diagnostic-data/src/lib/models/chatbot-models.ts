@@ -15,6 +15,11 @@ export interface ChatMessage {
     renderingType: MessageRenderingType;
     userFeedback: FeedbackOptions;
     status: MessageStatus;
+
+    /// <summary>
+    /// This is used to store the feedback document ids for the message if any were used to construct the response. This is used to track the feedback for the message.
+    /// </summary>
+    feedbackDocumentIds: string[];
 }
 
 export enum MessageRenderingType {
