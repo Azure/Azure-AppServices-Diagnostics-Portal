@@ -777,7 +777,7 @@ namespace AppLensV3.Services
                                 chatCompletionsOptions.FeedbackIdsUsed.Add(feedback.Id);
                             }
 
-                            systemPrompt = feedbackSb.Length > 0 ? systemPrompt.Replace(feedbackSearchSettings.ContentPlaceholder, feedbackSb.ToString()) : systemPrompt;
+                            systemPrompt = systemPrompt.Replace(feedbackSearchSettings.ContentPlaceholder, feedbackSb.ToString());
                         }
                     }
                     catch (Exception ex)
