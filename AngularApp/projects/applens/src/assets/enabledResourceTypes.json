@@ -582,7 +582,8 @@
             "azureCommImpactedServicesList": "",
             "pesId": "14783",
             "searchSuffix": "AZURE CACHE FOR REDIS",
-            "displayName": "Azure Cache for Redis"
+            "displayName": "Azure Cache for Redis",
+            "workflowsEnabled": true
         },
         {
              "service": "ResourceService",
@@ -799,7 +800,8 @@
             "pesId": "17700",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE CHAOS STUDIO",
-            "displayName": "Azure Chaos Studio"
+            "displayName": "Azure Chaos Studio",
+            "workflowsEnabled": true
         },
         {
             "service": "ResourceService",
@@ -812,7 +814,8 @@
             "pesId": "15543",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE DEVOPS SERVICES",
-            "displayName": "Azure DevOps Services"
+            "displayName": "Azure DevOps Services",
+            "workflowsEnabled": true
         },
         {
             "service": "ResourceService",
