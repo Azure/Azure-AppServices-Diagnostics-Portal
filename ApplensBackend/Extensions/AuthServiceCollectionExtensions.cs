@@ -18,6 +18,7 @@ using Kusto.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -69,6 +70,18 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 options.Events = new JwtBearerEvents
                 {
+                    OnTokenValidated = context =>
+                    {
+                        var allowedAppIds = configuration["AzureAd:AllowedAppId"].Split(',').Select(p => p.Trim());
+                        var claimPrincipal = context.Principal;
+                        var incomingAppId = claimPrincipal.Claims.FirstOrDefault(c => c.Type.Equals("aud", StringComparison.CurrentCultureIgnoreCase));
+                        if (incomingAppId == null || !allowedAppIds.Any(allowedAppId => allowedAppId.Equals(incomingAppId.Value, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            context.Fail("Unauthorized Request");
+                        }
+
+                        return Task.CompletedTask;
+                    },
                     OnAuthenticationFailed = context =>
                     {
                         return Task.CompletedTask;
