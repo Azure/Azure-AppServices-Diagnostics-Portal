@@ -174,6 +174,27 @@ namespace AppLensV3.Controllers
             }
         }
 
+        [HttpPost("saveChatFeedback")]
+        [HttpOptions("saveChatFeedback")]
+        public async Task<IActionResult> SaveChatFeedback([FromBody] ChatFeedback feedbackPayload)
+        {
+            var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
+            if (feedbackPayload.SubmittedBy?.Equals(userAlias, StringComparison.OrdinalIgnoreCase) == false) 
+            {
+                _logger.LogWarning($"Feedback submittedBy and logged-in user are different. {feedbackPayload.SubmittedBy} vs {userAlias}");
+                return BadRequest("Feedback submission prohibited for user.");
+            }
+
+            return Ok(await _chatFeedbackCosmosDBHandler.SaveFeedback(feedbackPayload));
+        }
+
+        [HttpPost("getRelatedFeedbackListFromChatHistory")]
+        [HttpOptions("getRelatedFeedbackListFromChatHistory")]
+        public async Task<IActionResult> GetRelatedFeedbackListFromChatHistory([FromBody] RequestChatPayload chatPayload)
+        {
+            return Ok(await _openAIService.GetChatFeedbackRaw(chatPayload.MetaData, chatPayload.Messages.ToList()));
+        }
+
         private static string GetHeaderOrDefault(IHeaderDictionary headers, string headerName, string defaultValue = "")
         {
             if (headers == null || headerName == null)
@@ -187,13 +208,6 @@ namespace AppLensV3.Controllers
             }
 
             return defaultValue;
-        }
-
-        [HttpPost("saveChatFeedback")]
-        public async Task<IActionResult> SaveChatFeedback([FromBody] ChatFeedback feedbackPayload)
-        {
-            await _chatFeedbackCosmosDBHandler.SaveFeedback(feedbackPayload);
-            return Ok(feedbackPayload);
         }
     }
 }
