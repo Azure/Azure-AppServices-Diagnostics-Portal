@@ -1,9 +1,12 @@
 ﻿using Azure;
 using Azure.AI.OpenAI;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
+using System.Security.Policy;
+using System.Text.RegularExpressions;
 
 namespace AppLensV3.Models
 {
@@ -14,6 +17,31 @@ namespace AppLensV3.Models
         public ChatMessage[] Messages { get; set; }
     }
 
+    public class GPT3CompletionModelPayload
+    {
+        [JsonProperty(PropertyName = "model")]
+        public string Model { get; set; } = "text-davinci-003";
+
+        [JsonProperty(PropertyName = "prompt")]
+        public string Prompt { get; set; }
+
+        [JsonProperty(PropertyName = "temperature")]
+        public double temperature { get; set; } = 0.1;
+
+        [JsonProperty(PropertyName = "max_tokens")]
+        public int MaxTokens { get; set; } = 500;
+
+        public GPT3CompletionModelPayload(string prompt)
+        {
+            if (string.IsNullOrWhiteSpace(prompt))
+            {
+                throw new ArgumentNullException(nameof(prompt));
+            }
+
+            Prompt = prompt;
+        }
+    }
+
     public class ChatMetaData
     {
         public string MessageId;
@@ -21,6 +49,10 @@ namespace AppLensV3.Models
         public string ChatModel;
         public int MaxTokens;
         public string AzureServiceName;
+        public string Provider;
+        public string ResourceType;
+
+        public Dictionary<string, string> ResourceSpecificInfo { get; set; } = new Dictionary<string, string>();
     }
 
     public class ChatStreamResponse
@@ -39,6 +71,12 @@ namespace AppLensV3.Models
             Content = content;
             FinishReason = finishReason;
         }
+    }
+
+    public class ExtendedChatCompletionsOptions:ChatCompletionsOptions
+    {
+        [JsonIgnore]
+        public List<string> FeedbackIdsUsed { get; set; } = new List<string>();
     }
 
     public class ChatResponse
@@ -61,6 +99,8 @@ namespace AppLensV3.Models
         /// </summary>
         public string FinishReason { get; set; } = string.Empty;
 
+        public List<string> FeedbackIds { get; set; }
+
         public ChatResponse(string chatResponse)
         {
             Text = chatResponse ?? string.Empty;
@@ -80,7 +120,7 @@ namespace AppLensV3.Models
                 Text = chatCompletionResponse.Value.Choices[0].Message?.Content ?? string.Empty;
                 FinishReason = chatCompletionResponse.Value.Choices[0].FinishReason ?? string.Empty;
             }
-    }
+        }
 
         public ChatResponse(OpenAIAPIResponse textCompletionResponse)
         {
@@ -168,10 +208,28 @@ namespace AppLensV3.Models
 
         [JsonProperty]
         public string PartitionKey => $"{ChatFeedback.GetPartitionKey(ChatIdentifier, Provider, ResourceType)}";
-        
+
         public static string GetPartitionKey(string chatIdentifier, string provider, string resourceType)
+            => NormalizeString($"{(string.IsNullOrWhiteSpace(chatIdentifier) ? "default" : chatIdentifier)}-{provider}-{resourceType}");
+
+        /// <summary>
+        /// Remove special characters from a string. This is used to create partition key and adhere to requirements by Azure Cognitive search APIs.
+        /// </summary>
+        /// <param name="str">String to normalize</param>
+        /// <returns>A string that has all special characters replaced with a -</returns>
+        private static string NormalizeString(string str)
         {
-            return $"{(string.IsNullOrWhiteSpace(chatIdentifier) ? "DEFAULT" : chatIdentifier).ToUpperInvariant()}_{provider?.ToUpperInvariant()}/{resourceType?.ToUpperInvariant()}";
+            if (string.IsNullOrWhiteSpace(str)) return str;
+
+            str = str.Replace(" ", string.Empty).Trim('-').ToLowerInvariant();
+
+            // Replace all special characters with - in str
+            string pattern = "[^a-z0-9-]+";
+
+            // Replace special characters with a hyphen "-". Repeating special characters are replaced with a single occurrence of a dash.
+            string updatedString = Regex.Replace(str, pattern, "-");
+            updatedString = updatedString.Trim('-');
+            return updatedString.Length > 127 ? updatedString.Substring(0, 127) : updatedString;
         }
     }
 }
