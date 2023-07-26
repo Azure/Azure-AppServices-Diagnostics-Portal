@@ -72,7 +72,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     OnTokenValidated = context =>
                     {
-                        var allowedAppIds = configuration["AzureAd:AllowedAppId"].Split(',').Select(p => p.Trim());
+                        var allowedAppIds = configuration["SecuritySettings:AllowedAppId"].Split(',').Select(p => p.Trim());
                         var claimPrincipal = context.Principal;
                         var incomingAppId = claimPrincipal.Claims.FirstOrDefault(c => c.Type.Equals("aud", StringComparison.CurrentCultureIgnoreCase));
                         if (incomingAppId == null || !allowedAppIds.Any(allowedAppId => allowedAppId.Equals(incomingAppId.Value, StringComparison.OrdinalIgnoreCase)))
