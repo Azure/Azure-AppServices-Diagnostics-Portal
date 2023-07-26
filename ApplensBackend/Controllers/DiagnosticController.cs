@@ -130,32 +130,6 @@ namespace AppLensV3.Controllers
             }
         }
 
-        [HttpGet("isappidallowed/{appId}")]
-        public IActionResult ValidateAppId(string appId)
-        {
-            //For NCloud it's using DSTS, so always return 200
-            if(!config.IsPublicAzure())
-            {
-                return Ok();
-            }
-
-            if (string.IsNullOrEmpty(appId))
-            {
-                return BadRequest();
-            }
-
-            var allowedAppIds = config["AzureAd:AllowedAppId"].Split(',');
-
-            if (allowedAppIds.Any(allowedAppId => allowedAppId.Equals(appId, StringComparison.OrdinalIgnoreCase)))
-            {
-                return Ok();
-            }
-            else
-            {
-                return Unauthorized($"AppId {appId} is not allowed");
-            }
-        }
-
         [HttpGet("workflows/isuserallowed/{userAlias}")]
         public IActionResult IsUserAllowed(string userAlias)
         {

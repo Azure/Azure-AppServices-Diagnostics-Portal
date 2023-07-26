@@ -442,11 +442,6 @@ export class DiagnosticApiService {
     return request;
   }
 
-  public validateAppId(appId: string): Observable<any> {
-    let path = `api/isappidallowed/${appId}`;
-    return this.get<any>(path);
-  }
-
   private getCacheKey(method: HttpMethod, path: string) {
     return `${HttpMethod[method]}-${path}`;
   }
