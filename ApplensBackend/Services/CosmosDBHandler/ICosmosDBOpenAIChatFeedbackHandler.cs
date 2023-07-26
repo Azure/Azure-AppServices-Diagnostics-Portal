@@ -10,7 +10,7 @@ namespace AppLensV3.Services
         /// </summary>
         /// <param name="chatFeedback">Feedback to be added.</param>
         /// <returns>ChatFeedbackSaveOperationResponse object indicating whether the save operation was successful or a failure.</returns>
-        Task SaveFeedback(ChatFeedback chatFeedback);
+        Task<ChatFeedback> SaveFeedback(ChatFeedback chatFeedback);
 
         /// <summary>
         /// Gets chat feedback for a specific PartitionKey and Id. PartitionKey is auto created based on ChatIdentifier, provider and resourcetype values.

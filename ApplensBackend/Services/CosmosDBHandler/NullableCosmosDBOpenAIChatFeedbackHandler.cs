@@ -12,7 +12,7 @@ namespace AppLensV3.Services
             return Task.FromResult(nullableChatFeedback);
         }
 
-        public Task SaveFeedback(ChatFeedback chatFeedback)
+        public Task<ChatFeedback> SaveFeedback(ChatFeedback chatFeedback)
         {
             return Task.FromResult(nullableChatFeedback);
         }
