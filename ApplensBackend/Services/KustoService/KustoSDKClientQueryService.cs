@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Data;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AppLensV3.Helpers;
@@ -147,16 +148,18 @@ namespace AppLensV3.Services
 
         private async Task<string> GetKustoClusterByGeo(string geoRegionName)
         {
-            string clusterQuery = @$"WawsAn_regionsincluster
+            string clusterQuery = @$"set query_results_cache_max_age = time(1d);
+                                    WawsAn_regionsincluster
                                     | where pdate >= ago(2d)
-                                    | where tolower(Region) =~ '{geoRegionName}'
-                                    | take 1
-                                    | project ClusterName";
+                                    | summarize by ClusterName, Region = tolower(Region)
+                                    ";
             var clusterResult = await ExecuteQueryAsync("wawseusfollower", "wawsprod", clusterQuery, "GetKustoClusterByGeoRegion");
             if (clusterResult.Rows.Count > 0)
             {
-                return clusterResult.Rows[0]["ClusterName"].ToString();
+                string clusterName = clusterResult.Rows.Cast<DataRow>().Where(dr => geoRegionName.Equals((string)dr["Region"], StringComparison.OrdinalIgnoreCase)).Select(s => (string)s["ClusterName"]).First();
+                return clusterName;
             }
+
             return null;
         }
 
