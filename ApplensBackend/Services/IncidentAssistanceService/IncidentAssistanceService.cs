@@ -16,6 +16,7 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Http;
 using System.Data;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AppLensV3.Services
 {
@@ -65,6 +66,8 @@ namespace AppLensV3.Services
         Task<List<IncidentInfo>> GetTopIncidentsForTeam(string teamId, string incidentType, int num = 5);
 
         Task<HttpResponseMessage> TestTemplateWithIncident(object payload, string userId);
+
+        Task<HttpResponseMessage> ValidateIncidentRoute(string incidentId, string userId);
     }
 
     public class IncidentAssistanceService : IIncidentAssistanceService
@@ -230,6 +233,20 @@ namespace AppLensV3.Services
             request = AddFunctionAuthHeaders(request);
             request.Content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
             return await _httpClient.SendAsync(request);
+        }
+
+        public async Task<HttpResponseMessage> ValidateIncidentRoute(string incidentId, string userId)
+        {
+            try
+            {
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"{IncidentAssistEndpoint}/api/triggerIncidentRouteValidation/{incidentId}?userId={userId}");
+                request = AddFunctionAuthHeaders(request);
+                return await _httpClient.SendAsync(request);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Couldn't complete request to incident automation. " + ex.ToString());
+            }
         }
     }
 }

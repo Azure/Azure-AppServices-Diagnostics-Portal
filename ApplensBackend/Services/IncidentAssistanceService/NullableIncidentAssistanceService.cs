@@ -62,5 +62,10 @@ namespace AppLensV3.Services
         {
             return null;
         }
+
+        Task<HttpResponseMessage> IIncidentAssistanceService.ValidateIncidentRoute(string incidentId, string userId)
+        {
+            return null;
+        }
     }
 }

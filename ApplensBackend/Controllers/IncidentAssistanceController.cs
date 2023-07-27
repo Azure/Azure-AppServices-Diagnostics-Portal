@@ -244,5 +244,21 @@ namespace AppLensV3.Controllers
             var responseTask = response.Content.ReadAsStringAsync();
             return StatusCode((int)response.StatusCode, await responseTask);
         }
+
+        [HttpGet("triggerIncidentRouteValidation/{incidentId}")]
+        [HttpOptions("triggerIncidentRouteValidation/{incidentId}")]
+        public async Task<IActionResult> ValidateIncidentRoute(string incidentId)
+        {
+            //string userId = GetUserId();
+            string userId = "jchukwuma";
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return StatusCode(401, "Invalid user. Does not contain valid upn.");
+            }
+            var response = await _incidentAssistanceService.ValidateIncidentRoute(incidentId, userId);
+            var responseTask = response.Content.ReadAsStringAsync();
+            return StatusCode((int)response.StatusCode, await responseTask);
+        }
     }
 }

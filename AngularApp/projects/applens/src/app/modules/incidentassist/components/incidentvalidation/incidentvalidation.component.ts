@@ -192,11 +192,10 @@ export class IncidentValidationComponent implements OnInit {
               // success on validating incident route
               this.displayLoader = false;
               var result = JSON.parse(res.body);
-              //if (result === null || result.match(/^ *$/) !== null) {
               if (result && result.length > 0) {
                   this.incidentRouteValidationStatus = true;
                   this.validateRouteButtonDisabled = true;
-                  this.routeMessage = `This incident should confidently be routed to the loop ${result}`;
+                  this.routeMessage = `AI-Driven Incident Route Decision: ${result}`;
                   this.routeMessageType = "success";
               }
               else {
@@ -206,7 +205,7 @@ export class IncidentValidationComponent implements OnInit {
           }, (err) => {
               // Error on validating incident route
               this.displayLoader = false;
-              this.routeMessage = `Failed to validate incident route because of this ${err}`;
+              this.routeMessage = `Failed to validate incident route.`;
               this.routeMessageType = "error";
           });
       }
