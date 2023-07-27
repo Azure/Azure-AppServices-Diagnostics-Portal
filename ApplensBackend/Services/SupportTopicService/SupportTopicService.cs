@@ -36,6 +36,11 @@ namespace AppLensV3.Services
                 throw new ArgumentNullException("productId");
             }
 
+            if(!Int32.TryParse(productId.Trim(), out int parsedProductId))
+            {
+                throw new ArgumentException("Invalid product id");
+            }
+
             string kustoQuery = _supportTopicsQuery
                 .Replace("{PRODUCTID}", productId);
 
