@@ -16,6 +16,8 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   apiProtocol: APIProtocol = APIProtocol.WebSocket;
   chatHeader: string;
   stopMessageGeneration: boolean = false;
+  clearChatConfirmationHidden: boolean = true;
+  copilotExitConfirmationHidden: boolean = true;
 
   private featureTitle = 'Detector Copilot (Preview)';
   private lastMessageIdForFeedback: string = '';
@@ -32,6 +34,17 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
   }
 
+  handleCloseCopilotEvent(event: any) {
+    if (event) {
+      this.checkMessageStateAndExitCopilot(event.showConfirmation);
+      if (event.resetCopilot) {
+        this._copilotService.reset();
+      }
+    }
+  }
+
+  //#region Chat Callbacks
+
   onUserMessageSend = (messageObj: ChatMessage): ChatMessage => {
 
     this._copilotService.operationInProgress = true;
@@ -42,18 +55,57 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   onSystemMessageReceived = (messageObj: ChatMessage): ChatMessage => {
 
     this._copilotService.operationInProgress = !(messageObj.status == MessageStatus.Finished || messageObj.status == MessageStatus.Cancelled);
-    if (this._copilotService.operationInProgress === false) {
-      console.log('Operation Complete');
-    }
     messageObj.displayMessage = messageObj.message;
     return messageObj;
   }
 
-  //#region Command Bar Methods
+  //#endregion
 
-  clearChat() {
+  //#region Settings : Clear Chat Methods
+
+  clearChat = () => {
     this._chatContextService.clearChat(this._copilotService.detectorCopilotChatIdentifier);
+    this.clearChatConfirmationHidden = true;
   }
+
+  showClearChatDialog = (show: boolean = true) => {
+    this.clearChatConfirmationHidden = !show;
+  }
+
+  //#endregion
+
+  //#region Copilot Exit Methods
+
+  showExitConfirmationDialog = (show: boolean = true) => {
+    this.copilotExitConfirmationHidden = !show;
+  }
+
+  exitCopilot = (cancelOpenAICall: boolean = true) => {
+
+    if (cancelOpenAICall) {
+      this.cancelOpenAICall();
+    }
+
+    this._copilotService.operationInProgress = false;
+    this.copilotExitConfirmationHidden = true;
+    this._copilotContainerService.hideCopilotPanel();
+  }
+
+  checkMessageStateAndExitCopilot(showConfirmation: boolean = true) {
+    if (this._copilotService.operationInProgress == true) {
+      if (showConfirmation)
+        this.showExitConfirmationDialog(true);
+      else
+        this.exitCopilot(true);
+    }
+    else {
+      this.exitCopilot(false);
+    }
+  }
+
+  //#endregion
+
+  //#region Other Command Bar Methods
 
   cancelOpenAICall = () => {
 

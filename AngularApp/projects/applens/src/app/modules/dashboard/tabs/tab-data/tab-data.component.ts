@@ -187,7 +187,19 @@ export class TabDataComponent implements OnInit, OnDestroy {
     }
   }
 
+  ngAfterViewInit() {
+    // Async to get button element after grandchild is rendered
+    setTimeout(() => {
+      this.updateDownloadReportId();
+    });
+  }
+
   refresh() {
+
+    if (this.copilotServiceMembersInitialized) {
+      this._copilotContainerService.onCloseCopilotPanelEvent.next({ showConfirmation: false, resetCopilot: true });
+    }
+
     if (this._route.snapshot.params['workflowId'] != null) {
       this.detector = this._route.snapshot.params['workflowId'];
       this.isWorkflowDetector = true;
@@ -237,6 +249,7 @@ export class TabDataComponent implements OnInit, OnDestroy {
   }
 
   openFeedback() {
+    this._copilotContainerService.onCloseCopilotPanelEvent.next({ showConfirmation: false, resetCopilot: false });
     this._applensGlobal.openFeedback = true;
   }
 
@@ -300,13 +313,6 @@ export class TabDataComponent implements OnInit, OnDestroy {
     this.panelTimer = setTimeout(() => {
       this.showPanel = false;
     }, 3000);
-  }
-
-  ngAfterViewInit() {
-    // Async to get button element after grandchild is rendered
-    setTimeout(() => {
-      this.updateDownloadReportId();
-    });
   }
 
   // Check if the app is an App Service Windows Standard or higher SKU

@@ -23,7 +23,6 @@ export class DetectorDevelopmentCopilotComponent implements OnInit, OnDestroy {
   clearChatConfirmationHidden: boolean = true;
   copilotExitConfirmationHidden: boolean = true;
 
-  private closeEventObservable: Subscription;
   private codeUsedInPrompt: string;
   private maxLinesLimitForCodeUpdate: number = 100;
 
@@ -43,11 +42,6 @@ export class DetectorDevelopmentCopilotComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.closeEventObservable) {
-      this.closeEventObservable.unsubscribe();
-      this.log('OnDestroy', 'unsubscribed from closeEventObservable');
-    }
-
     this.log('OnDestroy', 'ondestroy complete');
   }
 

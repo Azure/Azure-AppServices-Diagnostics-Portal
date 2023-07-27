@@ -79,15 +79,12 @@ export class ApplensDetectorCopilotService {
 
     reset() {
 
-        //Shekhar - TODO - Need to think about this : this._chatContextService.clearChat(this.chatComponentIdentifier);
         this.selectedComponent = {};
-
+        this._chatContextService.clearChat(this.detectorCopilotChatIdentifier);
         this.detectorResponse = null;
         this.wellFormattedDetectorOutput = null;
         this.customPrompt = '';
         this.operationInProgress = false;
-        this._copilotContainerService.feature = CopilotSupportedFeature.Other;
-        this._chatContextService.clearChat(this.detectorCopilotChatIdentifier);
     }
 
     private prepareCustomPrompt(wellFormattedDetectorOutput: any): string {

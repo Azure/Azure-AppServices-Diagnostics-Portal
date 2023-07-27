@@ -82,7 +82,6 @@ export class TabAnalysisComponent implements OnInit, OnDestroy {
     });
 
     this._diagnosticApi.get<boolean>('api/openai/detectorcopilot/enabled').subscribe(res => {
-
       this.copilotEnabled = res;
     });
   }
@@ -119,12 +118,14 @@ export class TabAnalysisComponent implements OnInit, OnDestroy {
   }
 
   emailToAuthor() {
+    
     this._applensCommandBarService.getDetectorMeatData(this.analysisId).subscribe(metaData => {
       this._applensCommandBarService.emailToAuthor(metaData);
     });
   }
 
   openFeedback() {
+    this._copilotContainerService.onCloseCopilotPanelEvent.next({ showConfirmation: false, resetCopilot: false });
     this._applensGlobal.openFeedback = true;
   }
 

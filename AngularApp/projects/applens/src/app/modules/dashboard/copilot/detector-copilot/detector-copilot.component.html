@@ -2,7 +2,7 @@
   <items>
 
     <fab-command-bar-item key="clearchat" text="Clear Chat" [iconProps]="{ iconName: 'EraseTool' }"
-      [disabled]="_copilotService.operationInProgress" (click)="clearChat()">
+      [disabled]="_copilotService.operationInProgress" (click)="showClearChatDialog()">
     </fab-command-bar-item>
     <fab-command-bar-item key="stopcalls" text="Stop" [iconProps]="{ iconName: 'stop' }"
       [disabled]="!_copilotService.operationInProgress" (click)="cancelOpenAICall()">
@@ -39,3 +39,28 @@
   [systemPhotoSource]="'/assets/img/bot_sparkle_icon.svg'" [preprocessUserMessage]="onUserMessageSend"
   [postProcessSystemMessage]="onSystemMessageReceived"  [stopMessageGeneration]="stopMessageGeneration">
 </openai-chat>
+
+<fab-dialog [hidden]="clearChatConfirmationHidden" (onDismiss)="showClearChatDialog(false)">
+  <fab-dialog-content [title]="'Are you sure?'">
+    <div style="font-size: 13px;">
+      Just Confirming. After all, I am a bot and "suppose to" obey all your commands <i class="fa fa-smile-o"
+        aria-hidden="true"></i>
+    </div>
+    <div class="mt-4" style="margin-top:10px">
+      <fab-primary-button text="Clear Chat" (onClick)="clearChat()" [contentClass]="'mr-3'"></fab-primary-button>
+      <fab-default-button text="Cancel" (onClick)="showClearChatDialog(false)"></fab-default-button>
+    </div>
+  </fab-dialog-content>
+</fab-dialog>
+
+<fab-dialog [hidden]="copilotExitConfirmationHidden" (onDismiss)="showExitConfirmationDialog(false)">
+  <fab-dialog-content [title]="'Are you sure?'">
+    <div style="font-size: 13px;">
+      Are you sure you want to exit? I'm in the midst of something epic!
+    </div>
+    <div class="mt-4" style="margin-top:10px">
+      <fab-primary-button text="Exit" (onClick)="exitCopilot()" [contentClass]="'mr-3'"></fab-primary-button>
+      <fab-default-button text="Cancel" (onClick)="showExitConfirmationDialog(false)"></fab-default-button>
+    </div>
+  </fab-dialog-content>
+</fab-dialog>
