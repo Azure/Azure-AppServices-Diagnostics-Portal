@@ -249,8 +249,7 @@ namespace AppLensV3.Controllers
         [HttpOptions("triggerIncidentRouteValidation/{incidentId}")]
         public async Task<IActionResult> ValidateIncidentRoute(string incidentId)
         {
-            //string userId = GetUserId();
-            string userId = "jchukwuma";
+            string userId = GetUserId();
 
             if (string.IsNullOrWhiteSpace(userId))
             {
