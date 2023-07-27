@@ -109,7 +109,7 @@ export class SupportTopicService {
 
     private showAllSelfHelpContent():boolean {
         let rp =  `${this._resourceService?.resource?.id}`.toLowerCase().split('/providers/')[1].split('/')[0];
-        let rpsToShowAllContent = ['microsoft.web', 'microsoft.containerservice'];
+        let rpsToShowAllContent = ['microsoft.web', 'microsoft.containerservice', 'microsoft.domainregistration', 'microsoft.certificateregistration'];
         return rpsToShowAllContent.some((rpToShowAllContent) => rp.includes(rpToShowAllContent));
     }
 
