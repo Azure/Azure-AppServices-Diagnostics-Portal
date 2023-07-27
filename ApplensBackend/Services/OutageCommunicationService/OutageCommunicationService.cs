@@ -43,6 +43,11 @@ namespace AppLensV3.Services
                 throw new ArgumentNullException("subscription");
             }
 
+            if (!Guid.TryParse(subscription, out _))
+            {
+                throw new ArgumentException("invalid subscription guid");
+            }
+
             if (string.IsNullOrWhiteSpace(impactedService))
             {
                 impactedService = "appservice";

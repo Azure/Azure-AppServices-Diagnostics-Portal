@@ -76,7 +76,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     private _supportTopicService: GenericSupportTopicService) {
     super(telemetryService);
     this.isPublic = this.config && this.config.isPublic;
-    this.isCaseSubmissionFlow = this._supportTopicService && (!!this._supportTopicService.sapSupportTopicId || !!this._supportTopicService.supportTopicId );
+    this.isCaseSubmissionFlow = this._supportTopicService && (!!this._supportTopicService.sapSupportTopicId || !!this._supportTopicService.supportTopicId);
 
     this._genericUserSettingsService.isWaterfallViewSub.subscribe(isWaterfallViewMode => {
       this.isWaterfallViewMode = isWaterfallViewMode;
@@ -135,11 +135,13 @@ export class DetectorListComponent extends DataRenderBaseComponent {
       }
     }, (error => {
       if (this.overrideResourceUri !== "") {
-        const e = JSON.parse(error);
-        let code: string = "";
-        if (e && e.error && e.error.code) {
-          code = e.error.code;
+        let errorObject;
+        try {
+          errorObject = JSON.parse(error);
+        } catch (exception) {
+
         }
+        let code: string = errorObject?.error?.code ?? "";
         switch (code) {
           case "InvalidAuthenticationTokenTenant":
             this.errorMsg = `No Access for resource ${this.resourceType} , please check your access`;
@@ -487,14 +489,14 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   private updateBreadcrumb(queryParams: any) {
     const fullPath = this._router.url.split("?")[0];
     const breadcrumbItem: BreadcrumbNavigationItem = {
-        name: this.detectorName,
-        queryParams: queryParams,
-        fullPath: fullPath
+      name: this.detectorName,
+      queryParams: queryParams,
+      fullPath: fullPath
     };
     if (this.isPublic) {
-        this._globals.breadCrumb = breadcrumbItem;
+      this._globals.breadCrumb = breadcrumbItem;
     } else {
-        this._breadcrumbService.updateBreadCrumbSubject(breadcrumbItem);
+      this._breadcrumbService.updateBreadCrumbSubject(breadcrumbItem);
     }
   }
 }

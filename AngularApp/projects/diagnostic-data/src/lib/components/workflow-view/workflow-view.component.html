@@ -20,7 +20,14 @@
 </div>
 
 <div *ngIf="!error" [hidden]="isLoading" class="mt-4">
-  <div id="canvas" ngFlowchartCanvas [ngFlowchartOptions]="options" [disabled]="disabled"></div>
+  <div id="canvas" ngFlowchartCanvas [ngFlowchartOptions]="options" [disabled]="disabled"
+    [ngClass]="{'case-submission-extra-height': inCaseSubmission }"></div>
+</div>
+
+<div class="mt-3">
+  <data-container *ngIf="supportDocumentRendered" [title]="'Additional troubleshooting resources'">
+    <markdown *ngIf="supportDocumentContent.length > 0" #markdownDiv [data]="supportDocumentContent"></markdown>
+  </data-container>
 </div>
 
 <ng-template #detectorTimePickerPill>
