@@ -19,7 +19,7 @@ namespace AppLensV3.Controllers
     /// Controller to surface ASC insights.
     /// </summary>
     [Route("api/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers")]
-    [Authorize]
+    [Authorize(Policy = "ApplensAccess")]
     public class InsightsController
     {
         private IDiagnosticClientService diagnosticClientService;

@@ -36,31 +36,41 @@ namespace AppLensV3.Controllers
         [HttpOptions("getSurvey/{caseId}")]
         public async Task<IActionResult> GetSurvey(string caseId)
         {
-            if (string.IsNullOrWhiteSpace(caseId))
-            {
-                return BadRequest("caseId cannot be empty");
-            }
+            //if (string.IsNullOrWhiteSpace(caseId))
+            //{
+            //    return BadRequest("caseId cannot be empty");
+            //}
 
-            var response = await _surveysService.GetSurveyInfo(caseId);
-            return StatusCode(200, response);
+            //var response = await _surveysService.GetSurveyInfo(caseId);
+            //return StatusCode(200, response);
+
+            return new ObjectResult("The API is not supported until further notice.")
+            {
+                StatusCode = 415
+            };
         }
 
         [HttpPost("submitSurvey")]
         [HttpOptions("submitSurvey")]
         public async Task<IActionResult> SubmitSurvey([FromBody] JToken body)
         {
-            string caseId = null;
-            if (body != null && body["caseId"] != null)
-            {
-                caseId = body["caseId"].ToString();
-            }
-            if (string.IsNullOrWhiteSpace(caseId))
-            {
-                return BadRequest("caseId cannot be empty");
-            }
+            //string caseId = null;
+            //if (body != null && body["caseId"] != null)
+            //{
+            //    caseId = body["caseId"].ToString();
+            //}
+            //if (string.IsNullOrWhiteSpace(caseId))
+            //{
+            //    return BadRequest("caseId cannot be empty");
+            //}
 
-            var response = await _surveysService.SubmitSurveyResponse(caseId, body);
-            return StatusCode(204, response);
+            //var response = await _surveysService.SubmitSurveyResponse(caseId, body);
+            //return StatusCode(204, response);
+
+            return new ObjectResult("The API is not supported until further notice.")
+            {
+                StatusCode = 415
+            };
         }
     }
 }
