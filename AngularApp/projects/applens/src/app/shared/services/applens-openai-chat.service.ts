@@ -91,6 +91,14 @@ export class ApplensOpenAIChatService {
     return this._backendApi.post(this.textCompletionApiPath, { payload: queryModel }, new HttpHeaders({ "x-ms-openai-cache": caching.toString() })).pipe(map((res: ChatResponse) => {return res;}));
   }
 
+  private ConvertKeyValuePairArrayToObj(keyValuePairArray: KeyValuePair[]): Record<string, string> {
+    let result: Record<string, string> = {};
+    keyValuePairArray.forEach((keyValuePair: KeyValuePair) => {
+      result[keyValuePair.key] = keyValuePair.value;
+    });
+    return result;    
+  }
+
   public getChatCompletion(queryModel: ChatCompletionModel, customPrompt: string = ''): Observable<ChatResponse> {
 
     if (customPrompt && customPrompt.length > 0) {
@@ -103,7 +111,8 @@ export class ApplensOpenAIChatService {
     queryModel.metadata["azureServiceName"] = this.productName;
     queryModel.metadata["provider"] = this.providerName;
     queryModel.metadata["resourceType"] = this.resourceTypeName;
-    queryModel.metadata["resourceSpecificInfo"] = this.resourceSpecificInfo;
+    queryModel.metadata["resourceSpecificInfo"] = this.ConvertKeyValuePairArrayToObj(this.resourceSpecificInfo);
+    
 
     return this._backendApi.post(this.chatCompletionApiPath, queryModel, null, true, true).pipe(map((res: ChatResponse) => {return res;}));
   }
@@ -120,7 +129,7 @@ export class ApplensOpenAIChatService {
     queryModel.metadata["azureServiceName"] = this.productName;
     queryModel.metadata["provider"] = this.providerName;
     queryModel.metadata["resourceType"] = this.resourceTypeName;
-    queryModel.metadata["resourceSpecificInfo"] = this.resourceSpecificInfo;
+    queryModel.metadata["resourceSpecificInfo"] = this.ConvertKeyValuePairArrayToObj(this.resourceSpecificInfo);
 
     return from(this.signalRConnection.send("sendMessage", JSON.stringify(queryModel))).pipe(
       map(() => ({ sent: true, failureReason: '' })),
@@ -184,7 +193,7 @@ export class ApplensOpenAIChatService {
         if (this.messageBuilder.length > 10 || (messageJson.FinishReason != undefined && messageJson.FinishReason != '')) {
 
           let chatResponse: ChatResponse = {
-            text: this.messageBuilder,
+            text: messageJson.FinishReason && messageJson.Content ? '' : this.messageBuilder,
             truncated: null,
             finishReason: messageJson.FinishReason,
             exception: '',

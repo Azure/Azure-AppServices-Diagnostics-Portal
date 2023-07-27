@@ -692,12 +692,13 @@ namespace AppLensV3.Services
                 systemPrompt = systemPrompt.Replace("<<CURRENT_DATETIME>>", DateTime.UtcNow.ToString() + " UTC");
                 string compsiteUserQuestion = string.Empty;
 
-                if (jObject["DocumentSearchSettings"] != null || jObject["ChatFeedbackSearchSettings"] != null)
+                ChatFeedbackSearchSettings feedbackSearchSettings = new ChatFeedbackSearchSettings();
+
+                if (jObject["DocumentSearchSettings"] != null || jObject["ChatFeedbackSearchSettings"] != null || systemPrompt.Contains(feedbackSearchSettings.ContentPlaceholder))
                 {
                     Task<string> documentContentTask = null;
                     DocumentSearchSettings documentSearchSettings = null;
                     Task<List<ChatFeedback>> getFeedbackListRawTask = null;
-                    ChatFeedbackSearchSettings feedbackSearchSettings = new ChatFeedbackSearchSettings();
                     try
                     {
                         compsiteUserQuestion = await PrepareCompositeUserQuestion(chatMessages);
