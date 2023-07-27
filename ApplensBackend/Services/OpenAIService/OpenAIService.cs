@@ -738,7 +738,7 @@ namespace AppLensV3.Services
 
                         if (getFeedbackListRawTask != null)
                         {
-                            List<ChatFeedback> feedbackList = await getFeedbackListRawTask;
+                            List<ChatFeedback> feedbackList = (await getFeedbackListRawTask) ?? new List<ChatFeedback>();
 
                             if (metadata.ResourceSpecificInfo?.Count > 0)
                             {
