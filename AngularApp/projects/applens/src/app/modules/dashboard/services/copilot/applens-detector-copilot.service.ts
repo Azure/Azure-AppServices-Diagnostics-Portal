@@ -26,6 +26,7 @@ export class ApplensDetectorCopilotService {
     public selectedComponent: any;
     public operationInProgress: boolean = false;
     public customPrompt: string = '';
+    public chatContainerHeight: string = '75vh';
 
     constructor(private _copilotContainerService: ApplensCopilotContainerService, private _resourceService: ResourceService,
         private _chatContextService: ChatUIContextService) {
@@ -46,7 +47,6 @@ export class ApplensDetectorCopilotService {
         this.detectorResponse = detectorData;
         this.wellFormattedDetectorOutput = ResponseUtilities.ConvertResponseTableToWellFormattedJson(detectorData);
         this.customPrompt = this.prepareCustomPrompt(this.wellFormattedDetectorOutput);
-        console.log(this.customPrompt);
     }
 
     selectComponentAndOpenCopilot(componentData: DiagnosticData) {
@@ -61,18 +61,21 @@ export class ApplensDetectorCopilotService {
 
         let wellFormattedSelectedData = ResponseUtilities.ConvertResponseTableToWellFormattedJson(customDetectorResponse);
         this.customPrompt = this.prepareCustomPrompt(wellFormattedSelectedData);
-        console.log(customDetectorResponse);
 
         // TODO Shekhar - Make it more robouust.. null checks
+        let truncatedSubHeading = (wellFormattedSelectedData.output[0].title && wellFormattedSelectedData.output[0].title.length > 70) ?
+            wellFormattedSelectedData.output[0].title.substring(0, 70) + '...' : wellFormattedSelectedData.output[0].title;
+
         this.selectedComponent['heading'] = `"${wellFormattedSelectedData.output[0].type.charAt(0).toUpperCase() + wellFormattedSelectedData.output[0].type.slice(1)}" selected`;
         this.selectedComponent['iconSrc'] = this.getIconByType(wellFormattedSelectedData.output[0]);
-        this.selectedComponent['subheading'] = wellFormattedSelectedData.output[0].title;
+        this.selectedComponent['subheading'] = truncatedSubHeading;
 
-        console.log(this.selectedComponent);
+        this.chatContainerHeight = '65vh';
         this._copilotContainerService.showCopilotPanel();
     }
 
     clearComponentSelection() {
+        this.chatContainerHeight = '75vh';
         this.customPrompt = this.prepareCustomPrompt(this.wellFormattedDetectorOutput);
         this.selectedComponent = {};
     }
@@ -85,6 +88,7 @@ export class ApplensDetectorCopilotService {
         this.wellFormattedDetectorOutput = null;
         this.customPrompt = '';
         this.operationInProgress = false;
+        this.chatContainerHeight = '75vh';
     }
 
     private prepareCustomPrompt(wellFormattedDetectorOutput: any): string {

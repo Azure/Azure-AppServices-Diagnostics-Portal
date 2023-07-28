@@ -32,13 +32,16 @@
 
 </div>
 
-<openai-chat [chatAlignment]="'left'" [chatIdentifier]="_copilotService.detectorCopilotChatIdentifier" [chatContextLength]="6"
+
+  <openai-chat [chatAlignment]="'left'" [chatIdentifier]="_copilotService.detectorCopilotChatIdentifier" [chatContextLength]="6"
   [chatModel]="chatModel" [chatQuerySamplesFileUri]="'assets/chatConfigs/detectorcopilot.json'"
   [customInitialPrompt]="_copilotService.customPrompt" [apiProtocol]="apiProtocol"
   [contentDisclaimerMessage]="contentDisclaimerMessage" [quotaEnforced]="true" [chatHeader]="chatHeader"
   [systemPhotoSource]="'/assets/img/bot_sparkle_icon.svg'" [preprocessUserMessage]="onUserMessageSend"
-  [postProcessSystemMessage]="onSystemMessageReceived"  [stopMessageGeneration]="stopMessageGeneration">
+  [postProcessSystemMessage]="onSystemMessageReceived"  [stopMessageGeneration]="stopMessageGeneration"
+  [chatContainerHeight]="_copilotService.chatContainerHeight">
 </openai-chat>
+
 
 <fab-dialog [hidden]="clearChatConfirmationHidden" (onDismiss)="showClearChatDialog(false)">
   <fab-dialog-content [title]="'Are you sure?'">

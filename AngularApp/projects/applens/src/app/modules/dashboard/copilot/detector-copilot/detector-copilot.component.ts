@@ -88,6 +88,7 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
 
     this._copilotService.operationInProgress = false;
     this.copilotExitConfirmationHidden = true;
+    this._copilotService.selectedComponent = {};
     this._copilotContainerService.hideCopilotPanel();
   }
 
