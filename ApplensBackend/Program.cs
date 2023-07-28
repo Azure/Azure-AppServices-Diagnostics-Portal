@@ -3,10 +3,13 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using Microsoft.Extensions.Hosting;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Kusto.Cloud.Platform.Security;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Kusto.Cloud.Platform.Security;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace AppLensV3
@@ -24,25 +27,34 @@ namespace AppLensV3
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
+            var tmp = new ConfigurationBuilder()
+                            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            if (tmpConfig.GetValue<string>("ASPNETCORE_ENVIRONMENT").Equals("Development", StringComparison.CurrentCultureIgnoreCase))
+            {
+                var secretClient = new SecretClient(new Uri($"{tmpConfig.GetValue<string>("KeyVault")}"),
+                                                                new DefaultAzureCredential());
 
-            var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("appsettings.NationalClouds.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{tmpConfig.GetValue<string>("CloudDomain")}.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{tmpConfig.GetValue<string>("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .AddCommandLine(args)
-                .Build();
+                tmp.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
+            }
 
+            tmp.AddJsonFile("appsettings.NationalClouds.json", optional: false, reloadOnChange: true);
+            if (tmpConfig.GetValue<string>("CloudDomain") != null && tmpConfig.GetValue<string>("ASPNETCORE_ENVIRONMENT").Equals("Production", StringComparison.CurrentCultureIgnoreCase))
+            {
+                tmp.AddJsonFile($"appsettings.{tmpConfig.GetValue<string>("CloudDomain")}.json", optional: false, reloadOnChange: true);
+            }
+
+            tmp.AddJsonFile($"appsettings.{tmpConfig.GetValue<string>("ASPNETCORE_ENVIRONMENT")}.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables()
+            .AddCommandLine(args).Build();
+            var finalConfig = tmp.Build();
             var assemblyName = typeof(Startup).GetTypeInfo().Assembly.FullName;
-
             var webHostBuilder = Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseConfiguration(config);
+                webBuilder.UseConfiguration(finalConfig);
                 webBuilder.UseStartup(assemblyName);
             });
 
-            if (config.GetValue<bool>("useHttps"))
+            if (finalConfig.GetValue<bool>("useHttps"))
             {
                 var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
                 store.Open(OpenFlags.ReadOnly);
@@ -56,12 +68,12 @@ namespace AppLensV3
                             listenOptions.UseHttps(serverCertificate);
                         });
                     });
-                    webBuilder.UseConfiguration(config);
+                    webBuilder.UseConfiguration(finalConfig);
                     webBuilder.UseStartup(assemblyName);
                 });
             }
 
-            if (config.GetValue("ASPNETCORE_ENVIRONMENT", "Production").Equals("Development", StringComparison.CurrentCultureIgnoreCase))
+            if (finalConfig.GetValue("ASPNETCORE_ENVIRONMENT", "Production").Equals("Development", StringComparison.CurrentCultureIgnoreCase))
             {
                 webHostBuilder.ConfigureLogging((logging) =>
                 {
@@ -71,14 +83,14 @@ namespace AppLensV3
                 });
             }
 
-            if (config.GetValue("ASPNETCORE_ENVIRONMENT", "Production").Equals("Production", StringComparison.CurrentCultureIgnoreCase))
+            if (finalConfig.GetValue("ASPNETCORE_ENVIRONMENT", "Production").Equals("Production", StringComparison.CurrentCultureIgnoreCase))
             {
                 webHostBuilder.ConfigureLogging((logging) =>
                 {
                     logging.ClearProviders();
                     logging.AddApplicationInsights();
 
-                    if (config.GetValue<bool>("FileLogging:Enabled"))
+                    if (finalConfig.GetValue<bool>("FileLogging:Enabled"))
                     {
                         logging.AddProvider(new FileLoggerProvider());
                     }
