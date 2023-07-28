@@ -13,7 +13,7 @@
     "ssl-local-poll": "npm run fixAngularReact && npm run ssl -- --poll 2000 -c local",
     "asd": "concurrently -k \"npm run ssl\" \"npm run lib\"",
     "build-lib": "npm run fixAngularReact && node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build diagnostic-data",
-    "build-applens": "npm run fixAngularReact && node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build applens --configuration production",
+    "build-applens": "npm run fixAngularReact && node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build applens --configuration production --sourceMap=true",
     "build-ncloud-applens-prod": "npm run fixAngularReact && node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build applens --configuration=nationalcloud-production",
     "build-ncloud-applens-local": "npm run fixAngularReact && node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build applens --configuration=nationalcloud-local",
     "build-asd": "npm run fixAngularReact && node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build app-service-diagnostics --configuration production --deploy-url https://app-service-diagnostics-portal.azureedge.net/ --sourceMap=true",

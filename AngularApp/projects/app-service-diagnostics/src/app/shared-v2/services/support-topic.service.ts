@@ -312,7 +312,8 @@ export class SupportTopicService {
 
                                 this._telemetryService.logEvent("KeywordsListForKeyStone", {
                                     "Keywords": keystoneInsight["Title"],
-                                    "KeystoneSolutionApplied": String(keystoneSolutionApplied)
+                                    "KeystoneSolutionApplied": String(keystoneSolutionApplied),
+                                    "CaseSubject": searchTerm
                                 });
                             }
                             

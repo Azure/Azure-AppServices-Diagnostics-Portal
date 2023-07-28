@@ -21,7 +21,7 @@ div#canvas[disabled="true"] ::ng-deep.ngflowchart-step-wrapper {
   color: var(--bodyText);
 }
 
-.control-pill-text:hover{
+.control-pill-text:hover {
   color: var(--bodyBackground);
 }
 
@@ -33,4 +33,8 @@ div#canvas[disabled="true"] ::ng-deep.ngflowchart-step-wrapper {
   display: flex;
   align-items: baseline;
   margin: 16px 0px 12px 0px;
+}
+
+.case-submission-extra-height {
+  height: 80vh !important;
 }

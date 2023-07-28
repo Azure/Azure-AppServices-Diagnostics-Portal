@@ -1,4 +1,4 @@
-<div  [ngStyle]="{ 'margin': withinGenie ? '0px' : '0px 20px'}">
+<div [ngStyle]="{ 'margin': withinGenie ? '0px' : '0px 20px'}">
   <span *ngIf="showPreLoadingError" style="margin-left:30px;margin-top:10px;">{{preLoadingErrorMessage}}</span>
   <span *ngIf="showPreLoader"><i class="fa fa-circle-o-notch fa-2x fa-spin preloading-icon"></i></span>
   <!-- <div *ngIf="searchMode != SearchAnalysisMode.Genie && inDrillDownMode && this.isPublic">
@@ -58,7 +58,8 @@
                           <status-icon class="mr-3" [status]="viewModel.model.status"></status-icon>
                           <div [attr.aria-label]="viewModel.model.title">{{viewModel.model.title}}</div>
                         </div>
-                        <div style="margin: 12px 0px 16px 0px;" [attr.aria-label]="viewModel.insightTitle">{{viewModel.insightTitle}}</div>
+                        <div style="margin: 12px 0px 16px 0px;" [attr.aria-label]="viewModel.insightTitle">
+                          {{viewModel.insightTitle}}</div>
                       </div>
                       <div body>
                         <markdown-text [markdownData]="viewModel.insightDescription"></markdown-text>
@@ -68,8 +69,9 @@
                           <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" [contentClass]="'mr-5'"
                             (onClick)="openSolutionPanel(viewModel)"
                             [contentStyle]="'border-radius: 2px;font-size: 13px;'">View Solutions</fab-primary-button>
-                            <fab-link (onClick)="selectDetector(viewModel)">View details</fab-link>
-                            <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open in new tab]</fab-link>
+                          <fab-link (onClick)="selectDetector(viewModel)">View details</fab-link>
+                          <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)"
+                            [styles]="linkStyle">[Open in new tab]</fab-link>
                         </div>
                       </div>
                     </fab-card>
@@ -197,16 +199,19 @@
                       <div style="display: flex;align-items: center;min-height: 40px;">
                         <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus"
                           [status]="viewModel.model.status"></status-icon>
-                        <div class="list-view-title" [attr.aria-label]="viewModel.model.title">{{viewModel.model.title}}</div>
+                        <div class="list-view-title" [attr.aria-label]="viewModel.model.title">{{viewModel.model.title}}
+                        </div>
                       </div>
                     </div>
                     <div body>
-                      <div style="margin-bottom: 10px;" [attr.aria-label]="viewModel.insightTitle">{{viewModel.insightTitle}}</div>
+                      <div style="margin-bottom: 10px;" [attr.aria-label]="viewModel.insightTitle">
+                        {{viewModel.insightTitle}}</div>
                     </div>
                     <div footer>
                       <div style="margin-bottom:15px;">
                         <fab-link (onClick)="selectDetector(viewModel)">View details</fab-link>
-                        <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open in new tab]</fab-link>
+                        <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)"
+                          [styles]="linkStyle">[Open in new tab]</fab-link>
                       </div>
                     </div>
                   </fab-card>
@@ -218,7 +223,8 @@
       </div>
 
       <div class="list-item-wrapper" *ngIf="failedLoadingViewModels.length > 0">
-        <collapsible-list-fabric [collapsed]="false" [title]="'Failed Loading Checks (' + failedLoadingViewModels.length + ')'">
+        <collapsible-list-fabric [collapsed]="false"
+          [title]="'Failed Loading Checks (' + failedLoadingViewModels.length + ')'">
           <collapsible-list-item body>
 
             <div class="list-text">
@@ -232,12 +238,14 @@
                     </div>
                   </div>
                   <div body>
-                    <div style="margin-bottom: 10px;">Sorry there was a problem. Please try viewing the detector here</div>
+                    <div style="margin-bottom: 10px;">Sorry there was a problem. Please try viewing the detector here
+                    </div>
                   </div>
                   <div footer>
                     <div style="margin-bottom: 12px;">
                       <fab-link (onClick)="selectDetector(viewModel)">View details</fab-link>
-                      <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open in new tab]</fab-link>
+                      <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open
+                        in new tab]</fab-link>
                     </div>
                   </div>
                 </fab-card>
@@ -253,9 +261,11 @@
     <div *ngIf="!isDynamicAnalysis && isSearchEmbedded" style="margin-left:30px;">
       <detector-search [detector]="analysisId" [diagnosticData]="searchDiagnosticData"></detector-search>
     </div>
-    <div *ngIf="(webSearchEnabled) && (isDynamicAnalysis || withinGenie) && ((!showPreLoader && getPendingDetectorCount() === 0) || showWebSearch)"
+    <div
+      *ngIf="(webSearchEnabled) && (isDynamicAnalysis || withinGenie) && ((!showPreLoader && getPendingDetectorCount() === 0) || showWebSearch)"
       style="margin-left:80px;margin-top:20px;" [ngStyle]="{'margin-left': (withinGenie? '0px': '80px')}">
-      <web-search [searchTerm]="searchTerm" [searchId]="searchId" [isChildComponent]="true" [searchMode]="searchMode" (onComplete)="webSearchCompleted($event)">
+      <web-search [searchTerm]="searchTerm" [searchId]="searchId" [isChildComponent]="true" [searchMode]="searchMode"
+        (onComplete)="webSearchCompleted($event)">
       </web-search>
     </div>
 
@@ -266,19 +276,10 @@
       </documents-search>
     </div>
 
-    <div *ngIf="supportDocumentRendered">
-      <div class="list-item-wrapper" *ngIf="supportDocumentRendered">
-        <div class="stepper-circle stepper-circle-dark-blue">
-          <i aria-hidden="true" class="fa fa-file-text-o"></i>
-        </div>
-        <div class="list-item">
-          <div class="list-title">Additional troubleshooting resources</div>
-          <div class="support-doc-section">
-            <markdown *ngIf="supportDocumentContent.length>0" [data]="supportDocumentContent"></markdown>
-          </div>
-          <div class="white-line" [ngClass]="{'remove-padding':withinDiagnoseAndSolve}"></div>
-        </div>
-      </div>
+    <div class="document-container">
+      <data-container *ngIf="supportDocumentRendered" [title]="'Additional troubleshooting resources'">
+        <markdown *ngIf="supportDocumentContent.length>0" [data]="supportDocumentContent"></markdown>
+      </data-container>
     </div>
   </div>
 </div>
