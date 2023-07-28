@@ -57,7 +57,7 @@
 <!-- <ng-container *ngIf="!inDrillDownMode else drilldownTemplate"> -->
 <div *ngIf="issueDetectedViewModels.length > 0">
   <collapsible-list-fabric [collapsed]="false"
-    [title]="'Observations and Solutions (' + issueDetectedViewModels.length + ')'">
+    [title]="'Observations and Solutions (' + issueDetectedViewModels.length + ')'" [disabled]="disableCollapse">
     <collapsible-list-item body>
       <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
         <fab-card [expanded]="!isPublic" [isExpandable]="!!viewModel.insightDescription" [isAlign]="true" [ariaLabel]="viewModel.model.title">
