@@ -89,7 +89,7 @@
 <br />
 <div *ngIf="successfulViewModels.length > 0">
   <collapsible-list-fabric [collapsed]="isCaseSubmissionFlow ? true : (issueDetectedViewModels.length > 0 || loading === LoadingStatus.Loading)"
-    [title]="'Successful Checks (' + successfulViewModels.length + ')'">
+    [title]="'Successful Checks (' + successfulViewModels.length + ')'" [disabled]="disableCollapse">
     <collapsible-list-item body>
       <div class="list-text">
         <div *ngFor="let viewModel of successfulViewModels" style="margin-bottom: 8px;">
@@ -118,7 +118,7 @@
 </div>
 <br />
 
-<div *ngIf="failedLoadingViewModels.length > 0">
+<div *ngIf="failedLoadingViewModels.length > 0 && !disableCollapse">
   <collapsible-list-fabric [collapsed]="false" [title]="'Failed Loading Checks (' + failedLoadingViewModels.length + ')'">
     <collapsible-list-item body>
 
