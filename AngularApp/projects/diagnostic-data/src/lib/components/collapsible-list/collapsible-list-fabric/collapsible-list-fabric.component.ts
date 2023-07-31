@@ -11,8 +11,7 @@ export class CollapsibleListFabricComponent {
 
   @Input() title: string;
   @Input() collapsed: boolean;
-  @Input() lessMargin: boolean = true;
-  @Input() disabled: boolean = false;
+  @Input() lessMargin: boolean = false;
   @Input() iconProps: any = null;
 
   @Output() collapsedChange = new EventEmitter<any>();
