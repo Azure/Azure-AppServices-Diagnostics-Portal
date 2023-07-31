@@ -27,8 +27,9 @@ import { DetectorSettingsModel } from '../models/detector-designer-models/detect
 import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 import { INodeModelChangeEventProps } from '../node-composer/node-composer.component';
-import { NoCodeDetectorJson, NoCodeExpressionBody, NoCodeExpressionResponse, NoCodePackage, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
+import { NoCodeDetector, NoCodeExpressionBody, NoCodeExpressionResponse, NoCodePackage, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
 import * as moment from 'moment';
+import { NodeCompatibleEventEmitter } from 'rxjs/internal/observable/fromEvent';
 
 
 @Component({
@@ -198,7 +199,8 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   initialized: boolean = false;  
 
   resetSettingsPanel(): void {
-    this.detectorSettingsPanelValue = new DetectorSettingsModel(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName);
+    this.detectorSettingsPanelValue = new DetectorSettingsModel(this.resourceService.ArmResource.provider.replace(/\./g, "_"), this.resourceService.ArmResource.resourceTypeName.replace(/\./g, "_"));
+    //this.detectorSettingsPanelValue.id = this.detectorSettingsPanelValue.id.replace(/\./g, "_");
     this.detectorSettingsPanelValue.name = this.detectorName;
     this.detectorId = this.detectorSettingsPanelValue.id;
   
@@ -324,7 +326,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   
   public runCompilation():void {
     let djson = '[';
-    let det: NoCodeDetectorJson = new NoCodeDetectorJson;
+    let det: NoCodeDetector = new NoCodeDetector;
     this.elements.forEach(x => {
       let newNode = new NoCodeExpressionBody;
       newNode.NodeSettings = x.settings;
@@ -336,6 +338,20 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     });
     djson = djson.substring(0, djson.length - 1);
     djson = djson.concat(']');
+
+    // let djson = '{"nodes":[';
+    // let det: NoCodeDetector = new NoCodeDetector;
+    // this.elements.forEach(x => {
+    //   let newNode = new NoCodeExpressionBody;
+    //   newNode.NodeSettings = x.settings;
+    //   newNode.OperationName = x.queryName;
+    //   newNode.Text = x.code;
+    //   det.nodes.push(newNode);
+    //   djson = djson.concat(x.GetJson(),',');
+    //   //this.detectorJson.push(x.GetJson());
+    // });
+    // djson = djson.substring(0, djson.length - 1);
+    // djson = djson.concat(']}');
 
     this.detectorJson = djson;
 
@@ -360,19 +376,59 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   public publishButtonOnClick():void {
     console.log('Publish Button On Click');
-    var pkg = new NoCodePackage();
-    pkg.NoCodeJson = this.detectorJson;
-    pkg.AppType = "All";
-    pkg.Platform = "Windows";
-    pkg.StackType = "All";
-    pkg.Id = "testNoCodeId";
-    pkg.Nodes = this.nodeExpressionList;
-    pkg.Author = "darreldonald";
-    pkg.DetectorName = this.detectorName;
-    pkg.Description = "describe yourself in 150 characters or fewer"
-    this.diagnosticApiService.publishNoCode(pkg).subscribe(x => {
+    var det = this.buildNoCodeDetectorObject();
+
+    /*this.diagnosticApiService.publishNoCode(pkg).subscribe(x => {
       console.log("subscribe");
-    });
+    });*/
+
+    this.gradPublish(det);
+
+    // let branch = `dev/${det.author}/noCodeDetector/${det.id}`;
+    // let repoPaths = [`${det.id}/metadata.json`];
+    // let files = [`{"utterances":[]}`];
+    // let comment = "test push detector";
+    // let changeType = "Add";
+    // let resourceUri = this.resourceService.getCurrentResourceId();
+    // this.diagnosticApiService.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri, det).subscribe(x => {
+    //   console.log("subscribe");
+    // });
+  }
+
+  private gradPublish(det: NoCodeDetector): void {
+    let branch = `dev/${det.author}/noCodeDetector/${det.id}`;
+    let repoPaths = [`${det.id}/metadata.json`];
+    let files = [`{"utterances":[]}`];
+    let comment = "test push detector";
+    let changeType = "Add";
+    let resourceUri = this.resourceService.getCurrentResourceId();
+
+    const PushDetector = this.diagnosticApiService.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri, det);
+    //const MakePullRequest = this.diagnosticApiService.makePullRequest(branch, /*default branch*/, )
+
+    PushDetector.subscribe(x => {
+        console.log("subscribe");
+      });
+  }
+
+  private saveDetector(){
+    
+  }
+
+  private buildNoCodeDetectorObject(): NoCodeDetector {
+    var det = new NoCodeDetector();
+    det.appType = "All"; // list
+    // pkg.appType = this.detectorSettingsPanelValue.appTypes;
+    det.platform = "Windows"; // list
+    det.stackType = "All"; // list
+    det.id = this.detectorId;
+    det.nodes = this.nodeExpressionList;
+    det.author = "darreldonald"; // list
+    det.name = this.detectorName;
+    det.description = this.detectorSettingsPanelValue.description;
+    det.category = this.detectorSettingsPanelValue.category;
+
+    return det;
   }
 
   public getRequiredErrorMessageOnTextField(value: string): string {

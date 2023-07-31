@@ -11,7 +11,7 @@ import { dynamicExpressionBody } from '../workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../../../shared/models/devopsCommitStatus';
 import { ChatFeedbackPostBody } from '../../../shared/models/openAIChatFeedbackModel';
-import { NoCodeDetectorJson, NoCodeExpressionBody, NoCodePackage } from '../dynamic-node-settings/node-rendering-json-models';
+import { NoCodeDetector, NoCodeExpressionBody, NoCodePackage } from '../dynamic-node-settings/node-rendering-json-models';
 
 
 @Injectable()
@@ -301,7 +301,7 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.evaluateNoCodeExpression(this._resourceService.getCurrentResourceId(true), expression, startTime, endTime);
   }
 
-  executeNoCodeDetector(expression: NoCodeDetectorJson, startTime: string, endTime: string): Observable<any> {
+  executeNoCodeDetector(expression: NoCodeDetector, startTime: string, endTime: string): Observable<any> {
     return this._diagnosticApi.executeNoCodeDetector(this._resourceService.getCurrentResourceId(true), expression, startTime, endTime);
   }
 
@@ -323,8 +323,8 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getDevOpsTree(devOpsPath, branch, resourceUri);
   }
 
-  pushDetectorChanges(branch: string, files: string[], repoPaths: string[], comment: string, changeType: string, resourceUri: string) {
-    return this._diagnosticApi.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri);
+  pushDetectorChanges(branch: string, files: string[], repoPaths: string[], comment: string, changeType: string, resourceUri: string, noCodeDetector: NoCodeDetector = null) {
+    return this._diagnosticApi.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri, noCodeDetector);
   }
 
   makePullRequest(sourceBranch: string, targetBranch: string, title: string, resourceUri: string, reviewers: string[] = [], description: string = "") {
