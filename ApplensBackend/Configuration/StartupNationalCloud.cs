@@ -56,7 +56,7 @@ namespace AppLensV3
             }
         }
 
-        public void AddConfigurations(ConfigurationBuilder builder, IWebHostEnvironment env, string cloudDomain, IConfigurationRoot t)
+        public void AddConfigurations(ConfigurationBuilder builder, IWebHostEnvironment env, string cloudDomain, IConfigurationRoot tempConfig)
         {
             builder.SetBasePath(env.ContentRootPath)
                                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
