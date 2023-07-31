@@ -49,8 +49,57 @@ namespace AppLensV3.Models
         public string ChatModel;
         public int MaxTokens;
         public string AzureServiceName;
-        public string Provider;
-        public string ResourceType;
+        public string ArmResourceId;
+
+        private string provider = string.Empty;
+
+        public string Provider
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(provider) && !string.IsNullOrWhiteSpace(ArmResourceId) && ArmResourceId.IndexOf("/providers/", StringComparison.OrdinalIgnoreCase) > -1)
+                {
+                    int providersIndex = ArmResourceId.IndexOf("/providers/", StringComparison.OrdinalIgnoreCase) + 11;
+                    var resourceParts = ArmResourceId.Substring(providersIndex).Split('/');
+                    if (resourceParts.Length > 0)
+                    {
+                        provider = resourceParts[0];
+                    }
+                }
+
+                return provider;
+            }
+
+            set
+            {
+                provider = value ?? string.Empty;
+            }
+        }
+
+        private string resourceType;
+
+        public string ResourceType
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(resourceType) && !string.IsNullOrWhiteSpace(ArmResourceId) && ArmResourceId.IndexOf("/providers/", StringComparison.OrdinalIgnoreCase) > -1)
+                {
+                    int providersIndex = ArmResourceId.IndexOf("/providers/", StringComparison.OrdinalIgnoreCase) + 11;
+                    var resourceParts = ArmResourceId.Substring(providersIndex).Split('/');
+                    if (resourceParts.Length > 1)
+                    {
+                        resourceType = resourceParts[1];
+                    }
+                }
+
+                return resourceType;
+            }
+
+            set
+            {
+                resourceType = value ?? string.Empty;
+            }
+        }
 
         public Dictionary<string, string> ResourceSpecificInfo { get; set; } = new Dictionary<string, string>();
     }

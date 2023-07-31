@@ -40,7 +40,7 @@ namespace AppLensV3.Services
         /// </summary>
         /// <param name="chatMessages">Conversation history.</param>
         /// <returns>A string representing the userss intent in their last message to the system represented as a question.</returns>
-        Task<string> PrepareCompositeUserQuestion(List<ChatMessage> chatMessages);
+        Task<string> PrepareCompositeUserQuestion(List<ChatMessage> chatMessages, ChatMetaData metadata);
 
         /// <summary>
         /// Looks up feedback closely matching the query and returns a list of matching feedbacks.
@@ -101,7 +101,7 @@ namespace AppLensV3.Services
             return Task.CompletedTask;
         }
 
-        public Task<string> PrepareCompositeUserQuestion(List<ChatMessage> chatMessages)
+        public Task<string> PrepareCompositeUserQuestion(List<ChatMessage> chatMessages, ChatMetaData metadata)
         {
             return null;
         }
@@ -230,7 +230,7 @@ namespace AppLensV3.Services
         {
             if (chatMessages?.Count > 0)
             {
-                string compositeUserQuestion = await PrepareCompositeUserQuestion(chatMessages);
+                string compositeUserQuestion = await PrepareCompositeUserQuestion(chatMessages, metadata);
 
                 if (!string.IsNullOrWhiteSpace(compositeUserQuestion))
                 {
@@ -643,7 +643,7 @@ namespace AppLensV3.Services
         }
         #endregion
 
-        public async Task<string> PrepareCompositeUserQuestion(List<ChatMessage> chatMessages)
+        public async Task<string> PrepareCompositeUserQuestion(List<ChatMessage> chatMessages, ChatMetaData metadata)
         {
             if (chatMessages?.Count == 1 && !string.IsNullOrWhiteSpace(chatMessages[0].Content))
             {
@@ -665,7 +665,7 @@ namespace AppLensV3.Services
             systemPromptSb.AppendLine($"{jObject["systemPrompt"] ?? string.Empty}");
             string systemPrompt = systemPromptSb.ToString();
             systemPrompt = systemPrompt.Replace("<<CURRENT_DATETIME>>", DateTime.UtcNow.ToString() + " UTC");
-
+            systemPrompt = systemPrompt.Replace("<<ARM_RESOURCE_ID>>", metadata.ArmResourceId);
             ChatResponse response = await RunTextCompletion(new CompletionModel() { Payload = new GPT3CompletionModelPayload(systemPrompt) }, false);
             return response.Text;
         }
@@ -690,6 +690,7 @@ namespace AppLensV3.Services
 
                 // Replace <<CURRENT_DATETIME>> with the current UTC Date time
                 systemPrompt = systemPrompt.Replace("<<CURRENT_DATETIME>>", DateTime.UtcNow.ToString() + " UTC");
+                systemPrompt = systemPrompt.Replace("<<ARM_RESOURCE_ID>>", metadata.ArmResourceId);
                 string compsiteUserQuestion = string.Empty;
 
                 ChatFeedbackSearchSettings feedbackSearchSettings = new ChatFeedbackSearchSettings();
@@ -701,7 +702,7 @@ namespace AppLensV3.Services
                     Task<List<ChatFeedback>> getFeedbackListRawTask = null;
                     try
                     {
-                        compsiteUserQuestion = await PrepareCompositeUserQuestion(chatMessages);
+                        compsiteUserQuestion = await PrepareCompositeUserQuestion(chatMessages, metadata);
                         if (jObject["DocumentSearchSettings"] != null)
                         {
                             documentSearchSettings = jObject["DocumentSearchSettings"].ToObject<DocumentSearchSettings>();
@@ -765,12 +766,18 @@ namespace AppLensV3.Services
                                 feedbackSb.AppendLine($"A:{feedback.ExpectedResponse}");
                                 if (feedback.AdditionalFields?.Count > 0)
                                 {
+                                    List<string> additionalFields = new List<string>();
                                     foreach (KeyValuePair<string, string> kvp in feedback.AdditionalFields)
                                     {
                                         if (!string.IsNullOrWhiteSpace(kvp.Value))
                                         {
-                                            feedbackSb.AppendLine($"{kvp.Key}:{kvp.Value}");
+                                            additionalFields.Add(JsonConvert.SerializeObject(kvp));
                                         }
+                                    }
+
+                                    if (additionalFields.Count > 0)
+                                    {
+                                        feedbackSb.AppendLine($"Additional_Fields:[{string.Join(", ", additionalFields)}]");
                                     }
                                 }
 

@@ -109,8 +109,7 @@ export class ApplensOpenAIChatService {
     }
 
     queryModel.metadata["azureServiceName"] = this.productName;
-    queryModel.metadata["provider"] = this.providerName;
-    queryModel.metadata["resourceType"] = this.resourceTypeName;
+    queryModel.metadata["armResourceId"] = this._resourceService.getCurrentResourceId();
     queryModel.metadata["resourceSpecificInfo"] = this.ConvertKeyValuePairArrayToObj(this.resourceSpecificInfo);
     
 
@@ -127,8 +126,7 @@ export class ApplensOpenAIChatService {
     }
 
     queryModel.metadata["azureServiceName"] = this.productName;
-    queryModel.metadata["provider"] = this.providerName;
-    queryModel.metadata["resourceType"] = this.resourceTypeName;
+    queryModel.metadata["armResourceId"] = this._resourceService.getCurrentResourceId();
     queryModel.metadata["resourceSpecificInfo"] = this.ConvertKeyValuePairArrayToObj(this.resourceSpecificInfo);
 
     return from(this.signalRConnection.send("sendMessage", JSON.stringify(queryModel))).pipe(

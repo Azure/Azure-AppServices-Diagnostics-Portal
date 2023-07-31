@@ -287,6 +287,9 @@ mostUsedOutputBinding
       status: MessageStatus.Finished,
       feedbackDocumentIds: []
     });
+
+    this.chatMessages = [];
+    
   }
 
   ngOnInit(): void {
