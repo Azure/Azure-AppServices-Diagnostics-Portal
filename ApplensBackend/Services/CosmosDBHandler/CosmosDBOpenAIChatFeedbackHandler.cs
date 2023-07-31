@@ -33,7 +33,7 @@ namespace AppLensV3.Services
         /// <returns>ChatFeedbackSaveOperationResponse object indicating whether the save operation was successful or a failure.</returns>
         public async Task<ChatFeedback> SaveFeedback(ChatFeedback chatFeedback)
         {
-            CognitiveSearchDocument doc = new CognitiveSearchDocument(chatFeedback.Id, chatFeedback.UserQuestion, chatFeedback.FeedbackExplanation);
+            CognitiveSearchDocument doc = new CognitiveSearchDocument(chatFeedback.Id, chatFeedback.UserQuestion, !string.IsNullOrWhiteSpace(chatFeedback.FeedbackExplanation) ? chatFeedback.FeedbackExplanation : chatFeedback.ExpectedResponse);
             doc.JsonPayload = JsonConvert.SerializeObject(chatFeedback);
             var cosmosSaveResponse = await Container.CreateItemAsync<ChatFeedback>(chatFeedback, GetPartitionKey(chatFeedback));
             if ((int)cosmosSaveResponse.StatusCode > 199 && (int)cosmosSaveResponse.StatusCode < 300)
