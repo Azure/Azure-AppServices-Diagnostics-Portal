@@ -4,6 +4,9 @@ using AppLensV3.Services;
 using AppLensV3.Services.ApplensTelemetryInitializer;
 using AppLensV3.Services.AppSvcUxDiagnosticDataService;
 using AppLensV3.Services.DiagnosticClientService;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
@@ -40,7 +43,7 @@ namespace AppLensV3
             }
 
             var builder = new ConfigurationBuilder();
-            cloudEnvironmentStartup.AddConfigurations(builder, env, tmpConfiguration.GetCloudDomain());
+            cloudEnvironmentStartup.AddConfigurations(builder, env, tmpConfiguration.GetCloudDomain(), tmpConfiguration);
 
             if (env.IsDevelopment())
             {
