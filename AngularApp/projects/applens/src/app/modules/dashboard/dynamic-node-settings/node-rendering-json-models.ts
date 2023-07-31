@@ -131,12 +131,18 @@ export class nodeJson {
   nodeExpression: NoCodeExpressionBody;
 }
 
-export class NoCodeDetectorJson {
+export class NoCodeDetector {
   nodes: NoCodeExpressionBody[] = [];
   id: string = "";
   name: string = "";
   description: string = "";
   author: string = "";
+  isInternal: boolean = true;
+  platform: string = "";
+  appType: string = "";
+  stackType: string = "";
+  category: string = "";
+  //json: string = "";
 }
 
 export class NoCodePackage {

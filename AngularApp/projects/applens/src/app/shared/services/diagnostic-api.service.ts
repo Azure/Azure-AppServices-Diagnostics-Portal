@@ -19,6 +19,7 @@ import { CommitStatus } from '../models/devopsCommitStatus';
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { ChatFeedbackPostBody } from '../models/openAIChatFeedbackModel';
 =======
 import { NoCodeExpressionBody } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
@@ -29,6 +30,9 @@ import { NoCodeDetectorJson, NoCodeExpressionBody } from '../../modules/dashboar
 =======
 import { NoCodeDetectorJson, NoCodeExpressionBody, NoCodePackage } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
 >>>>>>> f08874e98 (publishing is getting there)
+=======
+import { NoCodeDetector, NoCodeExpressionBody, NoCodePackage } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
+>>>>>>> b57599803 (made some changes for graduation)
 
 
 @Injectable()
@@ -382,7 +386,7 @@ export class DiagnosticApiService {
     return this.invoke<string>(path, HttpMethod.POST, body, false);
   }
 
-  public executeNoCodeDetector(resourceId: string, body: NoCodeDetectorJson, startTime: string, endTime: string): Observable<any> {
+  public executeNoCodeDetector(resourceId: string, body: NoCodeDetector, startTime: string, endTime: string): Observable<any> {
     let timeParameters = this._getTimeQueryParameters(startTime, endTime);
     let path = `${resourceId}/executeNoCodeDetector?${timeParameters}`;
     return this.invoke<string>(path, HttpMethod.POST, body, false);
@@ -630,7 +634,7 @@ export class DiagnosticApiService {
     return this.invoke(path, HttpMethod.GET, null, false);
   }
 
-  public pushDetectorChanges(branch: string, files: string[], repoPaths: string[], comment: string, changeType: string, resourceUri: string) {
+  public pushDetectorChanges(branch: string, files: string[], repoPaths: string[], comment: string, changeType: string, resourceUri: string, noCodeDetector: NoCodeDetector = null) {
 
     var body = {};
     body['branch'] = branch;
@@ -639,6 +643,7 @@ export class DiagnosticApiService {
     body['comment'] = comment;
     body['changeType'] = changeType;
     body['resourceUri'] = resourceUri;
+    body['noCodeDetector'] = noCodeDetector;
 
     let path = "devops/push";
     return this.invoke<any>(path, HttpMethod.POST, body, false, true, true, true, false);
