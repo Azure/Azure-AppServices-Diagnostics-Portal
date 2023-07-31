@@ -40,7 +40,7 @@ namespace AppLensV3
             }
 
             var builder = new ConfigurationBuilder();
-            cloudEnvironmentStartup.AddConfigurations(builder, env, tmpConfiguration.GetCloudDomain(), tmpConfiguration);
+            cloudEnvironmentStartup.AddConfigurations(builder, env, tmpConfiguration.GetCloudDomain());
 
             if (env.IsDevelopment())
             {

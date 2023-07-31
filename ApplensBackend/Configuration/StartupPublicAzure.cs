@@ -23,16 +23,16 @@ namespace AppLensV3
             _configuration = configuration;
         }
 
-        public void AddConfigurations(ConfigurationBuilder builder, IWebHostEnvironment env, string cloudDomaintempConfig, IConfigurationRoot tempConfig)
+        public void AddConfigurations(ConfigurationBuilder builder, IWebHostEnvironment env, string cloudDomaintempConfig)
         {
             builder.SetBasePath(env.ContentRootPath)
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-            if (env.IsDevelopment() && !string.IsNullOrWhiteSpace(tempConfig["KeyVault"]))
+            if (env.IsDevelopment() && !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("KeyVault")))
             {
-                string keyvault = tempConfig["KeyVault"];
+                string keyvault = Environment.GetEnvironmentVariable("KeyVault");
                 var secretClient = new SecretClient(
-                    new Uri(keyvault),
-                    new DefaultAzureCredential());
+                                       new Uri(keyvault),
+                                                          new DefaultAzureCredential());
                 builder.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
             }
 
