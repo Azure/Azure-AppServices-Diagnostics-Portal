@@ -48,7 +48,7 @@ export class PortalActionService {
         this._portalService.openBlade(bladeInfo, 'troubleshoot');
     }
 
-    public openBladeDiagnoseDetectorId(category: string, detector: string, type: DetectorType = DetectorType.Detector, startTime?: string, endTime ?: string) {
+    public openBladeDiagnoseDetectorId(category: string, detector: string, type: DetectorType = DetectorType.Detector, startTime?: string, endTime?: string) {
         const bladeInfo = {
             title: category,
             detailBlade: 'SCIFrameBlade',
@@ -82,7 +82,7 @@ export class PortalActionService {
         this._portalService.openBlade(bladeInfo, 'troubleshoot');
     }
 
-    public openBladeDiagnosticToolId(toolId: string, category:string = "DiagnosticTools") {
+    public openBladeDiagnosticToolId(toolId: string, category: string = "DiagnosticTools") {
         const bladeInfo = {
             title: category,
             detailBlade: 'SCIFrameBlade',
@@ -194,13 +194,13 @@ export class PortalActionService {
                     ResourceType: appInsightsResourceUri.ResourceType,
                     IsAzureFirst: appInsightsResourceUri.IsAzureFirst
                 },
-                TimeContext:{
+                TimeContext: {
                     durationMs: optInsightsTimeContext.durationMs,
                     endTime: optInsightsTimeContext.endTime,
                     createdTime: optInsightsTimeContext.createdTime,
                     isInitialTime: optInsightsTimeContext.isInitialTime,
                     grain: optInsightsTimeContext.grain,
-                    useDashboardTimeRange: optInsightsTimeContext.useDashboardTimeRange,            
+                    useDashboardTimeRange: optInsightsTimeContext.useDashboardTimeRange,
                 },
                 RoleName: SiteName,
                 OpenedFrom: 'app-service-diagnose-and-solve-problems'
@@ -299,15 +299,28 @@ export class PortalActionService {
             extension: 'Microsoft_Azure_ChangeAnalysis',
             detailBlade: 'ChangeAnalysisBaseBlade',
             detailBladeInputs: {
-                resourceIds:  [resourceUri != null || resourceUri != undefined ? resourceUri : this.currentSite.id],
+                resourceIds: [resourceUri != null || resourceUri != undefined ? resourceUri : this.currentSite.id],
                 deepLinkOrigin: 'appservicediagnostics'
             }
         };
 
-        if(startTime && endTime) {
+        if (startTime && endTime) {
             bladeInfo["detailBladeInputs"]["startTime"] = startTime;
             bladeInfo["detailBladeInputs"]["endTime"] = endTime;
         }
+
+        this._portalService.openBlade(bladeInfo, 'troubleshoot');
+    }
+
+    public openLoadTestingBlade() {
+        console.log("opening HubsExtension > BrowseResource > Microsoft.LoadTestService/LoadTests");
+        let bladeInfo = {
+            extension: 'HubsExtension',
+            detailBlade: 'BrowseResource',
+            detailBladeInputs: {
+                resourceType: "Microsoft.LoadTestService/LoadTests"
+            }
+        };
 
         this._portalService.openBlade(bladeInfo, 'troubleshoot');
     }
@@ -335,7 +348,7 @@ export class PortalActionService {
         };
     }
 
-    public openFeedbackPanel(){
+    public openFeedbackPanel() {
         this.globals.openFeedback = !this.globals.openFeedback;
     }
 }
