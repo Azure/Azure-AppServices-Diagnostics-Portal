@@ -313,7 +313,6 @@ export class PortalActionService {
     }
 
     public openLoadTestingBlade() {
-        console.log("opening HubsExtension > BrowseResource > Microsoft.LoadTestService/LoadTests");
         let bladeInfo = {
             extension: 'HubsExtension',
             detailBlade: 'BrowseResource',

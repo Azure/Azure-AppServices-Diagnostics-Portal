@@ -438,7 +438,7 @@ export class SitesCategoryService extends CategoryService {
           categoryQuickLinks: [{
             type: DetectorType.Detector,
             id: 'loadtesting',
-            displayText: 'Load Testing'
+            displayText: 'Explore'
           }]
         }
       });
