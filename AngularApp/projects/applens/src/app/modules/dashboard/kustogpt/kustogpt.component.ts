@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
 import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions } from 'diagnostic-data';
 import { ApplensGlobal } from '../../../applens-global';
-import { ChatFeedbackAdditionalField, ChatFeedbackModel } from '../../../shared/models/openAIChatFeedbackModel';
+import { ChatFeedbackAdditionalField, ChatFeedbackModel, FeedbackExplanationModes } from '../../../shared/models/openAIChatFeedbackModel';
 import { Observable, of } from 'rxjs';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { ResourceService } from '../../../shared/services/resource.service';
@@ -19,8 +19,9 @@ export class KustoGPTComponent {
 
   public apiProtocol = APIProtocol.WebSocket;
   public chatModel = ChatModel.GPT4;
-  public feedbackPanelVisible: boolean = true;
+  public feedbackPanelVisible: boolean = false;
   public chatIdentifier: string = 'analyticskustocopilot';
+  public feedbackExplanationMode:FeedbackExplanationModes = FeedbackExplanationModes.Explanation;
 
   public clusterName: string = '@AntaresStampKustoCluster';
   public databaseName: string = '@AnataresStampKustoDB';

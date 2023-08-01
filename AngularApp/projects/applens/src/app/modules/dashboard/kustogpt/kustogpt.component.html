@@ -13,6 +13,6 @@
       >
     </openai-chat-container>
     <chat-feedback-panel [(visible)] = "feedbackPanelVisible" (onDismissed) = "onDismissed($event)" [onBeforeSubmit] = "onBeforeSubmit"
-      [additionalFields] = "additionalFields" [chatIdentifier] = "chatIdentifier"
+      [additionalFields] = "additionalFields" [chatIdentifier] = "chatIdentifier" [chatContextLength] = "10" [feedbackExplanationMode] = "feedbackExplanationMode"
     ></chat-feedback-panel>
 </div>

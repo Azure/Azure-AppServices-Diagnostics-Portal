@@ -21,21 +21,21 @@ export class ChatFeedbackPanelComponent implements OnInit {
   type: PanelType = PanelType.custom;
   @Input() width: string = "850px";
   
-  _chatMessages: ChatMessage[] = [];
-  get chatMessages(): ChatMessage[] {
-    return this._chatMessages;
-  }
+  // _chatMessages: ChatMessage[] = [];
+  // get chatMessages(): ChatMessage[] {
+  //   return this._chatMessages;
+  // }
 
-  /// It is the list of chat messages that the user has seen. If this is supplied, messages from, chatContextService will be ignored.
-  @Input() set chatMessages(value:ChatMessage[]) {
-    if(value) {
-      this._chatMessages = value;
-      this.initValues();
-    }
-    else {
-      this._chatMessages = [];
-    }
-  }
+  // /// It is the list of chat messages that the user has seen. If this is supplied, messages from, chatContextService will be ignored.
+  // @Input() set chatMessages(value:ChatMessage[]) {
+  //   if(value) {
+  //     this._chatMessages = value;
+  //     this.initValues();
+  //   }
+  //   else {
+  //     this._chatMessages = [];
+  //   }
+  // }
 
   /// If chatMessages is empty or not supplied, then up to these many recent messages will be retrieved from chatContextService by chatIdentidier and used to generate feedback. This should also be accompanied with chatIdentidier else this is ignored.
   @Input() chatContextLength: number = 2;
@@ -46,7 +46,6 @@ export class ChatFeedbackPanelComponent implements OnInit {
   /// If chatIdentifier is supplied, then the feedback will be autosaved else no action is taken and the calling component is responsible for saving the feedback. Feedback can be accessed via onDismissed event.
   @Input() autoSaveFeedback: boolean = true;
   
-  @Input() chatModel: ChatModel = ChatModel.GPT4;
   @Input() responseTokenSize: ResponseTokensSize = ResponseTokensSize.Large;
   
   @Input() headerText: string = "Feedback to improve AI generated response.";
@@ -55,13 +54,8 @@ export class ChatFeedbackPanelComponent implements OnInit {
 
   @Input() resourceSpecificInfo: KeyValuePair[] = [];
 
-  _visible: boolean = false;
-  get visible(): boolean {
-    return this._visible;
-  }
-  @Input() set visible(value:boolean) {
-    this._visible = value;
-  }  
+  
+  @Input() visible:boolean
   @Output() visibleChange = new EventEmitter<boolean>();
 
   @Output() onDismissed = new EventEmitter<ChatFeedbackModel>();
@@ -220,77 +214,77 @@ mostUsedOutputBinding
     });
     
 
-    this.chatMessages = [];
+    // this.chatMessages = [];
     
-    this.chatMessages.push({
-      id: "1",
-      message: "Write a Kusto query to get the top used outbound trigger for function apps.",
-      displayMessage: "Write a Kusto query to get the top used outbound trigger for function apps.",
-      messageSource: MessageSource.User,
-      userFeedback: FeedbackOptions.None,
-      timestamp: 1,
-      messageDisplayDate: "",
-      renderingType: MessageRenderingType.Text,
-      status: MessageStatus.Finished,
-      feedbackDocumentIds: []
-    });
+    // this.chatMessages.push({
+    //   id: "1",
+    //   message: "Write a Kusto query to get the top used outbound trigger for function apps.",
+    //   displayMessage: "Write a Kusto query to get the top used outbound trigger for function apps.",
+    //   messageSource: MessageSource.User,
+    //   userFeedback: FeedbackOptions.None,
+    //   timestamp: 1,
+    //   messageDisplayDate: "",
+    //   renderingType: MessageRenderingType.Text,
+    //   status: MessageStatus.Finished,
+    //   feedbackDocumentIds: []
+    // });
 
-    this.chatMessages.push({
-      id: "2",
-      message: `To find the most used outbound trigger by Function apps, you can use the following Kusto query:
+    // this.chatMessages.push({
+    //   id: "2",
+    //   message: `To find the most used outbound trigger by Function apps, you can use the following Kusto query:
 
-      WawsAn_omgsitefunctionsentity
-      | where pdate >= ago(3d)
-      | summarize Count = count() by OutputBindings
-      | order by Count desc
-      | take 1
+    //   WawsAn_omgsitefunctionsentity
+    //   | where pdate >= ago(3d)
+    //   | summarize Count = count() by OutputBindings
+    //   | order by Count desc
+    //   | take 1
       
-      Explanation: This query looks at the last 3 days worth of data from the WawsAn_omgsitefunctionsentity table, summarizing the count of occurrences by OutputBindings. It then sorts the results by the count in descending order and takes the top most result, which represents the most used outbound trigger.`,
-      displayMessage: `To find the most used outbound trigger by Function apps, you can use the following Kusto query:
+    //   Explanation: This query looks at the last 3 days worth of data from the WawsAn_omgsitefunctionsentity table, summarizing the count of occurrences by OutputBindings. It then sorts the results by the count in descending order and takes the top most result, which represents the most used outbound trigger.`,
+    //   displayMessage: `To find the most used outbound trigger by Function apps, you can use the following Kusto query:
 
-      WawsAn_omgsitefunctionsentity
-      | where pdate >= ago(3d)
-      | summarize Count = count() by OutputBindings
-      | order by Count desc
-      | take 1
+    //   WawsAn_omgsitefunctionsentity
+    //   | where pdate >= ago(3d)
+    //   | summarize Count = count() by OutputBindings
+    //   | order by Count desc
+    //   | take 1
       
-      Explanation: This query looks at the last 3 days worth of data from the WawsAn_omgsitefunctionsentity table, summarizing the count of occurrences by OutputBindings. It then sorts the results by the count in descending order and takes the top most result, which represents the most used outbound trigger.`,
-      messageSource: MessageSource.System,
-      userFeedback: FeedbackOptions.None,
-      timestamp: 2,
-      messageDisplayDate: "",
-      renderingType: MessageRenderingType.Markdown,
-      status: MessageStatus.Finished,
-      feedbackDocumentIds: []
-    });
+    //   Explanation: This query looks at the last 3 days worth of data from the WawsAn_omgsitefunctionsentity table, summarizing the count of occurrences by OutputBindings. It then sorts the results by the count in descending order and takes the top most result, which represents the most used outbound trigger.`,
+    //   messageSource: MessageSource.System,
+    //   userFeedback: FeedbackOptions.None,
+    //   timestamp: 2,
+    //   messageDisplayDate: "",
+    //   renderingType: MessageRenderingType.Markdown,
+    //   status: MessageStatus.Finished,
+    //   feedbackDocumentIds: []
+    // });
 
-    this.chatMessages.push({
-      id: "3",
-      message: "show me a daily trend of this over the past week",
-      displayMessage: "show me a daily trend of this over the past week",
-      messageSource: MessageSource.User,
-      userFeedback: FeedbackOptions.None,
-      timestamp: 1,
-      messageDisplayDate: "",
-      renderingType: MessageRenderingType.Text,
-      status: MessageStatus.Finished,
-      feedbackDocumentIds: []
-    });
+    // this.chatMessages.push({
+    //   id: "3",
+    //   message: "show me a daily trend of this over the past week",
+    //   displayMessage: "show me a daily trend of this over the past week",
+    //   messageSource: MessageSource.User,
+    //   userFeedback: FeedbackOptions.None,
+    //   timestamp: 1,
+    //   messageDisplayDate: "",
+    //   renderingType: MessageRenderingType.Text,
+    //   status: MessageStatus.Finished,
+    //   feedbackDocumentIds: []
+    // });
 
-    this.chatMessages.push({
-      id: "4",
-      message: this.anotherSystemResponse,//"To analyze the daily trend of the most used outbound trigger by Function apps over the past week, you can use the WawsAn_omgsitefunctionsentity table.",
-      displayMessage: this.anotherSystemResponse,//"To analyze the daily trend of the most used outbound trigger by Function apps over the past week, you can use the WawsAn_omgsitefunctionsentity table.",
-      messageSource: MessageSource.System,
-      userFeedback: FeedbackOptions.Dislike,
-      timestamp: 1,
-      messageDisplayDate: "",
-      renderingType: MessageRenderingType.Markdown,
-      status: MessageStatus.Finished,
-      feedbackDocumentIds: []
-    });
+    // this.chatMessages.push({
+    //   id: "4",
+    //   message: this.anotherSystemResponse,//"To analyze the daily trend of the most used outbound trigger by Function apps over the past week, you can use the WawsAn_omgsitefunctionsentity table.",
+    //   displayMessage: this.anotherSystemResponse,//"To analyze the daily trend of the most used outbound trigger by Function apps over the past week, you can use the WawsAn_omgsitefunctionsentity table.",
+    //   messageSource: MessageSource.System,
+    //   userFeedback: FeedbackOptions.Dislike,
+    //   timestamp: 1,
+    //   messageDisplayDate: "",
+    //   renderingType: MessageRenderingType.Markdown,
+    //   status: MessageStatus.Finished,
+    //   feedbackDocumentIds: []
+    // });
 
-    this.chatMessages = [];
+    // this.chatMessages = [];
     
   }
 
@@ -300,78 +294,74 @@ mostUsedOutputBinding
 
   private initValues(): void {
     this.statusMessage = '';
-    if(this.chatMessages && this.chatMessages.length > 0) {
+    
       
-      let chatMessagesToWorkWith:ChatMessage[] = [];
-      // Update user question
-      if(this.chatMessages && this.chatMessages.length > 0 && this.chatMessages.some(message => message.messageSource == MessageSource.User) ) {
-        chatMessagesToWorkWith = this.chatMessages;
-      }
-      else {
-        if(this.chatIdentifier && this._chatContextService.messageStore[this.chatIdentifier] && this._chatContextService.messageStore[this.chatIdentifier].length > 0 ) {
-          chatMessagesToWorkWith = this._chatContextService.messageStore[this.chatIdentifier].slice(-1 * this.chatContextLength);
+    let chatMessagesToWorkWith:ChatMessage[] = [];
+
+    // Update user question    
+    if(this.chatIdentifier && this._chatContextService.messageStore[this.chatIdentifier] && this._chatContextService.messageStore[this.chatIdentifier].length > 0 ) {
+      chatMessagesToWorkWith = this._chatContextService.messageStore[this.chatIdentifier].slice(-1 * this.chatContextLength);
+    }
+
+    if(chatMessagesToWorkWith && chatMessagesToWorkWith.length > 0) {
+      let lastDislikeSystemMessageIndex = -1;
+      let dislikedSystemMessage = null;
+      let lastUserMessageBeforeDislike = null;
+      
+      for (let i = chatMessagesToWorkWith.length - 1; i >= 0; i--) {
+        const message = chatMessagesToWorkWith[i];
+        if (message.messageSource === MessageSource.System && message.userFeedback === FeedbackOptions.Dislike) {
+          lastDislikeSystemMessageIndex = i;
+          dislikedSystemMessage = message;
+          break;
+        }
+        else {
+          dislikedSystemMessage = message;
+        }
+
+        if (message.messageSource === MessageSource.User) {
+          lastUserMessageBeforeDislike = message;
         }
       }
 
-      if(chatMessagesToWorkWith && chatMessagesToWorkWith.length > 0) {
-        let lastDislikeSystemMessageIndex = -1;
-        let dislikedSystemMessage = null;
-        let lastUserMessageBeforeDislike = null;
-        
-        for (let i = chatMessagesToWorkWith.length - 1; i >= 0; i--) {
+      if (lastDislikeSystemMessageIndex !== -1) {
+        lastUserMessageBeforeDislike = null;
+        for (let i = lastDislikeSystemMessageIndex - 1; i >= 0; i--) {
           const message = chatMessagesToWorkWith[i];
-          if (message.messageSource === MessageSource.System && message.userFeedback === FeedbackOptions.Dislike) {
-            lastDislikeSystemMessageIndex = i;
-            dislikedSystemMessage = message;
-            break;
-          }
-          else {
-            dislikedSystemMessage = message;
-          }
-
           if (message.messageSource === MessageSource.User) {
             lastUserMessageBeforeDislike = message;
+            break;
           }
-        }
-
-        if (lastDislikeSystemMessageIndex !== -1) {
-          lastUserMessageBeforeDislike = null;
-          for (let i = lastDislikeSystemMessageIndex - 1; i >= 0; i--) {
-            const message = chatMessagesToWorkWith[i];
-            if (message.messageSource === MessageSource.User) {
-              lastUserMessageBeforeDislike = message;
-              break;
-            }
-          }
-        }
-
-        this.systemResponse = dislikedSystemMessage;
-        this.feedbackUserQuestion = lastUserMessageBeforeDislike;
-
-        let chatMessagesToConstructUserQuestionFrom = chatMessagesToWorkWith.slice(0, chatMessagesToWorkWith.findIndex(message => message.id === lastUserMessageBeforeDislike.id) + 1);
-        if(chatMessagesToConstructUserQuestionFrom && chatMessagesToConstructUserQuestionFrom.length > 0 && chatMessagesToConstructUserQuestionFrom.filter(message => message.messageSource === MessageSource.User).length > 1) {
-          // Construct a composite user question via OpenAI
-          this._openAIService.CheckEnabled().subscribe((enabled) => {
-            if(enabled) {
-              this.currentApiCallCount = 0;
-
-              // this.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom, ChatModel.GPT3), this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
-//                 'You are a chat assistant that helps consolidate the users final message in the form of a question. Given the current chat history, help construct a question for the user that can be answered by the system. Do not answer the users question, the goal is to only contruct a consolidated user question.'
-                // , '')
-              this.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom, ChatModel.GPT3), this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
-                "Given the chat history, please generate a statement that accurately captures the user's intent in the last message. Do not attempt to answer the user's question, the goal is to construct a question that conveys the user's most recent intent as if the user were talking with the AI assistant in first person."
-                , '', true)
-                .subscribe((messageObj) => {
-                  if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
-                    this.feedbackUserQuestion = messageObj;
-                    this.statusMessage = 'Note: User question was updated based on the chat history. Please validate the question before submitting.';
-                  }
-                });
-            }
-          });
         }
       }
+
+      this.systemResponse = dislikedSystemMessage;
+      this.feedbackUserQuestion = lastUserMessageBeforeDislike;
+
+      let chatMessagesToConstructUserQuestionFrom = chatMessagesToWorkWith.slice(0, chatMessagesToWorkWith.findIndex(message => message.id === lastUserMessageBeforeDislike.id) + 1);
+      if(chatMessagesToConstructUserQuestionFrom && chatMessagesToConstructUserQuestionFrom.length > 0 && chatMessagesToConstructUserQuestionFrom.filter(message => message.messageSource === MessageSource.User).length > 1) {
+        // Construct a composite user question via OpenAI
+        this._openAIService.CheckEnabled().subscribe((enabled) => {
+          if(enabled) {
+            this.currentApiCallCount = 0;
+
+            // this.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom, ChatModel.GPT3), this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
+//                 'You are a chat assistant that helps consolidate the users final message in the form of a question. Given the current chat history, help construct a question for the user that can be answered by the system. Do not answer the users question, the goal is to only contruct a consolidated user question.'
+              // , '')
+            this.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom, ChatModel.GPT3), this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
+              "Given the chat history, please generate a statement that accurately captures the user's intent in the last message. Do not attempt to answer the user's question, the goal is to construct a question that conveys the user's most recent intent as if the user were talking with the AI assistant in first person."
+              , '', true)
+              .subscribe((messageObj) => {
+                if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
+                  this.feedbackUserQuestion = messageObj;
+                  this.statusMessage = 'Note: User question was updated based on the chat history. Please validate the question before submitting.';
+                }
+              });
+          }
+        });
+      }
     }
+    
   }
 
   private GetEmptyChatMessage(): ChatMessage {
