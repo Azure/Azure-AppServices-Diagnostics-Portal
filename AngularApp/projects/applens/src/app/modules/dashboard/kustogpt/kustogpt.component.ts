@@ -19,7 +19,7 @@ export class KustoGPTComponent {
 
   public apiProtocol = APIProtocol.WebSocket;
   public chatModel = ChatModel.GPT4;
-  public feedbackPanelVisible: boolean = false;
+  public isOpen: boolean = false;
   public chatIdentifier: string = 'analyticskustocopilot';
   public feedbackExplanationMode:FeedbackExplanationModes = FeedbackExplanationModes.Explanation;
 
@@ -44,9 +44,9 @@ export class KustoGPTComponent {
 
   public onDismissed(feedbackModel:ChatFeedbackModel) {
     console.log('onDismissed clicked');
-    console.log(this.feedbackPanelVisible);
-    this.feedbackPanelVisible = false;
-    console.log(this.feedbackPanelVisible);
+    console.log(this.isOpen);
+    this.isOpen = false;
+    console.log(this.isOpen);
     console.log(feedbackModel);
   }
 
@@ -59,10 +59,10 @@ export class KustoGPTComponent {
   
   onFeedbackClicked = (chatMessage:ChatMessage, feedbackType:string):void => {
     if(feedbackType === FeedbackOptions.Dislike) {
-      this.feedbackPanelVisible = true;
+      this.isOpen = true;
     }
     else {
-      this.feedbackPanelVisible = false;
+      this.isOpen = false;
     }
   }
 

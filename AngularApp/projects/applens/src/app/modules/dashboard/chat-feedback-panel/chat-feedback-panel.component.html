@@ -1,6 +1,5 @@
 <div>
-  <fab-panel [isOpen] = 'visible' [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="true" [closeButtonAriaLabel]="'close'" (onDismiss)="dismissedHandler('Close')"
+  <fab-panel [isOpen] = 'isOpen' [type]="type" [customWidth]="width" (onDismiss)="dismissedHandler('Close')"
   [headerText]="headerText">
     <div style="margin: 5px; display:flex;flex-direction: column; min-height: 92vh;">
       <div style="height:95%">

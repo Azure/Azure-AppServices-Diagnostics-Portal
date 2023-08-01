@@ -55,8 +55,14 @@ export class ChatFeedbackPanelComponent implements OnInit {
   @Input() resourceSpecificInfo: KeyValuePair[] = [];
 
   
-  @Input() visible:boolean
-  @Output() visibleChange = new EventEmitter<boolean>();
+  _isOpen:boolean = false;
+  @Input() set isOpen(val:boolean) {
+    this._isOpen = val;
+  }
+  public get isOpen(): boolean {
+    return this._isOpen;
+  }
+  @Output() isOpenChange = new EventEmitter<boolean>();
 
   @Output() onDismissed = new EventEmitter<ChatFeedbackModel>();
   @Input() onBeforeSubmit: (feedbackModel: ChatFeedbackModel) => Observable<ChatFeedbackModel>;
@@ -156,8 +162,8 @@ mostUsedOutputBinding
 
   public dismissedHandler(source?:string) {
     this.savingInProgress = false;
-    this.visible = false;
-    this.visibleChange.emit(this.visible);
+    this.isOpen = false;
+    this.isOpenChange.emit(this.isOpen);
     
     if(source === 'Close') {
       this.onDismissed.emit(null);
