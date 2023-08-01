@@ -19,13 +19,14 @@ export class CategoryTileV4Component implements OnInit {
   @Input() category: Category;
   categoryImgPath: string;
   keywords: string;
-  constructor(private _portalService: PortalActionService, private _router: Router, private _activatedRoute: ActivatedRoute, private _notificationService: NotificationService, private _logger: LoggingV2Service, private _diagnosticService: DiagnosticService, private _resourceService: ResourceService,private _telemetryService:TelemetryService) { }
+  constructor(private _portalService: PortalActionService, private _router: Router, private _activatedRoute: ActivatedRoute, private _notificationService: NotificationService, private _logger: LoggingV2Service, private _diagnosticService: DiagnosticService, private _resourceService: ResourceService, private _telemetryService: TelemetryService,
+    private _portalActionService: PortalActionService) { }
 
   ngOnInit() {
     this.categoryImgPath = this.generateImagePath(this.category.id);
     this.keywords = this.category.keywords.join(", ");
   }
-  clickCategoryQuickLink(e:Event, quickLink:CategoryQuickLinkDetails):void {
+  clickCategoryQuickLink(e: Event, quickLink: CategoryQuickLinkDetails): void {
     e.stopPropagation();
     this._telemetryService.logEvent(TelemetryEventNames.QuickLinkOnCategoryTileClicked, {
       'Category': this.category.id,
@@ -35,25 +36,30 @@ export class CategoryTileV4Component implements OnInit {
       'DetectorName': quickLink.displayText
     });
 
-    if(quickLink.type === DetectorType.Detector || quickLink.type === DetectorType.Analysis || quickLink.type === DetectorType.Workflow) {
+    if (quickLink.type === DetectorType.Detector || quickLink.type === DetectorType.Analysis || quickLink.type === DetectorType.Workflow) {
       this._portalService.openBladeDiagnoseDetectorId(this.category.id, quickLink.id, quickLink.type);
     } else if (quickLink.type === DetectorType.CategoryOverview) {
       this._portalService.openBladeDiagnoseCategoryBlade(this.category.id);
-    } else  if(quickLink.type === DetectorType.DiagnosticTool) {
+    } else if (quickLink.type === DetectorType.DiagnosticTool) {
       this._portalService.openBladeDiagnosticToolId(quickLink.id, this.category.id);
-    }    
+    }
   }
 
   openBladeDiagnoseCategoryBlade() {
-    this._portalService.openBladeDiagnoseCategoryBlade(this.category.id);
-    this._telemetryService.logEvent('CategorySelected',{
+    if (this.category.customPortalAction != null && this.category.customPortalAction) {
+      this._portalService.openCustomPortalActionBlade(this.category.id);
+    } else {
+      this._portalService.openBladeDiagnoseCategoryBlade(this.category.id);
+    }
+
+    this._telemetryService.logEvent('CategorySelected', {
       'Category': this.category.id,
       'CategoryName': this.category.name,
     });
   }
 
   navigateToCategory(): void {
-    this._telemetryService.logEvent('CategorySelected',{
+    this._telemetryService.logEvent('CategorySelected', {
       'Category': this.category.id,
       'CategoryName': this.category.name,
     });

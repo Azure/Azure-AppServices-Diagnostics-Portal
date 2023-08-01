@@ -10,6 +10,7 @@ import { WebSitesService } from './web-sites.service';
 import { ArmService } from '../../../shared/services/arm.service';
 import { DetectorType } from 'diagnostic-data';
 import { ToolIds } from '../../../shared/models/tools-constants';
+import { PortalActionService } from '../../../shared/services/portal-action.service';
 
 @Injectable()
 export class SitesCategoryService extends CategoryService {
@@ -380,7 +381,7 @@ export class SitesCategoryService extends CategoryService {
       }
   ];
 
-  constructor(private _resourceService: WebSitesService, private _websiteFilter: WebSiteFilter, private _armService: ArmService) {
+  constructor(private _resourceService: WebSitesService, private _websiteFilter: WebSiteFilter, private _armService: ArmService, private _portalService: PortalActionService) {
     super();
     if(this._armService.isPublicAzure) {
       //Separate tile for Navigator for Windows Web App only when the site is on publicx Azure.
@@ -411,9 +412,35 @@ export class SitesCategoryService extends CategoryService {
         this._sitesCategories.push(diagnosticCategory);
     });
 
+    this.addLoadTestingCategory();
+
     this._addCategories(
       this._websiteFilter.transform(this._sitesCategories)
     );
+  }
+
+  private addLoadTestingCategory() {
+    if (this._armService.isPublicAzure) {
+      this._sitesCategories.push({
+        appType: AppType.WebApp,
+        platform: OperatingSystem.windows,
+        stack: '',
+        sku: Sku.All,
+        hostingEnvironmentKind: HostingEnvironmentKind.All,
+        item: {
+          id: this._portalService.LoadTestingId,
+          name: 'Load Test your App',
+          overviewDetectorId: '',
+          description: 'Load test your web app to understand how it performs under load.',
+          keywords: ['Stress Test', 'Performance Testing', 'smoke test'],
+          color: 'rgb(255, 217, 119)',
+          createFlowForCategory: false,
+          chatEnabled: false,
+          overridePath: "",
+          customPortalAction: true
+        }
+      });
+    }
   }
 
   private _getDiagnosticToolsCategory(siteId: string): SiteFilteredItem<Category>[] {
