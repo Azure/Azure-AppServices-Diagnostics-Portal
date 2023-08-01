@@ -36,21 +36,22 @@ export class CategoryTileV4Component implements OnInit {
       'DetectorName': quickLink.displayText
     });
 
-    if (quickLink.id === 'loadtesting' && DetectorType.Detector) {
-      this._portalActionService.openLoadTestingBlade();
-    } else {
-      if (quickLink.type === DetectorType.Detector || quickLink.type === DetectorType.Analysis || quickLink.type === DetectorType.Workflow) {
-        this._portalService.openBladeDiagnoseDetectorId(this.category.id, quickLink.id, quickLink.type);
-      } else if (quickLink.type === DetectorType.CategoryOverview) {
-        this._portalService.openBladeDiagnoseCategoryBlade(this.category.id);
-      } else if (quickLink.type === DetectorType.DiagnosticTool) {
-        this._portalService.openBladeDiagnosticToolId(quickLink.id, this.category.id);
-      }
+    if (quickLink.type === DetectorType.Detector || quickLink.type === DetectorType.Analysis || quickLink.type === DetectorType.Workflow) {
+      this._portalService.openBladeDiagnoseDetectorId(this.category.id, quickLink.id, quickLink.type);
+    } else if (quickLink.type === DetectorType.CategoryOverview) {
+      this._portalService.openBladeDiagnoseCategoryBlade(this.category.id);
+    } else if (quickLink.type === DetectorType.DiagnosticTool) {
+      this._portalService.openBladeDiagnosticToolId(quickLink.id, this.category.id);
     }
   }
 
   openBladeDiagnoseCategoryBlade() {
-    this._portalService.openBladeDiagnoseCategoryBlade(this.category.id);
+    if (this.category.customPortalAction != null && this.category.customPortalAction) {
+      this._portalService.openCustomPortalActionBlade(this.category.id);
+    } else {
+      this._portalService.openBladeDiagnoseCategoryBlade(this.category.id);
+    }
+
     this._telemetryService.logEvent('CategorySelected', {
       'Category': this.category.id,
       'CategoryName': this.category.name,

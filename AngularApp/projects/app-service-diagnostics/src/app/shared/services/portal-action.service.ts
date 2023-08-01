@@ -14,6 +14,7 @@ import { Globals } from '../../globals';
 @Injectable()
 export class PortalActionService {
     public apiVersion = '2016-08-01';
+    public LoadTestingId: string = 'loadtestingcustomblade';
 
     public currentSite: ResponseMessageEnvelope<Site>;
     private resourceId: string;
@@ -322,6 +323,12 @@ export class PortalActionService {
         };
 
         this._portalService.openBlade(bladeInfo, 'troubleshoot');
+    }
+
+    public openCustomPortalActionBlade(id: string) {
+        if (id === this.LoadTestingId) {
+            this.openLoadTestingBlade();
+        }
     }
 
     private getWebsiteId(subscriptionId: string, resourceGroup: string, siteName: string): any {

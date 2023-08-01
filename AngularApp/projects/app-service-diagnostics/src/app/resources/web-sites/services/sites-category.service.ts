@@ -10,6 +10,7 @@ import { WebSitesService } from './web-sites.service';
 import { ArmService } from '../../../shared/services/arm.service';
 import { DetectorType } from 'diagnostic-data';
 import { ToolIds } from '../../../shared/models/tools-constants';
+import { PortalActionService } from '../../../shared/services/portal-action.service';
 
 @Injectable()
 export class SitesCategoryService extends CategoryService {
@@ -380,7 +381,7 @@ export class SitesCategoryService extends CategoryService {
     }
   ];
 
-  constructor(private _resourceService: WebSitesService, private _websiteFilter: WebSiteFilter, private _armService: ArmService) {
+  constructor(private _resourceService: WebSitesService, private _websiteFilter: WebSiteFilter, private _armService: ArmService, private _portalService: PortalActionService) {
     super();
     if (this._armService.isPublicAzure) {
       //Separate tile for Navigator for Windows Web App only when the site is on publicx Azure.
@@ -426,7 +427,7 @@ export class SitesCategoryService extends CategoryService {
         sku: Sku.All,
         hostingEnvironmentKind: HostingEnvironmentKind.All,
         item: {
-          id: 'loadtesting',
+          id: this._portalService.LoadTestingId,
           name: 'Load Test your App',
           overviewDetectorId: '',
           description: 'Load test your web app to understand how it performs under load.',
@@ -434,12 +435,8 @@ export class SitesCategoryService extends CategoryService {
           color: 'rgb(255, 217, 119)',
           createFlowForCategory: false,
           chatEnabled: false,
-          overridePath: `resource${this._resourceService.resourceIdForRouting}/detectors/navigator`,
-          categoryQuickLinks: [{
-            type: DetectorType.Detector,
-            id: 'loadtesting',
-            displayText: 'Explore'
-          }]
+          overridePath: "",
+          customPortalAction: true
         }
       });
     }
