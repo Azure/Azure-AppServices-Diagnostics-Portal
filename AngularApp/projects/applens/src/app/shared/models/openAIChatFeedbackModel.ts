@@ -1,5 +1,12 @@
 import { KeyValuePair } from 'projects/diagnostic-data/src/lib/models/common-models';
 import {v4 as uuid} from 'uuid';
+
+export enum FeedbackExplanationModes {
+    None = 'None',
+    Explanation = 'Explanation',
+    ComparativeReasoning = 'ComparativeReasoning'
+}
+
 export interface ChatFeedbackAdditionalField {
     id:string, 
     labelText:string, 

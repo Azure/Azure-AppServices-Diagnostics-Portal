@@ -6,7 +6,7 @@ import { IButtonStyles, ITextFieldProps, PanelType } from 'office-ui-fabric-reac
 import { Observable, Subscription, of } from 'rxjs';
 import {v4 as uuid} from 'uuid';
 import { map } from 'rxjs/operators';
-import { ChatFeedbackAdditionalField, ChatFeedbackModel, ChatFeedbackValidationStatus } from '../../../shared/models/openAIChatFeedbackModel';
+import { ChatFeedbackAdditionalField, ChatFeedbackModel, ChatFeedbackValidationStatus, FeedbackExplanationModes } from '../../../shared/models/openAIChatFeedbackModel';
 import { AdalService } from 'adal-angular4';
 import { KeyValuePair } from 'dist/diagnostic-data/lib/models/common-models';
 import { ResourceService } from '../../../shared/services/resource.service';
@@ -26,7 +26,7 @@ export class ChatFeedbackPanelComponent implements OnInit {
     return this._chatMessages;
   }
 
-  /// It is the list of chat messages that the user has seen. If this is supplied, messages fro, chatContextService will be ignored.
+  /// It is the list of chat messages that the user has seen. If this is supplied, messages from, chatContextService will be ignored.
   @Input() set chatMessages(value:ChatMessage[]) {
     if(value) {
       this._chatMessages = value;
@@ -66,6 +66,8 @@ export class ChatFeedbackPanelComponent implements OnInit {
 
   @Output() onDismissed = new EventEmitter<ChatFeedbackModel>();
   @Input() onBeforeSubmit: (feedbackModel: ChatFeedbackModel) => Observable<ChatFeedbackModel>;
+
+  @Input() feedbackExplanationMode: FeedbackExplanationModes = FeedbackExplanationModes.None;
   
   public statusMessage = '';
   public savingInProgress = false;
@@ -656,6 +658,35 @@ mostUsedOutputBinding
     }
   }
 
+  getFeedbackExplanationInitialPrompt() {
+    if(this.feedbackUserQuestion.displayMessage && this.systemResponse.displayMessage && this.correctResponseFeedback)
+    {
+      if(this.feedbackExplanationMode ==  FeedbackExplanationModes.ComparativeReasoning)
+      {
+        return `UserQuestion: ${this.feedbackUserQuestion.displayMessage}
+
+        IncorrectAnswer: ${this.systemResponse.displayMessage}
+
+        CorrectAnswer: ${this.correctResponseFeedback}
+        
+        You are a chat assistant that helps reason why an answer to a question is incorrect and generates a summary reasoning about why the answer is incorrect. Given the UserQuestion, IncorrectAnswer and CorrectAnswer, compare the correct and incorrect answers. Please provide a detailed explanation of why the correct response is indeed correct and why the incorrect response is wrong. Break down the reasoning step by step to help the user understand the concepts better. You can also highlight any key points or examples that illustrate the differences between the two responses. Make the explanation clear, concise, and informative so that the user gains a deeper understanding of the topic.`;
+      }
+      else {
+        if(this.feedbackExplanationMode == FeedbackExplanationModes.Explanation) {
+          return `UserQuestion: ${this.feedbackUserQuestion.displayMessage}
+
+          IncorrectAnswer: ${this.systemResponse.displayMessage}
+
+          CorrectAnswer: ${this.correctResponseFeedback}
+          
+          You are a chat assistant that helps explain why an answer to a question is correct and generates a summary. Given the UserQuestion, IncorrectAnswer and CorrectAnswer, please provide a detailed explanation of why the correct response is indeed correct. Break down the reasoning step by step to help the user understand the concepts better. You can also highlight any key points or examples that illustrate the response. Make the explanation clear, concise, and informative so that the user gains a deeper understanding of the topic. Make sure not to provide any reference or mention of the IncorrectAnswer in your explanation.`;
+        }
+      }
+    }
+
+    return ``;
+  }
+
   submitChatFeedback() {
     this.savingInProgress = true;
     this.savingProgressText = 'Saving...';
@@ -665,37 +696,43 @@ mostUsedOutputBinding
       this.validateFeedback().subscribe((validated) => {
         if(validated){
           if(this.correctResponseFeedbackReasoning) {
-            this.handleFeedbackAutoSaveAndEvent();
+            this.handleFeedbackAutoSaveAndRaiseEvent();
           }
           else {
             this.statusMessage = '';
-            this.savingProgressText = 'Constructing feedback explanation...';
-            this._openAIService.CheckEnabled().subscribe((enabled) => {
-              if(enabled && this.feedbackUserQuestion.displayMessage && this.systemResponse.displayMessage && this.correctResponseFeedback) {            
-                this.currentApiCallCount = 0;
-                this.fetchOpenAIResultAsChatMessageUsingRest( null, this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
-                  `You are a chat assistant that helps reason why an answer to a question is incorrect and generates a summary reasoning about why the answer is incorrect. Given the following UserQuestion, IncorrectAnswer and CorrectAnswer, compare the correct and incorrect answers. Please provide a detailed explanation of why the correct response is indeed correct and why the incorrect response is wrong. Break down the reasoning step by step to help the user understand the concepts better. You can also highlight any key points or examples that illustrate the differences between the two responses. Make the explanation clear, concise, and informative so that the user gains a deeper understanding of the topic.
-                  UserQuestion: ${this.feedbackUserQuestion.displayMessage}
-    
-                  IncorrectAnswer: ${this.systemResponse.displayMessage}
-    
-                  CorrectAnswer: ${this.correctResponseFeedback}
-                  `,
-                  '').subscribe((messageObj) => {
-                    if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
-                      this.correctResponseFeedbackReasoning = messageObj.displayMessage;
-                    }
+            if(this.feedbackExplanationMode == FeedbackExplanationModes.None) {
+              this.handleFeedbackAutoSaveAndRaiseEvent();
+            }
+            else
+            {
+              this.savingProgressText = 'Constructing feedback explanation...';
+              this._openAIService.CheckEnabled().subscribe((enabled) => {
+                if(enabled && this.feedbackUserQuestion.displayMessage && this.systemResponse.displayMessage && this.correctResponseFeedback) {            
+                  this.currentApiCallCount = 0;
+                  this.fetchOpenAIResultAsChatMessageUsingRest( null, this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
+                    `You are a chat assistant that helps reason why an answer to a question is incorrect and generates a summary reasoning about why the answer is incorrect. Given the following UserQuestion, IncorrectAnswer and CorrectAnswer, compare the correct and incorrect answers. Please provide a detailed explanation of why the correct response is indeed correct and why the incorrect response is wrong. Break down the reasoning step by step to help the user understand the concepts better. You can also highlight any key points or examples that illustrate the differences between the two responses. Make the explanation clear, concise, and informative so that the user gains a deeper understanding of the topic.
+                    UserQuestion: ${this.feedbackUserQuestion.displayMessage}
+      
+                    IncorrectAnswer: ${this.systemResponse.displayMessage}
+      
+                    CorrectAnswer: ${this.correctResponseFeedback}
+                    `,
+                    '').subscribe((messageObj) => {
+                      if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
+                        this.correctResponseFeedbackReasoning = messageObj.displayMessage;
+                      }
 
-                    this.handleFeedbackAutoSaveAndEvent();
-                  }, (error) => {
-                    this.statusMessage = `Error saving feedback: ${error.message}`;
-                    this.savingInProgress = false;
-                  });
-              }
-            }, (error) => {
-              this.statusMessage = `Error saving feedback: ${error.message}`;
-              this.savingInProgress = false;
-            });
+                      this.handleFeedbackAutoSaveAndRaiseEvent();
+                    }, (error) => {
+                      this.statusMessage = `Error saving feedback: ${error.message}`;
+                      this.savingInProgress = false;
+                    });
+                }
+              }, (error) => {
+                this.statusMessage = `Error saving feedback: ${error.message}`;
+                this.savingInProgress = false;
+              });
+            }
           }
         }
         else {
@@ -712,7 +749,7 @@ mostUsedOutputBinding
     
   }
 
-  private handleFeedbackAutoSaveAndEvent() {
+  private handleFeedbackAutoSaveAndRaiseEvent() {
     if (this.autoSaveFeedback) {
       this.savingProgressText = 'Saving feedback...';
       this._diagnosticService.saveChatFeedback(this.GetChatFeedbackModel().toChatFeedbackPostBody()).subscribe((result) => {
