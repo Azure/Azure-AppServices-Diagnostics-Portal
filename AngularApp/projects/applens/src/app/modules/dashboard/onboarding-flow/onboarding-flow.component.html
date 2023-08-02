@@ -322,6 +322,8 @@
         rel="noopener noreferrer" [href]="PRLink">here</a>.</div>
     <div *ngIf="saveFailed && saveIdFailure" style="margin-left: 4px;">This detector ID is already in use. Please try a
       new one</div>
+      <div *ngIf="(saveFailed || publishFailed) && !idMatches" style="margin-left: 4px;">Detector IDs cannot be changed once saved. Please 
+        revert the ID back to {{lastSavedId}}. You may need to rerun the detector to clear this error.</div>
     <div *ngIf="(saveFailed || publishFailed) && badBranchNameFailure" style="margin-left: 4px;">{{charWarningMessage}}
       Please edit the detector ID to remove these characters</div>
   </fab-panel>
@@ -351,9 +353,9 @@
       <fab-command-bar-item key="publishGrad" [text]="modalPublishingButtonText" [iconProps]="publishIcon"
         (click)="publishButtonOnClick()" [disabled]="publishButtonDisabled">
       </fab-command-bar-item>
-      <fab-command-bar-item *ngIf="isWorkflowDetector" text="Download" [iconProps]="{ iconName: 'Installation' }"
+      <fab-command-bar-item *ngIf="isWorkflowDetector" key="download" text="Download" [iconProps]="{ iconName: 'Installation' }"
         (click)="downloadWorkflow()"></fab-command-bar-item>
-      <fab-command-bar-item *ngIf="isWorkflowDetector" text="Upload" [iconProps]="{ iconName: 'PublishContent' }"
+      <fab-command-bar-item *ngIf="isWorkflowDetector" key="upload" text="Upload" [iconProps]="{ iconName: 'PublishContent' }"
         (click)="uploader.click()"></fab-command-bar-item>
       <fab-command-bar-item *ngIf="!isWorkflowDetector" key="gistVersion" text="Gist version"
         [iconProps]="{ iconName: 'BackToWindow' }" (click)="showGistDialog()"></fab-command-bar-item>
@@ -365,8 +367,9 @@
         text="Update Detector References" [iconProps]="{iconName: 'BackToWindow'}"
         (click)="showUpdateDetectorReferencesDialog()">
       </fab-command-bar-item>
-      <fab-command-bar-item *ngIf="copilotEnabled" text="Detector Copilot (Preview)" [iconProps]="{ iconName: 'robot' }"
-        (click)="_detectorCopilotService.showCopilotPanel()" [disabled]="copilotServiceMembersInitialized == false || isWorkflowDetector"></fab-command-bar-item>
+      <fab-command-bar-item *ngIf="copilotEnabled" key="copilot" [text]="_detectorCopilotService.copilotHeaderTitle" [iconProps]="{ iconName: 'robot' }"
+        (click)="_detectorCopilotService.showCopilotPanel()" [disabled]="copilotServiceMembersInitialized == false || isWorkflowDetector">
+      </fab-command-bar-item>
       <far-items>
         <fab-command-bar-item *ngIf="detectorGraduation" key="brachSelectorPill" text="custom text">
           <render>

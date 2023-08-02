@@ -8,7 +8,7 @@
   "searchSuffix": "Azure Container App",
   "azureServiceName": "Container Apps",
   "armApiConfig": {
-    "armApiVersion": "2022-01-01-preview"
+    "armApiVersion": "2022-10-01"
   },
   "isSearchEnabled": true,
   "keystoneDetectorId": "",

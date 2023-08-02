@@ -38,6 +38,7 @@ export class DaasValidatorComponent implements OnInit {
   daasAppSettingsCheck: DaasAppSettingsCheck;
   isWindowsApp: boolean = false;
   useDiagServerForLinux: boolean = false;
+  serverFarmSku: string = '';
 
   constructor(private _serverFarmService: ServerFarmDataService,
     private _siteService: SiteService, private _daasService: DaasService,
@@ -84,6 +85,16 @@ export class DaasValidatorComponent implements OnInit {
 
       if (serverFarm != null) {
         this.checkingSkuSucceeded = true;
+
+        //
+        // validationResult is created fresh in configure-stroage component due to which
+        // the serverFarmSku is assigned to a property in configure-storage component
+        // Also, for diagnosers not requiring storage, the serverFarmSku should be set
+        // on the actual validationResult as well.
+        //
+
+        this.serverFarmSku = serverFarm.sku.tier;
+        this.validationResult.ServerFarmSku = serverFarm.sku.tier;
         if (serverFarm.sku.tier === 'Standard' || serverFarm.sku.tier.indexOf('Premium') > -1 || serverFarm.sku.tier.indexOf('Isolated') > -1) {
           this.supportedTier = true;
 

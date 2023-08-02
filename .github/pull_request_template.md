@@ -32,6 +32,8 @@
 - [ ] I have run the linter to catch any errors.
 - [ ] There are no errors from my changes on this branch.
 - [ ] I have ensured that my changes support accessibility and can be accessed with the keyboard alone
+- [ ] I have added tests for this feature (if applicable)
+- [ ] I have incorporated telemetry into this code to capture and analyze relevant metrics (if applicable)
 - [ ] I have requested review on this PR.
 
 ## Screenshots Before Fix (if appropriate):

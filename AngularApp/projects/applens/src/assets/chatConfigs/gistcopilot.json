@@ -1,0 +1,20 @@
+{
+    "samples": [
+        {
+            "key": "Write a hello world gist",
+            "value": "Write a hello world gist"
+        },
+        {
+            "key": "Add a sample Insight helper method to gist",
+            "value": "Add a sample helper method to gist that adds an insight to the response"
+        },
+        {
+            "key": "Add logging to gist",
+            "value": "Add logging to gist"
+        },
+        {
+            "key": "Summary of the gist",
+            "value": "Write a summary of this gist. no code please"
+        }
+    ]
+}

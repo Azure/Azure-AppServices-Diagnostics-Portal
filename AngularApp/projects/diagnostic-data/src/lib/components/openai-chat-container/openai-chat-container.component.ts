@@ -11,7 +11,8 @@ import {
   ChatAlignment,
   ChatModel,
   ResponseTokensSize,
-  APIProtocol
+  APIProtocol,
+  TelemetryEventNames
 
 } from "../../../public_api";
 import { HttpClient } from '@angular/common/http';
@@ -42,6 +43,7 @@ export class OpenAIChatContainerComponent implements OnInit {
   @Input() systemPhotoSource: string = '/assets/img/openailogo.svg';
   @Input() showCopyOption:boolean = false;
   @Input() apiProtocol: APIProtocol = APIProtocol.Rest;
+  @Input() inputTextLimit: number = 500;
 
   // Callback methods for pre and post processing messages
   @Input() onUserMessageSend: (message: ChatMessage) => ChatMessage = function (message: ChatMessage) {
@@ -51,6 +53,8 @@ export class OpenAIChatContainerComponent implements OnInit {
   @Input() onPrepareChatContext: (context: any) => any = function (context: any) {
     return context;
   };
+
+  @Input() onCopyClick: Function;
 
   // Variables that can be taken as input
   @Input() showFeedbackOptions: boolean = true;
@@ -151,6 +155,8 @@ export class OpenAIChatContainerComponent implements OnInit {
   clearChat = () => {
     this._chatContextService.clearChat(this.chatIdentifier);
     this.clearChatConfirmationHidden = true;
+    this._telemetryService.logEvent(TelemetryEventNames.ChatGPTClearButtonClicked, { userId: this._chatContextService.userId, timestamp: new Date().getTime().toString() });
+
   }
 
   showClearChatDialog = (show: boolean = true) => {

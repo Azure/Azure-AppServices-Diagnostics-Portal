@@ -51,13 +51,15 @@ table th {
 }
 
 #app-root[theme=dark] a{ 
-  color: var(--linkCodeOptimizations) !important 
+  color: var(--linkCodeOptimizations) !important; 
 }
 
 .linkCodeOptimizations { 
-  color: var(--linkCodeOptimizations) !important 
+  color: var(--linkCodeOptimizations) !important; 
+  margin: 4px;
 }
 
 #_link_CodeOptimizations { 
   color: var(--linkCodeOptimizations) !important 
+
 }

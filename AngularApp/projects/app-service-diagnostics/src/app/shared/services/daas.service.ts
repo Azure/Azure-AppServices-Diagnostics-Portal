@@ -7,7 +7,7 @@ import { SiteDaasInfo } from '../models/solution-metadata';
 import { ArmService } from './arm.service';
 import { AuthService } from '../../startup/services/auth.service';
 import { UriElementsService } from './urielements.service';
-import { DiagnoserDefinition, DatabaseTestConnectionResult, MonitoringSession, MonitoringLogsPerInstance, ActiveMonitoringSession, DaasAppInfo, DaasSettings, ValidateSasUriResponse, Session, LinuxDaasSettings, ValidateStorageAccountResponse, DaasStorageConfiguration, Instance, LinuxCommandOutput, LinuxCommand, DaasSettingsResponse } from '../models/daas';
+import { DiagnoserDefinition, DatabaseTestConnectionResult, MonitoringSession, MonitoringLogsPerInstance, ActiveMonitoringSession, DaasAppInfo, DaasSettings, ValidateSasUriResponse, Session, LinuxDaasSettings, ValidateStorageAccountResponse, DaasStorageConfiguration, Instance, LinuxCommandOutput, LinuxCommand, DaasSettingsResponse, InstanceProcess } from '../models/daas';
 import { SiteInfoMetaData } from '../models/site';
 import { SiteService } from './site.service';
 import { StorageAccountProperties } from '../../shared-v2/services/shared-storage-account.service';
@@ -70,6 +70,21 @@ export class DaasService {
                     }
                 });
                 return instances;
+            }
+        }));
+    }
+
+    getInstanceProcesses(site: SiteDaasInfo, instanceId: string): Observable<InstanceProcess[]> {
+        const resourceUri: string = this._uriElementsService.getInstanceProcesses(site, instanceId);
+        return this._armClient.getResourceCollection<any>(resourceUri, null, true).pipe(map(response => {
+            if (Array.isArray(response) && response.length > 0) {
+                let instaceProcesses: InstanceProcess[] = [];
+                response.forEach(instance => {
+                    if (instance && instance.properties && instance.properties["machineName"]) {
+                        instaceProcesses.push({ id: instance.properties["id"], machineName: instance.properties["machineName"], name: instance.properties["name"], href: instance.properties["href"], user_name: instance.properties["user_name"], instanceId: instanceId });
+                    }
+                });
+                return instaceProcesses;
             }
         }));
     }

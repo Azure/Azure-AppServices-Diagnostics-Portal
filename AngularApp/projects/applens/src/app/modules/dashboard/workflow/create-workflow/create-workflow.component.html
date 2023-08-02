@@ -45,6 +45,60 @@
         <input name="category" class="form-control input-sm" [(ngModel)]="publishBody.Category">
       </div>
     </div>
+
+    <div class="form-row" *ngIf="!publishBody.IsInternal">
+      <div class="form-group col-md-12">
+        <table class="table table-bordered table-condensed" style="margin-bottom: 0px;">
+          <thead>
+            <tr>
+              <th>Support Topics</th>
+              <th style="width: 15%;">
+                <button class="btn btn-sm ml" (click)="addingSupportTopic = true">
+                  <i class="fa fa-lg  fa-plus text-success"></i>
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="publishBody.SupportTopicPaths && publishBody.SupportTopicPaths.length === 0">
+              <td colspan="2">No support topics mapped to this workflow. Please click the Add (+) button to add a
+                support topic.</td>
+            </tr>
+            <tr *ngFor="let supportTopicPath of publishBody.SupportTopicPaths">
+              <td>{{ supportTopicPath}}</td>
+              <td>
+                <button class="btn btn-sm ml-1" (click)="deleteSupportTopic(supportTopicPath)">
+                  <i class="fa fa-lg fa-trash text-danger"></i>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="addingSupportTopic">
+              <td>
+                <select class="form-control input-sm" style="width: 1000px;" [(ngModel)]="chosenSupportTopic"
+                  name="selectSupportTopic">
+                  <option *ngFor="let supportTopicPath of supportTopicPaths" [value]="supportTopicPath">{{
+                    supportTopicPath }}</option>
+                </select>
+              </td>
+              <td>
+                <div *ngIf="loadingExistingSupportTopics">
+                  <fab-spinner [label]="'Loading existing support topic information. Please wait...'"></fab-spinner>
+                </div>
+                <div *ngIf="!loadingExistingSupportTopics">
+                  <button class="btn btn-sm" (click)="addSupportTopic()">
+                    <i class="fa fa-lg fa-floppy-o text-primary"></i>
+                  </button>
+                  <button class="btn btn-sm" (click)="addingSupportTopic = false">
+                    <i class="fa fa-lg fa-times-circle text-primary"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="form-row">
       <ng-container *ngIf="service === 'SiteService'">
         <div class="form-group col-md-3">

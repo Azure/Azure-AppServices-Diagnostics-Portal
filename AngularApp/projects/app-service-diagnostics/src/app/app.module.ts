@@ -3,7 +3,7 @@ import {
   PUBLIC_DEV_CONFIGURATION, PUBLIC_PROD_CONFIGURATION, SolutionService, SettingsService,
   BackendCtrlQueryService, GenieGlobals, PortalActionGenericService,
   KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService,
-  GenericFeatureService, OptInsightsGenericService, GenericLinkInterceptorService
+  GenericFeatureService, OptInsightsGenericService
 } from 'diagnostic-data';
 import { SiteService } from 'projects/app-service-diagnostics/src/app/shared/services/site.service';
 import { HttpClientModule } from '@angular/common/http';
@@ -50,7 +50,6 @@ import { GenericThemeService } from 'diagnostic-data';
 import { ClientScriptService } from './shared-v2/services/client-script.service';
 import { OpenAIArmService } from 'diagnostic-data';
 import { OptInsightsService } from './shared/services/optinsights/optinsights.service';
-import { LinkInterceptorService } from './shared-v2/services/link-interceptor.service';
 
 @NgModule({
   imports: [
@@ -107,7 +106,6 @@ import { LinkInterceptorService } from './shared-v2/services/link-interceptor.se
     ClientScriptService,
     CategoryService,
     { provide: GenericFeatureService, useExisting: FeatureService },
-    { provide: GenericLinkInterceptorService, useExisting: LinkInterceptorService },
     LoggingV2Service,
     SupportTopicService,
     ResourceResolver,

@@ -15,7 +15,7 @@ namespace AppLensV3.Controllers
     /// </summary>
     [Produces("application/json")]
     [Route("api/templates")]
-    //[Authorize(Policy = "ApplensAccess")]
+    [Authorize(Policy = "ApplensAccess")]
     public class DetectorGistTemplateController : Controller
     {
         private IDetectorGistTemplateService templateService;

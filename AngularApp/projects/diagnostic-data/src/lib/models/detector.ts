@@ -89,7 +89,7 @@ export interface SupportTopic {
     id: string;
     pesId: string;
     sapSupportTopicId: string;
-    sapPesId: string;
+    sapProductId: string;
 }
 
 export enum DetectorType {
@@ -230,6 +230,7 @@ export interface DetectorListRendering extends Rendering {
     detectorIds: string[];
     additionalParams?: string;
     resourceUri?: string
+    disableCollapse?: boolean;
 }
 
 export interface MarkdownRendering extends Rendering {

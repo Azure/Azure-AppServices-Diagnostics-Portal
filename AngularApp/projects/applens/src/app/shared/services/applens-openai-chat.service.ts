@@ -142,7 +142,8 @@ export class ApplensOpenAIChatService {
           let chatResponse: ChatResponse = {
             text: this.messageBuilder,
             truncated: null,
-            finishReason: messageJson.FinishReason
+            finishReason: messageJson.FinishReason,
+            exception: ''
           };
 
           this.onMessageReceive.next(chatResponse);
@@ -162,6 +163,16 @@ export class ApplensOpenAIChatService {
     });
 
     this.signalRConnection.on("MessageCancelled", (reason: any) => {
+
+      let chatResponse: ChatResponse = {
+        text: '',
+        truncated: null,
+        finishReason: 'cancelled',
+        exception: reason
+      };
+
+      this.onMessageReceive.next(chatResponse);
+      
       this.messageBuilder = '';
       this.resetOnMessageReceiveObservable();
     });

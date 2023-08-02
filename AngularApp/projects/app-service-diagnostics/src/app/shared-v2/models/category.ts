@@ -11,10 +11,11 @@ export interface Category {
     createFlowForCategory: boolean;
     overridePath?: string;
     chatEnabled: boolean;
+    customPortalAction?: boolean; // Only used currently for navigation to Load Testing blade from Web Apps
 }
 
 export interface CategoryQuickLinkDetails {
     type: DetectorType;
-    id:string;
-    displayText:string;
+    id: string;
+    displayText: string;
 }

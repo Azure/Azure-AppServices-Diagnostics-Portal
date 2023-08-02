@@ -1,0 +1,24 @@
+
+    <openai-chat-container #chatbot 
+      
+      [persistChat]="false"
+      [chatAlignment]="'center'"
+      [chatIdentifier]="chatComponentIdentifier"
+      [chatContextLength]="6"
+      [chatQuerySamplesFileUri]="chatQuerySamplesFileURIPath"
+      [showFeedbackOptions]="true"
+      [showContentDisclaimer]="true"
+      [contentDisclaimerMessage]="contentDisclaimerMessage"
+      [quotaEnforced]="true"
+      [dailyMessageQuota]="20"
+      [messageQuotaWarningThreshold]="10"
+      [chatHeader]= "chatHeader"
+      [systemPhotoSource]="'/assets/img/openailogo.svg'"
+      [customFirstMessage] = "customFirstMessageEdit"
+      [apiProtocol] = "apiProtocol"
+      [inputTextLimit] = "inputTextLimit"
+      [chatModel] = "chatModel"
+      [showCopyOption] = "showCopyOption"
+      [onCopyClick] = "copyChatGPTClicked"
+    >
+    </openai-chat-container>

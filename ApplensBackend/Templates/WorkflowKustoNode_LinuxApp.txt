@@ -1,0 +1,5 @@
+AntaresIISLogFrontEndTable
+| where { Utilities.TimeAndTenantFilterQuery(cxt.StartTime, cxt.EndTime, cxt.Resource) }
+| where { Utilities.HostNamesFilterQuery(cxt.Resource.Hostnames) }
+| take 6
+| project TIMESTAMP, Cs_host
