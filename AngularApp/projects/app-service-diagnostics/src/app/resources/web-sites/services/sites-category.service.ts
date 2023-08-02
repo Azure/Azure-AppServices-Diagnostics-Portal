@@ -431,13 +431,18 @@ export class SitesCategoryService extends CategoryService {
           id: this._portalService.LoadTestingId,
           name: 'Load Test your App',
           overviewDetectorId: '',
-          description: 'Load test your web app to understand how it performs under load.',
-          keywords: ['Stress Test', 'Performance Testing', 'smoke test'],
+          description: 'Load test your application with high levels of traffic to identify performance bottlenecks.',
+          keywords: [],
           color: 'rgb(255, 217, 119)',
           createFlowForCategory: false,
           chatEnabled: false,
           overridePath: "",
-          customPortalAction: true
+          customPortalAction: true,
+          categoryQuickLinks: [{
+              type: null,
+              id:this._portalService.LoadTestingId,
+              displayText:'Create Load Test'
+              }]
         }
       });
     }

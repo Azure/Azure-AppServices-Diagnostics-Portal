@@ -42,6 +42,8 @@ export class CategoryTileV4Component implements OnInit {
       this._portalService.openBladeDiagnoseCategoryBlade(this.category.id);
     } else if (quickLink.type === DetectorType.DiagnosticTool) {
       this._portalService.openBladeDiagnosticToolId(quickLink.id, this.category.id);
+    } else if (quickLink.type == null) {
+      this._portalService.openCustomPortalActionBlade(this.category.id);
     }
   }
 
