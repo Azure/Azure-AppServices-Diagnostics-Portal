@@ -431,7 +431,7 @@ export class SitesCategoryService extends CategoryService {
           id: this._portalService.LoadTestingId,
           name: 'Load Test your App',
           overviewDetectorId: '',
-          description: 'Load test your application with high levels of traffic to identify performance bottlenecks.',
+          description: 'Generate high-scale load on your application to identify performance bottlenecks.',
           keywords: [],
           color: 'rgb(255, 217, 119)',
           createFlowForCategory: false,
