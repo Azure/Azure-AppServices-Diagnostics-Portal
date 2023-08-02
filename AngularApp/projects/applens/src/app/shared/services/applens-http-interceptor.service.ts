@@ -104,7 +104,7 @@ export class AppLensInterceptorService implements HttpInterceptor {
         if (error.status === 403 && error.url.includes("api/invoke") && errorObj.Status == UserAccessStatus.ResourceNotRelatedToCase) {
           this.raiseAlert(error, req);
         }
-        else if (error.status === 403 && errorObj.Status === 10) {
+        else if (error.status === 403 && errorObj.Status === UserAccessStatus.AllowedResourceException) {
           this.raiseResourceAlert(error);
         }
         else if (error.status == 403 && error.url.includes("api/invoke") && errorObj.Status == UserAccessStatus.ConsentRequired) {

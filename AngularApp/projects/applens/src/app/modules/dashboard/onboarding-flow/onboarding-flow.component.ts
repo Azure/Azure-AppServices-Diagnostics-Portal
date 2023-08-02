@@ -1,6 +1,6 @@
 import { AdalService } from 'adal-angular4';
 import {
-  CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, QueryResponseService, ChatUIContextService
+  CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, QueryResponseService, ChatUIContextService, UserAccessStatus
 } from 'diagnostic-data';
 import * as moment from 'moment';
 import { NgxSmartModalService } from 'ngx-smart-modal';
@@ -1568,7 +1568,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
           this.markCodeLinesInEditor(this.detailedCompilationTraces);
         }, ((error: any) => {
           let errorObj = JSON.parse(error.error);
-          const errorMessage = (error.status === 403 && errorObj.Status === 10) ? "" : error?.error?.replace(/"/g, '');
+          const errorMessage = (error.status === 403 && errorObj.Status === UserAccessStatus.AllowedResourceException) ? "" : error?.error?.replace(/"/g, '');
           this.enableRunButton();
           this.publishingPackage = null;
           this.localDevButtonDisabled = false;
@@ -1604,7 +1604,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
               }
             }
           });
-          if (error.status === 403 && errorObj.Status === 10)  {
+          if (error.status === 403 && errorObj.Status === UserAccessStatus.AllowedResourceException)  {
             var url = errorObj.DetailText;
             this.detailedCompilationTraces.push({
               severity: HealthStatus.Critical,

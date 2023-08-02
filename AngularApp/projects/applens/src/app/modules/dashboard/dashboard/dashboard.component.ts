@@ -3,7 +3,7 @@ import { Subscription, Observable, Subject } from 'rxjs';
 import { Component, OnDestroy, Pipe, PipeTransform } from '@angular/core';
 import { ResourceService } from '../../../shared/services/resource.service';
 import * as momentNs from 'moment';
-import { DetectorControlService, FeatureNavigationService, BreadcrumbNavigationItem, GenericThemeService, ChatUIContextService } from 'diagnostic-data';
+import { DetectorControlService, FeatureNavigationService, BreadcrumbNavigationItem, GenericThemeService, ChatUIContextService, HealthStatus } from 'diagnostic-data';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { SearchService } from '../services/search.service';
@@ -181,9 +181,9 @@ export class DashboardComponent implements OnDestroy {
 
     this._alertService.getAlert().subscribe((alert: AlertInfo) => {
       this.alertInfo = alert;
-      this.displayAlertDialog = alert.alertStatus != 6;
-      this.displayResourceAlert = alert.alertStatus == 6;
-      this.hideResourceAlert = !(alert.alertStatus == 6);
+      this.displayAlertDialog = alert.alertStatus != HealthStatus.ResourcePermission;
+      this.displayResourceAlert = alert.alertStatus == HealthStatus.ResourcePermission;
+      this.hideResourceAlert = !(alert.alertStatus == HealthStatus.ResourcePermission);
       setTimeout(() => {
         var elem = document.getElementsByClassName('ms-Dialog-title')[0] as HTMLElement;
         if (elem) {
