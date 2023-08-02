@@ -382,15 +382,6 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
           messageObj.status = MessageStatus.InProgress;
           messageObj.message = `${messageObj.message}${chatResponse.text}`;
 
-          // Check if the ids in chatResponse.feedbackIds are already present in messageObj.feedbackDocumentIds. If not, add them to messageObj.feedbackDocumentIds
-          if (chatResponse.feedbackIds && chatResponse.feedbackIds.length > 0) {
-            chatResponse.feedbackIds.forEach((id) => {
-              if (messageObj.feedbackDocumentIds.indexOf(id) == -1) {
-                messageObj.feedbackDocumentIds.push(id);
-              }
-            });
-          }
-
           if (this.postProcessSystemMessage == undefined) {
             messageObj.displayMessage = `${messageObj.displayMessage}${chatResponse.text}`;
           }
@@ -403,6 +394,15 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
 
         // In streaming, the finish reason would be set when the stream ends. (not for every message chunk)
         if (chatResponse.finishReason != undefined && chatResponse.finishReason != '') {
+
+          // Check if the ids in chatResponse.feedbackIds are already present in messageObj.feedbackDocumentIds. If not, add them to messageObj.feedbackDocumentIds
+          if (chatResponse.feedbackIds && chatResponse.feedbackIds.length > 0) {
+            chatResponse.feedbackIds.forEach((id) => {
+              if (messageObj.feedbackDocumentIds.indexOf(id) == -1) {
+                messageObj.feedbackDocumentIds.push(id);
+              }
+            });
+          }
 
           let finalMsgStatus = MessageStatus.Finished;
 

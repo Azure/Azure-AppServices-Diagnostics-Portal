@@ -12,7 +12,7 @@
       [onFeedbackClicked] = "onFeedbackClicked"
       >
     </openai-chat-container>
-    <chat-feedback-panel [(isOpen)] = "isOpen" (onDismissed) = "onDismissed($event)" [onBeforeSubmit] = "onBeforeSubmit"
+    <chat-feedback-panel [(isOpen)] = "feedbackPanelOpenState" (onDismissed) = "onDismissed($event)" [onBeforeSubmit] = "onBeforeSubmit"
       [additionalFields] = "additionalFields" [chatIdentifier] = "chatIdentifier" [chatContextLength] = "10" [feedbackExplanationMode] = "feedbackExplanationMode"
     ></chat-feedback-panel>
 </div>

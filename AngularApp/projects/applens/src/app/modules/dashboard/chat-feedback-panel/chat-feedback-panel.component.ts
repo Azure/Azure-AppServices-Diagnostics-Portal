@@ -18,7 +18,7 @@ import { ApplensDiagnosticService } from '../services/applens-diagnostic.service
   styleUrls: ['./chat-feedback-panel.component.scss']
 })
 export class ChatFeedbackPanelComponent implements OnInit {
-  type: PanelType = PanelType.custom;
+  panelType: PanelType = PanelType.custom;
   @Input() width: string = "850px";
   
   // _chatMessages: ChatMessage[] = [];
@@ -57,6 +57,9 @@ export class ChatFeedbackPanelComponent implements OnInit {
   
   _isOpen:boolean = false;
   @Input() set isOpen(val:boolean) {
+    if(val) {
+      this.initValues();
+    }
     this._isOpen = val;
   }
   public get isOpen(): boolean {
@@ -98,8 +101,8 @@ export class ChatFeedbackPanelComponent implements OnInit {
     }
   }
 
-  feedbackUserQuestion:ChatMessage;
-  systemResponse:ChatMessage;
+  feedbackUserQuestion:ChatMessage = this.GetEmptyChatMessage();
+  systemResponse:ChatMessage = this.GetEmptyChatMessage();
   correctResponseFeedback:string = '';
   correctResponseFeedbackReasoning:string = '';
   
@@ -147,7 +150,7 @@ mostUsedOutputBinding
   private GetChatFeedbackModel(): ChatFeedbackModel {
     let chatFeedbackModel = new ChatFeedbackModel(this.chatIdentifier, this.userAlias, this.provider, this.resourceType);
       chatFeedbackModel.userQuestion = this.feedbackUserQuestion.displayMessage;
-      chatFeedbackModel.incorrectSystemResponse = this.systemResponse.displayMessage;
+      chatFeedbackModel.incorrectSystemResponse = this.systemResponse.message;
       chatFeedbackModel.expectedResponse = this.correctResponseFeedback;
       chatFeedbackModel.feedbackExplanation = this.correctResponseFeedbackReasoning;
       chatFeedbackModel.additionalFields = this.additionalFields;
@@ -655,13 +658,13 @@ mostUsedOutputBinding
   }
 
   getFeedbackExplanationInitialPrompt() {
-    if(this.feedbackUserQuestion.displayMessage && this.systemResponse.displayMessage && this.correctResponseFeedback)
+    if(this.feedbackUserQuestion.displayMessage && this.systemResponse.message && this.correctResponseFeedback)
     {
       if(this.feedbackExplanationMode ==  FeedbackExplanationModes.ComparativeReasoning)
       {
         return `UserQuestion: ${this.feedbackUserQuestion.displayMessage}
 
-        IncorrectAnswer: ${this.systemResponse.displayMessage}
+        IncorrectAnswer: ${this.systemResponse.message}
 
         CorrectAnswer: ${this.correctResponseFeedback}
         
@@ -671,7 +674,7 @@ mostUsedOutputBinding
         if(this.feedbackExplanationMode == FeedbackExplanationModes.Explanation) {
           return `UserQuestion: ${this.feedbackUserQuestion.displayMessage}
 
-          IncorrectAnswer: ${this.systemResponse.displayMessage}
+          IncorrectAnswer: ${this.systemResponse.message}
 
           CorrectAnswer: ${this.correctResponseFeedback}
           
@@ -703,17 +706,9 @@ mostUsedOutputBinding
             {
               this.savingProgressText = 'Constructing feedback explanation...';
               this._openAIService.CheckEnabled().subscribe((enabled) => {
-                if(enabled && this.feedbackUserQuestion.displayMessage && this.systemResponse.displayMessage && this.correctResponseFeedback) {            
+                if(enabled && this.feedbackUserQuestion.displayMessage && this.systemResponse.message && this.correctResponseFeedback) {            
                   this.currentApiCallCount = 0;
-                  this.fetchOpenAIResultAsChatMessageUsingRest( null, this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
-                    `You are a chat assistant that helps reason why an answer to a question is incorrect and generates a summary reasoning about why the answer is incorrect. Given the following UserQuestion, IncorrectAnswer and CorrectAnswer, compare the correct and incorrect answers. Please provide a detailed explanation of why the correct response is indeed correct and why the incorrect response is wrong. Break down the reasoning step by step to help the user understand the concepts better. You can also highlight any key points or examples that illustrate the differences between the two responses. Make the explanation clear, concise, and informative so that the user gains a deeper understanding of the topic.
-                    UserQuestion: ${this.feedbackUserQuestion.displayMessage}
-      
-                    IncorrectAnswer: ${this.systemResponse.displayMessage}
-      
-                    CorrectAnswer: ${this.correctResponseFeedback}
-                    `,
-                    '').subscribe((messageObj) => {
+                  this.fetchOpenAIResultAsChatMessageUsingRest( null, this.GetEmptyChatMessage(), true, true, ChatModel.GPT3, this.getFeedbackExplanationInitialPrompt(), '').subscribe((messageObj) => {
                       if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
                         this.correctResponseFeedbackReasoning = messageObj.displayMessage;
                       }
