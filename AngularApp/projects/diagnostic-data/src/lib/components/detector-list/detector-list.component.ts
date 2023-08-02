@@ -69,6 +69,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   expandIssuedChecks: boolean = false;
   isWaterfallViewMode: boolean = false;
   isCaseSubmissionFlow: boolean = false;
+  disableCollapse: boolean = false;
 
   constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private _solutionService: SolutionService,
     private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router,
@@ -87,6 +88,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   protected processData(data: DiagnosticData) {
     super.processData(data);
     this.renderingProperties = <DetectorListRendering>data.renderingProperties;
+    this.disableCollapse = this.renderingProperties.disableCollapse ?? false;
     this.getResponseFromResource();
     this._genericUserSettingsService.getExpandAnalysisCheckCard().subscribe(expandIssuedChecks => {
       this.expandIssuedChecks = expandIssuedChecks;
