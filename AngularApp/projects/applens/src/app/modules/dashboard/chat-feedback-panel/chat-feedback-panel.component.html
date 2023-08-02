@@ -1,7 +1,7 @@
 <div>
-  <fab-panel [isOpen] = 'isOpen' [type]="panelType" [customWidth]="width" (onDismiss)="dismissedHandler('Close')"
+  <fab-panel [isOpen] = 'isOpen' [type]="panelType" [customWidth]="width" (onDismiss)="dismissedHandler('Close')" [renderFooterContent]='PanelFooter' [isFooterAtBottom]="true"
   [headerText]="headerText">  
-    <div style="margin: 5px; display:flex;flex-direction: column; min-height: 92vh;">
+    <div style="margin: 5px; display:flex;flex-direction: column;">
       <div style="height:95%">
         <fab-text-field [ariaLabel]="'Question'" [required]="'{true}'" [label]="'Question'" [styles]="fabTextFieldStyles" [rows] = 4 [multiline]="true" (onChange) = "updateFeedbackUserQuestion($event)" [value] = "feedbackUserQuestion.displayMessage">
         </fab-text-field>
@@ -13,13 +13,14 @@
         </fab-text-field>
         <div *ngIf = "statusMessage" style="color: brown;margin:2em;" role="text" aria-label="Status message" aria-disabled="true"  >{{statusMessage}}</div>
       </div>
-      <div class="chat-feedback-panel-footer">
-        <hr class="chat-feedback-panel-divider">
-        <div style="margin:1.5em;display:flex;align-items: center;">
-          <fab-primary-button (onClick)="submitChatFeedback()" [disabled]="(!correctResponseFeedback || correctResponseFeedback?.length < 1 || savingInProgress)" [contentClass]="'feedback-submit-button'">Submit feedback</fab-primary-button>          
-          <div *ngIf = "savingInProgress" style="margin: 2em;"><fab-spinner [ariaLabel]="'Saving'" [label] = "savingProgressText"></fab-spinner></div>
-        </div>
-      </div>
     </div>
   </fab-panel>
+  <ng-template #PanelFooter>
+    <div>
+      <div style="margin:1.5em;display:flex;align-items: center;">
+        <fab-primary-button (onClick)="submitChatFeedback()" [disabled]="(!correctResponseFeedback || correctResponseFeedback?.length < 1 || savingInProgress)" [contentClass]="'feedback-submit-button'">Submit feedback</fab-primary-button>          
+        <div *ngIf = "savingInProgress" style="margin: 2em;"><fab-spinner [ariaLabel]="'Saving'" [label] = "savingProgressText"></fab-spinner></div>
+      </div>
+    </div>
+</ng-template>
 </div>
