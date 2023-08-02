@@ -105,10 +105,6 @@ namespace AppLensV3.Services
                 var kustoClientId = $"Diagnostics.{operationName};AppLensUI;{startTime?.ToString() ?? "UnknownStartTime"};{endTime?.ToString() ?? "UnknownEndTime"}##{0}_{Guid.NewGuid().ToString()}";
                 clientRequestProperties.ClientRequestId = kustoClientId;
                 clientRequestProperties.SetOption("servertimeout", new TimeSpan(0, 0, timeoutSeconds));
-                if (cluster.StartsWith("waws", StringComparison.OrdinalIgnoreCase) && cluster.EndsWith("follower", StringComparison.OrdinalIgnoreCase))
-                {
-                    clientRequestProperties.SetOption(ClientRequestProperties.OptionQueryConsistency, ClientRequestProperties.OptionQueryConsistency_Weak);
-                }
 
                 var kustoClient = Client(cluster, database);
                 var result = await kustoClient.ExecuteQueryAsync(database, query, clientRequestProperties);
