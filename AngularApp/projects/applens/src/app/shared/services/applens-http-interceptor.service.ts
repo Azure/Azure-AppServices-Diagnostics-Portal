@@ -84,8 +84,8 @@ export class AppLensInterceptorService implements HttpInterceptor {
       details: `<a href= ${url} target=_blank> ${url} </a>`,
       seekConfirmation: false,
       confirmationOptions: [{ label: 'Yes, proceed', value: 'yes' }, { label: 'No, take me back', value: 'no' }],
-      alertStatus: HealthStatus.ResourcePermission,
-      userAccessStatus: errobj.Status
+      alertStatus: HealthStatus.Warning,
+      userAccessStatus: UserAccessStatus.AllowedResourceException
     };
     this._alertService.sendAlert(alertInfo);
   }

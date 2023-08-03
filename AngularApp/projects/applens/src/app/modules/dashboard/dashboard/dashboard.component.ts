@@ -181,9 +181,9 @@ export class DashboardComponent implements OnDestroy {
 
     this._alertService.getAlert().subscribe((alert: AlertInfo) => {
       this.alertInfo = alert;
-      this.displayAlertDialog = alert.alertStatus != HealthStatus.ResourcePermission;
-      this.displayResourceAlert = alert.alertStatus == HealthStatus.ResourcePermission;
-      this.hideResourceAlert = !(alert.alertStatus == HealthStatus.ResourcePermission);
+      this.displayAlertDialog = alert.userAccessStatus != UserAccessStatus.AllowedResourceException;
+      this.displayResourceAlert = alert.userAccessStatus == UserAccessStatus.AllowedResourceException;
+      this.hideResourceAlert = !(alert.userAccessStatus == UserAccessStatus.AllowedResourceException);
       setTimeout(() => {
         var elem = document.getElementsByClassName('ms-Dialog-title')[0] as HTMLElement;
         if (elem) {
