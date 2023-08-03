@@ -6,6 +6,7 @@ import { environment } from '../../../../environments/environment';
 import { StartupInfo } from '../../models/portal';
 import { DemoSubscriptions } from '../../../../../../diagnostic-data/src/lib/models/betaSubscriptions';
 import { DetectorType, TelemetryService, TelemetrySource } from 'diagnostic-data';
+import { ResourceService } from '../../../shared-v2/services/resource.service';
 
 @Component({
   selector: 'resource-redirect',
@@ -15,11 +16,15 @@ import { DetectorType, TelemetryService, TelemetrySource } from 'diagnostic-data
 export class ResourceRedirectComponent implements OnInit {
   private _newVersionEnabled = true;
 
-  constructor(private _authService: AuthService, private _router: Router, private _telemetryService: TelemetryService) { }
+  constructor(private _authService: AuthService, private _router: Router, private _telemetryService: TelemetryService, private _resourceService: ResourceService) { }
 
   ngOnInit() {
     this._telemetryService.updateCommonProperties({ 'Location': TelemetrySource.DiagAndSolveBlade });
     this.navigateToExperience();
+    //Better way is to update Ibiza code to pass PesId and SapProductId from portal
+    this._resourceService.getPesId().subscribe(pesId => {
+      this._telemetryService.updateCommonProperties({ 'PesId': pesId });
+    });
   }
 
   navigateToExperience() {

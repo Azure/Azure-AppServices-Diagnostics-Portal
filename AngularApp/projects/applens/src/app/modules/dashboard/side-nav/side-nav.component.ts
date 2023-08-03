@@ -275,7 +275,7 @@ export class SideNavComponent implements OnInit {
 
   checkRCAToolkitEnabled(){
     //check if rca toolkit is present/enabled
-    let isPresent = this.tools.find(tool => tool.label === "RCA Toolkit");
+    let isPresent = this.tools.find(tool => tool.label === "RCA Copilot (Preview)");
     if(isPresent){
       return; 
     }
@@ -287,7 +287,7 @@ export class SideNavComponent implements OnInit {
 
       this.tools.push(
         {
-        label: 'RCA Toolkit',
+        label: 'RCA Copilot (Preview)',
         id: "",
         onClick: () => {
           PortalUtils.logEvent("rcacopilot-toolopened", "", this._telemetryService);

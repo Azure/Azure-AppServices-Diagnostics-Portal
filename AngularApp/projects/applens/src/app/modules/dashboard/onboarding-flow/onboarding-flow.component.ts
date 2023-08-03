@@ -1831,6 +1831,8 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     const commitType = (this.mode == DevelopMode.Create && !this.isSaved || (this.useAutoMergeText && !this.codeOnDefaultBranch) && !isSystemInvoker) ? "add" : "edit";
     const commitMessageStart = (this.mode == DevelopMode.Create && !this.isSaved || (this.useAutoMergeText && !this.codeOnDefaultBranch) && !isSystemInvoker) ? "Adding" : "Editing";
 
+    this.lastSavedId = commitType == "add" ? this.publishingPackage.id : this.lastSavedId;
+
     let gradPublishFiles: string[] = [
       this.publishingPackage.codeString,
       this.publishingPackage.metadata,
@@ -1999,13 +2001,15 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     const commitType = this.mode == DevelopMode.Create && !this.isSaved && !this.detectorLoaded ? "add" : "edit";
     const commitMessageStart = this.mode == DevelopMode.Create && !this.isSaved && !this.detectorLoaded ? "Adding" : "Editing";
 
+    this.lastSavedId = commitType == "add" ? this.publishingPackage.id : this.lastSavedId;
+
     let gradPublishFiles: string[] = !!this.publishingPackage ? [
       this.code,
       this.publishingPackage.metadata,
       this.publishingPackage.packageConfig
     ] : [
       this.code,
-      JSON.stringify({ "utterances": this.allUtterances }),
+      JSON.stringify({ "utterances": this.allUtterances, "shieldEmbedded" : this.isShieldEmbedded }),
       JSON.stringify(this.configuration)
     ];
 

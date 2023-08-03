@@ -480,6 +480,17 @@ export const HomeRoutes = RouterModule.forChild([
                         }
                     },
                     {
+                        path: 'workflows/:workflowId',
+                        component: GenericDetectorComponent,
+                        data: {
+                            cacheComponent: true
+                        },
+                        resolve: {
+                            time: TimeControlResolver,
+                            navigationTitle: TabTitleResolver,
+                        }
+                    },
+                    {
                         path: 'analysis/:analysisId',
                         component: GenericAnalysisComponent,
                         data: {

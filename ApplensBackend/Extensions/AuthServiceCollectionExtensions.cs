@@ -15,6 +15,10 @@ using Microsoft.IdentityModel.Tokens.Saml2;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using Kusto.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -36,20 +40,54 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(environment));
             }
-
-            services.AddAuthentication(auth =>
-            {
-                auth.DefaultScheme = AzureADDefaults.BearerAuthenticationScheme;
-            })
-            .AddAzureADBearer(options =>
-            {
-                configuration.Bind("AzureAd", options);
-            });
+            
             if (configuration["ServerMode"] != "internal")
             {
                 services.AddHttpContextAccessor();
                 AuthorizationTokenService.Instance.Initialize(configuration);
             }
+
+            ValidateSecuritySettings(configuration);
+            string openIdConfigEndpoint = $"{configuration["SecuritySettings:AADAuthority"]}/.well-known/openid-configuration"; ;
+            var configManager = new Microsoft.IdentityModel.Protocols.ConfigurationManager<OpenIdConnectConfiguration>(openIdConfigEndpoint, new OpenIdConnectConfigurationRetriever());
+            configManager.AutomaticRefreshInterval = TimeSpan.FromHours(6);
+            var config = configManager.GetConfigurationAsync().Result;
+            var issuer = config.Issuer;
+            var signingKeys = config.SigningKeys;
+
+            services.AddAuthentication(auth =>
+            {
+                auth.DefaultScheme = AzureADDefaults.BearerAuthenticationScheme;
+            }).AddJwtBearer(AzureADDefaults.BearerAuthenticationScheme, options =>
+            {
+                options.RefreshOnIssuerKeyNotFound = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidAudiences = new[] { configuration["SecuritySettings:ClientId"], $"spn:{configuration["SecuritySettings:ClientId"]}" },
+                    ValidIssuers = new[] { issuer, $"{issuer}/v2.0" },
+                    IssuerSigningKeys = signingKeys
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        var allowedAppIds = configuration["SecuritySettings:AllowedAppId"].Split(',').Select(p => p.Trim());
+                        var claimPrincipal = context.Principal;
+                        var incomingAppId = claimPrincipal.Claims.FirstOrDefault(c => c.Type.Equals("aud", StringComparison.CurrentCultureIgnoreCase));
+                        if (incomingAppId == null || !allowedAppIds.Any(allowedAppId => allowedAppId.Equals(incomingAppId.Value, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            context.Fail("Unauthorized Request");
+                        }
+
+                        return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = context =>
+                    {
+                        return Task.CompletedTask;
+                    }
+                };
+            });
 
             services.AddAuthorization(options =>
             {
@@ -58,10 +96,18 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 options.AddPolicy("DefaultAccess", policy =>
                 {
+                    if (!environment.IsDevelopment())
+                    {
+                        policy.RequireAuthenticatedUser().AddAuthenticationSchemes(AzureADDefaults.BearerAuthenticationScheme);
+                    }
                     policy.Requirements.Add(new DefaultAuthorizationRequirement());
                 });
                 options.AddPolicy(applensAccess.GroupName, policy =>
                 {
+                    if (!environment.IsDevelopment())
+                    {
+                        policy.RequireAuthenticatedUser().AddAuthenticationSchemes(AzureADDefaults.BearerAuthenticationScheme);
+                    }
                     policy.Requirements.Add(new SecurityGroupRequirement(applensAccess.GroupName, applensAccess.GroupId));
                 });
             });
@@ -113,6 +159,18 @@ namespace Microsoft.Extensions.DependencyInjection
                     options.SecurityTokenHandlers = new List<ISecurityTokenValidator> { new Saml2SecurityTokenHandler() };
                 })
                 .AddCookie();
+        }
+
+        private static void ValidateSecuritySettings(IConfiguration configuration)
+        {
+            var securitySettings = configuration.GetSection("SecuritySettings").GetChildren();
+            foreach (var setting in securitySettings)
+            {
+                if (string.IsNullOrEmpty(setting.Value))
+                {
+                    throw new Exception($"Configuration {setting.Key} cannot be null or empty");
+                }
+            }
         }
     }
 }
