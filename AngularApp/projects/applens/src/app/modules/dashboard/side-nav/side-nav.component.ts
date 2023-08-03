@@ -203,6 +203,19 @@ export class SideNavComponent implements OnInit {
       icon: null
     },
     {
+      label: 'Ask AppLens',
+      id: "askAppLens",
+      onClick: () => {
+        this.navigateTo("askApplens");
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `askapplens`.toLowerCase();
+      },
+      icon: null
+    },
+    {
       label: 'KQL for Antares Analytics',
       id: "kustocopilot",
       onClick: () => {
