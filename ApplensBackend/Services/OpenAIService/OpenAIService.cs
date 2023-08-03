@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace AppLensV3.Services
 {
@@ -771,12 +772,19 @@ namespace AppLensV3.Services
                                     {
                                         if (!string.IsNullOrWhiteSpace(kvp.Value))
                                         {
-                                            additionalFields.Add(JsonConvert.SerializeObject(kvp));
+                                            additionalFields.Add(JsonConvert.SerializeObject(kvp, new JsonSerializerSettings()
+                                            {
+                                                ContractResolver = new DefaultContractResolver()
+                                                {
+                                                    NamingStrategy = new CamelCaseNamingStrategy()
+                                                }
+                                            }));
                                         }
                                     }
 
                                     if (additionalFields.Count > 0)
                                     {
+                                        feedbackSb.AppendLine();
                                         feedbackSb.AppendLine($"Additional_Fields:[{string.Join(", ", additionalFields)}]");
                                     }
                                 }
