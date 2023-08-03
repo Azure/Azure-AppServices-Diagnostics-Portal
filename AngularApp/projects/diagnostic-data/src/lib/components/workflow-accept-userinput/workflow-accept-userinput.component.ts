@@ -35,7 +35,11 @@ export class WorkflowAcceptUserinputComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.data.inputNodeSettings && this.data.inputNodeSettings.inputType === inputType.select) {
-      this.selectFieldValue = this.data.inputNodeSettings.options[0];
+      if (this.data.inputNodeSettings.options && this.data.inputNodeSettings.options.length > 0) {
+        this.selectFieldValue = this.data.inputNodeSettings.options[0];
+      } else if (this.data.inputNodeSettings.inputListItems && this.data.inputNodeSettings.inputListItems.length > 0) {
+        this.selectFieldValue = this.data.inputNodeSettings.inputListItems[0].value;
+      }
     }
   }
 
