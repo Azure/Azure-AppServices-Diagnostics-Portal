@@ -1817,7 +1817,32 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       this.owners.forEach(o => {
         if (o.match(/^\s*$/) == null) reviewers = reviewers.concat(o, '\n');
       });
+    } else {
+      if (this.isWorkflowDetector && this.workflowPublishBody != null) {
+        if (this.workflowPublishBody.AppType != null) {
+          this.workflowPublishBody.AppType.split(',').forEach(apt => {
+            if (Object.keys(this.DevopsConfig.appTypeReviewers).includes(apt)) {
+              this.DevopsConfig.appTypeReviewers[apt].forEach(rev => {
+                if (!this.owners.includes(rev)) this.owners.push(rev);
+              });
+            }
+          });
+        }
+        if (this.workflowPublishBody.Platform != null) {
+          this.workflowPublishBody.Platform.split(',').forEach(plt => {
+            if (Object.keys(this.DevopsConfig.platformReviewers).includes(plt)) {
+              this.DevopsConfig.platformReviewers[plt].forEach(rev => {
+                if (!this.owners.includes(rev)) this.owners.push(rev);
+              });
+            }
+          });
+        }
+        this.owners.forEach(o => {
+          if (o.match(/^\s*$/) == null) reviewers = reviewers.concat(o, '\n');
+        });
+      }
     }
+
     return reviewers;
   }
 
