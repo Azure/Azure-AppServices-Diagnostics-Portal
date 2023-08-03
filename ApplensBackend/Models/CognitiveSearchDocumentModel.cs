@@ -37,6 +37,7 @@ namespace AppLensV3.Models
     public class DocumentSearchSettings
     {
         public string IndexName { get; set; }
+        public bool IncludeReferences { get; set; }
         public int NumDocuments { get; set; } = 3;
         public double MinScore { get; set; } = 0.5;
         public string DocumentContentPlaceholder { get; set; } = "<<DOCUMENT_CONTENT_HERE>>";
