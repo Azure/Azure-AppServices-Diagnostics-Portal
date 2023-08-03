@@ -14,7 +14,7 @@ import { StringUtilities } from '../../../../../../diagnostic-data/src/public_ap
 export class ApplensDocsCopilotComponent implements OnInit {
   userPhotoSource: string = '';
   userNameInitial: string = '';
-  chatHeader: string = `<h1 class='chatui-header-text'><b>AppLens Documentation Co-Pilot</b>!</h1>`;
+  chatHeader: string = `<h1 class='chatui-header-text'><b>Ask AppLens</b></h1>`;
 
   // Variables to be passed down to the OpenAI Chat component
   chatComponentIdentifier: string = "applensdocscopilot";
