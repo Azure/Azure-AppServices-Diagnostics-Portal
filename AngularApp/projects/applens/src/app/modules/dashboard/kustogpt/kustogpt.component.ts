@@ -12,6 +12,7 @@ import { ResourceService } from '../../../shared/services/resource.service';
 import { KeyValuePair } from 'dist/diagnostic-data/lib/models/common-models';
 import { SiteService } from '../../../shared/services/site.service';
 import { ObserverSiteInfo } from '../../../shared/models/observer';
+import { KustoUtilities } from 'projects/diagnostic-data/src/lib/utilities/kusto-utilities';
 
 @Component({
   selector: 'kustogpt',
@@ -79,8 +80,8 @@ export class KustoGPTComponent {
 
 
   onSystemMessageReceived = (chatMessage:ChatMessage):ChatMessage => {
-    if(chatMessage) {      
-      if(chatMessage.message && chatMessage.message.indexOf('Additional_Fields:') > -1 && chatMessage.message.indexOf('Explanation:') > -1) {
+    if(chatMessage && chatMessage.message) {
+      if(chatMessage.message.indexOf('Additional_Fields:') > -1 && chatMessage.message.indexOf('Explanation:') > -1) {
         let chatMessageSplit = chatMessage.message.split('\n');
         if(!chatMessage.data) {
           chatMessage.data = [] as KeyValuePair[];
@@ -108,13 +109,14 @@ export class KustoGPTComponent {
                   }
                 });
                 chatMessage.data = additionalFieldsObject;
-                this.chatMessageKustoExecuteLink[chatMessage.id] = `__Cluster:__ ${this.clusterName}\n__Database:__ ${this.databaseName}\n`;
+                let kustoQuery = KustoUtilities.GetKustoQueryFromMarkdown(chatMessage.message, this.clusterName, this.databaseName);
+                this.chatMessageKustoExecuteLink[chatMessage.id] = `__Cluster:__ ${this.clusterName}\n__Database:__ ${this.databaseName}\n\n<a target='_blank' style='padding:1em;' href='${kustoQuery.KustoDesktopUrl}'><img src='${KustoUtilities.KustoDesktopImage}' style='width:22em'></a><a target='_blank' href='${kustoQuery.Url}'><img src='${KustoUtilities.KustoWebImage}' style='width:22em'></a>\n`;
               }
               console.log(chatMessage);
             }
             catch(e) {
               console.log('Error parsing additional fields');
-              console.log(e);              
+              console.log(e);
             }
           }
         }

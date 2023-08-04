@@ -80,6 +80,7 @@
     "ngx-smart-modal": "^6.0.4",
     "office-ui-fabric-core": "^11.0.0",
     "office-ui-fabric-react": "^7.135.0",
+    "pako": "^2.1.0",
     "pdfmake": "^0.2.4",
     "prismjs": "^1.29.0",
     "react": "^16.8.0",

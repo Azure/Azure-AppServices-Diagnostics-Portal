@@ -1,3 +1,5 @@
+import * as pako from 'pako';
+
 export interface KustoQuery {
     text: string;
     Url: string;
@@ -5,8 +7,10 @@ export interface KustoQuery {
 }
 
 export class KustoUtilities {
+    public static readonly KustoDesktopImage:string = `https://applensimgs.blob.core.windows.net/images/KustoDesktop1.png`;
+    public static readonly KustoWebImage:string = `https://applensimgs.blob.core.windows.net/images/Kustoweb1.png`;
 
-    static GetQueryTextFromMarkdown(markdown: string): string {
+    public static ExtractQueryTextFromMarkdown(markdown: string): string {
         if(!markdown) {
             return '';
         }
@@ -25,7 +29,7 @@ export class KustoUtilities {
         }
     }
 
-    static GetKustoQueryFromMarkdown(markdown: string, cluster:string, database:string): KustoQuery {
+    public static GetKustoQueryFromMarkdown(markdown: string, cluster:string, database:string): KustoQuery {
         if(!cluster || !database) {
             return {
                 text: '',
@@ -34,30 +38,37 @@ export class KustoUtilities {
             };
         }
 
-        let queryText = KustoUtilities.GetQueryTextFromMarkdown(markdown);
+        let queryText = KustoUtilities.ExtractQueryTextFromMarkdown(markdown);
         return KustoUtilities.GetKustoQuery(queryText, cluster, database);
     }
 
-    static GetKustoQuery(queryText: string, cluster:string, database:string): KustoQuery {
-        if(!queryText || !cluster || !database) {
-            return {
-                text: '',
-                Url: '',
-                KustoDesktopUrl: ''
-            };
+    public static GetKustoQuery(queryText: string, cluster:string, database:string): KustoQuery {
+        if(queryText && cluster && database) {
+            let encodedQueryText = '';
+            try {
+                //First zip the query text, then base64encode it and then url encode it
+                var zip = pako.gzip(queryText, { to: 'string' });
+                const base64Data = btoa(String.fromCharCode(...zip));
+                encodedQueryText = encodeURIComponent(base64Data);
+            }
+            catch(error) {
+                console.log('Error while encoding query text');
+                console.log(error);
+            }
+
+            if(encodedQueryText) {
+                return {
+                    text: queryText,
+                    Url: `https://dataexplorer.azure.com/clusters/${cluster}/databases/${database}?query=${encodedQueryText}`,
+                    KustoDesktopUrl: `https://${cluster}.windows.net/clusters/${database}?query=${encodedQueryText}&web=0`
+                };
+            }
         }
 
-        // First Base64 encode the query text and then URL encode it
-        let encodedQueryText = btoa(queryText);
-        encodedQueryText = encodeURIComponent(encodedQueryText);
-
-        let url = `https://dataexplorer.azure.com/clusters/${cluster}/databases/${database}?query=${encodedQueryText}`;
-        let kustoDesktopUrl = `https://${cluster}.windows.net/clusters/${database}?query=${encodedQueryText}&web=0`;
-
         return {
-            text: queryText,
-            Url: url,
-            KustoDesktopUrl: kustoDesktopUrl
+            text: '',
+            Url: '',
+            KustoDesktopUrl: ''
         };
     }
 }
