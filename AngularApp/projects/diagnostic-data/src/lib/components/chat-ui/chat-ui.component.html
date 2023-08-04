@@ -48,10 +48,7 @@
                 <!-- {{message.messageDisplayDate}} -->
               </div>
               <div style="white-space:pre-wrap">
-                <markdown [ngClass]="{'blinking-cursor': message.status==2}" [data]="message.displayMessage">
-
-                </markdown>
-
+                <chat-ui-markdown-wrapper [ngClass]="{'blinking-cursor': message.status==2}" [data] = "message.displayMessage" [onCopyClick] = 'onCopyClick'></chat-ui-markdown-wrapper>
               </div>
               <ng-container *ngIf="showFeedbackOptions && message.messageSource=='system'">
                 <div class="chatui-feedback-icons">
