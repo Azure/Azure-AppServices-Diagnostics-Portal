@@ -127,6 +127,7 @@ export class workflowPublishBody {
   ResourceType: string;
   ResourceProvider: string;
   Category: string;
+  SupportTopicPaths: string[] = [];
 }
 
 export interface workflowNodeResult {

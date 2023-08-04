@@ -18,5 +18,9 @@ namespace AppLensV3.Models
         public string SupportTopicL3Name { get; set; }
 
         public string SupportTopicPath { get; set; }
+
+        public string SapProductId { get; set; }
+
+        public string SapSupportTopicId { get; set; }
     }
 }

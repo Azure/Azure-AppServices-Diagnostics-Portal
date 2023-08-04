@@ -20,12 +20,17 @@
           <td>
             <div class="btn-group" role="radiogroup">
               <button tabindex="0" [disabled]="sessionInProgress" role="radio" class="btn btn-default btn-xs"
-                [ngClass]="{'btn-primary':collectionMode === sessionMode.CollectAndAnalyze}" (click)="selectMode(0);"
+                [ngClass]="{'btn-primary':collectionMode === sessionMode.CollectAndAnalyze}"
+                (click)="selectMode(sessionMode.CollectAndAnalyze);"
+                (keyup.enter)="selectMode(sessionMode.CollectAndAnalyze);"
+                (keyup.space)="selectMode(sessionMode.CollectAndAnalyze);"
                 [attr.aria-checked]="collectionMode === sessionMode.CollectAndAnalyze">
                 Collect and Analyze Data
               </button>
               <button tabindex="0" [disabled]="sessionInProgress" role="radio" class="btn btn-default btn-xs"
-                [ngClass]="{'btn-primary':collectionMode === sessionMode.Collect}" (click)="selectMode(1);"
+                [ngClass]="{'btn-primary':collectionMode === sessionMode.Collect}"
+                (click)="selectMode(sessionMode.Collect);" (keyup.enter)="selectMode(sessionMode.Collect);"
+                (keyup.space)="selectMode(sessionMode.Collect);"
                 [attr.aria-checked]="collectionMode === sessionMode.Collect">
                 Collect Data Only
               </button>
