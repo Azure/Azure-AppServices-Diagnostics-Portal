@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BehaviorSubject } from 'rxjs';
 import { DirectionalHint } from 'office-ui-fabric-react';
+import { SuffixArray } from 'diagnostic-data';
 
 @Component({
   selector: 'collapsible-menu-item',
@@ -91,6 +92,8 @@ export class CollapsibleMenuItem {
   icon: string;
   group?:string
   visible?:boolean = true;
+  idSuffixArray?: Array<string>;
+  labelSuffixArray?: Array<string>;
 
   constructor(label: string, id: string, onClick: Function, isSelected: Function, icon: string = null, expanded: boolean = false, subItems: CollapsibleMenuItem[] = [], metadata: string = null) {
     this.label = label;
@@ -102,5 +105,7 @@ export class CollapsibleMenuItem {
     this.isSelected = isSelected;
     this.icon = icon;
     this.visible = true;
+    this.idSuffixArray = SuffixArray.buildSuffixArray(id);
+    this.labelSuffixArray = SuffixArray.buildSuffixArray(label);
   }
 }
