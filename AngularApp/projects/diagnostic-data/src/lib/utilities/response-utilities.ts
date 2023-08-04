@@ -1,4 +1,4 @@
-import { DataTableResponseObject, DetectorResponse, DiagnosticData, RenderingType } from '../models/detector';
+import { DetectorResponse, DetectorViewModeWithInsightInfo, DiagnosticData, RenderingType } from '../models/detector';
 import { DataTableUtilities } from './datatable-utilities';
 
 export class ResponseUtilities {
@@ -16,7 +16,41 @@ export class ResponseUtilities {
         detectorResponse.dataset?.forEach((dataEntry: DiagnosticData) => {
 
             let componentJson = this.GetComponentJsonByRenderingType(dataEntry);
-            if (componentJson) {
+            if (componentJson && componentJson.title && componentJson.title != '') {
+                detectorResponseJson['output'].push(componentJson);
+            }
+        });
+
+        return detectorResponseJson;
+    }
+
+    public static UpdateDetectorResponseWithAsyncChildDetectorsOutput(currentDetectorResponse: any, childDetectorsViewModels: DetectorViewModeWithInsightInfo[]): any {
+
+        var detectorResponseJson = {};
+        detectorResponseJson['metadata'] = currentDetectorResponse.metadata;
+        detectorResponseJson['output'] = currentDetectorResponse.output;
+
+        var childDetectorsInsightDataset = [];
+
+        childDetectorsViewModels.forEach(viewModel => {
+
+            let childDetectorResponse: DetectorResponse = viewModel.model.response;
+            let diagnosticData = childDetectorResponse.dataset.find(ds => (ds.renderingProperties.type == RenderingType.Insights &&
+                ds.table.rows &&
+                ds.table.rows[0] && ds.table.rows[0][1] &&
+                ds.table.rows[0][1].toLowerCase() == viewModel.insightTitle.toLowerCase()));
+
+            if (diagnosticData &&
+                !detectorResponseJson['output'].some(element => element.type.toLowerCase() == 'insight' && element.title.toLowerCase() == viewModel.insightTitle.toLowerCase())) {
+                childDetectorsInsightDataset.push(diagnosticData);
+            }
+        });
+
+
+        childDetectorsInsightDataset.forEach((dataEntry: DiagnosticData) => {
+
+            let componentJson = this.GetComponentJsonByRenderingType(dataEntry);
+            if (componentJson && componentJson.title && componentJson.title != '') {
                 detectorResponseJson['output'].push(componentJson);
             }
         });
@@ -29,29 +63,28 @@ export class ResponseUtilities {
     private static GetComponentJsonByRenderingType(diagnosticData: DiagnosticData): any {
 
         let renderingType = diagnosticData.renderingProperties?.type;
-        if (renderingType == undefined)
+        if (renderingType == undefined || diagnosticData == undefined || diagnosticData.table == undefined)
             return undefined;
 
         switch (renderingType) {
             case RenderingType.Insights:
-                return this.GetInsightJson(diagnosticData.table);
+                return this.GetInsightJson(diagnosticData);
             case RenderingType.Markdown:
-                return this.GetMarkdownJson(diagnosticData.table);
+                return this.GetMarkdownJson(diagnosticData);
             case RenderingType.Table:
-                return this.GetTableJson(diagnosticData.table);
+                return this.GetTableJson(diagnosticData);
             case RenderingType.TimeSeries:
-                return this.GetTimeSeriesJson(diagnosticData.table);
+                return this.GetTimeSeriesJson(diagnosticData);
             case RenderingType.DataSummary:
-                return this.GetDataSummaryJson(diagnosticData.table);
+                return this.GetDataSummaryJson(diagnosticData);
             default:
                 return undefined;
         }
     }
 
-    private static GetInsightJson(componentTable: DataTableResponseObject): any {
+    private static GetInsightJson(diagnosticData: DiagnosticData): any {
 
-        if (componentTable == undefined)
-            return undefined;
+        let componentTable = diagnosticData.table;
 
         const moreInfo = [];
         let solutions = [];
@@ -94,20 +127,56 @@ export class ResponseUtilities {
         };
     }
 
-    private static GetTableJson(componentTable: DataTableResponseObject): any {
-        return undefined;
+    private static GetTableJson(diagnosticData: DiagnosticData): any {
+
+        let title = diagnosticData.renderingProperties.title;
+        let columns = diagnosticData.table.columns.map(column => column.columnName).filter(columnName => columnName);
+        if (title == undefined || title == '') {
+            title = `Columns - ${columns.join(',')}`;
+        }
+
+        return {
+            type: "Table",
+            title: title,
+            description: diagnosticData.renderingProperties.description,
+            columns: columns,
+            rows: diagnosticData.table.rows
+        };
     }
 
-    private static GetMarkdownJson(componentTable: DataTableResponseObject): any {
-        return undefined;
+    private static GetMarkdownJson(diagnosticData: DiagnosticData): any {
+
+        let title = diagnosticData.renderingProperties.title && diagnosticData.renderingProperties.title != '' ?
+            diagnosticData.renderingProperties.title : diagnosticData.table.rows[0][0]
+
+        return {
+            type: "Additional Information",
+            title: title,
+            moreInfo: diagnosticData.table.rows[0][0]
+        };
     }
 
-    private static GetTimeSeriesJson(componentTable: DataTableResponseObject): any {
-        return undefined;
+    private static GetTimeSeriesJson(diagnosticData: DiagnosticData): any {
+        return {
+            type: "Graph",
+            title: '',
+            moreInfo: ''
+        };
     }
 
-    private static GetDataSummaryJson(componentTable: DataTableResponseObject): any {
-        return undefined;
+    private static GetDataSummaryJson(diagnosticData: DiagnosticData): any {
+
+        let title = diagnosticData.renderingProperties.title;
+        let data = [];
+        diagnosticData.table.rows.forEach(row => {
+            data.push({ name: row[0], value: row[1] });
+        });
+
+        return {
+            type: "Data Summary",
+            title: title,
+            data: data
+        };
     }
 
     //#endregion

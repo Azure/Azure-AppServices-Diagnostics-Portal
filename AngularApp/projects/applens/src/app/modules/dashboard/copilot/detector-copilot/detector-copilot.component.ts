@@ -3,6 +3,7 @@ import { ApplensCopilotContainerService } from '../../services/copilot/applens-c
 import { ApplensDetectorCopilotService } from '../../services/copilot/applens-detector-copilot.service';
 import { APIProtocol, ChatMessage, ChatModel, ChatUIContextService, MessageStatus } from 'diagnostic-data';
 import { PortalUtils } from 'projects/applens/src/app/shared/utilities/portal-util';
+import { ClipboardService } from 'projects/diagnostic-data/src/lib/services/clipboard.service';
 
 @Component({
   selector: 'detector-copilot',
@@ -23,7 +24,7 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   private lastMessageIdForFeedback: string = '';
 
   constructor(public _copilotContainerService: ApplensCopilotContainerService, public _copilotService: ApplensDetectorCopilotService,
-    private _chatContextService: ChatUIContextService) {
+    private _chatContextService: ChatUIContextService, private _clipboard: ClipboardService) {
   }
 
   ngOnInit(): void {
@@ -138,6 +139,13 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   }
 
   //#endregion
+
+  //custom copy method/callback 
+  copyChatGPTClicked = (textToCopy: string) => {
+    console.warn('Hi');
+    this._clipboard.copyAsHtml(textToCopy);
+    //PortalUtils.logEvent("rcacopilot-messagecopied", textToCopy, this._telemetryService); 
+  }
 
   private getChatHeader(): string {
     return `

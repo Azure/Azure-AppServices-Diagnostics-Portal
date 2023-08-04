@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApplensCopilotContainerService, CopilotSupportedFeature } from './applens-copilot-container.service';
-import { ChatUIContextService, DetectorResponse, DiagnosticData, RenderingType } from 'diagnostic-data';
+import { ChatUIContextService, DetectorResponse, DetectorViewModeWithInsightInfo, DetectorViewModel, DiagnosticData, RenderingType } from 'diagnostic-data';
 import { ResponseUtilities } from 'projects/diagnostic-data/src/lib/utilities/response-utilities';
 import { ResourceService } from 'projects/applens/src/app/shared/services/resource.service';
 
@@ -46,7 +46,16 @@ export class ApplensDetectorCopilotService {
     processDetectorData(detectorData: DetectorResponse) {
         this.detectorResponse = detectorData;
         this.wellFormattedDetectorOutput = ResponseUtilities.ConvertResponseTableToWellFormattedJson(detectorData);
+        console.warn(this.wellFormattedDetectorOutput);
         this.customPrompt = this.prepareCustomPrompt(this.wellFormattedDetectorOutput);
+    }
+
+    // This method is called by Detector List component or Analysis component to process async loading of child detectors
+    processAsyncDetectorViewModels(detectorViewModels: DetectorViewModeWithInsightInfo[]) {
+        this.wellFormattedDetectorOutput = ResponseUtilities.UpdateDetectorResponseWithAsyncChildDetectorsOutput(this.wellFormattedDetectorOutput, detectorViewModels);
+        console.warn(this.wellFormattedDetectorOutput);
+        this.customPrompt = this.prepareCustomPrompt(this.wellFormattedDetectorOutput);
+        console.warn(this.customPrompt);
     }
 
     selectComponentAndOpenCopilot(componentData: DiagnosticData) {
@@ -61,17 +70,21 @@ export class ApplensDetectorCopilotService {
 
         let wellFormattedSelectedData = ResponseUtilities.ConvertResponseTableToWellFormattedJson(customDetectorResponse);
         this.customPrompt = this.prepareCustomPrompt(wellFormattedSelectedData);
+        this.setSelectedComponentAndOpenCopilot(wellFormattedSelectedData);
+    }
 
-        // TODO Shekhar - Make it more robouust.. null checks
-        let truncatedSubHeading = (wellFormattedSelectedData.output[0].title && wellFormattedSelectedData.output[0].title.length > 70) ?
-            wellFormattedSelectedData.output[0].title.substring(0, 70) + '...' : wellFormattedSelectedData.output[0].title;
+    selectChildDetectorAndOpenCopilot(detectorViewModel: DetectorViewModeWithInsightInfo) {
 
-        this.selectedComponent['heading'] = `"${wellFormattedSelectedData.output[0].type.charAt(0).toUpperCase() + wellFormattedSelectedData.output[0].type.slice(1)}" selected`;
-        this.selectedComponent['iconSrc'] = this.getIconByType(wellFormattedSelectedData.output[0]);
-        this.selectedComponent['subheading'] = truncatedSubHeading;
+        let formattedDetectorResponse = {
+            metadata: this.wellFormattedDetectorOutput.metadata,
+            output: []
+        };
 
-        this.chatContainerHeight = '65vh';
-        this._copilotContainerService.showCopilotPanel();
+        formattedDetectorResponse = ResponseUtilities.UpdateDetectorResponseWithAsyncChildDetectorsOutput(formattedDetectorResponse, [detectorViewModel]);
+
+        console.log(formattedDetectorResponse);
+        this.customPrompt = this.prepareCustomPrompt(formattedDetectorResponse);
+        this.setSelectedComponentAndOpenCopilot(formattedDetectorResponse);
     }
 
     clearComponentSelection() {
@@ -115,22 +128,40 @@ export class ApplensDetectorCopilotService {
         return metadata;
     }
 
+    private setSelectedComponentAndOpenCopilot(componentDetectorData: any) {
+
+        // TODO Shekhar - Make it more robouust.. null checks
+        let truncatedSubHeading = (componentDetectorData.output[0].title && componentDetectorData.output[0].title.length > 70) ?
+        componentDetectorData.output[0].title.substring(0, 70) + '...' : componentDetectorData.output[0].title;
+
+        this.selectedComponent['heading'] = `"${componentDetectorData.output[0].type.charAt(0).toUpperCase() + componentDetectorData.output[0].type.slice(1)}" selected`;
+        this.selectedComponent['iconSrc'] = this.getIconByType(componentDetectorData.output[0]);
+        this.selectedComponent['subheading'] = truncatedSubHeading;
+
+        this.chatContainerHeight = '65vh';
+        this._copilotContainerService.showCopilotPanel();
+    }
+
     private getIconByType(componentOutput: any) {
         if (componentOutput == undefined || componentOutput.type == undefined)
             return '/assets/img/copilot-components/default.svg';
 
-        switch (componentOutput.type) {
+        switch (componentOutput.type.toLowerCase()) {
             case "insight":
                 if (componentOutput.status === 'Critical')
                     return '/assets/img/copilot-components/insight-critical.svg';
                 else if (componentOutput.status === 'Warning')
                     return '/assets/img/copilot-components/insight-warning.svg';
-                else
+                else if (componentOutput.status === 'Success')
                     return '/assets/img/copilot-components/insight-success.svg';
+                else
+                    return '/assets/img/copilot-components/insight-info.svg'
             case "graph":
                 return '/assets/img/copilot-components/metrics.svg';
-            case "markdown":
+            case "additional information":
                 return '/assets/img/copilot-components/markdown.svg';
+            case "table":
+                return '/assets/img/copilot-components/table.svg';
             default:
                 return '/assets/img/copilot-components/default.svg';
         }

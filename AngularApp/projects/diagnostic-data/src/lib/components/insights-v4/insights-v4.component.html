@@ -5,7 +5,7 @@
   <div *ngFor="let insight of insights">
     <fab-card [isExpandable]="hasContent(insight)" [expanded]="hasContent(insight) && insight.isExpanded"
       [ariaLabel]="insight.title" [background]="getInsightBackground(insight.status)">
-      
+
       <div header style="display: flex; justify-content: space-between;">
         <div style="display: flex;align-items: center;min-height: 40px;">
           <status-icon class="mr-3" [status]="insight.status"></status-icon>
@@ -18,11 +18,11 @@
               [ngTemplateOutletContext]="{'insight':insight}"></ng-container>
           </div>
         </div>
-        <button class="btn btn-default markdown-button" style="float:right;margin-top: -5px" *ngIf="!isPublic"
-        (click)="openCopilot(insight)" tabindex="0" (keyup.enter)="openCopilot()" aria-label="open copilot" 
-        style="display: flex; align-items: center; min-height: 40px;">
-        <span class="fa fa-copy"></span>
-      </button>
+        
+        <span class="additional-options-container">
+          <fab-icon [iconName]="'robot'" [ariaLabel]="'Ask Detector Copilot'" [contentClass]="'additional-option'"
+            (click)="openCopilot(insight)" title="Ask Detector Copilot" (keydown.enter)="openCopilot(insight)" tabindex="0"></fab-icon>
+        </span>
       </div>
 
       <div body style="margin-bottom: 10px;">

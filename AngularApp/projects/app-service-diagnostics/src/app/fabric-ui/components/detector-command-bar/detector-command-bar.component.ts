@@ -54,7 +54,6 @@ export class DetectorCommandBarComponent implements AfterViewInit {
   resourceSku: Sku = Sku.All;
   vfsFonts: any;
 
-  // Shekhar - This command bar is used for external portal
   constructor(private globals: Globals, private _detectorControlService: DetectorControlService, private _diagnosticService: DiagnosticService, private _route: ActivatedRoute, private router: Router, private telemetryService: TelemetryService, private _resourceService: ResourceService, private http: HttpClient) {
   }
 

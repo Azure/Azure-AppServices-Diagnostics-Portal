@@ -6,6 +6,7 @@ import { ClipboardService } from '../../services/clipboard.service';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
+import { GenericDetectorCopilotService } from 'diagnostic-data';
 
 @Component({
   selector: 'markdown-view',
@@ -16,13 +17,15 @@ export class MarkdownViewComponent extends DataRenderBaseComponent {
   renderingProperties: MarkdownRendering;
   markdownData: string;
   isPublic: boolean;
+  rawDiagnosticData : DiagnosticData;
 
-  constructor(private _markdownService: MarkdownService, private _clipboard: ClipboardService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, protected telemetryService: TelemetryService) {
+  constructor(private _markdownService: MarkdownService, private _clipboard: ClipboardService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, protected telemetryService: TelemetryService, private copilotService: GenericDetectorCopilotService) {
     super(telemetryService);
     this.isPublic = config && config.isPublic;
   }
 
   protected processData(data: DiagnosticData) {
+    this.rawDiagnosticData = data;
     super.processData(data);
     this.renderingProperties = <MarkdownRendering>data.renderingProperties;
 
@@ -46,5 +49,9 @@ export class MarkdownViewComponent extends DataRenderBaseComponent {
       'ButtonClicked': 'Copy to Email'
     };
     this.logEvent(TelemetryEventNames.MarkdownClicked, copytoEmailEventProps);
+  }
+
+  openCopilot() {
+    this.copilotService.selectComponentAndOpenCopilot(this.rawDiagnosticData);
   }
 }

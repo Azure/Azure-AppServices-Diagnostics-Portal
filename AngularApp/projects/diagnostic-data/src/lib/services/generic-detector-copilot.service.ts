@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DetectorResponse } from '../models/detector';
+import { DetectorResponse, DetectorViewModeWithInsightInfo } from '../models/detector';
 import { DiagnosticData } from 'dist/diagnostic-data/public_api';
 
 @Injectable()
@@ -14,6 +14,12 @@ export class GenericDetectorCopilotService {
   selectComponentAndOpenCopilot(componentData: DiagnosticData) {
   }
 
-  reset(){
+  processAsyncDetectorViewModels(detectorViewModels: DetectorViewModeWithInsightInfo[]) {
+  }
+
+  selectChildDetectorAndOpenCopilot(detectorViewModel: DetectorViewModeWithInsightInfo) {
+  }
+
+  reset() {
   }
 }

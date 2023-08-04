@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { DiagnosticData, Rendering, RenderingType } from '../../models/detector';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
+import { GenericDetectorCopilotService, TelemetryService } from 'diagnostic-data';
 
 @Component({
   selector: 'data-summary',
@@ -10,16 +11,29 @@ import { DataRenderBaseComponent } from '../data-render-base/data-render-base.co
 export class DataSummaryComponent extends DataRenderBaseComponent {
 
   DataRenderingType = RenderingType.DataSummary;
-
   renderingProperties: Rendering;
+  summaryViewModels: DataSummaryViewModel[] = [];
+  rawDiagnosticData: DiagnosticData;
+  additionalOptionsToShow: any[] = [];
 
-  public summaryViewModels: DataSummaryViewModel[] = [];
+  constructor(protected telemetryService: TelemetryService, private copilotService: GenericDetectorCopilotService) {
+    super(telemetryService);
+  }
 
   protected processData(data: DiagnosticData) {
+
+    this.rawDiagnosticData = data;
     super.processData(data);
     this.renderingProperties = <Rendering>data.renderingProperties;
 
     this.createViewModel();
+
+    // TODO: Shekhar - check if copilot is enabled
+    this.additionalOptionsToShow.push({
+      iconName: 'robot',
+      label: 'Ask Detector Copilot',
+      onClick: this.openCopilot
+    });
   }
 
   private createViewModel() {
@@ -34,6 +48,16 @@ export class DataSummaryComponent extends DataRenderBaseComponent {
         this.summaryViewModels.push(<DataSummaryViewModel>{ name: row[labelColumn], value: row[valueColumn], color: row[colorColumn] });
       });
     }
+  }
+
+  openCopilot = () : void => {
+
+    let data: DiagnosticData = {
+      table: this.rawDiagnosticData.table,
+      renderingProperties: this.rawDiagnosticData.renderingProperties
+    };
+
+    this.copilotService.selectComponentAndOpenCopilot(data);
   }
 }
 
