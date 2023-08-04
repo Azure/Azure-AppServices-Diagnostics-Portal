@@ -26,6 +26,11 @@
     </fab-dialog-footer>
   </fab-dialog>
 </div>
+<fab-dialog *ngIf="!stillLoading && displayResourceAlert" [hidden]="hideResourceAlert" [styles]="alertDialogStyles" [modalProps]="alertDialogProps" [forceFocusInsideTrap]="true" (onDismiss)="resourceAlertDialogCancel()">
+  <fab-dialog-content [title]="alertInfo.header" tabindex="1">  
+    <span [innerHTML]="alertInfo.details"></span>
+  </fab-dialog-content>
+</fab-dialog>
 <applens-header *ngIf="!stillLoading && showDashboardContent"></applens-header>
 <div class="main-row" style="margin: 0px auto; width: 100%;margin-top: 50px;" *ngIf="stillLoading">
   <fab-spinner [size]="loaderSize" [label]="'Loading...'"></fab-spinner>

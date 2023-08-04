@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.5" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageReference Include="Dapper" Version="1.50.5" />
     <PackageReference Include="Dapper.Contrib" Version="1.50.5" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.14.0" />
@@ -30,9 +31,11 @@
 	<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.14" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.1" />
 	<PackageReference Include="Microsoft.Azure.Cosmos" Version="3.27.0" />
+	<PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.5" />
     <PackageReference Include="Microsoft.Azure.Kusto.Cloud.Platform" Version="10.0.1" />
     <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="10.0.1" />
     <PackageReference Include="Microsoft.Azure.SignalR" Version="1.21.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.42.1" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

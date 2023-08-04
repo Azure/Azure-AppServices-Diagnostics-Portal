@@ -231,6 +231,7 @@ export interface DetectorListRendering extends Rendering {
     detectorIds: string[];
     additionalParams?: string;
     resourceUri?: string
+    disableCollapse?: boolean;
 }
 
 export interface MarkdownRendering extends Rendering {

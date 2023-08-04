@@ -24,16 +24,16 @@ namespace AppLensV3
         [HttpOptions("comms/{subscriptionId}")]
         public async Task<IActionResult> Invoke(string subscriptionId, string startTime = null, string endTime = null, string impactedService = null, bool checkForEmergingIssues = false)
         {
-            if (string.IsNullOrWhiteSpace(subscriptionId))
+            if (string.IsNullOrWhiteSpace(subscriptionId) || !Guid.TryParse(subscriptionId, out _))
             {
-                return BadRequest("subscriptionId cannot be empty");
+                return BadRequest("subscriptionId cannot be empty or invalid guid");
             }
 
             if (!DateTimeHelper.PrepareStartEndTimeWithTimeGrain(startTime, endTime, string.Empty, 30, out DateTime startTimeUtc, out DateTime endTimeUtc, out TimeSpan timeGrainTimeSpan, out string errorMessage))
             {
                 return BadRequest(errorMessage);
             }
-                        
+
             List<Communication> comms = await _outageService.GetCommunicationsAsync(subscriptionId, startTimeUtc, endTimeUtc, checkForEmergingIssues, impactedService);
             return Ok(comms);
         }

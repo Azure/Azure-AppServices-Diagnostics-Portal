@@ -72,6 +72,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   expandIssuedChecks: boolean = false;
   isWaterfallViewMode: boolean = false;
   isCaseSubmissionFlow: boolean = false;
+  disableCollapse: boolean = false;
 
   queryParams = {};
   linkStyle: ILinkProps['styles'] = {
@@ -96,6 +97,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   protected processData(data: DiagnosticData) {
     super.processData(data);
     this.renderingProperties = <DetectorListRendering>data.renderingProperties;
+    this.disableCollapse = this.renderingProperties.disableCollapse ?? false;
     this.getResponseFromResource();
     this._genericUserSettingsService.getExpandAnalysisCheckCard().subscribe(expandIssuedChecks => {
       this.expandIssuedChecks = expandIssuedChecks;
