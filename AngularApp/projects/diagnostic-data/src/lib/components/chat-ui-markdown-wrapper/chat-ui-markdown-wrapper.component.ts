@@ -23,11 +23,11 @@ export class ChatUIMarkdownWrapperComponent implements OnInit {
     _data:string = '';
     @Input() set data(val:string) {
         if(val) {
-            this.parseData(val);
             this._data = val;
+            this.parseData(val);
         }
         else {
-            //this._data = '';
+            this._data = '';
         }
     }
     public get data(): string {
@@ -88,7 +88,11 @@ export class ChatUIMarkdownWrapperComponent implements OnInit {
             result.push({ type: "markdown", lang: "", value: part });
           }
         }
-      
+
+        if(result.length == 0) {
+            result.push({ type: "markdown", lang: "", value: input });
+        }
+        
         // Remove empty elements
         return result.filter(e=>{return e.value});
       }
