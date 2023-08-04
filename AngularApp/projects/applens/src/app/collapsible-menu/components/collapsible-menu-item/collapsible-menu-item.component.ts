@@ -17,14 +17,14 @@ import { DirectionalHint } from 'office-ui-fabric-react';
 })
 export class CollapsibleMenuItemComponent {
 
-  private _searchValueSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+  //private _searchValueSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   private searchValueLocal: string;
 
   @Input() menuItem: CollapsibleMenuItem;
   @Input() level: number = 0;
   @Input() boldText: boolean = false;
   @Input() set searchValue(value) {
-    this._searchValueSubject.next(value);
+    //this._searchValueSubject.next(value);
   };
   //if alwaysShowItem is true, item will show even searchTerm is not matched
   @Input() alwaysShowItem: boolean = false;
@@ -45,9 +45,9 @@ export class CollapsibleMenuItemComponent {
     this.children = this.menuItem.subItems;
     this.hasChildren = this.menuItem.subItems && this.menuItem.subItems.length > 0;
 
-    this._searchValueSubject.subscribe(searchValue => {
-        this.searchValueLocal = searchValue;
-    });
+    // this._searchValueSubject.subscribe(searchValue => {
+    //     this.searchValueLocal = searchValue;
+    // });
   }
 
   handleClick() {
