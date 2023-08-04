@@ -110,7 +110,8 @@ export class KustoGPTComponent {
                 });
                 chatMessage.data = additionalFieldsObject;
                 let kustoQuery = KustoUtilities.GetKustoQueryFromMarkdown(chatMessage.message, this.clusterName, this.databaseName);
-                this.chatMessageKustoExecuteLink[chatMessage.id] = `__Cluster:__ ${this.clusterName}\n__Database:__ ${this.databaseName}\n\n<a target='_blank' style='padding:1em;' href='${kustoQuery.KustoDesktopUrl}'><img src='${KustoUtilities.KustoDesktopImage}' style='width:22em'></a><a target='_blank' href='${kustoQuery.Url}'><img src='${KustoUtilities.KustoWebImage}' style='width:22em'></a>\n`;
+                //this.chatMessageKustoExecuteLink[chatMessage.id] = `__Cluster:__ ${this.clusterName}\n__Database:__ ${this.databaseName}\n\n<a target='_blank' style='padding:1em;' href='${kustoQuery.KustoDesktopUrl}'><img src='${KustoUtilities.KustoDesktopImage}' style='width:22em'></a><a target='_blank' href='${kustoQuery.Url}'><img src='${KustoUtilities.KustoWebImage}' style='width:22em'></a>\n`;
+                this.chatMessageKustoExecuteLink[chatMessage.id] = `<a target='_blank' style='padding:1em;' href='${kustoQuery.KustoDesktopUrl}'><img src='${KustoUtilities.KustoDesktopImage}' style='width:18em'></a><a target='_blank' href='${kustoQuery.Url}'><img src='${KustoUtilities.KustoWebImage}' style='width:18em'></a>\n`;
               }
               console.log(chatMessage);
             }
