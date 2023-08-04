@@ -152,6 +152,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
                 let path = 'resource' + startupInfo.resourceId.toLowerCase();
                 path = this._updateRouteBasedOnAdditionalParameters(path, startupInfo.additionalParameters);
                 if (path) {
+                    this._telemetryService.logEvent(TelemetryEventNames.FeaturePathRouting, { "featurePath": `${startupInfo.additionalParameters.featurePath}` });
                     this._router.navigateByUrl(path);
                 }
             }
@@ -186,7 +187,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
             }
         });
 
-        if (this._resourceService && !!this._resourceService.resource && this._resourceService.resource.type === 'Microsoft.Web/sites' && !UriUtilities.isNoResourceCall(this._resourceService.resourceIdForRouting) ) {
+        if (this._resourceService && !!this._resourceService.resource && this._resourceService.resource.type === 'Microsoft.Web/sites' && !UriUtilities.isNoResourceCall(this._resourceService.resourceIdForRouting)) {
             if (locationPlacementId.toLowerCase() !== 'geos_2020-01-01') {
                 // Register Change Analysis Resource Provider.
                 this.armService.postResourceFullResponse(this.providerRegisterUrl, {}, true, '2018-05-01').subscribe((response: HttpResponse<{}>) => {
@@ -220,7 +221,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         this._telemetryService.logPageView(TelemetryEventNames.HomePageLoaded, { "numCategories": this.categories.length.toString() });
-        if(document.querySelector("fab-command-bar")){
+        if (document.querySelector("fab-command-bar")) {
             const ele = <HTMLInputElement>document.querySelector("fab-command-bar");
             ele.focus();
         }
@@ -289,7 +290,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
         if (additionalParameters.featurePath) {
             let featurePath: string = additionalParameters.featurePath;
             featurePath = featurePath.startsWith('/') ? featurePath.replace('/', '') : featurePath;
-
             return `${route}/${featurePath}`;
         }
 
@@ -369,7 +369,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.isPreview = this.abTestingService.isPreview;
         var isContainerApps = this._resourceService && !!this._resourceService.resource &&
             (this._resourceService.resource.type.toLowerCase() === 'microsoft.web/containerapps' ||
-            this._resourceService.resource.type.toLowerCase() === 'microsoft.app/containerapps');
+                this._resourceService.resource.type.toLowerCase() === 'microsoft.app/containerapps');
         var isArcApplianceApps = this._resourceService && !!this._resourceService.resource && this._resourceService.resource.type.toLowerCase() === 'microsoft.resourceConnector/appliances';
 
         this.enableABTesting = this.abTestingService.enableABTesting && !isContainerApps && !isArcApplianceApps;
@@ -385,7 +385,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     openSlotInNewTab(event: Event) {
         event.stopPropagation();
         const url = this.abTestingService.generateSlotLink();
-        this._telemetryService.logEvent(TelemetryEventNames.OpenSlotInNewTab,{
+        this._telemetryService.logEvent(TelemetryEventNames.OpenSlotInNewTab, {
             currentSlot: SlotType[this.abTestingService.slot]
         });
         window.open(url);
