@@ -18,14 +18,14 @@ import { SuffixArray } from 'diagnostic-data';
 })
 export class CollapsibleMenuItemComponent {
 
-  //private _searchValueSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+  private _searchValueSubject: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   private searchValueLocal: string;
 
   @Input() menuItem: CollapsibleMenuItem;
   @Input() level: number = 0;
   @Input() boldText: boolean = false;
   @Input() set searchValue(value) {
-    //this._searchValueSubject.next(value);
+    this._searchValueSubject.next(value);
   };
   //if alwaysShowItem is true, item will show even searchTerm is not matched
   @Input() alwaysShowItem: boolean = false;
@@ -46,9 +46,9 @@ export class CollapsibleMenuItemComponent {
     this.children = this.menuItem.subItems;
     this.hasChildren = this.menuItem.subItems && this.menuItem.subItems.length > 0;
 
-    // this._searchValueSubject.subscribe(searchValue => {
-    //     this.searchValueLocal = searchValue;
-    // });
+    this._searchValueSubject.subscribe(searchValue => {
+        this.searchValueLocal = searchValue;
+    });
   }
 
   handleClick() {
@@ -92,8 +92,6 @@ export class CollapsibleMenuItem {
   icon: string;
   group?:string
   visible?:boolean = true;
-  idSuffixArray?: Array<string>;
-  labelSuffixArray?: Array<string>;
 
   constructor(label: string, id: string, onClick: Function, isSelected: Function, icon: string = null, expanded: boolean = false, subItems: CollapsibleMenuItem[] = [], metadata: string = null) {
     this.label = label;
@@ -105,7 +103,5 @@ export class CollapsibleMenuItem {
     this.isSelected = isSelected;
     this.icon = icon;
     this.visible = true;
-    this.idSuffixArray = SuffixArray.buildSuffixArray(id);
-    this.labelSuffixArray = SuffixArray.buildSuffixArray(label);
   }
 }

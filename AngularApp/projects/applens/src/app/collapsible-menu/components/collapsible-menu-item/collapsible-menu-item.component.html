@@ -2,9 +2,9 @@
     <div tabindex="0" (keyup.enter)="handleClick()" class="menu-item" (click)="handleClick()"  [style.padding-left]="getPadding()" [style.font-size]="getFontSize()">
         <i class="fa expand-icon" *ngIf=" menuItem.subItems && menuItem.subItems.length > 0" [class.fa-caret-right]="!menuItem.expanded" [class.fa-caret-down]="menuItem.expanded"></i>
         <i class="fa" *ngIf="menuItem.icon" [ngClass]="menuItem.icon"></i>
-        <span class="menu-label" [innerHtml]="menuItem.label"></span>
+        <span class="menu-label" [innerHtml]="menuItem.label | searchmatch:searchValueLocal"></span>
     </div>
     <div class="menu-item-children" [@expand]="menuItem.expanded ? 'shown' : 'hidden'">
-      <collapsible-menu-item *ngFor="let item of menuItem.subItems" [menuItem]="item" [level]="level + 1"></collapsible-menu-item>
+      <collapsible-menu-item *ngFor="let item of menuItem.subItems" [searchValue]="searchValueLocal" [menuItem]="item" [level]="level + 1"></collapsible-menu-item>
     </div>
 </div>

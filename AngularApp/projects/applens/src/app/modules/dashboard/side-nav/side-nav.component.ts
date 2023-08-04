@@ -669,7 +669,6 @@ export class SideNavComponent implements OnInit {
   private checkMenuItemMatchesWithSearchTerm(item: CollapsibleMenuItem, searchValue: string) {
     if (searchValue == null || searchValue.length === 0) return true;
     // return StringUtilities.IndexOf(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || StringUtilities.IndexOf(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0;
-    //return SuffixArray.contains(searchValue, item.labelSuffixArray) || SuffixArray.contains(searchValue, item.idSuffixArray);
     return boyerMooreSundayStringSearch(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || boyerMooreSundayStringSearch(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0;
   }
 
