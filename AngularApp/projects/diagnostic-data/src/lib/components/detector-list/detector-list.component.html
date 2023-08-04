@@ -162,43 +162,25 @@
                   </status-icon>
                   <div class="list-view-title">{{viewModel.model.title}}</div>
                 </div>
-                <div body>
-                  <div style="margin-bottom: 10px;">{{viewModel.insightTitle}}</div>
+              </div>
+              <div body>
+                <div style="margin-bottom: 10px;">Sorry there was a problem. Please try viewing the detector here</div>
+              </div>
+              <div footer>
+                <div style="margin-bottom: 12px;">
+                  <fab-link *ngIf="this.overrideResourceUri == ''" (onClick)="selectDetector(viewModel)">View
+                    details</fab-link>
+                  <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open in
+                    new tab]</fab-link>
                 </div>
-                <div footer>
-                  <div style="margin-bottom: 12px;">
-                    <fab-link *ngIf="this.overrideResourceUri == ''" (onClick)="selectDetector(viewModel)">View
-                      details</fab-link>
-                    <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open
-                      in
-                      new tab]</fab-link>
-                  </div>
-                </div>
+              </div>
             </fab-card>
           </div>
         </div>
+
       </collapsible-list-item>
     </collapsible-list-fabric>
   </div>
-  <br />
-
-  </collapsible-list-item>
-  </collapsible-list-fabric>
-  </div>
-
-
-  <!-- <ng-template #drilldownTemplate>
-  <div>
-    <div style="display: inline-block;margin-left: 20px">
-      <h2>{{ drilldownDetectorName }}</h2>
-    </div>
-    <div style="display: inline-block;margin-left: 10px">
-      <a tabindex="0" (keyup.enter)="goBackToParentView()" aria-label="Link to go back to the analysis view"
-        role="button" (click)="goBackToParentView()">Back to Observations</a>
-    </div>
-  </div>
-  <router-outlet></router-outlet>
-</ng-template> -->
 
   <solutions-panel [isPanelOpenObservable]="solutionPanelOpenSubject" [solutions]="allSolutions"
     [title]="solutionTitle">
