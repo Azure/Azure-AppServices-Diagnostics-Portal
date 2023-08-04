@@ -1,133 +1,3 @@
-// class AhoCorasickNode {
-//     public children: Map<string, AhoCorasickNode>;
-//     public output: string[];
-//     public fail: AhoCorasickNode;
-
-//     constructor() {
-//         this.children = new Map();
-//         this.output = [];
-//         this.fail = null;
-//     }
-// }
-
-// class AhoCorasick {
-//     private root: AhoCorasickNode;
-
-//     constructor(patterns: string[]) {
-//         this.root = new AhoCorasickNode();
-//         this.buildTrie(patterns);
-//         this.buildFailTransitions();
-//     }
-
-//     private buildTrie(patterns: string[]): void {
-//         for (const pattern of patterns) {
-//             let node = this.root;
-//             for (const char of pattern) {
-//                 if (!node.children.has(char)) {
-//                     node.children.set(char, new AhoCorasickNode());
-//                 }
-//                 node = node.children.get(char);
-//             }
-//             node.output.push(pattern);
-//         }
-//     }
-
-//     private buildFailTransitions(): void {
-//         const queue: AhoCorasickNode[] = [];
-//         for (const childNode of this.root.children.keys()) {
-//             childNode.fail = this.root;
-//             queue.push(childNode);
-//         }
-
-//         while (queue.length > 0) {
-//             const currentNode = queue.shift();
-//             for (const [char, childNode] of currentNode.children) {
-//                 queue.push(childNode);
-//                 let failNode = currentNode.fail;
-//                 while (failNode && !failNode.children.has(char)) {
-//                     failNode = failNode.fail;
-//                 }
-//                 childNode.fail = failNode ? failNode.children.get(char) : this.root;
-//                 childNode.output = childNode.output.concat(childNode.fail.output);
-//             }
-//         }
-//     }
-
-//     public findMatches(candidateString: string): Map<string, string[]> {
-//         const matches = new Map<string, string[]>();
-//         let currentNode = this.root;
-
-//         for (const char of candidateString) {
-//             while (currentNode && !currentNode.children.has(char)) {
-//                 currentNode = currentNode.fail;
-//             }
-
-//             currentNode = currentNode ? currentNode.children.get(char) : this.root;
-//             if (currentNode.output.length > 0) {
-//                 for (const pattern of currentNode.output) {
-//                     if (!matches.has(pattern)) {
-//                         matches.set(pattern, []);
-//                     }
-//                     matches.get(pattern).push(candidateString);
-//                 }
-//             }
-//         }
-
-//         return matches;
-//     }
-// }
-
-
-// export function findMatchingStringsByAhoCorasick(inputStrings: string[], candidateStrings: string[]): Record<string, string[]> {
-//     const automaton = new AhoCorasick(inputStrings);
-//     const result: Record<string, string[]> = {};
-
-//     for (const inputString of inputStrings) {
-//         result[inputString] = [];
-//     }
-
-//     for (const candidateString of candidateStrings) {
-//         const matches = automaton.findMatches(candidateString);
-//         for (const [pattern, occurrences] of matches.entries()) {
-//             result[pattern] = result[pattern].concat(occurrences);
-//         }
-//     }
-
-//     return result;
-// }
-
-export class SuffixArray {
-    public static buildSuffixArray(s: string): Array<string> {
-        const suffixArray: Array<string> = new Array<string>();
-        if(!s) return suffixArray;
-        s = s.toLowerCase();
-        for (let i = 0; i < s.length; i++) {
-            suffixArray.push(s.substring(i));
-        }
-        suffixArray.sort();
-        return suffixArray;
-    }
-
-    public static contains(target: string, suffixArray: Array<string>): boolean {
-        if(!suffixArray) return false;
-        target = target.toLowerCase();
-        let left = 0;
-        let right = suffixArray.length - 1;
-        while (left <= right) {
-            const mid = Math.floor((left + right) / 2);
-            const suffix = suffixArray[mid];
-            const suffixContainsTarget = suffix.startsWith(target);
-            if (suffixContainsTarget) {
-                return true;
-            } else if (suffix < target) {
-                left = mid + 1;
-            } else {
-                right = mid - 1;
-            }
-        }
-        return false;
-    }
-}
 //Boyer-Moore-Sunday search algorithm
 export function boyerMooreSundayStringSearch(text: string, pattern: string): number {
     const n = text.length;
@@ -164,4 +34,67 @@ export function boyerMooreSundayStringSearch(text: string, pattern: string): num
     return -1;
 }
 
+//From https://github.com/python/cpython/blob/main/Objects/stringlib/fastsearch.h
+//
+export class FastSearch {
+    private static readonly STRINGLIB_BLOOM_WIDTH = 32;
+
+    private static STRINGLIB_BLOOM_ADD(mask: number, ch: number): number {
+        return (mask |= (1 << (ch & (this.STRINGLIB_BLOOM_WIDTH - 1))));
+    }
+
+    private static STRINGLIB_BLOOM(mask: number, ch: number): boolean {
+        return ((mask & (1 << (ch & (this.STRINGLIB_BLOOM_WIDTH - 1)))) !== 0);
+    }
+
+    public static fast_search(text: string, pattern: string): number {
+        const n = text.length;
+        const m = pattern.length;
+        const w = n - m;
+        const mlast = m - 1;
+        let skip = mlast - 1;
+        let mask = 0;
+        let i, j;
+        const ss = text.substring(m - 1);
+        const pp = pattern.substring(m - 1);
+
+        // create compressed boyer-moore delta 1 table
+        // process pattern[:-1]
+        for (i = 0; i < mlast; i++) {
+            mask = this.STRINGLIB_BLOOM_ADD(mask, pattern.charCodeAt(i));
+            if (pattern[i] === pattern[mlast]) {
+                skip = mlast - i - 1;
+            }
+        }
+        // process pattern[-1] outside the loop
+        mask = this.STRINGLIB_BLOOM_ADD(mask, pattern.charCodeAt(mlast));
+
+        for (i = 0; i <= w; i++) {
+            if (ss[i] === pp[0]) {
+                // candidate match
+                for (j = 0; j < mlast; j++) {
+                    if (text[i + j] !== pattern[j]) {
+                        break;
+                    }
+                }
+                if (j === mlast) {
+                    // got a match!
+                    return i;
+                }
+                // miss: check if next character is part of pattern
+                if (!this.STRINGLIB_BLOOM(mask, ss.charCodeAt(i + 1))) {
+                    i = i + m;
+                } else {
+                    i = i + skip;
+                }
+            } else {
+                // skip: check if next character is part of pattern
+                if (!this.STRINGLIB_BLOOM(mask, ss.charCodeAt(i + 1))) {
+                    i = i + m;
+                }
+            }
+        }
+        return -1;
+    }
+}
 

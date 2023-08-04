@@ -2,7 +2,6 @@ import { Component, Input } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { BehaviorSubject } from 'rxjs';
 import { DirectionalHint } from 'office-ui-fabric-react';
-import { SuffixArray } from 'diagnostic-data';
 
 @Component({
   selector: 'collapsible-menu-item',
