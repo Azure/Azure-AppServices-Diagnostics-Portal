@@ -637,7 +637,7 @@ export class DiagnosticApiService {
   public getEnableDetectorDevelopment(): Observable<boolean> {
     const path = "api/appsettings/DetectorDevelopmentEnabled";
     return this.get<boolean>(path).pipe(map((res) => {
-      return res.toString().toLowerCase() === "true";
+      return `${res}`.toLowerCase() === "true";
     }));
   }
   public getDevopsConfig(resourceProviderType: string): Observable<any> {
@@ -681,7 +681,7 @@ export class DiagnosticApiService {
   public isStaging(): Observable<boolean> {
     let path = "api/appsettings/APPLENS_ENVIRONMENT";
     return this.get<boolean>(path).pipe(map((res) => {
-      return res.toString().toLowerCase() === 'staging';
+      return `${res}`.toLowerCase() === 'staging';
     }));
   }
 
