@@ -370,7 +370,7 @@ mostUsedOutputBinding
           if(enabled) {
             this.currentApiCallCount = 0;
             this.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom, ChatModel.GPT3), this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
-              "Given the chat history, please generate a statement that accurately captures the user's intent in the last message. Do not attempt to answer the user's question, the goal is to construct a question that conveys the user's most recent intent. Phrase the question as if the user were talking with the AI assistant in first person. Output only the question without any explanation."
+              "Given the chat history, consolidate the users latest topic of discussion into a self contained question. Do not attempt to answer the user's question, the goal is to construct a self contained question that captures the user's most recent topic of discussion. Phrase the question as if the user were talking with the AI assistant in first person. Output only the question without any explanation."
               , '', true)
               .subscribe((messageObj) => {
                 if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
@@ -382,8 +382,10 @@ mostUsedOutputBinding
         });
       }
     }
-    
   }
+  /*
+  Considering the chat history, consolidate it into a self-contained question. Do not answer the user's question. Respond with only the consolidated question and phrase it as if the user were talking to the AI assistant in first person.
+  */
 
   private GetEmptyChatMessage(): ChatMessage {
     return {
