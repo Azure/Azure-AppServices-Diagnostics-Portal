@@ -6,7 +6,7 @@ import { IButtonStyles, ITextFieldProps, PanelType } from 'office-ui-fabric-reac
 import { Observable, Subscription, of } from 'rxjs';
 import {v4 as uuid} from 'uuid';
 import { map } from 'rxjs/operators';
-import { ChatFeedbackAdditionalField, ChatFeedbackModel, ChatFeedbackValidationStatus, FeedbackExplanationModes } from '../../../shared/models/openAIChatFeedbackModel';
+import { ChatFeedbackAdditionalField, ChatFeedbackModel, ChatFeedbackPanelOpenParams, ChatFeedbackValidationStatus, FeedbackExplanationModes } from '../../../shared/models/openAIChatFeedbackModel';
 import { AdalService } from 'adal-angular4';
 import { KeyValuePair } from 'dist/diagnostic-data/lib/models/common-models';
 import { ResourceService } from '../../../shared/services/resource.service';
@@ -55,17 +55,21 @@ export class ChatFeedbackPanelComponent implements OnInit {
   @Input() resourceSpecificInfo: KeyValuePair[] = [];
 
   
-  _isOpen:boolean = false;
-  @Input() set isOpen(val:boolean) {
-    if(val) {
-      this.initValues();
+  _feedbackPanelState:ChatFeedbackPanelOpenParams = {
+    isOpen: false,
+    chatMessageId: null
+  };
+
+  @Input() set feedbackPanelState(val:ChatFeedbackPanelOpenParams) {
+    if(val && val.isOpen) {
+      this.initValues(val);
     }
-    this._isOpen = val;
+    this._feedbackPanelState = val;
   }
-  public get isOpen(): boolean {
-    return this._isOpen;
+  public get feedbackPanelState(): ChatFeedbackPanelOpenParams {
+    return this._feedbackPanelState;
   }
-  @Output() isOpenChange = new EventEmitter<boolean>();
+  @Output() feedbackPanelStateChange = new EventEmitter<ChatFeedbackPanelOpenParams>();
 
   @Output() onDismissed = new EventEmitter<ChatFeedbackModel>();
   @Input() onBeforeSubmit: (feedbackModel: ChatFeedbackModel) => Observable<ChatFeedbackModel>;
@@ -165,8 +169,11 @@ mostUsedOutputBinding
 
   public dismissedHandler(source?:string) {
     this.savingInProgress = false;
-    this.isOpen = false;
-    this.isOpenChange.emit(this.isOpen);
+    this.feedbackPanelState = {
+      isOpen: false,
+      chatMessageId: this.systemResponse && this.systemResponse.message ? this.systemResponse.id : null
+    };
+    this.feedbackPanelStateChange.emit(this.feedbackPanelState);
     
     if(source === 'Close') {
       this.onDismissed.emit(null);
@@ -298,10 +305,13 @@ mostUsedOutputBinding
   }
 
   ngOnInit(): void {
-    this.initValues();
+    //this.initValues();
   }
 
-  private initValues(): void {
+  private initValues(panelOpenParams:ChatFeedbackPanelOpenParams): void {
+    if(!panelOpenParams.isOpen) {
+      return;
+    }
     this.statusMessage = '';
     
       
@@ -309,7 +319,13 @@ mostUsedOutputBinding
 
     // Update user question    
     if(this.chatIdentifier && this._chatContextService.messageStore[this.chatIdentifier] && this._chatContextService.messageStore[this.chatIdentifier].length > 0 ) {
-      chatMessagesToWorkWith = this._chatContextService.messageStore[this.chatIdentifier].slice(-1 * this.chatContextLength);
+      if(panelOpenParams.chatMessageId && this._chatContextService.messageStore[this.chatIdentifier] && this._chatContextService.messageStore[this.chatIdentifier].some((msg:ChatMessage)  => msg.id == panelOpenParams.chatMessageId) ) {
+        let chatMessageIndex = this._chatContextService.messageStore[this.chatIdentifier].findIndex((msg:ChatMessage)  => msg.id == panelOpenParams.chatMessageId);
+        chatMessagesToWorkWith = this._chatContextService.messageStore[this.chatIdentifier].slice( this.chatContextLength > chatMessageIndex ? 0 : (chatMessageIndex - this.chatContextLength) , chatMessageIndex + 1);
+      }
+      else {
+        chatMessagesToWorkWith = this._chatContextService.messageStore[this.chatIdentifier].slice(-1 * this.chatContextLength);
+      }
     }
 
     if(chatMessagesToWorkWith && chatMessagesToWorkWith.length > 0) {
@@ -353,10 +369,6 @@ mostUsedOutputBinding
         this._openAIService.CheckEnabled().subscribe((enabled) => {
           if(enabled) {
             this.currentApiCallCount = 0;
-
-            // this.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom, ChatModel.GPT3), this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
-//                 'You are a chat assistant that helps consolidate the users final message in the form of a question. Given the current chat history, help construct a question for the user that can be answered by the system. Do not answer the users question, the goal is to only contruct a consolidated user question.'
-              // , '')
             this.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom, ChatModel.GPT3), this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
               "Given the chat history, please generate a statement that accurately captures the user's intent in the last message. Do not attempt to answer the user's question, the goal is to construct a question that conveys the user's most recent intent. Phrase the question as if the user were talking with the AI assistant in first person."
               , '', true)

@@ -7,6 +7,11 @@ export enum FeedbackExplanationModes {
     ComparativeReasoning = 'ComparativeReasoning'
 }
 
+export interface ChatFeedbackPanelOpenParams {
+  isOpen: boolean,
+  chatMessageId: string,
+}
+
 export interface ChatFeedbackAdditionalField {
     id:string, 
     labelText:string, 

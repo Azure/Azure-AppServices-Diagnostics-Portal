@@ -1,5 +1,5 @@
 <div>
-  <fab-panel [isOpen] = 'isOpen' [type]="panelType" [customWidth]="width" (onDismiss)="dismissedHandler('Close')" [renderFooterContent]='PanelFooter' [isFooterAtBottom]="true"
+  <fab-panel [isOpen] = 'feedbackPanelState.isOpen' [type]="panelType" [customWidth]="width" (onDismiss)="dismissedHandler('Close')" [renderFooterContent]='PanelFooter' [isFooterAtBottom]="true"
   [headerText]="headerText">  
     <div style="margin: 5px; display:flex;flex-direction: column;">
       <div style="height:95%">

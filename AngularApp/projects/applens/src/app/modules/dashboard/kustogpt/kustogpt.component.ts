@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
 import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions } from 'diagnostic-data';
 import { ApplensGlobal } from '../../../applens-global';
-import { ChatFeedbackAdditionalField, ChatFeedbackModel, FeedbackExplanationModes } from '../../../shared/models/openAIChatFeedbackModel';
+import { ChatFeedbackAdditionalField, ChatFeedbackModel, ChatFeedbackPanelOpenParams, FeedbackExplanationModes } from '../../../shared/models/openAIChatFeedbackModel';
 import { Observable, of } from 'rxjs';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { ResourceService } from '../../../shared/services/resource.service';
@@ -23,7 +23,7 @@ export class KustoGPTComponent {
 
   public apiProtocol = APIProtocol.WebSocket;
   public chatModel = ChatModel.GPT4;
-  public feedbackPanelOpenState: boolean = false;
+  public feedbackPanelOpenState:ChatFeedbackPanelOpenParams = {isOpen:false, chatMessageId: null};
   public chatIdentifier: string = 'analyticskustocopilot';
   public feedbackExplanationMode:FeedbackExplanationModes = FeedbackExplanationModes.Explanation;
 
@@ -57,7 +57,10 @@ export class KustoGPTComponent {
   public onDismissed(feedbackModel:ChatFeedbackModel) {
     console.log('onDismissed clicked');
     console.log(this.feedbackPanelOpenState);
-    this.feedbackPanelOpenState = false;
+    this.feedbackPanelOpenState = {
+      isOpen: false,
+      chatMessageId: null
+    };
     console.log(this.feedbackPanelOpenState);
     console.log(feedbackModel);
   }
@@ -71,10 +74,16 @@ export class KustoGPTComponent {
   
   onFeedbackClicked = (chatMessage:ChatMessage, feedbackType:string):void => {
     if(feedbackType === FeedbackOptions.Dislike) {
-      this.feedbackPanelOpenState = true;
+      this.feedbackPanelOpenState = {
+        isOpen: true,
+        chatMessageId: chatMessage.id
+      };
     }
     else {
-      this.feedbackPanelOpenState = false;
+      this.feedbackPanelOpenState = {
+        isOpen: false,
+        chatMessageId: null
+      };
     }
   }
 
