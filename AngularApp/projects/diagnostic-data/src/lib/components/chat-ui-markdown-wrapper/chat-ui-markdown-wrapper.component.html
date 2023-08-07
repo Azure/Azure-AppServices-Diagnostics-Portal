@@ -3,7 +3,7 @@
   <markdown  *ngIf = "isMarkdown(element)" [data]="getElementValue(element)"></markdown>
   <div *ngIf="isSnippet(element)">
     <div class = "snippet-header-wrapper">
-      <div> {{getSnippetLanguage(element)}} </div>
+      <span class = "snippet-lang-text"> {{getSnippetLanguage(element)}} </span>
       <div (click)="copyDataToClipboard(element)" class="snippet-copy-button"> <i class="snippet-copy-icon fa fa-files-o"></i>Copy snippet </div>
     </div>
     <div class = 'snippet-markdown-wrapper'>
