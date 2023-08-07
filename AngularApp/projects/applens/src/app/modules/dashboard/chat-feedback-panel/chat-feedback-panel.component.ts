@@ -638,7 +638,6 @@ mostUsedOutputBinding
 
   validateFeedback():Observable<boolean> {
     if(this.correctResponseFeedback) {
-
       let chatFeedbackModel = this.GetChatFeedbackModel();
 
       if(this.onBeforeSubmit) {
@@ -665,9 +664,14 @@ mostUsedOutputBinding
         this.statusMessage = '';
         this.statusMessage += (!this.feedbackUserQuestion.displayMessage) ? 'Error: User question is required.\n': '';
         this.statusMessage += (!this.correctResponseFeedback) ? 'Error:Expected response is required.': '';
-        return of(!this.statusMessage);        
+        return of(!this.statusMessage);
       }
-      
+    }
+    else {
+      this.statusMessage = '';
+      this.statusMessage += (!this.feedbackUserQuestion.displayMessage) ? 'Error: User question is required.\n': '';
+      this.statusMessage += (!this.correctResponseFeedback) ? 'Error:Expected response is required.': '';
+      return of(!this.statusMessage);
     }
   }
 
@@ -676,23 +680,31 @@ mostUsedOutputBinding
     {
       if(this.feedbackExplanationMode ==  FeedbackExplanationModes.ComparativeReasoning)
       {
-        return `UserQuestion: ${this.feedbackUserQuestion.displayMessage}
+        return `--------------------UserQuestion--------------------
+${this.feedbackUserQuestion.displayMessage}
+--------------------UserQuestion--------------------
 
-        IncorrectAnswer: ${this.systemResponse.message}
+--------------------IncorrectAnswer--------------------
+${this.systemResponse.message}
+--------------------IncorrectAnswer--------------------
 
-        CorrectAnswer: ${this.correctResponseFeedback}
-        
-        You are a chat assistant that helps reason why an answer to a question is incorrect and generates a summary reasoning about why the answer is incorrect. Given the UserQuestion, IncorrectAnswer and CorrectAnswer, compare the correct and incorrect answers. Please provide a detailed explanation of why the correct response is indeed correct and why the incorrect response is wrong. Break down the reasoning step by step to help the user understand the concepts better. You can also highlight any key points or examples that illustrate the differences between the two responses. Make the explanation clear, concise, and informative so that the user gains a deeper understanding of the topic.`;
+--------------------CorrectAnswer--------------------
+${this.correctResponseFeedback}
+--------------------CorrectAnswer--------------------
+
+You are a chat assistant that helps reason why an answer to a question is incorrect and generates a summary reasoning about why the answer is incorrect. Given the UserQuestion, IncorrectAnswer and CorrectAnswer, compare the correct and incorrect answers. Please provide a detailed explanation of why the correct response is indeed correct and why the incorrect response is wrong. Break down the reasoning step by step to help the user understand the concepts better. You can also highlight any key points or examples that illustrate the differences between the two responses. Make the explanation clear, concise, and informative so that the user gains a deeper understanding of the topic.`;
       }
       else {
         if(this.feedbackExplanationMode == FeedbackExplanationModes.Explanation) {
-          return `UserQuestion: ${this.feedbackUserQuestion.displayMessage}
+          return `--------------------UserQuestion--------------------
+${this.feedbackUserQuestion.displayMessage}
+--------------------UserQuestion--------------------
 
-          IncorrectAnswer: ${this.systemResponse.message}
-
-          CorrectAnswer: ${this.correctResponseFeedback}
+--------------------ExpectedResponse--------------------
+${this.correctResponseFeedback}
+--------------------ExpectedResponse--------------------
           
-          You are a chat assistant that helps explain why an answer to a question is correct and generates a summary. Given the UserQuestion, IncorrectAnswer and CorrectAnswer, please provide a detailed explanation of why the correct response is indeed correct. Break down the reasoning step by step to help the user understand the concepts better. You can also highlight any key points or examples that illustrate the response. Make the explanation clear, concise, and informative so that the user gains a deeper understanding of the topic. Make sure not to provide any reference or mention of the IncorrectAnswer in your explanation.`;
+You are a chat assistant that helps explain why an expected response successfully answers the user's question. Given the UserQuestion and ExpectedResponse, please provide a detailed explanation of why and how the expected response indeed addresses the users question. Break down the explanation step by step to help the user understand the concepts better. You can also highlight any key points or examples that illustrate the response. Make the explanation clear, concise, and informative so that the user gains a deeper understanding of the topic.`;
         }
       }
     }
