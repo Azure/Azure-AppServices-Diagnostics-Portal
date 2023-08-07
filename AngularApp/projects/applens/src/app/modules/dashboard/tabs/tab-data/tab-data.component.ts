@@ -88,7 +88,7 @@ export class TabDataComponent implements OnInit, OnDestroy {
   copilotEnabled: boolean = true;
   copilotServiceMembersInitialized: boolean = false;
 
-  constructor(public resourceService: ResourceService, public _copilotContainerService: ApplensCopilotContainerService, private _detectorCopilotService: ApplensDetectorCopilotService,
+  constructor(public resourceService: ResourceService, public _copilotContainerService: ApplensCopilotContainerService, public _detectorCopilotService: ApplensDetectorCopilotService,
     private _route: ActivatedRoute, private _observerService: ObserverService, private _applensApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService,
     private _detectorControlService: DetectorControlService, private _applensCommandBarService: ApplensCommandBarService, private _applensGlobal: ApplensGlobal,
     private _telemetryService: TelemetryService, private _http: HttpClient) { }
@@ -96,6 +96,10 @@ export class TabDataComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.copilotServiceMembersInitialized = false;
+
+    this._detectorCopilotService.isEnabled().subscribe(res => {
+      this.copilotEnabled = res && !this.isWorkflowDetector;
+    });
 
     // If route query params contains detectorQueryParams, setting the values in shared service so it is accessible in all components
     this._route.queryParams.subscribe((queryParams: Params) => {
@@ -172,12 +176,6 @@ export class TabDataComponent implements OnInit, OnDestroy {
     // as this file caused problems when being compiled in a library project like diagnostic-data
     //
     this._http.get<any>('assets/vfs_fonts.json').subscribe((data: any) => { this.vfsFonts = data });
-
-    this._diagnosticApi.get<boolean>('api/openai/detectorcopilot/enabled').subscribe(res => {
-
-      this.copilotEnabled = res &&
-        this.isWorkflowDetector == false;
-    });
   }
 
   ngOnDestroy(): void {
@@ -203,6 +201,10 @@ export class TabDataComponent implements OnInit, OnDestroy {
     if (this._route.snapshot.params['workflowId'] != null) {
       this.detector = this._route.snapshot.params['workflowId'];
       this.isWorkflowDetector = true;
+
+      // disable copilot for workflows
+      this.copilotEnabled = false;
+      
     } else {
       this.detector = this._route.snapshot.params['detector'];
     }

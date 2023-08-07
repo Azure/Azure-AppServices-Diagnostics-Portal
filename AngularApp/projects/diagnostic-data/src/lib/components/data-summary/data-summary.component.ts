@@ -28,11 +28,14 @@ export class DataSummaryComponent extends DataRenderBaseComponent {
 
     this.createViewModel();
 
-    // TODO: Shekhar - check if copilot is enabled
-    this.additionalOptionsToShow.push({
-      iconName: 'robot',
-      label: 'Ask Detector Copilot',
-      onClick: this.openCopilot
+    this.copilotService.isEnabled().subscribe(res => {
+      if (res == true) {
+        this.additionalOptionsToShow.push({
+          iconName: 'robot',
+          label: 'Ask Detector Copilot',
+          onClick: this.openCopilot
+        });
+      }
     });
   }
 
@@ -50,7 +53,7 @@ export class DataSummaryComponent extends DataRenderBaseComponent {
     }
   }
 
-  openCopilot = () : void => {
+  openCopilot = (): void => {
 
     let data: DiagnosticData = {
       table: this.rawDiagnosticData.table,

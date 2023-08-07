@@ -663,7 +663,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       }
     });
 
-    this._diagnosticApi.get<boolean>('api/openai/detectorcopilot/enabled').subscribe(res => {
+    this._diagnosticApi.get<boolean>('api/openai/detectorcopilot/enabled?detectorMode=develop').subscribe(res => {
 
       this.copilotEnabled = res &&
         isSystemInvoker == false &&

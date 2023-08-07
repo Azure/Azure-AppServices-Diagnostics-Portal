@@ -81,7 +81,7 @@ export class TabAnalysisComponent implements OnInit, OnDestroy {
       this.copilotServiceMembersInitialized = true;
     });
 
-    this._diagnosticApi.get<boolean>('api/openai/detectorcopilot/enabled').subscribe(res => {
+    this._detectorCopilotService.isEnabled().subscribe(res => {
       this.copilotEnabled = res;
     });
   }

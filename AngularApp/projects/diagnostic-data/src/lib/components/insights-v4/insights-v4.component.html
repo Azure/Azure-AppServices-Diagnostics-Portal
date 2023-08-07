@@ -20,7 +20,7 @@
         </div>
         
         <span class="additional-options-container">
-          <fab-icon [iconName]="'robot'" [ariaLabel]="'Ask Detector Copilot'" [contentClass]="'additional-option'"
+          <fab-icon *ngIf="copilotEnabled" [iconName]="'robot'" [ariaLabel]="'Ask Detector Copilot'" [contentClass]="'additional-option'"
             (click)="openCopilot(insight)" title="Ask Detector Copilot" (keydown.enter)="openCopilot(insight)" tabindex="0"></fab-icon>
         </span>
       </div>

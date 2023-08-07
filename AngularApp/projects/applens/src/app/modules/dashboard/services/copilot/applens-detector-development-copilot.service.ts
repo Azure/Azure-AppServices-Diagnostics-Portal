@@ -20,7 +20,7 @@ export class ApplensDetectorDevelopmentCopilotService {
   public onCodeOperationProgressState: BehaviorSubject<{ inProgress: boolean }>;
   public chatComponentIdentifier: string = 'detectorcopilot';
   public copilotChatHeader: string;
-  public chatConfigFile: string = 'assets/chatConfigs/detectordevcopilot.json';
+  public chatConfigFile: string = 'assets/chatConfigs/detectorcopilot/detectordevcopilot.json';
   public logPrefix: string = 'DetectorCopilot';
 
   constructor(private _chatContextService: ChatUIContextService, private _copilotContainerService: ApplensCopilotContainerService) {
@@ -98,7 +98,7 @@ export class ApplensDetectorDevelopmentCopilotService {
       this._copilotContainerService.copilotHeaderTitle = 'Detector Copilot (Preview)';
     }
 
-    this.chatConfigFile = `assets/chatConfigs/${this.chatComponentIdentifier}.json`;
+    this.chatConfigFile = `assets/chatConfigs/detectorcopilot/${this.chatComponentIdentifier}.json`;
     this.logPrefix = this.chatComponentIdentifier;
 
     this.copilotChatHeader = `

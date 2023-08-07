@@ -35,7 +35,7 @@
 <div style="margin-top: 5px">
   <openai-chat [chatAlignment]="'left'" [chatIdentifier]="_copilotService.detectorCopilotChatIdentifier"
     [chatContextLength]="6" [chatModel]="chatModel"
-    [chatQuerySamplesFileUri]="'assets/chatConfigs/detectorcopilot.json'"
+    [chatQuerySamplesFileUri]="_copilotService.chatConfigFile"
     [customInitialPrompt]="_copilotService.customPrompt" [apiProtocol]="apiProtocol"
     [contentDisclaimerMessage]="contentDisclaimerMessage" [quotaEnforced]="true" [chatHeader]="chatHeader"
     [systemPhotoSource]="'/assets/img/bot_sparkle_icon.svg'" [preprocessUserMessage]="onUserMessageSend"

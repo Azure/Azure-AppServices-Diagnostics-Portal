@@ -66,7 +66,7 @@ export class SideNavComponent implements OnInit {
   isProd: boolean = false;
   workflowsEnabled: boolean = false;
   showChatGPT: boolean = false;
-  
+
 
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService,
     private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService,
@@ -219,7 +219,7 @@ export class SideNavComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.checkRCAToolkitEnabled(); 
+    this.checkRCAToolkitEnabled();
     this._openAIService.CheckEnabled().subscribe(enabled => {
       this.showChatGPT = this._openAIService.isEnabled;
       this._diagnosticApi.get<boolean>('api/openai/kustocopilot/enabled').subscribe(kustoGPTEnabledStatus => {
@@ -259,33 +259,33 @@ export class SideNavComponent implements OnInit {
     this.toolsCopy = this.deepCopyArray(this.tools);
   }
 
-  checkRCAToolkitEnabled(){
+  checkRCAToolkitEnabled() {
     //check if rca toolkit is present/enabled
     let isPresent = this.tools.find(tool => tool.label === "RCA Copilot (Preview)");
-    if(isPresent){
-      return; 
+    if (isPresent) {
+      return;
     }
 
     //if not present/enabled
     var tempResourceId = this.resourceService.getCurrentResourceId();
-   
-    if(tempResourceId.indexOf("Microsoft.Web/sites") != -1){
+
+    if (tempResourceId.indexOf("Microsoft.Web/sites") != -1) {
 
       this.tools.push(
         {
-        label: 'RCA Copilot (Preview)',
-        id: "",
-        onClick: () => {
-          PortalUtils.logEvent("rcacopilot-toolopened", "", this._telemetryService);
-          this.navigateTo("communicationToolkit");
-        },
-        expanded: false,
-        subItems: null,
-        isSelected: () => {
-          return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `communicationToolkit`.toLowerCase();
-        },
-        icon: null
-      })
+          label: 'RCA Copilot (Preview)',
+          id: "",
+          onClick: () => {
+            PortalUtils.logEvent("rcacopilot-toolopened", "", this._telemetryService);
+            this.navigateTo("communicationToolkit");
+          },
+          expanded: false,
+          subItems: null,
+          isSelected: () => {
+            return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `communicationToolkit`.toLowerCase();
+          },
+          icon: null
+        })
     }
   }
 
@@ -632,7 +632,8 @@ export class SideNavComponent implements OnInit {
 
   private checkMenuItemMatchesWithSearchTerm(item: CollapsibleMenuItem, searchValue: string) {
     if (searchValue == null || searchValue.length === 0) return true;
-    return StringUtilities.IndexOf(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || StringUtilities.IndexOf(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0;
+    if (item == null || item.id == null || item.label == null) return false;
+    return StringUtilities.IndexOf(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || StringUtilities.IndexOf(item.id?.toLowerCase(), searchValue.toLowerCase()) >= 0;
   }
 
   private contSubMenuItems(items: CollapsibleMenuItem[]): number {

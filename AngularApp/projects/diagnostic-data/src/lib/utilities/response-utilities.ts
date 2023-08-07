@@ -58,6 +58,12 @@ export class ResponseUtilities {
         return detectorResponseJson;
     }
 
+    public static MarkdownToText(markdown) {
+        const regex = /(?:__|[*#])|\[(.*?)\]\(.*?\)/gm;
+        const plainText = markdown.replace(regex, '$1');
+        return plainText;
+    }
+
     //#region Components Helpers
 
     private static GetComponentJsonByRenderingType(diagnosticData: DiagnosticData): any {

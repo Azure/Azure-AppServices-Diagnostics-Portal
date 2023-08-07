@@ -1,21 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ApplensCopilotContainerService, CopilotSupportedFeature } from './applens-copilot-container.service';
-import { ChatUIContextService, DetectorResponse, DetectorViewModeWithInsightInfo, DetectorViewModel, DiagnosticData, RenderingType } from 'diagnostic-data';
+import { ChatUIContextService, DetectorResponse, DetectorViewModeWithInsightInfo, DiagnosticData } from 'diagnostic-data';
 import { ResponseUtilities } from 'projects/diagnostic-data/src/lib/utilities/response-utilities';
 import { ResourceService } from 'projects/applens/src/app/shared/services/resource.service';
-
-export enum DetectorCopilotSupportedRenderings {
-    Table = 1,
-    TimeSeries = 2,
-    DataSummary = 5,
-    Insights = 7,
-    DynamicInsight = 8,
-    Markdown = 9,
-    DetectorList = 10,
-    DropDown = 11,
-    Form = 15,
-    SummaryCard = 22
-}
+import { DiagnosticApiService } from 'projects/applens/src/app/shared/services/diagnostic-api.service';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class ApplensDetectorCopilotService {
@@ -27,10 +16,17 @@ export class ApplensDetectorCopilotService {
     public operationInProgress: boolean = false;
     public customPrompt: string = '';
     public chatContainerHeight: string = '75vh';
+    public lastDetectorId = '';
+    public copilotButtonActive = false;
+    public chatConfigFile = '';
 
     constructor(private _copilotContainerService: ApplensCopilotContainerService, private _resourceService: ResourceService,
-        private _chatContextService: ChatUIContextService) {
+        private _chatContextService: ChatUIContextService, private _diagnosticApi: DiagnosticApiService) {
         this.reset();
+    }
+
+    isEnabled(): Observable<boolean> {
+        return this._diagnosticApi.get<boolean>('api/openai/detectorcopilot/enabled?detectorMode=data');
     }
 
     initializeMembers(isAnalysisMode: boolean) {
@@ -44,18 +40,21 @@ export class ApplensDetectorCopilotService {
     }
 
     processDetectorData(detectorData: DetectorResponse) {
+
+        if (this.lastDetectorId && this.lastDetectorId == detectorData.metadata.id) {
+            return;
+        }
+
         this.detectorResponse = detectorData;
         this.wellFormattedDetectorOutput = ResponseUtilities.ConvertResponseTableToWellFormattedJson(detectorData);
-        console.warn(this.wellFormattedDetectorOutput);
         this.customPrompt = this.prepareCustomPrompt(this.wellFormattedDetectorOutput);
+        this.copilotButtonActive = true;
     }
 
     // This method is called by Detector List component or Analysis component to process async loading of child detectors
     processAsyncDetectorViewModels(detectorViewModels: DetectorViewModeWithInsightInfo[]) {
         this.wellFormattedDetectorOutput = ResponseUtilities.UpdateDetectorResponseWithAsyncChildDetectorsOutput(this.wellFormattedDetectorOutput, detectorViewModels);
-        console.warn(this.wellFormattedDetectorOutput);
         this.customPrompt = this.prepareCustomPrompt(this.wellFormattedDetectorOutput);
-        console.warn(this.customPrompt);
     }
 
     selectComponentAndOpenCopilot(componentData: DiagnosticData) {
@@ -81,8 +80,6 @@ export class ApplensDetectorCopilotService {
         };
 
         formattedDetectorResponse = ResponseUtilities.UpdateDetectorResponseWithAsyncChildDetectorsOutput(formattedDetectorResponse, [detectorViewModel]);
-
-        console.log(formattedDetectorResponse);
         this.customPrompt = this.prepareCustomPrompt(formattedDetectorResponse);
         this.setSelectedComponentAndOpenCopilot(formattedDetectorResponse);
     }
@@ -91,20 +88,27 @@ export class ApplensDetectorCopilotService {
         this.chatContainerHeight = '75vh';
         this.customPrompt = this.prepareCustomPrompt(this.wellFormattedDetectorOutput);
         this.selectedComponent = {};
+        this.chatConfigFile = 'assets/chatConfigs/detectorcopilot/detectorcopilot.json';
     }
 
     reset() {
 
+        this.lastDetectorId = this.detectorResponse == null ? '' : this.detectorResponse.metadata.id;
         this.selectedComponent = {};
-        this._chatContextService.clearChat(this.detectorCopilotChatIdentifier);
         this.detectorResponse = null;
         this.wellFormattedDetectorOutput = null;
         this.customPrompt = '';
         this.operationInProgress = false;
         this.chatContainerHeight = '75vh';
+        this.copilotButtonActive = false;
+        this.chatConfigFile = 'assets/chatConfigs/detectorcopilot/detectorcopilot.json';
     }
 
     private prepareCustomPrompt(wellFormattedDetectorOutput: any): string {
+        if (wellFormattedDetectorOutput == undefined) {
+            return '';
+        }
+
         let messageJson = {};
         messageJson['azureServiceName'] = this._resourceService.displayName;
         messageJson['azureResourceName'] = this._resourceService.getResourceName();
@@ -132,13 +136,30 @@ export class ApplensDetectorCopilotService {
 
         // TODO Shekhar - Make it more robouust.. null checks
         let truncatedSubHeading = (componentDetectorData.output[0].title && componentDetectorData.output[0].title.length > 70) ?
-        componentDetectorData.output[0].title.substring(0, 70) + '...' : componentDetectorData.output[0].title;
+            componentDetectorData.output[0].title.substring(0, 70) + '...' : componentDetectorData.output[0].title;
 
         this.selectedComponent['heading'] = `"${componentDetectorData.output[0].type.charAt(0).toUpperCase() + componentDetectorData.output[0].type.slice(1)}" selected`;
         this.selectedComponent['iconSrc'] = this.getIconByType(componentDetectorData.output[0]);
-        this.selectedComponent['subheading'] = truncatedSubHeading;
-
+        this.selectedComponent['subheading'] = ResponseUtilities.MarkdownToText(truncatedSubHeading);
         this.chatContainerHeight = '65vh';
+
+        switch (componentDetectorData.output[0].type.toLowerCase()) {
+            case 'insight':
+                this.chatConfigFile = 'assets/chatConfigs/detectorcopilot/insight.json';
+                break;
+            case 'table':
+                this.chatConfigFile = 'assets/chatConfigs/detectorcopilot/table.json';
+                break;
+            case 'additional information':
+                this.chatConfigFile = 'assets/chatConfigs/detectorcopilot/markdown.json';
+                break;
+            case 'data summary':
+                this.chatConfigFile = 'assets/chatConfigs/detectorcopilot/datasummary.json';
+                break;
+            default:
+                this.chatConfigFile = 'assets/chatConfigs/detectorcopilot/detectorcopilot.json';
+        }
+
         this._copilotContainerService.showCopilotPanel();
     }
 

@@ -18,6 +18,7 @@ export class MarkdownViewComponent extends DataRenderBaseComponent {
   markdownData: string;
   isPublic: boolean;
   rawDiagnosticData : DiagnosticData;
+  copilotEnabled: boolean = false;
 
   constructor(private _markdownService: MarkdownService, private _clipboard: ClipboardService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, protected telemetryService: TelemetryService, private copilotService: GenericDetectorCopilotService) {
     super(telemetryService);
@@ -30,6 +31,10 @@ export class MarkdownViewComponent extends DataRenderBaseComponent {
     this.renderingProperties = <MarkdownRendering>data.renderingProperties;
 
     this.createViewModel();
+
+    this.copilotService.isEnabled().subscribe(res => {
+      this.copilotEnabled = res;
+    });
   }
 
   private createViewModel() {

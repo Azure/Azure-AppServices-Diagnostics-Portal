@@ -38,8 +38,14 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   handleCloseCopilotEvent(event: any) {
     if (event) {
       this.checkMessageStateAndExitCopilot(event.showConfirmation);
+
       if (event.resetCopilot) {
         this._copilotService.reset();
+
+        // Intentionally delaying the clear chat, so that the last message if in-progress can be cancelled before its cleared.
+        setTimeout(() => {
+          this._chatContextService.clearChat(this._copilotService.detectorCopilotChatIdentifier);
+        }, 500);
       }
     }
   }
@@ -56,7 +62,14 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   onSystemMessageReceived = (messageObj: ChatMessage): ChatMessage => {
 
     this._copilotService.operationInProgress = !(messageObj.status == MessageStatus.Finished || messageObj.status == MessageStatus.Cancelled);
-    messageObj.displayMessage = messageObj.message;
+
+    if (messageObj.status != MessageStatus.Cancelled) {
+      messageObj.displayMessage = messageObj.message;
+    }
+    else {
+      console.log('Copilot component : message cancelled');
+    }
+
     return messageObj;
   }
 
@@ -82,14 +95,13 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   }
 
   exitCopilot = (cancelOpenAICall: boolean = true) => {
-
+    console.log('Copilot component : exitCopilot called..');
     if (cancelOpenAICall) {
       this.cancelOpenAICall();
     }
 
-    this._copilotService.operationInProgress = false;
     this.copilotExitConfirmationHidden = true;
-    this._copilotService.selectedComponent = {};
+    this._copilotService.clearComponentSelection();
     this._copilotContainerService.hideCopilotPanel();
   }
 
@@ -110,7 +122,7 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   //#region Other Command Bar Methods
 
   cancelOpenAICall = () => {
-
+    console.log('Copilot component : cancelOpenAICall called..');
     this.stopMessageGeneration = true;
 
     setTimeout(() => {

@@ -17,16 +17,14 @@ import { StatusStyles } from "../../models/styles";
   styleUrls: ['./insights-v4.component.scss']
 })
 export class InsightsV4Component extends DataRenderBaseComponent {
-  DataRenderingType = RenderingType.Insights;
 
+  DataRenderingType = RenderingType.Insights;
   SolutionButtonType = SolutionButtonType;
   SolutionButtonPosition = SolutionButtonPosition;
-
   renderingProperties: InsightsRendering;
-
   public insights: Insight[];
-
   InsightStatus = HealthStatus;
+  copilotEnabled: boolean = false;
 
   solutions: Solution[] = [];
   solutionPanelOpenSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -36,6 +34,7 @@ export class InsightsV4Component extends DataRenderBaseComponent {
   solutionButtonType = SolutionButtonType.Button;
 
   private rawDiagnosticData: DiagnosticData;
+
 
   constructor(protected telemetryService: TelemetryService, private copilotService: GenericDetectorCopilotService) {
     super(telemetryService);
@@ -47,7 +46,12 @@ export class InsightsV4Component extends DataRenderBaseComponent {
     this.insights = InsightUtils.parseInsightRendering(data);
     this.processSolutionButtonOption(this.renderingProperties.solutionButtonOption);
     this.rawDiagnosticData = data;
+
+    this.copilotService.isEnabled().subscribe(res => {
+      this.copilotEnabled = res;
+    });
   }
+
   toggleInsightStatus(insight: any) {
     insight.isExpanded = this.hasContent(insight) && !insight.isExpanded;
     this.logInsightClickEvent(insight.title, insight.isExpanded, insight.status);
@@ -111,7 +115,7 @@ export class InsightsV4Component extends DataRenderBaseComponent {
   }
 
   openCopilot(insight: Insight) {
-    
+
     let speciifcInsightData: DiagnosticData = {
       table: this.rawDiagnosticData.table,
       renderingProperties: this.rawDiagnosticData.renderingProperties

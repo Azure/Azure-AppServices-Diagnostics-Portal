@@ -37,15 +37,18 @@ export class DataTableV4Component extends DataRenderBaseComponent {
     this.tableDescription = this.renderingProperties.description || "";
     this.searchPlaceholder = this.renderingProperties.searchPlaceholder || "";
 
-    // TODO: Shekhar - check if copilot is enabled
-    this.additionalOptionsToShow.push({
-      iconName: 'robot',
-      label: 'Ask Detector Copilot',
-      onClick: this.openCopilot
+    this.copilotService.isEnabled().subscribe(res => {
+      if (res == true) {
+        this.additionalOptionsToShow.push({
+          iconName: 'robot',
+          label: 'Ask Detector Copilot',
+          onClick: this.openCopilot
+        });
+      }
     });
   }
 
-  openCopilot = () : void => {
+  openCopilot = (): void => {
 
     let tableData: DiagnosticData = {
       table: this.table,
