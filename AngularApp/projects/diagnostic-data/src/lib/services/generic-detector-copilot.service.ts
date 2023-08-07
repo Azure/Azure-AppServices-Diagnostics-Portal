@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DetectorResponse, DetectorViewModeWithInsightInfo } from '../models/detector';
-import { DiagnosticData } from 'dist/diagnostic-data/public_api';
+import { DetectorResponse, DetectorViewModeWithInsightInfo, DiagnosticData } from '../models/detector';
 import { Observable } from 'rxjs';
 
 @Injectable()

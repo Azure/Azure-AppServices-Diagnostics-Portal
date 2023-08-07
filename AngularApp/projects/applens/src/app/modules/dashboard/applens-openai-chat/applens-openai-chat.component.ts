@@ -76,10 +76,7 @@ export class ApplensOpenAIChatComponent implements OnInit {
     this.userAlias = userId;
     this._diagnosticApiService.getUserPhoto(userId).subscribe(image => {
       
-      //this._chatUIContextService.userPhotoSource = image;
-
-      // TODO : Revert this:
-      this._chatUIContextService.userPhotoSource = 'https://avatars.githubusercontent.com/u/11183841';
+      this._chatUIContextService.userPhotoSource = image;
     });
 
     if (this._adalService.userInfo.profile) {

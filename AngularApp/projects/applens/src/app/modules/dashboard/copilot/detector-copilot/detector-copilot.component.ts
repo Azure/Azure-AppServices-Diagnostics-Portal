@@ -66,9 +66,6 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
     if (messageObj.status != MessageStatus.Cancelled) {
       messageObj.displayMessage = messageObj.message;
     }
-    else {
-      console.log('Copilot component : message cancelled');
-    }
 
     return messageObj;
   }
@@ -95,7 +92,6 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   }
 
   exitCopilot = (cancelOpenAICall: boolean = true) => {
-    console.log('Copilot component : exitCopilot called..');
     if (cancelOpenAICall) {
       this.cancelOpenAICall();
     }
@@ -122,7 +118,6 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   //#region Other Command Bar Methods
 
   cancelOpenAICall = () => {
-    console.log('Copilot component : cancelOpenAICall called..');
     this.stopMessageGeneration = true;
 
     setTimeout(() => {
@@ -151,13 +146,6 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   }
 
   //#endregion
-
-  //custom copy method/callback 
-  copyChatGPTClicked = (textToCopy: string) => {
-    console.warn('Hi');
-    this._clipboard.copyAsHtml(textToCopy);
-    //PortalUtils.logEvent("rcacopilot-messagecopied", textToCopy, this._telemetryService); 
-  }
 
   private getChatHeader(): string {
     return `
