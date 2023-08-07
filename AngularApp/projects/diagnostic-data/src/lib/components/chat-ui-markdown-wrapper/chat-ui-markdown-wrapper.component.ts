@@ -5,6 +5,9 @@ import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { v4 as uuid } from 'uuid';
 import { TimeUtilities } from '../../utilities/time-utilities';
 import { StringUtilities } from '../../utilities/string-utilities';
+import { ChatUIContextService } from '../../services/chatui-context.service';
+import { KustoUtilities } from '../../utilities/kusto-utilities';
+import { ClipboardService } from '../../services/clipboard.service';
 
 @Component({
     selector: 'chat-ui-markdown-wrapper',
@@ -18,7 +21,9 @@ export class ChatUIMarkdownWrapperComponent implements OnInit {
     
     public readonly codeSnippetExtractionRegex = /```(.*?)\n([\s\S]*?)\n```/;
 
-    @Input() onCopyClick: Function;    
+    @Input() onCopyClick: Function;
+    @Input() chatMessageId: string = '';
+    @Input() chatIdentifier: string = '';
 
     _data:string = '';
     @Input() set data(val:string) {
@@ -36,7 +41,7 @@ export class ChatUIMarkdownWrapperComponent implements OnInit {
 
     public parsedData:any[] = [];
 
-    constructor(private _telemetryService: TelemetryService) {
+    constructor(private _telemetryService: TelemetryService, private _chatContextService: ChatUIContextService, private _clipboard: ClipboardService) {
     }
 
     ngOnInit() {
@@ -136,7 +141,35 @@ export class ChatUIMarkdownWrapperComponent implements OnInit {
         }
         //default handling 
         else {
-            navigator.clipboard.writeText(textToCopy);
+            try
+            {
+                if( this.isSnippet(element) && (`${element?.lang}`.toLowerCase() === 'kusto' || `${element?.lang$}`.toLowerCase() === 'kql') && textToCopy
+                    && this.chatIdentifier && this.chatMessageId && this._chatContextService.messageStore[this.chatIdentifier] 
+                    && this._chatContextService.messageStore[this.chatIdentifier].some((msg:ChatMessage) => 
+                                msg.id == this.chatMessageId && msg.data && msg.data instanceof Array  && msg.data.length > 0 
+                                && msg.data.some((entry:KeyValuePair)=> `${entry.key }`.trim().toLowerCase() === 'clustername' )
+                                && msg.data.some((entry:KeyValuePair)=> `${entry.key }`.trim().toLowerCase() === 'databasename' )
+                                )
+                        )
+                    {
+                        // Get the element matching chatMessageId
+                        let msg = this._chatContextService.messageStore[this.chatIdentifier].find((msg:ChatMessage) => msg.id == this.chatMessageId);
+                        let clusterName = msg.data.find((entry:KeyValuePair)=> `${entry.key }`.trim().toLowerCase() === 'clustername' ).value;
+                        let databaseName = msg.data.find((entry:KeyValuePair)=> `${entry.key }`.trim().toLowerCase() === 'databasename' ).value;
+                        let kustoQuery = KustoUtilities.GetKustoQuery(textToCopy, clusterName, databaseName);
+
+                        let htmlText = `Execute: <a target='_blank' href = '${kustoQuery.Url}'>[Web]</a> <a target='_blank' href = '${kustoQuery.KustoDesktopUrl}'>[Desktop]</a> <a target='_blank' href = 'https://${clusterName}.kusto.windows.net/${databaseName}'>https://${clusterName}.kusto.windows.net/${databaseName}</a><br>${textToCopy.replace(/\n/g, '<br>')}`;
+                        this._clipboard.copyAsHtml(htmlText);
+                }
+                else {
+                    navigator.clipboard.writeText(textToCopy);
+                }
+            }
+            catch(e) {
+                console.log('Error copying to clipboard. Reverting to default behavior.');
+                console.log(e);
+                navigator.clipboard.writeText(textToCopy);
+            }
         }
     }
 }
