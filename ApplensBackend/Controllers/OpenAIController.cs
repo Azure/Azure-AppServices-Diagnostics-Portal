@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -193,6 +194,23 @@ namespace AppLensV3.Controllers
         public async Task<IActionResult> GetRelatedFeedbackListFromChatHistory([FromBody] RequestChatPayload chatPayload)
         {
             return Ok(await _openAIService.GetChatFeedbackRaw(chatPayload.MetaData, chatPayload.Messages.ToList()));
+        }
+
+        [HttpPost("purgeFeedbackList")]
+        [HttpOptions("purgeFeedbackList")]
+        public async Task<IActionResult> PurgeFeedbackList([FromBody] ChatPurgeModel feedbackPurgeModel)
+        {
+            if (feedbackPurgeModel.FeedbackIds?.Count < 1)
+            {
+                return Ok(new Tuple<bool, List<string>>(true, new List<string>()));
+            }
+
+            if (string.IsNullOrWhiteSpace(feedbackPurgeModel.ChatIdentifier) || string.IsNullOrWhiteSpace(feedbackPurgeModel.Provider) || string.IsNullOrWhiteSpace(feedbackPurgeModel.ResourceType))
+            {
+                return BadRequest("Missing required parameters.");
+            }
+
+            return Ok(await _chatFeedbackCosmosDBHandler.DeleteFeedbacks(feedbackPurgeModel.ChatIdentifier, feedbackPurgeModel.Provider, feedbackPurgeModel.ResourceType, feedbackPurgeModel.FeedbackIds));
         }
 
         private static string GetHeaderOrDefault(IHeaderDictionary headers, string headerName, string defaultValue = "")

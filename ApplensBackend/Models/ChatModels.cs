@@ -17,6 +17,17 @@ namespace AppLensV3.Models
         public ChatMessage[] Messages { get; set; }
     }
 
+    public class ChatPurgeModel
+    {
+        public List<string> FeedbackIds { get; set; }
+
+        public string ChatIdentifier { get; set; }
+
+        public string Provider { get; set; }
+
+        public string ResourceType { get; set; }
+    }
+
     public class GPT3CompletionModelPayload
     {
         [JsonProperty(PropertyName = "model")]

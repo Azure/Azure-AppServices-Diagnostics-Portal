@@ -1,4 +1,6 @@
 ﻿using AppLensV3.Models;
+using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 
 namespace AppLensV3.Services
@@ -17,5 +19,7 @@ namespace AppLensV3.Services
         /// </summary>
         /// <returns>Feedback correspoding to the Id. Null if matching feedback is not found.</returns>
         Task<ChatFeedback> GetFeedback(string chatIdentifier, string provider, string resourceType, string feedbackId);
+
+        Task<Tuple<bool, List<string>>> DeleteFeedbacks(string chatIdentifier, string provider, string resourceType, List<string> feedbackIds);
     }
 }

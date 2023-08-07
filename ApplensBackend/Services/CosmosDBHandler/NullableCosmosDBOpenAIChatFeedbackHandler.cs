@@ -1,4 +1,5 @@
 ﻿using AppLensV3.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,6 +16,11 @@ namespace AppLensV3.Services
         public Task<ChatFeedback> SaveFeedback(ChatFeedback chatFeedback)
         {
             return Task.FromResult(nullableChatFeedback);
+        }
+
+        public Task<Tuple<bool, List<string>>> DeleteFeedbacks(string chatIdentifier, string provider, string resourceType, List<string> feedbackIds)
+        {
+            return Task.FromResult(new Tuple<bool, List<string>>(true, feedbackIds));
         }
 
         Task<ChatFeedback> ICosmosDBHandlerBase<ChatFeedback>.CreateItemAsync(ChatFeedback item)
