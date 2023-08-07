@@ -245,7 +245,9 @@ namespace AppLensV3.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("Couldn't complete request to incident automation. " + ex.ToString());
+                var response = new HttpResponseMessage();
+                response.Content = new StringContent(ex.ToString());
+                return response;
             }
         }
     }

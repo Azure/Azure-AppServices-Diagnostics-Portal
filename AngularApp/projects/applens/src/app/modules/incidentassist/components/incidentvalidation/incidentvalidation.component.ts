@@ -195,7 +195,7 @@ export class IncidentValidationComponent implements OnInit {
               if (result && result.length > 0) {
                   this.incidentRouteValidationStatus = true;
                   this.validateRouteButtonDisabled = true;
-                  this.routeMessage = `AI-Driven Incident Route Decision: ${result}`;
+                  this.routeMessage = `${result}`;
                   this.routeMessageType = "success";
               }
               else {
@@ -205,7 +205,7 @@ export class IncidentValidationComponent implements OnInit {
           }, (err) => {
               // Error on validating incident route
               this.displayLoader = false;
-              this.routeMessage = `Failed to validate incident route.`;
+              this.routeMessage = `Failed to validate incident route: ${err.ToString}`;
               this.routeMessageType = "error";
           });
       }
