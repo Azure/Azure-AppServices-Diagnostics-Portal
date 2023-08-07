@@ -153,12 +153,15 @@ export class ResponseUtilities {
     private static GetMarkdownJson(diagnosticData: DiagnosticData): any {
 
         let title = diagnosticData.renderingProperties.title && diagnosticData.renderingProperties.title != '' ?
-            diagnosticData.renderingProperties.title : diagnosticData.table.rows[0][0]
+            diagnosticData.renderingProperties.title : diagnosticData.table.rows[0][0];
+
+        title = title.replace('<markdown>', '').replace('</markdown>', '');
+        let moreInfo = diagnosticData.table.rows[0][0].replace('<markdown>', '').replace('</markdown>', '');
 
         return {
             type: "Additional Information",
             title: title,
-            moreInfo: diagnosticData.table.rows[0][0]
+            moreInfo: moreInfo
         };
     }
 

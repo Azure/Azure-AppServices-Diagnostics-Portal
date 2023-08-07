@@ -50,12 +50,12 @@ export class TabAnalysisComponent implements OnInit, OnDestroy {
   @ViewChild('detectorListAnalysis', { static: true }) detectorListAnalysis: DetectorListAnalysisComponent
   downtimeZoomBehavior = zoomBehaviors.Zoom;
 
-   // copilot variables
-   copilotEnabled: boolean = true;
-   copilotServiceMembersInitialized: boolean = false;
+  // copilot variables
+  copilotEnabled: boolean = true;
+  copilotServiceMembersInitialized: boolean = false;
 
   constructor(private _activatedRoute: ActivatedRoute, private _router: Router, private _applensApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService,
-    private _applensCommandBarService: ApplensCommandBarService, private _applensGlobal: ApplensGlobal, private _telemetryService: TelemetryService, 
+    private _applensCommandBarService: ApplensCommandBarService, private _applensGlobal: ApplensGlobal, private _telemetryService: TelemetryService,
     public _copilotContainerService: ApplensCopilotContainerService, private _detectorCopilotService: ApplensDetectorCopilotService) {
   }
 
@@ -77,6 +77,11 @@ export class TabAnalysisComponent implements OnInit, OnDestroy {
         }
       });
 
+      // When the analysis is changed, close the copilot window
+      if (this.copilotServiceMembersInitialized) {
+        this._copilotContainerService.onCloseCopilotPanelEvent.next({ showConfirmation: false, resetCopilot: true });
+      }
+
       this._detectorCopilotService.initializeMembers(true);
       this.copilotServiceMembersInitialized = true;
     });
@@ -87,7 +92,7 @@ export class TabAnalysisComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    
+
     if (this.copilotServiceMembersInitialized) {
       this._copilotContainerService.onCloseCopilotPanelEvent.next({ showConfirmation: false, resetCopilot: true });
     }
@@ -118,7 +123,7 @@ export class TabAnalysisComponent implements OnInit, OnDestroy {
   }
 
   emailToAuthor() {
-    
+
     this._applensCommandBarService.getDetectorMeatData(this.analysisId).subscribe(metaData => {
       this._applensCommandBarService.emailToAuthor(metaData);
     });
