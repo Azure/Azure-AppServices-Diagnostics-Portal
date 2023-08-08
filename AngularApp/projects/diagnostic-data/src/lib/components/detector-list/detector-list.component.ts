@@ -308,6 +308,9 @@ export class DetectorListComponent extends DataRenderBaseComponent {
               this.issueDetectedViewModels = this.issueDetectedViewModels.sort((n1, n2) => {
                 return n1.model.status - n2.model.status
               });
+
+              this._copilotService.processAsyncDetectorViewModels([issueDetectedViewModel]);
+
             } else {
               let insightInfo = this.getDetectorInsightInfo(this.detectorViewModels[index]);
               let successViewModel: DetectorViewModeWithInsightInfo = { model: this.detectorViewModels[index], ...insightInfo };
@@ -317,6 +320,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
               }
 
               this.successfulViewModels.push(successViewModel);
+              this._copilotService.processAsyncDetectorViewModels([successViewModel]);
             }
           }
 
@@ -352,8 +356,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           'successfulViewModels': this.successfulViewModels,
           'issueDetectedViewModels': this.issueDetectedViewModels
         };
-
-        this._copilotService.processAsyncDetectorViewModels([...this.issueDetectedViewModels, ...this.successfulViewModels]);
 
         // this.onComplete.emit(dataOutput);
       }, 10);

@@ -735,6 +735,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
 
                             this.issueDetectedViewModels.push(issueDetectedViewModel);
                             this.issueDetectedViewModels = this.issueDetectedViewModels.sort((n1, n2) => n1.model.status - n2.model.status);
+                            this._copilotService.processAsyncDetectorViewModels([issueDetectedViewModel]);
                         } else {
                             if (this.containsAnyDisplayableRenderingType(response)) {
                                 let insight = this.getDetectorInsight(viewModelsToProcess[index]);
@@ -753,6 +754,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                                 }
 
                                 this.successfulViewModels.push(successViewModel);
+                                this._copilotService.processAsyncDetectorViewModels([successViewModel]);
                             }
                         }
                     }
@@ -793,7 +795,6 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                 };
                 
                 this.onComplete.emit(dataOutput);
-                this._copilotService.processAsyncDetectorViewModels([...this.issueDetectedViewModels, ...this.successfulViewModels]);
 
             }, 10);
 

@@ -53,8 +53,12 @@ export class ApplensDetectorCopilotService {
 
     // This method is called by Detector List component or Analysis component to process async loading of child detectors
     processAsyncDetectorViewModels(detectorViewModels: DetectorViewModeWithInsightInfo[]) {
+
         this.wellFormattedDetectorOutput = ResponseUtilities.UpdateDetectorResponseWithAsyncChildDetectorsOutput(this.wellFormattedDetectorOutput, detectorViewModels);
-        this.customPrompt = this.prepareCustomPrompt(this.wellFormattedDetectorOutput);
+
+        if (this.selectedComponent.heading == undefined) {
+            this.customPrompt = this.prepareCustomPrompt(this.wellFormattedDetectorOutput);
+        }
     }
 
     selectComponentAndOpenCopilot(componentData: DiagnosticData) {
