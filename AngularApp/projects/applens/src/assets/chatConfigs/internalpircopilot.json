@@ -1,0 +1,21 @@
+
+{
+    "samples": [
+        {
+            "key": "Same-Day PIR",
+            "value": "Write a Same-Day PIR for me. I will provide the context in the next message."
+        },
+        {
+            "key": "Standard PIR",
+            "value": "Write a Standard PIR for me. I will provide the context in the next message."
+        },
+        {
+            "key": "SEV-1 PIR",
+            "value": "Write a Sev-1 PIR for me. I will provide the context in the next message."
+        },
+        {
+            "key":"Modify/Edit my existing PIR",
+            "value": "Modify/Edit my existing PIR to make it more customer-friendly. I will enter it in the next message"
+        }
+    ]
+}

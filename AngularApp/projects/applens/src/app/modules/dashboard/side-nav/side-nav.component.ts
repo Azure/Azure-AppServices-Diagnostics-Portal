@@ -215,7 +215,22 @@ export class SideNavComponent implements OnInit {
       },
       icon: null,
       visible: false
+    },
+    {
+      label: 'Internal PIR Copilot (Preview)',
+        id: "internalpir",
+        onClick: () => {
+          PortalUtils.logEvent("internalpircopilot-toolopened", "", this._telemetryService);
+          this.navigateTo("internalpir");
+        },
+        expanded: false,
+        subItems: null,
+        isSelected: () => {
+          return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `internalpir`.toLowerCase();
+        },
+        icon: null
     }
+
   ];
 
   ngOnInit() {
