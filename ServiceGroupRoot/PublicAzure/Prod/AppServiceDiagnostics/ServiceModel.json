@@ -56,6 +56,222 @@
   ],
   "serviceResourceGroups": [
     {
+      "azureResourceGroupName": "appservice-diagnostics-am2",
+      "location": "North Europe",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "AM2"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeployAm2",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "AM2SWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
+      "azureResourceGroupName": "appservice-diagnostics-bay",
+      "location": "West US",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "BAY"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeployBay",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "BAYSWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
+      "azureResourceGroupName": "appservice-diagnostics-blu",
+      "location": "East US",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "BLU"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeployBlu",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "BLUSWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
+      "azureResourceGroupName": "appservice-diagnostics-bm",
+      "location": "West India",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "BM"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeployBm",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "BMSWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
+      "azureResourceGroupName": "appservice-diagnostics-cq",
+      "location": "Brazil South",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "CQ"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeployCq",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "CQSWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
+      "azureResourceGroupName": "appservice-diagnostics-hk1",
+      "location": "East Asia",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "HK1"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeployHk1",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "HK1SWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
+      "azureResourceGroupName": "appservice-diagnostics-jnb",
+      "location": "South Africa North",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "JNB"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeployJnb",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "JNBSWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
+      "azureResourceGroupName": "appservice-diagnostics-ma",
+      "location": "South India",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "MA"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeployMa",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "MASWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
+      "azureResourceGroupName": "appservice-diagnostics-ml1",
+      "location": "Australia Southeast",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "ML1"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeployMl1",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "ML1SWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
       "azureResourceGroupName": "appservice-diagnostics-par",
       "location": "France Central",
       "instanceOf": "WebAppResourceGroupDefinitions",
@@ -75,6 +291,102 @@
         },
         {
           "name": "PARSWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
+      "azureResourceGroupName": "appservice-diagnostics-pn",
+      "location": "Central India",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "PN"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeployPn",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "PNSWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
+      "azureResourceGroupName": "appservice-diagnostics-se1",
+      "location": "Korea Central",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "SE1"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeploySe1",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "SE1SWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
+      "azureResourceGroupName": "appservice-diagnostics-sg1",
+      "location": "Southeast Asia",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "SG1"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeploySg1",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "SG1SWAP",
+          "instanceOf": "AutoSwapDefinition"
+        }
+      ]
+    },
+    {
+      "azureResourceGroupName": "appservice-diagnostics-sn1",
+      "location": "South Central US",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "171912f7-0ed1-4fd6-aea4-f1aa9003ab21",
+      "scopeTags": [
+        {
+          "name": "General"
+        },
+        {
+          "name": "SN1"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppServiceDiagnosticsZipDeploySn1",
+          "instanceOf": "ZipDeployDefinition"
+        },
+        {
+          "name": "SN1SWAP",
           "instanceOf": "AutoSwapDefinition"
         }
       ]
