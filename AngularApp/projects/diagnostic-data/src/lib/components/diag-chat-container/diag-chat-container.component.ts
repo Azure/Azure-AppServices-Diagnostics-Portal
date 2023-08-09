@@ -1,9 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ChatUIComponent } from '../chat-ui/chat-ui.component';
 import { ChatUIContextService } from '../../services/chatui-context.service';
-import { TelemetryService, TelemetryEventNames, TimeUtilities } from '../../../public_api';
+import { ConversationalDiagService } from '../../services/conversational-diag.service';
+import { TelemetryService, TelemetryEventNames, TimeUtilities, DiagChatResponse } from '../../../public_api';
 import {ChatMessage, MessageRenderingType, MessageSource, MessageStatus} from '../../models/chatbot-models';
 import { v4 as uuid } from 'uuid';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'diag-chat-container',
@@ -11,7 +13,7 @@ import { v4 as uuid } from 'uuid';
   styleUrls: ['./diag-chat-container.component.scss']
 })
 export class DiagChatContainerComponent implements OnInit {
-  constructor(public _chatContextService: ChatUIContextService, public _telemetryService: TelemetryService) {
+  constructor(public _chatContextService: ChatUIContextService, public _telemetryService: TelemetryService, private _diagChatService: ConversationalDiagService) {
     if (!this._chatContextService.messageStore.hasOwnProperty(this.chatIdentifier)) {
       this._chatContextService.messageStore[this.chatIdentifier] = [];
     }
@@ -52,7 +54,65 @@ export class DiagChatContainerComponent implements OnInit {
     ];
 
   ngOnInit(): void {
+    this._diagChatService.establishSignalRConnection().subscribe((result: boolean) => {
+      this._chatContextService.chatInputBoxDisabled = !result;
+    });
   }
+
+  postProcessSystemMessage = (messageObject: ChatMessage) => {
+    messageObject.displayMessage = messageObject.message;
+    this._chatContextService.chatInputBoxDisabled = false;
+    this.chatUIComponentRef.scrollToBottom();
+  }
+
+  private diagChatCallSubscription: Subscription;
+
+  sendMessageOverWSS(searchQuery: any, messageObj: ChatMessage) {  
+    if (this.diagChatCallSubscription) {  
+      this.diagChatCallSubscription.unsubscribe();  
+    }  
+    
+    this.diagChatCallSubscription = this._diagChatService.onMessageReceive.subscribe((chatResponse: DiagChatResponse) => {  
+      if (messageObj.status == MessageStatus.Cancelled) {  
+        return;  
+      }
+      if (chatResponse == null){
+        return;
+      }  
+    
+      if (chatResponse != null && chatResponse != undefined) {  
+        if (chatResponse.message != undefined && chatResponse.message.displayMessage != '') {  
+          messageObj.status = chatResponse.message.status;  
+          messageObj.message = `${messageObj.message}${chatResponse.message.displayMessage}`;  
+        }  
+        else{
+          messageObj.message = "An error occurred.";
+          messageObj.status = MessageStatus.Finished;  
+        }  
+      }
+      else {
+        messageObj.message = "An error occurred.";
+        messageObj.status = MessageStatus.Finished;
+      }
+      if (this.postProcessSystemMessage != undefined) {
+        this.postProcessSystemMessage(messageObj);
+      }
+    }, (err) => {  
+      this._diagChatService.onMessageReceive = new BehaviorSubject<DiagChatResponse>(null);  
+    }); 
+    
+    this._diagChatService.sendChatMessage({
+      sessionId: "someSessionId",
+      resourceId: "subscriptions/14300d68-d0c8-4060-82af-bf2d9b70f130/resourceGroups/bakeryapp-rg/providers/Microsoft.Web/sites/takeithomebakery",
+      userId: "ajsharm",
+      message: searchQuery
+    }).subscribe(response => {
+      console.log("Response", response);
+    }, err => {
+      console.log("Error", err);
+    });
+  }  
+  
 
   onUserSendMessage = (messageObj: ChatMessage) => {
 
@@ -83,14 +143,17 @@ export class DiagChatContainerComponent implements OnInit {
     //Add a little timeout here to wait for the child component to initialize well
     setTimeout(() => { this.chatUIComponentRef.scrollToBottom(); }, 200);
 
-    setTimeout(() => {
+    this.sendMessageOverWSS(messageObj.message, chatMessage);
+
+    /*setTimeout(() => {
       chatMessage.message = "This is a sample response from the chatbot";
       chatMessage.displayMessage = chatMessage.message;
       chatMessage.status = MessageStatus.Finished;
       this._chatContextService.chatInputBoxDisabled = false;
       this._telemetryService.logEvent("DiagChatUserMessageReceived", { message: chatMessage.message, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
       this.chatUIComponentRef.scrollToBottom();
-    }, 2000);
+    }, 2000);*/
+
   }
 
 }

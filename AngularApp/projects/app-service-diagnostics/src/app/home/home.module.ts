@@ -65,6 +65,7 @@ import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/ser
 import { ClientScriptService } from '../shared-v2/services/client-script.service';
 import { ChatUIContextService, OpenAIArmService } from '../../../../diagnostic-data/src/public_api';
 import { DiagChatContainerComponent } from '../../../../diagnostic-data/src/lib/components/diag-chat-container/diag-chat-container.component';
+import { ConversationalDiagService } from '../../../../diagnostic-data/src/lib/services/conversational-diag.service';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -809,7 +810,8 @@ export const HomeRoutes = RouterModule.forChild([
             { provide: GenericDocumentsSearchService, useExisting: DocumentSearchService },
             { provide: CXPChatService, useExisting: CXPChatCallerService },
             { provide: GenericResourceService, useExisting: ResourceService },
-            { provide: GenericClientScriptService, useExisting: ClientScriptService}
+            { provide: GenericClientScriptService, useExisting: ClientScriptService},
+            ConversationalDiagService
         ],
 })
 export class HomeModule { }

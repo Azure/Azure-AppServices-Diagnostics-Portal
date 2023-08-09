@@ -1,4 +1,4 @@
-import { ChatModel } from "./chatbot-models";
+import { ChatMessage, ChatModel } from "./chatbot-models";
 
 export interface TextCompletionModel {
     model: TextModels;
@@ -26,6 +26,20 @@ export interface ChatResponse {
     truncated: boolean,
     finishReason: string,
     exception: string
+}
+
+export interface DiagChatRequestBody
+{
+    sessionId: string,
+    resourceId: string,
+    userId: string,
+    message: string
+}
+
+export interface DiagChatResponse {
+    sessionId: string;
+    message: ChatMessage;
+    error: any;
 }
 
 export enum TextModels {
