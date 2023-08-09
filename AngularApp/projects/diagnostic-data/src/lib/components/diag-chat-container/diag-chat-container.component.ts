@@ -82,6 +82,7 @@ export class DiagChatContainerComponent implements OnInit {
     
       if (chatResponse != null && chatResponse != undefined) {  
         if (chatResponse.message != undefined && chatResponse.message.displayMessage != '') {  
+          messageObj.renderingType = chatResponse.message.renderingType;
           messageObj.status = chatResponse.message.status;  
           messageObj.message = `${messageObj.message}${chatResponse.message.displayMessage}`;  
         }  
@@ -144,16 +145,6 @@ export class DiagChatContainerComponent implements OnInit {
     setTimeout(() => { this.chatUIComponentRef.scrollToBottom(); }, 200);
 
     this.sendMessageOverWSS(messageObj.message, chatMessage);
-
-    /*setTimeout(() => {
-      chatMessage.message = "This is a sample response from the chatbot";
-      chatMessage.displayMessage = chatMessage.message;
-      chatMessage.status = MessageStatus.Finished;
-      this._chatContextService.chatInputBoxDisabled = false;
-      this._telemetryService.logEvent("DiagChatUserMessageReceived", { message: chatMessage.message, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
-      this.chatUIComponentRef.scrollToBottom();
-    }, 2000);*/
-
   }
 
 }

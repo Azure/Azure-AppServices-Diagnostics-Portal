@@ -156,6 +156,7 @@ export * from './lib/components/openai-chat/openai-chat.component';
 export * from './lib/components/openai-chat-container/openai-chat-container.component';
 export * from './lib/components/openai-genie/openai-genie.component';
 export * from './lib/components/diag-chat-container/diag-chat-container.component';
+export * from './lib/components/diag-chat-solution/diag-chat-solution.component';
 
 export * from './lib/modules/fab-coachmark/coachmark.module'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.module'
