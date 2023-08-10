@@ -14,6 +14,14 @@
             "value": "Write a Sev-1 PIR for me. I will provide the context in the next message."
         },
         {
+            "key": "Internal PIR Outage Example",
+            "value": "Can you give me an example of an Internal PIR for an Outage Scenario?"
+        },
+        {
+            "key": "External PIR Example",
+            "value": "Can you give me an example of an External PIR?"
+        },
+        {
             "key":"Modify/Edit my existing PIR",
             "value": "Modify/Edit my existing PIR to make it more customer-friendly. I will enter it in the next message"
         }
