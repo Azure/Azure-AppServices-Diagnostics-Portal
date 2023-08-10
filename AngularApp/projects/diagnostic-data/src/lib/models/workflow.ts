@@ -1,5 +1,5 @@
 import { CompilationProperties } from "./compilation-properties";
-import { DataTableResponseColumn, PropertyBag } from "./detector";
+import { DataTableResponseColumn, DetectorResponse, PropertyBag } from "./detector";
 
 export interface Dictionary<T> {
   [K: string]: T;
@@ -76,6 +76,7 @@ export class workflowNodeData {
   switchOnValue: string;
   switchCaseValue: string;
   foreachVariable: string;
+  addDetectorOutput: boolean = false;
   inputNode: inputNode = new inputNode();
   kustoNode: kustoNode = new kustoNode();
 }
@@ -150,6 +151,8 @@ export interface workflowNodeResult {
   metadataPropertyBag: PropertyBag[]
   inputNodeSettings: inputNodeSettings;
   workflowPackage: any;
+  detectorId: string;
+  detectorResponse: DetectorResponse;
 }
 
 export interface inputNodeSettings {
