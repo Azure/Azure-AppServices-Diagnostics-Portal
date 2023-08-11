@@ -14,9 +14,9 @@ export class DiagChatSolutionComponent implements OnInit {
   ngOnInit(): void {
     if(this.solutionBody && this.solutionBody != '') {
       var obj = JSON.parse(this.solutionBody);
-      if (obj && obj.SolutionInfo && obj.SolutionInfo.SolutionId) {
-        this.solutionTitle = obj.SolutionInfo.Title;
-        this.solutionContent = obj.SolutionInfo.Description;
+      if (obj && obj.SolutionInfo && obj.SolutionInfo.TextSolution) {
+        this.solutionTitle = obj.SolutionInfo.TextSolution.Title;
+        this.solutionContent = obj.SolutionInfo.TextSolution.Description;
       }
     }
   }

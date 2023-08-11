@@ -36,9 +36,16 @@ export interface DiagChatRequestBody
     message: string
 }
 
+export enum QueryResponseStatus
+{
+    InProgress,
+    Finished
+}
+
 export interface DiagChatResponse {
     sessionId: string;
     message: ChatMessage;
+    responseStatus: QueryResponseStatus;
     error: any;
 }
 

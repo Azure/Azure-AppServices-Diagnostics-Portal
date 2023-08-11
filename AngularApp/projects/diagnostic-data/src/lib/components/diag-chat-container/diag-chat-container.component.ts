@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ChatUIComponent } from '../chat-ui/chat-ui.component';
 import { ChatUIContextService } from '../../services/chatui-context.service';
 import { ConversationalDiagService } from '../../services/conversational-diag.service';
-import { TelemetryService, TelemetryEventNames, TimeUtilities, DiagChatResponse } from '../../../public_api';
+import { TelemetryService, TelemetryEventNames, TimeUtilities, DiagChatResponse, QueryResponseStatus } from '../../../public_api';
 import {ChatMessage, MessageRenderingType, MessageSource, MessageStatus} from '../../models/chatbot-models';
 import { v4 as uuid } from 'uuid';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -24,8 +24,9 @@ export class DiagChatContainerComponent implements OnInit {
   preprocessUserMessage = (messageObj: ChatMessage): ChatMessage => {return messageObj};
   chatIdentifier: string = 'diagChatPublic';
   userInput: string = '';
-  chatHeader: string = '<h3>Diag Chat Container</h3>';
+  chatHeader: string = '<h2><b>Conversational Diagnostics for App Service</b></h2>';
   inputTextLimit: number = 500;
+  responseInProgress: boolean = false;
   chatQuerySamples: any[] = [
         {
             "key": "My application has performance issues",
@@ -67,36 +68,51 @@ export class DiagChatContainerComponent implements OnInit {
 
   private diagChatCallSubscription: Subscription;
 
-  sendMessageOverWSS(searchQuery: any, messageObj: ChatMessage) {  
+  sendMessageOverWSS(searchQuery: any) {  
     if (this.diagChatCallSubscription) {  
       this.diagChatCallSubscription.unsubscribe();  
-    }  
+    }
+
+    this.responseInProgress = true;
     
     this.diagChatCallSubscription = this._diagChatService.onMessageReceive.subscribe((chatResponse: DiagChatResponse) => {  
-      if (messageObj.status == MessageStatus.Cancelled) {  
-        return;  
-      }
       if (chatResponse == null){
+        this.responseInProgress = false;
         return;
-      }  
+      }
+
+      var isMessageEmptyOrError = false;
     
       if (chatResponse != null && chatResponse != undefined) {  
-        if (chatResponse.message != undefined && chatResponse.message.displayMessage != '') {  
+        if (chatResponse.message != undefined && chatResponse.message.message != '') {
+          let messageObj = this.pushEmptySystemMessage();
           messageObj.renderingType = chatResponse.message.renderingType;
-          messageObj.status = chatResponse.message.status;  
-          messageObj.message = `${messageObj.message}${chatResponse.message.displayMessage}`;  
+          messageObj.status = chatResponse.message.status;
+          messageObj.message = chatResponse.message.message;
+          if (this.postProcessSystemMessage != undefined) {
+            this.postProcessSystemMessage(messageObj);
+          }
         }  
         else{
-          messageObj.message = "An error occurred.";
-          messageObj.status = MessageStatus.Finished;  
+          isMessageEmptyOrError = true; 
         }  
       }
       else {
+        isMessageEmptyOrError = true;
+      }
+      if (isMessageEmptyOrError) {
+        let messageObj = this.pushEmptySystemMessage();
         messageObj.message = "An error occurred.";
         messageObj.status = MessageStatus.Finished;
+        if (this.postProcessSystemMessage != undefined) {
+          this.postProcessSystemMessage(messageObj);
+        }
       }
-      if (this.postProcessSystemMessage != undefined) {
-        this.postProcessSystemMessage(messageObj);
+      if (chatResponse.responseStatus == QueryResponseStatus.InProgress) {
+        this.responseInProgress = true;
+      }
+      else {
+        this.responseInProgress = false;
       }
     }, (err) => {  
       this._diagChatService.onMessageReceive = new BehaviorSubject<DiagChatResponse>(null);  
@@ -108,11 +124,26 @@ export class DiagChatContainerComponent implements OnInit {
       userId: "ajsharm",
       message: searchQuery
     }).subscribe(response => {
-      console.log("Response", response);
     }, err => {
       console.log("Error", err);
     });
-  }  
+  }
+
+  pushEmptySystemMessage = (): ChatMessage => {
+    let chatMessage = {
+      id: uuid(),
+      message: "",
+      displayMessage: "",
+      messageSource: MessageSource.System,
+      timestamp: new Date().getTime(),
+      messageDisplayDate: TimeUtilities.displayMessageDate(new Date()),
+      status: MessageStatus.InProgress,
+      userFeedback: "none",
+      renderingType: MessageRenderingType.Text
+    };
+    this._chatContextService.messageStore[this.chatIdentifier].push(chatMessage);
+    return chatMessage;
+  }
   
 
   onUserSendMessage = (messageObj: ChatMessage) => {
@@ -128,23 +159,11 @@ export class DiagChatContainerComponent implements OnInit {
     this._chatContextService.messageStore[this.chatIdentifier].push(messageObj);
     this._telemetryService.logEvent("DiagChatUserMessageSent", { message: messageObj.message, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
     this._chatContextService.chatInputBoxDisabled = true;
-    let chatMessage = {
-      id: uuid(),
-      message: "",
-      displayMessage: "",
-      messageSource: MessageSource.System,
-      timestamp: new Date().getTime(),
-      messageDisplayDate: TimeUtilities.displayMessageDate(new Date()),
-      status: MessageStatus.InProgress,
-      userFeedback: "none",
-      renderingType: MessageRenderingType.Text
-    };
-
-    this._chatContextService.messageStore[this.chatIdentifier].push(chatMessage);
+    
     //Add a little timeout here to wait for the child component to initialize well
     setTimeout(() => { this.chatUIComponentRef.scrollToBottom(); }, 200);
 
-    this.sendMessageOverWSS(messageObj.message, chatMessage);
+    this.sendMessageOverWSS(messageObj.message);
   }
 
 }

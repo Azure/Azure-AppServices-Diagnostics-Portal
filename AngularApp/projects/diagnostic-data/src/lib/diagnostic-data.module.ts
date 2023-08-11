@@ -123,6 +123,7 @@ import { FormStepComponent } from './components/step-views/form-step-view/form-s
 import { GenericPortalService } from './services/generic-portal.service';
 
 import { FabIconModule } from '@angular-react/fabric/lib/components/icon';
+import { FabShimmerModule } from '@angular-react/fabric/lib/components/shimmer';
 import { FabButtonModule } from '@angular-react/fabric/lib/components/button';
 import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown';
 import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
@@ -208,7 +209,8 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         FabDatePickerModule,
         FabCalendarModule,
         NgFlowchartModule,
-        FabDialogModule
+        FabDialogModule,
+        FabShimmerModule,
     ],
     providers: [
         ClipboardService

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from } from 'rxjs';
-import { DiagChatRequestBody, DiagChatResponse } from '../models/openai-data-models';
+import { DiagChatRequestBody, DiagChatResponse, QueryResponseStatus } from '../models/openai-data-models';
 import * as signalR from "@microsoft/signalr";
 import { TelemetryService } from './telemetry/telemetry.service';
 import { catchError, map } from 'rxjs/operators';
@@ -82,18 +82,23 @@ export class ConversationalDiagService {
 
   private addSignalREventListeners() {
 
-    this.signalRConnection.on("MessageReceived", (message: any) => {
-      if (message && message != null && message != undefined) {
-        var messageJson = JSON.parse(message);
-        if (messageJson && messageJson.message && messageJson.sessionId) {
+    this.signalRConnection.on("MessageReceived", (messageResponse: any) => {
+      if (messageResponse && messageResponse != null && messageResponse != undefined) {
+        var messageResponseJson = JSON.parse(messageResponse);
+        if (messageResponseJson && messageResponseJson.message && messageResponseJson.sessionId) {
 
           let chatResponse: DiagChatResponse = {
-            message: messageJson.message,
-            sessionId: messageJson.sessionId,
-            error: null
+            message: messageResponseJson.message,
+            sessionId: messageResponseJson.sessionId,
+            responseStatus: messageResponseJson.responseStatus,
+            error: messageResponseJson.error
           };
 
           this.onMessageReceive.next(chatResponse);
+
+          if (messageResponseJson.responseStatus == QueryResponseStatus.Finished) {
+            this.resetOnMessageReceiveObservable();
+          }
         }
       }
     }, function (err) {
@@ -107,7 +112,8 @@ export class ConversationalDiagService {
       let chatResponse: DiagChatResponse = {
         error: reason,
         sessionId: null,
-        message: null
+        message: null,
+        responseStatus: QueryResponseStatus.Finished
       };
 
       this.onMessageReceive.next(chatResponse);
