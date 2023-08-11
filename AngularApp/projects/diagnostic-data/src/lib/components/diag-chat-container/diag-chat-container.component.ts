@@ -160,7 +160,6 @@ export class DiagChatContainerComponent implements OnInit {
     this._telemetryService.logEvent("DiagChatUserMessageSent", { message: messageObj.message, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
     this._chatContextService.chatInputBoxDisabled = true;
 
-    this._chatContextService.messageStore[this.chatIdentifier].push(chatMessage);
     //Add a little timeout here to wait for the child component to initialize well
     setTimeout(() => { this.chatUIComponentRef.scrollToBottom(); }, 200);
 
