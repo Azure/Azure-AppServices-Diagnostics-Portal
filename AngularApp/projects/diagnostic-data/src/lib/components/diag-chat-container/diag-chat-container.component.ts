@@ -113,11 +113,11 @@ export class DiagChatContainerComponent implements OnInit {
       }
       else {
         this.responseInProgress = false;
-      }
+    }
     }, (err) => {  
       this._diagChatService.onMessageReceive = new BehaviorSubject<DiagChatResponse>(null);  
     }); 
-    
+
     this._diagChatService.sendChatMessage({
       sessionId: "someSessionId",
       resourceId: "subscriptions/14300d68-d0c8-4060-82af-bf2d9b70f130/resourceGroups/bakeryapp-rg/providers/Microsoft.Web/sites/takeithomebakery",
@@ -159,7 +159,8 @@ export class DiagChatContainerComponent implements OnInit {
     this._chatContextService.messageStore[this.chatIdentifier].push(messageObj);
     this._telemetryService.logEvent("DiagChatUserMessageSent", { message: messageObj.message, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
     this._chatContextService.chatInputBoxDisabled = true;
-    
+
+    this._chatContextService.messageStore[this.chatIdentifier].push(chatMessage);
     //Add a little timeout here to wait for the child component to initialize well
     setTimeout(() => { this.chatUIComponentRef.scrollToBottom(); }, 200);
 

@@ -26,5 +26,6 @@ export enum UserAccessStatus
   SGMembershipNeeded,
   CaseNumberNeeded,
   HasAccess,
-  ConsentRequired
+  ConsentRequired,
+  AllowedResourceException
 }

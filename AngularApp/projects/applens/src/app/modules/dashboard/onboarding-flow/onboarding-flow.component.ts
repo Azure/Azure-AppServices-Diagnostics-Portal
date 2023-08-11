@@ -1,6 +1,6 @@
 import { AdalService } from 'adal-angular4';
 import {
-  CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, QueryResponseService, ChatUIContextService
+  CompilationProperties, DetectorControlService, DetectorResponse, HealthStatus, QueryResponse, CompilationTraceOutputDetails, LocationSpan, Position, GenericThemeService, StringUtilities, QueryResponseService, ChatUIContextService, UserAccessStatus
 } from 'diagnostic-data';
 import * as moment from 'moment';
 import { NgxSmartModalService } from 'ngx-smart-modal';
@@ -1570,7 +1570,8 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
           this.localDevButtonDisabled = false;
           this.markCodeLinesInEditor(this.detailedCompilationTraces);
         }, ((error: any) => {
-          const errorMessage = error?.error?.replace(/"/g, '');
+          let errorObj = JSON.parse(error.error);
+          const errorMessage = (error.status === 403 && errorObj.Status === UserAccessStatus.AllowedResourceException) ? "" : error?.error?.replace(/"/g, '');
           this.enableRunButton();
           this.publishingPackage = null;
           this.localDevButtonDisabled = false;
@@ -1606,6 +1607,23 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
               }
             }
           });
+          if (error.status === 403 && errorObj.Status === UserAccessStatus.AllowedResourceException)  {
+            var url = errorObj.DetailText;
+            this.detailedCompilationTraces.push({
+              severity: HealthStatus.Critical,
+              message: `Visit this website to verify your access to the requested subscription: <a href= ${url} target=_blank> ${url} </a>`,
+              location: {
+                start: {
+                  linePos: 0,
+                  colPos: 0
+                },
+                end: {
+                  linePos: 0,
+                  colPos: 0
+                }
+              }
+            });
+          }
           this.markCodeLinesInEditor(this.detailedCompilationTraces);
         }));
     });
@@ -1817,7 +1835,32 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       this.owners.forEach(o => {
         if (o.match(/^\s*$/) == null) reviewers = reviewers.concat(o, '\n');
       });
+    } else {
+      if (this.isWorkflowDetector && this.workflowPublishBody != null) {
+        if (this.workflowPublishBody.AppType != null) {
+          this.workflowPublishBody.AppType.split(',').forEach(apt => {
+            if (Object.keys(this.DevopsConfig.appTypeReviewers).includes(apt)) {
+              this.DevopsConfig.appTypeReviewers[apt].forEach(rev => {
+                if (!this.owners.includes(rev)) this.owners.push(rev);
+              });
+            }
+          });
+        }
+        if (this.workflowPublishBody.Platform != null) {
+          this.workflowPublishBody.Platform.split(',').forEach(plt => {
+            if (Object.keys(this.DevopsConfig.platformReviewers).includes(plt)) {
+              this.DevopsConfig.platformReviewers[plt].forEach(rev => {
+                if (!this.owners.includes(rev)) this.owners.push(rev);
+              });
+            }
+          });
+        }
+        this.owners.forEach(o => {
+          if (o.match(/^\s*$/) == null) reviewers = reviewers.concat(o, '\n');
+        });
+      }
     }
+
     return reviewers;
   }
 
