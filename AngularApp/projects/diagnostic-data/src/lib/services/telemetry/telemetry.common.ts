@@ -142,7 +142,8 @@ export const TelemetryEventNames = {
     SuperGistAPILoaded: 'SuperGistAPILoaded',
     SuperGistUpdateDetectorReferencesButtonClicked: 'SuperGistDetectorReferencesButtonClicked',
     SuperGistUpdateSelectedButtonClicked: 'SuperGistUpdateSelectedButtonClicked',
-    ChatGPTClearButtonClicked : 'ChatGPTClearButtonClicked'
+    ChatGPTClearButtonClicked : 'ChatGPTClearButtonClicked',
+    FeaturePathRouting: 'FeaturePathRouting',
 };
 
 export const TelemetrySource = {

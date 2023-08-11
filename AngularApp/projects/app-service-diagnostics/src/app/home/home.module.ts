@@ -66,7 +66,6 @@ import { ClientScriptService } from '../shared-v2/services/client-script.service
 import { ChatUIContextService, OpenAIArmService } from '../../../../diagnostic-data/src/public_api';
 import { DiagChatContainerComponent } from '../../../../diagnostic-data/src/lib/components/diag-chat-container/diag-chat-container.component';
 import { ConversationalDiagService } from '../../../../diagnostic-data/src/lib/services/conversational-diag.service';
-
 export const HomeRoutes = RouterModule.forChild([
     {
         path: '',

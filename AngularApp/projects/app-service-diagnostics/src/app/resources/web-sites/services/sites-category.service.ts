@@ -423,7 +423,7 @@ export class SitesCategoryService extends CategoryService {
     if (this._armService.isPublicAzure) {
       this._sitesCategories.push({
         appType: AppType.WebApp,
-        platform: OperatingSystem.windows,
+        platform: OperatingSystem.windows | OperatingSystem.linux,
         stack: '',
         sku: Sku.All,
         hostingEnvironmentKind: HostingEnvironmentKind.All,
