@@ -14,8 +14,14 @@
   <div class="panel panel-default">
     <div class="panel-body">
       <div *ngIf="customActionType == 'Diagnostics'">
-
-        <div>
+        <div *ngIf="isElasticPremium">
+          <div class="error-details">
+            <i class="fa health-icon fa-times-circle unhealthy-icon-color" aria-hidden="true"></i>
+            Diagnostics via Auto-healing is currently not supported for Elastic Premium apps. Support for Elastic
+            Premimum will come in the next Azure App Service Platform update. Please stay tuned and sorry for the inconvenience.
+          </div>
+        </div>
+        <div *ngIf="!isElasticPremium">
           <div class="row">
             <div class="detail-cards">
               <ng-container *ngFor="let item of Diagnosers;let i = index">
@@ -40,8 +46,9 @@
                 <ng-container *ngFor="let option of DiagnoserOptions">
                   <div class="radio">
                     <label>
-                      <input type="radio" name="optradio" [checked]="diagnoserOption && diagnoserOption.option === option.option"
-                        [value]="option.option" (change)="chooseDiagnoserAction(option)"> {{ option.option }}
+                      <input type="radio" name="optradio"
+                        [checked]="diagnoserOption && diagnoserOption.option === option.option" [value]="option.option"
+                        (change)="chooseDiagnoserAction(option)"> {{ option.option }}
                     </label>
                   </div>
                 </ng-container>
@@ -75,7 +82,7 @@
             </div>
           </div>
         </div>
-        <div class="mt-3" *ngIf="diagnoser && diagnoser.Name">
+        <div class="mt-3" *ngIf="diagnoser && diagnoser.Name" [hidden]="isElasticPremium" >
           <daas-validator #daasValidatorRef [siteToBeDiagnosed]="siteToBeDiagnosed" [diagnoserName]="diagnoser.Name"
             (DaasValidated)="onDaasValidated($event)"></daas-validator>
         </div>
