@@ -123,6 +123,7 @@ import { FormStepComponent } from './components/step-views/form-step-view/form-s
 import { GenericPortalService } from './services/generic-portal.service';
 
 import { FabIconModule } from '@angular-react/fabric/lib/components/icon';
+import { FabShimmerModule } from '@angular-react/fabric/lib/components/shimmer';
 import { FabButtonModule } from '@angular-react/fabric/lib/components/button';
 import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown';
 import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
@@ -170,6 +171,8 @@ import {OpenAIChatContainerComponent} from './components/openai-chat-container/o
 import { ChatUIMarkdownWrapperComponent } from './components/chat-ui-markdown-wrapper/chat-ui-markdown-wrapper.component';
 import { GenericDetectorCopilotService } from './services/generic-detector-copilot.service';
 import { DiagChatContainerComponent } from './components/diag-chat-container/diag-chat-container.component';
+import { ConversationalDiagService } from './services/conversational-diag.service';
+import { DiagChatSolutionComponent } from './components/diag-chat-solution/diag-chat-solution.component';
 
 import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
 
@@ -209,7 +212,8 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         FabDatePickerModule,
         FabCalendarModule,
         NgFlowchartModule,
-        FabDialogModule
+        FabDialogModule,
+        FabShimmerModule,
     ],
     providers: [
         ClipboardService
@@ -291,7 +295,8 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         OpenAIGenieComponent,
         OpenAIChatContainerComponent,
         ChatUIMarkdownWrapperComponent,
-        DiagChatContainerComponent
+        DiagChatContainerComponent,
+        DiagChatSolutionComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -342,7 +347,8 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         DateTimePickerComponent,
         OpenAIChatContainerComponent,
         ChatUIMarkdownWrapperComponent,
-        DiagChatContainerComponent
+        DiagChatContainerComponent,
+        DiagChatSolutionComponent
     ]
 })
 export class DiagnosticDataModule {
@@ -377,7 +383,8 @@ export class DiagnosticDataModule {
                 OptInsightsGenericService,
                 DemoSubscriptions,
                 ChatUIContextService,
-                GenericDetectorCopilotService
+                GenericDetectorCopilotService,
+                ConversationalDiagService
             ]
         };
     }

@@ -1,0 +1,4 @@
+<solution-view-container *ngIf="solutionTitle != '' && solutionContent != ''" [solutionTitle]="solutionTitle" [detector]="'conversationalDiagnostics'"
+    [isAnalysisView]="false" [isKeystoneDetector]="false" [showFeedbackQuestion]="false">
+    <markdown [data]="solutionContent"></markdown>
+</solution-view-container>

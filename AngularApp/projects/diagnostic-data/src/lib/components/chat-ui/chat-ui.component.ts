@@ -51,6 +51,8 @@ export class ChatUIComponent implements OnInit {
     @Input() inputTextLimit: number = 1000;
     @Input() chatContainerHeight: string  = ''; 
 
+    @Input() displayLoaderShimmer: boolean = false;
+
     chatInputTextInternal: string = '';
 
     public focusChatInput = () => {
