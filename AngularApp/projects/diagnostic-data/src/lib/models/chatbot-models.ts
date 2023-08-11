@@ -18,9 +18,10 @@ export interface ChatMessage {
 }
 
 export enum MessageRenderingType {
-    Text = "text",
-    Markdown = "markdown",
-    Code = "code"
+    Text,
+    Markdown,
+    Code,
+    Solution
 }
 
 export enum MessageStatus {

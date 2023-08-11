@@ -34,6 +34,7 @@ export * from './lib/config/diagnostic-data-config';
 export * from './lib/diagnostic-data.module';
 export * from './lib/services/optinsights.service';
 export * from './lib/services/chatui-context.service';
+export * from './lib/services/conversational-diag.service';
 
 
 export * from './lib/models/detector';
@@ -155,6 +156,7 @@ export * from './lib/components/openai-chat/openai-chat.component';
 export * from './lib/components/openai-chat-container/openai-chat-container.component';
 export * from './lib/components/openai-genie/openai-genie.component';
 export * from './lib/components/diag-chat-container/diag-chat-container.component';
+export * from './lib/components/diag-chat-solution/diag-chat-solution.component';
 
 export * from './lib/modules/fab-coachmark/coachmark.module'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.module'

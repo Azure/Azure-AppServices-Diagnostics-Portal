@@ -7,10 +7,11 @@
     [chatAlignment]="'center'"
     [onSendMessage]="onUserSendMessage"
     [messages]="_chatContextService.messageStore[chatIdentifier]"
-    [userPhotoSource]="_chatContextService.userPhotoSource"
-    [userNameInitial]="_chatContextService.userNameInitial"
+    [systemNameInitial]="'AI'"
+    [userNameInitial]="'JD'"
     [chatInputBoxDisabled]="_chatContextService.chatInputBoxDisabled"
     [chatQuerySamples]="chatQuerySamples"
     [inputTextLimit]="inputTextLimit"
+    [displayLoaderShimmer]="responseInProgress"
     ></chat-ui>
 </div>

@@ -47,7 +47,10 @@
                     class="fa fa-lg fa-files-o"></i></span>
                 <!-- {{message.messageDisplayDate}} -->
               </div>
-              <div style="white-space:pre-wrap">
+              <div *ngIf="message.renderingType == 3">
+                <diag-chat-solution [solutionBody]="message.displayMessage"></diag-chat-solution>
+              </div>
+              <div *ngIf="message.renderingType != 3" style="white-space:pre-wrap">
                 <markdown [ngClass]="{'blinking-cursor': message.status==2}" [data]="message.displayMessage">
 
                 </markdown>
@@ -67,6 +70,9 @@
           </ng-container>
         </div>
       </div>
+    </div>
+    <div class="row no-margin" *ngIf="displayLoaderShimmer">
+      <fab-shimmer [width]="'50%'"></fab-shimmer>
     </div>
 
   </div>
