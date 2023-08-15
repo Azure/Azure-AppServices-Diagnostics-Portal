@@ -43,7 +43,7 @@ import { AutohealingDetectorComponent } from '../availability/detector-view/dete
 import { CpuMonitoringToolComponent } from '../shared/components/tools/cpu-monitoring-tool/cpu-monitoring-tool.component';
 import { EventViewerComponent } from '../shared/components/daas/event-viewer/event-viewer.component';
 import { FrebViewerComponent } from '../shared/components/daas/freb-viewer/freb-viewer.component';
-import { MetricsPerInstanceAppServicePlanResolver, AdvanceApplicationRestartResolver, SecurityScanningResolver, MetricsPerInstanceAppsResolver } from '../diagnostic-tools/diagnostic-tools.routeconfig';
+import { MetricsPerInstanceAppServicePlanResolver, AdvanceApplicationRestartResolver, SecurityScanningResolver, MetricsPerInstanceAppsResolver, DiagnosticToolsRoutes } from '../diagnostic-tools/diagnostic-tools.routeconfig';
 import { CategoryTileV4Component } from '../fabric-ui/components/category-tile-v4/category-tile-v4.component';
 import { GenieModule } from '../genie/genie.module';
 import { FabricModule } from '../fabric-ui/fabric.module';
@@ -90,7 +90,13 @@ export const HomeRoutes = RouterModule.forChild([
                     navigationTitle: 'DiagChat',
                     cacheComponent: true
                 },
-                pathMatch: 'full',
+                //pathMatch: 'full',
+                children: [
+                    {
+                        'path': 'tools',
+                        loadChildren: () => import('../diagnostic-tools/diagnostic-tools.module').then(m => m.DiagnosticToolsModule)
+                    }
+                ]
             },
             {
                 path: 'solutionorchestrator',
@@ -255,211 +261,7 @@ export const HomeRoutes = RouterModule.forChild([
                             navigationTitle: TabTitleResolver,
                         }
                     },
-                    {
-                        path: 'tools/profiler',
-                        component: ProfilerToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.Profiler,
-                            cacheComponent: true
-                        }
-                    },
-                    // Profiler Tool for Linux (To be shown when All Instances of a Linux App are running on ANT 98)
-                    {
-                        path: 'tools/profilerlinuxv2',
-                        component: ProfilerToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.Profiler,
-                            cacheComponent: true,
-                            allLinuxInstancesOnAnt98: true
-                        }
-                    },
-                    // Memory Dump
-                    {
-                        path: 'tools/memorydump',
-                        component: MemoryDumpToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.MemoryDump,
-                            cacheComponent: true
-                        }
-                    },
-                    // Memory Dump for Linux (To be shown when All Instances of a Linux App are running on ANT 98)
-                    {
-                        path: 'tools/memorydumplinuxv2',
-                        component: MemoryDumpToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.MemoryDump,
-                            cacheComponent: true,
-                            allLinuxInstancesOnAnt98: true
-                        }
-                    },
-                    // Java Thread Dump
-                    {
-                        path: 'tools/javathreaddump',
-                        component: JavaThreadDumpToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.JavaThreadDump,
-                            cacheComponent: true
-                        }
-                    },
-                    // Java Memory Dump
-                    {
-                        path: 'tools/javamemorydump',
-                        component: JavaMemoryDumpToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.JavaMemoryDump,
-                            cacheComponent: true
-                        }
-                    },
-                    // Java Flight Recorder
-                    {
-                        path: 'tools/javaflightrecorder',
-                        component: JavaFlightRecorderToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.JavaFlightRecorder,
-                            cacheComponent: true
-                        }
-                    },
-                    // Linux Node Heap Dump
-                    {
-                        path: 'tools/linuxnodeheapdump',
-                        component: LinuxNodeHeapDumpComponent,
-                        data: {
-                            navigationTitle: ToolNames.LinuxNodeHeapDump,
-                            cacheComponent: true
-                        }
-                    },
-                    // Linux Node Cpu Profiler
-                    {
-                        path: 'tools/linuxnodecpuprofiler',
-                        component: LinuxNodeCpuProfilerComponent,
-                        data: {
-                            navigationTitle: ToolNames.LinuxNodeCpuProfiler,
-                            cacheComponent: true
-                        }
-                    },
-                    // Linux Python CPU Profiler
-                    {
-                        path: 'tools/linuxpythoncpuprofiler',
-                        component: LinuxPythonCpuProfilerComponent,
-                        data: {
-                            navigationTitle: ToolNames.LinuxPythonCpuProfiler,
-                            cacheComponent: true
-                        }
-                    },
-                    // Database Test Tool(connection string)
-                    {
-                        path: 'tools/databasetester',
-                        component: ConnectionDiagnoserToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.DatabaseTester,
-                            cacheComponent: true
-                        }
-                    },
-                    // CPU Monitoring tool
-                    {
-                        path: 'tools/cpumonitoring',
-                        component: CpuMonitoringToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.CpuMonitoring,
-                            cacheComponent: true
-                        }
-                    },
-                    // Crash Monitoring tool
-                    {
-                        path: 'tools/crashmonitoring',
-                        component: CrashMonitoringComponent,
-                        data: {
-                            navigationTitle: ToolNames.CrashMonitoring,
-                            cacheComponent: true
-                        }
-                    },
-                    // Autohealing
-                    {
-                        path: 'tools/mitigate',
-                        component: AutohealingComponent,
-                        data: {
-                            navigationTitle: ToolNames.AutoHealing,
-                            detectorComponent: AutohealingDetectorComponent
-                        }
-                    },
-                    // Network Trace
-                    {
-                        path: 'tools/networktrace',
-                        component: NetworkTraceToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.NetworkTrace,
-                            cacheComponent: true
-                        }
-                    },
-                    // Network Checks
-                    {
-                        path: 'tools/networkchecks',
-                        component: NetworkCheckComponent,
-                        data: {
-                            navigationTitle: ToolNames.NetworkChecks,
-                            cacheComponent: true
-                        }
-                    },
-                    // Diagnostics
-                    {
-                        path: 'tools/daas',
-                        component: DaasMainComponent,
-                        data: {
-                            navigationTitle: ToolNames.Diagnostics,
-                            cacheComponent: true
-                        }
-                    },
-                    // Event Viewer
-                    {
-                        path: 'tools/eventviewer',
-                        component: EventViewerComponent,
-                        data: {
-                            navigationTitle: ToolNames.EventViewer,
-                            cacheComponent: true
-                        }
-                    },
-                    // Freb Viewer
-                    {
-                        // path: 'tools/frebviewer',
-                        path: 'tools/freblogs',
-                        component: FrebViewerComponent,
-                        data: {
-                            navigationTitle: ToolNames.FrebViewer,
-                            cacheComponent: true
-                        }
-                    },
-                    //Metrics per Instance (Apps)
-                    {
-                        // path: 'tools/metricsperinstance',
-                        path: 'tools/sitemetrics',
-                        resolve: {
-                            reroute: MetricsPerInstanceAppsResolver
-                        },
-                    },
-                    //Metrics per Instance (App Service Plan)
-                    {
-                        // path: 'tools/metricsperinstanceappserviceplan',
-                        path: 'tools/appserviceplanmetrics',
-                        resolve: {
-                            reroute: MetricsPerInstanceAppServicePlanResolver
-                        },
-                    },
-                    //Advanced Application Restart
-                    {
-                        // path: 'tools/applicationrestart',
-                        path: 'tools/advancedapprestart',
-                        resolve: {
-                            reroute: AdvanceApplicationRestartResolver
-                        },
-                    },
-                    //Security Scanning
-                    {
-                        // path: 'tools/securityscanning',
-                        path: 'tools/tinfoil',
-                        resolve: {
-                            reroute: SecurityScanningResolver
-                        },
-                    },
+                    { path: "tools", loadChildren: () => import('../diagnostic-tools/diagnostic-tools.module').then(m => m.DiagnosticToolsModule) },
                     // App settings page
                     {
                         path: 'settings',
@@ -809,7 +611,7 @@ export const HomeRoutes = RouterModule.forChild([
             { provide: GenericDocumentsSearchService, useExisting: DocumentSearchService },
             { provide: CXPChatService, useExisting: CXPChatCallerService },
             { provide: GenericResourceService, useExisting: ResourceService },
-            { provide: GenericClientScriptService, useExisting: ClientScriptService},
+            { provide: GenericClientScriptService, useExisting: ClientScriptService },
             ConversationalDiagService
         ],
 })

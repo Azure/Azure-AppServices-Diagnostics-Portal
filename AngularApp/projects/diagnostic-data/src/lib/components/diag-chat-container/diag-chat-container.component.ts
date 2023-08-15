@@ -2,10 +2,13 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ChatUIComponent } from '../chat-ui/chat-ui.component';
 import { ChatUIContextService } from '../../services/chatui-context.service';
 import { ConversationalDiagService } from '../../services/conversational-diag.service';
-import { TelemetryService, TelemetryEventNames, TimeUtilities, DiagChatResponse, QueryResponseStatus } from '../../../public_api';
-import {ChatMessage, MessageRenderingType, MessageSource, MessageStatus} from '../../models/chatbot-models';
+import { ChatMessage, MessageRenderingType, MessageSource, MessageStatus } from '../../models/chatbot-models';
 import { v4 as uuid } from 'uuid';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { TelemetryService } from '../../services/telemetry/telemetry.service';
+import { DiagChatResponse, QueryResponseStatus } from '../../models/openai-data-models';
+import { TimeUtilities } from '../../utilities/time-utilities';
+import { DiagnosticService } from '../../services/diagnostic.service';
 
 @Component({
   selector: 'diag-chat-container',
@@ -13,7 +16,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
   styleUrls: ['./diag-chat-container.component.scss']
 })
 export class DiagChatContainerComponent implements OnInit {
-  constructor(public _chatContextService: ChatUIContextService, public _telemetryService: TelemetryService, private _diagChatService: ConversationalDiagService) {
+  constructor(public _chatContextService: ChatUIContextService, public _telemetryService: TelemetryService, private _diagChatService: ConversationalDiagService, private _diagnosticService: DiagnosticService) {
     if (!this._chatContextService.messageStore.hasOwnProperty(this.chatIdentifier)) {
       this._chatContextService.messageStore[this.chatIdentifier] = [];
     }
@@ -21,38 +24,39 @@ export class DiagChatContainerComponent implements OnInit {
 
   @ViewChild('chatUIComponent') chatUIComponentRef: ChatUIComponent;
 
-  preprocessUserMessage = (messageObj: ChatMessage): ChatMessage => {return messageObj};
+  preprocessUserMessage = (messageObj: ChatMessage): ChatMessage => { return messageObj };
   chatIdentifier: string = 'diagChatPublic';
   userInput: string = '';
   chatHeader: string = '<h2><b>Conversational Diagnostics for App Service</b></h2>';
   inputTextLimit: number = 500;
   responseInProgress: boolean = false;
+  private diagChatCallSubscription: Subscription;
   chatQuerySamples: any[] = [
-        {
-            "key": "My application has performance issues",
-            "value": "My application has performance issues"
-        },
-        {
-            "key": "Broken connectivity to external endpoint",
-            "value": "Broken connectivity to external endpoint"
-        },
-        {
-            "key": "What is the meaning of 500.19 error?",
-            "value": "What is the meaning of 500.19 error?"
-        },
-        {
-            "key": "How to configure Virtual Network on my app?",
-            "value": "How to configure Virtual Network on my app?"
-        },
-        {
-            "key": "What are the Azure App Service resiliency features?",
-            "value": "What are the Azure App Service resiliency features?"
-        },
-        {
-            "key": "How to integrate KeyVault in Azure Function App using azure cli?",
-            "value": "How to integrate KeyVault in Azure Function App using azure cli?"
-        }
-    ];
+    {
+      "key": "My application has performance issues",
+      "value": "My application has performance issues"
+    },
+    {
+      "key": "Broken connectivity to external endpoint",
+      "value": "Broken connectivity to external endpoint"
+    },
+    {
+      "key": "What is the meaning of 500.19 error?",
+      "value": "What is the meaning of 500.19 error?"
+    },
+    {
+      "key": "How to configure Virtual Network on my app?",
+      "value": "How to configure Virtual Network on my app?"
+    },
+    {
+      "key": "What are the Azure App Service resiliency features?",
+      "value": "What are the Azure App Service resiliency features?"
+    },
+    {
+      "key": "How to integrate KeyVault in Azure Function App using azure cli?",
+      "value": "How to integrate KeyVault in Azure Function App using azure cli?"
+    }
+  ];
 
   ngOnInit(): void {
     this._diagChatService.establishSignalRConnection().subscribe((result: boolean) => {
@@ -66,24 +70,22 @@ export class DiagChatContainerComponent implements OnInit {
     this.chatUIComponentRef.scrollToBottom();
   }
 
-  private diagChatCallSubscription: Subscription;
-
-  sendMessageOverWSS(searchQuery: any) {  
-    if (this.diagChatCallSubscription) {  
-      this.diagChatCallSubscription.unsubscribe();  
+  sendMessageOverWSS(searchQuery: any) {
+    if (this.diagChatCallSubscription) {
+      this.diagChatCallSubscription.unsubscribe();
     }
 
     this.responseInProgress = true;
-    
-    this.diagChatCallSubscription = this._diagChatService.onMessageReceive.subscribe((chatResponse: DiagChatResponse) => {  
-      if (chatResponse == null){
+
+    this.diagChatCallSubscription = this._diagChatService.onMessageReceive.subscribe((chatResponse: DiagChatResponse) => {
+      if (chatResponse == null) {
         this.responseInProgress = false;
         return;
       }
 
-      var isMessageEmptyOrError = false;
-    
-      if (chatResponse != null && chatResponse != undefined) {  
+      let isMessageEmptyOrError = false;
+
+      if (chatResponse != null && chatResponse != undefined) {
         if (chatResponse.message != undefined && chatResponse.message.message != '') {
           let messageObj = this.pushEmptySystemMessage();
           messageObj.renderingType = chatResponse.message.renderingType;
@@ -92,10 +94,10 @@ export class DiagChatContainerComponent implements OnInit {
           if (this.postProcessSystemMessage != undefined) {
             this.postProcessSystemMessage(messageObj);
           }
-        }  
-        else{
-          isMessageEmptyOrError = true; 
-        }  
+        }
+        else {
+          isMessageEmptyOrError = true;
+        }
       }
       else {
         isMessageEmptyOrError = true;
@@ -113,14 +115,16 @@ export class DiagChatContainerComponent implements OnInit {
       }
       else {
         this.responseInProgress = false;
-    }
-    }, (err) => {  
-      this._diagChatService.onMessageReceive = new BehaviorSubject<DiagChatResponse>(null);  
-    }); 
+      }
+    }, (err) => {
+      this._diagChatService.onMessageReceive = new BehaviorSubject<DiagChatResponse>(null);
+    });
 
+    //Need to be replaced with actual session id and userId
+    const resourceId = this._diagnosticService.resourceId.startsWith('/') ? this._diagnosticService.resourceId.substring(1) : this._diagnosticService.resourceId;
     this._diagChatService.sendChatMessage({
       sessionId: "someSessionId",
-      resourceId: "subscriptions/14300d68-d0c8-4060-82af-bf2d9b70f130/resourceGroups/bakeryapp-rg/providers/Microsoft.Web/sites/takeithomebakery",
+      resourceId: resourceId,
       userId: "ajsharm",
       message: searchQuery
     }).subscribe(response => {
@@ -144,7 +148,7 @@ export class DiagChatContainerComponent implements OnInit {
     this._chatContextService.messageStore[this.chatIdentifier].push(chatMessage);
     return chatMessage;
   }
-  
+
 
   onUserSendMessage = (messageObj: ChatMessage) => {
 

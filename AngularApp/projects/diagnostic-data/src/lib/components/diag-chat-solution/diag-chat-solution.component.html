@@ -2,3 +2,9 @@
     [isAnalysisView]="false" [isKeystoneDetector]="false" [showFeedbackQuestion]="false">
     <markdown [data]="solutionContent"></markdown>
 </solution-view-container>
+<fab-link (click)="navigateToSolution()">Click View Solution</fab-link>
+<fab-panel [isOpen]="panelDisplay" [type]="panelType" [customWidth]="'1200px'" (onDismiss)="closePanel()">
+    <div>
+        <router-outlet></router-outlet>
+    </div>
+</fab-panel>
