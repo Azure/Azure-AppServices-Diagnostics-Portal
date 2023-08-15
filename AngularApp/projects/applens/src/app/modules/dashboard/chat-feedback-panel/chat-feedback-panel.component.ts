@@ -48,7 +48,7 @@ export class ChatFeedbackPanelComponent implements OnInit {
   
   @Input() responseTokenSize: ResponseTokensSize = ResponseTokensSize.Large;
   
-  @Input() headerText: string = "Feedback to improve AI generated response.";
+  @Input() headerText: string = "Finetune AI";
 
   @Input() additionalFields: ChatFeedbackAdditionalField[];
 

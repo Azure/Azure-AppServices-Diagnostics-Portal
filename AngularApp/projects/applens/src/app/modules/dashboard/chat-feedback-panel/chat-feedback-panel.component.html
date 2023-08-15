@@ -5,7 +5,7 @@
       <div style="height:95%">
         <fab-text-field [ariaLabel]="'Question'" [required]="'{true}'" [label]="'Question'" [styles]="fabTextFieldStyles" [rows] = 4 [multiline]="true" (onChange) = "updateFeedbackUserQuestion($event)" [value] = "feedbackUserQuestion.displayMessage">
         </fab-text-field>
-        <fab-text-field [ariaLabel]="'System response'"  [required]="'{true}'" [label]="'System response'" [styles]="fabTextFieldStyles" [disabled]="true" aria-disabled="true" [rows] = 5 [resizable]="false" [autoAdjustHeight] = "true" [multiline]="true" [value] = "systemResponse.displayMessage">
+        <fab-text-field [ariaLabel]="'System response'"  [required]="'{true}'" [label]="'System response'" [styles]="fabTextFieldStyles" [disabled]="true" aria-disabled="true" [rows] = 15 [resizable]="false" [autoAdjustHeight] = "false" [multiline]="true" [value] = "systemResponse.displayMessage">
         </fab-text-field>
         <fab-text-field [ariaLabel]="'Expected response'" [required]="'{true}'" [label]="'Expected response'" [styles]="fabTextFieldStyles" [rows] = 15 [autoAdjustHeight] = "true" [multiline]="true" (onChange) = "updateFeedbackUserResponse($event)" [defaultValue] = "correctResponseFeedback">
         </fab-text-field>
