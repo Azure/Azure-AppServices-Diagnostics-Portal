@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace AppLensV3.Controllers
@@ -28,14 +29,16 @@ namespace AppLensV3.Controllers
         private readonly IConfiguration _configuration;
         private readonly IHubContext<OpenAIChatCompletionHub> _hubContext;
         private readonly ICosmosDBOpenAIChatFeedbackHandler _chatFeedbackCosmosDBHandler;
+        private CopilotsConfiguration _copilotsconfiguration;
 
-        public OpenAIController(IOpenAIService openAIService, ILogger<OpenAIController> logger, IConfiguration config, IHubContext<OpenAIChatCompletionHub> hubContext, ICosmosDBOpenAIChatFeedbackHandler chatFeedbackCosmosDBHandler)
+        public OpenAIController(IOpenAIService openAIService, ILogger<OpenAIController> logger, IConfiguration config, IHubContext<OpenAIChatCompletionHub> hubContext, ICosmosDBOpenAIChatFeedbackHandler chatFeedbackCosmosDBHandler, IOptions<CopilotsConfiguration> copilotsConfiguration)
         {
             _logger = logger;
             _openAIService = openAIService;
             _configuration = config;
             _hubContext = hubContext;
             _chatFeedbackCosmosDBHandler = chatFeedbackCosmosDBHandler;
+            _copilotsconfiguration = copilotsConfiguration.Value;
         }
 
         [HttpGet("enabled")]
@@ -151,6 +154,30 @@ namespace AppLensV3.Controllers
             }
         }
 
+        [HttpGet("iscopilotenabled/{chatIdentifier}/{resourceProviderName}/{resourceTypeName}")]
+        public async Task<IActionResult> IsCopilotEnabled(string chatIdentifier, string resourceProviderName, string resourceTypeName)
+        {
+            if (!string.IsNullOrWhiteSpace(chatIdentifier) && !string.IsNullOrWhiteSpace(resourceProviderName) && !string.IsNullOrWhiteSpace(resourceTypeName))
+            {
+                var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
+                return Ok(_copilotsconfiguration.IsUserAllowedAccess(chatIdentifier, userAlias, resourceProviderName, resourceTypeName));
+            }
+
+            return Ok(false);
+        }
+
+        [HttpGet("isfeedbacksubmissionenabled/{chatIdentifier}/{resourceProviderName}/{resourceTypeName}")]
+        public async Task<IActionResult> IsFeedbackSubmissionEnabled(string chatIdentifier, string resourceProviderName, string resourceTypeName)
+        {
+            if (!string.IsNullOrWhiteSpace(chatIdentifier) && !string.IsNullOrWhiteSpace(resourceProviderName) && !string.IsNullOrWhiteSpace(resourceTypeName))
+            {
+                var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
+                return Ok(_copilotsconfiguration.IsUserAllowedToSubmitFeedback(chatIdentifier, userAlias, resourceProviderName, resourceTypeName));
+            }
+
+            return Ok(false);
+        }
+
         [HttpGet("kustocopilot/enabled")]
         public async Task<IActionResult> IsKustoCopilotEnabled()
         {
@@ -186,14 +213,29 @@ namespace AppLensV3.Controllers
                 return BadRequest("Feedback submission prohibited for user.");
             }
 
-            return Ok(await _chatFeedbackCosmosDBHandler.SaveFeedback(feedbackPayload));
+            if (_copilotsconfiguration.IsUserAllowedToSubmitFeedback(feedbackPayload.ChatIdentifier, userAlias, feedbackPayload.Provider, feedbackPayload.ResourceType))
+            {
+                return Ok(await _chatFeedbackCosmosDBHandler.SaveFeedback(feedbackPayload));
+            }
+            else
+            {
+                return Unauthorized("Feedback submission is not allowed for user.");
+            }
         }
 
         [HttpPost("getRelatedFeedbackListFromChatHistory")]
         [HttpOptions("getRelatedFeedbackListFromChatHistory")]
         public async Task<IActionResult> GetRelatedFeedbackListFromChatHistory([FromBody] RequestChatPayload chatPayload)
         {
-            return Ok(await _openAIService.GetChatFeedbackRaw(chatPayload.MetaData, chatPayload.Messages.ToList()));
+            var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
+            if (_copilotsconfiguration.IsUserAllowedToSubmitFeedback(chatPayload?.MetaData?.ChatIdentifier, userAlias, chatPayload?.MetaData?.Provider, chatPayload?.MetaData?.ResourceType))
+            {
+                return Ok(await _openAIService.GetChatFeedbackRaw(chatPayload.MetaData, chatPayload.Messages.ToList()));
+            }
+            else
+            {
+                return Unauthorized("Feedback retrieval is not allowed for user.");
+            }
         }
 
         [HttpPost("purgeFeedbackList")]
@@ -203,6 +245,12 @@ namespace AppLensV3.Controllers
             if (feedbackPurgeModel.FeedbackIds?.Count < 1)
             {
                 return Ok(new Tuple<bool, List<string>>(true, new List<string>()));
+            }
+
+            var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
+            if (!_copilotsconfiguration.IsUserAllowedToSubmitFeedback(feedbackPurgeModel.ChatIdentifier, userAlias, feedbackPurgeModel.Provider, feedbackPurgeModel.ResourceType))
+            {
+                return Unauthorized("User not allowed to delete feedback");
             }
 
             if (string.IsNullOrWhiteSpace(feedbackPurgeModel.ChatIdentifier) || string.IsNullOrWhiteSpace(feedbackPurgeModel.Provider) || string.IsNullOrWhiteSpace(feedbackPurgeModel.ResourceType))
