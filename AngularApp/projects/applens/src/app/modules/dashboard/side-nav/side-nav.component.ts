@@ -66,6 +66,7 @@ export class SideNavComponent implements OnInit {
   isProd: boolean = false;
   workflowsEnabled: boolean = false;
   showChatGPT: boolean = false;
+  askAppLensEnabled: boolean = false;
   
 
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService,
@@ -202,6 +203,19 @@ export class SideNavComponent implements OnInit {
       },
       icon: null
     },
+    ...this.askAppLensEnabled? [{
+      label: 'Ask AppLens',
+      id: "askAppLens",
+      onClick: () => {
+        this.navigateTo("askApplens");
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `askapplens`.toLowerCase();
+      },
+      icon: null
+    }]: [],
     {
       label: 'KQL for Antares Analytics',
       id: "kustocopilot",

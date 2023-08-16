@@ -3,6 +3,7 @@ using AppLensV3.Models;
 using AppLensV3.Services;
 using AppLensV3.Services.ApplensTelemetryInitializer;
 using AppLensV3.Services.AppSvcUxDiagnosticDataService;
+using AppLensV3.Services.CognitiveSearchService;
 using AppLensV3.Services.DiagnosticClientService;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -168,6 +169,15 @@ namespace AppLensV3
             else
             {
                 services.AddSingleton<IBingSearchService, BingSearchServiceDisabled>();
+            }
+
+            var cognitiveSearchConfiguration = Configuration.GetSection("CognitiveSearch").Get<CognitiveSearchConfiguration>();
+
+            if (cognitiveSearchConfiguration != null)
+            {
+                services.AddSingleton<ICognitiveSearchBaseService>(new CognitiveSearchBaseService(cognitiveSearchConfiguration));
+                services.AddSingleton<ICognitiveSearchAdminService, CognitiveSearchAdminService>();
+                services.AddSingleton<ICognitiveSearchQueryService, CognitiveSearchQueryService>();
             }
 
             if (Configuration.GetValue("Graph:Enabled", false))

@@ -140,6 +140,7 @@ import * as moment from 'moment';
 import { ApplensOpenAIChatComponent } from './applens-openai-chat/applens-openai-chat.component';
 import { CommunicationToolkitComponent } from './communication-toolkit/communication-toolkit.component';
 import { DetectorCopilotService } from 'projects/applens/src/app/modules/dashboard/services/detector-copilot.service';
+import { ApplensDocsCopilotComponent } from './applens-docs-copilot/applens-docs-copilot.component';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -511,6 +512,10 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
             { 
                 path: 'communicationToolkit',
                 component: CommunicationToolkitComponent
+            },
+            {
+                path: 'askApplens',
+                component: ApplensDocsCopilotComponent
             }
         ]
     },
@@ -620,6 +625,6 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         KustoQueryDialogComponent, DetectorNodeComponent, KustoNodeComponent, MarkdownNodeComponent, NodeActionsComponent, ConfigureVariablesComponent, CommonNodePropertiesComponent,
         NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent,
         WorkflowUserAccessComponent, ForeachNodeComponent, DevopsDeploymentsComponent, InputNodeComponent, NetworkTraceAnalysisComponent,
-        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent]
+        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent, ApplensDocsCopilotComponent]
 })
 export class DashboardModule { }

@@ -79,6 +79,7 @@ namespace AppLensV3.Services
         private readonly string openAIEndpoint;
         private readonly string openAIGPT3APIUrl;
         private readonly string openAIGPT4Model;
+        private readonly string openAIGPT35Model;
         private readonly string openAIAPIKey;
         private readonly ILogger<OpenAIService> logger;
         private readonly bool isOpenAIAPIEnabled = false;
@@ -86,6 +87,7 @@ namespace AppLensV3.Services
         private IOpenAIRedisService redisCache;
         private IConfiguration configuration;
         private static OpenAIClient openAIClient;
+        private readonly ICognitiveSearchQueryService _cognitiveSearchQueryService;
         private ConcurrentDictionary<string, Task<string>> chatTemplateFileCache;
         private string chatHubRedisKeyPrefix;
         private Dictionary<string, AnalyticsKustoTableDetails> analyticsKustoTables = new Dictionary<string, AnalyticsKustoTableDetails>(StringComparer.OrdinalIgnoreCase);
@@ -96,8 +98,9 @@ namespace AppLensV3.Services
         // It also gets the chatMessages and the chatMetaData in case the custom logic needs to prepare its independent set of messages.
         private delegate Task<OpenAIChainResponse> ChatCompletionCustomHandler(List<ChatMessage> chatMessages, ChatMetaData metadata, ChatCompletionsOptions chatCompletionsOptions, ILogger<OpenAIService> logger);
 
-        public OpenAIService(IConfiguration config, IOpenAIRedisService redisService, ILogger<OpenAIService> logger)
+        public OpenAIService(IConfiguration config, IOpenAIRedisService redisService, ILogger<OpenAIService> logger, ICognitiveSearchQueryService cognitiveSearchQueryService)
         {
+            _cognitiveSearchQueryService = cognitiveSearchQueryService;
             configuration = config;
             isOpenAIAPIEnabled = Convert.ToBoolean(configuration["OpenAIService:Enabled"]);
             chatTemplateFileCache = new ConcurrentDictionary<string, Task<string>>(StringComparer.OrdinalIgnoreCase);
@@ -108,6 +111,7 @@ namespace AppLensV3.Services
                 openAIEndpoint = configuration["OpenAIService:Endpoint"];
                 openAIGPT3APIUrl = configuration["OpenAIService:GPT3DeploymentAPI"];
                 openAIGPT4Model = configuration["OpenAIService:GPT4DeploymentName"];
+                openAIGPT35Model = configuration["OpenAIService:GPT35DeploymentName"];
                 openAIAPIKey = configuration["OpenAIService:APIKey"];
                 chatHubRedisKeyPrefix = "ChatHub-MessageState-";
 
@@ -137,6 +141,36 @@ namespace AppLensV3.Services
                 return false;
             }
             return await redisCache.SetKey(key, value);
+        }
+
+        private async Task<string> PrepareDocumentContent(DocumentSearchSettings documentSearchSettings, string query)
+        {
+            if (documentSearchSettings != null && documentSearchSettings.IndexName != null)
+            {
+                try
+                {
+                    var documents = await _cognitiveSearchQueryService.SearchDocuments(query, documentSearchSettings.IndexName);
+                    if (documents != null && documents.Count > 0)
+                    {
+                        List<string> documentContentList = new List<string>();
+                        foreach (var document in documents)
+                        {
+                            documentContentList.Add($"{(!string.IsNullOrWhiteSpace(document.Title) ? document.Title + "\n" : "")}{document.Content}\n{(!string.IsNullOrWhiteSpace(document.Url) ? "ReferenceUrl: " + document.Url : "")}");
+                        }
+                        var documentContent = string.Join("\n\n", documentContentList);
+                        if (documentSearchSettings.IncludeReferences)
+                        {
+                            documentContent = documentContent + "\nPlease provide reference links of the documents used to answer the query, at the bottom of your answer. Reference links should be created with title and url of the document using the <a href> HTML attribute with target='_blank'";
+                        }
+                        return documentContent;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+            return null;
         }
 
         public async Task<ChatResponse> RunTextCompletion(CompletionModel requestBody, bool cacheEnabledOnRequest)
@@ -216,7 +250,7 @@ namespace AppLensV3.Services
             }
             else
             {
-                response = await openAIClient.GetChatCompletionsAsync(openAIGPT4Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
+                response = await openAIClient.GetChatCompletionsAsync(metadata.ChatModel == "gpt4" || string.IsNullOrWhiteSpace(openAIGPT35Model) ? openAIGPT4Model: openAIGPT35Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
             }
 
             return new ChatResponse(response);
@@ -256,7 +290,7 @@ namespace AppLensV3.Services
             else
             {
                 Response<StreamingChatCompletions> response = await openAIClient.GetChatCompletionsStreamingAsync(
-                    openAIGPT4Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
+                    metadata.ChatModel == "gpt4" || string.IsNullOrWhiteSpace(openAIGPT35Model) ? openAIGPT4Model : openAIGPT35Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
                 using StreamingChatCompletions streamingChatCompletions = response.Value;
                 await foreach (StreamingChatChoice choice in streamingChatCompletions.GetChoicesStreaming(cancellationToken))
                 {
@@ -468,6 +502,32 @@ namespace AppLensV3.Services
                 string systemPrompt = (jObject["systemPrompt"] ?? string.Empty).ToString();
                 // replace <<CURRENT_DATETIME>> with the current UTC Date time
                 systemPrompt = systemPrompt.Replace("<<CURRENT_DATETIME>>", DateTime.UtcNow.ToString() + "UTC");
+                
+                if (jObject["DocumentSearchSettings"] != null)
+                {
+                    try
+                    {
+                        var documentSearchSettings = jObject["DocumentSearchSettings"].ToObject<DocumentSearchSettings>();
+                        var userQuery = chatMessages.Last().Content;
+                        string documentContent = await PrepareDocumentContent(documentSearchSettings, userQuery);
+                        if (!string.IsNullOrWhiteSpace(documentContent))
+                        {
+                            if (systemPrompt.Contains(documentSearchSettings.DocumentContentPlaceholder))
+                            {
+                                systemPrompt = systemPrompt.Replace(documentSearchSettings.DocumentContentPlaceholder, documentContent);
+                            }
+                            else
+                            {
+                                systemPrompt = $"Here is some information that can help answer user queries:\n{documentContent}\n\n{systemPrompt}";
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        //Do nothing and let the chat work as it is
+                    }
+                }
+
                 chatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.System, systemPrompt));
                 JArray fewShotExamples = (jObject["fewShotExamples"] ?? new JObject()).ToObject<JArray>();
 
