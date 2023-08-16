@@ -54,7 +54,7 @@
                 </ng-container>
               </div>
               <div class="col-sm-9">
-                <div class="diagnoser-option"> {{ diagnoserOption.Description}} </div>
+                <div class="diagnoser-option" *ngIf="diagnoserOption && diagnoserOption.Description"> {{ diagnoserOption.Description}} </div>
               </div>
             </div>
             <div class="row" style="margin-bottom: 5px; margin-left: 5px">
