@@ -154,8 +154,8 @@ namespace AppLensV3.Controllers
             }
         }
 
-        [HttpGet("iscopilotenabled/{chatIdentifier}/{resourceProviderName}/{resourceTypeName}")]
-        public async Task<IActionResult> IsCopilotEnabled(string chatIdentifier, string resourceProviderName, string resourceTypeName)
+        [HttpGet("iscopilotenabled/{resourceProviderName}/{resourceTypeName}/{chatIdentifier}")]
+        public async Task<IActionResult> IsCopilotEnabled(string resourceProviderName, string resourceTypeName, string chatIdentifier)
         {
             if (!string.IsNullOrWhiteSpace(chatIdentifier) && !string.IsNullOrWhiteSpace(resourceProviderName) && !string.IsNullOrWhiteSpace(resourceTypeName))
             {
@@ -166,8 +166,8 @@ namespace AppLensV3.Controllers
             return Ok(false);
         }
 
-        [HttpGet("isfeedbacksubmissionenabled/{chatIdentifier}/{resourceProviderName}/{resourceTypeName}")]
-        public async Task<IActionResult> IsFeedbackSubmissionEnabled(string chatIdentifier, string resourceProviderName, string resourceTypeName)
+        [HttpGet("isfeedbacksubmissionenabled/{resourceProviderName}/{resourceTypeName}/{chatIdentifier}")]
+        public async Task<IActionResult> IsFeedbackSubmissionEnabled(string resourceProviderName, string resourceTypeName, string chatIdentifier)
         {
             if (!string.IsNullOrWhiteSpace(chatIdentifier) && !string.IsNullOrWhiteSpace(resourceProviderName) && !string.IsNullOrWhiteSpace(resourceTypeName))
             {
