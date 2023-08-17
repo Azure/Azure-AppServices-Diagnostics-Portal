@@ -744,4 +744,18 @@ export class DiagnosticApiService {
       return res;
     }));
   }
+
+  public isCopilotEnabled(resourceProvider:string, resourceType:string, chatIdentifier:string): Observable<boolean> {
+    let path = `api/openai/isCopilotEnabled/${resourceProvider}/${resourceType}/${chatIdentifier}`;
+    return this.get<boolean>(path).pipe(map((res) => {
+      return res;
+    }));
+  }
+
+  public isFeedbackSubmissionEnabled(resourceProvider:string, resourceType:string, chatIdentifier:string): Observable<boolean> {
+    let path = `api/openai/isFeedbackSubmissionEnabled/${resourceProvider}/${resourceType}/${chatIdentifier}`;
+    return this.get<boolean>(path).pipe(map((res) => {
+      return res;
+    }));
+  }
 }

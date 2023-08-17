@@ -66,7 +66,6 @@ export class SideNavComponent implements OnInit {
   isProd: boolean = false;
   workflowsEnabled: boolean = false;
   showChatGPT: boolean = false;
-  
 
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService,
     private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService,
@@ -203,7 +202,7 @@ export class SideNavComponent implements OnInit {
       icon: null
     },
     {
-      label: 'KQL for Antares Analytics',
+      label: 'KQL Assistant (Preview)',
       id: "kustocopilot",
       onClick: () => {
         this.navigateTo("kustoQueryGenerator");
@@ -222,8 +221,14 @@ export class SideNavComponent implements OnInit {
     this.checkRCAToolkitEnabled(); 
     this._openAIService.CheckEnabled().subscribe(enabled => {
       this.showChatGPT = this._openAIService.isEnabled;
-      this._diagnosticApi.get<boolean>('api/openai/kustocopilot/enabled').subscribe(kustoGPTEnabledStatus => {
-        this.tools.find(tool => tool.id === 'kustocopilot').visible = kustoGPTEnabledStatus && `${this.resourceService.ArmResource.provider}`.toLowerCase().indexOf('microsoft.web') > -1;
+      let antaresAnalyticsEnabledState = this._diagnosticApi.isCopilotEnabled(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName, 'analyticskustocopilot');
+      let kqlAssistantEnabledState = this._diagnosticApi.isCopilotEnabled(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName, 'kustoqueryassistant');
+      forkJoin([antaresAnalyticsEnabledState, kqlAssistantEnabledState]).subscribe(results => {
+        this.tools.find(tool => tool.id === 'kustocopilot').visible = results[0] || results[1];
+        this.toolsCopy.find(tool => tool.id === 'kustocopilot').visible = results[0] || results[1];
+      }, error => {
+        console.error('Error while determining if KQL Assistant is enabled');
+        console.error(error);
       });
     });
     this._documentationService.getDocsRepoSettings().subscribe(settings => {

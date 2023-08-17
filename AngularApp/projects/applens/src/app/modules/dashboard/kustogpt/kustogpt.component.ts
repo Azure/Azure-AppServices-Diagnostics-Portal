@@ -1,6 +1,5 @@
 import { AdalService } from 'adal-angular4';
 import { Component, OnInit } from '@angular/core';
-import {DomSanitizer,SafeResourceUrl,} from '@angular/platform-browser';
 import { environment } from '../../../../environments/environment';
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
 import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions } from 'diagnostic-data';
@@ -13,6 +12,7 @@ import { KeyValuePair } from 'dist/diagnostic-data/lib/models/common-models';
 import { SiteService } from '../../../shared/services/site.service';
 import { ObserverSiteInfo } from '../../../shared/models/observer';
 import { KustoUtilities } from 'projects/diagnostic-data/src/lib/utilities/kusto-utilities';
+import { IDropdownOption, IDropdownProps } from 'office-ui-fabric-react';
 
 @Component({
   selector: 'kustogpt',
@@ -21,21 +21,47 @@ import { KustoUtilities } from 'projects/diagnostic-data/src/lib/utilities/kusto
 })
 export class KustoGPTComponent {
 
-  public apiProtocol = APIProtocol.WebSocket;
-  public chatModel = ChatModel.GPT4;
-  public feedbackPanelOpenState:ChatFeedbackPanelOpenParams = {isOpen:false, chatMessageId: null};
-  public chatIdentifier: string = 'analyticskustocopilot';
-  public feedbackExplanationMode:FeedbackExplanationModes = FeedbackExplanationModes.Explanation;
-
+  public readonly apiProtocol = APIProtocol.WebSocket;
+  public readonly chatModel = ChatModel.GPT4;
+  public readonly antaresAnalyticsChatIdentifier: string = 'analyticskustocopilot';
+  public readonly genericKustoAssistantChatIdentifier = 'kustoqueryassistant';
   public readonly clusterNameConst: string = '@AntaresStampKustoCluster';
   public readonly databaseNameConst: string = '@AnataresStampKustoDB';
+  public readonly feedbackExplanationMode:FeedbackExplanationModes = FeedbackExplanationModes.Explanation;  
+  public readonly chatIdentifierDropdownOptions: IDropdownOption[] = [
+    {
+      key: this.antaresAnalyticsChatIdentifier,
+      text: 'Antares Analytics Kusto assistant',
+      selected: true
+    },
+    {
+      key: this.genericKustoAssistantChatIdentifier,
+      text: 'Kusto assistant for this resource',
+      selected: false
+    }
+  ];
+
+  public readonly chatIdentifierDropdownWidth: IDropdownProps['styles'] = {
+    root: {
+      display:'flex'
+    },
+    dropdown:{
+      marginLeft: '0.5em',
+    },
+    dropdownItemsWrapper: {
+      maxHeight: '40vh',
+      width: '50em'
+    },
+  };
   
+  public feedbackPanelOpenState:ChatFeedbackPanelOpenParams = {isOpen:false, chatMessageId: null};  
+  public chatIdentifier:string = this.genericKustoAssistantChatIdentifier;
   public clusterName: string = this.clusterNameConst;
   public databaseName: string = this.databaseNameConst;
+  public isAnalyticsCopilotAllowed = false;
+  public isFeedbackSubmissionAllowed = false;
 
   public chatMessageKustoExecuteLink: { [chatId: string] : string; } = {};
-
-
 
   public additionalFields: ChatFeedbackAdditionalField[] = [
     {
@@ -54,15 +80,30 @@ export class KustoGPTComponent {
     }
   ];
 
+  public get chatQuerySamplesFileUri():string {
+    return `assets/chatConfigs/${this.chatIdentifier}.json`;
+  }
+
+  private updateFeedbackSubmissionStatus(chatIdentifier:string) {
+    this._diagnosticApiService.isFeedbackSubmissionEnabled(`${this._resourceService.ArmResource.provider}`,`${this._resourceService.ArmResource.resourceTypeName}`, chatIdentifier).subscribe((isFeedbackSubmissionEnabled) => {
+      this.isFeedbackSubmissionAllowed = isFeedbackSubmissionEnabled;
+    }, (error) => {
+      this.isFeedbackSubmissionAllowed = false;
+      console.error('Error getting feedback submission enablement status. Defaulting to disabled.');
+    });
+  }
+
+  public updateChatIdentifierDropdownOptions(event: any) {
+    this.chatIdentifier = event.option.key;
+    this.prepareChatHeader();
+    this.updateFeedbackSubmissionStatus(this.chatIdentifier);
+  }
+
   public onDismissed(feedbackModel:ChatFeedbackModel) {
-    console.log('onDismissed clicked');
-    console.log(this.feedbackPanelOpenState);
     this.feedbackPanelOpenState = {
       isOpen: false,
       chatMessageId: null
     };
-    console.log(this.feedbackPanelOpenState);
-    console.log(feedbackModel);
   }
 
   onBeforeSubmit = (chatFeedbackModel:ChatFeedbackModel): Observable<ChatFeedbackModel> => {
@@ -70,23 +111,24 @@ export class KustoGPTComponent {
     chatFeedbackModel.validationStatus.validationStatusResponse = 'Validation succeeded';
     return of(chatFeedbackModel);
   }
-
   
   onFeedbackClicked = (chatMessage:ChatMessage, feedbackType:string):void => {
-    if(feedbackType === FeedbackOptions.Dislike) {
-      this.feedbackPanelOpenState = {
-        isOpen: true,
-        chatMessageId: chatMessage.id
-      };
-    }
-    else {
-      this.feedbackPanelOpenState = {
-        isOpen: false,
-        chatMessageId: null
-      };
+    if(this.isFeedbackSubmissionAllowed) {
+      if(feedbackType === FeedbackOptions.Dislike) {
+        this.feedbackPanelOpenState = {
+          isOpen: true,
+          chatMessageId: chatMessage.id
+        };
+      }
+      else {
+        // We might want to store the correct response as well as a part of training data.
+        this.feedbackPanelOpenState = {
+          isOpen: false,
+          chatMessageId: null
+        };
+      }
     }
   }
-
 
   onSystemMessageReceived = (chatMessage:ChatMessage):ChatMessage => {
     if(chatMessage && chatMessage.message) {
@@ -101,9 +143,6 @@ export class KustoGPTComponent {
             additionalFields = additionalFields.replace('Additional_Fields:', '');
             try {
               let additionalFieldsObject = JSON.parse(additionalFields) as KeyValuePair[];
-              console.log('Additional fields object');
-              console.log(additionalFields);
-              console.log(additionalFieldsObject);
 
               // If additionalFieldsObject is an Array then add each item as a key value pair to the data property of the chatMessage
               if(Array.isArray(additionalFieldsObject)) {
@@ -126,11 +165,10 @@ export class KustoGPTComponent {
                   this.chatMessageKustoExecuteLink[chatMessage.id] = '';
                 }
               }
-              console.log(chatMessage);
             }
             catch(e) {
-              console.log('Error parsing additional fields');
-              console.log(e);
+              console.error('Error parsing additional fields');
+              console.error(e);
             }
           }
         }
@@ -151,10 +189,11 @@ export class KustoGPTComponent {
   }
 
   constructor(private _applensGlobal:ApplensGlobal, private _diagnosticService: ApplensDiagnosticService, private _resourceService: ResourceService, private _diagnosticApiService: DiagnosticApiService)  {
-    this._applensGlobal.updateHeader('KQL for Antares Analytics'); // This sets the title of the HTML page
+    this._applensGlobal.updateHeader('KQL assistant'); // This sets the title of the HTML page
     this._applensGlobal.updateHeader(''); // Clear the header title of the component as the chat header is being displayed in the chat UI
     this.prepareChatHeader();
-    
+    this.updateFeedbackSubmissionStatus(this.chatIdentifier);
+
     if(`${this._resourceService.ArmResource.provider}/${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase() !== 'microsoft.web/sites') {
       this._diagnosticService.getKustoMappings().subscribe((response) => {
         // Find the first entry with non empty publicClusterName in the response Array
@@ -177,6 +216,16 @@ export class KustoGPTComponent {
     }
     else {
        if(this._resourceService instanceof SiteService) {
+        // Check if Analytics copilot is enabled for this user
+        this._diagnosticApiService.isCopilotEnabled(`${this._resourceService.ArmResource.provider}`,`${this._resourceService.ArmResource.resourceTypeName}`, this.antaresAnalyticsChatIdentifier).subscribe((isCopilotEnabled) => {
+          this.isAnalyticsCopilotAllowed = isCopilotEnabled;
+          if(this.isAnalyticsCopilotAllowed) {
+            this.chatIdentifier = this.antaresAnalyticsChatIdentifier;
+            this.updateFeedbackSubmissionStatus(this.antaresAnalyticsChatIdentifier);
+            this.prepareChatHeader();
+          }
+        });
+
         let siteResource = this._resourceService as SiteService;
         siteResource.getCurrentResource().subscribe((siteResource:ObserverSiteInfo) => {
           if(siteResource && siteResource.GeomasterName && siteResource.GeomasterName.indexOf('-') > 0) {
@@ -193,20 +242,25 @@ export class KustoGPTComponent {
     }
   }
 
-  chatHeader = 'Kusto query generator for Antares Analytics - Preview';
+  chatHeader = 'Kusto query assistant - Preview';
   feedbackEmailAlias = 'applensv2team';
 
   private prepareChatHeader = () => {
-  this.chatHeader = `
-  <div class='copilot-header chatui-header-text'>
-    <img  class='copilot-header-img' src="/assets/img/Azure-Data-Explorer-Clusters.svg" alt = ''>
-    ${this.chatHeader}
-    <img class='copilot-header-img-secondary' src='/assets/img/rocket.png' alt=''>
-    <img class='copilot-header-img-secondary' src='/assets/img/rocket.png' alt=''">
-    <div class = "copilot-header-secondary" >
-      Queries generated can be executed against <strong>Cluster:</strong>wawsaneus.eastus <strong>Database:</strong>wawsanprod. For more information, see <a target = '_blank' href='https://msazure.visualstudio.com/Antares/_wiki/wikis/Antares.wiki/50081/Getting-started-with-Antares-Analytics-Kusto-data'>Getting started with Antares Analytics Kusto data.</a>
-    </div>
-  </div>
-  `;
+    if(this.chatIdentifier === this.antaresAnalyticsChatIdentifier) {
+      this.chatHeader = `<div class='copilot-header chatui-header-text'>
+      <img  class='copilot-header-img' src="/assets/img/Azure-Data-Explorer-Clusters.svg" alt = ''>
+      Kusto query generator for Antares Analytics - Preview
+      <div class = "copilot-header-secondary" >
+        Queries generated can be executed against <strong>Cluster:</strong>wawsaneus.eastus <strong>Database:</strong>wawsanprod. For more information, see <a target = '_blank' href='https://msazure.visualstudio.com/Antares/_wiki/wikis/Antares.wiki/50081/Getting-started-with-Antares-Analytics-Kusto-data'>Getting started with Antares Analytics Kusto data.</a>
+      </div>
+    </div>`;
+    }
+    else {
+      this.chatHeader = `<div class='copilot-header chatui-header-text'>
+      <img  class='copilot-header-img' src="/assets/img/Azure-Data-Explorer-Clusters.svg" alt = ''>
+      Kusto query assistant - Preview
+    </div>`
+    };
+  
   }
 }

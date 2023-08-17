@@ -1,11 +1,14 @@
 <div style="height:80vh;">
+  <div *ngIf="isAnalyticsCopilotAllowed" class = 'chatContextDropdownAlignment'>
+    <fab-dropdown label="Chat context" id="chatIdentifierDropdown" [options]="chatIdentifierDropdownOptions" (onChange)="updateChatIdentifierDropdownOptions($event)" [styles]="chatIdentifierDropdownWidth"></fab-dropdown>
+  </div>
   <openai-chat-container [chatIdentifier]="chatIdentifier"
       [chatContextLength]="10" 
       [chatModel] = "chatModel"
-      [chatQuerySamplesFileUri]="'assets/chatConfigs/analyticskustocopilot.json'"
+      [chatQuerySamplesFileUri]="chatQuerySamplesFileUri"
       [chatHeader]="chatHeader"
       [systemPhotoSource]="'/assets/img/bot_sparkle_icon.svg'"
-      [contentDisclaimerMessage] = "'* The model is still in training and may not be accurate. Please submit feedback via 👍 and 👎 to help us improve the model.'"
+      [contentDisclaimerMessage] = "'* This model is in training and may not be accurate. Please submit feedback via 👍 and 👎 to help improve the model.'"
       [showCopyOption]= "true"
       [apiProtocol] = "apiProtocol"
       [feedbackEmailAlias] = "feedbackEmailAlias"
@@ -13,7 +16,7 @@
       [onSystemMessageReceived] = "onSystemMessageReceived"
       >
     </openai-chat-container>
-    <chat-feedback-panel [(feedbackPanelState)] = "feedbackPanelOpenState" (onDismissed) = "onDismissed($event)" [onBeforeSubmit] = "onBeforeSubmit"
+    <chat-feedback-panel *ngIf="isFeedbackSubmissionAllowed" [(feedbackPanelState)] = "feedbackPanelOpenState" (onDismissed) = "onDismissed($event)" [onBeforeSubmit] = "onBeforeSubmit"
       [additionalFields] = "additionalFields" [chatIdentifier] = "chatIdentifier" [chatContextLength] = "10" [feedbackExplanationMode] = "feedbackExplanationMode"
     ></chat-feedback-panel>
 </div>

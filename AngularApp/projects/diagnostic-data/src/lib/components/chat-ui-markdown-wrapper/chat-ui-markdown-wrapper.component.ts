@@ -166,8 +166,8 @@ export class ChatUIMarkdownWrapperComponent implements OnInit {
                 }
             }
             catch(e) {
-                console.log('Error copying to clipboard. Reverting to default behavior.');
-                console.log(e);
+                console.error('Error copying to clipboard. Reverting to default behavior.');
+                console.error(e);
                 navigator.clipboard.writeText(textToCopy);
             }
         }

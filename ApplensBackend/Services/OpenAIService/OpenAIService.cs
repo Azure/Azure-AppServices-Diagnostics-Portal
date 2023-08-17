@@ -163,8 +163,6 @@ namespace AppLensV3.Services
         private readonly ICognitiveSearchQueryService _cognitiveSearchQueryService;
         private ConcurrentDictionary<string, Task<string>> chatTemplateFileCache;
         private string chatHubRedisKeyPrefix;
-        private Dictionary<string, AnalyticsKustoTableDetails> analyticsKustoTables = new Dictionary<string, AnalyticsKustoTableDetails>(StringComparer.OrdinalIgnoreCase);
-        private string analyticsKustoSecondPrompt = string.Empty;
         private ConcurrentDictionary<string, ChatCompletionCustomHandler> customHandlerForChatCompletion = new ConcurrentDictionary<string, ChatCompletionCustomHandler>(StringComparer.OrdinalIgnoreCase);
 
         // Delegate gets chatCompletionOptions which will have the corresponding template file and past user messages already loaded.
@@ -191,9 +189,6 @@ namespace AppLensV3.Services
                 InitializeHttpClient();
                 InitializeOpenAIClient();
                 InitializeChatTemplateFileCache();
-
-                // Initialize custom handlers for chat completion API. This allows for chaining GPT responses.
-                //customHandlerForChatCompletion["analyticskustocopilot"] = HandleAnalyticsKustoCopilot;
             }
         }
 
@@ -530,119 +525,6 @@ namespace AppLensV3.Services
 
             return await chatTemplateFileCache[templateCacheKey];
         }
-
-        #region Delegate implementation for custom chat completion handlers
-        private async Task<OpenAIChainResponse> HandleAnalyticsKustoCopilot(List<ChatMessage> chatMessages, ChatMetaData metadata, ExtendedChatCompletionsOptions chatCompletionsOptions, ILogger<OpenAIService> logger)
-        {
-            try
-            {
-                string latestUserQuestion = chatMessages.Last(m => m.Role == ChatRole.User).Content;
-                string chainingQuestion = $"Which table(s) will help answer the following question? If more than one table is found, return a comma seperated list.{Environment.NewLine}{latestUserQuestion}";
-
-                // Replace the users question with a synthethic intermediate question.
-                chatCompletionsOptions.Messages.Remove(chatCompletionsOptions.Messages.Last(m => m.Role == ChatRole.User));
-                chatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.User, chainingQuestion));
-
-                Response<ChatCompletions> intermediateResponse = await openAIClient.GetChatCompletionsAsync(openAIGPT4Model, chatCompletionsOptions);
-
-                string tableNamesCSV = intermediateResponse?.Value?.Choices?.Count > 0 && !string.IsNullOrWhiteSpace(intermediateResponse.Value.Choices[0]?.Message?.Content)
-                    ? intermediateResponse.Value.Choices[0].Message.Content : string.Empty;
-
-                if (string.IsNullOrWhiteSpace(tableNamesCSV))
-                {
-                    return new OpenAIChainResponse()
-                    {
-                        ShortCircuitReason = "Unable to identify tables necessary to construct the query",
-                        ChatResponseToUseInShortCircuit = new ChatResponse("Unable to identify related tables. Please help me learn, submit the expected query along with your question to Applens team."),
-                        ChatCompletionsOptionsToUseInChain = null
-                    };
-                }
-
-                #region Fetch details of relevent tables
-
-                StringBuilder secondQuestion = new StringBuilder();
-                foreach (string tableName in tableNamesCSV.Split(","))
-                {
-                    if (analyticsKustoTables.Count == 0)
-                    {
-                        string configString = await GetChatTemplateContent("analyticskustotableconfig");
-                        JObject jObject = JObject.Parse(configString);
-                        JArray tablesList = (jObject["Tables"] ?? new JObject()).ToObject<JArray>();
-                        foreach (var element in tablesList)
-                        {
-                            if (!string.IsNullOrWhiteSpace((element["TableName"] ?? string.Empty).ToString()) && !string.IsNullOrWhiteSpace((element["SchemaWithNotes"] ?? string.Empty).ToString()))
-                            {
-                                analyticsKustoTables.Add(element["TableName"].ToString().Trim(),
-                                    new AnalyticsKustoTableDetails()
-                                    {
-                                        TableName = element["TableName"].ToString().Trim(),
-                                        Description = (element["Description"] ?? string.Empty).ToString(),
-                                        SchemaWithNotes = (string)element["SchemaWithNotes"]
-                                    }
-                                 );
-                            }
-                        }
-                    }
-
-                    if (analyticsKustoTables.TryGetValue(tableName.Trim(), out AnalyticsKustoTableDetails tableDetails))
-                    {
-                        secondQuestion.AppendLine($"Table:{tableDetails.TableName}");
-                        if (!string.IsNullOrWhiteSpace(tableDetails.Description))
-                        {
-                            secondQuestion.AppendLine($"Description:{tableDetails.Description}");
-                        }
-
-                        secondQuestion.AppendLine($"SchemaWithNotes:{tableDetails.SchemaWithNotes}");
-                        secondQuestion.AppendLine();
-                    }
-                }
-
-                #endregion
-
-                if (secondQuestion.Length < 5)
-                {
-                    // We could not identify the table or the attempted question does not adhere to the rules set for the copilot. Terminate processing and return a response.
-                    OpenAIChainResponse returnResponse = new OpenAIChainResponse()
-                    {
-                        ShortCircuitReason = "Unable to identify tables necessary to construct the query",
-                        ChatResponseToUseInShortCircuit = new ChatResponse(tableNamesCSV),
-                        ChatCompletionsOptionsToUseInChain = null
-                    };
-
-                    return returnResponse;
-                }
-
-                if (string.IsNullOrWhiteSpace(analyticsKustoSecondPrompt))
-                {
-                    analyticsKustoSecondPrompt = await GetChatTemplateContent("analyticskustocopilotsecondprompt");
-                    JObject jObject = JObject.Parse(analyticsKustoSecondPrompt);
-                    analyticsKustoSecondPrompt = (jObject["systemPrompt"] ?? string.Empty).ToString();
-                }
-
-                secondQuestion.AppendLine(analyticsKustoSecondPrompt);
-                secondQuestion.AppendLine($"Note: The current timestamp is {DateTime.UtcNow.ToString("yyyy-MM-dd HH:MM:SS")} UTC");
-
-                // Remove the original system prompt and replace it with the newly constructed system prompt.
-                chatCompletionsOptions.Messages.RemoveAt(0);
-                chatCompletionsOptions.Messages.Insert(0, new ChatMessage(ChatRole.System, secondQuestion.ToString()));
-
-                // Remove the synthetic question that was added earlier and add the users question back.
-                chatCompletionsOptions.Messages.Remove(chatCompletionsOptions.Messages.Last(m => m.Role == ChatRole.User));
-                chatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.User, latestUserQuestion));
-
-                return new OpenAIChainResponse()
-                {
-                    ChatResponseToUseInShortCircuit = null,
-                    ChatCompletionsOptionsToUseInChain = chatCompletionsOptions
-                };
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex.Message);
-                throw;
-            }
-        }
-        #endregion
 
         public async Task<string> PrepareCompositeUserQuestion(List<ChatMessage> chatMessages, ChatMetaData metadata)
         {

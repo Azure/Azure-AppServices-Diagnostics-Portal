@@ -21,22 +21,6 @@ export class ChatFeedbackPanelComponent implements OnInit {
   panelType: PanelType = PanelType.custom;
   @Input() width: string = "850px";
   
-  // _chatMessages: ChatMessage[] = [];
-  // get chatMessages(): ChatMessage[] {
-  //   return this._chatMessages;
-  // }
-
-  // /// It is the list of chat messages that the user has seen. If this is supplied, messages from, chatContextService will be ignored.
-  // @Input() set chatMessages(value:ChatMessage[]) {
-  //   if(value) {
-  //     this._chatMessages = value;
-  //     this.initValues();
-  //   }
-  //   else {
-  //     this._chatMessages = [];
-  //   }
-  // }
-
   /// If chatMessages is empty or not supplied, then up to these many recent messages will be retrieved from chatContextService by chatIdentidier and used to generate feedback. This should also be accompanied with chatIdentidier else this is ignored.
   @Input() chatContextLength: number = 2;
   
@@ -228,80 +212,6 @@ mostUsedOutputBinding
         });
       }
     });
-    
-
-    // this.chatMessages = [];
-    
-    // this.chatMessages.push({
-    //   id: "1",
-    //   message: "Write a Kusto query to get the top used outbound trigger for function apps.",
-    //   displayMessage: "Write a Kusto query to get the top used outbound trigger for function apps.",
-    //   messageSource: MessageSource.User,
-    //   userFeedback: FeedbackOptions.None,
-    //   timestamp: 1,
-    //   messageDisplayDate: "",
-    //   renderingType: MessageRenderingType.Text,
-    //   status: MessageStatus.Finished,
-    //   feedbackDocumentIds: []
-    // });
-
-    // this.chatMessages.push({
-    //   id: "2",
-    //   message: `To find the most used outbound trigger by Function apps, you can use the following Kusto query:
-
-    //   WawsAn_omgsitefunctionsentity
-    //   | where pdate >= ago(3d)
-    //   | summarize Count = count() by OutputBindings
-    //   | order by Count desc
-    //   | take 1
-      
-    //   Explanation: This query looks at the last 3 days worth of data from the WawsAn_omgsitefunctionsentity table, summarizing the count of occurrences by OutputBindings. It then sorts the results by the count in descending order and takes the top most result, which represents the most used outbound trigger.`,
-    //   displayMessage: `To find the most used outbound trigger by Function apps, you can use the following Kusto query:
-
-    //   WawsAn_omgsitefunctionsentity
-    //   | where pdate >= ago(3d)
-    //   | summarize Count = count() by OutputBindings
-    //   | order by Count desc
-    //   | take 1
-      
-    //   Explanation: This query looks at the last 3 days worth of data from the WawsAn_omgsitefunctionsentity table, summarizing the count of occurrences by OutputBindings. It then sorts the results by the count in descending order and takes the top most result, which represents the most used outbound trigger.`,
-    //   messageSource: MessageSource.System,
-    //   userFeedback: FeedbackOptions.None,
-    //   timestamp: 2,
-    //   messageDisplayDate: "",
-    //   renderingType: MessageRenderingType.Markdown,
-    //   status: MessageStatus.Finished,
-    //   feedbackDocumentIds: []
-    // });
-
-    // this.chatMessages.push({
-    //   id: "3",
-    //   message: "show me a daily trend of this over the past week",
-    //   displayMessage: "show me a daily trend of this over the past week",
-    //   messageSource: MessageSource.User,
-    //   userFeedback: FeedbackOptions.None,
-    //   timestamp: 1,
-    //   messageDisplayDate: "",
-    //   renderingType: MessageRenderingType.Text,
-    //   status: MessageStatus.Finished,
-    //   feedbackDocumentIds: []
-    // });
-
-    // this.chatMessages.push({
-    //   id: "4",
-    //   message: this.anotherSystemResponse,//"To analyze the daily trend of the most used outbound trigger by Function apps over the past week, you can use the WawsAn_omgsitefunctionsentity table.",
-    //   displayMessage: this.anotherSystemResponse,//"To analyze the daily trend of the most used outbound trigger by Function apps over the past week, you can use the WawsAn_omgsitefunctionsentity table.",
-    //   messageSource: MessageSource.System,
-    //   userFeedback: FeedbackOptions.Dislike,
-    //   timestamp: 1,
-    //   messageDisplayDate: "",
-    //   renderingType: MessageRenderingType.Markdown,
-    //   status: MessageStatus.Finished,
-    //   feedbackDocumentIds: []
-    // });
-
-    // this.chatMessages = [];
-    
   }
 
   ngOnInit(): void {
@@ -753,7 +663,7 @@ You are a chat assistant that helps explain why an expected response successfull
           }
         }
         else {
-          console.log('submitChatFeedback - Validation failed. Keep the panel open');
+          // submitChatFeedback - Validation failed. Keep the panel open and let the user correct the feedback. Do nothing here...
         }
       }, (error) => {
         this.savingInProgress = false;
@@ -770,16 +680,18 @@ You are a chat assistant that helps explain why an expected response successfull
     if (this.autoSaveFeedback) {
       this.savingProgressText = 'Saving feedback...';
       this._diagnosticService.saveChatFeedback(this.GetChatFeedbackModel().toChatFeedbackPostBody()).subscribe((result) => {
-        console.log('Feedback saved');
+        // Feedback saved successfully
         this.statusMessage = '';
         this.dismissedHandler();
       }
       , (error) => {
         this.statusMessage = `Error saving feedback: ${error.message}`;
         this.savingInProgress = false;
+        console.error(`Error saving feedback: ${error.message}`);
+        console.error(error);
       });
     } else {
-      console.log('Raise the event and let the caller save this feedback');
+      // Raise the event and let the caller save this feedback
       this.dismissedHandler();
     }
     
