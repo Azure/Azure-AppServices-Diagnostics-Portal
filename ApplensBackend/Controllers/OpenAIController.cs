@@ -157,10 +157,17 @@ namespace AppLensV3.Controllers
         [HttpGet("isCopilotEnabled/{resourceProviderName}/{resourceTypeName}/{chatIdentifier}")]
         public async Task<IActionResult> IsCopilotEnabled(string resourceProviderName, string resourceTypeName, string chatIdentifier)
         {
-            if (!string.IsNullOrWhiteSpace(chatIdentifier) && !string.IsNullOrWhiteSpace(resourceProviderName) && !string.IsNullOrWhiteSpace(resourceTypeName))
+            try
             {
-                var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
-                return Ok(_copilotsconfiguration.IsUserAllowedAccess(chatIdentifier, userAlias, resourceProviderName, resourceTypeName));
+                if (!string.IsNullOrWhiteSpace(chatIdentifier) && !string.IsNullOrWhiteSpace(resourceProviderName) && !string.IsNullOrWhiteSpace(resourceTypeName))
+                {
+                    var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
+                    return Ok(_copilotsconfiguration.IsUserAllowedAccess(chatIdentifier, userAlias, resourceProviderName, resourceTypeName));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"IsCopilotEnabled() Failed. Exception : {ex}");
             }
 
             return Ok(false);
@@ -169,10 +176,17 @@ namespace AppLensV3.Controllers
         [HttpGet("isFeedbackSubmissionEnabled/{resourceProviderName}/{resourceTypeName}/{chatIdentifier}")]
         public async Task<IActionResult> IsFeedbackSubmissionEnabled(string resourceProviderName, string resourceTypeName, string chatIdentifier)
         {
-            if (!string.IsNullOrWhiteSpace(chatIdentifier) && !string.IsNullOrWhiteSpace(resourceProviderName) && !string.IsNullOrWhiteSpace(resourceTypeName))
+            try
             {
-                var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
-                return Ok(_copilotsconfiguration.IsUserAllowedToSubmitFeedback(chatIdentifier, userAlias, resourceProviderName, resourceTypeName));
+                if (!string.IsNullOrWhiteSpace(chatIdentifier) && !string.IsNullOrWhiteSpace(resourceProviderName) && !string.IsNullOrWhiteSpace(resourceTypeName))
+                {
+                    var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
+                    return Ok(_copilotsconfiguration.IsUserAllowedToSubmitFeedback(chatIdentifier, userAlias, resourceProviderName, resourceTypeName));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"IsFeedbackSubmissionEnabled() Failed. Exception : {ex}");
             }
 
             return Ok(false);
@@ -183,7 +197,7 @@ namespace AppLensV3.Controllers
         public async Task<IActionResult> SaveChatFeedback([FromBody] ChatFeedback feedbackPayload)
         {
             var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
-            if (feedbackPayload.SubmittedBy?.Equals(userAlias, StringComparison.OrdinalIgnoreCase) == false) 
+            if (feedbackPayload.SubmittedBy?.Equals(userAlias, StringComparison.OrdinalIgnoreCase) == false)
             {
                 _logger.LogWarning($"Feedback submittedBy and logged-in user are different. {feedbackPayload.SubmittedBy} vs {userAlias}");
                 return BadRequest("Feedback submission prohibited for user.");
