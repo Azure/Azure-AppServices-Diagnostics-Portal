@@ -759,7 +759,7 @@ namespace AppLensV3.Services
             Dictionary<string, string> dict1 = metadata?.ResourceSpecificInfo?.Count > 0 ? metadata.ResourceSpecificInfo : new Dictionary<string, string>();
             Dictionary<string, string> dict2 = feedback?.ResourceSpecificInfo?.Count > 0 ? feedback.ResourceSpecificInfo : new Dictionary<string, string>();
 
-            // If metadata.ResourceSpecificInfo doies not have any resourceSpecificInfo value, it is assumed that no filtering constraint is desired and the feedback will be evaluated as a match.
+            // If metadata.ResourceSpecificInfo does not have any resourceSpecificInfo value, it is assumed that no filtering constraint is desired and the feedback will be evaluated as a match.
             foreach (var kvp in dict1)
             {
                 if (dict2.TryGetValue(kvp.Key, out var value2))
