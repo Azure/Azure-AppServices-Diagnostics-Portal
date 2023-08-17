@@ -17,6 +17,6 @@
       >
     </openai-chat-container>
     <chat-feedback-panel *ngIf="isFeedbackSubmissionAllowed" [(feedbackPanelState)] = "feedbackPanelOpenState" (onDismissed) = "onDismissed($event)" [onBeforeSubmit] = "onBeforeSubmit"
-      [additionalFields] = "additionalFields" [chatIdentifier] = "chatIdentifier" [chatContextLength] = "10" [feedbackExplanationMode] = "feedbackExplanationMode"
+      [expectedResponseLabelText] = 'expectedResponseLabelText' [additionalFields] = "additionalFields" [chatIdentifier] = "chatIdentifier" [chatContextLength] = "10" [feedbackExplanationMode] = "feedbackExplanationMode"
     ></chat-feedback-panel>
 </div>

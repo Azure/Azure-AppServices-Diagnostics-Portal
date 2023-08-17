@@ -59,6 +59,8 @@ export class ChatFeedbackPanelComponent implements OnInit {
   @Input() onBeforeSubmit: (feedbackModel: ChatFeedbackModel) => Observable<ChatFeedbackModel>;
 
   @Input() feedbackExplanationMode: FeedbackExplanationModes = FeedbackExplanationModes.None;
+
+  @Input() expectedResponseLabelText:string = 'Expected response';
   
   public statusMessage = '';
   public savingInProgress = false;
@@ -93,47 +95,6 @@ export class ChatFeedbackPanelComponent implements OnInit {
   systemResponse:ChatMessage = this.GetEmptyChatMessage();
   correctResponseFeedback:string = '';
   correctResponseFeedbackReasoning:string = '';
-  
-  // correct question to ask for this is "What is the daily trend of most used outbound binding by Function apps over the past week?"
-  anotherSystemResponse: string = `WawsAn_omgsitefunctionsentity
-  | where pdate >= ago(7d)
-  | summarize Count = count() by OutputBindings, bin(pdate, 1d)
-  | top 1 by Count desc
-  | extend MostUsedOutputBinding = OutputBindings
-  | join kind=inner (
-      WawsAn_omgsitefunctionsentity
-      | where pdate >= ago(7d)
-      | summarize Count = count() by OutputBindings, bin(pdate, 1d)
-  ) on pdate
-  | where OutputBindings == MostUsedOutputBinding
-  | project pdate, MostUsedOutputBinding, Count
-  | order by pdate asc
-  | render timechart`;
-  correctSystemResponse:string = `let mostUsedOutputBinding = WawsAn_omgsitefunctionsentity
-  | where pdate >= ago(7d)
-  | where isnotempty( OutputBindings)
-  | summarize Count = count() by OutputBindings 
-  | extend Expanded = split(tolower(OutputBindings), ',')
-  | mv-expand Expanded to typeof(string)
-  | summarize Count  = sum(Count) by OutputBindings = Expanded
-  | where isnotempty( OutputBindings)
-  | summarize Count = sum(Count) by OutputBindings
-  | top 1 by Count desc 
-  | project OutputBindings;
-let dailyTrendOutputBindings = WawsAn_omgsitefunctionsentity
-  | where pdate >= ago(7d)
-  | where isnotempty( OutputBindings)
-  | summarize Count = count() by bin(pdate, 1d), OutputBindings 
-  | extend Expanded = split(tolower(OutputBindings), ',')
-  | mv-expand Expanded to typeof(string)
-  | summarize Count  = sum(Count) by bin(pdate, 1d), OutputBindings = Expanded
-  | where isnotempty( OutputBindings);
-mostUsedOutputBinding
-| join kind=inner (
-    dailyTrendOutputBindings
-) on OutputBindings
-| project pdate, OutputBindings, Count
-| render timechart`;
   
   private GetChatFeedbackModel(): ChatFeedbackModel {
     let chatFeedbackModel = new ChatFeedbackModel(this.chatIdentifier, this.userAlias, this.provider, this.resourceType);

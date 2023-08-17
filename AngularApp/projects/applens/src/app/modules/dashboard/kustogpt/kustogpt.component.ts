@@ -23,6 +23,7 @@ export class KustoGPTComponent {
 
   public readonly apiProtocol = APIProtocol.WebSocket;
   public readonly chatModel = ChatModel.GPT4;
+  public readonly expectedResponseLabelText:string = 'Expected response ( Kusto query only )';
   public readonly antaresAnalyticsChatIdentifier: string = 'analyticskustocopilot';
   public readonly genericKustoAssistantChatIdentifier = 'kustoqueryassistant';
   public readonly antaresClusterNamePlaceholderConst: string = '@AntaresStampKustoCluster';  
