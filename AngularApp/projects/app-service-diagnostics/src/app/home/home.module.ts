@@ -64,8 +64,8 @@ import { DownloadReportComponent } from '../shared/components/download-report/do
 import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
 import { ClientScriptService } from '../shared-v2/services/client-script.service';
 import { ChatUIContextService, OpenAIArmService } from '../../../../diagnostic-data/src/public_api';
-import { DiagChatContainerComponent } from '../../../../diagnostic-data/src/lib/components/diag-chat-container/diag-chat-container.component';
 import { ConversationalDiagService } from '../../../../diagnostic-data/src/lib/services/conversational-diag.service';
+import { DiagChatHomeComponent } from './diag-chat-home/diag-chat-home.component';
 export const HomeRoutes = RouterModule.forChild([
     {
         path: '',
@@ -85,7 +85,7 @@ export const HomeRoutes = RouterModule.forChild([
             },
             {
                 path: 'diagnosticChat',
-                component: DiagChatContainerComponent,
+                component: DiagChatHomeComponent,
                 data: {
                     navigationTitle: 'DiagChat',
                     cacheComponent: true
@@ -591,7 +591,7 @@ export const HomeRoutes = RouterModule.forChild([
         FabCommandBarModule,
         FabSpinnerModule
     ],
-    declarations: [HomeContainerComponent, HomeComponent, CategoryChatComponent, CategoryTileComponent, SearchResultsComponent, SupportTopicRedirectComponent, DiagnosticsSettingsComponent, CategoryTileV4Component, RiskTileComponent],
+    declarations: [HomeContainerComponent, HomeComponent, CategoryChatComponent, CategoryTileComponent, SearchResultsComponent, SupportTopicRedirectComponent, DiagnosticsSettingsComponent, CategoryTileV4Component, RiskTileComponent, DiagChatHomeComponent],
     providers:
         [
             CategoryTabResolver,

@@ -26,6 +26,7 @@ export class DiagChatSolutionComponent implements OnInit {
     }
   }
 
+  //To do, need to change the toolId to the real one
   navigateToSolution() {
     this.panelDisplay = true;
     const toolId = "cpumonitoring";
