@@ -196,22 +196,7 @@ mostUsedOutputBinding
     
     this.provider = this._resourceService.ArmResource.provider;
     this.resourceType = this._resourceService.ArmResource.resourceTypeName;
-    this.addOrUpdateResourceSpecificInfo('provider', this.provider);
-    this.addOrUpdateResourceSpecificInfo('resourceTypeName', this.resourceType );
-
-    let resourceReady: Observable<any>;
-    resourceReady =  (this._resourceService.ArmResource?.resourceGroup && this._resourceService.ArmResource?.resourceName) ? this._resourceService.getCurrentResource() : of(null);    
-    resourceReady.subscribe(resource => {
-      if (resource) {
-        this.resource = resource;
-        let valuesToAdd = ['IsLinux', 'Kind', 'IsXenon'];
-        valuesToAdd.forEach(key => {
-          if(this.resource[key]) {
-            this.addOrUpdateResourceSpecificInfo(key, this.resource[key]);
-          }
-        });
-      }
-    });
+    
   }
 
   ngOnInit(): void {
@@ -224,6 +209,24 @@ mostUsedOutputBinding
     }
     this.statusMessage = '';
     
+    if(this.chatIdentifier != 'analyticskustocopilot') {
+      this.addOrUpdateResourceSpecificInfo('provider', this.provider);
+      this.addOrUpdateResourceSpecificInfo('resourceTypeName', this.resourceType );
+
+      let resourceReady: Observable<any>;
+      resourceReady =  (this._resourceService.ArmResource?.resourceGroup && this._resourceService.ArmResource?.resourceName) ? this._resourceService.getCurrentResource() : of(null);    
+      resourceReady.subscribe(resource => {
+        if (resource) {
+          this.resource = resource;
+          let valuesToAdd = ['IsLinux', 'Kind', 'IsXenon'];
+          valuesToAdd.forEach(key => {
+            if(this.resource[key]) {
+              this.addOrUpdateResourceSpecificInfo(key, this.resource[key]);
+            }
+          });
+        }
+      });
+    }
       
     let chatMessagesToWorkWith:ChatMessage[] = [];
 

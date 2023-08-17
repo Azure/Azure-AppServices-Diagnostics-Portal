@@ -25,8 +25,10 @@ export class KustoGPTComponent {
   public readonly chatModel = ChatModel.GPT4;
   public readonly antaresAnalyticsChatIdentifier: string = 'analyticskustocopilot';
   public readonly genericKustoAssistantChatIdentifier = 'kustoqueryassistant';
-  public readonly clusterNameConst: string = '@AntaresStampKustoCluster';
-  public readonly databaseNameConst: string = '@AnataresStampKustoDB';
+  public readonly antaresClusterNamePlaceholderConst: string = '@AntaresStampKustoCluster';  
+  public readonly antaresDatabaseNamePlaceholderConst: string = '@AnataresStampKustoDB';
+  public readonly analyticsClusterNameConst:string = 'wawsaneus.eastus';
+  public readonly analyticsDatabaseNameConst: string = 'wawsanprod';
   public readonly feedbackExplanationMode:FeedbackExplanationModes = FeedbackExplanationModes.Explanation;  
   public readonly chatIdentifierDropdownOptions: IDropdownOption[] = [
     {
@@ -56,32 +58,37 @@ export class KustoGPTComponent {
   
   public feedbackPanelOpenState:ChatFeedbackPanelOpenParams = {isOpen:false, chatMessageId: null};  
   public chatIdentifier:string = this.genericKustoAssistantChatIdentifier;
-  public clusterName: string = this.clusterNameConst;
-  public databaseName: string = this.databaseNameConst;
+  public clusterName: string = this.antaresClusterNamePlaceholderConst;
+  public databaseName: string = this.antaresDatabaseNamePlaceholderConst;
+  public antaresClusterName:string = '';
+  public readonly antaresDatabaseName:string = 'wawsprod';
   public isAnalyticsCopilotAllowed = false;
   public isFeedbackSubmissionAllowed = false;
 
   public chatMessageKustoExecuteLink: { [chatId: string] : string; } = {};
 
-  public additionalFields: ChatFeedbackAdditionalField[] = [
-    {
-      id: 'clusterName',
-      labelText: 'Cluster Name',
-      value: this.clusterNameConst,
-      defaultValue: this.clusterNameConst,
-      isMultiline: false
-    },
-    {
-      id: 'databaseName',
-      labelText: 'Database Name',
-      value: this.databaseNameConst,
-      defaultValue: this.databaseNameConst,
-      isMultiline: false
-    }
-  ];
+  public additionalFields: ChatFeedbackAdditionalField[] = this.getAdditionalFieldsForChatFeedback(this.antaresClusterNamePlaceholderConst, this.antaresDatabaseNamePlaceholderConst); 
 
   public get chatQuerySamplesFileUri():string {
     return `assets/chatConfigs/${this.chatIdentifier}.json`;
+  }
+
+  private getAdditionalFieldsForChatFeedback(clusterName:string, databaseName:string):ChatFeedbackAdditionalField[] {
+    return [{
+        id: 'clusterName',
+        labelText: 'Cluster Name',
+        value: clusterName,
+        defaultValue: clusterName,
+        isMultiline: false
+      },
+      {
+        id: 'databaseName',
+        labelText: 'Database Name',
+        value: databaseName,
+        defaultValue: databaseName,
+        isMultiline: false
+      }
+    ];
   }
 
   private updateFeedbackSubmissionStatus(chatIdentifier:string) {
@@ -97,6 +104,17 @@ export class KustoGPTComponent {
     this.chatIdentifier = event.option.key;
     this.prepareChatHeader();
     this.updateFeedbackSubmissionStatus(this.chatIdentifier);
+    if (this.chatIdentifier == this.antaresAnalyticsChatIdentifier) {
+      this.clusterName =  this.analyticsClusterNameConst;
+      this.databaseName = this.analyticsDatabaseNameConst;
+      this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.analyticsClusterNameConst, this.analyticsDatabaseNameConst);
+    }
+    else {
+      // This dropdown is visible only for Microsoft.Web/sites resources, so it is safe to assume that the other selection is for an Antares site resource.
+      this.clusterName = this.antaresClusterName? this.antaresClusterName : this.antaresClusterNamePlaceholderConst;
+      this.databaseName = this.antaresClusterName? this.antaresDatabaseName : this.antaresDatabaseNamePlaceholderConst;
+      this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.antaresClusterNamePlaceholderConst, this.antaresDatabaseNamePlaceholderConst);
+    }
   }
 
   public onDismissed(feedbackModel:ChatFeedbackModel) {
@@ -147,12 +165,12 @@ export class KustoGPTComponent {
               // If additionalFieldsObject is an Array then add each item as a key value pair to the data property of the chatMessage
               if(Array.isArray(additionalFieldsObject)) {
                 additionalFieldsObject.forEach((item) => {
-                  if( `${item.key }`.trim().toLowerCase() === 'clustername' && `${item.value}`.toLowerCase() == this.clusterNameConst.toLowerCase()) {
-                    item.value = this.clusterName;
+                  if( `${item.key }`.trim().toLowerCase() === 'clustername' && `${item.value}`.toLowerCase() == this.antaresClusterNamePlaceholderConst.toLowerCase()) {
+                    item.value = this.antaresClusterName;
                   }
                   else {
-                    if( `${item.key }`.trim().toLowerCase() === 'databasename' && `${item.value}`.toLowerCase() == this.databaseNameConst.toLowerCase()) {
-                      item.value = this.databaseName;
+                    if( `${item.key }`.trim().toLowerCase() === 'databasename' && `${item.value}`.toLowerCase() == this.antaresDatabaseNamePlaceholderConst.toLowerCase()) {
+                      item.value = this.antaresDatabaseName;
                     }
                   }
                 });
@@ -208,10 +226,7 @@ export class KustoGPTComponent {
           this.clusterName = '';
           this.databaseName = '';
         }
-        this.additionalFields[0].value = this.clusterName;
-        this.additionalFields[0].defaultValue = this.clusterName;
-        this.additionalFields[1].value = this.databaseName;
-        this.additionalFields[1].defaultValue = this.databaseName;
+        this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.clusterName, this.databaseName);
       });
     }
     else {
@@ -223,20 +238,28 @@ export class KustoGPTComponent {
             this.chatIdentifier = this.antaresAnalyticsChatIdentifier;
             this.updateFeedbackSubmissionStatus(this.antaresAnalyticsChatIdentifier);
             this.prepareChatHeader();
-          }
-        });
 
-        let siteResource = this._resourceService as SiteService;
-        siteResource.getCurrentResource().subscribe((siteResource:ObserverSiteInfo) => {
-          if(siteResource && siteResource.GeomasterName && siteResource.GeomasterName.indexOf('-') > 0) {
-            let geoRegionName = siteResource.GeomasterName.split('-').pop().toLowerCase();
-            this._diagnosticApiService.getKustoClusterForGeoRegion(geoRegionName).subscribe((kustoClusterRes) => {
-              if (kustoClusterRes) {
-                this.clusterName = kustoClusterRes.ClusterName || kustoClusterRes.clusterName;
-                this.databaseName = 'wawsprod';
-              }
-            });
+            this.clusterName =  this.analyticsClusterNameConst;
+            this.databaseName = this.analyticsDatabaseNameConst;
+            this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.analyticsClusterNameConst, this.analyticsDatabaseNameConst);
           }
+
+          let siteResource = this._resourceService as SiteService;
+          siteResource.getCurrentResource().subscribe((siteResource:ObserverSiteInfo) => {
+            if(siteResource && siteResource.GeomasterName && siteResource.GeomasterName.indexOf('-') > 0) {
+              let geoRegionName = siteResource.GeomasterName.split('-').pop().toLowerCase();
+              this._diagnosticApiService.getKustoClusterForGeoRegion(geoRegionName).subscribe((kustoClusterRes) => {
+                if (kustoClusterRes) {
+                  this.antaresClusterName = kustoClusterRes.ClusterName || kustoClusterRes.clusterName;
+                  if(!this.isAnalyticsCopilotAllowed) {
+                    this.clusterName = this.antaresClusterName;
+                    this.databaseName = this.antaresDatabaseName;
+                    this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.antaresClusterNamePlaceholderConst, this.antaresDatabaseNamePlaceholderConst);
+                  }
+                }
+              });
+            }
+          });
         });
        }
     }
