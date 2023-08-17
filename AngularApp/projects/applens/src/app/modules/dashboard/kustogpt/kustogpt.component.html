@@ -14,6 +14,7 @@
       [feedbackEmailAlias] = "feedbackEmailAlias"
       [onFeedbackClicked] = "onFeedbackClicked"
       [onSystemMessageReceived] = "onSystemMessageReceived"
+      [autoAddResourceSpecificInfoToChatMessages] = "autoAddResourceSpecificInfoToChatMessages"
       >
     </openai-chat-container>
     <chat-feedback-panel *ngIf="isFeedbackSubmissionAllowed" [(feedbackPanelState)] = "feedbackPanelOpenState" (onDismissed) = "onDismissed($event)" [onBeforeSubmit] = "onBeforeSubmit"

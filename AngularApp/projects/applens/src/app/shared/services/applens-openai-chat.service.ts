@@ -99,7 +99,7 @@ export class ApplensOpenAIChatService {
     return result;    
   }
 
-  public getChatCompletion(queryModel: ChatCompletionModel, customPrompt: string = ''): Observable<ChatResponse> {
+  public getChatCompletion(queryModel: ChatCompletionModel, customPrompt: string = '', autoAddResourceSpecificInfo:boolean = true): Observable<ChatResponse> {
 
     if (customPrompt && customPrompt.length > 0) {
       queryModel.messages.unshift({
@@ -110,13 +110,15 @@ export class ApplensOpenAIChatService {
 
     queryModel.metadata["azureServiceName"] = this.productName;
     queryModel.metadata["armResourceId"] = this._resourceService.getCurrentResourceId();
-    queryModel.metadata["resourceSpecificInfo"] = this.ConvertKeyValuePairArrayToObj(this.resourceSpecificInfo);
     
+    if(autoAddResourceSpecificInfo) {
+      queryModel.metadata["resourceSpecificInfo"] = this.ConvertKeyValuePairArrayToObj(this.resourceSpecificInfo);
+    }
 
     return this._backendApi.post(this.chatCompletionApiPath, queryModel, null, true, true).pipe(map((res: ChatResponse) => {return res;}));
   }
 
-  public sendChatMessage(queryModel: ChatCompletionModel, customPrompt: string = ''): Observable<{ sent: boolean, failureReason: string }> {
+  public sendChatMessage(queryModel: ChatCompletionModel, customPrompt: string = '', autoAddResourceSpecificInfo:boolean = true): Observable<{ sent: boolean, failureReason: string }> {
 
     if (customPrompt && customPrompt.length > 0) {
       queryModel.messages.unshift({
@@ -127,7 +129,10 @@ export class ApplensOpenAIChatService {
 
     queryModel.metadata["azureServiceName"] = this.productName;
     queryModel.metadata["armResourceId"] = this._resourceService.getCurrentResourceId();
-    queryModel.metadata["resourceSpecificInfo"] = this.ConvertKeyValuePairArrayToObj(this.resourceSpecificInfo);
+    
+    if(autoAddResourceSpecificInfo) {
+      queryModel.metadata["resourceSpecificInfo"] = this.ConvertKeyValuePairArrayToObj(this.resourceSpecificInfo);
+    }
 
     return from(this.signalRConnection.send("sendMessage", JSON.stringify(queryModel))).pipe(
       map(() => ({ sent: true, failureReason: '' })),

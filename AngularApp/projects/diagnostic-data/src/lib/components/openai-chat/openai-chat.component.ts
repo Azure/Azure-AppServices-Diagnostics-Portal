@@ -53,6 +53,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
   @Input() showCopyOption: boolean = false;
   @Input() apiProtocol: APIProtocol = APIProtocol.Rest;
   @Input() inputTextLimit: Number = 500;
+  @Input() autoAddResourceSpecificInfoToChatMessages:boolean = true;
 
   // Callback methods for pre and post processing messages
   @Input() preprocessUserMessage: (message: ChatMessage) => ChatMessage = function (message: ChatMessage) {
@@ -292,7 +293,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
       }
       else {
         let chatCompletionQueryModel = CreateChatCompletionModel(searchQuery, messageObj.id, this.chatIdentifier, this.chatModel, this.responseTokenSize);
-        openAIAPICall = this._openAIService.getChatCompletion(chatCompletionQueryModel, this.customInitialPrompt);
+        openAIAPICall = this._openAIService.getChatCompletion(chatCompletionQueryModel, this.customInitialPrompt, this.autoAddResourceSpecificInfoToChatMessages);
       }
 
       this.openAIAPICallSubscription = openAIAPICall.subscribe((response: ChatResponse) => {
@@ -442,7 +443,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
 
     let chatCompletionQueryModel = CreateChatCompletionModel(searchQuery, messageObj.id, this.chatIdentifier, this.chatModel, this.responseTokenSize);
 
-    this._openAIService.sendChatMessage(chatCompletionQueryModel, this.customInitialPrompt).subscribe(response => {
+    this._openAIService.sendChatMessage(chatCompletionQueryModel, this.customInitialPrompt, this.autoAddResourceSpecificInfoToChatMessages).subscribe(response => {
     }, err => {
     });
   }

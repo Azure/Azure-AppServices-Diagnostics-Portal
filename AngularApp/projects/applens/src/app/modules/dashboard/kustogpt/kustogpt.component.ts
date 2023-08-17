@@ -57,7 +57,7 @@ export class KustoGPTComponent {
     },
   };
   
-  public feedbackPanelOpenState:ChatFeedbackPanelOpenParams = {isOpen:false, chatMessageId: null};  
+  public feedbackPanelOpenState:ChatFeedbackPanelOpenParams = {isOpen:false, chatMessageId: null};
   public chatIdentifier:string = this.genericKustoAssistantChatIdentifier;
   public clusterName: string = this.antaresClusterNamePlaceholderConst;
   public databaseName: string = this.antaresDatabaseNamePlaceholderConst;
@@ -65,6 +65,7 @@ export class KustoGPTComponent {
   public readonly antaresDatabaseName:string = 'wawsprod';
   public isAnalyticsCopilotAllowed = false;
   public isFeedbackSubmissionAllowed = false;
+  public autoAddResourceSpecificInfoToChatMessages:boolean = true;
 
   public chatMessageKustoExecuteLink: { [chatId: string] : string; } = {};
 
@@ -106,12 +107,14 @@ export class KustoGPTComponent {
     this.prepareChatHeader();
     this.updateFeedbackSubmissionStatus(this.chatIdentifier);
     if (this.chatIdentifier == this.antaresAnalyticsChatIdentifier) {
+      this.autoAddResourceSpecificInfoToChatMessages = false;
       this.clusterName =  this.analyticsClusterNameConst;
       this.databaseName = this.analyticsDatabaseNameConst;
       this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.analyticsClusterNameConst, this.analyticsDatabaseNameConst);
     }
     else {
       // This dropdown is visible only for Microsoft.Web/sites resources, so it is safe to assume that the other selection is for an Antares site resource.
+      this.autoAddResourceSpecificInfoToChatMessages = true;
       this.clusterName = this.antaresClusterName? this.antaresClusterName : this.antaresClusterNamePlaceholderConst;
       this.databaseName = this.antaresClusterName? this.antaresDatabaseName : this.antaresDatabaseNamePlaceholderConst;
       this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.antaresClusterNamePlaceholderConst, this.antaresDatabaseNamePlaceholderConst);
@@ -212,6 +215,7 @@ export class KustoGPTComponent {
     this._applensGlobal.updateHeader(''); // Clear the header title of the component as the chat header is being displayed in the chat UI
     this.prepareChatHeader();
     this.updateFeedbackSubmissionStatus(this.chatIdentifier);
+    this.autoAddResourceSpecificInfoToChatMessages = true;
 
     if(`${this._resourceService.ArmResource.provider}/${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase() !== 'microsoft.web/sites') {
       this._diagnosticService.getKustoMappings().subscribe((response) => {
@@ -226,7 +230,7 @@ export class KustoGPTComponent {
         else {
           this.clusterName = '';
           this.databaseName = '';
-        }
+        }        
         this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.clusterName, this.databaseName);
       });
     }
@@ -236,6 +240,7 @@ export class KustoGPTComponent {
         this._diagnosticApiService.isCopilotEnabled(`${this._resourceService.ArmResource.provider}`,`${this._resourceService.ArmResource.resourceTypeName}`, this.antaresAnalyticsChatIdentifier).subscribe((isCopilotEnabled) => {
           this.isAnalyticsCopilotAllowed = isCopilotEnabled;
           if(this.isAnalyticsCopilotAllowed) {
+            this.autoAddResourceSpecificInfoToChatMessages = false;
             this.chatIdentifier = this.antaresAnalyticsChatIdentifier;
             this.updateFeedbackSubmissionStatus(this.antaresAnalyticsChatIdentifier);
             this.prepareChatHeader();
