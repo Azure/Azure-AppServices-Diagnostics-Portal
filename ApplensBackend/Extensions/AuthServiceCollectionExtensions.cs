@@ -114,7 +114,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (environment.IsDevelopment())
             {
-                services.AddSingleton<IAuthorizationHandler, SecurityGroupHandlerLocalDevelopment>();
+                services.AddSingleton<IAuthorizationHandler, SecurityGroupHandler>();
+                //services.AddSingleton<IAuthorizationHandler, SecurityGroupHandlerLocalDevelopment>();
             }
             else
             {

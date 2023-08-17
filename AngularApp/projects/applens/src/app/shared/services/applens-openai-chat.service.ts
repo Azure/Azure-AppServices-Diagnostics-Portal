@@ -8,6 +8,7 @@ import { ResourceService } from './resource.service';
 import { environment } from '../../../environments/environment';
 import * as signalR from "@microsoft/signalr";
 import { error } from 'console';
+import { AdalService } from 'adal-angular4';
 
 @Injectable()
 export class ApplensOpenAIChatService {
@@ -26,7 +27,7 @@ export class ApplensOpenAIChatService {
   private signalRLogLevel: any;
   private messageBuilder: string;
 
-  constructor(private _backendApi: DiagnosticApiService, private _resourceService: ResourceService, private telemetryService: TelemetryService) {
+  constructor(private _adalService: AdalService, private _backendApi: DiagnosticApiService, private _resourceService: ResourceService, private telemetryService: TelemetryService) {
     this.resourceProvider = `${this._resourceService.ArmResource.provider}/${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase();
     this.productName = this._resourceService.searchSuffix + ((this.resourceProvider === 'microsoft.web/sites') ? ` ${this._resourceService.displayName}` : '');
     this.onMessageReceive = new BehaviorSubject<ChatResponse>(null);
@@ -102,7 +103,10 @@ export class ApplensOpenAIChatService {
       if (!this.signalRConnection || this.signalRConnection.state !== signalR.HubConnectionState.Connected) {
 
         this.signalRConnection = new signalR.HubConnectionBuilder()
-          .withUrl(this.signalRChatEndpoint)
+          .withUrl(this.signalRChatEndpoint, {  
+            accessTokenFactory: () => {  
+              return this._adalService.userInfo.token;
+            }})
           .configureLogging(this.signalRLogLevel)
           .withAutomaticReconnect()
           .build();
