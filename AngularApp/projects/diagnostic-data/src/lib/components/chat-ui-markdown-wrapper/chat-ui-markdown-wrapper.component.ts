@@ -116,18 +116,16 @@ export class ChatUIMarkdownWrapperComponent implements OnInit {
                 this.parsedData = this.parseNormalizedData(normalizedData);
             }
             else {
-                this.parsedData = [
-                    {
-                        type: 'markdown',
-                        lang: '',
-                        value: data
-                    }];
-
+                this.parsedData = [{
+                    type: 'markdown',
+                    lang: '',
+                    value: data
+                }];
             }
         }
     }
 
-    copyDataToClipboard(element:any) {
+    copyDataToClipboard(element:any) {        
         let textToCopy = `${element.value}`;
         if(this.isSnippet(element) && `${element?.value}`.indexOf('```') > -1) {
             const codeMatch = this.codeSnippetExtractionRegex.exec(`${element?.value}`);
@@ -136,7 +134,9 @@ export class ChatUIMarkdownWrapperComponent implements OnInit {
             }
         }
 
+        let currMessage = this._chatContextService.messageStore[this.chatIdentifier].find((msg:ChatMessage) => msg.id == this.chatMessageId);
         if(this.onCopyClick){
+            this._telemetryService.logEvent("OpenAICodeSnippetCopyClickEventRaised", { chatIdentifier: this.chatIdentifier, chatMessageId:this.chatMessageId, messageText:currMessage.displayMessage, textCopied:textToCopy, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
             this.onCopyClick(textToCopy);
         }
         //default handling 
@@ -153,22 +153,24 @@ export class ChatUIMarkdownWrapperComponent implements OnInit {
                         )
                     {
                         // Get the element matching chatMessageId
-                        let msg = this._chatContextService.messageStore[this.chatIdentifier].find((msg:ChatMessage) => msg.id == this.chatMessageId);
-                        let clusterName = msg.data.find((entry:KeyValuePair)=> `${entry.key }`.trim().toLowerCase() === 'clustername' ).value;
-                        let databaseName = msg.data.find((entry:KeyValuePair)=> `${entry.key }`.trim().toLowerCase() === 'databasename' ).value;
+                        let clusterName = currMessage.data.find((entry:KeyValuePair)=> `${entry.key }`.trim().toLowerCase() === 'clustername' ).value;
+                        let databaseName = currMessage.data.find((entry:KeyValuePair)=> `${entry.key }`.trim().toLowerCase() === 'databasename' ).value;
                         let kustoQuery = KustoUtilities.GetKustoQuery(textToCopy, clusterName, databaseName);
 
-                        let htmlText = `Execute: <a target='_blank' href = '${kustoQuery.Url}'>[Web]</a> <a target='_blank' href = '${kustoQuery.KustoDesktopUrl}'>[Desktop]</a> <a target='_blank' href = 'https://${clusterName}.kusto.windows.net/${databaseName}'>https://${clusterName}.kusto.windows.net/${databaseName}</a><br>${textToCopy.replace(/\n/g, '<br>')}`;
+                        let htmlText = `Execute: <a target='_blank' href = '${kustoQuery.Url}'>[Web]</a> <a target='_blank' href = '${kustoQuery.KustoDesktopUrl}'>[Desktop]</a> <a target='_blank' href = 'https://${clusterName}.kusto.windows.net/${databaseName}'>https://${clusterName}.kusto.windows.net/${databaseName}</a><br>${textToCopy.replace(/\n/g, '<br>')}`;                        
                         this._clipboard.copyAsHtml(htmlText);
+                        this._telemetryService.logEvent("OpenAICodeSnippetCopyClickKustoQueryCopied", { chatIdentifier: this.chatIdentifier, chatMessageId:this.chatMessageId, messageText:currMessage.displayMessage, textCopied:htmlText, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
                 }
-                else {
+                else {                    
                     navigator.clipboard.writeText(textToCopy);
+                    this._telemetryService.logEvent("OpenAICodeSnippetCopyClickSnippetCopied", { chatIdentifier: this.chatIdentifier, chatMessageId:this.chatMessageId, messageText:currMessage.displayMessage, textCopied:textToCopy, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
                 }
             }
             catch(e) {
                 console.error('Error copying to clipboard. Reverting to default behavior.');
                 console.error(e);
                 navigator.clipboard.writeText(textToCopy);
+                this._telemetryService.logEvent("OpenAICodeSnippetCopyClickError", { ...e, chatIdentifier: this.chatIdentifier, chatMessageId:this.chatMessageId, messageText:currMessage.displayMessage, textCopied:textToCopy, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
             }
         }
     }
