@@ -112,8 +112,8 @@ export class FabDataTableComponent implements AfterContentInit {
       //Ideally,it should be enable if table is too large.
       //But for now, if enabled, it will show only 40 rows
       this.fabDetailsList.onShouldVirtualize = () => {
-        // return this.rows.length > this.rowLimit ? true : false;
-        return false;
+         return this.rows.length > this.rowLimit ? true : false;
+        //return false;
       }
 
 
