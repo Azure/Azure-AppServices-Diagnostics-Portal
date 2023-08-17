@@ -166,7 +166,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
         this.isEnabledChecked = true;
       },
         (err) => {
-          this._telemetryService.logEvent("OpenAIChatQuerySamplesFileLoadError", { "chatQuerySamplesFileUri": this.chatQuerySamplesFileUri, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
+          this._telemetryService.logEvent("OpenAIChatQuerySamplesFileLoadError", {chatIdentifier: this.chatIdentifier,  "chatQuerySamplesFileUri": this.chatQuerySamplesFileUri, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
         });
     }
   }
@@ -176,7 +176,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
       this.fetchChat(this.chatIdentifier).subscribe((chatMessages: ChatMessage[]) => {
         this._chatContextService.messageStore[this.chatIdentifier] = chatMessages;
         this.chatUIComponentRef.scrollToBottom(true);
-        this._telemetryService.logEvent("OpenAIChatLoadedFromStore", { userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
+        this._telemetryService.logEvent("OpenAIChatLoadedFromStore", { chatIdentifier: this.chatIdentifier, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
 
         this.checkQuota();
         this.populateCustomFirstMessage();
@@ -226,7 +226,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
         let messageDailyCount = this._chatContextService.messageStore[this.chatIdentifier]
           .filter((m: ChatMessage) => m.messageSource == MessageSource.User && TimeUtilities.checkSameDay(m.timestamp)).length;
         if (messageDailyCount > this.dailyMessageQuota) {
-          this._telemetryService.logEvent("OpenAIChatMessageQuotaExceeded", { userId: this._chatContextService.userId, messageCount: messageDailyCount.toString(), quotaLimit: this.dailyMessageQuota.toString(), ts: new Date().getTime().toString() });
+          this._telemetryService.logEvent("OpenAIChatMessageQuotaExceeded", { chatIdentifier: this.chatIdentifier, userId: this._chatContextService.userId, messageCount: messageDailyCount.toString(), quotaLimit: this.dailyMessageQuota.toString(), ts: new Date().getTime().toString() });
           this._chatContextService.chatInputBoxDisabled = true;
           this.showMessageQuotaError = true;
           this.messageQuotaErrorMessage = `You have exhausted your daily quota of ${this.dailyMessageQuota} messages. We are working on increasing the quota capacity.`
@@ -342,7 +342,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
         (err) => {
           if (err.status && err.status == 400) {
             //Sometimes the chat context may become too long for the API to handle. In that case, we reduce the chat context length by 2 and retry
-            this._telemetryService.logEvent("OpenAIChatBadRequestError", { ...err, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
+            this._telemetryService.logEvent("OpenAIChatBadRequestError", { ...err, chatIdentifier: this.chatIdentifier, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
             this.chatContextLength = this.chatContextLength - 2 >= 0 ? this.chatContextLength - 2 : 0;
             this.fetchOpenAIResultUsingRest(searchQuery, messageObj, retry = false);
           }
@@ -449,11 +449,11 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
 
   handleFailure(err, messageObj) {
     if (err.status && err.status == 429) {
-      this._telemetryService.logEvent("OpenAIChatTooManyRequestsError", { ...err, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
+      this._telemetryService.logEvent("OpenAIChatTooManyRequestsError", { ...err, chatIdentifier: this.chatIdentifier, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
       this.displayChatRequestError("Ah! Too many people asking me questions! Please try again in sometime.");
     }
     else {
-      this._telemetryService.logEvent("OpenAIChatRequestError", { ...err, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
+      this._telemetryService.logEvent("OpenAIChatRequestError", { ...err, chatIdentifier: this.chatIdentifier, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
       this.displayChatRequestError("Me and AppLens are on a talking freeze it seems. Lets try again later.");
     }
 
@@ -510,7 +510,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
     if (this.checkQuota()) {
 
       this._chatContextService.messageStore[this.chatIdentifier].push(messageObj);
-      this._telemetryService.logEvent("OpenAIChatUserMessageSent", { message: messageObj.message, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
+      this._telemetryService.logEvent("OpenAIChatUserMessageSent", { chatIdentifier: this.chatIdentifier, message: messageObj.message, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
       this._chatContextService.chatInputBoxDisabled = true;
       let chatMessage = {
         id: uuid(),
