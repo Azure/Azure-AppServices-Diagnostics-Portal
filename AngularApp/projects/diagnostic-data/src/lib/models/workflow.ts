@@ -157,6 +157,12 @@ export interface inputNodeSettings {
   variableLabel: string;
   variables: Dictionary<string>;
   options: string[];
+  inputListItems: inputListItem[];
+}
+
+export interface inputListItem {
+  text: string;
+  value: string;
 }
 
 export interface workflowExecutionTrace {

@@ -3,7 +3,7 @@ import { Subscription, Observable, Subject } from 'rxjs';
 import { Component, OnDestroy, Pipe, PipeTransform } from '@angular/core';
 import { ResourceService } from '../../../shared/services/resource.service';
 import * as momentNs from 'moment';
-import { DetectorControlService, FeatureNavigationService, BreadcrumbNavigationItem, GenericThemeService, ChatUIContextService } from 'diagnostic-data';
+import { DetectorControlService, FeatureNavigationService, BreadcrumbNavigationItem, GenericThemeService, ChatUIContextService, HealthStatus } from 'diagnostic-data';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { SearchService } from '../services/search.service';
@@ -114,6 +114,8 @@ export class DashboardComponent implements OnDestroy {
   defaultResourceTypes = defaultResourceTypes;
   isPPE: boolean = false;
   detectorCopilotEnabled: boolean = false;
+  displayResourceAlert: boolean = false;
+  hideResourceAlert: boolean = false;
   constructor(public resourceService: ResourceService, private startupService: StartupService, private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
     private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, public _applensGlobal: ApplensGlobal, private _startupService: StartupService, private _resourceService: ResourceService, private _breadcrumbService: BreadcrumbService, private _userSettingsService: UserSettingService, private _themeService: GenericThemeService,
@@ -179,7 +181,9 @@ export class DashboardComponent implements OnDestroy {
 
     this._alertService.getAlert().subscribe((alert: AlertInfo) => {
       this.alertInfo = alert;
-      this.displayAlertDialog = true;
+      this.displayAlertDialog = alert.userAccessStatus != UserAccessStatus.AllowedResourceException;
+      this.displayResourceAlert = alert.userAccessStatus == UserAccessStatus.AllowedResourceException;
+      this.hideResourceAlert = !(alert.userAccessStatus == UserAccessStatus.AllowedResourceException);
       setTimeout(() => {
         var elem = document.getElementsByClassName('ms-Dialog-title')[0] as HTMLElement;
         if (elem) {
@@ -306,6 +310,10 @@ export class DashboardComponent implements OnDestroy {
     else {
       this.showGPTComponent = false;
     }
+  }
+
+  resourceAlertDialogCancel() {
+    this.hideResourceAlert = true;
   }
 
   ngOnInit() {

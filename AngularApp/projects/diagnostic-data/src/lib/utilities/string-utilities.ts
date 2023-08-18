@@ -189,4 +189,12 @@ export class StringUtilities {
           } catch { return false }
           return false
     }
+
+    public static markdownToHtmlWithTargetBlank(markdown) {  
+        const linkRegex = /\[([^\[]+)\]\(([^\)]+)\)/g;  
+        
+        return markdown.replace(linkRegex, (match, title, url) => {  
+          return `<a href="${url}" target="_blank">${title}</a>`;  
+        });  
+    }
 }

@@ -65,6 +65,31 @@ export class AppLensInterceptorService implements HttpInterceptor {
     this._alertService.sendAlert(alertInfo);
   }
 
+  raiseResourceAlert(event) {
+    let errormsg = event.error;
+    errormsg = errormsg.replace(/\\"/g, '"');
+    errormsg = errormsg.replace(/\"/g, '"');
+    let errobj = JSON.parse(errormsg);
+
+    let url = errobj.DetailText;
+    url = url.trim();
+    if (url) {
+      if (url[url.length - 1] == '.') {
+        url = url.substring(0, url.length - 1);
+      }
+    }
+
+    let alertInfo: AlertInfo = {
+      header: "Visit the following website to verify your access to the requested subscription.",
+      details: `<a href= ${url} target=_blank> ${url} </a>`,
+      seekConfirmation: false,
+      confirmationOptions: [{ label: 'Yes, proceed', value: 'yes' }, { label: 'No, take me back', value: 'no' }],
+      alertStatus: HealthStatus.Warning,
+      userAccessStatus: UserAccessStatus.AllowedResourceException
+    };
+    this._alertService.sendAlert(alertInfo);
+  }
+
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     return next.handle(req).pipe(map((event: HttpEvent<any>) => {
@@ -78,6 +103,9 @@ export class AppLensInterceptorService implements HttpInterceptor {
         let consentRequiredHeader =  error.headers.get("x-ms-diag-consent-required");
         if (error.status === 403 && error.url.includes("api/invoke") && errorObj.Status == UserAccessStatus.ResourceNotRelatedToCase) {
           this.raiseAlert(error, req);
+        }
+        else if (error.status === 403 && errorObj.Status === UserAccessStatus.AllowedResourceException) {
+          this.raiseResourceAlert(error);
         }
         else if (error.status == 403 && error.url.includes("api/invoke") && errorObj.Status == UserAccessStatus.ConsentRequired) {
           // do not raise alert. Let us handle this in the detector container component.

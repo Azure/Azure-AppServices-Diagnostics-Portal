@@ -38,6 +38,8 @@ namespace AppLensV3.Models
 
     public class SearchSettingsBase
     {
+        public string IndexName { get; set; }
+        public bool IncludeReferences { get; set; }
         public int NumDocuments { get; set; } = 3;
         public double MinScore { get; set; } = 0.5;
     }

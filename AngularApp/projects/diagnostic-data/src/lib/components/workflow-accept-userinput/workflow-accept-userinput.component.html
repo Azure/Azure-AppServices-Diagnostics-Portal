@@ -13,6 +13,15 @@
       <option *ngFor="let opt of data.inputNodeSettings.options" [value]="opt" [selected]="opt === selectFieldValue"> {{
         opt }} </option>
     </select>
+
+    <select class="form-control input-control-width" name="inputField"
+      [attr.aria-label]="data.inputNodeSettings.variableLabel"
+      *ngIf="data.inputNodeSettings.inputListItems && data.inputNodeSettings.inputListItems.length > 0" [disabled]="userInputDisabled"
+      (change)="selectChanged($event)">
+      <option *ngFor="let opt of data.inputNodeSettings.inputListItems" [value]="opt.value" [selected]="opt.value === selectFieldValue"> {{
+        opt.text }} </option>
+    </select>
+
   </div>
   <div *ngIf="data.inputNodeSettings.inputType === inputType.date">
     <div class="flex-display">

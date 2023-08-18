@@ -153,6 +153,7 @@ namespace AppLensV3.Services
         private readonly string openAIEndpoint;
         private readonly string openAIGPT3APIUrl;
         private readonly string openAIGPT4Model;
+        private readonly string openAIGPT35Model;
         private readonly string openAIAPIKey;
         private readonly ILogger<OpenAIService> logger;
         private readonly bool isOpenAIAPIEnabled = false;
@@ -182,6 +183,7 @@ namespace AppLensV3.Services
                 openAIEndpoint = configuration["OpenAIService:Endpoint"];
                 openAIGPT3APIUrl = configuration["OpenAIService:GPT3DeploymentAPI"];
                 openAIGPT4Model = configuration["OpenAIService:GPT4DeploymentName"];
+                openAIGPT35Model = configuration["OpenAIService:GPT35DeploymentName"];
                 openAIAPIKey = configuration["OpenAIService:APIKey"];
                 chatHubRedisKeyPrefix = "ChatHub-MessageState-";
 
@@ -207,8 +209,37 @@ namespace AppLensV3.Services
             {
                 return false;
             }
-
             return await redisCache.SetKey(key, value);
+        }
+
+        private async Task<string> PrepareDocumentContent(DocumentSearchSettings documentSearchSettings, string query)
+        {
+            if (documentSearchSettings != null && documentSearchSettings.IndexName != null)
+            {
+                try
+                {
+                    var documents = await _cognitiveSearchQueryService.SearchDocuments(query, documentSearchSettings.IndexName);
+                    if (documents != null && documents.Count > 0)
+                    {
+                        List<string> documentContentList = new List<string>();
+                        foreach (var document in documents)
+                        {
+                            documentContentList.Add($"{(!string.IsNullOrWhiteSpace(document.Title) ? document.Title + "\n" : "")}{document.Content}\n{(!string.IsNullOrWhiteSpace(document.Url) ? "ReferenceUrl: " + document.Url : "")}");
+                        }
+                        var documentContent = string.Join("\n\n", documentContentList);
+                        if (documentSearchSettings.IncludeReferences)
+                        {
+                            documentContent = documentContent + "\nPlease provide reference links of the documents used to answer the query, at the bottom of your answer. Reference links should be created with title and url of the document using the <a href> HTML attribute with target='_blank'";
+                        }
+                        return documentContent;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+            return null;
         }
 
         public async Task<List<ChatFeedback>> GetChatFeedbackRaw(string chatIdentifier, string provider, string resourceType, List<ChatMessage> chatMessages, ChatFeedbackSearchSettings feedbackSearchSettings = null)
@@ -291,32 +322,6 @@ namespace AppLensV3.Services
             return null;
         }
 
-        private async Task<string> PrepareDocumentContent(DocumentSearchSettings documentSearchSettings, string query)
-        {
-            if (documentSearchSettings != null && documentSearchSettings.IndexName != null)
-            {
-                try
-                {
-                    var documents = await _cognitiveSearchQueryService.SearchDocuments(query, documentSearchSettings.IndexName);
-                    if (documents != null && documents.Count > 0)
-                    {
-                        List<string> documentContentList = new List<string>();
-                        foreach (var document in documents)
-                        {
-                            documentContentList.Add($"{(!string.IsNullOrWhiteSpace(document.Title) ? document.Title + "\n" : "")}{document.Content}\n{(!string.IsNullOrWhiteSpace(document.Url) ? "ReferenceUrl: " + document.Url : "")}");
-                        }
-                        var documentContent = string.Join("\n\n", documentContentList);
-                        return documentContent;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return null;
-                }
-            }
-            return null;
-        }
-
         public async Task<ChatResponse> RunTextCompletion(CompletionModel requestBody, bool cacheEnabledOnRequest)
         {
             var cacheKey = JsonConvert.SerializeObject(requestBody);
@@ -394,7 +399,7 @@ namespace AppLensV3.Services
             }
             else
             {
-                response = await openAIClient.GetChatCompletionsAsync(openAIGPT4Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
+                response = await openAIClient.GetChatCompletionsAsync(metadata.ChatModel == "gpt4" || string.IsNullOrWhiteSpace(openAIGPT35Model) ? openAIGPT4Model: openAIGPT35Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
             }
 
             ChatResponse chatResponse = new ChatResponse(response);
@@ -442,7 +447,7 @@ namespace AppLensV3.Services
             else
             {
                 Response<StreamingChatCompletions> response = await openAIClient.GetChatCompletionsStreamingAsync(
-                    openAIGPT4Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
+                    metadata.ChatModel == "gpt4" || string.IsNullOrWhiteSpace(openAIGPT35Model) ? openAIGPT4Model : openAIGPT35Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
                 using StreamingChatCompletions streamingChatCompletions = response.Value;
                 await foreach (StreamingChatChoice choice in streamingChatCompletions.GetChoicesStreaming(cancellationToken))
                 {

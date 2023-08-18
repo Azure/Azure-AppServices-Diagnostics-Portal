@@ -1,7 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using AppLensV3.Helpers;
 using AppLensV3.Hubs;
 using AppLensV3.Middleware;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -19,11 +23,20 @@ namespace AppLensV3
             _configuration = configuration;
         }
 
-        public void AddConfigurations(ConfigurationBuilder builder, IWebHostEnvironment env, string cloudDomain)
+        public void AddConfigurations(ConfigurationBuilder builder, IWebHostEnvironment env, string cloudDomaintempConfig)
         {
             builder.SetBasePath(env.ContentRootPath)
-                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                    .AddJsonFile($"appsettings.PublicAzure.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            if (env.IsDevelopment() && !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("KeyVault")))
+            {
+                string keyvault = Environment.GetEnvironmentVariable("KeyVault");
+                var secretClient = new SecretClient(
+                                       new Uri(keyvault),
+                                                          new DefaultAzureCredential());
+                builder.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
+            }
+
+            builder.AddJsonFile($"appsettings.PublicAzure.json", optional: false, reloadOnChange: true)
                     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                     .AddEnvironmentVariables();
         }

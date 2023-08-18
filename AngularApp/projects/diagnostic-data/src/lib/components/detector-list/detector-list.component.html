@@ -56,69 +56,80 @@
 </div>
 <!-- <ng-container *ngIf="!inDrillDownMode else drilldownTemplate"> -->
 <div *ngIf="issueDetectedViewModels.length > 0">
-  <collapsible-list-fabric [collapsed]="false"
+  <collapsible-list-fabric *ngIf="!disableCollapse" [collapsed]="false"
     [title]="'Observations and Solutions (' + issueDetectedViewModels.length + ')'">
     <collapsible-list-item body>
-      <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
-        <fab-card [expanded]="!isPublic" [isExpandable]="!!viewModel.insightDescription" [isAlign]="true" [ariaLabel]="viewModel.model.title">
-          <div header>
-            <div style="display: flex;align-items: center;min-height: 40px;">
-              <status-icon class="mr-3" [status]="viewModel.model.status"></status-icon>
-              <div class="list-view-title">{{viewModel.model.title}}</div>
-            </div>
-            <div style="margin: 12px 0px 16px 0px;">{{viewModel.insightTitle}}</div>
-          </div>
-          <div body>
-            <markdown-text [markdownData]="viewModel.insightDescription"></markdown-text>
-          </div>
-          <div footer>
-            <div style="display: flex;align-items: center;margin-bottom: 15px;">
-              <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" [contentClass]="'mr-5'"
-                (onClick)="openSolutionPanel(viewModel)" [contentStyle]="'border-radius: 2px;font-size: 13px;'">
-                View Solutions</fab-primary-button>
-                <fab-link *ngIf="this.overrideResourceUri == ''" (onClick)="selectDetector(viewModel)">View details</fab-link>
-                <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open in new tab]</fab-link>
-            </div>
-          </div>
-        </fab-card>
-      </div>
+      <ng-container *ngTemplateOutlet="issueDetectedView"></ng-container>  
     </collapsible-list-item>
   </collapsible-list-fabric>
+  <ng-container *ngIf="disableCollapse"> <ng-container *ngTemplateOutlet="issueDetectedView"></ng-container></ng-container>
 </div>
+
+<ng-template #issueDetectedView>  
+  <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
+    <fab-card [expanded]="!isPublic" [isExpandable]="!!viewModel.insightDescription" [isAlign]="true" [ariaLabel]="viewModel.model.title">
+      <div header>
+        <div style="display: flex;align-items: center;min-height: 40px;">
+          <status-icon class="mr-3" [status]="viewModel.model.status"></status-icon>
+          <div class="list-view-title">{{viewModel.model.title}}</div>
+        </div>
+        <div style="margin: 12px 0px 16px 0px;">{{viewModel.insightTitle}}</div>
+      </div>
+      <div body>
+        <markdown-text [markdownData]="viewModel.insightDescription"></markdown-text>
+      </div>
+      <div footer>
+        <div style="display: flex;align-items: center;margin-bottom: 15px;">
+          <fab-primary-button *ngIf="allSolutionsMap.has(viewModel.model.title)" [contentClass]="'mr-5'"
+            (onClick)="openSolutionPanel(viewModel)" [contentStyle]="'border-radius: 2px;font-size: 13px;'">
+            View Solutions</fab-primary-button>
+            <fab-link *ngIf="this.overrideResourceUri == ''" (onClick)="selectDetector(viewModel)">View details</fab-link>
+            <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open in new tab]</fab-link>
+        </div>
+      </div>
+    </fab-card>
+  </div>
+</ng-template>  
 
 <br />
 <div *ngIf="successfulViewModels.length > 0">
-  <collapsible-list-fabric [collapsed]="isCaseSubmissionFlow ? true : (issueDetectedViewModels.length > 0 || loading === LoadingStatus.Loading)"
+  <collapsible-list-fabric *ngIf="!disableCollapse" [collapsed]="isCaseSubmissionFlow ? true : (issueDetectedViewModels.length > 0 || loading === LoadingStatus.Loading)"
     [title]="'Successful Checks (' + successfulViewModels.length + ')'">
     <collapsible-list-item body>
-      <div class="list-text">
-        <div *ngFor="let viewModel of successfulViewModels" style="margin-bottom: 8px;">
-          <fab-card [expanded]="false" [ariaLabel]="viewModel.model.title">
-            <div header>
-              <div style="display: flex;align-items: center;min-height: 40px;">
-                <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status">
-                </status-icon>
-                <div class="list-view-title">{{viewModel.model.title}}</div>
-              </div>
-            </div>
-            <div body>
-              <div style="margin-bottom: 10px;">{{viewModel.insightTitle}}</div>
-            </div>
-            <div footer>
-              <div style="margin-bottom: 12px;">
-                <fab-link *ngIf="this.overrideResourceUri == ''" (onClick)="selectDetector(viewModel)">View details</fab-link>
-                <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open in new tab]</fab-link>
-              </div>
-            </div>
-          </fab-card>
-        </div>
-      </div>
+      <ng-container *ngTemplateOutlet="successfulView"></ng-container>  
     </collapsible-list-item>
   </collapsible-list-fabric>
+  <ng-container *ngIf="disableCollapse"> <ng-container *ngTemplateOutlet="successfulView"></ng-container></ng-container>
 </div>
+
+<ng-template #successfulView>  
+  <div class="list-text">
+    <div *ngFor="let viewModel of successfulViewModels" style="margin-bottom: 8px;">
+      <fab-card [expanded]="false" [ariaLabel]="viewModel.model.title">
+        <div header>
+          <div style="display: flex;align-items: center;min-height: 40px;">
+            <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus" [status]="viewModel.model.status">
+            </status-icon>
+            <div class="list-view-title">{{viewModel.model.title}}</div>
+          </div>
+        </div>
+        <div body>
+          <div style="margin-bottom: 10px;">{{viewModel.insightTitle}}</div>
+        </div>
+        <div footer>
+          <div style="margin-bottom: 12px;">
+            <fab-link *ngIf="this.overrideResourceUri == ''" (onClick)="selectDetector(viewModel)">View details</fab-link>
+            <fab-link *ngIf="!isPublic" (onClick)="selectDetectorNewTab(viewModel)" [styles]="linkStyle">[Open in new tab]</fab-link>
+          </div>
+        </div>
+      </fab-card>
+    </div>
+  </div>
+</ng-template>  
+
 <br />
 
-<div *ngIf="failedLoadingViewModels.length > 0">
+<div *ngIf="failedLoadingViewModels.length > 0 && !disableCollapse">
   <collapsible-list-fabric [collapsed]="false" [title]="'Failed Loading Checks (' + failedLoadingViewModels.length + ')'">
     <collapsible-list-item body>
 
@@ -147,7 +158,6 @@
 
     </collapsible-list-item>
   </collapsible-list-fabric>
-
 </div>
 
 

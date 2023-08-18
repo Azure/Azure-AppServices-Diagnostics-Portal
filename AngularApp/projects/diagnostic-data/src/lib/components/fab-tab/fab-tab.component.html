@@ -4,8 +4,9 @@
       <fab-pivot-item [headerText]="key.title" [itemKey]="key.title" [itemIcon]="key.icon" [itemCount]="key.itemCount">
         <Label class="fabric-tab-label">
           <ng-container *ngFor="let data of tabContent(key.title)">
-            <dynamic-data [diagnosticData]="data" class="dynamic-data-container" [startTime]="startTime" [endTime]="endTime"  [xAxisPlotBands]="xAxisPlotBands" 
-            [zoomBehavior] = "zoomBehavior" (XAxisSelection)="onXAxisSelection($event)" [isAnalysisView]="isAnalysisView"></dynamic-data>
+            <dynamic-data [diagnosticData]="data" class="dynamic-data-container" [startTime]="startTime" [endTime]="endTime" [xAxisPlotBands]="xAxisPlotBands"
+            [detectorEventProperties]="detectorEventProperties" [developmentMode]="developmentMode" [executionScript]="executionScript" [detector]="detector" [compilationPackage]="compilationPackage"
+            [zoomBehavior]="zoomBehavior" (XAxisSelection)="onXAxisSelection($event)" [isAnalysisView]="isAnalysisView"></dynamic-data>
           </ng-container>
         </Label>
       </fab-pivot-item>

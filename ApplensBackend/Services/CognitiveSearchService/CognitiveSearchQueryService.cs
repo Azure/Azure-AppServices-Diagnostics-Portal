@@ -17,7 +17,6 @@ namespace AppLensV3.Services
     public class CognitiveSearchQueryService: ICognitiveSearchQueryService
     {
         private readonly ICognitiveSearchBaseService _baseService;
-
         public CognitiveSearchQueryService(ICognitiveSearchBaseService baseService)
         {
             _baseService = baseService;

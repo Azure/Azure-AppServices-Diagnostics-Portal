@@ -53,6 +53,7 @@ export enum ChatAlignment {
 
 export enum ChatModel {
     GPT3 = "gpt3",
+    GPT35 = "gpt35",
     GPT4 = "gpt4"
 }
 
