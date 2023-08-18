@@ -229,7 +229,7 @@ export class KustoGPTComponent {
     resourceReady.subscribe(resource => {
       if (resource) {
         this.resource = resource;
-        this.isFunctionApp = `${this.resource['Kind']}`.toLowerCase().indexOf('function') > -1;
+        this.isFunctionApp = `${this.resource['Kind']}`.toLowerCase().indexOf('functionapp') > -1;
       }
     });
 

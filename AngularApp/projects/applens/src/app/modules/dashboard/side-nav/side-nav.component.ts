@@ -11,7 +11,7 @@ import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/s
 import { environment } from '../../../../environments/environment';
 import { UserSettingService } from '../services/user-setting.service';
 import { BreadcrumbService } from '../services/breadcrumb.service';
-import { forkJoin, of } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { element } from 'protractor';
 import { ApplensDocumentationService } from '../services/applens-documentation.service';
@@ -20,6 +20,7 @@ import { DocumentationFilesList } from './documentationFilesList';
 import { ApplensOpenAIChatService } from '../../../shared/services/applens-openai-chat.service';
 import { PortalUtils } from '../../../shared/utilities/portal-util';
 import { SiteService } from '../../../shared/services/site.service';
+import { error } from 'console';
 
 @Component({
   selector: 'side-nav',
@@ -238,15 +239,20 @@ export class SideNavComponent implements OnInit {
       this.showChatGPT = this._openAIService.isEnabled;
       let antaresAnalyticsEnabledState = this._diagnosticApi.isCopilotEnabled(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName, 'analyticskustocopilot');
       let kqlAssistantEnabledState = this._diagnosticApi.isCopilotEnabled(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName, 'kustoqueryassistant');
-      let resourceReady = (this.resourceService instanceof SiteService && this.resourceService.ArmResource?.resourceGroup && this.resourceService.ArmResource?.resourceName) ? this.resourceService.getCurrentResource() : of(null);
-      forkJoin([antaresAnalyticsEnabledState, kqlAssistantEnabledState, resourceReady]).subscribe(results => {
-        let isFunctionApp = false;
-        if(this.resourceService instanceof SiteService && results[2]) {
-          let site = results[2] ;
-          isFunctionApp = `${site['Kind']}`.toLowerCase().indexOf('function') > -1;
-        }
-        this.tools.find(tool => tool.id === 'kustocopilot').visible = results[0] || (results[1] && isFunctionApp);
-        this.toolsCopy.find(tool => tool.id === 'kustocopilot').visible = results[0] || (results[1] && isFunctionApp);
+      let resourceReady:Observable<any> = (this.resourceService instanceof SiteService) ? this.resourceService.getCurrentResource() : of(null);
+      forkJoin([antaresAnalyticsEnabledState, kqlAssistantEnabledState]).subscribe(results => {
+        resourceReady.subscribe(resource => {
+          let isFunctionApp = false;
+          if(this.resourceService instanceof SiteService && resource) {
+            let site = resource;
+            isFunctionApp = `${site['Kind']}`.toLowerCase().indexOf('functionapp') > -1;
+          }
+          this.tools.find(tool => tool.id === 'kustocopilot').visible = results[0] || (results[1] && isFunctionApp);
+          this.toolsCopy.find(tool => tool.id === 'kustocopilot').visible = results[0] || (results[1] && isFunctionApp);
+        }, error => {
+          console.error('Error while determining if KQL Assistant is enabled');
+          console.error(error);
+        });
       }, error => {
         console.error('Error while determining if KQL Assistant is enabled');
         console.error(error);
