@@ -71,4 +71,35 @@ export class KustoUtilities {
             KustoDesktopUrl: ''
         };
     }
+
+    public static RunBestPracticeChecks(provider:string, resourceType:string, queryText:string, skipAntaresSpecificChecks:boolean = false):string {
+        let findings:string[] = [];
+        if(queryText) {
+            let queryTextSplit = queryText.split('|');
+
+            if(!queryTextSplit.find(l => l && l.toLowerCase().indexOf('where ') > -1 )) {
+                findings.push('Query must contain a where clause to filter necessary data.');
+            }
+
+            if(!queryTextSplit.find(l => l && (l.toLowerCase().indexOf('precisetimestamp ') > -1 || l.toLowerCase().indexOf('timestamp ') > -1 || l.toLowerCase().indexOf('pdate ') > -1 
+                                                || l.toLowerCase().indexOf('datetime(') > -1  || l.toLowerCase().indexOf('ago(') > -1 
+                                            ) )) {
+                findings.push('Query must contain a timerange filter.');
+            }
+
+            if(!skipAntaresSpecificChecks && `${provider}`.toLowerCase() == 'microsoft.web' && `${resourceType}`.toLowerCase() == 'sites' 
+                && !queryTextSplit.find(l => l && l.toLowerCase().indexOf('eventprimarystampname') > -1 )
+             ) {
+                findings.push('App service related queries must have a filter for EventPrimaryStampName.');
+            }
+
+            if(!queryTextSplit.find(l => l && (l.toLowerCase().indexOf('project ') > -1 || l.toLowerCase().indexOf('summarize ') > -1 || l.toLowerCase().indexOf('distinct ') > -1  ) )) {
+                findings.push('Query must contain either a project, summarize or a distinct statement.');
+            }
+        }
+        else {
+            findings.push('Empty query text.');
+        }        
+        return findings.join('\r\n');
+    }
 }
