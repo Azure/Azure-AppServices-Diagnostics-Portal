@@ -67,7 +67,7 @@ export class KustoGPTComponent {
   public isFeedbackSubmissionAllowed = false;
   public customInitialPrompt:string = '';
   public antaresStampName:string = '';
-  
+  private resource:any;
   public chatMessageKustoExecuteLink: { [chatId: string] : string; } = {};
 
   public additionalFields: ChatFeedbackAdditionalField[] = this.getAdditionalFieldsForChatFeedback(this.antaresClusterNamePlaceholderConst, this.antaresDatabaseNamePlaceholderConst); 
@@ -75,6 +75,8 @@ export class KustoGPTComponent {
   public get chatQuerySamplesFileUri():string {
     return `assets/chatConfigs/${this.chatIdentifier}.json`;
   }
+
+  public isFunctionApp:boolean = false;
 
   private getAdditionalFieldsForChatFeedback(clusterName:string, databaseName:string):ChatFeedbackAdditionalField[] {
     return [{
@@ -222,6 +224,15 @@ export class KustoGPTComponent {
   constructor(private _applensGlobal:ApplensGlobal, private _diagnosticService: ApplensDiagnosticService, private _resourceService: ResourceService, private _diagnosticApiService: DiagnosticApiService)  {
     this._applensGlobal.updateHeader('KQL assistant'); // This sets the title of the HTML page
     this._applensGlobal.updateHeader(''); // Clear the header title of the component as the chat header is being displayed in the chat UI
+    
+    let resourceReady = (this._resourceService instanceof SiteService && this._resourceService.ArmResource?.resourceGroup && this._resourceService.ArmResource?.resourceName) ? this._resourceService.getCurrentResource() : of(null);
+    resourceReady.subscribe(resource => {
+      if (resource) {
+        this.resource = resource;
+        this.isFunctionApp = `${this.resource['Kind']}`.toLowerCase().indexOf('function') > -1;
+      }
+    });
+
     this.prepareChatHeader();
     this.updateFeedbackSubmissionStatus(this.chatIdentifier);
 

@@ -1,5 +1,5 @@
 <div style="height:80vh;">
-  <div *ngIf="isAnalyticsCopilotAllowed" class = 'chatContextDropdownAlignment'>
+  <div *ngIf="isAnalyticsCopilotAllowed && isFunctionApp" class = 'chatContextDropdownAlignment'>
     <fab-dropdown label="Chat context" id="chatIdentifierDropdown" [options]="chatIdentifierDropdownOptions" (onChange)="updateChatIdentifierDropdownOptions($event)" [styles]="chatIdentifierDropdownWidth"></fab-dropdown>
   </div>
   <openai-chat-container [chatIdentifier]="chatIdentifier"
