@@ -756,11 +756,6 @@ namespace AppLensV3.Services
 
         private bool IsFeedbackApplicable(ChatMetaData metadata, ChatFeedback feedback)
         {
-            if (metadata.ChatIdentifier.Equals("analyticskustocopilot", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
             Dictionary<string, string> dict1 = metadata?.ResourceSpecificInfo?.Count > 0 ? metadata.ResourceSpecificInfo : new Dictionary<string, string>();
             Dictionary<string, string> dict2 = feedback?.ResourceSpecificInfo?.Count > 0 ? feedback.ResourceSpecificInfo : new Dictionary<string, string>();
 
