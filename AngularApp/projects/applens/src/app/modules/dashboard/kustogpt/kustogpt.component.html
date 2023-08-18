@@ -15,6 +15,7 @@
       [onFeedbackClicked] = "onFeedbackClicked"
       [onSystemMessageReceived] = "onSystemMessageReceived"
       [autoAddResourceSpecificInfoToChatMessages] = "chatIdentifier != antaresAnalyticsChatIdentifier"
+      [customInitialPrompt] = "customInitialPrompt"
       >
     </openai-chat-container>
     <chat-feedback-panel *ngIf="isFeedbackSubmissionAllowed" [(feedbackPanelState)] = "feedbackPanelOpenState" (onDismissed) = "onDismissed($event)" [onBeforeSubmit] = "onBeforeSubmit"

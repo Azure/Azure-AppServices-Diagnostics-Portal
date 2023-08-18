@@ -65,6 +65,8 @@ export class KustoGPTComponent {
   public readonly antaresDatabaseName:string = 'wawsprod';
   public isAnalyticsCopilotAllowed = false;
   public isFeedbackSubmissionAllowed = false;
+  public customInitialPrompt:string = '';
+  public antaresStampName:string = '';
   
   public chatMessageKustoExecuteLink: { [chatId: string] : string; } = {};
 
@@ -109,12 +111,14 @@ export class KustoGPTComponent {
       this.clusterName =  this.analyticsClusterNameConst;
       this.databaseName = this.analyticsDatabaseNameConst;
       this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.analyticsClusterNameConst, this.analyticsDatabaseNameConst);
+      this.customInitialPrompt = '';
     }
     else {
       // This dropdown is visible only for Microsoft.Web/sites resources, so it is safe to assume that the other selection is for an Antares site resource.
       this.clusterName = this.antaresClusterName? this.antaresClusterName : this.antaresClusterNamePlaceholderConst;
       this.databaseName = this.antaresClusterName? this.antaresDatabaseName : this.antaresDatabaseNamePlaceholderConst;
       this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.antaresClusterNamePlaceholderConst, this.antaresDatabaseNamePlaceholderConst);
+      this.customInitialPrompt = this.antaresStampName ? `EventPrimaryStampName = '${this.antaresStampName}'` : '';
     }
   }
 
@@ -244,6 +248,7 @@ export class KustoGPTComponent {
         this._diagnosticApiService.isCopilotEnabled(`${this._resourceService.ArmResource.provider}`,`${this._resourceService.ArmResource.resourceTypeName}`, this.antaresAnalyticsChatIdentifier).subscribe((isCopilotEnabled) => {
           this.isAnalyticsCopilotAllowed = isCopilotEnabled;
           if(this.isAnalyticsCopilotAllowed) {
+            this.customInitialPrompt = '';
             this.chatIdentifier = this.antaresAnalyticsChatIdentifier;
             this.updateFeedbackSubmissionStatus(this.antaresAnalyticsChatIdentifier);
             this.prepareChatHeader();
@@ -255,18 +260,22 @@ export class KustoGPTComponent {
 
           let siteResource = this._resourceService as SiteService;
           siteResource.getCurrentResource().subscribe((siteResource:ObserverSiteInfo) => {
-            if(siteResource && siteResource.GeomasterName && siteResource.GeomasterName.indexOf('-') > 0) {
-              let geoRegionName = siteResource.GeomasterName.split('-').pop().toLowerCase();
-              this._diagnosticApiService.getKustoClusterForGeoRegion(geoRegionName).subscribe((kustoClusterRes) => {
-                if (kustoClusterRes) {
-                  this.antaresClusterName = kustoClusterRes.ClusterName || kustoClusterRes.clusterName;
-                  if(!this.isAnalyticsCopilotAllowed) {
-                    this.clusterName = this.antaresClusterName;
-                    this.databaseName = this.antaresDatabaseName;
-                    this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.antaresClusterNamePlaceholderConst, this.antaresDatabaseNamePlaceholderConst);
+            if(siteResource) {
+              this.antaresStampName = siteResource.StampName;
+              this.customInitialPrompt = this.antaresStampName && !this.isAnalyticsCopilotAllowed ? `EventPrimaryStampName = '${this.antaresStampName}'` : '';
+              if(siteResource.GeomasterName && siteResource.GeomasterName.indexOf('-') > 0) {
+                let geoRegionName = siteResource.GeomasterName.split('-').pop().toLowerCase();
+                this._diagnosticApiService.getKustoClusterForGeoRegion(geoRegionName).subscribe((kustoClusterRes) => {
+                  if (kustoClusterRes) {
+                    this.antaresClusterName = kustoClusterRes.ClusterName || kustoClusterRes.clusterName;
+                    if(!this.isAnalyticsCopilotAllowed) {
+                      this.clusterName = this.antaresClusterName;
+                      this.databaseName = this.antaresDatabaseName;
+                      this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.antaresClusterNamePlaceholderConst, this.antaresDatabaseNamePlaceholderConst);
+                    }
                   }
-                }
-              });
+                });
+              }
             }
           });
         });
