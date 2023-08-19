@@ -58,7 +58,7 @@ export class KustoGPTComponent {
   };
   
   public feedbackPanelOpenState:ChatFeedbackPanelOpenParams = {isOpen:false, chatMessageId: null};
-  public chatIdentifier:string = this.genericKustoAssistantChatIdentifier;
+  public chatIdentifier:string = '';
   public clusterName: string = this.antaresClusterNamePlaceholderConst;
   public databaseName: string = this.antaresDatabaseNamePlaceholderConst;
   public antaresClusterName:string = '';
@@ -73,7 +73,7 @@ export class KustoGPTComponent {
   public additionalFields: ChatFeedbackAdditionalField[] = this.getAdditionalFieldsForChatFeedback(this.antaresClusterNamePlaceholderConst, this.antaresDatabaseNamePlaceholderConst); 
 
   public get chatQuerySamplesFileUri():string {
-    return `assets/chatConfigs/${this.chatIdentifier}.json`;
+    return this.chatIdentifier? `assets/chatConfigs/${this.chatIdentifier}.json`: '';
   }
 
   public isFunctionApp:boolean = false;
