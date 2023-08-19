@@ -628,6 +628,7 @@ You are a chat assistant that helps explain why an expected response successfull
         }
         else {
           // submitChatFeedback - Validation failed. Keep the panel open and let the user correct the feedback. Do nothing here...
+          this.savingInProgress = false;
         }
       }, (error) => {
         this.savingInProgress = false;
