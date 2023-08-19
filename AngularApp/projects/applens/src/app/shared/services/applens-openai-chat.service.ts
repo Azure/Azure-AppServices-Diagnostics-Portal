@@ -9,6 +9,7 @@ import { environment } from '../../../environments/environment';
 import * as signalR from "@microsoft/signalr";
 import { error } from 'console';
 import { KeyValuePair } from 'dist/diagnostic-data/lib/models/common-models';
+import { AdalService } from 'adal-angular4';
 
 @Injectable()
 export class ApplensOpenAIChatService {
@@ -46,7 +47,7 @@ export class ApplensOpenAIChatService {
     }
   }
 
-  constructor(private _backendApi: DiagnosticApiService, private _resourceService: ResourceService, private telemetryService: TelemetryService) {
+  constructor(private _adalService: AdalService, private _backendApi: DiagnosticApiService, private _resourceService: ResourceService, private telemetryService: TelemetryService) {
     this.resourceProvider = `${this._resourceService.ArmResource.provider}/${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase();
     this.providerName = `${this._resourceService.ArmResource.provider}`.toLowerCase();
     this.resourceTypeName = `${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase();
@@ -158,7 +159,10 @@ export class ApplensOpenAIChatService {
       if (!this.signalRConnection || this.signalRConnection.state !== signalR.HubConnectionState.Connected) {
 
         this.signalRConnection = new signalR.HubConnectionBuilder()
-          .withUrl(this.signalRChatEndpoint)
+          .withUrl(this.signalRChatEndpoint, {  
+            accessTokenFactory: () => {  
+              return this._adalService.userInfo.token;
+            }})
           .configureLogging(this.signalRLogLevel)
           .withAutomaticReconnect()
           .build();

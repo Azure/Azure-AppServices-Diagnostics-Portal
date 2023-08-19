@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AppLensV3.Models;
 using AppLensV3.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -15,6 +16,7 @@ namespace AppLensV3.Hubs
     /// <summary>
     /// Open AI Chat Completion Hub Class.
     /// </summary>
+    [Authorize(Policy = "ApplensAccess")]
     public class OpenAIChatCompletionHub : Hub
     {
         private IOpenAIRedisService openAIRedisService;
