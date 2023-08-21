@@ -6,3 +6,19 @@
   <workflow-view *ngIf="isWorkflowDetector" [workflowId]="detectorName" [lastRefreshed]="workflowLastRefreshed">
   </workflow-view>
 </div>
+
+  <fab-dialog [hidden]="!isUserConsentRequired"  [styles]="alertDialogStyles" [modalProps]="alertDialogProps" [forceFocusInsideTrap]="true"  (onDismiss)="consentDialogCancel()" >
+    <fab-dialog-content [title]="alertInfo.header" tabindex="1">  
+         <p> {{alertInfo.details}} </p>
+    </fab-dialog-content>
+    <fab-dialog-footer>
+      <div class="mt-5">
+        <fab-primary-button (onClick)="handleUserResponse(alertInfo.confirmationOptions[0])" [contentClass]="'mr-3'" tabindex="1">
+          {{alertInfo.confirmationOptions[0].label}}
+        </fab-primary-button>
+        <fab-default-button (onClick)="handleUserResponse(alertInfo.confirmationOptions[1])" tabindex="1">
+          {{alertInfo.confirmationOptions[1].label}}
+        </fab-default-button>
+      </div>
+    </fab-dialog-footer>
+  </fab-dialog>

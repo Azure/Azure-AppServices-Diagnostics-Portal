@@ -22,28 +22,25 @@ export var connectionFailureFlow = {
         var isLinuxOrContainer = siteInfo.kind.includes("linux") || siteInfo.kind.includes("container");
 
         var dnsSettings = [];
-        if (!isLinuxOrContainer) {
-            isContinue = await checkDnsSettingV2Async(siteInfo, diagProvider, flowMgr, isKuduAccessiblePromise, dnsSettings);
-            if (!isContinue) {
-                return;
-            }
+        isContinue = await checkDnsSettingV2Async(siteInfo, diagProvider, flowMgr, isKuduAccessiblePromise, dnsSettings, isLinuxOrContainer);
+        if (!isContinue) {
+            return;
         }
 
         await checkAppSettingsAsync(siteInfo, diagProvider, flowMgr);
-        if (isLinuxOrContainer) {
-            // linux and container based app is not supported by connectivity check yet
-            flowMgr.addView(new CommonWordings().connectivityCheckUnsupported.get());
-            return;
-        }
-        
-        checkNetworkConfigAndConnectivity(siteInfo, diagProvider, flowMgr, isKuduAccessiblePromise, dnsSettings);
+       
+        checkNetworkConfigAndConnectivity(siteInfo, diagProvider, flowMgr, isKuduAccessiblePromise, dnsSettings, isLinuxOrContainer);
 
     }
 }
 
-async function runConnectivityCheck(hostname, port, diagProvider, lengthLimit) {
+async function runConnectivityCheck(hostname, port, diagProvider, isLinuxOrContainer) {
     var subChecks = [];
-    var tcpPingResult = await diagProvider.tcpPingAsync(hostname, port).catch(e => {
+    var tcpPingAsync = diagProvider.tcpPingAsync.bind(diagProvider);
+    if(isLinuxOrContainer){
+        tcpPingAsync = diagProvider.tcpPingNetworkTroubleshooterAsync.bind(diagProvider);
+    }
+    var tcpPingResult = await tcpPingAsync(hostname, port).catch(e => {
         logDebugMessage(e);
         return {};
     });
@@ -173,13 +170,13 @@ function isRfc1918Ip(ip) {
     return false;
 }
 
-async function checkNetworkConfigAndConnectivity(siteInfo, diagProvider, flowMgr, isKuduAccessiblePromise, dnsServers) {
+async function checkNetworkConfigAndConnectivity(siteInfo, diagProvider, flowMgr, isKuduAccessiblePromise, dnsServers, isLinuxOrContainer) {
     var state = null;
     var isKuduAccessible = await isKuduAccessiblePromise;
     var vnetConfigChecker = new VnetIntegrationConfigChecker(siteInfo, diagProvider);
     var vnetIntegrationType = await vnetConfigChecker.getVnetIntegrationTypeAsync();
     var connectivityCheckViews = (function generateConnectivityCheckViews() {
-        if (!isKuduAccessible) {
+        if (!isLinuxOrContainer && !isKuduAccessible) {
             return [new CheckStepView({ title: "Connectivity check (tcpping and nameresolver) is not available due to Kudu is inaccessible.", level: 3 })];
         }
 
@@ -233,13 +230,13 @@ async function checkNetworkConfigAndConnectivity(siteInfo, diagProvider, flowMgr
                     }
                 }
                 var isContinue = true;
-                if (vnetIntegrationType == "swift") {
+                if (vnetIntegrationType == "swift" && !isLinuxOrContainer) {
                     var nameResolvingPromise = checkNameResolvingAsync(hostname, siteInfo, diagProvider);
                     flowMgr.addViews(nameResolvingPromise.then(p => p.views), "Analyzing target server ip...");
                     isContinue = (await nameResolvingPromise).isContinue;
                 }
                 if (isContinue) {
-                    flowMgr.addViews(runConnectivityCheck(hostname, port, diagProvider, userInputLimitInUI), `Connecting to ${userInput}...`);
+                    flowMgr.addViews(runConnectivityCheck(hostname, port, diagProvider, userInputLimitInUI, isLinuxOrContainer), `Connecting to ${userInput}...`);
                 }
                 this.collapsed = true;
             }

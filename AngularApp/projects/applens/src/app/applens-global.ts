@@ -12,6 +12,9 @@ import { l1SideNavCollapseWidth, l1SideNavExpandWidth } from "./shared/component
 @Injectable()
 export class ApplensGlobal {
     constructor(private _route: ActivatedRoute, private _adalService: AdalService) { }
+
+    sideMenuCollapsed: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
     openL2SideNavSubject: BehaviorSubject<L2SideNavType> = new BehaviorSubject<L2SideNavType>(L2SideNavType.None);
     expandL1SideNavSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 

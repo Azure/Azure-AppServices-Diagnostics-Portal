@@ -90,6 +90,7 @@ export class CollapsibleMenuItem {
   isSelected: Function;
   icon: string;
   group?:string
+  visible?:boolean = true;
 
   constructor(label: string, id: string, onClick: Function, isSelected: Function, icon: string = null, expanded: boolean = false, subItems: CollapsibleMenuItem[] = [], metadata: string = null) {
     this.label = label;
@@ -100,5 +101,6 @@ export class CollapsibleMenuItem {
     this.subItems = subItems;
     this.isSelected = isSelected;
     this.icon = icon;
+    this.visible = true;
   }
 }

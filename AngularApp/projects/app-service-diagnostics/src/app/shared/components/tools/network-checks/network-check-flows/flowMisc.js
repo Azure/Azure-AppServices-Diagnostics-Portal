@@ -460,11 +460,7 @@ export async function checkDnsSettingV2Async(siteInfo, diagProvider, flowMgr, is
                                 let unreachableDns = [];
                                 var vnetDnsSubChecks = [];
                                 vnetDnsSettings.sort();
-                                if (vnetDnsSettings.length > 2) {
-                                    // if windows
-                                    subChecks.push(wordings.onlyTwoVnetDnsWillBeApplied.get(vnetDnsSettings));
-                                }
-                                dnsSettings.push(...vnetDnsSettings.slice(0, 2));
+                                dnsSettings.push(...vnetDnsSettings);
                                 dnsSettingSource = "VNet DNS";
 
                                 for (let idx = 0; idx < dnsSettings.length; ++idx) {
@@ -505,7 +501,7 @@ export async function checkDnsSettingV2Async(siteInfo, diagProvider, flowMgr, is
                         if (vnetData.status == 401) {
                             views.push(wordings.noAccessToResource(vnetId));
                         } else {
-                            views.push(wordings.unexpectedError());
+                            views.push(wordings.unexpectedError.get());
                         }
                     }
                 }

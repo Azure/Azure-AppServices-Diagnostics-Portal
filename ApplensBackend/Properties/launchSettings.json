@@ -19,7 +19,8 @@
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "CloudDomain": "PublicAzure"
+        "CloudDomain": "PublicAzure",
+        "KeyVault": "https://applenskvdev.vault.azure.net/"
       }
     },
     "AppLensV3NationalClouds": {

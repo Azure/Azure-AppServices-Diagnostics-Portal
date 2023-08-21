@@ -74,25 +74,25 @@ export class SiteService extends ResourceService {
             this.pesId = '17378';
             this.imgSrc = 'assets/img/Azure-LogicAppsPreview-Logo.svg';
             this.staticSelfHelpContent = 'microsoft.logicapps';
-            this.displayName = "Logic APP";
+            this.displayName = "Logic App (Standard)";
             this.templateFileName = "WorkflowApp";
         }
         else if (this._siteObject && this._siteObject.Kind && this._siteObject.Kind.toString().toLowerCase().indexOf("functionapp") !== -1) {
             this.pesId = '16072';
             this.imgSrc = 'assets/img/Azure-Functions-Logo.png';
             this.staticSelfHelpContent = 'microsoft.function';
-            this.displayName = "FUNCTION APP";
+            this.displayName = "Function App";
             this.templateFileName = "FunctionApp";
         }
         else if (this._siteObject && this._siteObject.IsLinux != undefined && this._siteObject.IsLinux) {
             this.pesId = '16170';
             this.imgSrc = 'assets/img/Azure-Tux-Logo.png';
-            this.displayName = "LINUX WEB APP";
+            this.displayName = "Linux Web App";
             this.templateFileName = "LinuxApp";
         } else {
             this.pesId = '14748';
             this.imgSrc = 'assets/img/Azure-WebApps-Logo.png';
-            this.displayName = "App";
+            this.displayName = "Windows Web App";
             this.templateFileName = "WebApp";
         }
     }

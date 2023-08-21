@@ -1,4 +1,4 @@
-import { HealthStatus } from "diagnostic-data";
+import { HealthStatus } from "../models/detector";
 
 export interface AlertInfo {
     header: string;
@@ -6,6 +6,8 @@ export interface AlertInfo {
     seekConfirmation: boolean;
     confirmationOptions: ConfirmationOption[]; 
     alertStatus: HealthStatus;
+    userAccessStatus:UserAccessStatus;
+    resourceId?: string;
 }
 
 export interface ConfirmationOption {
@@ -23,5 +25,7 @@ export enum UserAccessStatus
   RequestFailure,
   SGMembershipNeeded,
   CaseNumberNeeded,
-  HasAccess
+  HasAccess,
+  ConsentRequired,
+  AllowedResourceException
 }

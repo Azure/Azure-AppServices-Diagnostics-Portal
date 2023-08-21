@@ -197,6 +197,8 @@ export class SupportTopicResult {
     supportTopicL2Name: string;
     supportTopicL3Name: string;
     supportTopicPath: string;
+    sapSupportTopicId:string;
+    sapProductId:string;
 }
 
 export class SupportTopicItem {

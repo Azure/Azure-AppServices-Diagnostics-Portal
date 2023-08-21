@@ -32,7 +32,7 @@ namespace AppLensV3.Services
                     var workflowUsers = await workflowUsersHandler.GetUsersAsync();
                     if (workflowUsers != null && workflowUsers.Any())
                     {
-                        var usersInDb = workflowUsers.Select(x => x.Alias.ToLower()).OrderBy(x => x);
+                        var usersInDb = workflowUsers.Where(x => x != null).Select(x => x.Alias.ToLower()).OrderBy(x => x);
                         if (usersInDb.Any())
                         {
                             this.workflowUsersList = usersInDb.ToList();

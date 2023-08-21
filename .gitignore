@@ -408,3 +408,4 @@ MigrationBackup/
 
 .vscode/launch.json
 /package-lock.json
+AngularApp/package-lock.json

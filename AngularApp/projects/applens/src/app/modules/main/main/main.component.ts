@@ -15,7 +15,7 @@ import { ResourceDescriptor } from 'diagnostic-data'
 import { applensDocs } from '../../../shared/utilities/applens-docs-constant';
 import { defaultResourceTypes } from '../../../shared/utilities/main-page-menu-options';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
-import { UserAccessStatus } from '../../../shared/models/alerts';
+import { UserAccessStatus } from 'diagnostic-data';
 import { applensDashboards } from '../../../shared/utilities/applens-dashboards-constant';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 import { TimeUtilities } from 'projects/diagnostic-data/src/lib/utilities/time-utilities';
@@ -69,6 +69,7 @@ export class MainComponent implements OnInit {
   isDeletedOrCreationFailedResource : boolean = false;
   deletedOrCreationFailedResourceEventTime: momentNs.Moment;
   queryParams: any;
+  showLoadingMessage : boolean = false;
 
   fabCheckBoxStyles: ICheckboxProps["styles"] = {
     text:{
@@ -362,6 +363,7 @@ export class MainComponent implements OnInit {
   }
 
   selectDropdownKey(e: { option: IDropdownOption, index: number }) {
+    this.errorMessage = '';
     const resourceType = this.defaultResourceTypes.find(resource => resource.displayName === e.option.text);
     this.selectResourceType(resourceType);
     this.hasResourceCaseNumberEnforced();
@@ -536,6 +538,8 @@ export class MainComponent implements OnInit {
 
   onGetDeletedOrCreationFailedResource() {
     const { targetPathBeforeError } = this.queryParams;
+    this.displayLoader = true;
+    this.showLoadingMessage = true;
     const dateStringFormat : string = TimeUtilities.fullStringFormat;
     const eventTime = this.deletedOrCreationFailedResourceEventTime.format(dateStringFormat);
     const { urlPath, queryParams } = this.extractUrlPathAndQueryParams(targetPathBeforeError);
@@ -548,9 +552,13 @@ export class MainComponent implements OnInit {
     const { provider: targetResourceProvider, type: targetResourceType } = resourceDescriptor || {}
     if (targetResourceProvider && targetResourceType) {
       this._diagnosticApiService.validateResourceExistenceInArmCluster(this.queryParams.resourceId, eventTime, targetResourceProvider, targetResourceType).subscribe(() => {
+        this.displayLoader = false;
+        this.showLoadingMessage = false;
         this.resetValuesAndNavigateToResource(urlPath, navigationExtras);
       },
       (error) => {
+        this.displayLoader = false;
+        this.showLoadingMessage = false;
         this.resetValuesAndNavigateToResource(urlPath, navigationExtras);
       });
     }
@@ -680,6 +688,7 @@ export class MainComponent implements OnInit {
   }
 
   updateResourceName(e: { event: Event, newValue?: string }) {
+    this.errorMessage = '';
     this.resourceName = e.newValue.toString();
     if(this.isNoResource) {
       if(!Guid.isGuid(this.resourceName.trim())) {

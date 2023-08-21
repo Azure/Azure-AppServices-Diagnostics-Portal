@@ -1,3 +1,4 @@
+import { AdalService } from 'adal-angular4';
 import { Injectable, OnInit, Inject, Input } from '@angular/core';
 import { ApplicationInsights, Snippet, IPageViewTelemetry, IEventTelemetry, IExceptionTelemetry, SeverityLevel, ITraceTelemetry, IMetricTelemetry, ITelemetryItem } from '@microsoft/applicationinsights-web'
 import { ITelemetryProvider } from 'diagnostic-data';
@@ -14,7 +15,7 @@ export class ApplensAppinsightsTelemetryService implements ITelemetryProvider {
   environment: string = "";
   websiteHostName: string = "";
 
-  constructor(private _backendApi: DiagnosticApiAppSettingsService) { }
+  constructor(private _backendApi: DiagnosticApiAppSettingsService, private _adalService: AdalService) { }
 
   public initialize() {
     if (!this.appInsights) {
@@ -58,6 +59,8 @@ export class ApplensAppinsightsTelemetryService implements ITelemetryProvider {
           envelop.data["environment"] = this.environment ? this.environment : "test";
           envelop.data["websiteHostName"] = this.websiteHostName ? this.websiteHostName : "applens";
           envelop.data["isfrontend"] = true;
+          let userId = (this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn : '').replace('@microsoft.com', '');
+          envelop.data["userId"] = userId;
         });
 
         this.logEvent("Application Insights initialized for applens client");

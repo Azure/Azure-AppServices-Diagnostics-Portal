@@ -1,0 +1,24 @@
+{
+    "samples": [
+        {
+            "key": "Most popular outbound trigger for Function apps",
+            "value": "What is the most used outbound trigger by Function apps?"
+        },
+        {
+            "key": "Function app usage for node applications, Linux vs Non-Linux",
+            "value": "What is the most used outbound trigger for Function apps?"
+        },
+        {
+            "key": "Unique count of Linux sites",
+            "value": "Give me a unique count of Linux sites."
+        },
+        {
+            "key": "Wordpress distribution by Linux vs Non-Linux",
+            "value": "Is Wordpress deployed more or Linux or Non-Linux?"
+        },
+        {
+            "key": "Recent Activity for Function Apps using Node12",
+            "value": "What are the latest dates when Node.js 12.x function apps with non-v1 host versions had executions in each subscription and their corresponding billing types, considering data from the past 90 days?"
+        }
+    ]
+}

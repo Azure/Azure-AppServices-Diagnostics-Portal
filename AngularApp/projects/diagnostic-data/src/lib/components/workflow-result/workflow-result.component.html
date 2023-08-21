@@ -1,38 +1,40 @@
-<h4>Node Properties</h4>
-<table class="table table-bordered">
-    <thead>
-    </thead>
-    <tbody>
-        <tr>
-            <th>Description</th>
-            <td>{{ renderingProperties.description }}</td>
-        </tr>
-        <tr>
-            <th>Status</th>
-            <td>{{ status }}</td>
-        </tr>
-        <tr>
-            <th>Markdown</th>
-            <td>{{ markdown }}</td>
-        </tr>
-    </tbody>
-</table>
-<h4>Variables</h4>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>name</th>
-            <th>type</th>
-            <th>value</th>
-            <th>runtimeValue</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let variable of variables">
-            <td>{{ variable.name }}</td>
-            <td>{{ variable.type }}</td>
-            <td>{{ variable.value }}</td>
-            <td>{{ variable.runtimeValue }}</td>
-        </tr>
-    </tbody>
-</table>
+<ng-container *ngIf="!isInWorkflow">
+    <h4>Node Properties</h4>
+    <table class="table table-bordered">
+        <thead>
+        </thead>
+        <tbody>
+            <tr>
+                <th>Description</th>
+                <td>{{ renderingProperties.description }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ status }}</td>
+            </tr>
+            <tr>
+                <th>Markdown</th>
+                <td>{{ markdown }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <h4>Variables</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>name</th>
+                <th>type</th>
+                <th>value</th>
+                <th>runtimeValue</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let variable of variables">
+                <td>{{ variable.name }}</td>
+                <td>{{ variable.type }}</td>
+                <td>{{ variable.value }}</td>
+                <td>{{ variable.runtimeValue }}</td>
+            </tr>
+        </tbody>
+    </table>
+</ng-container>

@@ -18,6 +18,7 @@ import { ApplensDocumentationService } from '../services/applens-documentation.s
 import { DocumentationRepoSettings } from '../../../shared/models/documentationRepoSettings';
 import { DocumentationFilesList } from './documentationFilesList';
 import { ApplensOpenAIChatService } from '../../../shared/services/applens-openai-chat.service';
+import { PortalUtils } from '../../../shared/utilities/portal-util';
 
 @Component({
   selector: 'side-nav',
@@ -65,6 +66,8 @@ export class SideNavComponent implements OnInit {
   isProd: boolean = false;
   workflowsEnabled: boolean = false;
   showChatGPT: boolean = false;
+  askAppLensEnabled: boolean = false;
+  
 
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService,
     private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService,
@@ -199,18 +202,49 @@ export class SideNavComponent implements OnInit {
         return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `networkTraceAnalysis`.toLowerCase();
       },
       icon: null
-    }];
+    },
+    ...this.askAppLensEnabled? [{
+      label: 'Ask AppLens',
+      id: "askAppLens",
+      onClick: () => {
+        this.navigateTo("askApplens");
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `askapplens`.toLowerCase();
+      },
+      icon: null
+    }]: [],
+    {
+      label: 'KQL for Antares Analytics',
+      id: "kustocopilot",
+      onClick: () => {
+        this.navigateTo("kustoQueryGenerator");
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `kustoQueryGenerator`;
+      },
+      icon: null,
+      visible: false
+    }
+  ];
 
   ngOnInit() {
+    this.checkRCAToolkitEnabled(); 
     this._openAIService.CheckEnabled().subscribe(enabled => {
       this.showChatGPT = this._openAIService.isEnabled;
+      this._diagnosticApi.get<boolean>('api/openai/kustocopilot/enabled').subscribe(kustoGPTEnabledStatus => {
+        this.tools.find(tool => tool.id === 'kustocopilot').visible = kustoGPTEnabledStatus && `${this.resourceService.ArmResource.provider}`.toLowerCase().indexOf('microsoft.web') > -1;
+      });
     });
     this._documentationService.getDocsRepoSettings().subscribe(settings => {
       this.documentationRepoSettings = settings;
       this.initializeDetectors();
     });
     this.getCurrentRoutePath();
-
     this._router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
       this.getCurrentRoutePath();
     });
@@ -237,6 +271,36 @@ export class SideNavComponent implements OnInit {
     }
 
     this.toolsCopy = this.deepCopyArray(this.tools);
+  }
+
+  checkRCAToolkitEnabled(){
+    //check if rca toolkit is present/enabled
+    let isPresent = this.tools.find(tool => tool.label === "RCA Copilot (Preview)");
+    if(isPresent){
+      return; 
+    }
+
+    //if not present/enabled
+    var tempResourceId = this.resourceService.getCurrentResourceId();
+   
+    if(tempResourceId.indexOf("Microsoft.Web/sites") != -1){
+
+      this.tools.push(
+        {
+        label: 'RCA Copilot (Preview)',
+        id: "",
+        onClick: () => {
+          PortalUtils.logEvent("rcacopilot-toolopened", "", this._telemetryService);
+          this.navigateTo("communicationToolkit");
+        },
+        expanded: false,
+        subItems: null,
+        isSelected: () => {
+          return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `communicationToolkit`.toLowerCase();
+        },
+        icon: null
+      })
+    }
   }
 
   navigateToOverview() {
@@ -362,6 +426,7 @@ export class SideNavComponent implements OnInit {
 
             categoryMenuItem.subItems.push(menuItem);
           });
+          this.gists = this.gists.sort((a, b) => a.label === 'Uncategorized' ? 1 : (a.label > b.label ? 1 : -1));
         });
         this.gistsCopy = this.deepCopyArray(this.gists);
       }

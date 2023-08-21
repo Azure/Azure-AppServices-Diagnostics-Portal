@@ -1,21 +1,32 @@
 <div class="mb-4">
-  <div *ngIf="data.inputNodeSettings.variableLabel" class="mb-2"> {{ data.inputNodeSettings.variableLabel }} </div>
+  <div *ngIf="data.inputNodeSettings.variableLabel" class="mb-2 mt-1">{{ data.inputNodeSettings.variableLabel }}</div>
   <div *ngIf="data.inputNodeSettings.inputType === inputType.text">
     <input class="form-control input-control-width" type="text" name="inputField" id="txtInputField"
-      [(ngModel)]="inputFieldValue" [disabled]="userInputDisabled" />
+      [(ngModel)]="inputFieldValue" [disabled]="userInputDisabled"
+      [attr.aria-label]="data.inputNodeSettings.variableLabel" />
   </div>
   <div *ngIf="data.inputNodeSettings.inputType === inputType.select">
-    <select class="form-control input-control-width"
+    <select class="form-control input-control-width" name="inputField"
+      [attr.aria-label]="data.inputNodeSettings.variableLabel"
       *ngIf="data.inputNodeSettings.options && data.inputNodeSettings.options.length > 0" [disabled]="userInputDisabled"
       (change)="selectChanged($event)">
       <option *ngFor="let opt of data.inputNodeSettings.options" [value]="opt" [selected]="opt === selectFieldValue"> {{
         opt }} </option>
     </select>
+
+    <select class="form-control input-control-width" name="inputField"
+      [attr.aria-label]="data.inputNodeSettings.variableLabel"
+      *ngIf="data.inputNodeSettings.inputListItems && data.inputNodeSettings.inputListItems.length > 0" [disabled]="userInputDisabled"
+      (change)="selectChanged($event)">
+      <option *ngFor="let opt of data.inputNodeSettings.inputListItems" [value]="opt.value" [selected]="opt.value === selectFieldValue"> {{
+        opt.text }} </option>
+    </select>
+
   </div>
   <div *ngIf="data.inputNodeSettings.inputType === inputType.date">
     <div class="flex-display">
       <div class="date-picker-container">
-        <fab-date-picker placeholder="Select a date..." ariaLabel="Select date" allowTextInput="true"
+        <fab-date-picker placeholder="Select a date..." ariaLabel="Select a date" allowTextInput="true"
           [disabled]="userInputDisabled" showMonthPickerAsOverlay="true"
           (onSelectDate)="onSelectDateHandler($event, 'date')" [formatDate]="formatDate" [value]="dateFieldValue">
         </fab-date-picker>
@@ -32,7 +43,7 @@
 
     <div class="flex-display">
       <div class="date-picker-container">
-        <fab-date-picker placeholder="Select a date..." ariaLabel="Select date" allowTextInput="true"
+        <fab-date-picker placeholder="Select a date..." ariaLabel="Select start date" allowTextInput="true"
           [disabled]="userInputDisabled" showMonthPickerAsOverlay="true"
           (onSelectDate)="onSelectDateHandler($event, 'startDate')" [formatDate]="formatDate"
           [value]="startDateFieldValue">
@@ -48,7 +59,7 @@
 
     <div class="flex-display">
       <div class="date-picker-container">
-        <fab-date-picker placeholder="Select a date..." ariaLabel="Select date" allowTextInput="true"
+        <fab-date-picker placeholder="Select a date..." ariaLabel="Select end date" allowTextInput="true"
           [disabled]="userInputDisabled" showMonthPickerAsOverlay="true"
           (onSelectDate)="onSelectDateHandler($event, 'endDate')" [formatDate]="formatDate" [value]="endDateFieldValue">
         </fab-date-picker>

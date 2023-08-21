@@ -18,6 +18,12 @@
                             <option *ngFor="let detector of workflowNodeDetectors" [value]="detector.id">{{
                                 detector.name }}</option>
                         </select>
+                        <div>
+                            <label class="checkbox-inline">
+                                <input [(ngModel)]="data.addDetectorOutput" id="addDetectorOutput"
+                                    name="chkAddDetectorOutput" type="checkbox" />
+                                Append detector output to node </label>
+                        </div>
                     </div>
 
                 </div>

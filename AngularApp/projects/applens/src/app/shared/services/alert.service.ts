@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, EventEmitter } from '@angular/core';
-import { AlertInfo } from '../models/alerts';
+import { AlertInfo } from 'diagnostic-data';
 
 @Injectable()
 export class AlertService {

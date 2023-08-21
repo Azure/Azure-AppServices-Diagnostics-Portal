@@ -69,6 +69,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   expandIssuedChecks: boolean = false;
   isWaterfallViewMode: boolean = false;
   isCaseSubmissionFlow: boolean = false;
+  disableCollapse: boolean = false;
 
   constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private _solutionService: SolutionService,
     private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router,
@@ -76,7 +77,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     private _supportTopicService: GenericSupportTopicService) {
     super(telemetryService);
     this.isPublic = this.config && this.config.isPublic;
-    this.isCaseSubmissionFlow = this._supportTopicService && (!!this._supportTopicService.sapSupportTopicId || !!this._supportTopicService.supportTopicId );
+    this.isCaseSubmissionFlow = this._supportTopicService && (!!this._supportTopicService.sapSupportTopicId || !!this._supportTopicService.supportTopicId);
 
     this._genericUserSettingsService.isWaterfallViewSub.subscribe(isWaterfallViewMode => {
       this.isWaterfallViewMode = isWaterfallViewMode;
@@ -87,6 +88,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   protected processData(data: DiagnosticData) {
     super.processData(data);
     this.renderingProperties = <DetectorListRendering>data.renderingProperties;
+    this.disableCollapse = this.renderingProperties.disableCollapse ?? false;
     this.getResponseFromResource();
     this._genericUserSettingsService.getExpandAnalysisCheckCard().subscribe(expandIssuedChecks => {
       this.expandIssuedChecks = expandIssuedChecks;
@@ -135,11 +137,13 @@ export class DetectorListComponent extends DataRenderBaseComponent {
       }
     }, (error => {
       if (this.overrideResourceUri !== "") {
-        const e = JSON.parse(error);
-        let code: string = "";
-        if (e && e.error && e.error.code) {
-          code = e.error.code;
+        let errorObject;
+        try {
+          errorObject = JSON.parse(error);
+        } catch (exception) {
+
         }
+        let code: string = errorObject?.error?.code ?? "";
         switch (code) {
           case "InvalidAuthenticationTokenTenant":
             this.errorMsg = `No Access for resource ${this.resourceType} , please check your access`;
@@ -177,6 +181,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           queryString += `&${key}=${encodeURIComponent(contextToPass[key])}`;
         }
       }
+      queryString += '&childDetector=true';
     }
     const viewModel: DetectorViewModel = {
       title: detector.name,
@@ -270,7 +275,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     const requests: Observable<any>[] = [];
 
     this.detectorMetaData = detectorList.filter(detector => this.renderingProperties.detectorIds.indexOf(detector.id) >= 0);
-    let detectorMetaData1 = this.renderingProperties.detectorIds.filter(id => this.detectorMetaData.findIndex(metaData => metaData.id == id) >= 0);
     detectorList.filter(detector => this.renderingProperties.detectorIds.indexOf(detector.id) >= 0);
     this.detectorViewModels = this.detectorMetaData.map(detector => this.getDetectorViewModel(detector, this.renderingProperties.additionalParams, this.overrideResourceUri));
     this.detectorViewModelsWaterfall = this.detectorViewModels;
@@ -281,7 +285,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
       requests.push((<Observable<DetectorResponse>>viewModel.request).pipe(
         map((response: DetectorResponse) => {
           this.detectorViewModels[index] = this.updateDetectorViewModelSuccess(viewModel, response);
-
           this.loading = this.detectorViewModels.findIndex(vm => vm.loadingStatus === LoadingStatus.Loading) > -1 ? LoadingStatus.Loading : LoadingStatus.Success;
 
           if (this.detectorViewModels[index].loadingStatus !== LoadingStatus.Failed) {
@@ -405,6 +408,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
           'ChildDetectorId': viewModel.model.metadata.id,
           'IsExpanded': true,
           'Status': viewModel.model.status,
+          'OpenInNewTab': false
         };
 
         // Log children detectors click
@@ -442,6 +446,16 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     if (viewModel != null && viewModel.model.metadata.id) {
       let targetDetector = viewModel.model.metadata.id;
 
+      const clickDetectorEventProperties = {
+        'ChildDetectorName': viewModel.model.title,
+        'ChildDetectorId': viewModel.model.metadata.id,
+        'IsExpanded': true,
+        'Status': viewModel.model.status,
+        'OpenInNewTab': true
+      };
+
+      this.logEvent(TelemetryEventNames.ChildDetectorClicked, clickDetectorEventProperties);
+
       if (targetDetector !== "") {
         const queryParams = this._activatedRoute.snapshot.queryParams;
         const additionalParams = this.renderingProperties.additionalParams ? JSON.parse(this.renderingProperties.additionalParams) : {};
@@ -477,14 +491,14 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   private updateBreadcrumb(queryParams: any) {
     const fullPath = this._router.url.split("?")[0];
     const breadcrumbItem: BreadcrumbNavigationItem = {
-        name: this.detectorName,
-        queryParams: queryParams,
-        fullPath: fullPath
+      name: this.detectorName,
+      queryParams: queryParams,
+      fullPath: fullPath
     };
     if (this.isPublic) {
-        this._globals.breadCrumb = breadcrumbItem;
+      this._globals.breadCrumb = breadcrumbItem;
     } else {
-        this._breadcrumbService.updateBreadCrumbSubject(breadcrumbItem);
+      this._breadcrumbService.updateBreadCrumbSubject(breadcrumbItem);
     }
   }
 }

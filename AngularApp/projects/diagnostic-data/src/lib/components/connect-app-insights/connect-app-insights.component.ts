@@ -20,13 +20,10 @@ export class ConnectAppInsightsComponent extends DataRenderBaseComponent {
     this.isPublic = config && config.isPublic;
   }
 
-  ngOnInit() {
-    this.detectorId = this.detectorEventProperties.DetectorId;
-  }
-
   protected processData(data: DiagnosticData) {
     super.processData(data);
     if (data.table.rows.length > 0) {
+      this.detectorId = this.detectorEventProperties.DetectorId;
       this.resourceId = data.table.rows[0][0];
     }
   }

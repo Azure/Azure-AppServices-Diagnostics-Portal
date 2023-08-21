@@ -30,10 +30,19 @@ export class LinkInterceptorService {
       let navigationExtras: NavigationExtras = {
         queryParamsHandling: 'preserve',
         preserveFragment: true,
-        relativeTo: activatedRoute
       };
 
-      if (linkURL && !isAbsolute.test(linkURL)) {
+      //
+      // Don't treat url as relative to the current URL if the 
+      // hyper link passed contains a full resourceId
+      //
+
+      if (linkURL.toLowerCase().indexOf('subscriptions/') === -1
+        && linkURL.toLowerCase().indexOf('/resourcegroups/') === -1) {
+        navigationExtras.relativeTo = activatedRoute;
+      }
+
+      if (linkURL && (!isAbsolute.test(linkURL) || linkURL.startsWith('./') || linkURL.startsWith('../'))) {
         e.preventDefault();
         router.navigate([linkURL], navigationExtras);
       } else {

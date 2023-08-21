@@ -90,7 +90,8 @@
             "pesId": "16450",
             "staticSelfHelpContent": "microsoft.containerservice",
             "searchSuffix": "AZURE KUBERNETES CLUSTER",
-            "displayName": "Kubernetes Service (AKS)"
+            "displayName": "Kubernetes Service (AKS)",
+            "workflowsEnabled": true
         },
         {
             "service": "ResourceService",
@@ -172,6 +173,18 @@
             "staticSelfHelpContent": "microsoft.apim",
             "searchSuffix": "AZURE API MANAGEMENT",
             "displayName": "API Management"
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.ApiCenter/services",
+            "templateFileName": "ApiCenterService",
+            "imgSrc": "assets/img/Azure-ApiCenter-Logo.png",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "API Center",
+            "pesId": "18144",
+            "staticSelfHelpContent": "microsoft.apicenter",
+            "searchSuffix": "AZURE API CENTER",
+            "displayName": "Azure API Center"
         },
         {
             "service": "ResourceService",
@@ -295,30 +308,6 @@
         },
         {
             "service": "ResourceService",
-            "resourceType": "Microsoft.Storage/storageAccounts",
-            "templateFileName": "StorageAccount",
-            "imgSrc": "assets/img/StorageAccount.png",
-            "versionPrefix": "",
-            "azureCommImpactedServicesList": "StorageAccounts",
-            "pesId": "15629",
-            "staticSelfHelpContent": "",
-            "searchSuffix": "AZURE STORAGE ACCOUNT",
-            "displayName": "Storage Account"
-        },
-        {
-            "service": "ResourceService",
-            "resourceType": "Microsoft.ClassicStorage/storageAccounts",
-            "templateFileName": "ClassicStorageAccount",
-            "imgSrc": "assets/img/ClassicStorageAccount.png",
-            "versionPrefix": "",
-            "azureCommImpactedServicesList": "ClassicStorageAccounts",
-            "pesId": "15629",
-            "staticSelfHelpContent": "",
-            "searchSuffix": "AZURE CLASSIC STORAGE ACCOUNT",
-            "displayName": "Classic Storage Account"
-        },
-        {
-            "service": "ResourceService",
             "resourceType": "Microsoft.Network/applicationGateways",
             "templateFileName": "ApplicationGateway",
             "imgSrc": "assets/img/ApplicationGateway-Logo.png",
@@ -434,6 +423,17 @@
             "azureCommImpactedServicesList": "Azure Virtual Machines",
             "searchSuffix": "AZURE VIRTUAL MACHINE",
             "displayName": "Virtual Machine"
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.ClassicCompute/domainNames",
+            "templateFileName": "CloudService",
+            "imgSrc": "assets/img/Cloud-Service-Logo.svg",
+            "versionPrefix": "",
+            "pesId": "13185",
+            "azureCommImpactedServicesList": "Cloud Service (Classic)",
+            "searchSuffix": "AZURE CLASSIC CLOUD SERVICE",
+            "displayName": "Classic Cloud Service"
         },
         {
              "service": "ResourceService",
@@ -582,7 +582,8 @@
             "azureCommImpactedServicesList": "",
             "pesId": "14783",
             "searchSuffix": "AZURE CACHE FOR REDIS",
-            "displayName": "Azure Cache for Redis"
+            "displayName": "Azure Cache for Redis",
+            "workflowsEnabled": true
         },
         {
              "service": "ResourceService",
@@ -713,7 +714,8 @@
             "pesId": "15659",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE COST MANAGEMENT",
-            "displayName": "Azure Cost Management"
+            "displayName": "Azure Cost Management",
+            "workflowsEnabled": true
         },
         {
             "service": "ResourceService",
@@ -798,7 +800,33 @@
             "pesId": "17700",
             "staticSelfHelpContent": "",
             "searchSuffix": "AZURE CHAOS STUDIO",
-            "displayName": "Azure Chaos Studio"
-        }        
+            "displayName": "Azure Chaos Studio",
+            "workflowsEnabled": true
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.Visualstudio/devops",
+            "templateFileName": "DevOps",
+            "imgSrc": "assets/img/Azure-DevOps-Logo.svg",
+            "versionPrefix": "",
+            "isNoResourceFlow": true,
+            "azureCommImpactedServicesList": "",
+            "pesId": "15543",
+            "staticSelfHelpContent": "",
+            "searchSuffix": "AZURE DEVOPS SERVICES",
+            "displayName": "Azure DevOps Services",
+            "workflowsEnabled": true
+        },
+        {
+            "service": "ResourceService",
+            "resourceType": "Microsoft.Communication/emailservices",
+            "templateFileName": "ACSEmail",
+            "imgSrc": "assets/img/Azure-CommunicationServicesEmail-Logo.svg",
+            "versionPrefix": "",
+            "pesId": "17327",
+            "staticSelfHelpContent": "",
+            "searchSuffix": "AZURE COMMUNICATION SERVICES EMAIL",
+            "displayName": "Azure Communication Services Email"
+        }   
     ]
 }

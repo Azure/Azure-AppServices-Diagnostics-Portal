@@ -1,14 +1,16 @@
+using System;
+using AppLensV3.Models;
 using AppLensV3.Services;
+using AppLensV3.Services.ApplensTelemetryInitializer;
+using AppLensV3.Services.AppSvcUxDiagnosticDataService;
+using AppLensV3.Services.CognitiveSearchService;
 using AppLensV3.Services.DiagnosticClientService;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using AppLensV3.Models;
-using Microsoft.ApplicationInsights.Extensibility;
-using AppLensV3.Services.ApplensTelemetryInitializer;
-using Microsoft.ApplicationInsights.AspNetCore.Extensions;
-using AppLensV3.Services.AppSvcUxDiagnosticDataService;
 using Microsoft.Extensions.Hosting;
 
 namespace AppLensV3
@@ -63,7 +65,6 @@ namespace AppLensV3
             };
             services.AddApplicationInsightsTelemetry(applicationInsightsOptions);
             services.AddSingleton<ITelemetryInitializer, ApplensTelemetryInitializer>();
-
             services.AddSingleton(Configuration);
 
             services.AddSingleton<GenericCertLoader>();
@@ -122,6 +123,33 @@ namespace AppLensV3
                 {
                     services.AddSingleton<IOpenAIRedisService, OpenAIRedisServiceDisabled>();
                 }
+
+                if (!Environment.IsDevelopment())
+                {
+                    var connString = Configuration.GetValue<string>("OpenAIService:SignalRConnectionString");
+                    if (string.IsNullOrWhiteSpace(connString))
+                    {
+                        throw new Exception("OpenAI enabled but SignalR connection string not found");
+                    }
+
+                    services
+                    .AddSignalR(options =>
+                    {
+                        // Max message size = 2MB
+                        options.MaximumReceiveMessageSize = 2 * 1024 * 1024;
+                        options.MaximumParallelInvocationsPerClient = 2;
+                    }).AddAzureSignalR(connString);
+                }
+                else
+                {
+                    services
+                    .AddSignalR(options =>
+                    {
+                        // Max message size = 2MB
+                        options.MaximumReceiveMessageSize = 2 * 1024 * 1024;
+                        options.MaximumParallelInvocationsPerClient = 2;
+                    });
+                }
             }
             else
             {
@@ -143,6 +171,15 @@ namespace AppLensV3
                 services.AddSingleton<IBingSearchService, BingSearchServiceDisabled>();
             }
 
+            var cognitiveSearchConfiguration = Configuration.GetSection("CognitiveSearch").Get<CognitiveSearchConfiguration>();
+
+            if (cognitiveSearchConfiguration != null)
+            {
+                services.AddSingleton<ICognitiveSearchBaseService>(new CognitiveSearchBaseService(cognitiveSearchConfiguration));
+                services.AddSingleton<ICognitiveSearchAdminService, CognitiveSearchAdminService>();
+                services.AddSingleton<ICognitiveSearchQueryService, CognitiveSearchQueryService>();
+            }
+
             if (Configuration.GetValue("Graph:Enabled", false))
             {
                 GraphTokenService.Instance.Initialize(Configuration);
@@ -152,8 +189,21 @@ namespace AppLensV3
             {
                 DiagnosticClientToken.Instance.Initialize(Configuration);
             }
-
             cloudEnvironmentStartup.AddCloudSpecificServices(services, Configuration, Environment);
+
+            if (Environment.IsDevelopment())
+            {
+                services.AddCors(options =>
+                {
+                    options.AddPolicy(
+                        "CorsPolicy",
+                        builder => builder.WithOrigins("http://localhost:4200")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials()
+                        .WithExposedHeaders("*"));
+                });
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

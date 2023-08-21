@@ -31,8 +31,8 @@ export const TelemetryEventNames = {
     MoreResultsButtonClicked: 'MoreResultsButtonClicked',
     SearchQueryResults: 'SearchQueryResults',
     SearchResultClicked: 'SearchResultClicked',
-    DeepSearchResults : 'DeepSearchResults',
-    DeepSearchResultClicked :  'DeepSearchResultClicked',
+    DeepSearchResults: 'DeepSearchResults',
+    DeepSearchResultClicked: 'DeepSearchResultClicked',
     SearchResultFeedback: 'SearchResultFeedback',
     SearchComponentVisible: "SearchComponentVisible",
     WebQueryResults: 'WebQueryResults',
@@ -99,11 +99,11 @@ export const TelemetryEventNames = {
     SolutionOrchestratorViewSupportingDataClicked: 'SolutionOrchestratorViewSupportingDataClicked',
     OpenSlotInNewTab: 'OpenSlotInNewTab',
     ResiliencyScoreReportButtonDisplayed: 'ResiliencyScoreReportButtonDisplayed',
-    ResiliencyScoreReportButtonClicked: 'ResiliencyScoreReportButtonClicked', 
+    ResiliencyScoreReportButtonClicked: 'ResiliencyScoreReportButtonClicked',
     ResiliencyScoreReportDownloaded: 'ResiliencyScoreReportDownloaded',
     ResiliencyScoreReportResourceNotSupported: 'ResiliencyScoreReportResourceNotSupported',
     ResiliencyScoreReportInPrivateAccess: 'ResiliencyScoreReportInPrivateAccess',
-    ResourceOutOfScopeUserResponse: 'ResourceOutOfScopeUserResponse',    
+    ResourceOutOfScopeUserResponse: 'ResourceOutOfScopeUserResponse',
     DownloadReportButtonDisplayed: 'DownloadReportButtonDisplayed',
     DownloadReportButtonClicked: 'DownloadReportButtonClicked',
     DownloadReportDirectLinkUsed: 'DownloadReportDirectLinkUsed',
@@ -132,6 +132,7 @@ export const TelemetryEventNames = {
     AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeSuccessful: 'AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeSuccessful',
     AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeFailure: 'AICodeOptimizerInsightsAggregatedInsightsbyTimeRangeFailure',
     AICodeOptimizerInsightsFailureGettingOPIResources: 'AICodeOptimizerInsightsFailureGettingOPIResources',
+    AICodeOptimizerOpenOptInsightsBladewithTimeRange: 'AICodeOptimizerOpenOptInsightsBladewithTimeRange',
     LoadingTimeOut: 'LoadingTimeOut',
     EmptySearchTerm: 'EmptySearchTerm',
     ChatGPTARMQueryResults: 'ChatGPTARMQueryResults',
@@ -140,7 +141,9 @@ export const TelemetryEventNames = {
     ChatGPTARMQueryResultEmpty: 'ChatGPTARMQueryResultEmpty',
     SuperGistAPILoaded: 'SuperGistAPILoaded',
     SuperGistUpdateDetectorReferencesButtonClicked: 'SuperGistDetectorReferencesButtonClicked',
-    SuperGistUpdateSelectedButtonClicked: 'SuperGistUpdateSelectedButtonClicked'
+    SuperGistUpdateSelectedButtonClicked: 'SuperGistUpdateSelectedButtonClicked',
+    ChatGPTClearButtonClicked : 'ChatGPTClearButtonClicked',
+    FeaturePathRouting: 'FeaturePathRouting',
 };
 
 export const TelemetrySource = {
@@ -174,4 +177,28 @@ export interface ITelemetryProvider {
 
     // Immediately send all queued telemetry. Synchronous.
     flush();
+}
+
+export class TelemetryUtilities {
+    static getProductNameByTypeAndKind(type: string, kind: string): string {
+        let productName = type;
+        if (type.toLowerCase() === "microsoft.web/sites") {
+            if (!kind) {
+                return productName;
+            }
+
+            if (kind.indexOf('linux') >= 0 && kind.indexOf('functionapp') >= 0) {
+                productName = "Azure Linux Function App";
+            }
+            else if (kind.indexOf("workflowapp") >= 0) {
+                productName = "Azure Logic App Standard";
+            }
+            else if (kind.indexOf('linux') >= 0) {
+                productName = "Azure Linux App";
+            } else if (kind.indexOf('functionapp') >= 0) {
+                productName = "Azure Function App";
+            }
+        }
+        return productName;
+    }
 }

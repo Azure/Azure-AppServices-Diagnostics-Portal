@@ -64,8 +64,9 @@ export class Dropdown extends FormInput {
     defaultSelectedKey: string;
     defaultSelectedKeys:string[];
     children: string[];
+    submitOnSelection:boolean;
     constructor(internalId:string, id:number, inputType: InputType, label:string, options:IDropdownOption[], defaultKey:string,
-        multiSelect: boolean, defaultKeys:string[], tooltip:string, tooltipIcon:string, children: string[], isVisible: boolean = true ) {
+        multiSelect: boolean, defaultKeys:string[], tooltip:string, tooltipIcon:string, children: string[], isVisible: boolean = true, submitOnSelection = false ) {
         super(internalId, id, inputType, label, false, tooltip, tooltipIcon, isVisible)
         this.dropdownOptions = options;
         this.isMultiSelect = multiSelect;
@@ -81,6 +82,7 @@ export class Dropdown extends FormInput {
                 "children": item["children"]
             };
         });
+        this.submitOnSelection = submitOnSelection;
     }
 }
 
