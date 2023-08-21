@@ -18,14 +18,14 @@
 	},
     "categories": [
         {
-            "id": "knownissueavailabilityperfaks",
-            "name": "Known Issues, Availability and Performance",
-            "description": "Check your cluster health and investigate performance issues",
-            "keywords": [ "Latency", "Throttling", "Autoscaler", "Helm-2", "Tiller", "OOMKilled", "CRUD"],
+            "id": "ccpavailabilityperfaks",
+            "name": "Cluster and Control Plane Availability and Performance",
+            "description": "Check your cluster health and control plane availability or service impacting, throttling and other performance issues",
+            "keywords": [ "Control Plane", "Throttling", "Service Principal", "Etcd Availability", "Container Runtime", "OOMKilled", "Service Availability"],
             "color": "rgb(186, 211, 245)",
             "createFlowForCategory": true,
             "chatEnabled": false,
-            "overviewDetectorId": "aks-category-availability-perf"
+            "overviewDetectorId": "aks-ccp-availability-perf"
         },
         {
             "id": "connectivityissuesaks",
