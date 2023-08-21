@@ -20,8 +20,8 @@
         {
             "id": "ccpavailabilityperfaks",
             "name": "Cluster and Control Plane Availability and Performance",
-            "description": "Check your cluster and control plane availability, throttling and performance issues",
-            "keywords": [ "Control Plane Availability", "Throttling",  "Container Runtime", "OOMKilled", "Service Health"],
+            "description": "Check your cluster and control plane availability and performance issues",
+            "keywords": [ "Control Plane Availability", "Throttling", "OOMKilled", "Service Health"],
             "color": "rgb(186, 211, 245)",
             "createFlowForCategory": true,
             "chatEnabled": false,
