@@ -153,6 +153,7 @@ export * from './lib/components/gantt-chart-taskbar-colors/gantt-chart-taskbar-c
 export * from './lib/components/chat-ui/chat-ui.component';
 export * from './lib/components/openai-chat/openai-chat.component';
 export * from './lib/components/openai-chat-container/openai-chat-container.component';
+export * from './lib/components/chat-ui-markdown-wrapper/chat-ui-markdown-wrapper.component';
 export * from './lib/components/openai-genie/openai-genie.component';
 
 export * from './lib/modules/fab-coachmark/coachmark.module'

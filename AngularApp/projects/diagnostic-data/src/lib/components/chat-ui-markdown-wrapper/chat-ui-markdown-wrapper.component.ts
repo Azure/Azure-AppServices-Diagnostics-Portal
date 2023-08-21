@@ -1,10 +1,7 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
+import { Component, Input} from '@angular/core';
 import { KeyValuePair } from '../../models/common-models';
-import { ChatMessage, ChatAlignment, MessageSource, MessageStatus, MessageRenderingType, FeedbackOptions } from '../../models/chatbot-models';
+import { ChatMessage } from "../../../public_api";
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
-import { v4 as uuid } from 'uuid';
-import { TimeUtilities } from '../../utilities/time-utilities';
-import { StringUtilities } from '../../utilities/string-utilities';
 import { ChatUIContextService } from '../../services/chatui-context.service';
 import { KustoUtilities } from '../../utilities/kusto-utilities';
 import { ClipboardService } from '../../services/clipboard.service';
@@ -15,7 +12,7 @@ import { ClipboardService } from '../../services/clipboard.service';
     styleUrls: ['./chat-ui-markdown-wrapper.component.scss']
 })
 
-export class ChatUIMarkdownWrapperComponent implements OnInit {
+export class ChatUIMarkdownWrapperComponent {
     public readonly placeHolderStartText:string = '---ChatUIMarkdownWrapperComponentPlaceholderStart---';
     public readonly placeHolderEndText:string = '---ChatUIMarkdownWrapperComponentPlaceholderStart---';
     
@@ -42,9 +39,6 @@ export class ChatUIMarkdownWrapperComponent implements OnInit {
     public parsedData:any[] = [];
 
     constructor(private _telemetryService: TelemetryService, private _chatContextService: ChatUIContextService, private _clipboard: ClipboardService) {
-    }
-
-    ngOnInit() {
     }
 
     public isMarkdown(element:any):boolean {

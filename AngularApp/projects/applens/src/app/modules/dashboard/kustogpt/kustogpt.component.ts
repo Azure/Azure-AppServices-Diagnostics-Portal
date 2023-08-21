@@ -1,6 +1,4 @@
-import { AdalService } from 'adal-angular4';
-import { Component, OnInit } from '@angular/core';
-import { environment } from '../../../../environments/environment';
+import { Component } from '@angular/core';
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
 import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions } from 'diagnostic-data';
 import { ApplensGlobal } from '../../../applens-global';

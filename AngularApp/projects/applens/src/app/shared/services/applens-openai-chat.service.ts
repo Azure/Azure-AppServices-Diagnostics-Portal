@@ -7,7 +7,6 @@ import { HttpHeaders } from "@angular/common/http";
 import { ResourceService } from './resource.service';
 import { environment } from '../../../environments/environment';
 import * as signalR from "@microsoft/signalr";
-import { error } from 'console';
 import { KeyValuePair } from 'dist/diagnostic-data/lib/models/common-models';
 import { AdalService } from 'adal-angular4';
 
