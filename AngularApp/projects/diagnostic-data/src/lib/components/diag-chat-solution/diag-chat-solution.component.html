@@ -3,10 +3,5 @@
     <markdown [data]="solutionContent"></markdown>
 </solution-view-container>
 <div class="mt-3 chat-solution-btn">
-    <fab-primary-button (onClick)="navigateToSolution()">Click View Solution</fab-primary-button>
+    <fab-primary-button (onClick)="openSolution()">Click View Solution</fab-primary-button>
 </div>
-<fab-panel [isOpen]="panelDisplay" [type]="panelType" [customWidth]="'1300px'" (onDismiss)="closePanel()">
-    <div>
-        <router-outlet></router-outlet>
-    </div>
-</fab-panel>

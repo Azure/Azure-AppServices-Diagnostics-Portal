@@ -9,6 +9,9 @@ import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { DiagChatResponse, QueryResponseStatus } from '../../models/openai-data-models';
 import { TimeUtilities } from '../../utilities/time-utilities';
 import { DiagnosticService } from '../../services/diagnostic.service';
+import { GenieGlobals } from '../../services/genie.service';
+import { PanelType } from 'office-ui-fabric-react';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'diag-chat-container',
@@ -16,7 +19,7 @@ import { DiagnosticService } from '../../services/diagnostic.service';
   styleUrls: ['./diag-chat-container.component.scss']
 })
 export class DiagChatContainerComponent implements OnInit {
-  constructor(public _chatContextService: ChatUIContextService, public _telemetryService: TelemetryService, private _diagChatService: ConversationalDiagService, private _diagnosticService: DiagnosticService) {
+  constructor(public _chatContextService: ChatUIContextService, public _telemetryService: TelemetryService, private _diagChatService: ConversationalDiagService, private _diagnosticService: DiagnosticService, public globals: GenieGlobals, private _router: Router, private _route: ActivatedRoute) {
     if (!this._chatContextService.messageStore.hasOwnProperty(this.chatIdentifier)) {
       this._chatContextService.messageStore[this.chatIdentifier] = [];
     }
@@ -57,8 +60,10 @@ export class DiagChatContainerComponent implements OnInit {
       "value": "How to integrate KeyVault in Azure Function App using azure cli?"
     }
   ];
+  panelType: PanelType = PanelType.custom;
 
   ngOnInit(): void {
+    this.globals.openDiagChatSolutionPanel = false;
     this._diagChatService.establishSignalRConnection().subscribe((result: boolean) => {
       this._chatContextService.chatInputBoxDisabled = !result;
     });
@@ -170,4 +175,8 @@ export class DiagChatContainerComponent implements OnInit {
     this.sendMessageOverWSS(messageObj.message);
   }
 
+  closePanel() {
+    this.globals.openDiagChatSolutionPanel = false;
+    this._router.navigate([`../../`], { relativeTo: this._route, skipLocationChange: true });
+  }
 }
