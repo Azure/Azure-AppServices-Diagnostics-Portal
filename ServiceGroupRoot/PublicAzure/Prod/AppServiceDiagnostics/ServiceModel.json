@@ -50,6 +50,23 @@
               "parametersPath": "Parameters\\AutoSwap.Parameters.json"
             }
           }
+        },
+        {
+            "name": "ShellExecutionDefinition",
+            "composedOf": {
+                "extension": {
+                    "rolloutParametersPath": "Parameters\\Script.RolloutParameters.json",
+                    "shell": [
+                        {
+                            "type": "mySimpleShell",
+                            "properties": {
+                                "imagename": "adm-ubuntu-2004-l",
+                                "imageversion": "v2"
+                            }
+                        }
+                    ]
+                }
+            }
         }
       ]
     }
@@ -292,6 +309,10 @@
         {
           "name": "PARSWAP",
           "instanceOf": "AutoSwapDefinition"
+        },
+        {
+          "name": "ExecuteShellScripts",
+          "instanceOf": "ShellExecutionDefinition"
         }
       ]
     },

@@ -1,0 +1,52 @@
+{
+    "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/scopeBindings.json",
+    "contentVersion": "0.0.0.1",
+    "scopeBindings": [
+        {
+            "scopeTagName": "General",
+            "bindings": [
+                {
+                    "find": "__TENANT_ID__",
+                    "replaceWith": "$callerTenantId()"
+                },
+                {
+                    "find": "__CLOUD_ENVIRONMENT__",
+                    "replaceWith": "$rolloutInfra()"
+                },
+                {
+                    "find": "__CURRENT_RESOURCE_GROUP_SUBSCRIPTION_ID__",
+                    "replaceWith": "$azureSubscriptionId()"
+                },
+                {
+                    "find": "__CDN_STORAGE_ACCOUNT_NAME__",
+                    "replaceWith": "diagsourcewatchertest1"
+                },
+                {
+                    "find": "__MANAGED_IDENTITY_NAME__",
+                    "replaceWith": "diag-msi"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "Test",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-pr"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "West US"
+                }
+            ]
+        }
+    ]
+}

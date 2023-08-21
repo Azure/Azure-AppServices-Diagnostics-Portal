@@ -212,11 +212,42 @@ extends:
               signing_environment: 'azure-ado'
               signing_profile: 'internal_azure_service'
               files_to_sign: '**/*;!**/*.pdb'
-              search_root: '$(System.ArtifactsDirectory)/AppServiceDiagnostics'              
+              search_root: '$(System.ArtifactsDirectory)/AppServiceDiagnostics'
+
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: '$(System.ArtifactsDirectory)/AppServiceDiagnostics/Backend/wwwroot'
+              Contents: '*.map'
+              TargetFolder: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/sourcemaps'                                          
+
+          - task: CopyFiles@2
+            displayName: 'Copy all files and directories from ServiceGroupRoot\Bin to shell_deps'
+            inputs:
+              SourceFolder: 'ServiceGroupRoot/Bin'
+              Contents: '**'
+              TargetFolder: '$(System.ArtifactsDirectory)/ServiceGroupRoot/shell_deps'              
+
+          - task: ArchiveFiles@2
+            displayName: 'Archive AppServiceDiagnostics'
+            inputs:
+              rootFolderOrFile: '$(System.ArtifactsDirectory)/AppServiceDiagnostics/Backend'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/AppServiceDiagnostics.zip'
 
           - task: ArchiveFiles@2
             inputs:
               rootFolderOrFile: '$(System.ArtifactsDirectory)/AppServiceDiagnostics/Backend'
               includeRootFolder: false
               archiveType: 'zip'
-              archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/AppServiceDiagnostics.zip'              
+              archiveFile: '$(System.ArtifactsDirectory)/ServiceGroupRoot/shell_deps/AppServiceDiagnostics.zip'
+
+          - task: ArchiveFiles@2
+            displayName: 'Create setup.tar.gz and copy to bin'
+            inputs:
+              rootFolderOrFile: '$(System.ArtifactsDirectory)/ServiceGroupRoot/shell_deps'
+              includeRootFolder: true
+              archiveType: 'tar'
+              archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/setup.tar.gz'
+              replaceExistingArchive: true
+              verbose: true                          
