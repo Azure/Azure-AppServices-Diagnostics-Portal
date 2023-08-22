@@ -106,7 +106,10 @@ import { CallstackPanelComponent } from './components/callstack-panel/callstack-
         CategoryOverviewComponent,
         CategoryNavComponent,
         SectionDividerComponent,
-        CollapsibleMenuItemComponent
+        CollapsibleMenuItemComponent,
+        DiagosticSessionsPanelComponent,
+        CreateStorageAccountPanelComponent,
+        CallstackPanelComponent
     ],
     providers: [
     ]

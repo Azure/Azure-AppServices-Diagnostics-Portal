@@ -12,6 +12,7 @@ export class GenieGlobals {
     openFeedback: boolean = false;
     messagesData: { [id: string]: any } = {};
     breadCrumb: BreadcrumbNavigationItem = null;
+    openDiagChatSolutionPanel: boolean = false;
 
     getDetectorName():string {
         return "";

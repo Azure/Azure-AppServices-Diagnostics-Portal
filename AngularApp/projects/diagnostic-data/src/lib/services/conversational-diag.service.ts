@@ -11,7 +11,7 @@ export class ConversationalDiagService {
   private signalRChatEndpoint: string = "/chatHub";
   private resourceProvider: string;
   private productName: string;
-  private signalRConnection: any;
+  private signalRConnection: signalR.HubConnection;
   private signalRLogLevel: any;
   private messageBuilder: string;
 
@@ -20,8 +20,8 @@ export class ConversationalDiagService {
     this.signalRLogLevel = signalR.LogLevel.Information;
 
     //if (!process.env.production) {
-      this.signalRChatEndpoint = "http://localhost:5043/chatHub";
-      this.signalRLogLevel = signalR.LogLevel.Debug;
+    this.signalRChatEndpoint = "http://localhost:5043/chatHub";
+    this.signalRLogLevel = signalR.LogLevel.Debug;
     //}
     //else {
     //  this.signalRChatEndpoint = "USE_THE_PRODUCTION_ENDPOINT_HERE";
@@ -42,7 +42,7 @@ export class ConversationalDiagService {
   public cancelChatMessage(messageId: string) {
 
     this.signalRConnection.send("CancelMessage", messageId)
-      .catchError((error) => {
+      .catch((error) => {
         this.log('CancelChatMessage', `Cancel Failed. Error : ${error.toString()}`);
       })
   }
@@ -101,11 +101,12 @@ export class ConversationalDiagService {
           }
         }
       }
-    }, function (err) {
-      this.log('MessageReceived', `Error : ${err.toString()}`);
-      this.resetOnMessageReceiveObservable();
-
-    });
+    },
+      // function (err) {
+      //   this.log('MessageReceived', `Error : ${err.toString()}`);
+      //   this.resetOnMessageReceiveObservable();
+      // }
+    );
 
     this.signalRConnection.on("MessageCancelled", (reason: any) => {
 
@@ -137,7 +138,7 @@ export class ConversationalDiagService {
     //  this.telemetryService.logEvent(eventStr, { message: message, ts: time });
     //}
     //else {
-      console.log(`event: ${eventStr}, message: ${message}, ts: ${time}`);
+    console.log(`event: ${eventStr}, message: ${message}, ts: ${time}`);
     //}
   }
 }

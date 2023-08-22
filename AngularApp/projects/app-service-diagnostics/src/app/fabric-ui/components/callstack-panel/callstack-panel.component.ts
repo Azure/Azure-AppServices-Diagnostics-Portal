@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Globals } from '../../../globals';
 import { PanelType } from 'office-ui-fabric-react';
 
@@ -8,7 +8,7 @@ import { PanelType } from 'office-ui-fabric-react';
   styleUrls: ['./callstack-panel.component.scss']
 })
 export class CallstackPanelComponent implements OnInit {
-
+  @Input() isPanelBlocking: boolean = false;
   type: PanelType = PanelType.custom;
   width: string = "850px";
   

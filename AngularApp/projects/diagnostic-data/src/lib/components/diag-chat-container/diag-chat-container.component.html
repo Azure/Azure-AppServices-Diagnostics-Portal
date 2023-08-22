@@ -1,17 +1,15 @@
 <div>
     <h2>Welcome to Conversational Diagnostics</h2>
-    <chat-ui #chatUIComponent
-    [chatIdentifier]="chatIdentifier"
-    [chatInputText]="userInput"
-    [chatHeader]="chatHeader"
-    [chatAlignment]="'center'"
-    [onSendMessage]="onUserSendMessage"
-    [messages]="_chatContextService.messageStore[chatIdentifier]"
-    [systemNameInitial]="'AI'"
-    [userNameInitial]="'JD'"
-    [chatInputBoxDisabled]="_chatContextService.chatInputBoxDisabled"
-    [chatQuerySamples]="chatQuerySamples"
-    [inputTextLimit]="inputTextLimit"
-    [displayLoaderShimmer]="responseInProgress"
-    ></chat-ui>
+    <chat-ui #chatUIComponent [chatIdentifier]="chatIdentifier" [chatInputText]="userInput" [chatHeader]="chatHeader"
+        [chatAlignment]="'center'" [onSendMessage]="onUserSendMessage"
+        [messages]="_chatContextService.messageStore[chatIdentifier]" [systemNameInitial]="'AI'"
+        [userNameInitial]="'JD'" [chatInputBoxDisabled]="_chatContextService.chatInputBoxDisabled"
+        [chatQuerySamples]="chatQuerySamples" [inputTextLimit]="inputTextLimit"
+        [displayLoaderShimmer]="responseInProgress"></chat-ui>
+    <fab-panel [isOpen]="globals.openDiagChatSolutionPanel" [type]="panelType" [customWidth]="'1300px'"
+        (onDismiss)="closePanel()">
+        <div>
+            <router-outlet></router-outlet>
+        </div>
+    </fab-panel>
 </div>
