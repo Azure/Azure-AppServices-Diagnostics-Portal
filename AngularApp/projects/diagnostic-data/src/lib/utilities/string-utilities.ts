@@ -199,6 +199,6 @@ export class StringUtilities {
     }
 
     public static IsNullOrWhiteSpace(input:string) {
-        return input ? this.ReplaceAll(input, ' ', '').length > 0: true;
+        return input ? this.ReplaceAll(input, ' ', '').length < 1: true;
     }
 }
