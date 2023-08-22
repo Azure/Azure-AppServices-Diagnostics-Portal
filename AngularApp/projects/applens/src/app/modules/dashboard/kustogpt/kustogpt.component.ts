@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
-import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions } from 'diagnostic-data';
+import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions, StringUtilities } from 'diagnostic-data';
 import { ApplensGlobal } from '../../../applens-global';
 import { ChatFeedbackAdditionalField, ChatFeedbackModel, ChatFeedbackPanelOpenParams, FeedbackExplanationModes } from '../../../shared/models/openAIChatFeedbackModel';
 import { Observable, of } from 'rxjs';
@@ -130,16 +130,21 @@ export class KustoGPTComponent {
   }
 
   onBeforeSubmit = (chatFeedbackModel:ChatFeedbackModel): Observable<ChatFeedbackModel> => {
-    let queryTextFindings = KustoUtilities.RunBestPracticeChecks(`${this._resourceService.ArmResource.provider}`, `${this._resourceService.ArmResource.resourceTypeName}`, chatFeedbackModel.expectedResponse, this.chatIdentifier == this.antaresAnalyticsChatIdentifier );
-    if(queryTextFindings) {
+    if(chatFeedbackModel && chatFeedbackModel.expectedResponse && !StringUtilities.IsNullOrWhiteSpace(chatFeedbackModel.expectedResponse) && chatFeedbackModel.expectedResponse.length > 5) {
       chatFeedbackModel.validationStatus.succeeded = false;
-      chatFeedbackModel.validationStatus.validationStatusResponse = queryTextFindings;
+      chatFeedbackModel.validationStatus.validationStatusResponse = 'Response must be a Kusto query.';
     }
     else {
-      chatFeedbackModel.validationStatus.succeeded = true;
-      chatFeedbackModel.validationStatus.validationStatusResponse = 'Validation succeeded';
+      let queryTextFindings = KustoUtilities.RunBestPracticeChecks(`${this._resourceService.ArmResource.provider}`, `${this._resourceService.ArmResource.resourceTypeName}`, chatFeedbackModel.expectedResponse, this.chatIdentifier == this.antaresAnalyticsChatIdentifier );
+      if(queryTextFindings) {
+        chatFeedbackModel.validationStatus.succeeded = false;
+        chatFeedbackModel.validationStatus.validationStatusResponse = queryTextFindings;
+      }
+      else {
+        chatFeedbackModel.validationStatus.succeeded = true;
+        chatFeedbackModel.validationStatus.validationStatusResponse = 'Validation succeeded';
+      }
     }
-    
     return of(chatFeedbackModel);
   }
   

@@ -64,6 +64,7 @@ export class ChatFeedbackPanelComponent implements OnInit {
   
   public statusMessage = '';
   public savingInProgress = false;
+  public disableSubmitButton = true;
     
   private openAIAPICallSubscription:Subscription;
   private currentApiCallCount:number = 0;
@@ -496,6 +497,9 @@ export class ChatFeedbackPanelComponent implements OnInit {
     if(this.feedbackUserQuestion && e) {
       this.feedbackUserQuestion.displayMessage = (e.newValue)? `${e.newValue}` : '';
       this.feedbackUserQuestion.message =  (e.newValue)? `${e.newValue}` : '';
+      if(!StringUtilities.IsNullOrWhiteSpace(e.newValue)) {
+        this.disableSubmitButton = false;
+      }
     }
   }
 
@@ -511,11 +515,11 @@ export class ChatFeedbackPanelComponent implements OnInit {
   }
 
   validateFeedback():Observable<boolean> {
-    if(this.correctResponseFeedback) {
+    // Remove all occurrence of empty whitespace space from this.correctResponseFeedback
+    if(this.correctResponseFeedback && this.correctResponseFeedback.replace(/\s/g, '').length > 2) {
       let chatFeedbackModel = this.GetChatFeedbackModel();
-
       if(this.onBeforeSubmit) {
-        return this.onBeforeSubmit(chatFeedbackModel).pipe(map((validatedChatFeedback) => {          
+        return this.onBeforeSubmit(chatFeedbackModel).pipe(map((validatedChatFeedback) => {
           if(validatedChatFeedback && validatedChatFeedback.validationStatus && validatedChatFeedback.validationStatus.succeeded) {
             this.statusMessage = validatedChatFeedback.validationStatus.validationStatusResponse;
             this.feedbackUserQuestion.displayMessage = validatedChatFeedback.userQuestion;
@@ -526,6 +530,7 @@ export class ChatFeedbackPanelComponent implements OnInit {
             this.correctResponseFeedbackReasoning = validatedChatFeedback.feedbackExplanation;
             this.additionalFields = validatedChatFeedback.additionalFields;
             chatFeedbackModel = validatedChatFeedback;
+            
             return true;
           }
           else {
@@ -544,7 +549,7 @@ export class ChatFeedbackPanelComponent implements OnInit {
     else {
       this.statusMessage = '';
       this.statusMessage += (!this.feedbackUserQuestion.displayMessage) ? 'Error: User question is required.\n': '';
-      this.statusMessage += (!this.correctResponseFeedback) ? 'Error:Expected response is required.': '';
+      this.statusMessage += (!this.correctResponseFeedback || this.correctResponseFeedback.replace(/\s/g, '').length < 2) ? 'Error:Expected response is required.': '';
       return of(!this.statusMessage);
     }
   }
@@ -588,6 +593,7 @@ You are a chat assistant that helps explain why an expected response successfull
 
   submitChatFeedback() {
     this.savingInProgress = true;
+    this.disableSubmitButton = true;
     this.savingProgressText = 'Saving...';
     try
     {
@@ -652,8 +658,9 @@ You are a chat assistant that helps explain why an expected response successfull
       , (error) => {
         this.statusMessage = `Error saving feedback: ${error.message}`;
         this.savingInProgress = false;
+        this.disableSubmitButton = false;
         console.error(`Error saving feedback: ${error.message}`);
-        console.error(error);
+        console.error(error);        
       });
     } else {
       // Raise the event and let the caller save this feedback
