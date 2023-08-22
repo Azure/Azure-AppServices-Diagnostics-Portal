@@ -102,13 +102,18 @@ export class KustoGPTComponent {
   }
 
   private updateFeedbackSubmissionStatus(chatIdentifier:string) {
-    this._diagnosticApiService.isFeedbackSubmissionEnabled(`${this._resourceService.ArmResource.provider}`,`${this._resourceService.ArmResource.resourceTypeName}`, chatIdentifier).subscribe((isFeedbackSubmissionEnabled) => {
-      this.isFeedbackSubmissionAllowed = isFeedbackSubmissionEnabled;
-    }, (error) => {
+    if(chatIdentifier) {
+      this._diagnosticApiService.isFeedbackSubmissionEnabled(`${this._resourceService.ArmResource.provider}`,`${this._resourceService.ArmResource.resourceTypeName}`, chatIdentifier).subscribe((isFeedbackSubmissionEnabled) => {
+        this.isFeedbackSubmissionAllowed = isFeedbackSubmissionEnabled;
+      }, (error) => {
+        this.isFeedbackSubmissionAllowed = false;
+        this._telemetryService.logException(error, 'kustogpt_updateFeedbackSubmissionStatus_isFeedbackSubmissionEnabled', {armId: this._resourceService.getCurrentResourceId(false), userId: this.getUserId(), message: 'Error getting feedback submission enablement status. Defaulting to disabled.'});
+        console.error('Error getting feedback submission enablement status. Defaulting to disabled.');
+      });
+    }
+    else {
       this.isFeedbackSubmissionAllowed = false;
-      this._telemetryService.logException(error, 'kustogpt_updateFeedbackSubmissionStatus_isFeedbackSubmissionEnabled', {armId: this._resourceService.getCurrentResourceId(false), userId: this.getUserId(), message: 'Error getting feedback submission enablement status. Defaulting to disabled.'});
-      console.error('Error getting feedback submission enablement status. Defaulting to disabled.');
-    });
+    }
   }
 
   public updateChatIdentifierDropdownOptions(event: any) {
@@ -246,6 +251,7 @@ export class KustoGPTComponent {
     });
 
     this.prepareChatHeader();
+    this.chatIdentifier = this.genericKustoAssistantChatIdentifier;
     this.updateFeedbackSubmissionStatus(this.chatIdentifier);
 
     if(`${this._resourceService.ArmResource.provider}/${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase() !== 'microsoft.web/sites') {
