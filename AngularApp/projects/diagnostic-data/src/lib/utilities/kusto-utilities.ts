@@ -7,8 +7,8 @@ export interface KustoQuery {
 }
 
 export class KustoUtilities {
-    public static readonly KustoDesktopImage:string = `https://applensimgs.blob.core.windows.net/images/KustoDesktop1.png`;
-    public static readonly KustoWebImage:string = `https://applensimgs.blob.core.windows.net/images/Kustoweb1.png`;
+    public static readonly KustoDesktopImage:string = `assets/img/KustoDesktop1.png`;
+    public static readonly KustoWebImage:string = `assets/img/Kustoweb1.png`;
 
     public static ExtractQueryTextFromMarkdown(markdown: string): string {
         if(!markdown) {

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
-import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions, StringUtilities } from 'diagnostic-data';
+import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions, StringUtilities, TelemetryService } from 'diagnostic-data';
 import { ApplensGlobal } from '../../../applens-global';
 import { ChatFeedbackAdditionalField, ChatFeedbackModel, ChatFeedbackPanelOpenParams, FeedbackExplanationModes } from '../../../shared/models/openAIChatFeedbackModel';
 import { Observable, of } from 'rxjs';
@@ -11,6 +11,7 @@ import { SiteService } from '../../../shared/services/site.service';
 import { ObserverSiteInfo } from '../../../shared/models/observer';
 import { KustoUtilities } from 'projects/diagnostic-data/src/lib/utilities/kusto-utilities';
 import { IDropdownOption, IDropdownProps } from 'office-ui-fabric-react';
+import { AdalService } from 'adal-angular4';
 
 @Component({
   selector: 'kustogpt',
@@ -94,11 +95,18 @@ export class KustoGPTComponent {
     ];
   }
 
+  private getUserId() {
+    let alias: string = Object.keys(this._adalService.userInfo.profile).length > 0 ? this._adalService.userInfo.profile.upn : '';
+    const userId: string = alias.replace('@microsoft.com', '');
+    return userId;
+  }
+
   private updateFeedbackSubmissionStatus(chatIdentifier:string) {
     this._diagnosticApiService.isFeedbackSubmissionEnabled(`${this._resourceService.ArmResource.provider}`,`${this._resourceService.ArmResource.resourceTypeName}`, chatIdentifier).subscribe((isFeedbackSubmissionEnabled) => {
       this.isFeedbackSubmissionAllowed = isFeedbackSubmissionEnabled;
     }, (error) => {
       this.isFeedbackSubmissionAllowed = false;
+      this._telemetryService.logException(error, 'kustogpt_updateFeedbackSubmissionStatus_isFeedbackSubmissionEnabled', {armId: this._resourceService.getCurrentResourceId(false), userId: this.getUserId(), message: 'Error getting feedback submission enablement status. Defaulting to disabled.'});
       console.error('Error getting feedback submission enablement status. Defaulting to disabled.');
     });
   }
@@ -203,6 +211,7 @@ export class KustoGPTComponent {
               }
             }
             catch(e) {
+              this._telemetryService.logException(e, 'kustogpt_onSystemMessageReceived_parseadditionalFields', {armId: this._resourceService.getCurrentResourceId(false), userId: this.getUserId(), message: 'Error parsing additional fields'});
               console.error('Error parsing additional fields');
               console.error(e);
             }
@@ -224,7 +233,7 @@ export class KustoGPTComponent {
     return chatMessage;
   }
 
-  constructor(private _applensGlobal:ApplensGlobal, private _diagnosticService: ApplensDiagnosticService, private _resourceService: ResourceService, private _diagnosticApiService: DiagnosticApiService)  {
+  constructor(private _applensGlobal:ApplensGlobal, private _diagnosticService: ApplensDiagnosticService, private _resourceService: ResourceService, private _diagnosticApiService: DiagnosticApiService, private _adalService: AdalService, private _telemetryService: TelemetryService)  {
     this._applensGlobal.updateHeader('KQL assistant'); // This sets the title of the HTML page
     this._applensGlobal.updateHeader(''); // Clear the header title of the component as the chat header is being displayed in the chat UI
     

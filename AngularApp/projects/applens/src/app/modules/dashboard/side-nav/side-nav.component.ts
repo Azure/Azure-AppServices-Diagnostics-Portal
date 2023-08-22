@@ -250,10 +250,12 @@ export class SideNavComponent implements OnInit {
           this.tools.find(tool => tool.id === 'kustocopilot').visible = results[0] || (results[1] && isFunctionApp);
           this.toolsCopy.find(tool => tool.id === 'kustocopilot').visible = results[0] || (results[1] && isFunctionApp);
         }, error => {
+          this._telemetryService.logException(error, 'side-nav_ngOnInit_resourceReady', {armId: this.resourceService.getCurrentResourceId(false), userId: this.getUserId(),  message: 'Error while determining if KQL Assistant is enabled'})
           console.error('Error while determining if KQL Assistant is enabled');
           console.error(error);
         });
       }, error => {
+        this._telemetryService.logException(error, 'side-nav_ngOnInit_forkjoin', {armId: this.resourceService.getCurrentResourceId(false), userId: this.getUserId(), message: 'Error while determining if KQL Assistant is enabled'})
         console.error('Error while determining if KQL Assistant is enabled');
         console.error(error);
       });

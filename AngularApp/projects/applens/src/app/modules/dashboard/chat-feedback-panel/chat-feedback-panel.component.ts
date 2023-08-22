@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ChatMessage, ChatModel, ChatResponse, ChatUIContextService, CreateChatCompletionModel, CreateTextCompletionModel, 
-  FeedbackOptions, GenericOpenAIChatService, MessageRenderingType, MessageSource, MessageStatus, ResponseTokensSize, StringUtilities, TextModels, TimeUtilities } from 'diagnostic-data';
+  FeedbackOptions, GenericOpenAIChatService, MessageRenderingType, MessageSource, MessageStatus, ResponseTokensSize, StringUtilities, TelemetryService, TextModels, TimeUtilities } from 'diagnostic-data';
 import { ApplensGlobal } from '../../../applens-global';
 import { IButtonStyles, ITextFieldProps, PanelType } from 'office-ui-fabric-react';
 import { Observable, Subscription, of } from 'rxjs';
@@ -152,7 +152,7 @@ export class ChatFeedbackPanelComponent implements OnInit {
   }
 
   constructor(private _adalService: AdalService, private _applensGlobal:ApplensGlobal, private _openAIService: GenericOpenAIChatService, 
-    private _chatContextService: ChatUIContextService, private _resourceService: ResourceService, private _diagnosticService: ApplensDiagnosticService) {
+    private _chatContextService: ChatUIContextService, private _resourceService: ResourceService, private _diagnosticService: ApplensDiagnosticService, private _telemetryService: TelemetryService) {
 
     this.userAlias = `${this._adalService.userInfo.profile.upn}`.split('@')[0];
     
@@ -497,15 +497,18 @@ export class ChatFeedbackPanelComponent implements OnInit {
     if(this.feedbackUserQuestion && e) {
       this.feedbackUserQuestion.displayMessage = (e.newValue)? `${e.newValue}` : '';
       this.feedbackUserQuestion.message =  (e.newValue)? `${e.newValue}` : '';
-      if(!StringUtilities.IsNullOrWhiteSpace(e.newValue)) {
-        this.disableSubmitButton = false;
-      }
     }
   }
 
   updateFeedbackUserResponse(e: { event: Event, newValue?: string }) {
       this.correctResponseFeedback = (e?.newValue)? `${e.newValue}` : '';
       this.correctResponseFeedbackReasoning = '';
+      if(!StringUtilities.IsNullOrWhiteSpace(this.correctResponseFeedback)) {
+        this.disableSubmitButton = false;
+      }
+      else {
+        this.disableSubmitButton = true;
+      }
   }
   
   updateAdditionalFieldValue(element: ChatFeedbackAdditionalField, e: { event: Event, newValue?: string }) {
@@ -516,7 +519,7 @@ export class ChatFeedbackPanelComponent implements OnInit {
 
   validateFeedback():Observable<boolean> {
     // Remove all occurrence of empty whitespace space from this.correctResponseFeedback
-    if(this.correctResponseFeedback && this.correctResponseFeedback.replace(/\s/g, '').length > 2) {
+    if(this.correctResponseFeedback && !StringUtilities.IsNullOrWhiteSpace(this.correctResponseFeedback) && this.correctResponseFeedback.replace(/\s/g, '').length > 2) {
       let chatFeedbackModel = this.GetChatFeedbackModel();
       if(this.onBeforeSubmit) {
         return this.onBeforeSubmit(chatFeedbackModel).pipe(map((validatedChatFeedback) => {
@@ -542,14 +545,14 @@ export class ChatFeedbackPanelComponent implements OnInit {
       else {        
         this.statusMessage = '';
         this.statusMessage += (!this.feedbackUserQuestion.displayMessage) ? 'Error: User question is required.\n': '';
-        this.statusMessage += (!this.correctResponseFeedback) ? 'Error:Expected response is required.': '';
+        this.statusMessage += (!this.correctResponseFeedback) ? `Error: ${this.expectedResponseLabelText} is required.`: '';
         return of(!this.statusMessage);
       }
     }
     else {
       this.statusMessage = '';
       this.statusMessage += (!this.feedbackUserQuestion.displayMessage) ? 'Error: User question is required.\n': '';
-      this.statusMessage += (!this.correctResponseFeedback || this.correctResponseFeedback.replace(/\s/g, '').length < 2) ? 'Error:Expected response is required.': '';
+      this.statusMessage += (!this.correctResponseFeedback || StringUtilities.IsNullOrWhiteSpace(this.correctResponseFeedback) || this.correctResponseFeedback.replace(/\s/g, '').length < 3) ? `Error: ${this.expectedResponseLabelText} is required.`: '';
       return of(!this.statusMessage);
     }
   }
@@ -659,8 +662,9 @@ You are a chat assistant that helps explain why an expected response successfull
         this.statusMessage = `Error saving feedback: ${error.message}`;
         this.savingInProgress = false;
         this.disableSubmitButton = false;
+        this._telemetryService.logException(error, 'chat-feedback-panel_handleFeedbackAutoSaveAndRaiseEvent_saveChatFeedback', {armId: this._resourceService.getCurrentResourceId(false), userId: this.userAlias, message: error.message})
         console.error(`Error saving feedback: ${error.message}`);
-        console.error(error);        
+        console.error(error);
       });
     } else {
       // Raise the event and let the caller save this feedback
