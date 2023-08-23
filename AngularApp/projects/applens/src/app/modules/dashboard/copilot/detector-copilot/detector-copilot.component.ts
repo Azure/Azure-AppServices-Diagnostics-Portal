@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ApplensCopilotContainerService } from '../../services/copilot/applens-copilot-container.service';
 import { ApplensDetectorCopilotService } from '../../services/copilot/applens-detector-copilot.service';
-import { APIProtocol, ChatMessage, ChatModel, ChatUIContextService, MessageStatus } from 'diagnostic-data';
+import { APIProtocol, ChatMessage, ChatModel, ChatUIContextService, MessageStatus, TelemetryService } from 'diagnostic-data';
 import { PortalUtils } from 'projects/applens/src/app/shared/utilities/portal-util';
-import { ClipboardService } from 'projects/diagnostic-data/src/lib/services/clipboard.service';
 
 @Component({
   selector: 'detector-copilot',
@@ -21,10 +20,9 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   copilotExitConfirmationHidden: boolean = true;
 
   private featureTitle = 'Detector Copilot (Preview)';
-  private lastMessageIdForFeedback: string = '';
 
   constructor(public _copilotContainerService: ApplensCopilotContainerService, public _copilotService: ApplensDetectorCopilotService,
-    private _chatContextService: ChatUIContextService, private _clipboard: ClipboardService) {
+    private _chatContextService: ChatUIContextService, private _telemetryService: TelemetryService,) {
   }
 
   ngOnInit(): void {
@@ -55,32 +53,25 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   onUserMessageSend = (messageObj: ChatMessage): ChatMessage => {
 
     this._copilotService.operationInProgress = true;
-    this.lastMessageIdForFeedback = messageObj.id;
+    PortalUtils.logEvent(`${this._copilotService.detectorCopilotChatIdentifier}-OnMessageSent`, `${messageObj.displayMessage}, id: ${messageObj.id}`, this._telemetryService);
     return messageObj;
   }
 
   onSystemMessageReceived = (messageObj: ChatMessage): ChatMessage => {
 
     this._copilotService.operationInProgress = !(messageObj.status == MessageStatus.Finished || messageObj.status == MessageStatus.Cancelled);
+    let completionEventName = messageObj.status == MessageStatus.Finished ? 'OnMessageReceived' :
+      messageObj.status == MessageStatus.Cancelled ? 'OnMessageCancelled' : '';
 
     if (messageObj.status != MessageStatus.Cancelled) {
       messageObj.displayMessage = messageObj.message;
     }
 
+    if (completionEventName != '') {
+      PortalUtils.logEvent(`${this._copilotService.detectorCopilotChatIdentifier}-${completionEventName}`, '<not logging message content>', this._telemetryService);
+    }
+
     return messageObj;
-  }
-
-  //#endregion
-
-  //#region Settings : Clear Chat Methods
-
-  clearChat = () => {
-    this._chatContextService.clearChat(this._copilotService.detectorCopilotChatIdentifier);
-    this.clearChatConfirmationHidden = true;
-  }
-
-  showClearChatDialog = (show: boolean = true) => {
-    this.clearChatConfirmationHidden = !show;
   }
 
   //#endregion
@@ -123,26 +114,6 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.stopMessageGeneration = false;
     }, 1000);
-  }
-
-  sendFeedback = () => {
-
-    let newline = '%0D%0A';
-    const subject = encodeURIComponent(`${this._copilotContainerService.copilotHeaderTitle} Feedback`);
-    let body = encodeURIComponent('Please provide feedback here:');
-    let link = "";
-
-    var browserType = PortalUtils.getBrowserType();
-    var url = window.location.href;
-    let debugInfo = `${newline}============ Debug Info ============${newline}`;
-    debugInfo += `Browser: ${browserType}${newline}`;
-    debugInfo += `Last User Message Id: ${this.lastMessageIdForFeedback}${newline}`;
-    debugInfo += `Url: ${url}${newline}`;
-
-
-    body = `${body}${newline}${newline}${newline}${debugInfo}`;
-    link = `mailto:detectorcopilotfeedb@microsoft.com?subject=${subject}&body=${body}`;
-    window.open(link);
   }
 
   //#endregion

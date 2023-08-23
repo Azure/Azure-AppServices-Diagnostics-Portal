@@ -29,6 +29,7 @@ export class OpenAIChatContainerComponent implements OnInit {
   @Input() customInitialPrompt: string = '';
   @Input() customFirstMessage: string = '';
   @Input() chatIdentifier: string = '';
+  @Input() chatContainerHeight: string = '';
   @Input() persistChat: boolean = false;
   @Input() chatHeader: string = '';
   @Input() chatContextLength: number = 2;
@@ -172,4 +173,4 @@ export class OpenAIChatContainerComponent implements OnInit {
       this.isEnabled = this._openAIService.isEnabled;
     });
   }
-}  
+}

@@ -1,7 +1,7 @@
 <fab-command-bar tabindex="0" [contentClass]="'fab-command-bar-class'">
   <items>
     <fab-command-bar-item *ngIf="copilotEnabled" key="detectorcopilot" text="Detector Copilot (Preview)" 
-    [iconProps]="{ iconName: 'robot' }" (click)="_copilotContainerService.showCopilotPanel()" [disabled]="_detectorCopilotService.copilotButtonActive == false">
+    [iconProps]="{ iconName: 'robot' }" (click)="openDetectorCopilot()" [disabled]="_detectorCopilotService.copilotButtonActive == false">
     </fab-command-bar-item>
     <fab-command-bar-item key="refresh" text="Refresh" [iconProps]="{ iconName: 'Refresh' }" (click)="refreshPage()">
     </fab-command-bar-item>

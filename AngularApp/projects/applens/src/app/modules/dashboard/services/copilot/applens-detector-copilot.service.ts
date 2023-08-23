@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ApplensCopilotContainerService, CopilotSupportedFeature } from './applens-copilot-container.service';
-import { ChatUIContextService, DetectorResponse, DetectorViewModeWithInsightInfo, DiagnosticData } from 'diagnostic-data';
+import { DetectorResponse, DetectorViewModeWithInsightInfo, DiagnosticData, TelemetryService } from 'diagnostic-data';
 import { ResponseUtilities } from 'projects/diagnostic-data/src/lib/utilities/response-utilities';
 import { ResourceService } from 'projects/applens/src/app/shared/services/resource.service';
 import { DiagnosticApiService } from 'projects/applens/src/app/shared/services/diagnostic-api.service';
 import { Observable } from 'rxjs';
+import { PortalUtils } from 'projects/applens/src/app/shared/utilities/portal-util';
 
 @Injectable()
 export class ApplensDetectorCopilotService {
@@ -21,7 +22,7 @@ export class ApplensDetectorCopilotService {
     public chatConfigFile = '';
 
     constructor(private _copilotContainerService: ApplensCopilotContainerService, private _resourceService: ResourceService,
-        private _chatContextService: ChatUIContextService, private _diagnosticApi: DiagnosticApiService) {
+        private _diagnosticApi: DiagnosticApiService, private _telemetryService: TelemetryService) {
         this.reset();
     }
 
@@ -74,6 +75,8 @@ export class ApplensDetectorCopilotService {
         let wellFormattedSelectedData = ResponseUtilities.ConvertResponseTableToWellFormattedJson(customDetectorResponse);
         this.customPrompt = this.prepareCustomPrompt(wellFormattedSelectedData);
         this.setSelectedComponentAndOpenCopilot(wellFormattedSelectedData);
+
+        PortalUtils.logEvent('detectorcopilot-open', `{componentHeading : ${this.selectedComponent.heading}}, componentSubHeading : ${this.selectedComponent.subheading}`, this._telemetryService);
     }
 
     selectChildDetectorAndOpenCopilot(detectorViewModel: DetectorViewModeWithInsightInfo) {
@@ -86,6 +89,8 @@ export class ApplensDetectorCopilotService {
         formattedDetectorResponse = ResponseUtilities.UpdateDetectorResponseWithAsyncChildDetectorsOutput(formattedDetectorResponse, [detectorViewModel]);
         this.customPrompt = this.prepareCustomPrompt(formattedDetectorResponse);
         this.setSelectedComponentAndOpenCopilot(formattedDetectorResponse);
+
+        PortalUtils.logEvent('detectorcopilot-open', `{componentHeading : ${this.selectedComponent.heading}}, componentSubHeading : ${this.selectedComponent.subheading}`, this._telemetryService);
     }
 
     clearComponentSelection() {

@@ -9,6 +9,7 @@ import { IPanelProps, PanelType } from 'office-ui-fabric-react';
 import { ApplensCopilotContainerService } from '../../services/copilot/applens-copilot-container.service';
 import { ApplensDetectorCopilotService } from '../../services/copilot/applens-detector-copilot.service';
 import { DiagnosticApiService } from 'projects/applens/src/app/shared/services/diagnostic-api.service';
+import { PortalUtils } from 'projects/applens/src/app/shared/utilities/portal-util';
 
 @Component({
   selector: 'tab-analysis',
@@ -146,6 +147,11 @@ export class TabAnalysisComponent implements OnInit, OnDestroy {
       this._telemetryService.logEvent(TelemetryEventNames.FavoriteDetectorAdded, { 'detectorId': this.analysisId, 'location': 'CommandBar' });
       this.addFavoriteDetector();
     }
+  }
+
+  openDetectorCopilot() {
+    this._copilotContainerService.showCopilotPanel();
+    PortalUtils.logEvent('detectorcopilot-open', '', this._telemetryService);
   }
 
   private addFavoriteDetector() {

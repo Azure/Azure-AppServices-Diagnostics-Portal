@@ -16,6 +16,7 @@ import { ObserverSiteSku, ObserverSkuType } from '../../../../shared/models/obse
 import { ApplensCopilotContainerService } from '../../services/copilot/applens-copilot-container.service';
 import { ApplensDetectorCopilotService } from '../../services/copilot/applens-detector-copilot.service';
 import { DiagnosticApiService } from '../../../../shared/services/diagnostic-api.service';
+import { PortalUtils } from 'projects/applens/src/app/shared/utilities/portal-util';
 
 @Component({
   selector: 'tab-data',
@@ -204,7 +205,7 @@ export class TabDataComponent implements OnInit, OnDestroy {
 
       // disable copilot for workflows
       this.copilotEnabled = false;
-      
+
     } else {
       this.detector = this._route.snapshot.params['detector'];
     }
@@ -292,6 +293,10 @@ export class TabDataComponent implements OnInit, OnDestroy {
     })
   }
 
+  openDetectorCopilot() {
+    this._copilotContainerService.showCopilotPanel();
+    PortalUtils.logEvent('detectorcopilot-open', '', this._telemetryService);
+  }
 
   private removeFavoriteDetector() {
     this._applensCommandBarService.removeFavoriteDetector(this.detector).subscribe(message => {

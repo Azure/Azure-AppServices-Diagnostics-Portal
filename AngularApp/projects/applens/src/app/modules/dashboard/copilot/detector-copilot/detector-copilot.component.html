@@ -1,62 +1,33 @@
-<fab-command-bar [contentStyle]="'solid gray;font-size:12px'" [contentClass]="'fab-command-bar-class'">
-  <items>
+<openai-chat-container #chatbot [persistChat]="false" [chatIdentifier]="_copilotService.detectorCopilotChatIdentifier"
+  [customInitialPrompt]="_copilotService.customPrompt" [chatContextLength]="6"
+  [chatQuerySamplesFileUri]="_copilotService.chatConfigFile" [showFeedbackOptions]="true" [showContentDisclaimer]="true"
+  [contentDisclaimerMessage]="contentDisclaimerMessage" [quotaEnforced]="true" [dailyMessageQuota]="20"
+  [messageQuotaWarningThreshold]="10" [chatHeader]="chatHeader" [systemPhotoSource]="'/assets/img/bot_sparkle_icon.svg'"
+  [apiProtocol]="apiProtocol" [chatModel]="chatModel" [onUserMessageSend]="onUserMessageSend" [stopMessageGeneration] = "stopMessageGeneration"
+  [onSystemMessageReceived]="onSystemMessageReceived" [chatContainerHeight]="_copilotService.chatContainerHeight">
 
-    <fab-command-bar-item key="clearchat" text="Clear Chat" [iconProps]="{ iconName: 'EraseTool' }"
-      [disabled]="_copilotService.operationInProgress" (click)="showClearChatDialog()">
-    </fab-command-bar-item>
-    <fab-command-bar-item key="stopcalls" text="Stop" [iconProps]="{ iconName: 'stop' }"
-      [disabled]="!_copilotService.operationInProgress" (click)="cancelOpenAICall()">
-    </fab-command-bar-item>
-    <fab-command-bar-item key="feedback" text="Feedback" [iconProps]="{ iconName: 'mail' }" (click)="sendFeedback()">
-    </fab-command-bar-item>
-  </items>
-</fab-command-bar>
+  <div highlightedSection
+    *ngIf="this._copilotService.selectedComponent.heading && this._copilotService.selectedComponent.heading != ''"
+    class="selected-component">
 
-<div *ngIf="this._copilotService.selectedComponent.heading && this._copilotService.selectedComponent.heading != ''"
-  class="selected-component">
-
-  <div class="selected-component-content-container">
-    <div class="title-container">
-      <img class="icon" [src]="this._copilotService.selectedComponent.iconSrc" />
-      <div class="title">{{this._copilotService.selectedComponent.heading}}</div>
+    <div class="selected-component-content-container">
+      <div class="title-container">
+        <img class="icon" [src]="this._copilotService.selectedComponent.iconSrc" />
+        <div class="title">{{this._copilotService.selectedComponent.heading}}</div>
+      </div>
+      <div class="subheading">{{this._copilotService.selectedComponent.subheading}}</div>
+      <button type="button" class="clear-selected-component" title="clear selection" data-is-visible="true"
+        aria-label="clear selection" data-is-focusable="true" (click)="this._copilotService.clearComponentSelection()">
+        <span>
+          <i data-icon-name="Cancel" aria-hidden="true" class="ms-Icon root-89 css-164 ms-Button-icon icon-159"
+            style="font-family: FabricMDL2Icons;">&#x2715;</i>
+        </span>
+      </button>
     </div>
-    <div class="subheading">{{this._copilotService.selectedComponent.subheading}}</div>
-    <button type="button" class="clear-selected-component" title="clear selection" data-is-visible="true"
-      aria-label="clear selection" data-is-focusable="true" (click)="this._copilotService.clearComponentSelection()">
-      <span>
-        <i data-icon-name="Cancel" aria-hidden="true" class="ms-Icon root-89 css-164 ms-Button-icon icon-159"
-          style="font-family: FabricMDL2Icons;">&#x2715;</i>
-      </span>
-    </button>
+
   </div>
 
-</div>
-
-<div style="margin-top: 5px">
-  <openai-chat [chatAlignment]="'left'" [chatIdentifier]="_copilotService.detectorCopilotChatIdentifier"
-    [chatContextLength]="6" [chatModel]="chatModel"
-    [chatQuerySamplesFileUri]="_copilotService.chatConfigFile"
-    [customInitialPrompt]="_copilotService.customPrompt" [apiProtocol]="apiProtocol"
-    [contentDisclaimerMessage]="contentDisclaimerMessage" [quotaEnforced]="true" [chatHeader]="chatHeader"
-    [systemPhotoSource]="'/assets/img/bot_sparkle_icon.svg'" [preprocessUserMessage]="onUserMessageSend"
-    [postProcessSystemMessage]="onSystemMessageReceived" [stopMessageGeneration]="stopMessageGeneration"
-    [chatContainerHeight]="_copilotService.chatContainerHeight">
-  </openai-chat>
-</div>
-
-
-<fab-dialog [hidden]="clearChatConfirmationHidden" (onDismiss)="showClearChatDialog(false)">
-  <fab-dialog-content [title]="'Are you sure?'">
-    <div style="font-size: 13px;">
-      Just Confirming. After all, I am a bot and "suppose to" obey all your commands <i class="fa fa-smile-o"
-        aria-hidden="true"></i>
-    </div>
-    <div class="mt-4" style="margin-top:10px">
-      <fab-primary-button text="Clear Chat" (onClick)="clearChat()" [contentClass]="'mr-3'"></fab-primary-button>
-      <fab-default-button text="Cancel" (onClick)="showClearChatDialog(false)"></fab-default-button>
-    </div>
-  </fab-dialog-content>
-</fab-dialog>
+</openai-chat-container>
 
 <fab-dialog [hidden]="copilotExitConfirmationHidden" (onDismiss)="showExitConfirmationDialog(false)">
   <fab-dialog-content [title]="'Are you sure?'">
