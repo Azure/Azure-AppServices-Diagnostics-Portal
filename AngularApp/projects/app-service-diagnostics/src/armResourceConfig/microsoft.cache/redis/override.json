@@ -1,0 +1,33 @@
+{
+	"homePageText": {
+		"title": "",
+		"description": "",
+		"searchBarPlaceHolder": ""
+	},
+	"matchRegEx": "/Microsoft.Cache/redis/",
+	"searchSuffix": "",
+	"azureServiceName": "",
+	"armApiConfig": {
+		"armApiVersion": "",
+		"isArmApiResponseBase64Encoded": false
+	},
+	"isSearchEnabled": true,
+	"keystoneDetectorId": "",
+	"liveChatConfig": {
+		"isApplicableForLiveChat": false,
+		"supportTopicIds": []
+	},
+	"categories": [{
+			"id": "",
+			"name": "",
+			"description": "",
+			"keywords": [],
+			"color": "",
+			"createFlowForCategory": true,
+			"overridePath": "",
+			"chatEnabled": false
+		}
+	],
+	"pesId": "14783",
+	"sapProductId": "275635f1-6a9b-cca1-af9e-c379b30890ff"
+}

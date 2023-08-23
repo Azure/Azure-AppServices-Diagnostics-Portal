@@ -24,6 +24,7 @@ import { OperatingSystem } from '../../../shared/models/site';
 import { RiskAlertService } from '../../../shared-v2/services/risk-alert.service';
 import { ABTestingService } from '../../../shared/services/abtesting.service';
 import { SlotType } from '../../../shared/models/slottypes';
+import { Observable, of } from 'rxjs';
 
 @Component({
     selector: 'home',
@@ -149,11 +150,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
         this._authService.getStartupInfo().subscribe(startupInfo => {
             if (startupInfo.additionalParameters && Object.keys(startupInfo.additionalParameters).length > 0) {
-                let path = 'resource' + startupInfo.resourceId.toLowerCase();
-                path = this._updateRouteBasedOnAdditionalParameters(path, startupInfo.additionalParameters);
-                if (path) {
-                    this._router.navigateByUrl(path);
-                }
+                let resourceUri = 'resource' + startupInfo.resourceId.toLowerCase();
+                const featurePath = startupInfo?.additionalParameters?.featurePath ?? "";
+                this._validateFeaturePath(featurePath).subscribe(isValid => {
+                    if (isValid) {
+                        this._telemetryService.logEvent(TelemetryEventNames.FeaturePathRouting,
+                            { "featurePath": `${featurePath}` });
+                        const path = this._updateRouteBasedOnAdditionalParameters(resourceUri, featurePath);
+                        this._router.navigateByUrl(path);
+                    }
+                });
             }
         });
 
@@ -186,7 +192,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
             }
         });
 
-        if (this._resourceService && !!this._resourceService.resource && this._resourceService.resource.type === 'Microsoft.Web/sites' && !UriUtilities.isNoResourceCall(this._resourceService.resourceIdForRouting) ) {
+        if (this._resourceService && !!this._resourceService.resource && this._resourceService.resource.type === 'Microsoft.Web/sites' && !UriUtilities.isNoResourceCall(this._resourceService.resourceIdForRouting)) {
             if (locationPlacementId.toLowerCase() !== 'geos_2020-01-01') {
                 // Register Change Analysis Resource Provider.
                 this.armService.postResourceFullResponse(this.providerRegisterUrl, {}, true, '2018-05-01').subscribe((response: HttpResponse<{}>) => {
@@ -220,7 +226,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {
         this._telemetryService.logPageView(TelemetryEventNames.HomePageLoaded, { "numCategories": this.categories.length.toString() });
-        if(document.querySelector("fab-command-bar")){
+        if (document.querySelector("fab-command-bar")) {
             const ele = <HTMLInputElement>document.querySelector("fab-command-bar");
             ele.focus();
         }
@@ -285,15 +291,22 @@ export class HomeComponent implements OnInit, AfterViewInit {
         }
     }
 
-    private _updateRouteBasedOnAdditionalParameters(route: string, additionalParameters: any): string {
-        if (additionalParameters.featurePath) {
-            let featurePath: string = additionalParameters.featurePath;
-            featurePath = featurePath.startsWith('/') ? featurePath.replace('/', '') : featurePath;
+    private _updateRouteBasedOnAdditionalParameters(resourceUri: string, featurePath: string): string {
+        featurePath = featurePath.startsWith('/') ? featurePath.replace('/', '') : featurePath;
+        return `${resourceUri}/${featurePath}`;
+    }
 
-            return `${route}/${featurePath}`;
+    private _validateFeaturePath(featurePath: string): Observable<boolean> {
+        const [type, detectorId] = featurePath.toLowerCase().split('/');
+        if (!featurePath) return of(false);
+
+        if (type?.startsWith("detectors") || type?.startsWith("analysis")) {
+            return this._diagnosticService.getDetectors().map(detectors => {
+                return detectors.some(detector => detector.id.toLowerCase() === detectorId);
+            });
+        } else {
+            return of(true);
         }
-
-        return null;
     }
 
     private _logSearch() {
@@ -369,7 +382,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.isPreview = this.abTestingService.isPreview;
         var isContainerApps = this._resourceService && !!this._resourceService.resource &&
             (this._resourceService.resource.type.toLowerCase() === 'microsoft.web/containerapps' ||
-            this._resourceService.resource.type.toLowerCase() === 'microsoft.app/containerapps');
+                this._resourceService.resource.type.toLowerCase() === 'microsoft.app/containerapps');
         var isArcApplianceApps = this._resourceService && !!this._resourceService.resource && this._resourceService.resource.type.toLowerCase() === 'microsoft.resourceConnector/appliances';
 
         this.enableABTesting = this.abTestingService.enableABTesting && !isContainerApps && !isArcApplianceApps;
@@ -385,7 +398,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     openSlotInNewTab(event: Event) {
         event.stopPropagation();
         const url = this.abTestingService.generateSlotLink();
-        this._telemetryService.logEvent(TelemetryEventNames.OpenSlotInNewTab,{
+        this._telemetryService.logEvent(TelemetryEventNames.OpenSlotInNewTab, {
             currentSlot: SlotType[this.abTestingService.slot]
         });
         window.open(url);

@@ -142,7 +142,8 @@ export const TelemetryEventNames = {
     SuperGistAPILoaded: 'SuperGistAPILoaded',
     SuperGistUpdateDetectorReferencesButtonClicked: 'SuperGistDetectorReferencesButtonClicked',
     SuperGistUpdateSelectedButtonClicked: 'SuperGistUpdateSelectedButtonClicked',
-    ChatGPTClearButtonClicked : 'ChatGPTClearButtonClicked'
+    ChatGPTClearButtonClicked : 'ChatGPTClearButtonClicked',
+    FeaturePathRouting: 'FeaturePathRouting',
 };
 
 export const TelemetrySource = {
@@ -182,10 +183,6 @@ export class TelemetryUtilities {
     static getProductNameByTypeAndKind(type: string, kind: string): string {
         let productName = type;
         if (type.toLowerCase() === "microsoft.web/sites") {
-            if (!kind) {
-                return productName;
-            }
-
             if (kind.indexOf('linux') >= 0 && kind.indexOf('functionapp') >= 0) {
                 productName = "Azure Linux Function App";
             }
@@ -196,6 +193,8 @@ export class TelemetryUtilities {
                 productName = "Azure Linux App";
             } else if (kind.indexOf('functionapp') >= 0) {
                 productName = "Azure Function App";
+            } else {
+                productName = "Azure Web App";
             }
         }
         return productName;

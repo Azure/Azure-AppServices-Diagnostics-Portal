@@ -17,6 +17,7 @@ export class WorkflowResultComponent extends DataRenderBaseComponent {
   status: string = '';
   markdown: string = '';
   variables: stepVariable[] = [];
+  isInWorkflow: boolean = false;
 
   constructor(protected telemetryService: TelemetryService, @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig) {
     super(telemetryService);
@@ -35,10 +36,12 @@ export class WorkflowResultComponent extends DataRenderBaseComponent {
       let statusColIndex: number = 0;
       let markdownColIndex: number = 1;
       let variablesColIndex: number = 2;
+      let isInWorkflowColIndex: number = 3;
 
       this.status = table.rows[0][statusColIndex];
       this.markdown = table.rows[0][markdownColIndex];
       this.variables = JSON.parse(table.rows[0][variablesColIndex]);
+      this.isInWorkflow = table.rows[0][isInWorkflowColIndex];
     }
   }
 }

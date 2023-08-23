@@ -136,12 +136,14 @@ import { WorkflowUserAccessComponent } from './workflow/workflow-user-access/wor
 import { InputNodeComponent } from './workflow/input-node/input-node.component';
 import { NetworkTraceAnalysisComponent } from './network-trace-analysis/network-trace-analysis.component';
 import { KustoGPTComponent } from './kustogpt/kustogpt.component';
+import { ChatFeedbackPanelComponent } from './chat-feedback-panel/chat-feedback-panel.component';
 import * as moment from 'moment';
 import { ApplensOpenAIChatComponent } from './applens-openai-chat/applens-openai-chat.component';
 import { CommunicationToolkitComponent } from './communication-toolkit/communication-toolkit.component';
 import { ApplensCopilotContainerService } from 'projects/applens/src/app/modules/dashboard/services/copilot/applens-copilot-container.service';
 import { ApplensDetectorCopilotService } from 'projects/applens/src/app/modules/dashboard/services/copilot/applens-detector-copilot.service';
 import { ApplensDetectorDevelopmentCopilotService } from 'projects/applens/src/app/modules/dashboard/services/copilot/applens-detector-development-copilot.service';
+import { ApplensDocsCopilotComponent } from './applens-docs-copilot/applens-docs-copilot.component';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -513,6 +515,10 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
             { 
                 path: 'communicationToolkit',
                 component: CommunicationToolkitComponent
+            },
+            {
+                path: 'askApplens',
+                component: ApplensDocsCopilotComponent
             }
         ]
     },
@@ -626,6 +632,6 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         KustoQueryDialogComponent, DetectorNodeComponent, KustoNodeComponent, MarkdownNodeComponent, NodeActionsComponent, ConfigureVariablesComponent, CommonNodePropertiesComponent,
         NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent,
         WorkflowUserAccessComponent, ForeachNodeComponent, DevopsDeploymentsComponent, InputNodeComponent, NetworkTraceAnalysisComponent,
-        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent]
+        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent, ApplensDocsCopilotComponent, ChatFeedbackPanelComponent]
 })
 export class DashboardModule { }

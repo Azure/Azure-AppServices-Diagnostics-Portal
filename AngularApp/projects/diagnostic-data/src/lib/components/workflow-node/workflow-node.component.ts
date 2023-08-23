@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { MarkdownService } from 'ngx-markdown';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Moment } from 'moment';
 import { NgFlowchart, NgFlowchartStepComponent } from 'projects/ng-flowchart/dist';
 import { HealthStatus } from '../../models/detector';
 import { workflowNodeResult, workflowNodeState } from '../../models/workflow';
@@ -15,7 +15,7 @@ import { WorkflowAcceptUserinputComponent } from '../workflow-accept-userinput/w
   templateUrl: './workflow-node.component.html',
   styleUrls: ['./workflow-node.component.scss']
 })
-export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNodeResult> implements OnInit {
+export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNodeResult> implements OnInit, AfterViewInit, OnDestroy {
 
   private acceptUserInput: WorkflowAcceptUserinputComponent;
   @ViewChild('acceptUserInput') set content(content: WorkflowAcceptUserinputComponent) {
@@ -24,11 +24,16 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
     }
   }
 
+  @ViewChild('detectorViewDiv') detectorViewDiv: ElementRef;
+
   isLoading: boolean = false;
   error: any;
   status: HealthStatus = HealthStatus.Info;
   markdownHtml: string = '';
   runButtonClicked: boolean = false;
+  endTime: Moment = this._detectorControlService.endTime;
+  startTime: Moment = this._detectorControlService.startTime;
+  resizeObserver: ResizeObserver;
 
   constructor(private _diagnosticService: DiagnosticService, private _detectorControlService: DetectorControlService,
     private _workflowHelperService: WorkflowHelperService) {
@@ -39,6 +44,49 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
     this.updateStatus();
     if (this.data.promptType && this.data.promptType === 'automatic' && this.data.type !== "IfElseCondition" && this.data.type !== "SwitchCondition") {
       this.runNext(this.data.children);
+    }
+
+    this.setupResizeObserver();
+  }
+
+  //
+  // Force a re-render of the canvas when the height of the container changes.
+  // This is specifically needed when a detector has elements (like insights)
+  // that can change the height of the detector-view component. We have to
+  // force a re-render of the canvas so that the nodes are re-positioned and
+  // the connectors are re-drawn.
+  //
+
+  setupResizeObserver() {
+    this.resizeObserver = new ResizeObserver(entries => {
+      this.canvas.reRender();
+    });
+  }
+
+  ngAfterViewInit(): void {
+
+    //
+    // Very critical to call this as the whole workflow falls apart
+    //
+    super.ngAfterViewInit();
+
+    if (this.data.type !== "Detector" || this.data.detectorResponse == null) {
+      return;
+    }
+
+    //
+    // Setup the resize observer to observe for resizing of the
+    //  parent div for detector-view component
+    //
+
+    if (this.detectorViewDiv != null && this.detectorViewDiv.nativeElement != null) {
+      this.resizeObserver.observe(this.detectorViewDiv.nativeElement);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.resizeObserver != null) {
+      this.resizeObserver.disconnect();
     }
   }
 

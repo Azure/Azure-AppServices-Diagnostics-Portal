@@ -5,20 +5,20 @@ import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from 
 import { ResourceService } from '../../../shared/services/resource.service';
 import { CollapsibleMenuItem } from '../../../collapsible-menu/components/collapsible-menu-item/collapsible-menu-item.component';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
-import { DetectorMetaData, DetectorType, StringUtilities } from 'diagnostic-data';
+import { DetectorMetaData, DetectorType, FastSearch } from 'diagnostic-data';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
 import { environment } from '../../../../environments/environment';
 import { UserSettingService } from '../services/user-setting.service';
 import { BreadcrumbService } from '../services/breadcrumb.service';
-import { forkJoin } from 'rxjs';
+import { Observable, forkJoin, of } from 'rxjs';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
-import { element } from 'protractor';
 import { ApplensDocumentationService } from '../services/applens-documentation.service';
 import { DocumentationRepoSettings } from '../../../shared/models/documentationRepoSettings';
 import { DocumentationFilesList } from './documentationFilesList';
 import { ApplensOpenAIChatService } from '../../../shared/services/applens-openai-chat.service';
 import { PortalUtils } from '../../../shared/utilities/portal-util';
+import { SiteService } from '../../../shared/services/site.service';
 
 @Component({
   selector: 'side-nav',
@@ -66,6 +66,7 @@ export class SideNavComponent implements OnInit {
   isProd: boolean = false;
   workflowsEnabled: boolean = false;
   showChatGPT: boolean = false;
+  askAppLensEnabled: boolean = false;  
 
 
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService,
@@ -202,8 +203,21 @@ export class SideNavComponent implements OnInit {
       },
       icon: null
     },
+    ...this.askAppLensEnabled? [{
+      label: 'Ask AppLens',
+      id: "askAppLens",
+      onClick: () => {
+        this.navigateTo("askApplens");
+      },
+      expanded: false,
+      subItems: null,
+      isSelected: () => {
+        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `askapplens`.toLowerCase();
+      },
+      icon: null
+    }]: [],
     {
-      label: 'KQL for Antares Analytics',
+      label: 'KQL Assistant (Preview)',
       id: "kustocopilot",
       onClick: () => {
         this.navigateTo("kustoQueryGenerator");
@@ -222,8 +236,27 @@ export class SideNavComponent implements OnInit {
     this.checkRCAToolkitEnabled();
     this._openAIService.CheckEnabled().subscribe(enabled => {
       this.showChatGPT = this._openAIService.isEnabled;
-      this._diagnosticApi.get<boolean>('api/openai/kustocopilot/enabled').subscribe(kustoGPTEnabledStatus => {
-        this.tools.find(tool => tool.id === 'kustocopilot').visible = kustoGPTEnabledStatus && `${this.resourceService.ArmResource.provider}`.toLowerCase().indexOf('microsoft.web') > -1;
+      let antaresAnalyticsEnabledState = this._diagnosticApi.isCopilotEnabled(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName, 'analyticskustocopilot');
+      let kqlAssistantEnabledState = this._diagnosticApi.isCopilotEnabled(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName, 'kustoqueryassistant');
+      let resourceReady:Observable<any> = (this.resourceService instanceof SiteService) ? this.resourceService.getCurrentResource() : of(null);
+      forkJoin([antaresAnalyticsEnabledState, kqlAssistantEnabledState]).subscribe(results => {
+        resourceReady.subscribe(resource => {
+          let isFunctionApp = false;
+          if(this.resourceService instanceof SiteService && resource) {
+            let site = resource;
+            isFunctionApp = `${site['Kind']}`.toLowerCase().indexOf('functionapp') > -1;
+          }
+          this.tools.find(tool => tool.id === 'kustocopilot').visible = results[0] || (results[1] && isFunctionApp);
+          this.toolsCopy.find(tool => tool.id === 'kustocopilot').visible = results[0] || (results[1] && isFunctionApp);
+        }, error => {
+          this._telemetryService.logException(error, 'side-nav_ngOnInit_resourceReady', {armId: this.resourceService.getCurrentResourceId(false), userId: this.getUserId(),  message: 'Error while determining if KQL Assistant is enabled'})
+          console.error('Error while determining if KQL Assistant is enabled');
+          console.error(error);
+        });
+      }, error => {
+        this._telemetryService.logException(error, 'side-nav_ngOnInit_forkjoin', {armId: this.resourceService.getCurrentResourceId(false), userId: this.getUserId(), message: 'Error while determining if KQL Assistant is enabled'})
+        console.error('Error while determining if KQL Assistant is enabled');
+        console.error(error);
       });
     });
     this._documentationService.getDocsRepoSettings().subscribe(settings => {
@@ -378,6 +411,7 @@ export class SideNavComponent implements OnInit {
 
         this.categories = this.categories.sort((a, b) => a.label === 'Uncategorized' ? 1 : (a.label > b.label ? 1 : -1));
         this.categoriesCopy = this.deepCopyArray(this.categories);
+
         this.detectorsLoading = false;
         this._telemetryService.logPageView(TelemetryEventNames.SideNavigationLoaded, {});
       }
@@ -633,7 +667,7 @@ export class SideNavComponent implements OnInit {
   private checkMenuItemMatchesWithSearchTerm(item: CollapsibleMenuItem, searchValue: string) {
     if (searchValue == null || searchValue.length === 0) return true;
     if (item == null || item.id == null || item.label == null) return false;
-    return StringUtilities.IndexOf(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || StringUtilities.IndexOf(item.id?.toLowerCase(), searchValue.toLowerCase()) >= 0;
+    return FastSearch.fast_search(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || FastSearch.fast_search(item.id?.toLowerCase(), searchValue.toLowerCase()) >= 0;
   }
 
   private contSubMenuItems(items: CollapsibleMenuItem[]): number {
@@ -645,7 +679,6 @@ export class SideNavComponent implements OnInit {
     }
     return count;
   }
-
 }
 
 @Pipe({

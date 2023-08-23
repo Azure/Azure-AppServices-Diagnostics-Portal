@@ -11,15 +11,15 @@ export class GenericOpenAIChatService {
     return of(false);
   }
 
-  public generateTextCompletion(queryModel: TextCompletionModel, customPrompt: string = '', caching: boolean = true): Observable<ChatResponse> {
+  public generateTextCompletion(queryModel: TextCompletionModel, customPrompt: string = '', caching: boolean = true, insertCustomPromptAtEnd:boolean = false): Observable<ChatResponse> {
     return null;
   }
 
-  public getChatCompletion(queryModel: ChatCompletionModel, customPrompt: string = ''): Observable<ChatResponse> {
+  public getChatCompletion(queryModel: ChatCompletionModel, customPrompt: string = '', autoAddResourceSpecificInfo:boolean = true): Observable<ChatResponse> {
     return null;
   }
 
-  public sendChatMessage(queryModel: ChatCompletionModel, customPrompt: string = ''): Observable<{ sent: boolean, failureReason: string }> {
+  public sendChatMessage(queryModel: ChatCompletionModel, customPrompt: string = '', autoAddResourceSpecificInfo:boolean = true): Observable<{ sent: boolean, failureReason: string }> {
     return null;
   };
 
