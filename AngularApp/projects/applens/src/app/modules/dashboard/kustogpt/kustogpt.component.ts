@@ -142,12 +142,12 @@ export class KustoGPTComponent {
   }
 
   onBeforeSubmit = (chatFeedbackModel:ChatFeedbackModel): Observable<ChatFeedbackModel> => {
-    if(chatFeedbackModel && chatFeedbackModel.expectedResponse && !StringUtilities.IsNullOrWhiteSpace(chatFeedbackModel.expectedResponse) && chatFeedbackModel.expectedResponse.length > 5) {
+    if(chatFeedbackModel && chatFeedbackModel.expectedResponse && !StringUtilities.IsNullOrWhiteSpace(chatFeedbackModel.expectedResponse) && chatFeedbackModel.expectedResponse.length < 5) {
       chatFeedbackModel.validationStatus.succeeded = false;
       chatFeedbackModel.validationStatus.validationStatusResponse = 'Response must be a Kusto query.';
     }
     else {
-      let queryTextFindings = KustoUtilities.RunBestPracticeChecks(`${this._resourceService.ArmResource.provider}`, `${this._resourceService.ArmResource.resourceTypeName}`, chatFeedbackModel.expectedResponse, this.chatIdentifier == this.antaresAnalyticsChatIdentifier );
+      let queryTextFindings = KustoUtilities.RunBestPracticeChecks(`${this._resourceService.ArmResource.provider}`, `${this._resourceService.ArmResource.resourceTypeName}`, chatFeedbackModel.expectedResponse, this.chatIdentifier == this.antaresAnalyticsChatIdentifier || this.isFunctionApp );
       if(queryTextFindings) {
         chatFeedbackModel.validationStatus.succeeded = false;
         chatFeedbackModel.validationStatus.validationStatusResponse = queryTextFindings;
