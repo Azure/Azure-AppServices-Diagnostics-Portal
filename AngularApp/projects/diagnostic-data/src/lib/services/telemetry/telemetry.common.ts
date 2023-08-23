@@ -182,7 +182,7 @@ export interface ITelemetryProvider {
 export class TelemetryUtilities {
     static getProductNameByTypeAndKind(type: string, kind: string): string {
         let productName = type;
-        if (type.toLowerCase() === "microsoft.web/sites") {
+        if (kind && type.toLowerCase() === "microsoft.web/sites") {
             if (kind.indexOf('linux') >= 0 && kind.indexOf('functionapp') >= 0) {
                 productName = "Azure Linux Function App";
             }
