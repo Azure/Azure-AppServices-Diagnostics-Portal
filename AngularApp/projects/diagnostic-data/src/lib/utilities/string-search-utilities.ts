@@ -1,41 +1,3 @@
-//Boyer-Moore-Sunday search algorithm
-export function boyerMooreSundayStringSearch(text: string, pattern: string): number {
-    const n = text.length;
-    const m = pattern.length;
-
-    if (m === 0) return 0;
-    if (n < m) return -1;
-
-    const lastOccurrence = new Map<string, number>();
-    for (let i = 0; i < m; i++) {
-        lastOccurrence.set(pattern[i], i);
-    }
-
-    let i = 0;
-    while (i <= n - m) {
-        let j = 0;
-        while (j < m && pattern[j] === text[i + j]) {
-            j++;
-        }
-
-        if (j === m) {
-            return i;
-        }
-
-        if (i + m < n) {
-            const nextChar = text[i + m];
-            const jump = m - (lastOccurrence.get(nextChar) || -1);
-            i += jump;
-        } else {
-            i++;
-        }
-    }
-
-    return -1;
-}
-
-//From https://github.com/python/cpython/blob/main/Objects/stringlib/fastsearch.h
-//
 export class FastSearch {
     private static readonly STRINGLIB_BLOOM_WIDTH = 32;
 
@@ -47,6 +9,7 @@ export class FastSearch {
         return ((mask & (1 << (ch & (this.STRINGLIB_BLOOM_WIDTH - 1)))) !== 0);
     }
 
+    //From https://github.com/python/cpython/blob/main/Objects/stringlib/fastsearch.h
     public static fast_search(text: string, pattern: string): number {
         const n = text.length;
         const m = pattern.length;
@@ -94,6 +57,42 @@ export class FastSearch {
                 }
             }
         }
+        return -1;
+    }
+
+    //Boyer-Moore-Sunday search algorithm
+    static boyerMooreSundayStringSearch(text: string, pattern: string): number {
+        const n = text.length;
+        const m = pattern.length;
+    
+        if (m === 0) return 0;
+        if (n < m) return -1;
+    
+        const lastOccurrence = new Map<string, number>();
+        for (let i = 0; i < m; i++) {
+            lastOccurrence.set(pattern[i], i);
+        }
+    
+        let i = 0;
+        while (i <= n - m) {
+            let j = 0;
+            while (j < m && pattern[j] === text[i + j]) {
+                j++;
+            }
+    
+            if (j === m) {
+                return i;
+            }
+    
+            if (i + m < n) {
+                const nextChar = text[i + m];
+                const jump = m - (lastOccurrence.get(nextChar) || -1);
+                i += jump;
+            } else {
+                i++;
+            }
+        }
+    
         return -1;
     }
 }

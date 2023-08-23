@@ -5,7 +5,7 @@ import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from 
 import { ResourceService } from '../../../shared/services/resource.service';
 import { CollapsibleMenuItem } from '../../../collapsible-menu/components/collapsible-menu-item/collapsible-menu-item.component';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
-import { DetectorMetaData, DetectorType, FastSearch, boyerMooreSundayStringSearch } from 'diagnostic-data';
+import { DetectorMetaData, DetectorType, FastSearch } from 'diagnostic-data';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
 import { environment } from '../../../../environments/environment';
@@ -19,7 +19,6 @@ import { DocumentationFilesList } from './documentationFilesList';
 import { ApplensOpenAIChatService } from '../../../shared/services/applens-openai-chat.service';
 import { PortalUtils } from '../../../shared/utilities/portal-util';
 import { SiteService } from '../../../shared/services/site.service';
-import { error } from 'console';
 
 @Component({
   selector: 'side-nav',
@@ -68,7 +67,6 @@ export class SideNavComponent implements OnInit {
   workflowsEnabled: boolean = false;
   showChatGPT: boolean = false;
   askAppLensEnabled: boolean = false;  
-  detectorSuffixArrayMap: Map<string, Array<string>> = new Map<string, Array<string>>();
 
 
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService,
@@ -668,9 +666,6 @@ export class SideNavComponent implements OnInit {
 
   private checkMenuItemMatchesWithSearchTerm(item: CollapsibleMenuItem, searchValue: string) {
     if (searchValue == null || searchValue.length === 0) return true;
-    // return StringUtilities.IndexOf(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || StringUtilities.IndexOf(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0;
-    //return boyerMooreSundayStringSearch(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || boyerMooreSundayStringSearch(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0;
-    console.log("Search Result", item.label.toLowerCase(), searchValue.toLowerCase(), FastSearch.fast_search(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0);
     return FastSearch.fast_search(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || FastSearch.fast_search(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0;
   }
 
