@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ChatMessage, ChatModel, ChatResponse, ChatUIContextService, CreateChatCompletionModel, CreateTextCompletionModel, 
-  FeedbackOptions, GenericOpenAIChatService, MessageRenderingType, MessageSource, MessageStatus, ResponseTokensSize, StringUtilities, TelemetryService, TextModels, TimeUtilities } from 'diagnostic-data';
+  FeedbackOptions, GenericOpenAIChatService, KeyValuePair, MessageRenderingType, MessageSource, MessageStatus, ResponseTokensSize, StringUtilities, TelemetryService, TextModels, TimeUtilities } from 'diagnostic-data';
 import { ApplensGlobal } from '../../../applens-global';
 import { IButtonStyles, ITextFieldProps, PanelType } from 'office-ui-fabric-react';
 import { Observable, Subscription, of } from 'rxjs';
@@ -8,7 +8,6 @@ import {v4 as uuid} from 'uuid';
 import { map } from 'rxjs/operators';
 import { ChatFeedbackAdditionalField, ChatFeedbackModel, ChatFeedbackPanelOpenParams, ChatFeedbackValidationStatus, FeedbackExplanationModes } from '../../../shared/models/openAIChatFeedbackModel';
 import { AdalService } from 'adal-angular4';
-import { KeyValuePair } from 'dist/diagnostic-data/lib/models/common-models';
 import { ResourceService } from '../../../shared/services/resource.service';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 

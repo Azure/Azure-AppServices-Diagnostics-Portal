@@ -1,13 +1,12 @@
 import { catchError, map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from, of } from 'rxjs';
-import { TextCompletionModel, ChatCompletionModel, OpenAIAPIResponse, ChatResponse, TelemetryService } from "diagnostic-data";
+import { TextCompletionModel, ChatCompletionModel, OpenAIAPIResponse, ChatResponse, TelemetryService,KeyValuePair } from "diagnostic-data";
 import { DiagnosticApiService } from './diagnostic-api.service';
 import { HttpHeaders } from "@angular/common/http";
 import { ResourceService } from './resource.service';
 import { environment } from '../../../environments/environment';
 import * as signalR from "@microsoft/signalr";
-import { KeyValuePair } from 'dist/diagnostic-data/lib/models/common-models';
 import { AdalService } from 'adal-angular4';
 
 @Injectable()

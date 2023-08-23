@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
-import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions, StringUtilities, TelemetryService } from 'diagnostic-data';
+import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions, StringUtilities, TelemetryService,KeyValuePair } from 'diagnostic-data';
 import { ApplensGlobal } from '../../../applens-global';
 import { ChatFeedbackAdditionalField, ChatFeedbackModel, ChatFeedbackPanelOpenParams, FeedbackExplanationModes } from '../../../shared/models/openAIChatFeedbackModel';
 import { Observable, of } from 'rxjs';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { ResourceService } from '../../../shared/services/resource.service';
-import { KeyValuePair } from 'dist/diagnostic-data/lib/models/common-models';
 import { SiteService } from '../../../shared/services/site.service';
 import { ObserverSiteInfo } from '../../../shared/models/observer';
 import { KustoUtilities } from 'projects/diagnostic-data/src/lib/utilities/kusto-utilities';
