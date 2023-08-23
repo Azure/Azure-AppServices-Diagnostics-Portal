@@ -1,5 +1,5 @@
 import { AdalService } from 'adal-angular4';
-import { DetectorMetaData, DetectorResponse, ExtendDetectorMetaData, QueryResponse, TelemetryService } from 'diagnostic-data';
+import { ChatCompletionModel, DetectorMetaData, DetectorResponse, ExtendDetectorMetaData, QueryResponse, TelemetryService } from 'diagnostic-data';
 import { map, retry, catchError, tap } from 'rxjs/operators';
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
@@ -16,6 +16,7 @@ import { List } from 'office-ui-fabric-react';
 import { dynamicExpressionBody } from '../../modules/dashboard/workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../models/devopsCommitStatus';
+import { ChatFeedbackPostBody } from '../models/openAIChatFeedbackModel';
 
 
 @Injectable()
@@ -728,5 +729,33 @@ export class DiagnosticApiService {
       'TargetResourceType': targetResourceType
     };
     return this.invoke<any>(path, HttpMethod.POST, body, false, false, true, false);
+  }
+
+  public saveChatFeedback(chatFeedback: ChatFeedbackPostBody): Observable<ChatFeedbackPostBody> {
+    let path = 'api/openai/saveChatFeedback';
+    return this.post<ChatFeedbackPostBody, ChatFeedbackPostBody>(path, chatFeedback).pipe(map(res => {
+      return res;
+    }));
+  }
+
+  public getRelatedFeedbackListFromChatHistory(chatCompletionModel: ChatCompletionModel): Observable<ChatFeedbackPostBody[]> {
+    let path = 'api/openai/getRelatedFeedbackListFromChatHistory';
+    return this.post<ChatFeedbackPostBody[], ChatCompletionModel>(path, chatCompletionModel).pipe(map(res => {
+      return res;
+    }));
+  }
+
+  public isCopilotEnabled(resourceProvider:string, resourceType:string, chatIdentifier:string): Observable<boolean> {
+    let path = `api/openai/isCopilotEnabled/${resourceProvider}/${resourceType}/${chatIdentifier}`;
+    return this.get<boolean>(path).pipe(map((res) => {
+      return res;
+    }));
+  }
+
+  public isFeedbackSubmissionEnabled(resourceProvider:string, resourceType:string, chatIdentifier:string): Observable<boolean> {
+    let path = `api/openai/isFeedbackSubmissionEnabled/${resourceProvider}/${resourceType}/${chatIdentifier}`;
+    return this.get<boolean>(path).pipe(map((res) => {
+      return res;
+    }));
   }
 }

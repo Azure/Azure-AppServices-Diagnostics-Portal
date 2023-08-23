@@ -1,10 +1,10 @@
 <div [attr.name]="data.name" #canvasContent>
-  <div class="panel panel-default">
+  <div class="panel panel-default" [ngClass]="{'min-width-detector': data.detectorResponse}">
     <div class="panel-heading">
 
       <div class="node-heading">
         <status-icon class="mr-3" [status]="status"></status-icon>
-        <div class="mr-3" tabindex="0"><strong [attr.aria-label]="data.title" >{{ data.title }}</strong></div>
+        <div class="mr-3" tabindex="0"><strong [attr.aria-label]="data.title">{{ data.title }}</strong></div>
         <div class="tool-tip-icon">
           <div class="mr-2">
             <i *ngIf="isLoading && ((data.children && data.children.length > 0) || data.type.toLowerCase() === 'input')"
@@ -40,6 +40,11 @@
       <div *ngIf="data.description" tabindex="0" class="description-text">{{ data.description }}</div>
       <div *ngIf="data.markdownText" tabindex="0" class="markdown-text">
         <markdown-text [markdownData]="data.markdownText" [isMarkdownView]="true"></markdown-text>
+      </div>
+      <div #detectorViewDiv *ngIf="data.detectorResponse" class="mr-3 min-width-detector-section">
+        <detector-view [detectorResponse]="data.detectorResponse" [developmentMode]="false" hideDetectorControl="true"
+          [startTime]="startTime" [endTime]="endTime">
+        </detector-view>
       </div>
       <workflow-accept-userinput *ngIf="data.inputNodeSettings" [data]="data"
         #acceptUserInput></workflow-accept-userinput>

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace AppLensV3.Services
 {
@@ -33,6 +34,54 @@ namespace AppLensV3.Services
         Task StreamChatCompletion(List<ChatMessage> chatMessages, ChatMetaData metadata, Func<ChatStreamResponse, Task> onMessageStreamAsyncCallback, CancellationToken cancellationToken = default);
 
         bool IsEnabled();
+
+        /// <summary>
+        /// Returns the last user message in the form of a question that the user would ask AI by looking at the conversation history. The returned question is the users intent.
+        /// This is helpful while looking up articles/documents in vectorDB.
+        /// </summary>
+        /// <param name="chatMessages">Conversation history.</param>
+        /// <returns>A string representing the userss intent in their last message to the system represented as a question.</returns>
+        Task<string> PrepareCompositeUserQuestion(List<ChatMessage> chatMessages, ChatMetaData metadata);
+
+        /// <summary>
+        /// Looks up feedback closely matching the query and returns a list of matching feedbacks.
+        /// </summary>
+        /// <param name="chatIdentifier">Chat identifier representing the bot.</param>
+        /// <param name="provider">Provider for the RP.</param>
+        /// <param name="resourceType">Resource type for the RP.</param>
+        /// <param name="chatMessages">Conversation history which will be analyzed to create a final user intent to do the lookup against.</param>
+        /// <param name="feedbackSearchSettings">Helps configure how many feedback elements should be returned and how strict the matching should be.</param>
+        /// <returns>A list of chat feedbacks that closely matched the query.</returns>
+        Task<List<ChatFeedback>> GetChatFeedbackRaw(string chatIdentifier, string provider, string resourceType, List<ChatMessage> chatMessages, ChatFeedbackSearchSettings feedbackSearchSettings = null);
+
+        /// <summary>
+        /// Constructs an index for the feedback using chat metadata (chatIdentifier, provider and resourceType) to look up the feedback closely matching the query and returns a list of matching feedbacks.
+        /// </summary>
+        /// <param name="metadata">Chat metadata.</param>
+        /// <param name="chatMessages">Conversation history which will be analyzed to create a final user intent to do the lookup against.</param>
+        /// <param name="feedbackSearchSettings">Helps configure how many feedback elements should be returned and how strict the matching should be.</param>
+        /// <returns>A list of chat feedbacks that closely matched the query.</returns>
+        Task<List<ChatFeedback>> GetChatFeedbackRaw(ChatMetaData metadata, List<ChatMessage> chatMessages, ChatFeedbackSearchSettings feedbackSearchSettings = null);
+
+        /// <summary>
+        /// Looks up feedback closely matching the query and returns a list of matching feedbacks.
+        /// </summary>
+        /// <param name="chatIdentifier">Chat identifier representing the bot.</param>
+        /// <param name="provider">Provider for the RP.</param>
+        /// <param name="resourceType">Resource type for the RP.</param>
+        /// <param name="query">Question to lookup against in vectorDB.</param>
+        /// <param name="feedbackSearchSettings">Helps configure how many feedback elements should be returned and how strict the matching should be.</param>
+        /// <returns>A list of chat feedbacks that closely matched the query.</returns>
+        Task<List<ChatFeedback>> GetChatFeedbackRaw(string chatIdentifier, string provider, string resourceType, string query, ChatFeedbackSearchSettings feedbackSearchSettings = null);
+
+        /// <summary>
+        /// Constructs an index for the feedback using chat metadata (chatIdentifier, provider and resourceType) to look up the feedback closely matching the query and returns a list of matching feedbacks.
+        /// </summary>
+        /// <param name="metadata">Chat metadata.</param>
+        /// <param name="query">Question to lookup against in vectorDB.</param>
+        /// <param name="feedbackSearchSettings">Helps configure how many feedback elements should be returned and how strict the matching should be.</param>
+        /// <returns>A list of chat feedbacks that closely matched the query.</returns>
+        Task<List<ChatFeedback>> GetChatFeedbackRaw(ChatMetaData metadata, string query, ChatFeedbackSearchSettings feedbackSearchSettings = null);
     }
 
     public class OpenAIServiceDisabled : IOpenAIService
@@ -52,6 +101,31 @@ namespace AppLensV3.Services
         {
             return Task.CompletedTask;
         }
+
+        public Task<string> PrepareCompositeUserQuestion(List<ChatMessage> chatMessages, ChatMetaData metadata)
+        {
+            return null;
+        }
+
+        public Task<List<ChatFeedback>> GetChatFeedbackRaw(string chatIdentifier, string provider, string resourceType, List<ChatMessage> chatMessages, ChatFeedbackSearchSettings feedbackSearchSettings = null)
+        {
+            return null;
+        }
+
+        public Task<List<ChatFeedback>> GetChatFeedbackRaw(ChatMetaData metadata, List<ChatMessage> chatMessages, ChatFeedbackSearchSettings feedbackSearchSettings = null)
+        {
+            return null;
+        }
+
+        public Task<List<ChatFeedback>> GetChatFeedbackRaw(string chatIdentifier, string provider, string resourceType, string query, ChatFeedbackSearchSettings feedbackSearchSettings = null)
+        {
+            return null;
+        }
+
+        public Task<List<ChatFeedback>> GetChatFeedbackRaw(ChatMetaData metadata, string query, ChatFeedbackSearchSettings feedbackSearchSettings = null)
+        {
+            return null;
+        }
     }
 
     public class OpenAIChainResponse
@@ -69,7 +143,7 @@ namespace AppLensV3.Services
         /// <summary>
         /// Gets or sets a value that will be used to make a call to OpenAI service as a part of chaining operation.
         /// </summary>
-        public ChatCompletionsOptions ChatCompletionsOptionsToUseInChain { get; set; } = null;
+        public ExtendedChatCompletionsOptions ChatCompletionsOptionsToUseInChain { get; set; } = null;
     }
 
     public class OpenAIService : IOpenAIService
@@ -90,13 +164,11 @@ namespace AppLensV3.Services
         private readonly ICognitiveSearchQueryService _cognitiveSearchQueryService;
         private ConcurrentDictionary<string, Task<string>> chatTemplateFileCache;
         private string chatHubRedisKeyPrefix;
-        private Dictionary<string, AnalyticsKustoTableDetails> analyticsKustoTables = new Dictionary<string, AnalyticsKustoTableDetails>(StringComparer.OrdinalIgnoreCase);
-        private string analyticsKustoSecondPrompt = string.Empty;
         private ConcurrentDictionary<string, ChatCompletionCustomHandler> customHandlerForChatCompletion = new ConcurrentDictionary<string, ChatCompletionCustomHandler>(StringComparer.OrdinalIgnoreCase);
 
         // Delegate gets chatCompletionOptions which will have the corresponding template file and past user messages already loaded.
         // It also gets the chatMessages and the chatMetaData in case the custom logic needs to prepare its independent set of messages.
-        private delegate Task<OpenAIChainResponse> ChatCompletionCustomHandler(List<ChatMessage> chatMessages, ChatMetaData metadata, ChatCompletionsOptions chatCompletionsOptions, ILogger<OpenAIService> logger);
+        private delegate Task<OpenAIChainResponse> ChatCompletionCustomHandler(List<ChatMessage> chatMessages, ChatMetaData metadata, ExtendedChatCompletionsOptions chatCompletionsOptions, ILogger<OpenAIService> logger);
 
         public OpenAIService(IConfiguration config, IOpenAIRedisService redisService, ILogger<OpenAIService> logger, ICognitiveSearchQueryService cognitiveSearchQueryService)
         {
@@ -119,9 +191,6 @@ namespace AppLensV3.Services
                 InitializeHttpClient();
                 InitializeOpenAIClient();
                 InitializeChatTemplateFileCache();
-
-                // Initialize custom handlers for chat completion API. This allows for chaining GPT responses.
-                customHandlerForChatCompletion["analyticskustocopilot"] = HandleAnalyticsKustoCopilot;
             }
         }
 
@@ -170,6 +239,86 @@ namespace AppLensV3.Services
                     return null;
                 }
             }
+            return null;
+        }
+
+        public async Task<List<ChatFeedback>> GetChatFeedbackRaw(string chatIdentifier, string provider, string resourceType, List<ChatMessage> chatMessages, ChatFeedbackSearchSettings feedbackSearchSettings = null)
+        {
+            ChatMetaData metadata = new ChatMetaData()
+            {
+                ChatIdentifier = chatIdentifier,
+                Provider = provider,
+                ResourceType = resourceType
+            };
+            return await GetChatFeedbackRaw(metadata, chatMessages, feedbackSearchSettings);
+        }
+
+        public async Task<List<ChatFeedback>> GetChatFeedbackRaw(ChatMetaData metadata, List<ChatMessage> chatMessages, ChatFeedbackSearchSettings feedbackSearchSettings = null)
+        {
+            if (chatMessages?.Count > 0)
+            {
+                string compositeUserQuestion = await PrepareCompositeUserQuestion(chatMessages, metadata);
+
+                if (!string.IsNullOrWhiteSpace(compositeUserQuestion))
+                {
+                    return await GetChatFeedbackRaw(metadata, compositeUserQuestion, feedbackSearchSettings);
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<List<ChatFeedback>> GetChatFeedbackRaw(string chatIdentifier, string provider, string resourceType, string query, ChatFeedbackSearchSettings feedbackSearchSettings = null)
+        {
+            ChatMetaData metadata = new ChatMetaData()
+            {
+                ChatIdentifier = chatIdentifier,
+                Provider = provider,
+                ResourceType = resourceType
+            };
+            return await GetChatFeedbackRaw(metadata, query, feedbackSearchSettings);
+        }
+
+        public async Task<List<ChatFeedback>> GetChatFeedbackRaw(ChatMetaData metadata, string query, ChatFeedbackSearchSettings feedbackSearchSettings = null)
+        {
+            try
+            {
+                if (feedbackSearchSettings == null)
+                {
+                    feedbackSearchSettings = new ChatFeedbackSearchSettings();
+                }
+
+                if (!string.IsNullOrWhiteSpace(ChatFeedback.GetPartitionKey(metadata.ChatIdentifier, metadata.Provider, metadata.ResourceType)))
+                {
+                    string index = ChatFeedback.GetPartitionKey(metadata.ChatIdentifier, metadata.Provider, metadata.ResourceType);
+                    var documents = await _cognitiveSearchQueryService.SearchDocuments(query, index, feedbackSearchSettings.NumDocuments, feedbackSearchSettings.MinScore);
+                    if (documents != null && documents.Count > 0)
+                    {
+                        List<ChatFeedback> feedbackList = new List<ChatFeedback>();
+                        foreach (var document in documents)
+                        {
+                            if (!string.IsNullOrWhiteSpace(document.JsonPayload))
+                            {
+                                try
+                                {
+                                    feedbackList.Add(JsonConvert.DeserializeObject<ChatFeedback>(document.JsonPayload));
+                                }
+                                catch
+                                {
+                                    // If one deserialization fails, move to processing next feedback
+                                }
+                            }
+                        }
+
+                        return feedbackList;
+                    }
+                }
+            }
+            catch
+            {
+                return null;
+            }
+
             return null;
         }
 
@@ -234,7 +383,7 @@ namespace AppLensV3.Services
                 throw new ArgumentNullException("chatMessages cannot be null or empty");
             }
 
-            ChatCompletionsOptions chatCompletionsOptions = await PrepareChatCompletionOptions(chatMessages, metadata);
+            ExtendedChatCompletionsOptions chatCompletionsOptions = await PrepareChatCompletionOptions(chatMessages, metadata);
 
             Response<ChatCompletions> response = null;
             OpenAIChainResponse chainResponse = null;
@@ -253,7 +402,13 @@ namespace AppLensV3.Services
                 response = await openAIClient.GetChatCompletionsAsync(metadata.ChatModel == "gpt4" || string.IsNullOrWhiteSpace(openAIGPT35Model) ? openAIGPT4Model: openAIGPT35Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
             }
 
-            return new ChatResponse(response);
+            ChatResponse chatResponse = new ChatResponse(response);
+            if (chatCompletionsOptions?.FeedbackIdsUsed.Count > 0)
+            {
+                chatResponse.FeedbackIds.AddRange(chatCompletionsOptions.FeedbackIdsUsed);
+            }
+
+            return chatResponse;
         }
 
         /// <inheritdoc/>
@@ -266,7 +421,7 @@ namespace AppLensV3.Services
 
             string finishReason = string.Empty;
 
-            ChatCompletionsOptions chatCompletionsOptions = await PrepareChatCompletionOptions(chatMessages, metadata);
+            ExtendedChatCompletionsOptions chatCompletionsOptions = await PrepareChatCompletionOptions(chatMessages, metadata);
             OpenAIChainResponse chainResponse = null;
             if (!string.IsNullOrWhiteSpace(metadata.ChatIdentifier) && customHandlerForChatCompletion.TryGetValue(metadata.ChatIdentifier, out ChatCompletionCustomHandler customHandler))
             {
@@ -284,7 +439,9 @@ namespace AppLensV3.Services
                         await onMessageStreamAsyncCallback(new ChatStreamResponse(content: chainResponse.ChatResponseToUseInShortCircuit.Text));
                     }
 
-                    await onMessageStreamAsyncCallback(new ChatStreamResponse(finishReason: "stop"));
+                    await onMessageStreamAsyncCallback(new ChatStreamResponse(
+                        content: chatCompletionsOptions.FeedbackIdsUsed.Count > 0 ? JsonConvert.SerializeObject(chatCompletionsOptions.FeedbackIdsUsed) : string.Empty,
+                        finishReason: "stop"));
                 }
             }
             else
@@ -313,7 +470,11 @@ namespace AppLensV3.Services
 
                 if (onMessageStreamAsyncCallback != default)
                 {
-                    await onMessageStreamAsyncCallback(new ChatStreamResponse(finishReason: finishReason));
+                    List<string> feedbackIdsToReturn = new List<string>();
+                    feedbackIdsToReturn = (chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions)?.FeedbackIdsUsed;
+                    await onMessageStreamAsyncCallback(new ChatStreamResponse(
+                        content: feedbackIdsToReturn?.Count > 0 ? JsonConvert.SerializeObject(feedbackIdsToReturn) : string.Empty,
+                        finishReason: finishReason));
                 }
             }
         }
@@ -370,122 +531,36 @@ namespace AppLensV3.Services
             return await chatTemplateFileCache[templateCacheKey];
         }
 
-        #region Delegate implementation for custom chat completion handlers
-        private async Task<OpenAIChainResponse> HandleAnalyticsKustoCopilot(List<ChatMessage> chatMessages, ChatMetaData metadata, ChatCompletionsOptions chatCompletionsOptions, ILogger<OpenAIService> logger)
+        public async Task<string> PrepareCompositeUserQuestion(List<ChatMessage> chatMessages, ChatMetaData metadata)
         {
-            try
+            if (chatMessages?.Count == 1 && !string.IsNullOrWhiteSpace(chatMessages[0].Content))
             {
-                string latestUserQuestion = chatMessages.Last(m => m.Role == ChatRole.User).Content;
-                string chainingQuestion = $"Which table(s) will help answer the following question? If more than one table is found, return a comma seperated list.{Environment.NewLine}{latestUserQuestion}";
-
-                // Replace the users question with a synthethic intermediate question.
-                chatCompletionsOptions.Messages.Remove(chatCompletionsOptions.Messages.Last(m => m.Role == ChatRole.User));
-                chatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.User, chainingQuestion));
-
-                Response<ChatCompletions> intermediateResponse = await openAIClient.GetChatCompletionsAsync(openAIGPT4Model, chatCompletionsOptions);
-
-                string tableNamesCSV = intermediateResponse?.Value?.Choices?.Count > 0 && !string.IsNullOrWhiteSpace(intermediateResponse.Value.Choices[0]?.Message?.Content)
-                    ? intermediateResponse.Value.Choices[0].Message.Content : string.Empty;
-
-                if (string.IsNullOrWhiteSpace(tableNamesCSV))
-                {
-                    return new OpenAIChainResponse()
-                    {
-                        ShortCircuitReason = "Unable to identify tables necessary to construct the query",
-                        ChatResponseToUseInShortCircuit = new ChatResponse("Unable to identify related tables. Please help me learn, submit the expected query along with your question to Applens team."),
-                        ChatCompletionsOptionsToUseInChain = null
-                    };
-                }
-
-                #region Fetch details of relevent tables
-
-                StringBuilder secondQuestion = new StringBuilder();
-                foreach (string tableName in tableNamesCSV.Split(","))
-                {
-                    if (analyticsKustoTables.Count == 0)
-                    {
-                        string configString = await GetChatTemplateContent("analyticskustotableconfig");
-                        JObject jObject = JObject.Parse(configString);
-                        JArray tablesList = (jObject["Tables"] ?? new JObject()).ToObject<JArray>();
-                        foreach (var element in tablesList)
-                        {
-                            if (!string.IsNullOrWhiteSpace((element["TableName"] ?? string.Empty).ToString()) && !string.IsNullOrWhiteSpace((element["SchemaWithNotes"] ?? string.Empty).ToString()))
-                            {
-                                analyticsKustoTables.Add(element["TableName"].ToString().Trim(),
-                                    new AnalyticsKustoTableDetails()
-                                    {
-                                        TableName = element["TableName"].ToString().Trim(),
-                                        Description = (element["Description"] ?? string.Empty).ToString(),
-                                        SchemaWithNotes = (string)element["SchemaWithNotes"]
-                                    }
-                                 );
-                            }
-                        }
-                    }
-
-                    if (analyticsKustoTables.TryGetValue(tableName.Trim(), out AnalyticsKustoTableDetails tableDetails))
-                    {
-                        secondQuestion.AppendLine($"Table:{tableDetails.TableName}");
-                        if (!string.IsNullOrWhiteSpace(tableDetails.Description))
-                        {
-                            secondQuestion.AppendLine($"Description:{tableDetails.Description}");
-                        }
-
-                        secondQuestion.AppendLine($"SchemaWithNotes:{tableDetails.SchemaWithNotes}");
-                        secondQuestion.AppendLine();
-                    }
-                }
-
-                #endregion
-
-                if (secondQuestion.Length < 5)
-                {
-                    // We could not identify the table or the attempted question does not adhere to the rules set for the copilot. Terminate processing and return a response.
-                    OpenAIChainResponse returnResponse = new OpenAIChainResponse()
-                    {
-                        ShortCircuitReason = "Unable to identify tables necessary to construct the query",
-                        ChatResponseToUseInShortCircuit = new ChatResponse(tableNamesCSV),
-                        ChatCompletionsOptionsToUseInChain = null
-                    };
-
-                    return returnResponse;
-                }
-
-                if (string.IsNullOrWhiteSpace(analyticsKustoSecondPrompt))
-                {
-                    analyticsKustoSecondPrompt = await GetChatTemplateContent("analyticskustocopilotsecondprompt");
-                    JObject jObject = JObject.Parse(analyticsKustoSecondPrompt);
-                    analyticsKustoSecondPrompt = (jObject["systemPrompt"] ?? string.Empty).ToString();
-                }
-
-                secondQuestion.AppendLine(analyticsKustoSecondPrompt);
-                secondQuestion.AppendLine($"Note: The current timestamp is {DateTime.UtcNow.ToString("yyyy-MM-dd HH:MM:SS")} UTC");
-
-                // Remove the original system prompt and replace it with the newly constructed system prompt.
-                chatCompletionsOptions.Messages.RemoveAt(0);
-                chatCompletionsOptions.Messages.Insert(0, new ChatMessage(ChatRole.System, secondQuestion.ToString()));
-
-                // Remove the synthetic question that was added earlier and add the users question back.
-                chatCompletionsOptions.Messages.Remove(chatCompletionsOptions.Messages.Last(m => m.Role == ChatRole.User));
-                chatCompletionsOptions.Messages.Add(new ChatMessage(ChatRole.User, latestUserQuestion));
-
-                return new OpenAIChainResponse()
-                {
-                    ChatResponseToUseInShortCircuit = null,
-                    ChatCompletionsOptionsToUseInChain = chatCompletionsOptions
-                };
+                return chatMessages[0].Content;
             }
-            catch (Exception ex)
+
+            string compositeQuestionCreatorTemplateContent = await GetChatTemplateContent("compositequestioncreator");
+            JObject jObject = JObject.Parse(compositeQuestionCreatorTemplateContent);
+            StringBuilder systemPromptSb = new StringBuilder();
+
+            systemPromptSb.AppendLine("Below is a chat history between a human and an AI assistant.");
+            systemPromptSb.AppendLine();
+            foreach (ChatMessage chatMessage in chatMessages)
             {
-                logger.LogError(ex.Message);
-                throw;
+                systemPromptSb.AppendLine($"{chatMessage.Role}:{chatMessage.Content}");
             }
+
+            systemPromptSb.AppendLine();
+            systemPromptSb.AppendLine($"{jObject["systemPrompt"] ?? string.Empty}");
+            string systemPrompt = systemPromptSb.ToString();
+            systemPrompt = systemPrompt.Replace("<<CURRENT_DATETIME>>", DateTime.UtcNow.ToString() + " UTC");
+            systemPrompt = systemPrompt.Replace("<<ARM_RESOURCE_ID>>", metadata.ArmResourceId);
+            ChatResponse response = await RunTextCompletion(new CompletionModel() { Payload = new GPT3CompletionModelPayload(systemPrompt) }, false);
+            return response.Text;
         }
-        #endregion
 
-        private async Task<ChatCompletionsOptions> PrepareChatCompletionOptions(List<ChatMessage> chatMessages, ChatMetaData metadata)
+        private async Task<ExtendedChatCompletionsOptions> PrepareChatCompletionOptions(List<ChatMessage> chatMessages, ChatMetaData metadata)
         {
-            var chatCompletionsOptions = new ChatCompletionsOptions()
+            var chatCompletionsOptions = new ExtendedChatCompletionsOptions()
             {
                 Temperature = 0.3F,
                 MaxTokens = metadata.MaxTokens <= MaxTokensAllowed ? metadata.MaxTokens : MaxTokensAllowed,
@@ -500,31 +575,118 @@ namespace AppLensV3.Services
 
                 JObject jObject = JObject.Parse(chatTemplateContent);
                 string systemPrompt = (jObject["systemPrompt"] ?? string.Empty).ToString();
-                // replace <<CURRENT_DATETIME>> with the current UTC Date time
-                systemPrompt = systemPrompt.Replace("<<CURRENT_DATETIME>>", DateTime.UtcNow.ToString() + "UTC");
-                
-                if (jObject["DocumentSearchSettings"] != null)
+
+                // Replace <<CURRENT_DATETIME>> with the current UTC Date time
+                systemPrompt = systemPrompt.Replace("<<CURRENT_DATETIME>>", DateTime.UtcNow.ToString() + " UTC");
+                systemPrompt = systemPrompt.Replace("<<ARM_RESOURCE_ID>>", metadata.ArmResourceId);
+                string compsiteUserQuestion = string.Empty;
+
+                ChatFeedbackSearchSettings feedbackSearchSettings = new ChatFeedbackSearchSettings();
+
+                if (jObject["DocumentSearchSettings"] != null || jObject["ChatFeedbackSearchSettings"] != null || systemPrompt.Contains(feedbackSearchSettings.ContentPlaceholder))
                 {
+                    Task<string> documentContentTask = null;
+                    DocumentSearchSettings documentSearchSettings = null;
+                    Task<List<ChatFeedback>> getFeedbackListRawTask = null;
                     try
                     {
-                        var documentSearchSettings = jObject["DocumentSearchSettings"].ToObject<DocumentSearchSettings>();
-                        var userQuery = chatMessages.Last().Content;
-                        string documentContent = await PrepareDocumentContent(documentSearchSettings, userQuery);
-                        if (!string.IsNullOrWhiteSpace(documentContent))
+                        compsiteUserQuestion = await PrepareCompositeUserQuestion(chatMessages, metadata);
+                        if (jObject["DocumentSearchSettings"] != null)
                         {
-                            if (systemPrompt.Contains(documentSearchSettings.DocumentContentPlaceholder))
+                            documentSearchSettings = jObject["DocumentSearchSettings"].ToObject<DocumentSearchSettings>();
+                            documentContentTask = PrepareDocumentContent(documentSearchSettings, compsiteUserQuestion);
+                        }
+
+                        if (jObject["ChatFeedbackSearchSettings"] != null || systemPrompt.Contains(feedbackSearchSettings.ContentPlaceholder))
+                        {
+                            feedbackSearchSettings = jObject["ChatFeedbackSearchSettings"] != null ? (jObject["ChatFeedbackSearchSettings"].ToObject<ChatFeedbackSearchSettings>() ?? feedbackSearchSettings) : feedbackSearchSettings;
+
+                            if (systemPrompt.Contains(feedbackSearchSettings.ContentPlaceholder))
                             {
-                                systemPrompt = systemPrompt.Replace(documentSearchSettings.DocumentContentPlaceholder, documentContent);
+                                ChatFeedbackSearchSettings clonedFeedbackSearchSettings = feedbackSearchSettings.Clone();
+                                clonedFeedbackSearchSettings.NumDocuments += 10; // Fetch more documents than were specified. This is to account for later filtering before they are added to the system prompt.
+                                getFeedbackListRawTask = GetChatFeedbackRaw(metadata, compsiteUserQuestion, clonedFeedbackSearchSettings);
                             }
-                            else
+                        }
+
+                        if (documentContentTask != null && documentSearchSettings != null)
+                        {
+                            string documentContent = await documentContentTask;
+                            if (!string.IsNullOrWhiteSpace(documentContent))
                             {
-                                systemPrompt = $"Here is some information that can help answer user queries:\n{documentContent}\n\n{systemPrompt}";
+                                if (systemPrompt.Contains(documentSearchSettings.DocumentContentPlaceholder))
+                                {
+                                    systemPrompt = systemPrompt.Replace(documentSearchSettings.DocumentContentPlaceholder, documentContent);
+                                }
+                                else
+                                {
+                                    systemPrompt = $"Here is some information that can help answer user queries:\n{documentContent}\n\n{systemPrompt}";
+                                }
                             }
+                        }
+
+                        if (getFeedbackListRawTask != null)
+                        {
+                            List<ChatFeedback> feedbackList = (await getFeedbackListRawTask) ?? new List<ChatFeedback>();
+
+                            if (metadata.ResourceSpecificInfo?.Count > 0)
+                            {
+                                // Match retrieved feedback based on resource specific Info.
+                                for (int i = feedbackList.Count - 1; i > -1; i--)
+                                {
+                                   if (!IsFeedbackApplicable(metadata, feedbackList[0]))
+                                   {
+                                        feedbackList.RemoveAt(i);
+                                   }
+                                }
+                            }
+
+                            if (feedbackList.Count > feedbackSearchSettings.NumDocuments)
+                            {
+                                // Optional, apply some semantic sorting to intelligently determine which feedbacks to retain out of the ones that matched.
+                                feedbackList = feedbackList.Take(feedbackSearchSettings.NumDocuments).ToList();
+                            }
+
+                            StringBuilder feedbackSb = new StringBuilder();
+                            foreach (ChatFeedback feedback in feedbackList)
+                            {
+                                feedbackSb.AppendLine($"Q:{feedback.UserQuestion}");
+                                feedbackSb.AppendLine($"A:{feedback.ExpectedResponse}");
+                                if (feedback.AdditionalFields?.Count > 0)
+                                {
+                                    List<string> additionalFields = new List<string>();
+                                    foreach (KeyValuePair<string, string> kvp in feedback.AdditionalFields)
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(kvp.Value))
+                                        {
+                                            additionalFields.Add(JsonConvert.SerializeObject(kvp, new JsonSerializerSettings()
+                                            {
+                                                ContractResolver = new DefaultContractResolver()
+                                                {
+                                                    NamingStrategy = new CamelCaseNamingStrategy()
+                                                }
+                                            }));
+                                        }
+                                    }
+
+                                    if (additionalFields.Count > 0)
+                                    {
+                                        feedbackSb.AppendLine();
+                                        feedbackSb.AppendLine($"Additional_Fields:[{string.Join(", ", additionalFields)}]");
+                                    }
+                                }
+
+                                feedbackSb.AppendLine();
+                                chatCompletionsOptions.FeedbackIdsUsed.Add(feedback.Id);
+                            }
+
+                            systemPrompt = systemPrompt.Replace(feedbackSearchSettings.ContentPlaceholder, feedbackSb.ToString());
                         }
                     }
                     catch (Exception ex)
                     {
-                        //Do nothing and let the chat work as it is
+                        // Do nothing and let the chat work as it is
+                        logger.LogError($"Error while dynamically updating the system prompt : {ex}");
                     }
                 }
 
@@ -580,6 +742,57 @@ namespace AppLensV3.Services
             {
                 httpClient.Dispose();
             }
+        }
+
+        private bool AreCommaSeparatedValuesEqual(string str1, string str2)
+        {
+            str1 = string.IsNullOrWhiteSpace(str1) ? string.Empty : str1;
+            str2 = string.IsNullOrWhiteSpace(str2) ? string.Empty : str2;
+
+            var words1 = str1.Replace(" ", "").Split(',');
+            var words2 = str2.Replace(" ", "").Split(',');
+
+            Array.Sort(words1, StringComparer.OrdinalIgnoreCase);
+            Array.Sort(words2, StringComparer.OrdinalIgnoreCase);
+
+            // Assuming comma seperated values do not have duplicates.
+            return words1.SequenceEqual(words2, StringComparer.OrdinalIgnoreCase);
+        }
+
+        private bool IsFeedbackApplicable(ChatMetaData metadata, ChatFeedback feedback)
+        {
+            Dictionary<string, string> dict1 = metadata?.ResourceSpecificInfo?.Count > 0 ? metadata.ResourceSpecificInfo : new Dictionary<string, string>();
+            Dictionary<string, string> dict2 = feedback?.ResourceSpecificInfo?.Count > 0 ? feedback.ResourceSpecificInfo : new Dictionary<string, string>();
+
+            // If metadata.ResourceSpecificInfo does not have any resourceSpecificInfo value, it is assumed that no filtering constraint is desired and the feedback will be evaluated as a match.
+            foreach (var kvp in dict1)
+            {
+                if (dict2.TryGetValue(kvp.Key, out var value2))
+                {
+                    // AppKind property is comma seperated.
+                    // Strict comparision at the moment. App Kind match should have all app kinds
+                    if (kvp.Value?.Contains(",") == true && value2?.Contains(",") == true)
+                    {
+                        if (!AreCommaSeparatedValuesEqual(kvp.Value, value2))
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        if (kvp.Value?.Equals(value2, StringComparison.OrdinalIgnoreCase) == false)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    return false; // Key is missing in feedback, it is not applicable
+                }
+            }
+
+            return true;
         }
     }
 }

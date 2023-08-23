@@ -24,6 +24,7 @@ import { OperatingSystem } from '../../../shared/models/site';
 import { RiskAlertService } from '../../../shared-v2/services/risk-alert.service';
 import { ABTestingService } from '../../../shared/services/abtesting.service';
 import { SlotType } from '../../../shared/models/slottypes';
+import { Observable, of } from 'rxjs';
 
 @Component({
     selector: 'home',
@@ -149,12 +150,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
         this._authService.getStartupInfo().subscribe(startupInfo => {
             if (startupInfo.additionalParameters && Object.keys(startupInfo.additionalParameters).length > 0) {
-                let path = 'resource' + startupInfo.resourceId.toLowerCase();
-                path = this._updateRouteBasedOnAdditionalParameters(path, startupInfo.additionalParameters);
-                if (path) {
-                    this._telemetryService.logEvent(TelemetryEventNames.FeaturePathRouting, { "featurePath": `${startupInfo.additionalParameters.featurePath}` });
-                    this._router.navigateByUrl(path);
-                }
+                let resourceUri = 'resource' + startupInfo.resourceId.toLowerCase();
+                const featurePath = startupInfo?.additionalParameters?.featurePath ?? "";
+                this._validateFeaturePath(featurePath).subscribe(isValid => {
+                    if (isValid) {
+                        this._telemetryService.logEvent(TelemetryEventNames.FeaturePathRouting,
+                            { "featurePath": `${featurePath}` });
+                        const path = this._updateRouteBasedOnAdditionalParameters(resourceUri, featurePath);
+                        this._router.navigateByUrl(path);
+                    }
+                });
             }
         });
 
@@ -286,14 +291,22 @@ export class HomeComponent implements OnInit, AfterViewInit {
         }
     }
 
-    private _updateRouteBasedOnAdditionalParameters(route: string, additionalParameters: any): string {
-        if (additionalParameters.featurePath) {
-            let featurePath: string = additionalParameters.featurePath;
-            featurePath = featurePath.startsWith('/') ? featurePath.replace('/', '') : featurePath;
-            return `${route}/${featurePath}`;
-        }
+    private _updateRouteBasedOnAdditionalParameters(resourceUri: string, featurePath: string): string {
+        featurePath = featurePath.startsWith('/') ? featurePath.replace('/', '') : featurePath;
+        return `${resourceUri}/${featurePath}`;
+    }
 
-        return null;
+    private _validateFeaturePath(featurePath: string): Observable<boolean> {
+        const [type, detectorId] = featurePath.toLowerCase().split('/');
+        if (!featurePath) return of(false);
+
+        if (type?.startsWith("detectors") || type?.startsWith("analysis")) {
+            return this._diagnosticService.getDetectors().map(detectors => {
+                return detectors.some(detector => detector.id.toLowerCase() === detectorId);
+            });
+        } else {
+            return of(true);
+        }
     }
 
     private _logSearch() {

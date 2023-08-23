@@ -172,12 +172,15 @@ export class DetectorTimePickerComponent implements OnInit {
       this.closeTimePicker();
     }
   }
-
+  //In Applens, if endtime - starttime > 3 days or endtime <= starttime, endtime adjust to starttime + 1 day
+  //In  D&S blade, endTime always adjust to starttime + 1 day
   onChangeStartMoment(startMoment: moment.Moment) {
     this.startMoment = startMoment.clone();
-    const currentMoment = this.detectorControlService.currentUTCMoment;
+    const currentMoment = this.detectorControlService.currentUTCMoment.clone();
     const plusOneDayMoment = startMoment.clone().add(1, 'day');
-    this.endMoment = moment.min(currentMoment, plusOneDayMoment);
+    if (this.isPublic || this.endMoment.diff(startMoment, 'days') > 3 || this.endMoment.isSameOrBefore(startMoment)) {
+      this.endMoment = moment.min(currentMoment, plusOneDayMoment);
+    }
   }
 
   validateStartAndEndTime() {
