@@ -72,7 +72,7 @@ export class KustoUtilities {
         };
     }
 
-    public static RunBestPracticeChecks(provider:string, resourceType:string, queryText:string, skipAntaresSpecificChecks:boolean = false):string {
+    public static RunBestPracticeChecks(queryText:string, skipAntaresSpecificChecks:boolean = false):string {
         let findings:string[] = [];
         if(queryText) {
             let queryTextSplit = queryText.split('|');
@@ -87,9 +87,7 @@ export class KustoUtilities {
                 findings.push('Query must contain a timerange filter.');
             }
 
-            if(!skipAntaresSpecificChecks && `${provider}`.toLowerCase() == 'microsoft.web' && `${resourceType}`.toLowerCase() == 'sites' 
-                && !queryTextSplit.find(l => l && l.toLowerCase().indexOf('eventprimarystampname') > -1 )
-             ) {
+            if(!skipAntaresSpecificChecks && !queryTextSplit.find(l => l && l.toLowerCase().indexOf('eventprimarystampname') > -1 )) {
                 findings.push('App service related queries must have a filter for EventPrimaryStampName.');
             }
 
@@ -100,6 +98,6 @@ export class KustoUtilities {
         else {
             findings.push('Empty query text.');
         }        
-        return findings.join('\r\n');
+        return findings.join('\n');
     }
 }

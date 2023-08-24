@@ -5,7 +5,7 @@ import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from 
 import { ResourceService } from '../../../shared/services/resource.service';
 import { CollapsibleMenuItem } from '../../../collapsible-menu/components/collapsible-menu-item/collapsible-menu-item.component';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
-import { DetectorMetaData, DetectorType, StringUtilities } from 'diagnostic-data';
+import { DetectorMetaData, DetectorType, FastSearch } from 'diagnostic-data';
 import { TelemetryService } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../../../../../diagnostic-data/src/lib/services/telemetry/telemetry.common';
 import { environment } from '../../../../environments/environment';
@@ -13,14 +13,12 @@ import { UserSettingService } from '../services/user-setting.service';
 import { BreadcrumbService } from '../services/breadcrumb.service';
 import { Observable, forkJoin, of } from 'rxjs';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
-import { element } from 'protractor';
 import { ApplensDocumentationService } from '../services/applens-documentation.service';
 import { DocumentationRepoSettings } from '../../../shared/models/documentationRepoSettings';
 import { DocumentationFilesList } from './documentationFilesList';
 import { ApplensOpenAIChatService } from '../../../shared/services/applens-openai-chat.service';
 import { PortalUtils } from '../../../shared/utilities/portal-util';
 import { SiteService } from '../../../shared/services/site.service';
-import { error } from 'console';
 
 @Component({
   selector: 'side-nav',
@@ -69,6 +67,7 @@ export class SideNavComponent implements OnInit {
   workflowsEnabled: boolean = false;
   showChatGPT: boolean = false;
   askAppLensEnabled: boolean = false;  
+
 
   constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _adalService: AdalService,
     private _diagnosticApiService: ApplensDiagnosticService, public resourceService: ResourceService, private _telemetryService: TelemetryService,
@@ -234,7 +233,7 @@ export class SideNavComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.checkRCAToolkitEnabled(); 
+    this.checkRCAToolkitEnabled();
     this._openAIService.CheckEnabled().subscribe(enabled => {
       this.showChatGPT = this._openAIService.isEnabled;
       let antaresAnalyticsEnabledState = this._diagnosticApi.isCopilotEnabled(this.resourceService.ArmResource.provider, this.resourceService.ArmResource.resourceTypeName, 'analyticskustocopilot');
@@ -293,33 +292,33 @@ export class SideNavComponent implements OnInit {
     this.toolsCopy = this.deepCopyArray(this.tools);
   }
 
-  checkRCAToolkitEnabled(){
+  checkRCAToolkitEnabled() {
     //check if rca toolkit is present/enabled
     let isPresent = this.tools.find(tool => tool.label === "RCA Copilot (Preview)");
-    if(isPresent){
-      return; 
+    if (isPresent) {
+      return;
     }
 
     //if not present/enabled
     var tempResourceId = this.resourceService.getCurrentResourceId();
-   
-    if(tempResourceId.indexOf("Microsoft.Web/sites") != -1){
+
+    if (tempResourceId.indexOf("Microsoft.Web/sites") != -1) {
 
       this.tools.push(
         {
-        label: 'RCA Copilot (Preview)',
-        id: "",
-        onClick: () => {
-          PortalUtils.logEvent("rcacopilot-toolopened", "", this._telemetryService);
-          this.navigateTo("communicationToolkit");
-        },
-        expanded: false,
-        subItems: null,
-        isSelected: () => {
-          return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `communicationToolkit`.toLowerCase();
-        },
-        icon: null
-      })
+          label: 'RCA Copilot (Preview)',
+          id: "",
+          onClick: () => {
+            PortalUtils.logEvent("rcacopilot-toolopened", "", this._telemetryService);
+            this.navigateTo("communicationToolkit");
+          },
+          expanded: false,
+          subItems: null,
+          isSelected: () => {
+            return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `communicationToolkit`.toLowerCase();
+          },
+          icon: null
+        })
     }
   }
 
@@ -412,6 +411,7 @@ export class SideNavComponent implements OnInit {
 
         this.categories = this.categories.sort((a, b) => a.label === 'Uncategorized' ? 1 : (a.label > b.label ? 1 : -1));
         this.categoriesCopy = this.deepCopyArray(this.categories);
+
         this.detectorsLoading = false;
         this._telemetryService.logPageView(TelemetryEventNames.SideNavigationLoaded, {});
       }
@@ -666,7 +666,7 @@ export class SideNavComponent implements OnInit {
 
   private checkMenuItemMatchesWithSearchTerm(item: CollapsibleMenuItem, searchValue: string) {
     if (searchValue == null || searchValue.length === 0) return true;
-    return StringUtilities.IndexOf(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || StringUtilities.IndexOf(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0;
+    return FastSearch.fast_search(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || FastSearch.fast_search(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0;
   }
 
   private contSubMenuItems(items: CollapsibleMenuItem[]): number {
@@ -678,7 +678,6 @@ export class SideNavComponent implements OnInit {
     }
     return count;
   }
-
 }
 
 @Pipe({

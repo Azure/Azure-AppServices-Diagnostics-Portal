@@ -744,19 +744,37 @@ namespace AppLensV3.Services
             }
         }
 
-        private bool AreCommaSeparatedValuesEqual(string str1, string str2)
+        private bool AreCommaSeparatedValuesEqual(string str1, string str2, bool matchAll = true)
         {
             str1 = string.IsNullOrWhiteSpace(str1) ? string.Empty : str1;
             str2 = string.IsNullOrWhiteSpace(str2) ? string.Empty : str2;
 
-            var words1 = str1.Replace(" ", "").Split(',');
-            var words2 = str2.Replace(" ", "").Split(',');
+            var words1 = str1.Replace(" ", string.Empty).Split(',');
+            var words2 = str2.Replace(" ", string.Empty).Split(',');
 
-            Array.Sort(words1, StringComparer.OrdinalIgnoreCase);
-            Array.Sort(words2, StringComparer.OrdinalIgnoreCase);
+            if (matchAll)
+            {
+                if (words1.Length != words2.Length)
+                {
+                    return false;
+                }
+                else
+                {
+                    // Remove duplicates
+                    words1 = words1.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+                    words2 = words2.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 
-            // Assuming comma seperated values do not have duplicates.
-            return words1.SequenceEqual(words2, StringComparer.OrdinalIgnoreCase);
+                    Array.Sort(words1, StringComparer.OrdinalIgnoreCase);
+                    Array.Sort(words2, StringComparer.OrdinalIgnoreCase);
+
+                    // Assuming comma seperated values do not have duplicates.
+                    return words1.SequenceEqual(words2, StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            else
+            {
+                return words1.Any(w => words2.Contains(w, StringComparer.OrdinalIgnoreCase));
+            }
         }
 
         private bool IsFeedbackApplicable(ChatMetaData metadata, ChatFeedback feedback)
@@ -769,11 +787,15 @@ namespace AppLensV3.Services
             {
                 if (dict2.TryGetValue(kvp.Key, out var value2))
                 {
-                    // AppKind property is comma seperated.
+                    // AppKind property is the only property that we send today which is comma seperated.
                     // Strict comparision at the moment. App Kind match should have all app kinds
                     if (kvp.Value?.Contains(",") == true && value2?.Contains(",") == true)
                     {
-                        if (!AreCommaSeparatedValuesEqual(kvp.Value, value2))
+                        if (!AreCommaSeparatedValuesEqual(
+                            kvp.Value,
+                            value2,
+                            !(kvp.Key.Equals("Kind", StringComparison.OrdinalIgnoreCase) && metadata.Provider.Equals("Microsoft.Web", StringComparison.OrdinalIgnoreCase) && metadata.ResourceType.Equals("sites", StringComparison.OrdinalIgnoreCase))
+                            ))
                         {
                             return false;
                         }
@@ -788,7 +810,15 @@ namespace AppLensV3.Services
                 }
                 else
                 {
-                    return false; // Key is missing in feedback, it is not applicable
+                    if (kvp.Key.Equals("Kind", StringComparison.OrdinalIgnoreCase) && metadata.Provider.Equals("Microsoft.Web", StringComparison.OrdinalIgnoreCase) && metadata.ResourceType.Equals("sites", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // If  kind is not present in feedback of a web app resource, then the feedback is shared across all app types and it should match.
+                        return true;
+                    }
+                    else
+                    {
+                        return false; // Key is missing in feedback, it is not applicable
+                    }
                 }
             }
 

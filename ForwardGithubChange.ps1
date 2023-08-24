@@ -10,11 +10,14 @@ IF ([string]::IsNullOrWhitespace($createdBranchName)) {
 }
 "Branch creating in OneBranch is " + $createdBranchName
 
-git checkout -b $createdBranchName
+
+git fetch origin main
+git checkout -b $createdBranchName origin/main
+
 git remote add github https://github.com/Azure/Azure-AppServices-Diagnostics-Portal.git
-git pull
-git pull github
+git fetch github $branchName
 git merge -X theirs github/$branchName
+
 "Pushing branch " + $createdBranchName + " to remote"
 git push -u origin $createdBranchName
 git remote remove github
