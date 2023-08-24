@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
 import { KeyValuePair } from '../../models/common-models';
-import { ChatMessage, ChatAlignment, MessageSource, MessageStatus, MessageRenderingType } from '../../models/chatbot-models';
+import { ChatMessage, ChatAlignment, MessageSource, MessageStatus, MessageRenderingType, FeedbackOptions } from '../../models/chatbot-models';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { v4 as uuid } from 'uuid';
 import { TimeUtilities } from '../../utilities/time-utilities';
@@ -93,7 +93,7 @@ export class ChatUIComponent implements OnInit {
                 timestamp: new Date().getTime(),
                 messageDisplayDate: TimeUtilities.displayMessageDate(new Date()),
                 status: MessageStatus.Finished,
-                userFeedback: "none",
+                userFeedback: FeedbackOptions.None,
                 renderingType: MessageRenderingType.Text
             };
 
@@ -103,9 +103,9 @@ export class ChatUIComponent implements OnInit {
     }
 
     feedbackClicked(message: ChatMessage, feedbackType: string) {
-        message.userFeedback = feedbackType;
+        message.userFeedback = feedbackType == 'like' ? FeedbackOptions.Like : FeedbackOptions.Dislike;
         if (this.onFeedbackClick) {
-            this.onFeedbackClick(message.id, feedbackType);
+            this.onFeedbackClick(message.id, feedbackType == 'like' ? FeedbackOptions.Like : FeedbackOptions.Dislike);
         }
         //Default handling if no callback is provided
         else {

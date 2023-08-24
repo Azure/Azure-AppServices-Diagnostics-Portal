@@ -1,7 +1,12 @@
 ﻿using Azure;
 using Azure.AI.OpenAI;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
 using SendGrid.Helpers.Mail;
+using System;
 using System.Collections.Generic;
+using System.Security.Policy;
+using System.Text.RegularExpressions;
 
 namespace AppLensV3.Models
 {
@@ -12,6 +17,42 @@ namespace AppLensV3.Models
         public ChatMessage[] Messages { get; set; }
     }
 
+    public class ChatPurgeModel
+    {
+        public List<string> FeedbackIds { get; set; }
+
+        public string ChatIdentifier { get; set; }
+
+        public string Provider { get; set; }
+
+        public string ResourceType { get; set; }
+    }
+
+    public class GPT3CompletionModelPayload
+    {
+        [JsonProperty(PropertyName = "model")]
+        public string Model { get; set; } = "text-davinci-003";
+
+        [JsonProperty(PropertyName = "prompt")]
+        public string Prompt { get; set; }
+
+        [JsonProperty(PropertyName = "temperature")]
+        public double temperature { get; set; } = 0.1;
+
+        [JsonProperty(PropertyName = "max_tokens")]
+        public int MaxTokens { get; set; } = 500;
+
+        public GPT3CompletionModelPayload(string prompt)
+        {
+            if (string.IsNullOrWhiteSpace(prompt))
+            {
+                throw new ArgumentNullException(nameof(prompt));
+            }
+
+            Prompt = prompt;
+        }
+    }
+
     public class ChatMetaData
     {
         public string MessageId;
@@ -19,6 +60,59 @@ namespace AppLensV3.Models
         public string ChatModel;
         public int MaxTokens;
         public string AzureServiceName;
+        public string ArmResourceId;
+
+        private string provider = string.Empty;
+
+        public string Provider
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(provider) && !string.IsNullOrWhiteSpace(ArmResourceId) && ArmResourceId.IndexOf("/providers/", StringComparison.OrdinalIgnoreCase) > -1)
+                {
+                    int providersIndex = ArmResourceId.IndexOf("/providers/", StringComparison.OrdinalIgnoreCase) + 11;
+                    var resourceParts = ArmResourceId.Substring(providersIndex).Split('/');
+                    if (resourceParts.Length > 0)
+                    {
+                        provider = resourceParts[0];
+                    }
+                }
+
+                return provider;
+            }
+
+            set
+            {
+                provider = value ?? string.Empty;
+            }
+        }
+
+        private string resourceType;
+
+        public string ResourceType
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(resourceType) && !string.IsNullOrWhiteSpace(ArmResourceId) && ArmResourceId.IndexOf("/providers/", StringComparison.OrdinalIgnoreCase) > -1)
+                {
+                    int providersIndex = ArmResourceId.IndexOf("/providers/", StringComparison.OrdinalIgnoreCase) + 11;
+                    var resourceParts = ArmResourceId.Substring(providersIndex).Split('/');
+                    if (resourceParts.Length > 1)
+                    {
+                        resourceType = resourceParts[1];
+                    }
+                }
+
+                return resourceType;
+            }
+
+            set
+            {
+                resourceType = value ?? string.Empty;
+            }
+        }
+
+        public Dictionary<string, string> ResourceSpecificInfo { get; set; } = new Dictionary<string, string>();
     }
 
     public class ChatStreamResponse
@@ -37,6 +131,12 @@ namespace AppLensV3.Models
             Content = content;
             FinishReason = finishReason;
         }
+    }
+
+    public class ExtendedChatCompletionsOptions:ChatCompletionsOptions
+    {
+        [JsonIgnore]
+        public List<string> FeedbackIdsUsed { get; set; } = new List<string>();
     }
 
     public class ChatResponse
@@ -59,6 +159,8 @@ namespace AppLensV3.Models
         /// </summary>
         public string FinishReason { get; set; } = string.Empty;
 
+        public List<string> FeedbackIds { get; set; }
+
         public ChatResponse(string chatResponse)
         {
             Text = chatResponse ?? string.Empty;
@@ -78,7 +180,7 @@ namespace AppLensV3.Models
                 Text = chatCompletionResponse.Value.Choices[0].Message?.Content ?? string.Empty;
                 FinishReason = chatCompletionResponse.Value.Choices[0].FinishReason ?? string.Empty;
             }
-    }
+        }
 
         public ChatResponse(OpenAIAPIResponse textCompletionResponse)
         {
@@ -121,5 +223,73 @@ namespace AppLensV3.Models
         public int Prompt_Tokens { get; set; }
         public int Completion_Tokens { get; set; }
         public int Total_Tokens { get; set; }
+    }
+
+    public class ChatFeedback
+    {
+        [JsonProperty(PropertyName = "id")]
+        public string Id { get; set; }
+
+        [JsonProperty]
+        public DateTime Timestamp { get; set; }
+
+        [JsonProperty]
+        public string Provider { get; set; }
+
+        [JsonProperty]
+        public string ResourceType { get; set; }
+
+        [JsonProperty]
+        public string ChatIdentifier { get; set; }
+
+        [JsonProperty]
+        public string SubmittedBy { get; set; }
+
+        [JsonProperty]
+        public string UserQuestion { get; set; }
+
+        [JsonProperty]
+        public string IncorrectSystemResponse { get; set; }
+
+        [JsonProperty]
+        public string ExpectedResponse { get; set; }
+
+        [JsonProperty]
+        public string FeedbackExplanation { get; set; }
+
+        [JsonProperty]
+        public Dictionary<string, string> AdditionalFields { get; set; }
+
+        [JsonProperty]
+        public Dictionary<string, string> ResourceSpecificInfo { get; set; }
+
+        [JsonProperty]
+        public List<string> LinkedFeedbackIds { get; set; }
+
+        [JsonProperty]
+        public string PartitionKey => $"{ChatFeedback.GetPartitionKey(ChatIdentifier, Provider, ResourceType)}";
+
+        public static string GetPartitionKey(string chatIdentifier, string provider, string resourceType)
+            => NormalizeString($"{(string.IsNullOrWhiteSpace(chatIdentifier) ? "default" : chatIdentifier)}-{provider}-{resourceType}");
+
+        /// <summary>
+        /// Remove special characters from a string. This is used to create partition key and adhere to requirements by Azure Cognitive search APIs.
+        /// </summary>
+        /// <param name="str">String to normalize</param>
+        /// <returns>A string that has all special characters replaced with a -</returns>
+        private static string NormalizeString(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) return str;
+
+            str = str.Replace(" ", string.Empty).Trim('-').ToLowerInvariant();
+
+            // Replace all special characters with - in str
+            string pattern = "[^a-z0-9-]+";
+
+            // Replace special characters with a hyphen "-". Repeating special characters are replaced with a single occurrence of a dash.
+            string updatedString = Regex.Replace(str, pattern, "-");
+            updatedString = updatedString.Trim('-');
+            return updatedString.Length > 127 ? updatedString.Substring(0, 127) : updatedString;
+        }
     }
 }

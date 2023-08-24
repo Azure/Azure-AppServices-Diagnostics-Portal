@@ -1,0 +1,16 @@
+{
+    "samples": [
+        {
+            "key": "Access Issues",
+            "value": "How to gain access to AppLens?"
+        },
+        {
+            "key": "Detector creation and publishing",
+            "value": "How to create and publish a detector?"
+        },
+        {
+            "key": "Detector Discoverability",
+            "value": "How to publish detectors with search discoverability?"
+        }
+    ]
+}

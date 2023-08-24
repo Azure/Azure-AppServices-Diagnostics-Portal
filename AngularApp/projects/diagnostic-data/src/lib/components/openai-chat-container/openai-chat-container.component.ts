@@ -12,6 +12,7 @@ import {
   ChatModel,
   ResponseTokensSize,
   APIProtocol,
+  FeedbackOptions,
   TelemetryEventNames
 
 } from "../../../public_api";
@@ -67,6 +68,8 @@ export class OpenAIChatContainerComponent implements OnInit {
 
   @Input() feedbackEmailAlias:string = 'applensv2team';
   @Input() customCommandBarButtons:CustomCommandBarButtons[] = [];
+  @Input() onFeedbackClicked: (chatMessage:ChatMessage, feedbackType:FeedbackOptions) => void;
+  @Input() autoAddResourceSpecificInfoToChatMessages:boolean = true;
 
   constructor(private _activatedRoute: ActivatedRoute, private _router: Router,
     private _chatContextService: ChatUIContextService,

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { IBreadcrumbItem, IBreadcrumbProps, SpinnerSize } from 'office-ui-fabric-react';
 import { delay } from 'rxjs-compat/operator/delay';
 import { ApplensOpenAIChatService } from '../../../shared/services/applens-openai-chat.service';
@@ -102,5 +102,16 @@ export class CommunicationToolkitComponent implements OnInit {
     PortalUtils.logEvent("rcacopilot-messagecopied", textToCopy, this._telemetryService); 
   }
 
+  //windows users control c for keyboard c 
+  @HostListener('window:keydown.control.c') //windows
+  copyFromKeyboardClickedWithControlC(){
+    PortalUtils.logEvent("rcacopilot-messagecopied", "Copied From Keyboard with Control C", this._telemetryService); 
+  }
+
+  //mac users command c for keyboard copy
+  @HostListener('window:keydown.command.c') //mac users
+  copyFromKeyboardClickedWithCommandC(){
+    PortalUtils.logEvent("rcacopilot-messagecopied", "Copied from keyboard Command C", this._telemetryService); 
+  }
 
 }

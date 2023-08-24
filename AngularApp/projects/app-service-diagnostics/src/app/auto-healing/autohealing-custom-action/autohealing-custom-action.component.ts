@@ -29,7 +29,8 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
   showDiagnoserOptionWarning: boolean = false;
   validationResult: DaasValidationResult = new DaasValidationResult();
   updatedCustomAction: AutoHealCustomAction = new AutoHealCustomAction();
-
+  
+  isElasticPremium: boolean = false;
 
   Diagnosers = [{ Name: 'Memory Dump', Enabled: true, Description: 'Collects memory dumps of the process and the child processes hosting your app and analyzes them for errors' },
   { Name: 'CLR Profiler', Enabled: true, Description: 'Profiles ASP.NET application code to identify exceptions and performance issues' },
@@ -224,6 +225,11 @@ export class AutohealingCustomActionComponent implements OnInit, OnChanges, Afte
 
   onDaasValidated(event: DaasValidationResult) {
     this.validationResult = event;
+    this.isElasticPremium = event.ServerFarmSku != null && event.ServerFarmSku.toLowerCase().startsWith('elastic');
+    if (this.isElasticPremium) {
+      this.validationResult.Validated = false;
+    }
+
     this.updateDaasAction(false);
   }
 }

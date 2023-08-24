@@ -136,10 +136,12 @@ import { WorkflowUserAccessComponent } from './workflow/workflow-user-access/wor
 import { InputNodeComponent } from './workflow/input-node/input-node.component';
 import { NetworkTraceAnalysisComponent } from './network-trace-analysis/network-trace-analysis.component';
 import { KustoGPTComponent } from './kustogpt/kustogpt.component';
+import { ChatFeedbackPanelComponent } from './chat-feedback-panel/chat-feedback-panel.component';
 import * as moment from 'moment';
 import { ApplensOpenAIChatComponent } from './applens-openai-chat/applens-openai-chat.component';
 import { CommunicationToolkitComponent } from './communication-toolkit/communication-toolkit.component';
 import { DetectorCopilotService } from 'projects/applens/src/app/modules/dashboard/services/detector-copilot.service';
+import { ApplensDocsCopilotComponent } from './applens-docs-copilot/applens-docs-copilot.component';
 import { InternalPirCopilotComponent } from './internal-pir-copilot/internal-pir-copilot.component';
 
 @Injectable()
@@ -514,6 +516,10 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
                 component: CommunicationToolkitComponent
             },
             {
+                path: 'askApplens',
+                component: ApplensDocsCopilotComponent
+            },
+            {
                 path: 'internalpir',
                 component: InternalPirCopilotComponent
             }
@@ -625,6 +631,6 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         KustoQueryDialogComponent, DetectorNodeComponent, KustoNodeComponent, MarkdownNodeComponent, NodeActionsComponent, ConfigureVariablesComponent, CommonNodePropertiesComponent,
         NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent,
         WorkflowUserAccessComponent, ForeachNodeComponent, DevopsDeploymentsComponent, InputNodeComponent, NetworkTraceAnalysisComponent,
-        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent, InternalPirCopilotComponent]
+        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent, ApplensDocsCopilotComponent, ChatFeedbackPanelComponent, InternalPirCopilotComponent]
 })
 export class DashboardModule { }
