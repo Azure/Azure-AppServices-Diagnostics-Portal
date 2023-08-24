@@ -157,7 +157,7 @@ export class KustoGPTComponent {
       chatFeedbackModel.validationStatus.validationStatusResponse = 'Response must be a Kusto query.';
     }
     else {
-      let skipAntaresSpecificChecks:boolean = this.chatIdentifier == this.antaresAnalyticsChatIdentifier || this.isFunctionApp || 
+      let skipAntaresSpecificChecks:boolean = this.chatIdentifier == this.antaresAnalyticsChatIdentifier || this.isFunctionApp || `${chatFeedbackModel.expectedResponse}`.toLowerCase().indexOf('wawsan_') > -1 ||
               !(chatFeedbackModel.additionalFields && 
                 chatFeedbackModel.additionalFields.some( (item) => `${item.id}`.trim().toLowerCase() === 'clustername' && ( this.isAntaresStampCluster(item.value) || (!item.value && this.isAntaresStampCluster(item.defaultValue)))) &&
                 chatFeedbackModel.additionalFields.some( (item) => `${item.id}`.trim().toLowerCase() === 'databasename' && ( this.isAntaresStampDatabase(item.value) || (!item.value && this.isAntaresStampDatabase(item.defaultValue))))
