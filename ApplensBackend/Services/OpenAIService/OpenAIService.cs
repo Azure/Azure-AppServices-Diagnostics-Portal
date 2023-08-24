@@ -749,8 +749,8 @@ namespace AppLensV3.Services
             str1 = string.IsNullOrWhiteSpace(str1) ? string.Empty : str1;
             str2 = string.IsNullOrWhiteSpace(str2) ? string.Empty : str2;
 
-            var words1 = str1.Replace(" ", "").Split(',');
-            var words2 = str2.Replace(" ", "").Split(',');
+            var words1 = str1.Replace(" ", string.Empty).Split(',');
+            var words2 = str2.Replace(" ", string.Empty).Split(',');
 
             Array.Sort(words1, StringComparer.OrdinalIgnoreCase);
             Array.Sort(words2, StringComparer.OrdinalIgnoreCase);
@@ -769,7 +769,7 @@ namespace AppLensV3.Services
             {
                 if (dict2.TryGetValue(kvp.Key, out var value2))
                 {
-                    // AppKind property is comma seperated.
+                    // AppKind property is the only property that we send today which is comma seperated.
                     // Strict comparision at the moment. App Kind match should have all app kinds
                     if (kvp.Value?.Contains(",") == true && value2?.Contains(",") == true)
                     {
