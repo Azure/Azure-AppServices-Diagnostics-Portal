@@ -141,13 +141,29 @@ export class KustoGPTComponent {
     };
   }
 
+  private isAntaresStampCluster(clusterName:string): boolean {
+    // Might be different for NClouds
+    return clusterName && ((clusterName.toLowerCase().trim() != this.analyticsClusterNameConst && clusterName.toLowerCase().trim().startsWith('waws')) || clusterName.toLowerCase().trim() == this.antaresClusterNamePlaceholderConst.toLowerCase());
+  }
+
+  private isAntaresStampDatabase(databaseName:string): boolean {
+    // Might be different for NClouds
+    return databaseName && ((databaseName.toLowerCase().trim() != this.analyticsDatabaseNameConst && databaseName.toLowerCase().trim().startsWith('waws')) || databaseName.toLowerCase().trim() == this.antaresDatabaseNamePlaceholderConst.toLowerCase());
+  }
+
   onBeforeSubmit = (chatFeedbackModel:ChatFeedbackModel): Observable<ChatFeedbackModel> => {
-    if(chatFeedbackModel && chatFeedbackModel.expectedResponse && !StringUtilities.IsNullOrWhiteSpace(chatFeedbackModel.expectedResponse) && chatFeedbackModel.expectedResponse.length > 5) {
+    if(chatFeedbackModel && chatFeedbackModel.expectedResponse && !StringUtilities.IsNullOrWhiteSpace(chatFeedbackModel.expectedResponse) && chatFeedbackModel.expectedResponse.length < 5) {
       chatFeedbackModel.validationStatus.succeeded = false;
       chatFeedbackModel.validationStatus.validationStatusResponse = 'Response must be a Kusto query.';
     }
     else {
-      let queryTextFindings = KustoUtilities.RunBestPracticeChecks(`${this._resourceService.ArmResource.provider}`, `${this._resourceService.ArmResource.resourceTypeName}`, chatFeedbackModel.expectedResponse, this.chatIdentifier == this.antaresAnalyticsChatIdentifier );
+      let skipAntaresSpecificChecks:boolean = this.chatIdentifier == this.antaresAnalyticsChatIdentifier || this.isFunctionApp || `${chatFeedbackModel.expectedResponse}`.toLowerCase().indexOf('wawsan_') > -1 ||
+              !(chatFeedbackModel.additionalFields && 
+                chatFeedbackModel.additionalFields.some( (item) => `${item.id}`.trim().toLowerCase() === 'clustername' && ( this.isAntaresStampCluster(item.value) || (!item.value && this.isAntaresStampCluster(item.defaultValue)))) &&
+                chatFeedbackModel.additionalFields.some( (item) => `${item.id}`.trim().toLowerCase() === 'databasename' && ( this.isAntaresStampDatabase(item.value) || (!item.value && this.isAntaresStampDatabase(item.defaultValue))))
+              );
+
+      let queryTextFindings = KustoUtilities.RunBestPracticeChecks(chatFeedbackModel.expectedResponse, skipAntaresSpecificChecks);
       if(queryTextFindings) {
         chatFeedbackModel.validationStatus.succeeded = false;
         chatFeedbackModel.validationStatus.validationStatusResponse = queryTextFindings;

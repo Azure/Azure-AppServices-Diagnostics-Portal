@@ -142,7 +142,7 @@ export const TelemetryEventNames = {
     SuperGistAPILoaded: 'SuperGistAPILoaded',
     SuperGistUpdateDetectorReferencesButtonClicked: 'SuperGistDetectorReferencesButtonClicked',
     SuperGistUpdateSelectedButtonClicked: 'SuperGistUpdateSelectedButtonClicked',
-    ChatGPTClearButtonClicked : 'ChatGPTClearButtonClicked',
+    ChatGPTClearButtonClicked: 'ChatGPTClearButtonClicked',
     FeaturePathRouting: 'FeaturePathRouting',
 };
 
@@ -181,17 +181,24 @@ export interface ITelemetryProvider {
 
 export class TelemetryUtilities {
     static getProductNameByTypeAndKind(type: string, kind: string): string {
+        type = `${type}`.toLowerCase();
+        kind = `${kind}`.toLowerCase();
         let productName = type;
-        if (kind && type.toLowerCase() === "microsoft.web/sites") {
-            if (kind.indexOf('linux') >= 0 && kind.indexOf('functionapp') >= 0) {
-                productName = "Azure Linux Function App";
+        if (type === "microsoft.web/sites") {
+            if (kind.indexOf('linux') >= 0) {
+                if (kind.indexOf("workflowapp") >= 0) {
+                    productName = "Azure Linux Logic App Standard";
+                }
+                else if (kind.indexOf('functionapp') >= 0) {
+                    productName = "Azure Linux Function App";
+                } else {
+                    productName = "Azure Linux App";
+                }
             }
             else if (kind.indexOf("workflowapp") >= 0) {
                 productName = "Azure Logic App Standard";
             }
-            else if (kind.indexOf('linux') >= 0) {
-                productName = "Azure Linux App";
-            } else if (kind.indexOf('functionapp') >= 0) {
+            else if (kind.indexOf('functionapp') >= 0) {
                 productName = "Azure Function App";
             } else {
                 productName = "Azure Web App";
