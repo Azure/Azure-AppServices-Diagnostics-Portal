@@ -193,8 +193,7 @@ export class TelemetryUtilities {
                     }
                     else if(kind.indexOf('functionapp') >= 0) {
                             productName = "Azure Linux Function App";
-                    }
-                    else {
+                    } else {
                         productName = "Azure Linux App";
                     }
                 }
