@@ -61,6 +61,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
             '';
     }
 
+    openDiagCopilot(){
+        this._router.navigate(['/diagnosticCopilot'], { queryParams: { 'category': 'diagnostics' } });
+    }
+
     get isIE_Browser(): boolean {
         return /msie\s|trident\//i.test(window.navigator.userAgent);
     }
