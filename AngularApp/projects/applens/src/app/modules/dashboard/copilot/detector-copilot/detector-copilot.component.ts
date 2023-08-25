@@ -22,7 +22,7 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   private featureTitle = 'Detector Copilot (Preview)';
 
   constructor(public _copilotContainerService: ApplensCopilotContainerService, public _copilotService: ApplensDetectorCopilotService,
-    private _chatContextService: ChatUIContextService, private _telemetryService: TelemetryService,) {
+    private _chatContextService: ChatUIContextService, private _telemetryService: TelemetryService) {
   }
 
   ngOnInit(): void {
