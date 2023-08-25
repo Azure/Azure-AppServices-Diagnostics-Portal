@@ -10,16 +10,22 @@ import { PortalUtils } from 'projects/applens/src/app/shared/utilities/portal-ut
 @Injectable()
 export class ApplensDetectorCopilotService {
 
+    private CHAT_CONTAINER_HEIGHT: string = '73vh';
+    private CHAT_CONTAINER_HEIGHT_WITH_COMPONENT_SELECTED: string = '60vh';
+
     public detectorCopilotChatIdentifier = 'detectorcopilot';
     public detectorResponse: DetectorResponse;
     public wellFormattedDetectorOutput: any;
     public selectedComponent: any;
     public operationInProgress: boolean = false;
     public customPrompt: string = '';
-    public chatContainerHeight: string = '75vh';
+    public chatContainerHeight: string = this.CHAT_CONTAINER_HEIGHT;
     public lastDetectorId = '';
     public copilotButtonActive = false;
     public chatConfigFile = '';
+
+    
+
 
     constructor(private _copilotContainerService: ApplensCopilotContainerService, private _resourceService: ResourceService,
         private _diagnosticApi: DiagnosticApiService, private _telemetryService: TelemetryService) {
@@ -94,7 +100,7 @@ export class ApplensDetectorCopilotService {
     }
 
     clearComponentSelection() {
-        this.chatContainerHeight = '75vh';
+        this.chatContainerHeight = this.CHAT_CONTAINER_HEIGHT
         this.customPrompt = this.prepareCustomPrompt(this.wellFormattedDetectorOutput);
         this.selectedComponent = {};
         this.chatConfigFile = 'assets/chatConfigs/detectorcopilot/detectorcopilot.json';
@@ -108,7 +114,7 @@ export class ApplensDetectorCopilotService {
         this.wellFormattedDetectorOutput = null;
         this.customPrompt = '';
         this.operationInProgress = false;
-        this.chatContainerHeight = '75vh';
+        this.chatContainerHeight = this.CHAT_CONTAINER_HEIGHT;
         this.copilotButtonActive = false;
         this.chatConfigFile = 'assets/chatConfigs/detectorcopilot/detectorcopilot.json';
     }
@@ -150,7 +156,7 @@ export class ApplensDetectorCopilotService {
         this.selectedComponent['heading'] = `"${componentDetectorData.output[0].type.charAt(0).toUpperCase() + componentDetectorData.output[0].type.slice(1)}" selected`;
         this.selectedComponent['iconSrc'] = this.getIconByType(componentDetectorData.output[0]);
         this.selectedComponent['subheading'] = ResponseUtilities.MarkdownToText(truncatedSubHeading);
-        this.chatContainerHeight = '65vh';
+        this.chatContainerHeight = this.CHAT_CONTAINER_HEIGHT_WITH_COMPONENT_SELECTED;
 
         switch (componentDetectorData.output[0].type.toLowerCase()) {
             case 'insight':

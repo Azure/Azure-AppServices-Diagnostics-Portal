@@ -44,6 +44,27 @@ export class ResponseUtilities {
                 !detectorResponseJson['output'].some(element => element.type.toLowerCase() == 'insight' && element.title.toLowerCase() == viewModel.insightTitle.toLowerCase())) {
                 childDetectorsInsightDataset.push(diagnosticData);
             }
+            else if (!diagnosticData) {
+                // This can happen if the child detectors has no insights
+                // In this case, its better to add the child detector name and description as informational insight
+
+                let temporaryDiagnosticData = {
+                    renderingProperties: {
+                        type: RenderingType.Insights
+                    },
+                    table: {
+                        columns: [],
+                        rows: [
+                            [
+                                "Info",
+                                `${childDetectorResponse.metadata.name}`
+                            ]
+                        ]
+                    }
+                };
+
+                childDetectorsInsightDataset.push(temporaryDiagnosticData);
+            }
         });
 
 
