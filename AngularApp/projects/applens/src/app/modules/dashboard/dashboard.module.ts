@@ -417,7 +417,16 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
                         data: {
                             tabKey: TabKey.Develop
                         }
-                    }, {
+                    },
+                    {
+                        path: 'nocodeedit',
+                        component: TabDevelopComponent,
+                        canDeactivate: [DevelopNavigationGuardService],
+                        data: {
+                            tabKey: TabKey.Develop
+                        }
+                    },
+                    {
                         path: 'changelist',
                         component: TabChangelistComponent,
                         data: {

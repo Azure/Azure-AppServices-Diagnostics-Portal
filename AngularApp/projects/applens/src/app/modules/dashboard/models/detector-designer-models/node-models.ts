@@ -1,7 +1,7 @@
 import { DiagnosticData, RenderingType } from "diagnostic-data";
 import { Guid } from "projects/diagnostic-data/src/lib/utilities/guid";
 import { NodeSettings, nodeJson } from "../../dynamic-node-settings/node-rendering-json-models";
-import { nodeStatus } from "dist/diagnostic-data/public_api";
+//import { nodeStatus } from "dist/diagnostic-data/public_api";
 
 export class ComposerNodeModel {
     id: string = Guid.newGuid();

@@ -1,7 +1,8 @@
 import { RenderingType, TimeSeriesType } from "diagnostic-data";
 import { NormalPeoplePickerBase } from "office-ui-fabric-react";
 import { NoCodeSupportedRenderingTypes } from "../models/detector-designer-models/node-models";
-import { SupportTopic } from "dist/diagnostic-data/public_api";
+import { AnalysisPickerModel, SupportTopic, SupportTopicPickerModel } from "../models/detector-designer-models/detector-settings-models";
+//import { SupportTopic } from "dist/diagnostic-data/public_api";
 
 export class NoCodeExpressionBody {
     Text: string;
@@ -142,6 +143,8 @@ export class NoCodeDetector {
   appType: string = "";
   stackType: string = "";
   category: string = "";
+  supportTopics: SupportTopic[] = [];
+  analysisTypes: string[] = [];
   //json: string = "";
 }
 

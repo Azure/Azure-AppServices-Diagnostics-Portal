@@ -12,6 +12,7 @@ export class TabDevelopComponent implements OnInit {
   DevelopMode = DevelopMode;
   id: string;
   isWorkflow: boolean = false;
+  isNoCode: boolean = false;
 
   constructor(private _route: ActivatedRoute) {
   }
@@ -23,6 +24,9 @@ export class TabDevelopComponent implements OnInit {
   };
 
   ngOnInit() {
+    if (this._route.snapshot.routeConfig.path === 'nocodeedit') {
+      this.isNoCode = true;
+    }
     if (this._route.parent.snapshot.params['detector']) {
       this.id = this._route.parent.snapshot.params['detector'];
       this.isWorkflow = false;

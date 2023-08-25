@@ -65,10 +65,11 @@ interface DetectorMetaDataBase {
     author: string;
 }
 
-export interface ExtendDetectorMetaData extends DetectorMetaDataBase {
+export interface ExtendDetectorMetaData extends DetectorMetaData {
     internalOnly: boolean;
     commitSha: string;
     gitCommitDate: Date;
+    isNoCode: boolean;
 }
 
 export interface DataProviderMetadata {
