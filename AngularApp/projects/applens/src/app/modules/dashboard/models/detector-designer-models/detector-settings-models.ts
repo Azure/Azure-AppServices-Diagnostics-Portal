@@ -24,6 +24,22 @@ export interface SupportTopicResponseModel {
     productName?: string;
     supportTopicL2Name?: string;
     supportTopicL3Name?: string
+
+    
+  }
+
+  export class SupportTopic{
+    id: string;
+    pesId: string;
+    sapSupportTopicId: string;
+    sapProductId: string;
+
+    constructor(model: SupportTopicPickerModel){
+      this.id = model.supportTopicId;
+      this.pesId = model.pesId;
+      this.sapSupportTopicId = model.sapSupportTopicId;
+      this.sapProductId = model.sapProductId;
+    }
   }
 
   export enum EntityType {
@@ -132,7 +148,7 @@ export interface SupportTopicResponseModel {
     }
 
     public get isAppService(): boolean {
-        return this.providerName.toLowerCase() === 'microsoft.web' && this.resourceTypeName.toLowerCase() === 'sites';
+        return this.providerName.toLowerCase() === 'microsoft_web' && this.resourceTypeName.toLowerCase() === 'sites';
     }
 
     public constructor(providerName:string, resourceTypeName:string, detectorName?:string, detectorId?:string) {

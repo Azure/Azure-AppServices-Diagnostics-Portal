@@ -23,13 +23,14 @@ import { SiteService } from '../../../shared/services/site.service';
 import { ObserverSiteInfo } from '../../../shared/models/observer';
 import { AppType, PlatformType, SitePropertiesParser, StackType } from '../../../shared/utilities/applens-site-properties-parsing-utilities';
 import { Options } from 'ng5-slider';
-import { DetectorSettingsModel } from '../models/detector-designer-models/detector-settings-models';
+import { DetectorSettingsModel, SupportTopic } from '../models/detector-designer-models/detector-settings-models';
 import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 import { INodeModelChangeEventProps } from '../node-composer/node-composer.component';
 import { NoCodeDetector, NoCodeExpressionBody, NoCodeExpressionResponse, NoCodePackage, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
 import * as moment from 'moment';
 import { NodeCompatibleEventEmitter } from 'rxjs/internal/observable/fromEvent';
+import { DevopsConfig } from '../../../shared/models/devopsConfig';
 
 
 @Component({
@@ -40,6 +41,9 @@ import { NodeCompatibleEventEmitter } from 'rxjs/internal/observable/fromEvent';
 
 export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  {
   @Input() mode: DevelopMode = DevelopMode.Create;
+  @Input() detectorId:string = '';
+
+  DevelopMode = DevelopMode;
 
   detectorName:string = 'Settings Panel Name';//'Auto Generated Detector Name';
   //detectorPanelOpen:boolean = true;
@@ -154,12 +158,14 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
 
   //#region Graduation branch picker variables
+  userAlias: string = '';
   detectorGraduation: boolean = false;
   isBranchCallOutVisible: boolean = false;
   branchButtonDisabled: boolean = false;
   showBranches: IChoiceGroupOption[] = [{key: "", text: ""}];
   displayBranch: string = "";
   tempBranch: string = "";
+  mainBranch: string = "";
   pillButtonStyleBranchPicker: IButtonStyles = {
     root: {
       //   color: "#323130",
@@ -174,6 +180,11 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   detectorJson = "";
   nodeExpressionList: NoCodeExpressionBody[] = [];
   detectorNodes: any = null;
+  autoMerge: boolean = false;
+  devopsConfig: DevopsConfig;
+  isProd: boolean = true;
+  PPEHostname: string = '';
+  PPELink: string = '';
   //#endregion Graduation branch picker variables
 
   //#region Time picker variables
@@ -193,7 +204,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   //#region Time picker variables
 
   //#region Detector settings panel variables
-  detectorId:string = '';  
+  //detectorId:string = '';  
   //#endregion Detector settings panel variables
 
   initialized: boolean = false;  
@@ -270,7 +281,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     private _applensCommandBarService: ApplensCommandBarService, private _router: Router, private _themeService: GenericThemeService, private _applensGlobal: ApplensGlobal ) {
     this._applensGlobal.updateHeader('');
     
-    this.resetGlobals();
+    //if (this.mode == DevelopMode.Create) this.resetGlobals();
   }
 
   // startTime: moment.Moment;
@@ -279,6 +290,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   ngOnInit() {
     // this.startTime = this._detectorControlService.startTime;
     // this.endTime = this._detectorControlService.endTime;
+    this.userAlias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn.replace('@microsoft.com', '') : '';
     this._activatedRoute.params.subscribe((params: Params) => {
       this.initialized = false;
       this._detectorControlService.timePickerStrSub.subscribe(s => {
@@ -286,16 +298,110 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       });
       this.startUp();
     });
-    this.elements.push(new ComposerNodeModel);
-    this.elements[0].queryName = 'firstQuery';
+    if (this.mode == DevelopMode.Create) {
+      this.resetGlobals();
+      this.elements.push(new ComposerNodeModel);
+      this.elements[0].queryName = 'firstQuery';
+    }
   }
 
   startUp(){
+    this.diagnosticApiService.getPPEHostname().subscribe(host => {
+      this.PPEHostname = host;
+      this.diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
+        this.PPELink = `${this.PPEHostname}${this._router.url}`;
+        this.isProd = env === "Prod";
+        if (this.isProd) {
+          window.open(this.PPELink, '_blank');
+          this.mode === DevelopMode.Create ? window.open(this._router.url.replace('/designDetector?', '?'), '_self') : window.open(this._router.url.replace('/nocodeedit?', '?'), '_self');
+        }
+      });
+    });
+
     this.detectorGraduation = true;
     
     this.diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(devopsConfig => {
-      this.noBranchesAvailable();
+      //this.noBranchesAvailable();
       this.detectorGraduation = devopsConfig.graduationEnabled;
+      this.devopsConfig = new DevopsConfig(devopsConfig);
+      this.autoMerge = devopsConfig.autoMerge
+    });
+
+    this.diagnosticApiService.getBranches(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(branches => {
+      if (branches.length > 0) {
+        this.mainBranch = branches.find(branch => branch.isMainBranch.toLocaleLowerCase() === 'true').branchName;
+        if (this.mode != DevelopMode.Create) {
+          this.diagnosticApiService.getDetectorCode(`${this.detectorId}/package.json`, this.mainBranch, `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(pkg => {
+            console.log(pkg);
+            this.buildSavedDetector(pkg);
+          });
+        }
+        // this.showBranches = branches.map(branch => {
+        //   return { key: branch, text: branch };
+        // });
+        // this.displayBranch = this.showBranches[0].key;
+      } else {
+        this.noBranchesAvailable();
+      }
+    });
+  }
+
+  buildSavedDetector(pkgJson: string) {
+    const pkg = JSON.parse(pkgJson);
+    const parsedDetector = JSON.parse(pkg.NoCodeDetectorJson);
+    const savedDetector: NoCodeDetector = new NoCodeDetector();
+
+    savedDetector.id = parsedDetector.Id;
+    savedDetector.name = parsedDetector.Name;
+    savedDetector.description = parsedDetector.Description;
+    savedDetector.author = parsedDetector.Author;
+    savedDetector.isInternal = parsedDetector.IsInternal;
+    savedDetector.platform = parsedDetector.Platform;
+    savedDetector.appType = parsedDetector.AppType;
+    savedDetector.stackType = parsedDetector.StackType;
+    savedDetector.category = parsedDetector.Category;
+
+    this.detectorName = pkg.name;
+
+    if (!this.detectorSettingsPanelValue) this.detectorSettingsPanelValue = new DetectorSettingsModel(this.resourceService.ArmResource.provider.replace(/\./g, "_"), this.resourceService.ArmResource.resourceTypeName.replace(/\./g, "_"));
+    this.detectorSettingsPanelValue.description = pkg.Description;
+    this.detectorSettingsPanelValue.category = pkg.Category;
+    this.detectorSettingsPanelValue.isInternalOnly = pkg.IsInternal;
+    this.detectorSettingsPanelValue.id = pkg.id;
+    this.detectorSettingsPanelValue.authors = [];
+    if (pkg.Author)
+    pkg.Author.split(",").forEach(a => {
+      this.detectorSettingsPanelValue.authors.push(a);
+    });
+    this.detectorSettingsPanelValue.appTypes = [];
+    if (pkg.AppType)
+    pkg.AppType.split(",").forEach(a => {
+      this.detectorSettingsPanelValue.appTypes.push(SitePropertiesParser.getAppType(a));
+    });
+    this.detectorSettingsPanelValue.platformTypes = [];
+    if (pkg.Platform)
+    pkg.Platform.split(",").forEach(p => {
+      this.detectorSettingsPanelValue.platformTypes.push(SitePropertiesParser.getPlatformType(p));
+    });
+    this.detectorSettingsPanelValue.stackTypes = [];
+    if (pkg.StackType)
+    pkg.StackType.split(",").forEach(s => {
+      this.detectorSettingsPanelValue.stackTypes.push(SitePropertiesParser.getStackType(s));
+    });
+
+    // parsedDetector.Nodes.forEach(n => {
+    //   let node = new NoCodeExpressionBody;
+    //   node.NodeSettings = n.NodeSettings;
+    // });
+
+    savedDetector.nodes = parsedDetector.Nodes;
+
+    savedDetector.nodes.forEach(node => {
+      let newNode = new ComposerNodeModel;
+      newNode.settings = node.NodeSettings;
+      newNode.queryName = node.OperationName;
+      newNode.code = node.Text;
+      this.elements.push(newNode);
     });
   }
 
@@ -372,6 +478,9 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   public saveDetectorCode():void {
     console.log('Save Detector Code');
+    var det = this.buildNoCodeDetectorObject();
+    let changeType = this.mode == DevelopMode.Create ? 'Add' : 'Edit';
+    this.saveDetector(det, changeType);
   }
 
   public publishButtonOnClick():void {
@@ -381,8 +490,9 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     /*this.diagnosticApiService.publishNoCode(pkg).subscribe(x => {
       console.log("subscribe");
     });*/
+    let changeType = this.mode == DevelopMode.Create ? 'Add' : 'Edit';
 
-    this.gradPublish(det);
+    this.autoMerge ? this.autoMergePublish(det, changeType) : this.gradPublish(det, changeType);
 
     // let branch = `dev/${det.author}/noCodeDetector/${det.id}`;
     // let repoPaths = [`${det.id}/metadata.json`];
@@ -395,40 +505,102 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     // });
   }
 
-  private gradPublish(det: NoCodeDetector): void {
-    let branch = `dev/${det.author}/noCodeDetector/${det.id}`;
+  private gradPublish(det: NoCodeDetector, changeType: string, comment: string = ''): void {
+    let branch = `dev/${this.userAlias}/noCodeDetector/${det.id}`;
     let repoPaths = [`${det.id}/metadata.json`];
     let files = [`{"utterances":[]}`];
-    let comment = "test push detector";
-    let changeType = "Add";
+    //let comment = "test push detector";
+    //let changeType = "Add";
     let resourceUri = this.resourceService.getCurrentResourceId();
 
     const PushDetector = this.diagnosticApiService.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri, det);
-    //const MakePullRequest = this.diagnosticApiService.makePullRequest(branch, /*default branch*/, )
+    const MakePullRequest = this.diagnosticApiService.makePullRequest(branch, this.mainBranch, 'test pullrequest title', resourceUri);
 
     PushDetector.subscribe(x => {
-        console.log("subscribe");
+      console.log("push");
+      MakePullRequest.subscribe(x => {
+        console.log("pr");
       });
+    });
   }
 
-  private saveDetector(){
-    
+  private autoMergePublish(det: NoCodeDetector, changeType: string, comment: string = ''): void {
+    let repoPaths = [`${det.id}/metadata.json`];
+    let files = [`{"utterances":[]}`];
+    let resourceUri = this.resourceService.getCurrentResourceId();
+
+    const PushDetector = this.diagnosticApiService.pushDetectorChanges(this.mainBranch, files, repoPaths, comment, changeType, resourceUri, det);
+
+    PushDetector.subscribe(x => {
+      console.log("push");
+    });
+  }
+
+  private saveDetector(det: NoCodeDetector, changeType: string, comment: string = ''): void {
+    let branch = `dev/${this.userAlias}/noCodeDetector/${det.id}`;
+    let repoPaths = [`${det.id}/metadata.json`];
+    let files = [`{"utterances":[]}`];
+    //let comment = "test push detector";
+    //let changeType = "Add";
+    let resourceUri = this.resourceService.getCurrentResourceId();
+
+    const PushDetector = this.diagnosticApiService.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri, det);
+
+    PushDetector.subscribe(x => {
+      console.log("push");
+    });
   }
 
   private buildNoCodeDetectorObject(): NoCodeDetector {
     var det = new NoCodeDetector();
-    det.appType = "All"; // list
-    // pkg.appType = this.detectorSettingsPanelValue.appTypes;
-    det.platform = "Windows"; // list
-    det.stackType = "All"; // list
+    // if web app add app plat and stack types
+    // also write functions for adding these. looks like theyre enums instead of strings
+    if (!!this.detectorSettingsPanelValue.appTypes)
+      det.appType = this.getAppTypes();
+    if (!!this.detectorSettingsPanelValue.platformTypes)
+      det.platform = this.getPlatTypes();
+    if (!!this.detectorSettingsPanelValue.stackTypes)
+      det.stackType = this.getStackTypes();
+    
+    det.supportTopics = []
+    this.detectorSettingsPanelValue.supportTopicList.forEach(x => {
+      det.supportTopics.push(new SupportTopic(x));
+    });
+
     det.id = this.detectorId;
     det.nodes = this.nodeExpressionList;
-    det.author = "darreldonald"; // list
+    det.author = this.detectorSettingsPanelValue.authors.join(",");
     det.name = this.detectorName;
     det.description = this.detectorSettingsPanelValue.description;
     det.category = this.detectorSettingsPanelValue.category;
+    det.isInternal = this.detectorSettingsPanelValue.isInternalOnly;
+    det.analysisTypes = this.detectorSettingsPanelValue.analysisList.map(x => x.id);
 
     return det;
+  }
+
+  private getAppTypes(): string {
+    let apptypes = [];
+    this.detectorSettingsPanelValue.appTypes.forEach(x => {
+      apptypes.push(SitePropertiesParser.getDisplayForAppType(x));
+    });
+    return apptypes.join(",");
+  }
+
+  private getPlatTypes(): string {
+    let plattypes = [];
+    this.detectorSettingsPanelValue.platformTypes.forEach(x => {
+      plattypes.push(SitePropertiesParser.getDisplayForPlatformType(x));
+    });
+    return plattypes.join(",");
+  }
+
+  private getStackTypes(): string {
+    let stacktypes = [];
+    this.detectorSettingsPanelValue.stackTypes.forEach(x => {
+      stacktypes.push(SitePropertiesParser.getDisplayForStackType(x));
+    });
+    return stacktypes.join(",");
   }
 
   public getRequiredErrorMessageOnTextField(value: string): string {

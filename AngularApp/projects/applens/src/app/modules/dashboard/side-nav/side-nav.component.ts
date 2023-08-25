@@ -410,7 +410,7 @@ export class SideNavComponent implements OnInit {
   }
 
   initializeDetectors() {
-    this._diagnosticApiService.getDetectors().subscribe(detectorList => {
+    this._diagnosticApiService.getDetectorsWithExtendDefinition().subscribe(detectorList => {
       if (detectorList) {
         detectorList.forEach(element => {
           this.createDetectorMenuItem(element, this.categories);

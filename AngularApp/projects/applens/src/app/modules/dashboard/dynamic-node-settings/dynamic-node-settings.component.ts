@@ -20,6 +20,9 @@ import { RenderingSettingsBase } from './node-rendering-json-models';
 })
 
 export class DynamicNodeSettings implements OnInit {
+  public readonly antaresClusterNamePlaceholderConst: string = '@AntaresStampKustoCluster';  
+  public readonly antaresDatabaseNamePlaceholderConst: string = '@AnataresStampKustoDB';
+  public readonly connectionStringPlaceholder: string = `${this.antaresClusterNamePlaceholderConst}/${this.antaresDatabaseNamePlaceholderConst}`;
   clusterName: string = '@StampCluster';
   databaseName: string = 'wawsprod';
   scopeString: string = "";

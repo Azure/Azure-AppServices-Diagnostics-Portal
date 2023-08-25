@@ -26,6 +26,9 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
   
   @Input('id') rootId?: string = 'detectorSettingsPanel';
   @Input() headerText?: string = 'Configure';
+  @Input() isEditMode: boolean = true;
+
+  @Input() public detectorId: string = '';
 
   _isOpen:boolean = false;
   @Input() set isOpen(val:boolean) {
@@ -102,7 +105,7 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
   //#endregion
 
   public detectorName: string = '';
-  public detectorId: string = '';
+  //public detectorId: string = '';
 
   detectorType: EntityType = EntityType.Detector;
   detectorTypeOptions: IDropdownOption[] = [];
