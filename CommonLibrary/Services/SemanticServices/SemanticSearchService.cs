@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
 using System.Web;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Logging;
 
 namespace CommonLibrary.Services
 {
@@ -16,9 +17,11 @@ namespace CommonLibrary.Services
         private static HttpClient httpClient;
         private readonly string semanticServiceEndpoint;
         private IConfiguration configuration;
-        public SemanticSearchService(IConfiguration config)
+        private readonly ILogger<SemanticSearchService> _logger;
+        public SemanticSearchService(IConfiguration config, ILogger<SemanticSearchService> logger)
         {
             configuration = config;
+            _logger = logger;
             semanticServiceEndpoint = config["SemanticService:Endpoint"];
             InitializeHttpClient();
         }
@@ -60,14 +63,14 @@ namespace CommonLibrary.Services
                 }
                 else
                 {
-                    return new List<SemanticSearchDocument>();
+                    _logger.LogError($"SemanticSearchServiceFailedStatusCode: {response.StatusCode}");
                 }
             }
             catch (Exception ex)
             {
-                //TODO: Log error
-                return new List<SemanticSearchDocument>();
+                _logger.LogError($"SemanticSearchServiceCallerError: {ex.GetType()}", ex);
             }
+            return new List<SemanticSearchDocument>();
         }
 
         private void InitializeHttpClient()

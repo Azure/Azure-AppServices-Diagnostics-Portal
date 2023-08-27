@@ -86,6 +86,7 @@ namespace CommonLibrary.Services
         private static HttpClient httpClient;
         private IOpenAIRedisService redisCache;
         private IConfiguration configuration;
+        private readonly SemanticServiceConfiguration _semanticServiceConfiguration;
         private static OpenAIClient openAIClient;
         private readonly ISemanticSearchService _semanticSearchService;
         private ConcurrentDictionary<string, Task<string>> chatTemplateFileCache;
@@ -98,9 +99,10 @@ namespace CommonLibrary.Services
         // It also gets the chatMessages and the chatMetaData in case the custom logic needs to prepare its independent set of messages.
         private delegate Task<OpenAIChainResponse> ChatCompletionCustomHandler(List<ChatMessage> chatMessages, ChatMetaData metadata, ChatCompletionsOptions chatCompletionsOptions, ILogger<OpenAIService> logger);
 
-        public OpenAIService(IConfiguration config, IOpenAIRedisService redisService, ILogger<OpenAIService> logger, ISemanticSearchService semanticSearchService)
+        public OpenAIService(IConfiguration config, SemanticServiceConfiguration semanticServiceConfiguration, IOpenAIRedisService redisService, ILogger<OpenAIService> logger, ISemanticSearchService semanticSearchService)
         {
             _semanticSearchService = semanticSearchService;
+            _semanticServiceConfiguration = semanticServiceConfiguration;
             configuration = config;
             isOpenAIAPIEnabled = Convert.ToBoolean(configuration["OpenAIService:Enabled"]);
             chatTemplateFileCache = new ConcurrentDictionary<string, Task<string>>(StringComparer.OrdinalIgnoreCase) ;
@@ -143,13 +145,46 @@ namespace CommonLibrary.Services
             return await redisCache.SetKey(key, value);
         }
 
-        private async Task<string> PrepareDocumentContent(DocumentSearchSettings documentSearchSettings, string query)
+        private async Task<string> GetRefinedQueryForDocumentSearch(List<ChatMessage> messages)
+        {
+            if (_semanticServiceConfiguration.UseRefinedQuery)
+            {
+                var relevantMessages = messages.TakeLast(5).Select(x => $"{x.Role}: {x.Content}").ToList();
+                string relevantMessagesString = string.Join("\n", relevantMessages);
+                string queryPrompt = $"Your job is to create queries for document search. You will be given a chat between a user and an AI assistant and you have to understand the context of the user's query and provide a refined query with all the necessary words and context which will help in searching for relevant documents. Here is the chat messages sequence:\n\n{relevantMessagesString}\n\nYour job is to provide a refined document search query for finding relevant documents for the user's query above.\nDocumentSearchQuery: ";
+                var completionModel = new CompletionModel()
+                {
+                    Payload = new Dictionary<string, object>()
+                {
+                    { "prompt", queryPrompt},
+                    { "temperature", 0.0}
+                }
+                };
+                try
+                {
+                    var response = await RunTextCompletion(completionModel, false);
+                    if (response != null && !string.IsNullOrWhiteSpace(response.Text))
+                    {
+                        return response.Text;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError($"Error in GetRefinedQueryForDocumentSearch: {ex}");
+                }
+            }
+            // as a fallback, use the user's message as the query
+            return messages.Last().Content;
+        }
+
+        private async Task<string> PrepareDocumentContent(DocumentSearchSettings documentSearchSettings, List<ChatMessage> chatMessages)
         {
             if (documentSearchSettings != null && documentSearchSettings.IndexName != null)
             {
                 try
                 {
-                    var documents = await _semanticSearchService.SearchDocuments(query, documentSearchSettings.IndexName, "");
+                    string docSearchQuery = await GetRefinedQueryForDocumentSearch(chatMessages);
+                    var documents = await _semanticSearchService.SearchDocuments(docSearchQuery, documentSearchSettings.IndexName, "");
                     if (documents != null && documents.Count > 0)
                     {
                         List<string> documentContentList = new List<string>();
@@ -512,8 +547,7 @@ namespace CommonLibrary.Services
                         {
                             documentSearchSettings.IndexName = $"{documentSearchSettings.IndexName}--{metadata.AzureServiceName}";
                         }
-                        var userQuery = chatMessages.Last().Content;
-                        string documentContent = await PrepareDocumentContent(documentSearchSettings, userQuery);
+                        string documentContent = await PrepareDocumentContent(documentSearchSettings, chatMessages);
                         if (!string.IsNullOrWhiteSpace(documentContent))
                         {
                             if (systemPrompt.Contains(documentSearchSettings.DocumentContentPlaceholder))

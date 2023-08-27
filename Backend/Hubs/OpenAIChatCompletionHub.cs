@@ -16,7 +16,7 @@ namespace Backend.Hubs
     /// <summary>
     /// Open AI Chat Completion Hub Class.
     /// </summary>
-    //[Authorize(Policy = "ArmAccess")]
+    [Authorize(AuthenticationSchemes = "ArmAuthentication")]
     public class OpenAIChatCompletionHub : Hub
     {
         private IOpenAIRedisService openAIRedisService;

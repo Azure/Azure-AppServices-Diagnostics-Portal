@@ -91,6 +91,7 @@ namespace Backend
                     {
                         ValidAudiences = new[] { Configuration["ArmAuthentication:Audience"] },
                         IssuerValidator = ArmTokenValidator.ValidateIssuer
+                        ValidateIssuerSigningKey = false,
                     };
 
                     options.Events = new JwtBearerEvents

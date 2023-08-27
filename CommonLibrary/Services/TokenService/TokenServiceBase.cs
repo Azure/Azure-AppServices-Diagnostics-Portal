@@ -65,8 +65,6 @@ namespace CommonLibrary.Services
                 {
                     DateTime invocationEndTime = DateTime.UtcNow;
                     long latencyInMs = Convert.ToInt64((invocationEndTime - invocationStartTime).TotalMilliseconds);
-
-                    // TODO: log event
                 }
 
                 await Task.Delay(TokenServiceConstants.TokenRefreshIntervalInMs);

@@ -3,6 +3,7 @@
     public class SemanticServiceConfiguration
     {
         public bool Enabled { get; set; }
+        public bool UseRefinedQuery { get; set; } = true;
         public string Endpoint { get; set; }
         public string Resource { get; set; }
         public string ClientId { get; set; }
