@@ -3,7 +3,7 @@ import { Solution, SolutionButtonOption } from '../components/solution/solution'
 import { TableColumnOption } from './data-table';
 import { MetricType } from './time-series';
 import { Observable } from 'rxjs';
-import { LoadingStatus } from 'diagnostic-data';
+import { LoadingStatus } from './loading';
 
 export interface ArmObject {
     id: string;

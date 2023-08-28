@@ -6,7 +6,7 @@ import { ClipboardService } from '../../services/clipboard.service';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
-import { GenericDetectorCopilotService } from 'diagnostic-data';
+import { GenericDetectorCopilotService } from '../../services/generic-detector-copilot.service';
 
 @Component({
   selector: 'markdown-view',

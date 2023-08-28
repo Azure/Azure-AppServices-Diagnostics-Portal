@@ -15,7 +15,7 @@ import { UriUtilities } from '../../utilities/uri-utilities';
 import { QueryResponseService } from '../../services/query-response.service';
 import * as moment from 'moment';
 import { TimeUtilities } from '../../utilities/time-utilities';
-import { GenericDetectorCopilotService } from 'diagnostic-data';
+import { GenericDetectorCopilotService } from '../../services/generic-detector-copilot.service';
 
 @Component({
   selector: 'custom-form',

@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { DiagnosticData, Rendering, RenderingType } from '../../models/detector';
 import { DataRenderBaseComponent } from '../data-render-base/data-render-base.component';
-import { GenericDetectorCopilotService, TelemetryService } from 'diagnostic-data';
+import { TelemetryService } from '../../services/telemetry/telemetry.service';
+import { GenericDetectorCopilotService } from '../../services/generic-detector-copilot.service';
 
 @Component({
   selector: 'data-summary',
