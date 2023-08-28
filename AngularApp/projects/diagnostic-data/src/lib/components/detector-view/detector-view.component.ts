@@ -397,8 +397,10 @@ export class DetectorViewComponent implements OnInit {
           }
         });
 
-        // Call Detecotor Copilot service to process and save data for context
-        this._detectorCopilotService.processDetectorData(data);
+        // Call Detecotor Copilot service to process and save data for context, but only for parent detector and not for child detector
+        if (!this.insideDetectorList) {
+          this._detectorCopilotService.processDetectorData(data);
+        }
       }
     });
   }

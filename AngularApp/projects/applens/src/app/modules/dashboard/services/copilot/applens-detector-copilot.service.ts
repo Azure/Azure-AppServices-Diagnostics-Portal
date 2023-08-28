@@ -24,9 +24,6 @@ export class ApplensDetectorCopilotService {
     public copilotButtonActive = false;
     public chatConfigFile = '';
 
-    
-
-
     constructor(private _copilotContainerService: ApplensCopilotContainerService, private _resourceService: ResourceService,
         private _diagnosticApi: DiagnosticApiService, private _telemetryService: TelemetryService) {
         this.reset();
@@ -62,6 +59,15 @@ export class ApplensDetectorCopilotService {
     processAsyncDetectorViewModels(detectorViewModels: DetectorViewModeWithInsightInfo[]) {
 
         this.wellFormattedDetectorOutput = ResponseUtilities.UpdateDetectorResponseWithAsyncChildDetectorsOutput(this.wellFormattedDetectorOutput, detectorViewModels);
+
+        if (this.selectedComponent.heading == undefined) {
+            this.customPrompt = this.prepareCustomPrompt(this.wellFormattedDetectorOutput);
+        }
+    }
+
+    processAsyncFormsResponse(formId: any, formsResponse: DetectorResponse) {
+
+        this.wellFormattedDetectorOutput = ResponseUtilities.UpdateDetectorResponseWithFormsResponse(this.wellFormattedDetectorOutput, formId, formsResponse);
 
         if (this.selectedComponent.heading == undefined) {
             this.customPrompt = this.prepareCustomPrompt(this.wellFormattedDetectorOutput);

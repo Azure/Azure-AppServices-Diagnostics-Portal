@@ -1,4 +1,5 @@
 import { DetectorResponse, DetectorViewModeWithInsightInfo, DiagnosticData, RenderingType } from '../models/detector';
+import { InputType } from '../models/form';
 import { DataTableUtilities } from './datatable-utilities';
 
 export class ResponseUtilities {
@@ -11,16 +12,7 @@ export class ResponseUtilities {
 
         var detectorResponseJson = {};
         detectorResponseJson['metadata'] = detectorResponse.metadata;
-        detectorResponseJson['output'] = [];
-
-        detectorResponse.dataset?.forEach((dataEntry: DiagnosticData) => {
-
-            let componentJson = this.GetComponentJsonByRenderingType(dataEntry);
-            if (componentJson && componentJson.title && componentJson.title != '') {
-                detectorResponseJson['output'].push(componentJson);
-            }
-        });
-
+        detectorResponseJson['output'] = this.ParseDetectorResponseInternal(detectorResponse);
         return detectorResponseJson;
     }
 
@@ -78,6 +70,20 @@ export class ResponseUtilities {
 
         return detectorResponseJson;
     }
+    
+    public static UpdateDetectorResponseWithFormsResponse(currentDetectorResponse: any, formId: any, formResponse: DetectorResponse): any {
+        var detectorResponseJson = {};
+        detectorResponseJson['metadata'] = currentDetectorResponse.metadata;
+        detectorResponseJson['output'] = currentDetectorResponse.output;
+
+        let formElement = detectorResponseJson['output'].find(p => p.type === 'input' && p.id == formId);
+        if(formElement)
+        {
+            formElement['output'] = this.ParseDetectorResponseInternal(formResponse);
+        }
+
+        return detectorResponseJson;
+    }
 
     public static MarkdownToText(markdown) {
         const regex = /(?:__|[*#])|\[(.*?)\]\(.*?\)/gm;
@@ -86,6 +92,21 @@ export class ResponseUtilities {
     }
 
     //#region Components Helpers
+
+    private static ParseDetectorResponseInternal(detectorResponse: DetectorResponse)  {
+        
+        var output = [];
+
+        detectorResponse.dataset?.forEach((dataEntry: DiagnosticData) => {
+
+            let componentJson = this.GetComponentJsonByRenderingType(dataEntry);
+            if (componentJson) {
+                output.push(componentJson);
+            }
+        });
+        
+        return output;
+    }
 
     private static GetComponentJsonByRenderingType(diagnosticData: DiagnosticData): any {
 
@@ -104,6 +125,8 @@ export class ResponseUtilities {
                 return this.GetTimeSeriesJson(diagnosticData);
             case RenderingType.DataSummary:
                 return this.GetDataSummaryJson(diagnosticData);
+            case RenderingType.Form:
+                return this.GetFormJson(diagnosticData);
             default:
                 return undefined;
         }
@@ -206,6 +229,65 @@ export class ResponseUtilities {
             type: "Data Summary",
             title: title,
             data: data
+        };
+    }
+
+    private static GetFormJson(diagnosticData: DiagnosticData): any {
+
+        let dt = diagnosticData.table;
+        let id = dt.rows[0][0];
+        let title = dt.rows[0][1] != '' ? dt.rows[0][1] : 'user input';
+        let formInputs = dt.rows[0][2];
+        let inputs = [];
+
+        for (let ip = 0; ip < formInputs.length; ip++) {
+
+            let inputType = formInputs[ip]["inputType"];
+
+            switch (inputType) {
+                case InputType.TextBox:
+                    inputs.push({
+                        'inputType': 'textbox',
+                        'label': formInputs[ip]["label"]
+                    });
+                    break;
+                case InputType.RadioButton:
+                    inputs.push({
+                        'inputType': 'radio options',
+                        'label': formInputs[ip]["label"],
+                        'options': formInputs[ip]["items"],
+                        'tooltip': formInputs[ip]["toolTip"] != undefined ? formInputs[ip]["toolTip"] : ""
+                    });
+                    break;
+                case InputType.DropDown:
+                    inputs.push({
+                        'inputType': 'dropdown',
+                        'label': formInputs[ip]["label"],
+                        'options': formInputs[ip]["dropdownOptions"],
+                        'toolTip': formInputs[ip]["toolTip"] != undefined ? formInputs[ip]["toolTip"] : ""
+                    });
+                    break;
+                case InputType.DateTimePicker:
+                    inputs.push({
+                        'inputType': 'datetimepicker',
+                        'label': formInputs[ip]["label"]
+                    });
+                    break;
+                case InputType.Button:
+                    inputs.push({
+                        'inputType': 'button',
+                        'label': formInputs[ip]["label"]
+                    });
+                    break;
+            }
+        }
+
+        return {
+            type: 'input',
+            title: title,
+            id: id,
+            inputs: inputs,
+            output: []
         };
     }
 

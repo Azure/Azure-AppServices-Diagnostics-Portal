@@ -15,10 +15,13 @@ export class GenericDetectorCopilotService {
   processDetectorData(detectorData: DetectorResponse) {
   }
 
-  selectComponentAndOpenCopilot(componentData: DiagnosticData) {
+  processAsyncDetectorViewModels(detectorViewModels: DetectorViewModeWithInsightInfo[]) {
   }
 
-  processAsyncDetectorViewModels(detectorViewModels: DetectorViewModeWithInsightInfo[]) {
+  processAsyncFormsResponse(formId: any, formsResponse: DetectorResponse) {
+  }
+
+  selectComponentAndOpenCopilot(componentData: DiagnosticData) {
   }
 
   selectChildDetectorAndOpenCopilot(detectorViewModel: DetectorViewModeWithInsightInfo) {
