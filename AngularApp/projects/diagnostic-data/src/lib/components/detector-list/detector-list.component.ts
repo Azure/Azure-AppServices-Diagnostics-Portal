@@ -300,7 +300,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
               this.issueDetectedViewModels = this.issueDetectedViewModels.sort((n1, n2) => {
                 return n1.model.status - n2.model.status
               });
-            } else {
+            } else if(this.detectorViewModels[index].status !== HealthStatus.None){
               let insightInfo = this.getDetectorInsightInfo(this.detectorViewModels[index]);
               let successViewModel: DetectorViewModeWithInsightInfo = { model: this.detectorViewModels[index], ...insightInfo };
 
