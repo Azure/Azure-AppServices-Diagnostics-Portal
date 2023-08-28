@@ -14,10 +14,12 @@ export class DiagPortalOpenAIService {
   content: any[] = [];
 
   public onMessageReceive: BehaviorSubject<ChatResponse> = null;
-  public isEnabled: boolean = true;
+  public isEnabled: boolean = false;
 
   private signalRChatEndpoint: string = "/chatcompletionHub";
   private productName: string;
+  private resourceId: string;
+  private resourceProvider: string;
   private signalRConnection: any;
   private signalRLogLevel: any;
   private messageBuilder: string;
@@ -27,21 +29,24 @@ export class DiagPortalOpenAIService {
     this.productName = this._resourceService.searchSuffix;
     this.onMessageReceive = new BehaviorSubject<ChatResponse>(null);
     this.signalRLogLevel = signalR.LogLevel.Information;
-    this.azureServiceNameLowercase = this._resourceService.azureServiceName.toLowerCase().replace(/ /g,'')
+    this._authService.getStartupInfo()
+    .subscribe(info => {
+      if (info) {
+        this.resourceId = info.resourceId;
+        let resourceProviderSubstr = this.resourceId.split("/providers/")[1];
+        this.resourceProvider = `${resourceProviderSubstr.split("/")[0]}/${resourceProviderSubstr.split("/")[1]}`;
+      }
+    });
+    this.azureServiceNameLowercase = this._resourceService.azureServiceName.toLowerCase().replace(/ /g,'');
 
     if (!environment.production) {
-      this.signalRChatEndpoint = "http://localhost:62302/chatcompletionHub";
-      this.signalRLogLevel = signalR.LogLevel.Debug;
-    }
-    else {
       this.signalRChatEndpoint = "http://localhost:62302/chatcompletionHub";
       this.signalRLogLevel = signalR.LogLevel.Debug;
     }
   }
 
   public CheckEnabled(): Observable<boolean> {
-    return of(true);
-    //return this._backendApi.get<boolean>(`api/openai/enabled`).pipe(map((value: boolean) => { this.isEnabled = value; return value; }), catchError((err) => of(false)));
+    return this._backendApi.get<boolean>(`api/copilot/docscopilot/enabled?resourceProvider=${encodeURIComponent(this.resourceProvider)}`).pipe(map((value: boolean) => { this.isEnabled = value; return value; }), catchError((err) => of(false)));
   }
 
   public sendChatMessage(queryModel: ChatCompletionModel, customPrompt: string = ''): Observable<{ sent: boolean, failureReason: string }> {

@@ -24,10 +24,19 @@ namespace Backend.Controllers
         private OpenAIServiceConfiguration _openAIServiceConfiguration;
         private readonly IConfiguration _configuration;
         private readonly DocsCopilotConfiguration _docsCopilotConfiguration;
+        private readonly string[] enabledResourceProviders;
         public OpenAIController(IConfiguration config, IOpenAIService openAIService, ILogger<OpenAIController> logger, OpenAIServiceConfiguration openAIServiceConfiguration)
         {
             _configuration = config;
             _docsCopilotConfiguration = config.GetSection("DocsCopilot").Get<DocsCopilotConfiguration>();
+            if (_docsCopilotConfiguration != null && !string.IsNullOrWhiteSpace(_docsCopilotConfiguration.EnabledResourceProviders))
+            {
+                enabledResourceProviders = _docsCopilotConfiguration.EnabledResourceProviders.Split(",").Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.ToLower()).ToArray();
+            }
+            else
+            {
+                enabledResourceProviders = new string[] { };
+            }
             _logger = logger;
             _openAIService = openAIService;
             _openAIServiceConfiguration = openAIServiceConfiguration;
@@ -40,9 +49,14 @@ namespace Backend.Controllers
         }
 
         [HttpGet("docscopilot/enabled")]
-        public async Task<IActionResult> IsDocsCopilotEnabled()
+        public async Task<IActionResult> IsDocsCopilotEnabled(string resourceProvider, string kind)
         {
-            return Ok(_docsCopilotConfiguration.Enabled);
+            if (string.IsNullOrWhiteSpace(resourceProvider))
+            {
+                return BadRequest("Query parameter 'resourceProvider' not provided");
+            }
+            resourceProvider = resourceProvider.ToLower();
+            return Ok(_docsCopilotConfiguration.Enabled && enabledResourceProviders.Contains(resourceProvider));
         }
 
         [HttpPost("runTextCompletion")]

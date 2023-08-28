@@ -86,10 +86,10 @@ export const HomeRoutes = RouterModule.forChild([
                 pathMatch: 'full',
             },
             {
-                path: 'diagnosticCopilot',
+                path: 'documentationCopilot',
                 component: DiagPortalDocsCopilotComponent,
                 data: {
-                    navigationTitle: 'DiagCopilot',
+                    navigationTitle: 'DocsCopilot',
                     cacheComponent: true
                 },
                 pathMatch: 'full',

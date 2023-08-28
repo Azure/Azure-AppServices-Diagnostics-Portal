@@ -93,8 +93,8 @@
     <items>
       <fab-command-bar-item *ngIf="disableGenie==false" key="askGenie" text="Ask Genie" [iconProps]="{ iconName: 'ChatInviteFriend' }"
         (click)="openGeniePanel()" data-track-type="run"></fab-command-bar-item>
-      <fab-command-bar-item *ngIf="disableGenie==false" key="diagChat" text="Copilot" [iconProps]="{ iconName: 'ChatInviteFriend' }"
-      (click)="openDiagCopilot()" data-track-type="run"></fab-command-bar-item>
+      <fab-command-bar-item *ngIf="disableGenie==false" key="docsChat" text="Copilot" [iconProps]="{ iconName: 'ChatInviteFriend' }"
+      (click)="openDocsCopilot()" data-track-type="run"></fab-command-bar-item>
       <fab-command-bar-item *ngIf="showRiskSection" key="refresh1" text="Refresh" [iconProps]="{ iconName: 'Refresh' }"
         (click)="refreshPage()">
       </fab-command-bar-item>

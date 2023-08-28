@@ -1,4 +1,4 @@
-
+  <div *ngIf="isEnabled">
     <openai-chat-container #chatbot 
       
       [persistChat]="false"
@@ -22,3 +22,7 @@
       [chatModel] = "chatModel"
     >
     </openai-chat-container>
+  </div>
+  <div *ngIf="!isEnabled">
+    <center><h2>Documentation Copilot is not enabled for this service yet.</h2></center>
+  </div>

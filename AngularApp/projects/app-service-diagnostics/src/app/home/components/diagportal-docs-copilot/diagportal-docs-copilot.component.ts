@@ -61,6 +61,9 @@ export class DiagPortalDocsCopilotComponent implements OnInit {
       if (this.isEnabled) {
         this._telemetryService.logEvent("DiagPortalDocsCopilotLoaded", { ts: new Date().getTime().toString()});
       }
+    },
+    (err) => {
+      this.isEnabled = false;
     });
   }
 }
