@@ -70,15 +70,14 @@ export class ResponseUtilities {
 
         return detectorResponseJson;
     }
-    
+
     public static UpdateDetectorResponseWithFormsResponse(currentDetectorResponse: any, formId: any, formResponse: DetectorResponse): any {
         var detectorResponseJson = {};
         detectorResponseJson['metadata'] = currentDetectorResponse.metadata;
         detectorResponseJson['output'] = currentDetectorResponse.output;
 
         let formElement = detectorResponseJson['output'].find(p => p.type === 'input' && p.id == formId);
-        if(formElement)
-        {
+        if (formElement) {
             formElement['output'] = this.ParseDetectorResponseInternal(formResponse);
         }
 
@@ -93,8 +92,8 @@ export class ResponseUtilities {
 
     //#region Components Helpers
 
-    private static ParseDetectorResponseInternal(detectorResponse: DetectorResponse)  {
-        
+    private static ParseDetectorResponseInternal(detectorResponse: DetectorResponse) {
+
         var output = [];
 
         detectorResponse.dataset?.forEach((dataEntry: DiagnosticData) => {
@@ -104,7 +103,7 @@ export class ResponseUtilities {
                 output.push(componentJson);
             }
         });
-        
+
         return output;
     }
 
