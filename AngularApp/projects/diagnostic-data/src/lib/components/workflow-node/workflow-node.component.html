@@ -43,7 +43,7 @@
       </div>
       <div #detectorViewDiv *ngIf="data.detectorResponse" class="mr-3 min-width-detector-section">
         <detector-view [detectorResponse]="data.detectorResponse" [developmentMode]="false" hideDetectorControl="true"
-          [startTime]="startTime" [endTime]="endTime">
+          [startTime]="startTime" [endTime]="endTime" isWorkflowNode="true" (ProgressToNextNode)="onProgressToNextNode($event)">
         </detector-view>
       </div>
       <workflow-accept-userinput *ngIf="data.inputNodeSettings" [data]="data"

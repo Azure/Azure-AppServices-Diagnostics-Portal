@@ -79,7 +79,9 @@ export class DetectorViewComponent implements OnInit {
   openTimePickerSubject: BehaviorSubject<boolean> = new BehaviorSubject(false);
   timePickerButtonStr: string = "";
   timePickerErrorStr: string = "";
-  get loadingMessage(){
+  nextButtonDisabled: boolean = true;
+  selectWorkflowDownTimeDisabled: boolean = false;
+  get loadingMessage() {
     return `Analyzing data ${this.timePickerButtonStr.includes("to") ? "from" : "in"} ${this.timePickerButtonStr}, to change, use the time range picker`;
   }
 
@@ -134,12 +136,14 @@ export class DetectorViewComponent implements OnInit {
   @Input() isRiskAlertDetector: boolean = false;
   @Input() overWriteDetectorDescription: string = "";
   @Input() overWriteDetectorName: string = "";
+  @Input() isWorkflowNode: boolean = false;
   feedbackButtonLabel: string = 'Send Feedback';
   hideShieldComponent: boolean = false;
 
   downTimes: DownTime[] = [];
   supportsDownTime: boolean = false;
   selectedDownTime: DownTime;
+  selectedWorkflowDowntime: any = 'chooseDownTime';
   downtimeSelectionErrorStr: string = '';
   downtimeFilterDisabled: boolean = false;
   forbiddenError: boolean = false;
@@ -156,6 +160,8 @@ export class DetectorViewComponent implements OnInit {
     if (zoomBehavior & zoomBehaviors.UnGreyGraph) this.downtimeFilterDisabled = false;
   }
   @Output() XAxisSelection: EventEmitter<XAxisSelection> = new EventEmitter<XAxisSelection>();
+  @Output() ProgressToNextNode: EventEmitter<DownTime> = new EventEmitter<DownTime>();
+
   public onXAxisSelection(event: XAxisSelection) {
     let downTime = new DownTime();
     downTime.StartTime = event.fromTime;
@@ -171,7 +177,13 @@ export class DetectorViewComponent implements OnInit {
       );
       this.downTimes.forEach(d => { d.isSelected = false; });
       this.downTimes.push(downTime);
-      this.populateFabricDowntimeDropDown(this.downTimes);
+
+      if (this.isWorkflowNode) {
+        this.selectedWorkflowDowntime = downTime;
+      } else {
+        this.populateFabricDowntimeDropDown(this.downTimes);
+      }
+
       this.onDownTimeChange(downTime, DowntimeInteractionSource.Graph);
     }
     else {
@@ -205,11 +217,11 @@ export class DetectorViewComponent implements OnInit {
         let errorDetails = {
           'isPublic': this.isPublic.toString(),
           'errorDetails': JSON.stringify(this.errorState)
-        };     
-         if (StringUtilities.isValidJSON(this.errorState.error)) {
-          let errorObj =JSON.parse(this.errorState.error);         
-          this.forbiddenError = this.errorState.status == 403 && errorObj.Status == UserAccessStatus.ConsentRequired; 
-        }        
+        };
+        if (StringUtilities.isValidJSON(this.errorState.error)) {
+          let errorObj = JSON.parse(this.errorState.error);
+          this.forbiddenError = this.errorState.status == 403 && errorObj.Status == UserAccessStatus.ConsentRequired;
+        }
         this.logEvent("DetectorLoadingError", errorDetails);
       }
     });
@@ -303,7 +315,7 @@ export class DetectorViewComponent implements OnInit {
 
         this.logInsights(data);
 
-        if (this.isAnalysisView) {
+        if (this.isAnalysisView || this.isWorkflowNode) {
           let downTime = data.dataset.find(set => (<Rendering>set.renderingProperties).type === RenderingType.DownTime);
           if (this.isInCaseSubmission()) {
             //Disable downtimes in case submission
@@ -375,7 +387,7 @@ export class DetectorViewComponent implements OnInit {
               }
             }
 
-            if (!!defaultDowntime) {
+            if (!!defaultDowntime && !this.isWorkflowNode) {
               this.populateFabricDowntimeDropDown(this.downTimes);
               this.onDownTimeChange(defaultDowntime, defaultDowntimeTriggerSource);
             }
@@ -505,6 +517,10 @@ export class DetectorViewComponent implements OnInit {
   }
 
   private populateFabricDowntimeDropDown(downTimes: DownTime[]): void {
+    if (this.isWorkflowNode) {
+      return;
+    }
+
     if (!!downTimes) {
       this.fabChoiceGroupOptions = [];
       downTimes.forEach(d => {
@@ -549,17 +565,20 @@ export class DetectorViewComponent implements OnInit {
         d.EndTime = moment.utc(row[endTimeIndex]);
         d.downTimeLabel = row[downtimeLabelIndex];
         d.isSelected = row[isSelectedIndex];
-        if (d.isSelected) {
+        if (d.isSelected && !this.isWorkflowNode) {
           this.selectedDownTime = d;
         }
         if (this.validateDowntimeEntry(d)) {
           this.downTimes.push(d);
         }
       }
-      let selectedDownTime = this.downTimes.find(downtime => downtime.isSelected == true);
-      if (selectedDownTime == null && this.downTimes.length > 0) {
-        this.downTimes[0].isSelected = true;
-        this.selectedDownTime = this.downTimes[0];
+
+      if (!this.isWorkflowNode) {
+        let selectedDownTime = this.downTimes.find(downtime => downtime.isSelected == true);
+        if (selectedDownTime == null && this.downTimes.length > 0) {
+          this.downTimes[0].isSelected = true;
+          this.selectedDownTime = this.downTimes[0];
+        }
       }
       let downtimeListForLogging = {
         'DowntimesIdentifiedCount': this.downTimes.length,
@@ -568,8 +587,10 @@ export class DetectorViewComponent implements OnInit {
 
       this.logEvent(TelemetryEventNames.DowntimeListPassedByDetector, downtimeListForLogging);
 
-      this.populateFabricDowntimeDropDown(this.downTimes);
-      this.setxAxisPlotBands(false);
+      if (!this.isWorkflowNode) {
+        this.populateFabricDowntimeDropDown(this.downTimes);
+        this.setxAxisPlotBands(false);
+      }
     }
   }
 
@@ -828,6 +849,24 @@ export class DetectorViewComponent implements OnInit {
 
   updateTimePickerErrorMessage(message: string) {
     this.timePickerErrorStr = message;
+  }
+
+  onWorkflowDowntimeChange(downTime: any) {
+    if (downTime === 'chooseDownTime') {
+      this.setxAxisPlotBands(false, null);
+      this.onDownTimeChange(null, DowntimeInteractionSource.Workflow);
+      this.nextButtonDisabled = true;
+      return;
+    }
+
+    this.nextButtonDisabled = false;
+    this.onDownTimeChange(downTime, DowntimeInteractionSource.Workflow);
+  }
+
+  clickNext() {
+    this.ProgressToNextNode.emit(this.selectedWorkflowDowntime);
+    this.nextButtonDisabled = true;
+    this.selectWorkflowDownTimeDisabled = true;
   }
 }
 

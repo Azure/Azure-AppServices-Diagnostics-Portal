@@ -269,7 +269,8 @@ export const DowntimeInteractionSource = {
     Dropdown: 'Dropdown',
     DefaultFromDetector: 'DefaultFromDetector',
     DefaultFromQueryParams: 'DefaultFromQueryParams',
-    DefaultFromUI: 'DefaultFromUI'
+    DefaultFromUI: 'DefaultFromUI',
+    Workflow:'Workflow'
 };
 
 export enum GanttChartInnerMarkdownPosition {
