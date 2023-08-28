@@ -29,7 +29,7 @@ export class CommunicationToolkitComponent implements OnInit {
   // Variables to be passed down to the OpenAI Chat component
   chatComponentIdentifier: string = "rcacopilot";
   showContentDisclaimer: boolean = true;
-  contentDisclaimerMessage: string = "*Please VERIFY the RCA before sending to customers. I'm still learning :). Dont send any sensitive data.";
+  contentDisclaimerMessage: string = "*Please VERIFY the RCA before sending to customers. I'm still learning :). Don't send any sensitive data.";
 
   userAlias: string = '';
   userChatGPTSetting: UserChatGPTSetting;
