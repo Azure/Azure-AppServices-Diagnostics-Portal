@@ -1,7 +1,7 @@
 import { catchError, map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from, of } from 'rxjs';
-import { TextCompletionModel, ChatCompletionModel, OpenAIAPIResponse, ChatResponse, TelemetryService,KeyValuePair } from "diagnostic-data";
+import { TextCompletionModel, ChatCompletionModel, OpenAIAPIResponse, ChatResponse, TelemetryService,KeyValuePair, ChatMessage, ChatModel, MessageStatus, TextModels, StringUtilities, TimeUtilities, CreateTextCompletionModel, CreateChatCompletionModel } from "diagnostic-data";
 import { DiagnosticApiService } from './diagnostic-api.service';
 import { HttpHeaders } from "@angular/common/http";
 import { ResourceService } from './resource.service';
@@ -95,7 +95,7 @@ export class ApplensOpenAIChatService {
     keyValuePairArray.forEach((keyValuePair: KeyValuePair) => {
       result[keyValuePair.key] = keyValuePair.value;
     });
-    return result;    
+    return result;
   }
 
   public getChatCompletion(queryModel: ChatCompletionModel, customPrompt: string = '', autoAddResourceSpecificInfo:boolean = true): Observable<ChatResponse> {
@@ -256,5 +256,94 @@ export class ApplensOpenAIChatService {
     else {
       console.log(`event: ${eventStr}, message: ${message}, ts: ${time}`);
     }
+  }
+
+  public fetchOpenAIResultAsChatMessageUsingRest(chatHistory: any, messageObj: ChatMessage, retry: boolean = true, trimnewline: boolean = false, chatModel:ChatModel, 
+    customInitialPrompt:string, chatIdentifier:string, responseTokenSize:number, currentApiCallCount:number, openAIApiCallLimit:number, insertCustomPromptAtEnd:boolean = false): Observable<ChatMessage> {
+      if (currentApiCallCount >= openAIApiCallLimit) {
+        currentApiCallCount = 0;
+        throw new Error("Error: OpenAI API call limit reached.");
+      }
+    
+      currentApiCallCount++;
+    
+      if (messageObj.status == MessageStatus.Cancelled) {
+        currentApiCallCount = 0;
+        return of(messageObj);
+      }
+    
+      let openAIAPICall: Observable<ChatResponse> = new Observable();
+      currentApiCallCount = 0;
+    
+      messageObj.status = messageObj.status == MessageStatus.Created ? MessageStatus.Waiting : messageObj.status;
+    
+      if (chatModel == ChatModel.GPT3) {
+        let openAIQueryModel = CreateTextCompletionModel(chatHistory, TextModels.Default, responseTokenSize);
+        openAIAPICall = this.generateTextCompletion(openAIQueryModel, customInitialPrompt, true, insertCustomPromptAtEnd);
+      } else {
+        let chatCompletionQueryModel = CreateChatCompletionModel(chatHistory, messageObj.id, chatIdentifier, chatModel, responseTokenSize);
+        openAIAPICall = this.getChatCompletion(chatCompletionQueryModel, customInitialPrompt);
+      }
+    
+      return new Observable<ChatMessage>((observer) => {
+        const subscription = openAIAPICall.subscribe( (response: ChatResponse) => {
+            if (messageObj.status == MessageStatus.Cancelled) {
+              currentApiCallCount = 0;
+              observer.next(messageObj);
+              observer.complete();
+              return;
+            }
+    
+            let trimmedText = chatModel == ChatModel.GPT3 ? (trimnewline ? StringUtilities.TrimBoth(response.text) : StringUtilities.TrimEnd(response.text)) : response.text;
+    
+            messageObj.message = StringUtilities.mergeOverlappingStrings(messageObj.message, trimmedText);
+            messageObj.status = response.truncated === true ? MessageStatus.InProgress : MessageStatus.Finished;
+            messageObj.displayMessage = StringUtilities.mergeOverlappingStrings(messageObj.displayMessage, trimmedText);
+  
+    
+            if (response.truncated) {
+              // Do not trim newline for the next query
+              this.fetchOpenAIResultAsChatMessageUsingRest(chatHistory, messageObj, retry, false, chatModel, customInitialPrompt, chatIdentifier, responseTokenSize, currentApiCallCount, openAIApiCallLimit, insertCustomPromptAtEnd).subscribe( (result: ChatMessage) => {
+                  observer.next(result);
+                  observer.complete();
+                },
+                (error: any) => {
+                  observer.error(error);
+                }
+              );
+            } else {
+              messageObj.status =  MessageStatus.Finished;
+              messageObj.timestamp = new Date().getTime();
+              messageObj.messageDisplayDate = TimeUtilities.displayMessageDate(new Date());
+              currentApiCallCount = 0;
+              messageObj.displayMessage = messageObj.displayMessage.replace('System: ', '');
+              messageObj.displayMessage = messageObj.displayMessage.replace('Assistant: ', '');
+    
+              observer.next(messageObj);
+              observer.complete();
+            }
+          },
+          (error: any) => {
+            if (retry) {
+              this.fetchOpenAIResultAsChatMessageUsingRest(chatHistory, messageObj, false, trimnewline, chatModel, customInitialPrompt, chatIdentifier, responseTokenSize, currentApiCallCount, openAIApiCallLimit, insertCustomPromptAtEnd).subscribe(
+                (result: ChatMessage) => {
+                  currentApiCallCount = 0;
+                  observer.next(result);
+                  observer.complete();
+                },
+                (error: any) => {
+                  observer.error(error);
+                }
+              );
+            } else {
+              observer.error(error);
+            }
+          }
+        );
+    
+        return () => {
+          subscription.unsubscribe();
+        };
+      });
   }
 }

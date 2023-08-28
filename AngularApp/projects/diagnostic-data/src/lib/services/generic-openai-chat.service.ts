@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ChatCompletionModel, TextCompletionModel, ChatResponse } from '../models/openai-data-models';
 import { Observable, of } from 'rxjs';
+import { ChatMessage, ChatModel } from '../models/chatbot-models';
 
 @Injectable()
 export class GenericOpenAIChatService {
@@ -28,5 +29,10 @@ export class GenericOpenAIChatService {
 
   public establishSignalRConnection(): Observable<boolean> {
     return Observable.of(false);
+  }
+
+  public fetchOpenAIResultAsChatMessageUsingRest(chatHistory: any, messageObj: ChatMessage, retry: boolean = true, trimnewline: boolean = false, chatModel:ChatModel, 
+    customInitialPrompt:string, chatIdentifier:string, responseTokenSize:number, currentApiCallCount:number, openAIApiCallLimit:number, insertCustomPromptAtEnd:boolean = false): Observable<ChatMessage> {
+    return Observable.of(messageObj);
   }
 }

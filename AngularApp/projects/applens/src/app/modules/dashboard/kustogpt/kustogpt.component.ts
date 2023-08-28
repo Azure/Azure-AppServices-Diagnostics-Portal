@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
-import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions, StringUtilities, TelemetryService,KeyValuePair } from 'diagnostic-data';
+import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions, StringUtilities, TelemetryService,KeyValuePair, GenericOpenAIChatService, MessageSource, TimeUtilities, MessageStatus, MessageRenderingType, ResponseTokensSize, ResourceDescriptor } from 'diagnostic-data';
 import { ApplensGlobal } from '../../../applens-global';
 import { ChatFeedbackAdditionalField, ChatFeedbackModel, ChatFeedbackPanelOpenParams, FeedbackExplanationModes } from '../../../shared/models/openAIChatFeedbackModel';
 import { Observable, of } from 'rxjs';
@@ -11,6 +11,7 @@ import { ObserverSiteInfo } from '../../../shared/models/observer';
 import { KustoUtilities } from 'projects/diagnostic-data/src/lib/utilities/kusto-utilities';
 import { IDropdownOption, IDropdownProps } from 'office-ui-fabric-react';
 import { AdalService } from 'adal-angular4';
+import {v4 as uuid} from 'uuid';
 
 @Component({
   selector: 'kustogpt',
@@ -18,17 +19,18 @@ import { AdalService } from 'adal-angular4';
   styleUrls: ['./kustogpt.component.scss']
 })
 export class KustoGPTComponent {
-
   public readonly apiProtocol = APIProtocol.WebSocket;
   public readonly chatModel = ChatModel.GPT4;
+  public readonly feedbackPanelSubmitButtonTemplatizeText = 'Templatize query';
+  public readonly feedbackPanelSubmitButtonSubmitText = 'Submit feedback';
   public readonly expectedResponseLabelText:string = 'Expected response ( Kusto query only )';
   public readonly antaresAnalyticsChatIdentifier: string = 'analyticskustocopilot';
   public readonly genericKustoAssistantChatIdentifier = 'kustoqueryassistant';
-  public readonly antaresClusterNamePlaceholderConst: string = '@AntaresStampKustoCluster';  
+  public readonly antaresClusterNamePlaceholderConst: string = '@AntaresStampKustoCluster';
   public readonly antaresDatabaseNamePlaceholderConst: string = '@AnataresStampKustoDB';
   public readonly analyticsClusterNameConst:string = 'wawsaneus.eastus';
   public readonly analyticsDatabaseNameConst: string = 'wawsanprod';
-  public readonly feedbackExplanationMode:FeedbackExplanationModes = FeedbackExplanationModes.Explanation;  
+  
   public readonly chatIdentifierDropdownOptions: IDropdownOption[] = [
     {
       key: this.antaresAnalyticsChatIdentifier,
@@ -54,7 +56,9 @@ export class KustoGPTComponent {
       width: '50em'
     },
   };
-  
+
+  public feedbackExplanationMode:FeedbackExplanationModes = FeedbackExplanationModes.None;
+  public feedbackPanelSubmitButtonText:string = this.feedbackPanelSubmitButtonTemplatizeText;
   public feedbackPanelOpenState:ChatFeedbackPanelOpenParams = {isOpen:false, chatMessageId: null};
   public chatIdentifier:string = '';
   public clusterName: string = this.antaresClusterNamePlaceholderConst;
@@ -151,7 +155,61 @@ export class KustoGPTComponent {
     return databaseName && ((databaseName.toLowerCase().trim() != this.analyticsDatabaseNameConst && databaseName.toLowerCase().trim().startsWith('waws')) || databaseName.toLowerCase().trim() == this.antaresDatabaseNamePlaceholderConst.toLowerCase());
   }
 
-  onBeforeSubmit = (chatFeedbackModel:ChatFeedbackModel): Observable<ChatFeedbackModel> => {
+  private GetQueryTemplatizationPrompt = (ARMId:string, kustoQuery:string):string => {
+    if(!ARMId || !kustoQuery) {
+      return '';
+    }
+
+    return `
+You are an AI assistant that templatizes any given Kusto query. 
+--------ARMId
+${ARMId}
+--------ARMId
+--------Kusto Query
+${kustoQuery}
+--------Kusto Query
+
+Always remember that you are NOT a chatbot. You are an assistant to templatize the provided Kusto query. Strictly adhere to the following rules.
+* Templatize the provided Kusto query for fields that are taken as inputs. Some of the fileds that must be templatized are as follows
+  start time 
+  end time 
+  site name
+  app name
+  any id's
+  subscription id
+  resource group name
+  resource name
+  run id
+  flow id
+  farm id
+  URLs
+  Hostnames 
+  etc.
+* Filters used to reduce the number of rows returned by the query by filtering out logs should not be templatized.
+* If the Kusto query contains any string that is a part of ARMId, it must be templatized.
+* Rewrite the templatized query with placeholder values and respond with only the templatized version of the supplied Kusto query without any labels, delimeters of decorators around it. Do not include any explanation in your response.  
+* Ensure that the templatized query has the same number of where clauses as in the provided Kusto query.
+* Make your response is always in the following format.
+--------Kusto Query
+<<Templatized Kusto Query>>
+--------Kusto Query
+`;
+  }
+
+  private ReplaceResourceIdsWithPlaceholders = (ARMId:string, kustoQuery:string):string => {
+    // There are times when the templatization does not replace the resource id's with the placeholders. So we are doing it here.
+    let resourceUriParts:ResourceDescriptor = ResourceDescriptor.parseResourceUri(ARMId);
+    // Replace all occurrences of the subscription id with the placeholder, case insensitive
+    kustoQuery = kustoQuery.replace(new RegExp(resourceUriParts.subscription, 'gi'), '<<SubscriptionId>>');
+    // Replace all occurrences of the resource group with the placeholder, case insensitive
+    kustoQuery = kustoQuery.replace(new RegExp(resourceUriParts.resourceGroup, 'gi'), '<<ResourceGroupName>>');
+    //Replace all occurrences of the resource name with the placeholder, case insensitive
+    kustoQuery = kustoQuery.replace(new RegExp(resourceUriParts.resource, 'gi'), '<<ResourceName>>');
+
+    return kustoQuery;
+  }
+
+  onBeforeSubmit = (chatFeedbackModel:ChatFeedbackModel): Observable<ChatFeedbackModel> => {    
     if(chatFeedbackModel && chatFeedbackModel.expectedResponse && !StringUtilities.IsNullOrWhiteSpace(chatFeedbackModel.expectedResponse) && chatFeedbackModel.expectedResponse.length < 5) {
       chatFeedbackModel.validationStatus.succeeded = false;
       chatFeedbackModel.validationStatus.validationStatusResponse = 'Response must be a Kusto query.';
@@ -167,6 +225,48 @@ export class KustoGPTComponent {
       if(queryTextFindings) {
         chatFeedbackModel.validationStatus.succeeded = false;
         chatFeedbackModel.validationStatus.validationStatusResponse = queryTextFindings;
+        return of(chatFeedbackModel);
+      }
+
+      if(this.feedbackPanelSubmitButtonText === this.feedbackPanelSubmitButtonTemplatizeText) {
+        chatFeedbackModel.feedbackExplanation = '';        
+        chatFeedbackModel.validationStatus.succeeded = false;
+        let chatMessage = {
+          id: uuid(),
+          message: "",
+          displayMessage: "",
+          messageSource: MessageSource.System,
+          timestamp: new Date().getTime(),
+          messageDisplayDate: TimeUtilities.displayMessageDate(new Date()),
+          status: MessageStatus.Created,
+          userFeedback: FeedbackOptions.None,
+          renderingType: MessageRenderingType.Text,
+          feedbackDocumentIds: []
+        } as ChatMessage;
+
+        return this._openAIService.fetchOpenAIResultAsChatMessageUsingRest('', chatMessage, true, false, ChatModel.GPT3, this.GetQueryTemplatizationPrompt(this._resourceService.getCurrentResourceId(false), chatFeedbackModel.expectedResponse),
+          '', ResponseTokensSize.XLarge, 0, 10, true).map((chatMessage) => {
+            if(chatMessage && chatMessage.message && chatMessage.message.length > 0) {
+              // Replace the delimeter --------Kusto Query with empty string
+              chatMessage.message = chatMessage.message.replace(/--------Kusto Query/gi, '');
+              chatFeedbackModel.expectedResponse = this.ReplaceResourceIdsWithPlaceholders(this._resourceService.getCurrentResourceId(false), chatMessage.message);
+              chatFeedbackModel.feedbackExplanation = '';        
+              chatFeedbackModel.validationStatus.succeeded = false;
+              chatFeedbackModel.validationStatus.validationStatusResponse = 'Query templatized. If correct, enter a new line in response for confirmation and submit feedback, else manually templatize the response before submitting.';
+              this.feedbackExplanationMode = FeedbackExplanationModes.Explanation;
+              this.feedbackPanelSubmitButtonText = this.feedbackPanelSubmitButtonSubmitText;
+              return chatFeedbackModel;
+            }
+            else {
+              throw new Error('Failed to templatize query, empty response during templatization. Please try again.');
+            }
+        }, (error) => {
+            chatFeedbackModel.feedbackExplanation = '';
+            chatFeedbackModel.validationStatus.succeeded = false;
+            chatFeedbackModel.validationStatus.validationStatusResponse = `Failed to templatize query, please try again. Error: ${error}`;
+            this._telemetryService.logException(error, 'kustogpt_onBeforeSubmit_fetchOpenAIResultAsChatMessageUsingRest', {armId: this._resourceService.getCurrentResourceId(false), userId: this.getUserId(), message: 'Error templatizing query'});
+            return chatFeedbackModel;
+        });
       }
       else {
         chatFeedbackModel.validationStatus.succeeded = true;
@@ -179,6 +279,8 @@ export class KustoGPTComponent {
   onFeedbackClicked = (chatMessage:ChatMessage, feedbackType:string):void => {
     if(this.isFeedbackSubmissionAllowed) {
       if(feedbackType === FeedbackOptions.Dislike) {
+        this.feedbackExplanationMode = FeedbackExplanationModes.None;
+        this.feedbackPanelSubmitButtonText = this.feedbackPanelSubmitButtonTemplatizeText;
         this.feedbackPanelOpenState = {
           isOpen: true,
           chatMessageId: chatMessage.id
@@ -253,7 +355,8 @@ export class KustoGPTComponent {
     return chatMessage;
   }
 
-  constructor(private _applensGlobal:ApplensGlobal, private _diagnosticService: ApplensDiagnosticService, private _resourceService: ResourceService, private _diagnosticApiService: DiagnosticApiService, private _adalService: AdalService, private _telemetryService: TelemetryService)  {
+  constructor(private _applensGlobal:ApplensGlobal, private _diagnosticService: ApplensDiagnosticService, private _resourceService: ResourceService, private _diagnosticApiService: DiagnosticApiService, 
+    private _openAIService: GenericOpenAIChatService, private _adalService: AdalService, private _telemetryService: TelemetryService)  {
     this._applensGlobal.updateHeader('KQL assistant'); // This sets the title of the HTML page
     this._applensGlobal.updateHeader(''); // Clear the header title of the component as the chat header is being displayed in the chat UI
     
