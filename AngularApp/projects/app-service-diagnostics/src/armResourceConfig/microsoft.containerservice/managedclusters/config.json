@@ -12,6 +12,19 @@
 	},
 	"isSearchEnabled": true,
 	"keystoneDetectorId": "",
+    "riskAlertConfigs": [
+        {
+            "title": 'Availability risk alert',
+            "riskAlertDetectorId": "riskalerts-availability",
+            "enableForCaseSubmissionFlow": true
+         },
+        {
+            "title": 'Reliability risk alert',
+            "riskAlertDetectorId": "YYYY",
+            "enableForCaseSubmissionFlow": true
+         }
+    ],
+
 	"liveChatConfig": {
 		"isApplicableForLiveChat": false,
 		"supportTopicIds": []
@@ -92,4 +105,3 @@
 	"pesId": "16450",
     "sapProductId": "5a3a423f-8667-9095-1770-0a554a934512"
 }
-
