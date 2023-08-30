@@ -5,7 +5,7 @@ import { SolutionService } from '../../services/solution.service';
 import { Observable } from 'rxjs';
 import { MockUpSolutionData } from './mockup-solution-data';
 import { StringUtilities } from '../../utilities/string-utilities';
-import { ChatMessage, MessageRenderingType, MessageSource, MessageStatus } from '../../models/chatbot-models';
+import { ChatMessage, FeedbackOptions, MessageRenderingType, MessageSource, MessageStatus } from '../../models/chatbot-models';
 import { TimeUtilities } from '../../utilities/time-utilities';
 import { v4 as uuid } from 'uuid';
 
@@ -194,8 +194,9 @@ export class DiagChatSolutionComponent implements OnInit {
         timestamp: new Date().getTime(),
         messageDisplayDate: TimeUtilities.displayMessageDate(new Date()),
         status: MessageStatus.Finished,
-        userFeedback: "none",
-        renderingType: MessageRenderingType.Markdown
+        userFeedback: FeedbackOptions.None,
+        renderingType: MessageRenderingType.Markdown,
+        feedbackDocumentIds: []
       }
       this.OnSolutionActionFinish.emit(chatMessage);
     }
