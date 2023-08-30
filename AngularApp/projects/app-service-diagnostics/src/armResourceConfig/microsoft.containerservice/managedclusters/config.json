@@ -14,13 +14,8 @@
 	"keystoneDetectorId": "",
     "riskAlertConfigs": [
         {
-            "title": 'Availability risk alert',
-            "riskAlertDetectorId": "riskalerts-availability",
-            "enableForCaseSubmissionFlow": true
-         },
-        {
-            "title": 'Reliability risk alert',
-            "riskAlertDetectorId": "YYYY",
+            "title": "Reliability risk alert",
+            "riskAlertDetectorId": "riskalerts-reliability", 
             "enableForCaseSubmissionFlow": true
          }
     ],
