@@ -7,6 +7,7 @@ import { StartupInfo } from '../../models/portal';
 import { DemoSubscriptions } from '../../../../../../diagnostic-data/src/lib/models/betaSubscriptions';
 import { DetectorType, TelemetryService, TelemetrySource } from 'diagnostic-data';
 import { ResourceService } from '../../../shared-v2/services/resource.service';
+import { PortalService } from '../../../startup/services/portal.service';
 
 @Component({
   selector: 'resource-redirect',
@@ -16,7 +17,7 @@ import { ResourceService } from '../../../shared-v2/services/resource.service';
 export class ResourceRedirectComponent implements OnInit {
   private _newVersionEnabled = true;
 
-  constructor(private _authService: AuthService, private _router: Router, private _telemetryService: TelemetryService, private _resourceService: ResourceService) { }
+  constructor(private _authService: AuthService, private _router: Router, private _telemetryService: TelemetryService, private _resourceService: ResourceService, private _portalService: PortalService) { }
 
   ngOnInit() {
     this._telemetryService.updateCommonProperties({ 'Location': TelemetrySource.DiagAndSolveBlade });
@@ -24,6 +25,10 @@ export class ResourceRedirectComponent implements OnInit {
     //Better way is to update Ibiza code to pass PesId and SapProductId from portal
     this._resourceService.getPesId().subscribe(pesId => {
       this._telemetryService.updateCommonProperties({ 'PesId': pesId });
+    });
+    this._portalService.getIFrameInfo().subscribe(info => {
+      const slot: string = info.slot;
+      this._telemetryService.updateCommonProperties({ 'Slot': slot });
     });
   }
 
