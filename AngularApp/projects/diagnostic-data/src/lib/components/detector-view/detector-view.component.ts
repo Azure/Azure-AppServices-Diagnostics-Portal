@@ -82,6 +82,9 @@ export class DetectorViewComponent implements OnInit {
   timePickerErrorStr: string = "";
   nextButtonDisabled: boolean = true;
   selectWorkflowDownTimeDisabled: boolean = false;
+  downTimeOptions: IDropdownOption[] = [];
+  defaultSelectedKey: string = "";
+
   get loadingMessage() {
     return `Analyzing data ${this.timePickerButtonStr.includes("to") ? "from" : "in"} ${this.timePickerButtonStr}, to change, use the time range picker`;
   }
@@ -180,7 +183,8 @@ export class DetectorViewComponent implements OnInit {
       this.downTimes.push(downTime);
 
       if (this.isWorkflowNode) {
-        this.selectedWorkflowDowntime = downTime;
+        this.populateWorkflowDowntimeDropDown(this.downTimes);
+
       } else {
         this.populateFabricDowntimeDropDown(this.downTimes);
       }
@@ -525,8 +529,41 @@ export class DetectorViewComponent implements OnInit {
     } as DownTime;
   }
 
+  private populateWorkflowDowntimeDropDown(downTimes: DownTime[]) {
+    let selectedDownTimeIdx = -1;
+    if (this.downTimes != null && this.downTimes.length > 0) {
+      selectedDownTimeIdx = this.downTimes.findIndex(x => x.isSelected);
+    }
+
+    this.downTimeOptions = [];
+    this.downTimeOptions.push({
+      key: "Choose a downtime",
+      text: "Choose a downtime",
+      ariaLabel: "Choose a downtime",
+      data: null
+    });
+
+    downTimes.forEach(downTime => {
+      this.downTimeOptions.push({
+        key: this.getKeyForDownTime(downTime),
+        text: this.getDowntimeLabel(downTime),
+        ariaLabel: this.getDowntimeLabel(downTime),
+        data: downTime
+      });
+    });
+
+    if (selectedDownTimeIdx == -1) {
+      this.defaultSelectedKey = "Choose a downtime";
+    } else {
+      this.defaultSelectedKey = this.getKeyForDownTime(this.downTimes[selectedDownTimeIdx]);
+      this.selectedWorkflowDowntime = this.downTimes[selectedDownTimeIdx];
+      this.nextButtonDisabled = false;
+    }
+  }
+
   private populateFabricDowntimeDropDown(downTimes: DownTime[]): void {
     if (this.isWorkflowNode) {
+      this.populateWorkflowDowntimeDropDown(downTimes);
       return;
     }
 
@@ -595,11 +632,9 @@ export class DetectorViewComponent implements OnInit {
       };
 
       this.logEvent(TelemetryEventNames.DowntimeListPassedByDetector, downtimeListForLogging);
+      this.populateFabricDowntimeDropDown(this.downTimes);
+      this.setxAxisPlotBands(false);
 
-      if (!this.isWorkflowNode) {
-        this.populateFabricDowntimeDropDown(this.downTimes);
-        this.setxAxisPlotBands(false);
-      }
     }
   }
 
@@ -860,8 +895,8 @@ export class DetectorViewComponent implements OnInit {
     this.timePickerErrorStr = message;
   }
 
-  onWorkflowDowntimeChange(downTime: any) {
-    if (downTime === 'chooseDownTime') {
+  onWorkflowDowntimeChange(e: { option: IDropdownOption, index: number }) {
+    if (e.option.data == null) {
       this.setxAxisPlotBands(false, null);
       this.onDownTimeChange(null, DowntimeInteractionSource.Workflow);
       this.nextButtonDisabled = true;
@@ -869,7 +904,8 @@ export class DetectorViewComponent implements OnInit {
     }
 
     this.nextButtonDisabled = false;
-    this.onDownTimeChange(downTime, DowntimeInteractionSource.Workflow);
+    this.onDownTimeChange(e.option.data, DowntimeInteractionSource.Workflow);
+    this.selectedWorkflowDowntime = e.option.data;
   }
 
   clickNext() {

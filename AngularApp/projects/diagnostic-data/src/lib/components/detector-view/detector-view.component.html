@@ -87,11 +87,9 @@
 <div *ngIf="isWorkflowNode && supportsDownTime">
   Before proceeding further, please select a downtime from the list below
   <div class="mt-2">
-    <select [disabled]="selectWorkflowDownTimeDisabled" name="workflowDownTime" id="workflowDownTimeId"
-      [(ngModel)]="selectedWorkflowDowntime" (ngModelChange)="onWorkflowDowntimeChange($event)">
-      <option value="chooseDownTime">Choose a downtime</option>
-      <option *ngFor="let downtime of downTimes" [ngValue]="downtime">{{downtime.downTimeLabel}}</option>
-    </select>
+    <fab-dropdown [disabled]="selectWorkflowDownTimeDisabled" role="combobox" [options]="downTimeOptions"
+      (onChange)="onWorkflowDowntimeChange($event)" [defaultSelectedKey]="defaultSelectedKey">
+    </fab-dropdown>
   </div>
   <button type="button" class="mt-3 mb-2 btn btn-primary btn-sm" [disabled]="nextButtonDisabled"
     (click)="clickNext()">Next</button>
