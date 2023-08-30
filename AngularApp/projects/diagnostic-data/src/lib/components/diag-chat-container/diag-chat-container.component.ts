@@ -75,7 +75,7 @@ export class DiagChatContainerComponent implements OnInit {
     this.chatUIComponentRef.scrollToBottom();
   }
 
-  sendMessageOverWSS(searchQuery: any) {
+  sendMessageOverWSS(searchQuery: string) {
     if (this.diagChatCallSubscription) {
       this.diagChatCallSubscription.unsubscribe();
     }
@@ -179,5 +179,9 @@ export class DiagChatContainerComponent implements OnInit {
   closePanel() {
     this.globals.openDiagChatSolutionPanel = false;
     this._router.navigate([`../../`], { relativeTo: this._route, skipLocationChange: true });
+  }
+
+  processSystemMessage(chatMessage: ChatMessage) {
+    this._chatContextService.messageStore[this.chatIdentifier].push(chatMessage);
   }
 }

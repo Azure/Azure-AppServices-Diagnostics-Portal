@@ -49,7 +49,7 @@
                 <!-- {{message.messageDisplayDate}} -->
               </div>
               <div *ngIf="message.renderingType == 3">
-                <diag-chat-solution [solutionBody]="message.displayMessage"></diag-chat-solution>
+                <diag-chat-solution [solutionString]="message.displayMessage" (OnSolutionActionFinish)="appendSolutionFinishedMessage($event)"></diag-chat-solution>
               </div>
               <div *ngIf="message.renderingType != 3" style="white-space:pre-wrap">
                 <markdown [ngClass]="{'blinking-cursor': message.status==2}" [data]="message.displayMessage">

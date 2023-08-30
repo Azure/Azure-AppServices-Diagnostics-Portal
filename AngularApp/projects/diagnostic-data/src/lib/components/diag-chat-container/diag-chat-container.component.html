@@ -5,7 +5,7 @@
         [messages]="_chatContextService.messageStore[chatIdentifier]" [systemNameInitial]="'AI'"
         [userNameInitial]="'JD'" [chatInputBoxDisabled]="_chatContextService.chatInputBoxDisabled"
         [chatQuerySamples]="chatQuerySamples" [inputTextLimit]="inputTextLimit"
-        [displayLoaderShimmer]="responseInProgress"></chat-ui>
+        [displayLoaderShimmer]="responseInProgress" (OnPushSystemMessage)="processSystemMessage($event)"></chat-ui>
     <fab-panel [isOpen]="globals.openDiagChatSolutionPanel" [type]="panelType" [customWidth]="'1300px'"
         (onDismiss)="closePanel()">
         <div>

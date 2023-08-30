@@ -14,6 +14,10 @@ export class GenericSolutionService {
     return of("Not implemented");
   }
 
+  OpenTabFromChat(): Observable<any> {
+    return of("Not implemented");
+  }
+
   GoToBlade(resourceUri: string, actionOptions: {}): Observable<any> {
     return of("Not implemented");
   }

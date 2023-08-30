@@ -1,4 +1,7 @@
-<diag-chat-container></diag-chat-container>
+<div class="mt-3 ml-3">
+    <fab-link (onClick)="navigateToLastPage()">&lt;Go Back</fab-link>
+    <diag-chat-container></diag-chat-container>
+</div>
 
 <ng-container *ngIf="isWindowsOrLinuxApp">
     <diagostic-sessions-panel [isPanelBlocking]="true"></diagostic-sessions-panel>

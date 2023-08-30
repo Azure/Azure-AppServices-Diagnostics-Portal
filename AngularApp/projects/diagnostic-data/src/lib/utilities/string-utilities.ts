@@ -48,6 +48,10 @@ export class StringUtilities {
         return input1 == input2;
     }
 
+    static LowerFirstChar(target: string): string {
+        return target.charAt(0).toLowerCase() + target.slice(1);
+    }
+
     /* * 
     * KMP algorithm for searching string index
     * https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm
