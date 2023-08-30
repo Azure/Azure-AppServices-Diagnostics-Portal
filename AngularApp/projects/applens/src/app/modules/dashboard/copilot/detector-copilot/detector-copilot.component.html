@@ -1,0 +1,42 @@
+<openai-chat-container #chatbot [persistChat]="false" [chatIdentifier]="_copilotService.detectorCopilotChatIdentifier"
+  [customInitialPrompt]="_copilotService.customPrompt" [chatContextLength]="6"
+  [chatQuerySamplesFileUri]="_copilotService.chatConfigFile" [showFeedbackOptions]="true" [showContentDisclaimer]="true"
+  [contentDisclaimerMessage]="contentDisclaimerMessage" [quotaEnforced]="true" [dailyMessageQuota]="20"
+  [messageQuotaWarningThreshold]="10" [chatHeader]="chatHeader" [systemPhotoSource]="'/assets/img/bot_sparkle_icon.svg'"
+  [apiProtocol]="apiProtocol" [chatModel]="chatModel" [onUserMessageSend]="onUserMessageSend" [stopMessageGeneration] = "stopMessageGeneration"
+  [onSystemMessageReceived]="onSystemMessageReceived" [chatContainerHeight]="_copilotService.chatContainerHeight">
+
+  <div highlightedSection
+    *ngIf="this._copilotService.selectedComponent.heading && this._copilotService.selectedComponent.heading != ''"
+    class="selected-component">
+
+    <div class="selected-component-content-container">
+      <div class="title-container">
+        <img class="icon" [src]="this._copilotService.selectedComponent.iconSrc" />
+        <div class="title">{{this._copilotService.selectedComponent.heading}}</div>
+      </div>
+      <div class="subheading">{{this._copilotService.selectedComponent.subheading}}</div>
+      <button type="button" class="clear-selected-component" title="clear selection" data-is-visible="true"
+        aria-label="clear selection" data-is-focusable="true" (click)="this._copilotService.clearComponentSelection()">
+        <span>
+          <i data-icon-name="Cancel" aria-hidden="true" class="ms-Icon root-89 css-164 ms-Button-icon icon-159"
+            style="font-family: FabricMDL2Icons;">&#x2715;</i>
+        </span>
+      </button>
+    </div>
+
+  </div>
+
+</openai-chat-container>
+
+<fab-dialog [hidden]="copilotExitConfirmationHidden" (onDismiss)="showExitConfirmationDialog(false)">
+  <fab-dialog-content [title]="'Are you sure?'">
+    <div style="font-size: 13px;">
+      Are you sure you want to exit? I'm in the midst of something epic!
+    </div>
+    <div class="mt-4" style="margin-top:10px">
+      <fab-primary-button text="Exit" (onClick)="exitCopilot()" [contentClass]="'mr-3'"></fab-primary-button>
+      <fab-default-button text="Cancel" (onClick)="showExitConfirmationDialog(false)"></fab-default-button>
+    </div>
+  </fab-dialog-content>
+</fab-dialog>

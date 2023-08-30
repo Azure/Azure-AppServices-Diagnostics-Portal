@@ -22,6 +22,7 @@ import { GenieGlobals } from '../../services/genie.service';
 import { BreadcrumbNavigationItem } from '../../services/generic-breadcrumb.service';
 import { UserAccessStatus } from '../../models/alerts';
 import { StringUtilities } from '../../utilities/string-utilities';
+import { GenericDetectorCopilotService } from '../../services/generic-detector-copilot.service';
 
 const minSupportedDowntimeDuration: number = 10;
 const defaultDowntimeSelectionError: string = 'Downtimes less than 10 minutes are not supported. Select a time duration spanning at least 10 minutes.';
@@ -196,7 +197,9 @@ export class DetectorViewComponent implements OnInit {
   public breadCrumb: BreadcrumbNavigationItem;
 
   constructor(@Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private telemetryService: TelemetryService,
-    private detectorControlService: DetectorControlService, private _supportTopicService: GenericSupportTopicService, private _cxpChatService: CXPChatService, protected _route: ActivatedRoute, private _router: Router, private _genericUserSettingsService: GenericUserSettingService, private _global: GenieGlobals) {
+    private detectorControlService: DetectorControlService, private _supportTopicService: GenericSupportTopicService, private _cxpChatService: CXPChatService,
+    protected _route: ActivatedRoute, private _router: Router, private _genericUserSettingsService: GenericUserSettingService, private _global: GenieGlobals,
+    private _detectorCopilotService: GenericDetectorCopilotService) {
     this.isPublic = config && config.isPublic;
     this.feedbackButtonLabel = this.isPublic ? 'Send Feedback' : 'Rate Detector';
   }
@@ -267,6 +270,7 @@ export class DetectorViewComponent implements OnInit {
 
 
       if (data) {
+
         this.detectorEventProperties = {
           'StartTime': this.startTime.toISOString(),
           'EndTime': this.endTime.toISOString(),
@@ -404,6 +408,11 @@ export class DetectorViewComponent implements OnInit {
             (<HTMLInputElement>document.querySelector("#time-picker-button button")).focus();
           }
         });
+
+        // Call Detecotor Copilot service to process and save data for context, but only for parent detector and not for child detector
+        if (!this.insideDetectorList) {
+          this._detectorCopilotService.processDetectorData(data);
+        }
       }
     });
   }

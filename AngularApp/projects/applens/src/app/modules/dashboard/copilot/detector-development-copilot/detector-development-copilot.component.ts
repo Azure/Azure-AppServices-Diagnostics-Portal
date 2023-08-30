@@ -1,20 +1,20 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { APIProtocol, ChatMessage, ChatModel, ChatUIContextService, MessageSource, MessageStatus, ResponseTokensSize, StringUtilities, TelemetryService } from 'diagnostic-data';
 import { Subscription } from 'rxjs';
-import { DetectorCopilotService } from '../services/detector-copilot.service';
+import { ApplensDetectorDevelopmentCopilotService } from '../../services/copilot/applens-detector-development-copilot.service';
+import { ApplensCopilotContainerService } from '../../services/copilot/applens-copilot-container.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'projects/applens/src/environments/environment';
-import { PortalUtils } from '../../../shared/utilities/portal-util';
+import { PortalUtils } from '../../../../shared/utilities/portal-util';
 
 @Component({
-  selector: 'detector-copilot',
-  templateUrl: './detector-copilot.component.html',
-  styleUrls: ['./detector-copilot.component.scss']
+  selector: 'detector-development-copilot',
+  templateUrl: './detector-development-copilot.component.html',
+  styleUrls: ['./detector-development-copilot.component.scss']
 })
-export class DetectorCopilotComponent implements OnInit, OnDestroy {
+export class DetectorDevelopmentCopilotComponent implements OnInit, OnDestroy {
 
   contentDisclaimerMessage: string = "I'm biased towards coding; mention 'no code' for other help and avoid sensitive data :)";
-  chatHeader: string = '';
   chatModel: ChatModel = ChatModel.GPT4;
   apiProtocol: APIProtocol = APIProtocol.WebSocket;
   responseTokenSize: ResponseTokensSize = ResponseTokensSize.Small;
@@ -23,7 +23,6 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   clearChatConfirmationHidden: boolean = true;
   copilotExitConfirmationHidden: boolean = true;
 
-  private closeEventObservable: Subscription;
   private codeUsedInPrompt: string;
   private maxLinesLimitForCodeUpdate: number = 100;
 
@@ -34,34 +33,28 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
 
   private lastMessageIdForFeedback: string = '';
 
-  constructor(public _chatContextService: ChatUIContextService, public _copilotService: DetectorCopilotService, private telemetryService: TelemetryService, private http: HttpClient) {
+  constructor(public _chatContextService: ChatUIContextService, public _copilotService: ApplensDetectorDevelopmentCopilotService, public _copilotContainerService: ApplensCopilotContainerService, private telemetryService: TelemetryService, private http: HttpClient) {
   }
 
   ngOnInit(): void {
     this.prepareCodeUpdateMessages();
-
-    this.closeEventObservable = this._copilotService.onCloseCopilotPanelEvent.subscribe(event => {
-      if (event) {
-        this.checkMessageStateAndExitCopilot(event.showConfirmation);
-        setTimeout(() => {
-          if (event.resetCopilot) {
-            this._copilotService.reset();
-            this.log('OnClose', 'copilot reset complete');
-          }
-        }, 1000);
-      }
-    });
-
     this.log('OnInit', 'initialization complete');
   }
 
   ngOnDestroy() {
-    if (this.closeEventObservable) {
-      this.closeEventObservable.unsubscribe();
-      this.log('OnDestroy', 'unsubscribed from closeEventObservable');
-    }
-
     this.log('OnDestroy', 'ondestroy complete');
+  }
+
+  handleCloseCopilotEvent(event: any) {
+    if (event) {
+      this.checkMessageStateAndExitCopilot(event.showConfirmation);
+      setTimeout(() => {
+        if (event.resetCopilot) {
+          this._copilotService.reset();
+          this.log('OnClose', 'copilot reset complete');
+        }
+      }, 1000);
+    }
   }
 
   //#region Chat Callback Methods
@@ -244,7 +237,7 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
   sendFeedback = () => {
 
     let newline = '%0D%0A';
-    const subject = encodeURIComponent(`${this._copilotService.copilotHeaderTitle} Feedback`);
+    const subject = encodeURIComponent(`${this._copilotContainerService.copilotHeaderTitle} Feedback`);
     let body = encodeURIComponent('Please provide feedback here:');
     let link = "";
 
@@ -278,7 +271,7 @@ export class DetectorCopilotComponent implements OnInit, OnDestroy {
     this._copilotService.operationInProgress = false;
     this._copilotService.onCodeOperationProgressState.next({ inProgress: false });
     this.copilotExitConfirmationHidden = true;
-    this._copilotService.hideCopilotPanel();
+    this._copilotContainerService.hideCopilotPanel();
     this.log('OnClose', 'copilot panel closed');
   }
 

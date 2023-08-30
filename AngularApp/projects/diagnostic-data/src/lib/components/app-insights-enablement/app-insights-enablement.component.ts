@@ -44,11 +44,26 @@ export class AppInsightsEnablementComponent implements OnInit {
   optInsightResourceInfoSubject = new BehaviorSubject<{ resourceUri: string, appId: string }>({ resourceUri: "", appId: "" });
   isCodeInsightsEnabledInProd: boolean = true;
   codeOptimizationEnabled = false;
+  _resourceId: string = "";
 
-  @Input() resourceId: string = "";
+  @Input() set resourceId(val: string) {
+    if (val) {
+      this._resourceId = val;
+      this.initialize();
+    }
+  }
+
   @Input() detectorId: string = "";
 
   ngOnInit() {
+    this.initialize();
+  }
+
+  initialize() {
+    if (!this._resourceId) {
+      return;
+    }
+
     this.detectorId = this.detectorId ? this.detectorId : this._route.snapshot.parent.params['category'];
     // Only displaying Code Optimizations if called from the following detectors
     this.codeOptimizationEnabled = this.detectorId === 'webappcpu' || this.detectorId === 'Memoryusage' || this.detectorId === 'perfAnalysis' || this.detectorId === 'AvailabilityAndPerformanceWindows';
@@ -63,12 +78,12 @@ export class AppInsightsEnablementComponent implements OnInit {
           this.optInsightResourceInfoSubject.next({ resourceUri: this.appInsightsResourceUri, appId: this.appId });
 
           if (this.isAppInsightsEnabled) {
-            this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsEnabled);
-            this._appInsightsService.getAppInsightsConnected(this.resourceId).subscribe(connected => {
+            this._appInsightsService.logAppInsightsEvent(this._resourceId, TelemetryEventNames.AppInsightsEnabled);
+            this._appInsightsService.getAppInsightsConnected(this._resourceId).subscribe(connected => {
               if (connected) {
-                this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsAlreadyConnected);
+                this._appInsightsService.logAppInsightsEvent(this._resourceId, TelemetryEventNames.AppInsightsAlreadyConnected);
                 this.isAppInsightsConnected = true;
-                this._appInsightsService.getAppInsightsStoredConfiguration(this.resourceId).subscribe(storedResponse => {
+                this._appInsightsService.getAppInsightsStoredConfiguration(this._resourceId).subscribe(storedResponse => {
                   if (storedResponse && storedResponse.AppId && storedResponse.ApiKey) {
                     const additionalHeaders = new HttpHeaders({ 'appinsights-app-id': storedResponse.AppId, 'appinsights-encryptedkey': storedResponse.ApiKey });
                     this._backendCtrlService.get<any>(`api/appinsights/validate`, additionalHeaders, true).subscribe(resp => {
@@ -77,7 +92,7 @@ export class AppInsightsEnablementComponent implements OnInit {
                         if (resp.updatedEncryptionBlob != null && resp.updatedEncryptionBlob.length > 1) {
                           this._appInsightsService.updateAppInsightsEncryptedAppSettings(resp.updatedEncryptionBlob, storedResponse.AppId).subscribe(appSettingUpdated => {
                             if (appSettingUpdated) {
-                              this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsAppSettingsUpdatedWithLatestSecret);
+                              this._appInsightsService.logAppInsightsEvent(this._resourceId, TelemetryEventNames.AppInsightsAppSettingsUpdatedWithLatestSecret);
                             }
                             this.loadingSettings = false;
                           }, error => {
@@ -90,9 +105,9 @@ export class AppInsightsEnablementComponent implements OnInit {
                     }, error => {
                       this.loadingSettings = false;
                       if (error.status === 403) {
-                        this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsConfigurationInvalid);
+                        this._appInsightsService.logAppInsightsEvent(this._resourceId, TelemetryEventNames.AppInsightsConfigurationInvalid);
                       } else {
-                        this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsFailedDuringKeyValidation);
+                        this._appInsightsService.logAppInsightsEvent(this._resourceId, TelemetryEventNames.AppInsightsFailedDuringKeyValidation);
                         if (error.error) {
                           this.appInsightsValiationError += " - " + error.error;
                         }
@@ -115,7 +130,7 @@ export class AppInsightsEnablementComponent implements OnInit {
                 this._appInsightsService.checkAppInsightsAccess(this.appInsightsResourceUri).subscribe(hasWriteAccess => {
                   if (!hasWriteAccess) {
                     this.hasWriteAccess = false;
-                    this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsResourceMissingWriteAccess);
+                    this._appInsightsService.logAppInsightsEvent(this._resourceId, TelemetryEventNames.AppInsightsResourceMissingWriteAccess);
                   } else {
                     this._appInsightsService.getAppInsightsApiKeysCount().subscribe(keyCount => {
                       this.hasWriteAccess = true;
@@ -123,13 +138,13 @@ export class AppInsightsEnablementComponent implements OnInit {
                       if (keyCount < maxApiKeysPerAiResource) {
                         this.canCreateApiKeys = true;
                       } else {
-                        this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsMaxApiKeysExceeded);
+                        this._appInsightsService.logAppInsightsEvent(this._resourceId, TelemetryEventNames.AppInsightsMaxApiKeysExceeded);
                       }
                     });
                   }
 
                 }, errorCheckingAccess => {
-                  this._appInsightsService.logAppInsightsError(this.resourceId, TelemetryEventNames.AppInsightsAccessCheckError, errorCheckingAccess);
+                  this._appInsightsService.logAppInsightsError(this._resourceId, TelemetryEventNames.AppInsightsAccessCheckError, errorCheckingAccess);
                   this.loadingSettings = false;
                   this.hasWriteAccess = false;
                 });
@@ -154,9 +169,9 @@ export class AppInsightsEnablementComponent implements OnInit {
             //    to list all the AppInsights resources.
             //
             this.appSettingsHaveInstrumentationKey = true;
-            this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsFromDifferentSubscription);
+            this._appInsightsService.logAppInsightsEvent(this._resourceId, TelemetryEventNames.AppInsightsFromDifferentSubscription);
           } else {
-            this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsNotEnabled)
+            this._appInsightsService.logAppInsightsEvent(this._resourceId, TelemetryEventNames.AppInsightsNotEnabled)
           }
           this.loadingSettings = false;
         }
@@ -165,24 +180,24 @@ export class AppInsightsEnablementComponent implements OnInit {
   }
 
   enable() {
-    this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsEnableClicked);
+    this._appInsightsService.logAppInsightsEvent(this._resourceId, TelemetryEventNames.AppInsightsEnableClicked);
     this._appInsightsService.openAppInsightsBlade();
   }
 
   connect() {
     this.connecting = true;
-    this._appInsightsService.connectAppInsights(this.resourceId, this.appInsightsResourceUri, this.appId).subscribe(resp => {
+    this._appInsightsService.connectAppInsights(this._resourceId, this.appInsightsResourceUri, this.appId).subscribe(resp => {
       this.connecting = false;
       if (resp) {
         this.isAppInsightsConnected = true;
         this.appInsightsValidated = true;
-        this._appInsightsService.logAppInsightsEvent(this.resourceId, TelemetryEventNames.AppInsightsConnected);
+        this._appInsightsService.logAppInsightsEvent(this._resourceId, TelemetryEventNames.AppInsightsConnected);
       }
 
     }, error => {
       this.connecting = false;
       this.error = error;
-      this._appInsightsService.logAppInsightsError(this.resourceId, TelemetryEventNames.AppInsightsConnectionError, this.error);
+      this._appInsightsService.logAppInsightsError(this._resourceId, TelemetryEventNames.AppInsightsConnectionError, this.error);
     });
   }
 

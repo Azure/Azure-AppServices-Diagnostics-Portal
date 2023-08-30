@@ -48,7 +48,8 @@ export class ChatUIComponent implements OnInit {
     @Input() showValidationError: boolean = false;
     @Input() validationErrorMessage: string = '';
 
-    @Input() inputTextLimit: number = 500;
+    @Input() inputTextLimit: number = 1000;
+    @Input() chatContainerHeight: string  = ''; 
 
     chatInputTextInternal: string = '';
 

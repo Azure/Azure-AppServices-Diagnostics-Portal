@@ -30,11 +30,11 @@
 
 .insight-expand-icon {
     font-weight: bold;
-    float:left;
-    font-size:18px;
+    float: left;
+    font-size: 18px;
     min-height: 1px;
     min-width: 1.5%;
-    margin-right:10px;
+    margin-right: 10px;
 }
 
 .card-header {
@@ -78,7 +78,7 @@ table {
 }
 
 .expand-icon {
-    float:right;
+    float: right;
     font-size: 20px;
 }
 
@@ -89,82 +89,88 @@ td {
 
 /*tooltip Box*/
 .con-tooltip {
-  border-radius: 9px;
-  transition: all 0.3s ease-in-out;
-  cursor: default;
+    border-radius: 9px;
+    transition: all 0.3s ease-in-out;
+    cursor: default;
 }
 
 /*tooltip */
 .tooltip {
-  visibility: hidden;
-  z-index: 1;
-  opacity: .40;
-  width: max-content;
-  padding: 5px 5px 2px 5px;
-  background: #333;
-  color: #E086D3;
-  position: absolute;
-  top:-140%;
-  left: -25%;
-  border-radius: 9px;
-  font: 16px;
-  transform: translateY(9px);
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 0 3px rgba(56, 54, 54, 0.86);
+    visibility: hidden;
+    z-index: 1;
+    opacity: .40;
+    width: max-content;
+    padding: 5px 5px 2px 5px;
+    background: #333;
+    color: #E086D3;
+    position: absolute;
+    top: -140%;
+    left: -25%;
+    border-radius: 9px;
+    font: 16px;
+    transform: translateY(9px);
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 0 3px rgba(56, 54, 54, 0.86);
 }
 
 
 /* tooltip  after*/
 .tooltip::after {
-  content: " ";
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 12px 12.5px 0 12.5px;
-  border-color: #333 transparent transparent transparent;
-  position: absolute;
-  left: 40%;
+    content: " ";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 12px 12.5px 0 12.5px;
+    border-color: #333 transparent transparent transparent;
+    position: absolute;
+    left: 40%;
 }
 
-.con-tooltip:hover .tooltip{
-  visibility: visible;
-  transform: translateY(-10px);
-  opacity: 1;
-  transition: .3s linear;
-  animation: tooltipmove 1s ease-in-out infinite  alternate;
+.con-tooltip:hover .tooltip {
+    visibility: visible;
+    transform: translateY(-10px);
+    opacity: 1;
+    transition: .3s linear;
+    animation: tooltipmove 1s ease-in-out infinite alternate;
 }
+
 @keyframes tooltipmove {
-  0%{
-    transform: translateY(6px);
-  }
+    0% {
+        transform: translateY(6px);
+    }
 
-  100%{
-    transform: translateY(1px);
-  }
+    100% {
+        transform: translateY(1px);
+    }
 
 }
 
 /*hover ToolTip*/
-.bottom:hover {transform: translateY(6px);}
-
-/*bottom*/
-.bottom .tooltip { top:115%; left:-20%; }
-
-.bottom .tooltip::after{
-  top:-17%;
-  left:40%;
-  transform: rotate(180deg);
+.bottom:hover {
+    transform: translateY(6px);
 }
 
-.con-tooltip > a{
+/*bottom*/
+.bottom .tooltip {
+    top: 115%;
+    left: -20%;
+}
+
+.bottom .tooltip::after {
+    top: -17%;
+    left: 40%;
+    transform: rotate(180deg);
+}
+
+.con-tooltip>a {
     color: rgb(51, 51, 51)
 }
 
-.con-tooltip > a:hover{
+.con-tooltip>a:hover {
     color: #015cda
 }
 
-.con-tooltip > a:visited{
+.con-tooltip>a:visited {
     color: #015cda
 }
 

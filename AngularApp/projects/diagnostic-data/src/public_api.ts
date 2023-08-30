@@ -34,6 +34,7 @@ export * from './lib/config/diagnostic-data-config';
 export * from './lib/diagnostic-data.module';
 export * from './lib/services/optinsights.service';
 export * from './lib/services/chatui-context.service';
+export * from './lib/services/generic-detector-copilot.service';
 
 
 export * from './lib/models/detector';
@@ -69,6 +70,7 @@ export * from './lib/utilities/uri-utilities';
 export * from './lib/utilities/string-utilities';
 export * from './lib/utilities/time-utilities';
 export * from './lib/utilities/string-search-utilities';
+export * from './lib/utilities/response-utilities';
 export * from './lib/components/step-views/step-view-lib';
 export * from "./lib/components/solution-orchestrator/solution-orchestrator.component";
 export * from './lib/utilities/resiliencyScoreReportHelper';

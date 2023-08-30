@@ -1,5 +1,8 @@
 <fab-command-bar tabindex="0" [contentClass]="'fab-command-bar-class'">
   <items>
+    <fab-command-bar-item *ngIf="copilotEnabled" key="detectorcopilot" text="Detector Copilot (Preview)"
+      [iconProps]="{ iconName: 'robot' }" (click)="openDetectorCopilot()" [disabled]="_detectorCopilotService.copilotButtonActive == false">
+    </fab-command-bar-item>
     <fab-command-bar-item key="refresh" text="Refresh" [iconProps]="{ iconName: 'Refresh' }" (click)="refreshPage()">
     </fab-command-bar-item>
     <fab-command-bar-item key="feedback" text="Feedback" [iconProps]="{ iconName: 'Emoji2' }" (click)="openFeedback()">
@@ -11,40 +14,29 @@
       (click)="internalExternalToggle()"></fab-command-bar-item>
     <fab-command-bar-item key="favoriteDetector" [text]="pinUnpinDetectorText"
       [iconProps]="{ iconName: pinUnpinDetectorIcon }" (click)="addOrRemoveDetector()"></fab-command-bar-item>
-    <fab-command-bar-item *ngIf="displayDownloadReportButton" key="downloadReport" [text]="downloadReportText" [style]="displayDownloadReportButtonStyle" [id]="'downloadReportId'" 
-      [iconProps]="downloadReportIcon" (click)="downloadReport()" [disabled]="downloadReportButtonDisabled"></fab-command-bar-item>    
+    <fab-command-bar-item *ngIf="displayDownloadReportButton" key="downloadReport" [text]="downloadReportText"
+      [style]="displayDownloadReportButtonStyle" [id]="'downloadReportId'" [iconProps]="downloadReportIcon"
+      (click)="downloadReport()" [disabled]="downloadReportButtonDisabled"></fab-command-bar-item>
   </items>
 </fab-command-bar>
-<fab-coachmark 
-   *ngIf="showCoachmark==true"
-  [attr.id]="'fab-coachmark'" 
-  [target]="downloadReportId" 
-  (onAnimationOpenEnd)="showingTeachingBubble()"
-  [positioningContainerProps]="coachmarkPositioningContainerProps"
-  delayBeforeCoachmarkAnimation="4000"
-  ariaAlertText="A coachmark has appeared"
-  ariaDescribedBy="coachmark-desc1" 
-  ariaLabelledBy="coachmark-label1"
-  ariaDescribedByText="Press enter or alt + C to open the coachmark notification"
+<fab-coachmark *ngIf="showCoachmark==true" [attr.id]="'fab-coachmark'" [target]="downloadReportId"
+  (onAnimationOpenEnd)="showingTeachingBubble()" [positioningContainerProps]="coachmarkPositioningContainerProps"
+  delayBeforeCoachmarkAnimation="4000" ariaAlertText="A coachmark has appeared" ariaDescribedBy="coachmark-desc1"
+  ariaLabelledBy="coachmark-label1" ariaDescribedByText="Press enter or alt + C to open the coachmark notification"
   ariaLabelledByText="Coachmark notification">
-  <fab-teachingbubble
-    *ngIf="showTeachingBubble==true"    
-    headline="Download Resiliency Score report here!" 
-    (onDismiss)="coachMarkViewed()" 
-    [target]="downloadReportId"    
-    [hasCloseIcon]="true" 
-    [calloutProps]="teachingBubbleCalloutProps"
-    closeButtonAriaLabel="Close"
-    hasCondensedHeadline="true"
-    ariaDescribedBy="downloadreport-description1" 
-    ariaLabelledBy="downloadreport-label1">
-    Click here to download a report to check how well this Web App scores against our recommended resiliency best practices.
+  <fab-teachingbubble *ngIf="showTeachingBubble==true" headline="Download Resiliency Score report here!"
+    (onDismiss)="coachMarkViewed()" [target]="downloadReportId" [hasCloseIcon]="true"
+    [calloutProps]="teachingBubbleCalloutProps" closeButtonAriaLabel="Close" hasCondensedHeadline="true"
+    ariaDescribedBy="downloadreport-description1" ariaLabelledBy="downloadreport-label1">
+    Click here to download a report to check how well this Web App scores against our recommended resiliency best
+    practices.
   </fab-teachingbubble>
 </fab-coachmark>
-<detector-container [isWorkflowDetector]="isWorkflowDetector" [analysisMode]="analysisMode" [detector]="detector"></detector-container>
+<detector-container [isWorkflowDetector]="isWorkflowDetector" [analysisMode]="analysisMode"
+  [detector]="detector"></detector-container>
 
-<fab-panel [isOpen]="showPanel" [type]="PanelType.smallFixedFar" [hasCloseButton]="false"
-  [styles]="panelStyles" [isBlocking]="false">
+<fab-panel [isOpen]="showPanel" [type]="PanelType.smallFixedFar" [hasCloseButton]="false" [styles]="panelStyles"
+  [isBlocking]="false">
   <div style="padding: 10px;">
     <div style="display: flex;align-items: center; font-size: 14px;">
       <status-icon [status]="panelHealthStatus" class="mr-3"></status-icon>

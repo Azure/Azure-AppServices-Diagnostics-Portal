@@ -367,8 +367,8 @@
         text="Update Detector References" [iconProps]="{iconName: 'BackToWindow'}"
         (click)="showUpdateDetectorReferencesDialog()">
       </fab-command-bar-item>
-      <fab-command-bar-item *ngIf="copilotEnabled" key="copilot" [text]="_detectorCopilotService.copilotHeaderTitle" [iconProps]="{ iconName: 'robot' }"
-        (click)="_detectorCopilotService.showCopilotPanel()" [disabled]="copilotServiceMembersInitialized == false || isWorkflowDetector">
+      <fab-command-bar-item *ngIf="copilotEnabled" key="copilot" [text]="_copilotContainerService.copilotHeaderTitle" [iconProps]="{ iconName: 'robot' }"
+        (click)="_copilotContainerService.showCopilotPanel()" [disabled]="copilotServiceMembersInitialized == false || isWorkflowDetector">
       </fab-command-bar-item>
       <far-items>
         <fab-command-bar-item *ngIf="detectorGraduation" key="brachSelectorPill" text="custom text">

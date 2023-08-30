@@ -13,7 +13,8 @@
     </ng-container>
   </div>
   <div id="chatui-all-messages-container-id" class="chatui-box-row-container chatui-chat-messages-container"
-    *ngIf="messages && messages.length>0">
+    *ngIf="messages && messages.length>0"
+    [ngStyle]="chatContainerHeight && chatContainerHeight !== '' ? {'height': chatContainerHeight} : {}">
     <div class="chatui-top-error-container" *ngIf="showTopErrorBar"
       [ngClass]="{'fade-in': showTopErrorBar, 'fade-out': !showTopErrorBar}">
       {{topErrorBarMessage}}

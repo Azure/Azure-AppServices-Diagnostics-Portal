@@ -38,7 +38,8 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { WorkflowRunDialogComponent } from '../workflow/workflow-run-dialog/workflow-run-dialog.component';
 import { UserSettingService } from '../services/user-setting.service';
 import { WorkflowService } from '../workflow/services/workflow.service';
-import { DetectorCopilotService } from '../services/detector-copilot.service';
+import { ApplensCopilotContainerService } from '../services/copilot/applens-copilot-container.service';
+import { ApplensDetectorDevelopmentCopilotService } from '../services/copilot/applens-detector-development-copilot.service';
 
 const codePrefix = `// *****PLEASE DO NOT MODIFY THIS PART*****
 using Diagnostics.DataProviders;
@@ -345,7 +346,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     public ngxSmartModalService: NgxSmartModalService, private _telemetryService: TelemetryService, private _activatedRoute: ActivatedRoute,
     private _applensCommandBarService: ApplensCommandBarService, private _router: Router, private _themeService: GenericThemeService, private _applensGlobal: ApplensGlobal,
     private matDialog: MatDialog, private _queryResponseService: QueryResponseService, private _userSettingService: UserSettingService,
-    private _workflowService: WorkflowService, public _chatContextService: ChatUIContextService, public _detectorCopilotService: DetectorCopilotService) {
+    private _workflowService: WorkflowService, public _chatContextService: ChatUIContextService, public _copilotContainerService: ApplensCopilotContainerService, public _detectorDevelopmentCopilotService: ApplensDetectorDevelopmentCopilotService) {
     this.lightOptions = {
       theme: 'vs',
       language: 'csharp',
@@ -393,7 +394,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     this.emailRecipients = this.userName.replace('@microsoft.com', '');
     this.userId = this.userName.replace('@microsoft.com', '');
     this.publishAccessControlResponse = {};
-    this._detectorCopilotService.detectorAuthor = this.userId;
+    this._detectorDevelopmentCopilotService.detectorAuthor = this.userId;
   }
 
   ngOnInit() {
@@ -423,7 +424,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
         this.copilotCodeUpdateProgressStateObservable.unsubscribe();
       }
 
-      this._detectorCopilotService.onCloseCopilotPanelEvent.next({ showConfirmation: false, resetCopilot: true });
+      this._copilotContainerService.onCloseCopilotPanelEvent.next({ showConfirmation: false, resetCopilot: true });
 
     }
   }
@@ -439,7 +440,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
         return false;
       }
     }
-    else if (this._detectorCopilotService.operationInProgress) {
+    else if (this._detectorDevelopmentCopilotService.operationInProgress) {
       if (confirm("Are you sure you want to leave? Looks like Copilot operation is in progress.")) {
         return true;
       }
@@ -662,7 +663,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       }
     });
 
-    this._diagnosticApi.get<boolean>('api/openai/detectorcopilot/enabled').subscribe(res => {
+    this._diagnosticApi.get<boolean>('api/openai/detectorcopilot/enabled?detectorMode=develop').subscribe(res => {
 
       this.copilotEnabled = res &&
         isSystemInvoker == false &&
@@ -1134,7 +1135,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
   }
 
   showGistDialog() {
-    this._detectorCopilotService.hideCopilotPanel();
+    this._copilotContainerService.hideCopilotPanel();
     this.gistsDropdownOptions = [];
     this.gists = Object.keys(this.configuration['dependencies']);
     this.gists.forEach(g => {
@@ -1340,7 +1341,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       this.runDetectorCompilation();
     }
 
-    this._detectorCopilotService.hideCopilotPanel();
+    this._copilotContainerService.hideCopilotPanel();
   }
 
   runWorkflowCompilation() {
@@ -2032,7 +2033,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
   }
 
   saveDetectorCode() {
-    this._detectorCopilotService.hideCopilotPanel();
+    this._copilotContainerService.hideCopilotPanel();
     this.updatePublishingPackageIfWorkflow();
 
     this.saveTempId = this.getIdFromCodeString();
@@ -2482,20 +2483,20 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
   //#region Copilot Methods
 
   initalizeCoPilotServiceMembers() {
-    this._detectorCopilotService.azureServiceType = this.resourceService.displayName;
-    this._detectorCopilotService.detectorDevelopMode = this.mode;
-    this._detectorCopilotService.detectorCode = StringUtilities.ReplaceNewlines(this.code);
-    this._detectorCopilotService.initializeMembers(this.gistMode);
+    this._detectorDevelopmentCopilotService.azureServiceType = this.resourceService.displayName;
+    this._detectorDevelopmentCopilotService.detectorDevelopMode = this.mode;
+    this._detectorDevelopmentCopilotService.detectorCode = StringUtilities.ReplaceNewlines(this.code);
+    this._detectorDevelopmentCopilotService.initializeMembers(this.gistMode);
     if (this.mode == DevelopMode.Create) {
-      this._detectorCopilotService.detectorTemplate = StringUtilities.ReplaceNewlines(this.code);
+      this._detectorDevelopmentCopilotService.detectorTemplate = StringUtilities.ReplaceNewlines(this.code);
     }
     else {
-      this._detectorCopilotService.detectorTemplate = '';
+      this._detectorDevelopmentCopilotService.detectorTemplate = '';
     }
 
     setTimeout(() => {
       if (this.copilotCodeSuggestionObservable == undefined) {
-        this.copilotCodeSuggestionObservable = this._detectorCopilotService.onCodeSuggestion.subscribe(event => {
+        this.copilotCodeSuggestionObservable = this._detectorDevelopmentCopilotService.onCodeSuggestion.subscribe(event => {
           if (event == null || event == undefined || event.code == null || event.code == undefined)
             return;
 
@@ -2513,7 +2514,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       }
 
       if (this.copilotCodeUpdateProgressStateObservable == undefined) {
-        this.copilotCodeUpdateProgressStateObservable = this._detectorCopilotService.onCodeOperationProgressState.subscribe(res => {
+        this.copilotCodeUpdateProgressStateObservable = this._detectorDevelopmentCopilotService.onCodeOperationProgressState.subscribe(res => {
           if (res) {
             this._monacoEditor.updateOptions({ readOnly: res.inProgress });
           }
@@ -2553,7 +2554,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
   // Whenever the detector code changes, we need to keep code copilot service in sync
   updateCodeEvent(event: any) {
     this.code = event;
-    this._detectorCopilotService.detectorCode = event;
+    this._detectorDevelopmentCopilotService.detectorCode = event;
   }
 
   //#endregion

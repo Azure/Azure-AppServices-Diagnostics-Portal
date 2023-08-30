@@ -54,6 +54,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
   @Input() apiProtocol: APIProtocol = APIProtocol.Rest;
   @Input() inputTextLimit: Number = 500;
   @Input() autoAddResourceSpecificInfoToChatMessages:boolean = true;
+  @Input() chatContainerHeight: string  = ''; 
 
   // Callback methods for pre and post processing messages
   @Input() preprocessUserMessage: (message: ChatMessage) => ChatMessage = function (message: ChatMessage) {

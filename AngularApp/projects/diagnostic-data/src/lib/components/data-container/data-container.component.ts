@@ -12,8 +12,7 @@ export class DataContainerComponent {
   @Input() title: string;
   @Input() description: string;
   @Input() noBodyPadding: boolean = false;
-
   @Input() hideIfNoTitle: boolean = true;
-
   @Input() applicationInsightContainerStyle: number = 0;
+  @Input() additionalOptionsToShow: any[] = [];
 }

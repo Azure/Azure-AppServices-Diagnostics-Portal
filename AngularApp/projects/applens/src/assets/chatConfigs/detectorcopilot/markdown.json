@@ -1,0 +1,16 @@
+{
+    "samples": [
+        {
+            "key": "Write a summary for this information.",
+            "value": "Write a summary for this information."
+        },
+        {
+            "key": "Write an email to the customer with this additional information.",
+            "value": "Write an email to the customer with this additional information."
+        },
+        {
+            "key": "Give me more information about this issue.",
+            "value": "Give me more information about this issue."
+        }
+    ]
+}

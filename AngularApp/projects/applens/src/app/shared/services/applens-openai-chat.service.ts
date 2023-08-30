@@ -1,7 +1,7 @@
 import { catchError, map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from, of } from 'rxjs';
-import { TextCompletionModel, ChatCompletionModel, OpenAIAPIResponse, ChatResponse, TelemetryService,KeyValuePair } from "diagnostic-data";
+import { TextCompletionModel, ChatCompletionModel, ChatResponse, TelemetryService,KeyValuePair } from "diagnostic-data";
 import { DiagnosticApiService } from './diagnostic-api.service';
 import { HttpHeaders } from "@angular/common/http";
 import { ResourceService } from './resource.service';
@@ -49,7 +49,6 @@ export class ApplensOpenAIChatService {
     this.resourceProvider = `${this._resourceService.ArmResource.provider}/${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase();
     this.providerName = `${this._resourceService.ArmResource.provider}`.toLowerCase();
     this.resourceTypeName = `${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase();
-    this.productName = this._resourceService.searchSuffix + ((this.resourceProvider === 'microsoft.web/sites') ? ` ${this._resourceService.displayName}` : '');
     this.onMessageReceive = new BehaviorSubject<ChatResponse>(null);
     this.signalRLogLevel = signalR.LogLevel.Information;
 
@@ -120,10 +119,7 @@ export class ApplensOpenAIChatService {
   public sendChatMessage(queryModel: ChatCompletionModel, customPrompt: string = '', autoAddResourceSpecificInfo:boolean = true): Observable<{ sent: boolean, failureReason: string }> {
 
     if (customPrompt && customPrompt.length > 0) {
-      queryModel.messages.unshift({
-        "role": "user",
-        "content": customPrompt
-      });
+      queryModel.metadata['customPrompt'] = customPrompt;
     }
 
     queryModel.metadata["azureServiceName"] = this.productName;
