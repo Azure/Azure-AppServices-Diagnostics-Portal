@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ChatUIComponent } from '../chat-ui/chat-ui.component';
 import { ChatUIContextService } from '../../services/chatui-context.service';
 import { ConversationalDiagService } from '../../services/conversational-diag.service';
-import { ChatMessage, MessageRenderingType, MessageSource, MessageStatus } from '../../models/chatbot-models';
+import { ChatMessage, FeedbackOptions, MessageRenderingType, MessageSource, MessageStatus } from '../../models/chatbot-models';
 import { v4 as uuid } from 'uuid';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
@@ -139,7 +139,7 @@ export class DiagChatContainerComponent implements OnInit {
   }
 
   pushEmptySystemMessage = (): ChatMessage => {
-    let chatMessage = {
+    let chatMessage: ChatMessage = {
       id: uuid(),
       message: "",
       displayMessage: "",
@@ -147,8 +147,9 @@ export class DiagChatContainerComponent implements OnInit {
       timestamp: new Date().getTime(),
       messageDisplayDate: TimeUtilities.displayMessageDate(new Date()),
       status: MessageStatus.InProgress,
-      userFeedback: "none",
-      renderingType: MessageRenderingType.Text
+      userFeedback: FeedbackOptions.None,
+      renderingType: MessageRenderingType.Text,
+      feedbackDocumentIds: []
     };
     this._chatContextService.messageStore[this.chatIdentifier].push(chatMessage);
     return chatMessage;
