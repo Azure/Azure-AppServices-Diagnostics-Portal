@@ -33,7 +33,8 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
   _isOpen:boolean = false;
   @Input() set isOpen(val:boolean) {
     this._isOpen = val;
-    this.resetSettingsPanel();
+    if (this.settingsValue && this._isOpen)
+      this.resetSettingsPanel();
   }
   public get isOpen(): boolean 
   {
@@ -191,7 +192,7 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.resetGlobals();
+    //this.resetGlobals();
   }
 
   ngOnDestroy(): void {
@@ -218,7 +219,7 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
     return this.resourceService.ArmResource.provider.toLowerCase() === 'microsoft.web' && this.resourceService.ArmResource.resourceTypeName.toLowerCase() === 'sites';
   }
 
-  resetGlobals(): void {    
+  resetGlobals(): void {   
     this.resetSettingsPanel();
   }
 
@@ -256,14 +257,14 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
     for (let entity in EntityType) {      
       if (isNaN(Number(entity)) && !this.detectorTypeOptions.some(option => option.key === entity)) {
         this.detectorTypeOptions.push(<IDropdownOption>{
-          key: entity,
+          key: EntityType[entity],
           text: entity,
           selected: this.settingsValue && this.settingsValue.type? entity === EntityType[this.settingsValue.type] : entity === EntityType[EntityType.Detector],
           index: index++,
           itemType: SelectableOptionMenuItemType.Normal
         });
       }
-    }    
+    }
        
     this.detectorType = this.settingsValue && this.settingsValue.type? this.settingsValue.type : EntityType.Detector;
     //#endregion DetectorType dropdown options

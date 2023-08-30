@@ -24,8 +24,6 @@ export interface SupportTopicResponseModel {
     productName?: string;
     supportTopicL2Name?: string;
     supportTopicL3Name?: string
-
-    
   }
 
   export class SupportTopic{

@@ -23,7 +23,7 @@ import { SiteService } from '../../../shared/services/site.service';
 import { ObserverSiteInfo } from '../../../shared/models/observer';
 import { AppType, PlatformType, SitePropertiesParser, StackType } from '../../../shared/utilities/applens-site-properties-parsing-utilities';
 import { Options } from 'ng5-slider';
-import { DetectorSettingsModel, SupportTopic } from '../models/detector-designer-models/detector-settings-models';
+import { AnalysisPickerModel, DetectorSettingsModel, EntityType, SupportTopic, SupportTopicPickerModel } from '../models/detector-designer-models/detector-settings-models';
 import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 import { INodeModelChangeEventProps } from '../node-composer/node-composer.component';
@@ -163,7 +163,8 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   isBranchCallOutVisible: boolean = false;
   branchButtonDisabled: boolean = false;
   showBranches: IChoiceGroupOption[] = [{key: "", text: ""}];
-  displayBranch: string = "";
+  optionsForSingleChoice: IChoiceGroupOption[] = [{key: "", text: ""}];
+  displayBranch: string = "NA (not published)";
   tempBranch: string = "";
   mainBranch: string = "";
   pillButtonStyleBranchPicker: IButtonStyles = {
@@ -328,25 +329,66 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     });
 
     this.diagnosticApiService.getBranches(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(branches => {
-      if (branches.length > 0) {
-        this.mainBranch = branches.find(branch => branch.isMainBranch.toLocaleLowerCase() === 'true').branchName;
+        this.mainBranch = branches.find(branch => branch.isMainBranch.toLowerCase() === 'true').branchName;
+        
         if (this.mode != DevelopMode.Create) {
-          this.diagnosticApiService.getDetectorCode(`${this.detectorId}/package.json`, this.mainBranch, `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(pkg => {
-            console.log(pkg);
-            this.buildSavedDetector(pkg);
-          });
+          this.editStartUp(branches);
         }
-        // this.showBranches = branches.map(branch => {
-        //   return { key: branch, text: branch };
-        // });
-        // this.displayBranch = this.showBranches[0].key;
-      } else {
-        this.noBranchesAvailable();
-      }
+        else {
+          this.createStartUp(branches);
+        }
+
+        if (this.showBranches.length < 1) this.noBranchesAvailable();
     });
   }
 
+  editStartUp(branches: { branchName: string, isMainBranch: string }[]) {
+    var branchRegEx = new RegExp(`dev\/.*\/noCodeDetector\/${this.detectorId}`);
+    branches = branches.filter(bn => {
+      return branchRegEx.test(bn.branchName);
+    });
+
+    this.showBranches = branches.map(branch => {
+      return { key: branch.branchName, text: `${branch.branchName.split('/')[1]} : ${branch.branchName.split('/')[3]}` };
+    });
+
+    branches.forEach(branch => {
+      this.showBranches.push({ key: branch.branchName, text: branch.branchName });
+    });
+    let inProgressBranch = this.showBranches.find(branch => branch.key === `dev/${this.userAlias}/noCodeDetector/${this.detectorId}`);
+    this.displayBranch = inProgressBranch ? inProgressBranch.key : this.mainBranch;
+    this.showBranches.push({ key: this.mainBranch, text: this.mainBranch });
+
+    this.diagnosticApiService.getDetectorCode(`${this.detectorId}/package.json`, this.displayBranch, `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(pkg => {
+      console.log(pkg);
+      this.buildSavedDetector(pkg);
+    });
+  }
+
+  createStartUp(branches: { branchName: string, isMainBranch: string }[]) {
+    var branchRegEx = new RegExp(`dev\/.*\/noCodeDetector\/.*`);
+    branches = branches.filter(bn => {
+      return branchRegEx.test(bn.branchName);
+    });
+
+    this.diagnosticApiService.getDetectors().subscribe(detectors => {
+      let idList = detectors.map(detector => detector.id.toLowerCase());
+      branches = branches.filter(bn => {
+        return !idList.includes(bn.branchName.split("/")[3].toLowerCase());
+      });
+
+      this.showBranches = branches.map(branch => {
+        return { key: branch.branchName, text: `${branch.branchName.split('/')[1]} : ${branch.branchName.split('/')[3]}` };
+      });
+    });
+  }
+
+  // setBranch(branch: string) {
+  //   this.displayBranch = branch;
+  // }
+
   buildSavedDetector(pkgJson: string) {
+    this.elements = [];
     const pkg = JSON.parse(pkgJson);
     const parsedDetector = JSON.parse(pkg.NoCodeDetectorJson);
     const savedDetector: NoCodeDetector = new NoCodeDetector();
@@ -368,6 +410,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     this.detectorSettingsPanelValue.category = pkg.Category;
     this.detectorSettingsPanelValue.isInternalOnly = pkg.IsInternal;
     this.detectorSettingsPanelValue.id = pkg.id;
+    this.detectorSettingsPanelValue.type = this.getEntityType(pkg.type);
     this.detectorSettingsPanelValue.authors = [];
     if (pkg.Author)
     pkg.Author.split(",").forEach(a => {
@@ -379,14 +422,33 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       this.detectorSettingsPanelValue.appTypes.push(SitePropertiesParser.getAppType(a));
     });
     this.detectorSettingsPanelValue.platformTypes = [];
-    if (pkg.Platform)
-    pkg.Platform.split(",").forEach(p => {
+    if (pkg.PlatForm)
+    pkg.PlatForm.split(",").forEach(p => {
       this.detectorSettingsPanelValue.platformTypes.push(SitePropertiesParser.getPlatformType(p));
     });
     this.detectorSettingsPanelValue.stackTypes = [];
     if (pkg.StackType)
     pkg.StackType.split(",").forEach(s => {
       this.detectorSettingsPanelValue.stackTypes.push(SitePropertiesParser.getStackType(s));
+    });
+    this.detectorSettingsPanelValue.analysisList = [];
+    if (pkg.AnalysisTypes)
+    pkg.AnalysisTypes.forEach(a => {
+      let analysistype = <AnalysisPickerModel> {
+        id: a
+      };
+      this.detectorSettingsPanelValue.analysisList.push(analysistype);
+    });
+    this.detectorSettingsPanelValue.supportTopicList = [];
+    if (pkg.SupportTopicList)
+    pkg.SupportTopicList.forEach(s => {
+      let supportTopic = <SupportTopicPickerModel>{
+        supportTopicId: s.Id,
+        pesId: s.PesId,
+        sapSupportTopicId: s.SapSupportTopicId,
+        sapProductId: s.SapProductId
+      };
+      this.detectorSettingsPanelValue.supportTopicList.push(supportTopic);
     });
 
     // parsedDetector.Nodes.forEach(n => {
@@ -505,7 +567,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     // });
   }
 
-  private gradPublish(det: NoCodeDetector, changeType: string, comment: string = ''): void {
+  private gradPublish(det: NoCodeDetector, changeType: string, comment: string = 'gotta pass something here'): void {
     let branch = `dev/${this.userAlias}/noCodeDetector/${det.id}`;
     let repoPaths = [`${det.id}/metadata.json`];
     let files = [`{"utterances":[]}`];
@@ -602,6 +664,17 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     });
     return stacktypes.join(",");
   }
+
+  private getEntityType(value: string): EntityType {
+      switch (value.toLowerCase()) {
+        case 'analysis':
+          return EntityType.Analysis;
+        case 'detector':
+          return EntityType.Detector;
+        default:
+          return undefined;
+      }
+    }
 
   public getRequiredErrorMessageOnTextField(value: string): string {
     if (!value) {
@@ -739,7 +812,17 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   updateBranch() {
     console.log("Update Branch");
-    this.closeBranchCallout();
+    this.displayBranch = this.tempBranch;
+    if (this.tempBranch != this.mainBranch) {
+      this.detectorId = this.tempBranch.split('/')[3];
+    }
+    this.diagnosticApiService.getDetectorCode(`${this.detectorId}/package.json`, this.displayBranch, `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(pkg => {
+      console.log(pkg);
+      this.buildSavedDetector(pkg);
+      this.mode = DevelopMode.Edit;
+      this.closeBranchCallout();
+    });
+    
   }
 }
 

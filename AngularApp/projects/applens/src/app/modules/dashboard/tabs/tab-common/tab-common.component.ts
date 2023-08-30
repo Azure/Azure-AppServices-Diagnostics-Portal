@@ -5,6 +5,7 @@ import { ResourceService } from 'projects/applens/src/app/shared/services/resour
 import { filter, merge } from 'rxjs/operators';
 import { Tab, TabKey } from '../tab-key';
 import { ApplensGlobal } from '../../../../applens-global';
+import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
 
 @Component({
   selector: 'tab-common',
@@ -17,13 +18,14 @@ export class TabCommonComponent implements OnInit {
   graduationEnabled: boolean = false;
   TabKey = TabKey;
   isWorkflow: boolean = false;
+  isNoCode: boolean = false;
   detectorAuthor: string = '';
   detectorDescription: string = '';
   detectorDevelopmentEnvironment: string = 'prod';
   PPEHostname: string = '';
   PPELink: string = '';
 
-  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _diagnosticApiService: DiagnosticApiService, private resourceService: ResourceService, private _applensGlobal:ApplensGlobal) {
+  constructor(private _router: Router, private _activatedRoute: ActivatedRoute, private _applensDiagnosticsService: ApplensDiagnosticService, private _diagnosticApiService: DiagnosticApiService, private resourceService: ResourceService, private _applensGlobal:ApplensGlobal) {
     this._activatedRoute.firstChild.data.subscribe(data => {
       const key: string = data["tabKey"];
       this.selectedTabKey = key;
@@ -39,6 +41,9 @@ export class TabCommonComponent implements OnInit {
   ngOnInit() {
     this._diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
       this.detectorDevelopmentEnvironment = env;
+    });
+    this._applensDiagnosticsService.getDetectorExtendedMetaDataById(this._activatedRoute.snapshot.params['detector']).subscribe(detectorMetaData => {
+      this.isNoCode = detectorMetaData.isNoCode;
     });
     this._activatedRoute.params.subscribe(param => {
       this._diagnosticApiService.getPPEHostname().subscribe(host => {
@@ -83,7 +88,8 @@ export class TabCommonComponent implements OnInit {
           });
         }
         else {
-          this._router.navigate(["edit"], {
+          let editPath = this.isNoCode ? 'nocodeedit' : 'edit';
+          this._router.navigate([editPath], {
             relativeTo: this._activatedRoute,
             queryParamsHandling: "preserve"
           });
