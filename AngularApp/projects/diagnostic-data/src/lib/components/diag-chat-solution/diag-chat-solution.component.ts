@@ -29,10 +29,10 @@ export class DiagChatSolutionComponent implements OnInit {
 
 
   @Input() set solutionString(solutionString: string) {
-    // this.solutionBody = <DiagSolutionBody>JSON.parse(solutionString);
+    this.solutionBody = <DiagSolutionBody>JSON.parse(solutionString);
     
     //For testing purposes
-    this.solutionBody = <DiagSolutionBody>JSON.parse(MockUpSolutionData.ArmApi);
+    //this.solutionBody = <DiagSolutionBody>JSON.parse(MockUpSolutionData.ArmApi);
     
     this.solutionType = this.solutionBody.SolutionInfo.Type;
 
@@ -84,7 +84,7 @@ export class DiagChatSolutionComponent implements OnInit {
         return "Open Solution";
       }
       case (ActionType.ToggleStdoutSetting): {
-        return 'Enable STDOUT Logging ';
+        return 'Enable STDOUT Logging';
       }
       case (ActionType.Markdown):
       default: {
@@ -179,9 +179,12 @@ export class DiagChatSolutionComponent implements OnInit {
       case ActionType.ArmApi:
         displayMessage = isSuccess ? `<div>Solution Ran Successfully</div>` : `<div style='color:red'>An error occurred while performing the action. Please try again.</div>`;
         break;
+      case ActionType.ToggleStdoutSetting:
+        displayMessage = isSuccess ? `<div>STDOUT Logging Enabled</div>` : `<div style='color:red'>An error occurred while enabling STDOUT Logging. Please try again.</div>`;
       default:
         displayMessage = "";
     }
+    
     if(displayMessage != "") {
       const chatMessage: ChatMessage = {
         id: uuid(),
