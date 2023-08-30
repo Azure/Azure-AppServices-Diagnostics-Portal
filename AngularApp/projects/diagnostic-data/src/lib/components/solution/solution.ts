@@ -56,3 +56,24 @@ export enum SolutionButtonPosition {
     Bottom,
     NextToTitle
 }
+
+export enum DiagSolutionType {
+    Text,
+    Action,
+}
+
+export interface TextSolution {
+    SolutionId: string;
+    Title: string;
+    Description: string;
+    References: { [key: string]: string }[]
+}
+
+export interface DiagSolutionBody {
+    IsSolutionFound: boolean;
+    SolutionInfo: {
+        Type: DiagSolutionType;
+        ActionableSolution?: Solution;
+        TextSolution?: TextSolution;
+    };
+}

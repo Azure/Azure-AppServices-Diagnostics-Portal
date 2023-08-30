@@ -46,6 +46,7 @@ import { ClientScriptService } from '../shared-v2/services/client-script.service
 import { ChatUIContextService, OpenAIArmService } from '../../../../diagnostic-data/src/public_api';
 import { ConversationalDiagService } from '../../../../diagnostic-data/src/lib/services/conversational-diag.service';
 import { DiagChatHomeComponent } from './diag-chat-home/diag-chat-home.component';
+import { FabLinkModule } from '@angular-react/fabric/lib/components/link';
 export const HomeRoutes = RouterModule.forChild([
     {
         path: '',
@@ -569,7 +570,8 @@ export const HomeRoutes = RouterModule.forChild([
         }),
         FabSearchBoxModule,
         FabCommandBarModule,
-        FabSpinnerModule
+        FabSpinnerModule,
+        FabLinkModule
     ],
     declarations: [HomeContainerComponent, HomeComponent, CategoryChatComponent, CategoryTileComponent, SearchResultsComponent, SupportTopicRedirectComponent, DiagnosticsSettingsComponent, CategoryTileV4Component, RiskTileComponent, DiagChatHomeComponent],
     providers:

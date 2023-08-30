@@ -14,6 +14,10 @@ export class SolutionService {
     return null;
   }
 
+  OpenTabFromChat(resourceUri: string, actionOptions: {}): Observable<any> {
+    return null;
+  }
+
   GoToBlade(resourceUri: string, actionOptions: {}): Observable<any> {
     return null;
   }
