@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DevelopMode, OnboardingFlowComponent } from '../../onboarding-flow/onboarding-flow.component';
+import { DetectorDesignerComponent } from '../../detector-designer/detector-designer.component';
 
 @Component({
   selector: 'tab-develop',
@@ -14,13 +15,16 @@ export class TabDevelopComponent implements OnInit {
   isWorkflow: boolean = false;
   isNoCode: boolean = false;
 
-  constructor(private _route: ActivatedRoute) {
+  constructor(private _route: ActivatedRoute, private _changeDetectorRef: ChangeDetectorRef) {
   }
 
-  @ViewChild("onboardingFlow", { static: true }) onboardingFlowComponent: OnboardingFlowComponent;
+  @ViewChild("onboardingFlow", { static: false }) onboardingFlowComponent: OnboardingFlowComponent;
+  @ViewChild("detectorDesigner", { static: false }) detectorDesignerComponent: DetectorDesignerComponent;
 
   canExit(): boolean {
-    return this.onboardingFlowComponent.canExit();
+    this._changeDetectorRef.detectChanges();
+    return this.isNoCode ? this.detectorDesignerComponent.canExit() : this.onboardingFlowComponent.canExit();
+    // return this.detectorDesignerComponent.canExit();
   };
 
   ngOnInit() {

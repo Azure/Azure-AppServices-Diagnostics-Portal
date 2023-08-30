@@ -133,6 +133,12 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getDetectorsWithExtendDefinition(versionPrefix, resourceId, null, internalClient);
   }
 
+  getDetectorExtendedMetaDataById(id: string): Observable<ExtendDetectorMetaData> {
+    return this.getDetectorsWithExtendDefinition().pipe(map(datas => {
+      return datas.find(d => d.id === id);
+    }));
+  }
+
   getDetectorsSearch(query: string, internalClient: boolean = true): Observable<DetectorMetaData[]> {
     var queryParams: any[] = null;
     if (query != null)

@@ -11,7 +11,7 @@
                 </div>
                 <div class="col-md-4">
                     <fab-dropdown role="combobox" [label]="'Type'" [required]="true" [styles]="fabDropdownStyle"
-                        [ariaLabel]="'Type of detector'" [id]="rootId + '_detectorType'" [options]="detectorTypeOptions"
+                        [ariaLabel]="'Type of detector'" [options]="detectorTypeOptions" [selectedKey]="detectorType"
                         (onChange)="onChangeDetectorType($event);saveButtonDisabledStatus = false"></fab-dropdown>
                 </div>
                 <div class="col-md-4">
