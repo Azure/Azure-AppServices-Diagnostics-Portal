@@ -16,23 +16,8 @@ import { List } from 'office-ui-fabric-react';
 import { dynamicExpressionBody } from '../../modules/dashboard/workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../models/devopsCommitStatus';
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { ChatFeedbackPostBody } from '../models/openAIChatFeedbackModel';
-=======
-import { NoCodeExpressionBody } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
->>>>>>> cddf9f3ef (templatizer, settings, send query to back end)
-=======
-import { NoCodeDetectorJson, NoCodeExpressionBody } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
->>>>>>> 67b41f09d (getting detector view but it doesnt update. graph still not working)
-=======
-import { NoCodeDetectorJson, NoCodeExpressionBody, NoCodePackage } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
->>>>>>> f08874e98 (publishing is getting there)
-=======
 import { NoCodeDetector, NoCodeExpressionBody, NoCodePackage } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
->>>>>>> b57599803 (made some changes for graduation)
 
 
 @Injectable()
