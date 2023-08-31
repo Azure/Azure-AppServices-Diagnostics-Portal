@@ -143,6 +143,7 @@ import { CommunicationToolkitComponent } from './communication-toolkit/communica
 import { DetectorCopilotService } from 'projects/applens/src/app/modules/dashboard/services/detector-copilot.service';
 import { ApplensDocsCopilotComponent } from './applens-docs-copilot/applens-docs-copilot.component';
 import { InternalPirCopilotComponent } from './internal-pir-copilot/internal-pir-copilot.component';
+import { ExternalpircopilotComponent } from './externalpircopilot/externalpircopilot.component';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -631,6 +632,6 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         KustoQueryDialogComponent, DetectorNodeComponent, KustoNodeComponent, MarkdownNodeComponent, NodeActionsComponent, ConfigureVariablesComponent, CommonNodePropertiesComponent,
         NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent,
         WorkflowUserAccessComponent, ForeachNodeComponent, DevopsDeploymentsComponent, InputNodeComponent, NetworkTraceAnalysisComponent,
-        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent, ApplensDocsCopilotComponent, ChatFeedbackPanelComponent, InternalPirCopilotComponent]
+        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent, ApplensDocsCopilotComponent, ChatFeedbackPanelComponent, InternalPirCopilotComponent, ExternalpircopilotComponent]
 })
 export class DashboardModule { }
