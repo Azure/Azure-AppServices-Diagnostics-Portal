@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DiagPortalOpenAIService } from '../../../shared-v2/services/diagportal-openai-chat.service';
+import { DiagPortalOpenAIChatService } from '../../../shared-v2/services/diagportal-openai-chat.service';
 import { TelemetryService, ChatUIContextService, TelemetryEventNames, ChatMessage, APIProtocol, ChatModel } from 'diagnostic-data';
 import { StringUtilities } from '../../../../../../diagnostic-data/src/public_api';
 import { ResourceService } from '../../../shared-v2/services/resource.service';
@@ -45,7 +45,7 @@ export class DiagPortalDocsCopilotComponent implements OnInit {
   }
   
   constructor(
-    private _openAIService: DiagPortalOpenAIService,
+    private _diagPortalOpenAIChatService: DiagPortalOpenAIChatService,
     private _telemetryService: TelemetryService,
     public _chatUIContextService: ChatUIContextService,
     private _resourceService: ResourceService) { 
@@ -55,8 +55,8 @@ export class DiagPortalDocsCopilotComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._openAIService.CheckEnabled().subscribe(enabled => {
-      this.isEnabled = this._openAIService.isEnabled;
+    this._diagPortalOpenAIChatService.CheckEnabled().subscribe(enabled => {
+      this.isEnabled = this._diagPortalOpenAIChatService.isEnabled;
       this.isEnabledChecked = true;
       if (this.isEnabled) {
         this._telemetryService.logEvent("DiagPortalDocsCopilotLoaded", { ts: new Date().getTime().toString()});

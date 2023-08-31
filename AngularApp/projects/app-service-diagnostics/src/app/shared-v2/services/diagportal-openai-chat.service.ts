@@ -9,7 +9,7 @@ import { AuthService } from '../../startup/services/auth.service';
 import * as signalR from "@microsoft/signalr";
 
 @Injectable()
-export class DiagPortalOpenAIService {
+export class DiagPortalOpenAIChatService {
 
   content: any[] = [];
 
@@ -173,7 +173,7 @@ export class DiagPortalOpenAIService {
 
   private log = (event: string, message: string) => {
 
-    let eventStr = `DiagPortalOpenAIService-${event}`;
+    let eventStr = `DiagPortalOpenAIChatService-${event}`;
     let time = new Date().getTime().toString();
     if (environment.production) {
       this.telemetryService.logEvent(eventStr, { message: message, ts: time });

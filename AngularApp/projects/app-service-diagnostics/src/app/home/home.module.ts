@@ -64,7 +64,7 @@ import { DownloadReportComponent } from '../shared/components/download-report/do
 import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
 import { ClientScriptService } from '../shared-v2/services/client-script.service';
 import { OpenAIArmService } from '../../../../diagnostic-data/src/public_api';
-import { DiagPortalOpenAIService } from '../shared-v2/services/diagportal-openai-chat.service';
+import { DiagPortalOpenAIChatService } from '../shared-v2/services/diagportal-openai-chat.service';
 import { DiagPortalDocsCopilotComponent } from './components/diagportal-docs-copilot/diagportal-docs-copilot.component';
 import { GenericOpenAIChatService } from '../../../../diagnostic-data/src/public_api';
 
@@ -805,14 +805,14 @@ export const HomeRoutes = RouterModule.forChild([
             MetricsPerInstanceAppServicePlanResolver,
             AdvanceApplicationRestartResolver,
             SecurityScanningResolver,
-            DiagPortalOpenAIService,
+            DiagPortalOpenAIChatService,
             { provide: GenericSupportTopicService, useExisting: SupportTopicService },
             { provide: GenericContentService, useExisting: ContentService },
             { provide: GenericDocumentsSearchService, useExisting: DocumentSearchService },
             { provide: CXPChatService, useExisting: CXPChatCallerService },
             { provide: GenericResourceService, useExisting: ResourceService },
             { provide: GenericClientScriptService, useExisting: ClientScriptService},
-            { provide: GenericOpenAIChatService, useExisting: DiagPortalOpenAIService}
+            { provide: GenericOpenAIChatService, useExisting: DiagPortalOpenAIChatService}
         ],
 })
 export class HomeModule { }

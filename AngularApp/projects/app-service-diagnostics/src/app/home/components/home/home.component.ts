@@ -24,6 +24,7 @@ import { OperatingSystem } from '../../../shared/models/site';
 import { RiskAlertService } from '../../../shared-v2/services/risk-alert.service';
 import { ABTestingService } from '../../../shared/services/abtesting.service';
 import { SlotType } from '../../../shared/models/slottypes';
+import { DiagPortalOpenAIChatService } from '../../../shared-v2/services/diagportal-openai-chat.service';
 
 @Component({
     selector: 'home',
@@ -54,6 +55,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     isPreview: boolean = false;
     abTestingBannerText: string = "";
     disableGenie: boolean = false;
+    docsCopilotEnabled: boolean = false;
 
     get inputAriaLabel(): string {
         return this.searchValue !== '' ?
@@ -76,7 +78,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     constructor(private _resourceService: ResourceService, private _categoryService: CategoryService, private _notificationService: NotificationService, private _router: Router,
         private _detectorControlService: DetectorControlService, private _featureService: FeatureService, private _logger: LoggingV2Service, private _authService: AuthService,
         private _navigator: FeatureNavigationService, private _activatedRoute: ActivatedRoute, private armService: ArmService, private _telemetryService: TelemetryService, private _diagnosticService: DiagnosticService, private _portalService: PortalActionService, private globals: Globals,
-        private subscriptionPropertiesService: SubscriptionPropertiesService, private _quickLinkService: QuickLinkService, private _riskAlertService: RiskAlertService, public abTestingService: ABTestingService) {
+        private subscriptionPropertiesService: SubscriptionPropertiesService, private _quickLinkService: QuickLinkService, private _riskAlertService: RiskAlertService, public abTestingService: ABTestingService,
+        private _diagPortalOpenAIChatService: DiagPortalOpenAIChatService) {
 
         this.subscriptionId = this._activatedRoute.snapshot.params['subscriptionid'];
         this.resourceName = this._resourceService.resource ? this._resourceService.resource.name : "";
@@ -177,6 +180,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
         if (!this._detectorControlService.startTime) {
             this._detectorControlService.setDefault();
         }
+
+        /*this._diagPortalOpenAIChatService.CheckEnabled().subscribe(enabled => {
+            this.docsCopilotEnabled = this._diagPortalOpenAIChatService.isEnabled;
+            if (this.docsCopilotEnabled) {
+              this._telemetryService.logEvent("DiagPortalDocsCopilotCheck", { IsEnabled: this.docsCopilotEnabled.toString(), ts: new Date().getTime().toString()});
+            }
+          },
+          (err) => {
+            this.docsCopilotEnabled = false;
+          });*/
 
         let locationPlacementId = '';
         this.subscriptionPropertiesService.getSubscriptionProperties(this.subscriptionId).subscribe((response: HttpResponse<{}>) => {
