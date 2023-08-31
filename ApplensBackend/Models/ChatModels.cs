@@ -60,6 +60,7 @@ namespace AppLensV3.Models
         public string ChatModel;
         public int MaxTokens;
         public string AzureServiceName;
+        public string CustomPrompt;
         public string ArmResourceId;
 
         private string provider = string.Empty;

@@ -1,0 +1,16 @@
+{
+    "samples": [
+        {
+            "key": "What does this table represent?",
+            "value": "What does this table represent?"
+        },
+        {
+            "key": "Find errors in this table.",
+            "value": "Find errors in this table."
+        },
+        {
+            "key": "How can I resolve the issue here.",
+            "value": "How can I resolve the issue here."
+        }
+    ]
+}

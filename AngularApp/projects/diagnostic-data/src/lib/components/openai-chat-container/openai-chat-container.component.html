@@ -16,12 +16,14 @@
   </items>
 </fab-command-bar>
 
+<ng-content select="[highlightedSection]"></ng-content>
 
-<div *ngIf="isEnabled" style="height:80vh;">
+<div *ngIf="isEnabled">
   <openai-chat
     [customInitialPrompt] = "customInitialPrompt"
     [customFirstMessage] = "customFirstMessage"
     [chatIdentifier] = "chatIdentifier"
+    [chatContainerHeight] = "chatContainerHeight"
     [persistChat] = "persistChat"
     [chatHeader] = "chatHeader"
     [chatContextLength] = "chatContextLength"
