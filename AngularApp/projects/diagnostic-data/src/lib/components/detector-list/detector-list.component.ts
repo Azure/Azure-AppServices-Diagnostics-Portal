@@ -4,10 +4,12 @@ import { catchError } from 'rxjs/operators';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, Pipe, PipeTransform, Inject, Optional } from '@angular/core';
 import {
-  DetectorListRendering, DetectorMetaData, DetectorResponse, DetectorType, DiagnosticData, HealthStatus
+  BasicInsightInfo,
+  DetectorListRendering, DetectorMetaData, DetectorResponse, DetectorType, DetectorViewModel, DiagnosticData, HealthStatus
 } from '../../models/detector';
 import { LoadingStatus } from '../../models/loading';
 import { StatusStyles } from '../../models/styles';
+import { DetectorViewModeWithInsightInfo } from '../../models/detector';
 import { DetectorControlService } from '../../services/detector-control.service';
 import { DiagnosticService } from '../../services/diagnostic.service';
 import { TelemetryEventNames } from '../../services/telemetry/telemetry.common';
@@ -26,6 +28,7 @@ import { SolutionService } from '../../services/solution.service';
 import { GenericUserSettingService } from '../../services/generic-user-setting.service';
 import { GenieGlobals } from '../../services/genie.service';
 import { GenericSupportTopicService } from '../../services/generic-support-topic.service';
+import { GenericDetectorCopilotService } from '../../services/generic-detector-copilot.service';
 
 @Component({
   selector: 'detector-list',
@@ -71,10 +74,17 @@ export class DetectorListComponent extends DataRenderBaseComponent {
   isCaseSubmissionFlow: boolean = false;
   disableCollapse: boolean = false;
 
+  queryParams = {};
+  linkStyle: ILinkProps['styles'] = {
+    root: {
+      padding: '10px'
+    }
+  }
+
   constructor(private _diagnosticService: DiagnosticService, protected telemetryService: TelemetryService, private _detectorControl: DetectorControlService, private _solutionService: SolutionService,
     private parseResourceService: ParseResourceService, @Inject(DIAGNOSTIC_DATA_CONFIG) private config: DiagnosticDataConfig, private _router: Router,
     private _activatedRoute: ActivatedRoute, private _portalActionService: PortalActionGenericService, private _breadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService, private _globals: GenieGlobals,
-    private _supportTopicService: GenericSupportTopicService) {
+    private _supportTopicService: GenericSupportTopicService, private _copilotService: GenericDetectorCopilotService) {
     super(telemetryService);
     this.isPublic = this.config && this.config.isPublic;
     this.isCaseSubmissionFlow = this._supportTopicService && (!!this._supportTopicService.sapSupportTopicId || !!this._supportTopicService.supportTopicId);
@@ -82,7 +92,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     this._genericUserSettingsService.isWaterfallViewSub.subscribe(isWaterfallViewMode => {
       this.isWaterfallViewMode = isWaterfallViewMode;
     });
-
   }
 
   protected processData(data: DiagnosticData) {
@@ -268,7 +277,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     }
   }
 
-
   //Get from detector-list-analysis
   startDetectorRendering(detectorList: DetectorMetaData[]) {
     this.issueDetectedViewModels = [];
@@ -300,6 +308,9 @@ export class DetectorListComponent extends DataRenderBaseComponent {
               this.issueDetectedViewModels = this.issueDetectedViewModels.sort((n1, n2) => {
                 return n1.model.status - n2.model.status
               });
+
+              this._copilotService.processAsyncDetectorViewModels([issueDetectedViewModel]);
+
             } else {
               let insightInfo = this.getDetectorInsightInfo(this.detectorViewModels[index]);
               let successViewModel: DetectorViewModeWithInsightInfo = { model: this.detectorViewModels[index], ...insightInfo };
@@ -309,6 +320,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
               }
 
               this.successfulViewModels.push(successViewModel);
+              this._copilotService.processAsyncDetectorViewModels([successViewModel]);
             }
           }
 
@@ -391,13 +403,6 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     return insightInfo;
   }
 
-
-  queryParams = {};
-  linkStyle: ILinkProps['styles'] = {
-    root: {
-      padding: '10px'
-    }
-  }
   public selectDetector(viewModel: DetectorViewModeWithInsightInfo) {
     if (viewModel != null && viewModel.model.metadata.id) {
       let targetDetector = viewModel.model.metadata.id;
@@ -488,6 +493,10 @@ export class DetectorListComponent extends DataRenderBaseComponent {
     }
   }
 
+  openCopilot(viewModel: DetectorViewModeWithInsightInfo) {
+    this._copilotService.selectChildDetectorAndOpenCopilot(viewModel);
+  }
+
   private updateBreadcrumb(queryParams: any) {
     const fullPath = this._router.url.split("?")[0];
     const breadcrumbItem: BreadcrumbNavigationItem = {
@@ -513,25 +522,4 @@ export class DetectorOrderPipe implements PipeTransform {
       return a.status > b.status ? 1 : -1;
     });
   }
-}
-
-interface DetectorViewModel {
-  title: string;
-  metadata: DetectorMetaData;
-  loadingStatus: LoadingStatus;
-  status: HealthStatus;
-  statusColor: string;
-  statusIcon: string;
-  expanded: boolean;
-  response: DetectorResponse;
-  request: Observable<DetectorResponse>
-}
-
-interface BasicInsightInfo {
-  insightTitle: string;
-  insightDescription: string;
-}
-
-interface DetectorViewModeWithInsightInfo extends BasicInsightInfo {
-  model: DetectorViewModel;
 }

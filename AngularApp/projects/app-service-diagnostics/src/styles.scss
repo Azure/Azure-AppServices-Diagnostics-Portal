@@ -1,6 +1,7 @@
 
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "../src/styles/icons.scss";
+@import "../../diagnostic-data/src/lib/scss/styles.scss";
 
 body {
     background-color: var(--bodyBackground)!important;

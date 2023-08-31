@@ -54,6 +54,10 @@
                   <div *ngFor="let viewModel of issueDetectedViewModels" style="margin-bottom: 8px;">
                     <fab-card [expanded]="true" [isExpandable]="!!viewModel.insightDescription" [isAlign]="true">
                       <div header>
+                        <span class="additional-options-container">
+                          <fab-icon [iconName]="'robot'" [contentClass]="'additional-option'" [ariaLabel]="'Ask Detector Copilot'"
+                            (click)="openCopilot(viewModel)" title="Ask Detector Copilot" (keydown.enter)="openCopilot(viewModel)" tabindex="0"></fab-icon>
+                        </span>
                         <div style="display: flex;align-items: center;min-height: 40px;">
                           <status-icon class="mr-3" [status]="viewModel.model.status"></status-icon>
                           <div [attr.aria-label]="viewModel.model.title">{{viewModel.model.title}}</div>
@@ -196,6 +200,10 @@
                 <div *ngFor="let viewModel of successfulViewModels" style="margin-bottom: 8px;">
                   <fab-card [expanded]="false">
                     <div header>
+                      <div class="additional-options-container">
+                        <fab-icon [iconName]="'robot'" [ariaLabel]="'Ask Detector Copilot'" [contentClass]="'additional-option'"
+                          (click)="openCopilot(viewModel)" title="Ask Detector Copilot" (keydown.enter)="openCopilot(viewModel)" tabindex="0"></fab-icon>
+                      </div>
                       <div style="display: flex;align-items: center;min-height: 40px;">
                         <status-icon class="mr-3" [loading]="viewModel.model.loadingStatus"
                           [status]="viewModel.model.status"></status-icon>
@@ -223,8 +231,7 @@
       </div>
 
       <div class="list-item-wrapper" *ngIf="failedLoadingViewModels.length > 0">
-        <collapsible-list-fabric [collapsed]="false"
-          [title]="'Failed Loading Checks (' + failedLoadingViewModels.length + ')'">
+        <collapsible-list-fabric [collapsed]="true" [title]="'Failed Loading Checks (' + failedLoadingViewModels.length + ')'">
           <collapsible-list-item body>
 
             <div class="list-text">

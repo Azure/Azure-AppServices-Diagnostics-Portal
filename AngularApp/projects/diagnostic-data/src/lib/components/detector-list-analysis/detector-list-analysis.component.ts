@@ -34,6 +34,7 @@ import { ILinkProps, PanelType } from 'office-ui-fabric-react';
 import { BreadcrumbNavigationItem, GenericBreadcrumbService } from '../../services/generic-breadcrumb.service';
 import { GenericUserSettingService } from '../../services/generic-user-setting.service';
 import { GenericFeatureService } from '../../services/generic-feature-service';
+import { GenericDetectorCopilotService } from '../../services/generic-detector-copilot.service';
 
 const WAIT_TIME_IN_SECONDS_TO_ALLOW_DOWNTIME_INTERACTION: number = 58;
 const PERCENT_CHILD_DETECTORS_COMPLETED_TO_ALLOW_DOWNTIME_INTERACTION: number = 0.9;
@@ -140,7 +141,9 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         private _diagnosticService: DiagnosticService, private _detectorControl: DetectorControlService,
         protected telemetryService: TelemetryService, public _appInsightsService: AppInsightsQueryService,
         private _supportTopicService: GenericSupportTopicService, protected _globals: GenieGlobals, private _solutionService: SolutionService,
-        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService, private _genericBreadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService, private _genericCategoryService: GenericFeatureService) {
+        @Inject(DIAGNOSTIC_DATA_CONFIG) config: DiagnosticDataConfig, private portalActionService: PortalActionGenericService, private _resourceService: GenericResourceService,
+        private _genericBreadcrumbService: GenericBreadcrumbService, private _genericUserSettingsService: GenericUserSettingService,
+        private _genericCategoryService: GenericFeatureService, private _copilotService: GenericDetectorCopilotService) {
         super(telemetryService);
         this.isPublic = config && config.isPublic;
 
@@ -504,8 +507,6 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
         }
     }
 
-
-
     renderInsightsFromSearch(downTime: DownTime) {
         this._resourceService.getPesId().subscribe(pesId => {
             if (!((this.isPublic && detectorSearchEnabledPesIds.findIndex(x => x == pesId) < 0) || (!this.isPublic && detectorSearchEnabledPesIdsInternal.findIndex(x => x == pesId) < 0))) {
@@ -734,6 +735,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
 
                             this.issueDetectedViewModels.push(issueDetectedViewModel);
                             this.issueDetectedViewModels = this.issueDetectedViewModels.sort((n1, n2) => n1.model.status - n2.model.status);
+                            this._copilotService.processAsyncDetectorViewModels([issueDetectedViewModel]);
                         } else {
                             if (this.containsAnyDisplayableRenderingType(response)) {
                                 let insight = this.getDetectorInsight(viewModelsToProcess[index]);
@@ -752,6 +754,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                                 }
 
                                 this.successfulViewModels.push(successViewModel);
+                                this._copilotService.processAsyncDetectorViewModels([successViewModel]);
                             }
                         }
                     }
@@ -790,8 +793,9 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                     'successfulViewModels': this.successfulViewModels,
                     'issueDetectedViewModels': this.issueDetectedViewModels
                 };
-
+                
                 this.onComplete.emit(dataOutput);
+
             }, 10);
 
             this.childDetectorsEventProperties['ChildDetectorsList'] = JSON.stringify(childDetectorData);
@@ -1110,7 +1114,7 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                     'OpenInNewTab': true
                 };
                 this.logEvent(TelemetryEventNames.ChildDetectorClicked, clickDetectorEventProperties);
-                
+
                 let paramString = "";
                 Object.keys(queryParams).forEach(x => {
                     paramString = paramString === "" ? `${paramString}${x}=${queryParams[x]}` : `${paramString}&${x}=${queryParams[x]}`;
@@ -1153,6 +1157,10 @@ export class DetectorListAnalysisComponent extends DataRenderBaseComponent imple
                 self.showLoadingMessage = false;
             }, 3000)
         }, 4000);
+    }
+
+    openCopilot(viewModel: any) {
+        this._copilotService.selectChildDetectorAndOpenCopilot(viewModel);
     }
 
     openSolutionPanel(viewModel: any) {

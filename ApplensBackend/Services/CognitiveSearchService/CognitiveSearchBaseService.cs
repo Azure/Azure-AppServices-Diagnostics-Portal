@@ -63,18 +63,38 @@ namespace AppLensV3.Services.CognitiveSearchService
             return await _indexClient.GetIndexesAsync().ToListAsync();
         }
 
+        public async Task<SearchIndex> GetSearchIndex(string indexName)
+        {
+            if (!isEnabled)
+            {
+                return null;
+            }
+            try
+            {
+                return _indexClient.GetIndex(indexName);
+            }
+            catch(Exception)
+            {
+                return null;
+            }
+        }
+
         public async Task<bool> CreateIndex(string indexName)
         {
             if (!isEnabled)
             {
                 return false;
             }
-            if (_indexClient.GetIndex(indexName) == null)
+
+            if (await GetSearchIndex(indexName) == null)
             {
                 SearchIndex newIndex = new SearchIndex(indexName);
+                FieldBuilder fieldBuilder = new FieldBuilder();
+                newIndex.Fields = fieldBuilder.Build(typeof(CognitiveSearchDocumentWrapper));
                 await _indexClient.CreateIndexAsync(newIndex);
                 return true;
             }
+
             return false;
         }
 
@@ -104,10 +124,12 @@ namespace AppLensV3.Services.CognitiveSearchService
             {
                 return null;
             }
-            if (_indexClient.GetIndex(indexName) == null)
+
+            if (await GetSearchIndex(indexName) == null)
             {
-                var created = await CreateIndex(indexName);
+                _ = await CreateIndex(indexName);
             }
+
             return _indexClient.GetSearchClient(indexName);
         }
 

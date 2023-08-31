@@ -63,7 +63,7 @@ export class SupportTopicService {
 
     private cleanSelfHelpContentApollo(selfHelpResponse) {
         let docContent = selfHelpResponse.properties.content;
-        let result = cleanApolloSolutions(docContent);
+        let result = cleanApolloSolutions(docContent, this.showAllSelfHelpContent());
         return result;
     }
 
@@ -107,15 +107,23 @@ export class SupportTopicService {
         return throwError("Cannot get self content from Apollo");
     }
 
+    private showAllSelfHelpContent():boolean {
+        let rp =  `${this._resourceService?.resource?.id}`.toLowerCase().split('/providers/')[1].split('/')[0];
+        let rpsToShowAllContent = ['microsoft.web', 'microsoft.containerservice', 'microsoft.domainregistration', 'microsoft.certificateregistration', 'microsoft.workflow', 'microsoft.apimanagement', 'microsoft.app', 'microsoft.containerregistry', 'microsoft.containerinstance', 'microsoft.redhatopenshift', 'microsoft.servicefabric'];
+        return rpsToShowAllContent.some((rpToShowAllContent) => rp.includes(rpToShowAllContent));
+    }
+
     private cleanSelfHelpContentLegacy(selfHelpResponse) {
         if (selfHelpResponse && selfHelpResponse.length > 0) {
             var htmlContent = selfHelpResponse[0]["htmlContent"];
             // Custom javascript code to remove top header from support document html string
             var tmp = document.createElement("DIV");
             tmp.innerHTML = htmlContent;
-            var h2s = tmp.getElementsByTagName("h2");
-            if (h2s && h2s.length > 0) {
-                h2s[0].remove();
+            if(!this.showAllSelfHelpContent()) {
+                var h2s = tmp.getElementsByTagName("h2");
+                if (h2s && h2s.length > 0) {
+                    h2s[0].remove();
+                }
             }
 
             return tmp.innerHTML;

@@ -1,17 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { PanelType } from 'office-ui-fabric-react';
-import { DevelopMode } from '../onboarding-flow/onboarding-flow.component';
+import { DevelopMode } from '../../onboarding-flow/onboarding-flow.component';
 import { ChatUIContextService, StringUtilities } from 'diagnostic-data';
+import { ApplensCopilotContainerService, CopilotSupportedFeature } from './applens-copilot-container.service';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class DetectorCopilotService {
+@Injectable()
+export class ApplensDetectorDevelopmentCopilotService {
 
-  public openPanel: boolean;
-  public panelType: PanelType = PanelType.custom;
-  public panelWidth: string = "720px";
   public isGist: boolean = false;
   public detectorCode: string = '';
   public detectorTemplate: string = '';
@@ -22,26 +17,15 @@ export class DetectorCopilotService {
   public codeHistory: string[] = [];
   public codeHistoryNavigator: number = -1;
   public onCodeSuggestion: BehaviorSubject<{ code: string, append: boolean, source: string }>;
-  public onCloseCopilotPanelEvent: BehaviorSubject<{ showConfirmation: boolean, resetCopilot: boolean }>;
   public onCodeOperationProgressState: BehaviorSubject<{ inProgress: boolean }>;
   public chatComponentIdentifier: string = 'detectorcopilot';
-  public copilotHeaderTitle: string;
   public copilotChatHeader: string;
-  public chatConfigFile: string = 'assets/chatConfigs/detectorcopilot.json';
+  public chatConfigFile: string = 'assets/chatConfigs/detectorcopilot/detectordevcopilot.json';
   public logPrefix: string = 'DetectorCopilot';
 
-  constructor(private _chatContextService: ChatUIContextService) {
+  constructor(private _chatContextService: ChatUIContextService, private _copilotContainerService: ApplensCopilotContainerService) {
     this.onCodeSuggestion = new BehaviorSubject<{ code: string, append: boolean, source: string }>(null);
-    this.onCloseCopilotPanelEvent = new BehaviorSubject<{ showConfirmation: boolean, resetCopilot: boolean }>(null);
     this.onCodeOperationProgressState = new BehaviorSubject<{ inProgress: boolean }>(null);
-  }
-
-  hideCopilotPanel() {
-    this.openPanel = false;
-  }
-
-  showCopilotPanel() {
-    this.openPanel = true;
   }
 
   reset() {
@@ -104,23 +88,23 @@ export class DetectorCopilotService {
     this.isGist = isGistMode;
     
     if (isGistMode) {
+      this._copilotContainerService.feature = CopilotSupportedFeature.GistDevelopmentTab;
       this.chatComponentIdentifier = 'gistcopilot';
-      this.copilotHeaderTitle = 'Gist Copilot (Preview)';
+      this._copilotContainerService.copilotHeaderTitle = 'Gist Copilot (Preview)';
     }
     else {
-      this.chatComponentIdentifier = 'detectorcopilot';
-      this.copilotHeaderTitle = 'Detector Copilot (Preview)';
+      this._copilotContainerService.feature = CopilotSupportedFeature.DetectorDevelopmentTab;
+      this.chatComponentIdentifier = 'detectordevcopilot';
+      this._copilotContainerService.copilotHeaderTitle = 'Detector Copilot (Preview)';
     }
 
-    this.chatConfigFile = `assets/chatConfigs/${this.chatComponentIdentifier}.json`;
+    this.chatConfigFile = `assets/chatConfigs/detectorcopilot/${this.chatComponentIdentifier}.json`;
     this.logPrefix = this.chatComponentIdentifier;
 
     this.copilotChatHeader = `
     <h1 class='copilot-header chatui-header-text'>
-      <img  class='copilot-header-img' src="/assets/img/bot_sparkle_icon.svg" alt = ''>
-      ${this.copilotHeaderTitle}
+      ${this._copilotContainerService.copilotHeaderTitle}
       <img class='copilot-header-img-secondary' src='/assets/img/rocket.png' alt=''>
-      <img class='copilot-header-img-secondary' src='/assets/img/rocket.png' alt=''">
     </h1>`;
   }
 }

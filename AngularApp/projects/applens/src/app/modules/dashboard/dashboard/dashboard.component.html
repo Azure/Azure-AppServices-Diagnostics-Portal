@@ -90,9 +90,11 @@
 </div>
 </fab-panel>
 
-<fab-panel *ngIf="!stillLoading && detectorCopilotEnabled" [isOpen]="_detectorCopilotService.openPanel" [type]="_detectorCopilotService.panelType" [customWidth]="_detectorCopilotService.panelWidth" [isHiddenOnDismiss]="true"
+<fab-panel *ngIf="!stillLoading && detectorCopilotEnabled" [isOpen]="_copilotContainerService.openPanel" [type]="_copilotContainerService.panelType" [customWidth]="_copilotContainerService.panelWidth" [isHiddenOnDismiss]="true"
 [hasCloseButton]="true" [closeButtonAriaLabel]="'close'" [isBlocking]="false" (onDismiss)="dismissCopilotPanel()"
-[headerText]="_detectorCopilotService.copilotHeaderTitle" [isLightDismiss]="false" (onLightDismissClick)="dismissCopilotPanel()">
-<detector-copilot></detector-copilot>
+[headerText]="_copilotContainerService.copilotHeaderTitle" [isLightDismiss]="false" (onLightDismissClick)="dismissCopilotPanel()">
+
+  <copilot-container></copilot-container>
+
 </fab-panel>
 

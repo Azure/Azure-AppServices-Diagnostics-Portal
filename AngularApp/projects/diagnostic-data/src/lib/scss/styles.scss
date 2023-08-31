@@ -2,6 +2,7 @@
 
 $panel-padding-left: 20px;
 $panel-padding-right: 20px;
+
 //For clean fabric panel padding
 ::ng-deep .ms-Panel-content {
     // padding-left: $panel-padding-left;
@@ -30,4 +31,22 @@ $panel-padding-right: 20px;
 .panel-padding {
     margin-left: 20px;
     margin-right: 20px;
+}
+
+.additional-options-container {
+    float: right;
+    margin-top: 0;
+    background: var(--bodyBackground);
+}
+
+.additional-option {
+    font-size: 14px;
+    cursor: pointer;
+    color: #6d6d6d;
+    margin-left: 10px;
+}
+
+.additional-option:hover,
+.additional-option:focus {
+    color: rgb(0, 120, 212);
 }

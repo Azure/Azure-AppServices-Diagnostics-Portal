@@ -2,19 +2,21 @@
      If there is a title I will wrap it in a container, otherwise I will show it by itself -->
 <ng-template #summaries>
   <div *ngIf="summaryViewModels">
-      <div class="display-member" [style.border-color]="viewModel.color ? viewModel.color : 'blue'" *ngFor="let viewModel of summaryViewModels">
-        <div class="hightlight-value" >{{viewModel.value}}</div>
-        {{viewModel.name}}
-      </div>
+    <div class="display-member" [style.border-color]="viewModel.color ? viewModel.color : '#2D87C3'"
+      *ngFor="let viewModel of summaryViewModels">
+      <div class="hightlight-value">{{viewModel.value}}</div>
+      {{viewModel.name}}
     </div>
+  </div>
 </ng-template>
 
 <!-- If there is title wrap it in container -->
-<data-container *ngIf="renderingProperties.title; else noContainer" [title]="renderingProperties.title" [description]="renderingProperties.description">
+<data-container *ngIf="renderingProperties.title; else noContainer" [title]="renderingProperties.title"
+  [description]="renderingProperties.description" [additionalOptionsToShow]="additionalOptionsToShow">
   <ng-container *ngTemplateOutlet="summaries"></ng-container>
 </data-container>
 
 <!-- If there is no title, do not use container. Note this is called from the else statement in the *ngIf above -->
 <ng-template #noContainer>
-    <ng-container *ngTemplateOutlet="summaries"></ng-container>
+  <ng-container *ngTemplateOutlet="summaries"></ng-container>
 </ng-template>

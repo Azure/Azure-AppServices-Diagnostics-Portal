@@ -1,11 +1,19 @@
 <ng-template #header>
     {{renderingProperties.title}}
-    <button class="btn btn-default markdown-button" style="float:right;margin-top: -5px" *ngIf="!isPublic" (click)="copyMarkdown()" tabindex="0" (keyup.enter)="copyMarkdown()" aria-label="copy markdown">
-        <span class="fa fa-copy"></span>
-    </button>
+
+    <span class="additional-options-container">
+
+        <fab-icon [iconName]="'copy'" [ariaLabel]="'copy content'" [contentClass]="'additional-option'"
+            (click)="copyMarkdown()" title="Copy content" tabindex="0" (keydown.enter)="copyMarkdown()"></fab-icon>
+
+        <fab-icon *ngIf="copilotEnabled" [iconName]="'robot'" [ariaLabel]="'ask detector copilot'" [contentClass]="'additional-option'"
+            (click)="openCopilot()" title="Ask Detector Copilot" tabindex="0" (keydown.enter)="openCopilot()"></fab-icon>
+    </span>
+
 </ng-template>
 
-<data-container *ngIf="renderingProperties.isContainerNeeded else noContainerMarkdown" [headerTemplate]="header" [title]="renderingProperties.title">
+<data-container *ngIf="renderingProperties.isContainerNeeded else noContainerMarkdown" [headerTemplate]="header"
+    [title]="renderingProperties.title">
     <markdown-text [markdownData]="markdownData" [detector]="detector" [isMarkdownView]="true"></markdown-text>
 </data-container>
 

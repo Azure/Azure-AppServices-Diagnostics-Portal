@@ -25,7 +25,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 import { UserAccessStatus } from "diagnostic-data";
 import { defaultResourceTypes } from '../../../shared/utilities/main-page-menu-options';
-import { DetectorCopilotService } from '../services/detector-copilot.service';
+import { ApplensCopilotContainerService } from '../services/copilot/applens-copilot-container.service';
 
 @Component({
   selector: 'dashboard',
@@ -119,7 +119,7 @@ export class DashboardComponent implements OnDestroy {
   constructor(public resourceService: ResourceService, private startupService: StartupService, private _detectorControlService: DetectorControlService,
     private _router: Router, private _activatedRoute: ActivatedRoute, private _navigator: FeatureNavigationService,
     private _diagnosticService: ApplensDiagnosticService, private _adalService: AdalService, public _searchService: SearchService, private _diagnosticApiService: DiagnosticApiService, private _observerService: ObserverService, public _applensGlobal: ApplensGlobal, private _startupService: StartupService, private _resourceService: ResourceService, private _breadcrumbService: BreadcrumbService, private _userSettingsService: UserSettingService, private _themeService: GenericThemeService,
-    private _alertService: AlertService, private _telemetryService: TelemetryService, private _titleService: Title, private _chatContextService: ChatUIContextService, public _detectorCopilotService: DetectorCopilotService) {
+    private _alertService: AlertService, private _telemetryService: TelemetryService, private _titleService: Title, private _chatContextService: ChatUIContextService, public _copilotContainerService: ApplensCopilotContainerService) {
     this.contentHeight = (window.innerHeight - 50) + 'px';
 
     this.navigateSub = this._navigator.OnDetectorNavigate.subscribe((detector: string) => {
@@ -559,7 +559,7 @@ export class DashboardComponent implements OnDestroy {
   }
 
   dismissCopilotPanel = () => {
-    this._detectorCopilotService.onCloseCopilotPanelEvent.next({ showConfirmation: true, resetCopilot: false });
+    this._copilotContainerService.onCloseCopilotPanelEvent.next({ showConfirmation: true, resetCopilot: false });
   }
 }
 

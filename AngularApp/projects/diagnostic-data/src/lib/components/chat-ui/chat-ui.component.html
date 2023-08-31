@@ -13,7 +13,8 @@
     </ng-container>
   </div>
   <div id="chatui-all-messages-container-id" class="chatui-box-row-container chatui-chat-messages-container"
-    *ngIf="messages && messages.length>0">
+    *ngIf="messages && messages.length>0"
+    [ngStyle]="chatContainerHeight && chatContainerHeight !== '' ? {'height': chatContainerHeight} : {}">
     <div class="chatui-top-error-container" *ngIf="showTopErrorBar"
       [ngClass]="{'fade-in': showTopErrorBar, 'fade-out': !showTopErrorBar}">
       {{topErrorBarMessage}}
@@ -48,10 +49,7 @@
                 <!-- {{message.messageDisplayDate}} -->
               </div>
               <div style="white-space:pre-wrap">
-                <markdown [ngClass]="{'blinking-cursor': message.status==2}" [data]="message.displayMessage">
-
-                </markdown>
-
+                <chat-ui-markdown-wrapper [ngClass]="{'blinking-cursor': message.status==2}" [data] = "message.displayMessage" [onCopyClick] = 'onCopyClick' [chatIdentifier] = "chatIdentifier" [chatMessageId] = "message.id"></chat-ui-markdown-wrapper>
               </div>
               <ng-container *ngIf="showFeedbackOptions && message.messageSource=='system'">
                 <div class="chatui-feedback-icons">
@@ -94,7 +92,7 @@
           <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
         </svg>
       </button>
-
+      <div class="chatui-textarea-bottom-stripe"></div>
     </div>
     <div class="chatui-content-disclaimer" *ngIf="showContentDisclaimer" [innerHtml]="contentDisclaimerMessage">
     </div>

@@ -15,6 +15,7 @@ import { UriUtilities } from '../../utilities/uri-utilities';
 import { QueryResponseService } from '../../services/query-response.service';
 import * as moment from 'moment';
 import { TimeUtilities } from '../../utilities/time-utilities';
+import { GenericDetectorCopilotService } from '../../services/generic-detector-copilot.service';
 
 @Component({
   selector: 'custom-form',
@@ -36,6 +37,7 @@ export class FormComponent extends DataRenderBaseComponent {
     private detectorControlService: DetectorControlService, private _queryResponseService: QueryResponseService,
     private activatedRoute: ActivatedRoute,
     private locationService: Location,
+    private copilotService: GenericDetectorCopilotService
   ) {
     super(telemetryService);
     this.isPublic = config && config.isPublic;
@@ -297,6 +299,8 @@ export class FormComponent extends DataRenderBaseComponent {
           formToExecute.formResponse = response;
           formToExecute.errorMessage = '';
           formToExecute.loadingFormResponse = false;
+
+          this.copilotService.processAsyncFormsResponse(formToExecute.formId, response);
         }, (error: any) => {
           formToExecute.loadingFormResponse = false;
           formToExecute.errorMessage = 'Something went wrong while loading data';

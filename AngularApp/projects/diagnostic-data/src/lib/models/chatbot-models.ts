@@ -13,8 +13,18 @@ export interface ChatMessage {
     timestamp: number;
     messageDisplayDate: string;
     renderingType: MessageRenderingType;
-    userFeedback: string;
+    userFeedback: FeedbackOptions;
     status: MessageStatus;
+
+    /// <summary>
+    /// This is used to store the feedback document ids for the message if any were used to construct the response. This is used to track the feedback for the message.
+    /// </summary>
+    feedbackDocumentIds: string[];
+
+    /// <summary>
+    /// This is used to store any additional data associated with the chat message by the specific copilot. It is optional.
+    /// </summary>
+    data?: any;
 }
 
 export enum MessageRenderingType {
@@ -50,4 +60,10 @@ export enum ChatModel {
 export enum APIProtocol {
     Rest = "rest",
     WebSocket = "websocket"
+}
+
+export enum FeedbackOptions {
+    Like = "like",
+    Dislike = "dislike",
+    None = "none"
 }

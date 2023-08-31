@@ -197,4 +197,8 @@ export class StringUtilities {
           return `<a href="${url}" target="_blank">${title}</a>`;  
         });  
     }
+
+    public static IsNullOrWhiteSpace(input:string) {
+        return input ? this.ReplaceAll(input, ' ', '').length < 1: true;
+    }
 }
