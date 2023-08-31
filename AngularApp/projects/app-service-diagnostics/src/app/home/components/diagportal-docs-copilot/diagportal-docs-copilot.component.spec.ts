@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ApplensDocsCopilotComponent } from './applens-docs-copilot.component';
+import { DiagPortalDocsCopilotComponent } from './diagportal-docs-copilot.component';
 
-describe('ApplensDocsCopilotComponent', () => {
-  let component: ApplensDocsCopilotComponent;
-  let fixture: ComponentFixture<ApplensDocsCopilotComponent>;
+describe('DiagPortalDocsCopilotComponent', () => {
+  let component: DiagPortalDocsCopilotComponent;
+  let fixture: ComponentFixture<DiagPortalDocsCopilotComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ApplensDocsCopilotComponent ]
+      declarations: [ DiagPortalDocsCopilotComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ApplensDocsCopilotComponent);
+    fixture = TestBed.createComponent(DiagPortalDocsCopilotComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
