@@ -16,8 +16,4 @@ git checkout -b $createdBranchName origin/main
 
 git remote add github https://github.com/Azure/Azure-AppServices-Diagnostics-Portal.git
 git fetch github $branchName
-git merge -X theirs github/$branchName
-
-"Pushing branch " + $createdBranchName + " to remote"
-git push -u origin $createdBranchName
-git remote remove github
+git merge github/$branchName

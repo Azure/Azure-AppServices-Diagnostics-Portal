@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
-import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions, StringUtilities, TelemetryService,KeyValuePair } from 'diagnostic-data';
+import { APIProtocol, ChatMessage, ChatModel, FeedbackOptions, StringUtilities, TelemetryService,KeyValuePair, GenericOpenAIChatService, MessageSource, TimeUtilities, MessageStatus, MessageRenderingType, ResponseTokensSize, ResourceDescriptor, DetectorControlService } from 'diagnostic-data';
 import { ApplensGlobal } from '../../../applens-global';
 import { ChatFeedbackAdditionalField, ChatFeedbackModel, ChatFeedbackPanelOpenParams, FeedbackExplanationModes } from '../../../shared/models/openAIChatFeedbackModel';
 import { Observable, of } from 'rxjs';
@@ -11,6 +11,7 @@ import { ObserverSiteInfo } from '../../../shared/models/observer';
 import { KustoUtilities } from 'projects/diagnostic-data/src/lib/utilities/kusto-utilities';
 import { IDropdownOption, IDropdownProps } from 'office-ui-fabric-react';
 import { AdalService } from 'adal-angular4';
+import {v4 as uuid} from 'uuid';
 
 @Component({
   selector: 'kustogpt',
@@ -18,17 +19,17 @@ import { AdalService } from 'adal-angular4';
   styleUrls: ['./kustogpt.component.scss']
 })
 export class KustoGPTComponent {
-
   public readonly apiProtocol = APIProtocol.WebSocket;
   public readonly chatModel = ChatModel.GPT4;
   public readonly expectedResponseLabelText:string = 'Expected response ( Kusto query only )';
   public readonly antaresAnalyticsChatIdentifier: string = 'analyticskustocopilot';
   public readonly genericKustoAssistantChatIdentifier = 'kustoqueryassistant';
-  public readonly antaresClusterNamePlaceholderConst: string = '@AntaresStampKustoCluster';  
+  public readonly antaresClusterNamePlaceholderConst: string = '@AntaresStampKustoCluster';
   public readonly antaresDatabaseNamePlaceholderConst: string = '@AnataresStampKustoDB';
   public readonly analyticsClusterNameConst:string = 'wawsaneus.eastus';
   public readonly analyticsDatabaseNameConst: string = 'wawsanprod';
-  public readonly feedbackExplanationMode:FeedbackExplanationModes = FeedbackExplanationModes.Explanation;  
+  public readonly feedbackExplanationMode:FeedbackExplanationModes = FeedbackExplanationModes.Explanation;
+  
   public readonly chatIdentifierDropdownOptions: IDropdownOption[] = [
     {
       key: this.antaresAnalyticsChatIdentifier,
@@ -54,7 +55,7 @@ export class KustoGPTComponent {
       width: '50em'
     },
   };
-  
+
   public feedbackPanelOpenState:ChatFeedbackPanelOpenParams = {isOpen:false, chatMessageId: null};
   public chatIdentifier:string = '';
   public clusterName: string = this.antaresClusterNamePlaceholderConst;
@@ -119,18 +120,18 @@ export class KustoGPTComponent {
     this.chatIdentifier = event.option.key;
     this.prepareChatHeader();
     this.updateFeedbackSubmissionStatus(this.chatIdentifier);
+    this.customInitialPrompt = `\nStart time = ${this._detectorControlService.startTimeString}\nEnd time ; ${this._detectorControlService.endTimeString}`;
     if (this.chatIdentifier == this.antaresAnalyticsChatIdentifier) {
       this.clusterName =  this.analyticsClusterNameConst;
       this.databaseName = this.analyticsDatabaseNameConst;
       this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.analyticsClusterNameConst, this.analyticsDatabaseNameConst);
-      this.customInitialPrompt = '';
     }
     else {
       // This dropdown is visible only for Microsoft.Web/sites resources, so it is safe to assume that the other selection is for an Antares site resource.
       this.clusterName = this.antaresClusterName? this.antaresClusterName : this.antaresClusterNamePlaceholderConst;
       this.databaseName = this.antaresClusterName? this.antaresDatabaseName : this.antaresDatabaseNamePlaceholderConst;
       this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.antaresClusterNamePlaceholderConst, this.antaresDatabaseNamePlaceholderConst);
-      this.customInitialPrompt = this.antaresStampName ? `EventPrimaryStampName = '${this.antaresStampName}'` : '';
+      this.customInitialPrompt += this.antaresStampName ? `\nEventPrimaryStampName = '${this.antaresStampName}'` : '';
     }
   }
 
@@ -151,7 +152,21 @@ export class KustoGPTComponent {
     return databaseName && ((databaseName.toLowerCase().trim() != this.analyticsDatabaseNameConst && databaseName.toLowerCase().trim().startsWith('waws')) || databaseName.toLowerCase().trim() == this.antaresDatabaseNamePlaceholderConst.toLowerCase());
   }
 
-  onBeforeSubmit = (chatFeedbackModel:ChatFeedbackModel): Observable<ChatFeedbackModel> => {
+  // Implement a cheaper version of the templatization logic here.
+  private ReplaceResourceIdsWithPlaceholders = (ARMId:string, kustoQuery:string):string => {
+    let resourceUriParts:ResourceDescriptor = ResourceDescriptor.parseResourceUri(ARMId);
+    // Replace all occurrences of the subscription id (case insensitive) with a placeholder as subscriptionId is organization identifiable data.
+    kustoQuery = kustoQuery.replace(new RegExp(resourceUriParts.subscription, 'gi'), '<<SubscriptionId>>');
+
+    // Replace all occurrences of the resource group name (case insensitive) with a placeholder.
+    kustoQuery = kustoQuery.replace(new RegExp(resourceUriParts.resourceGroup, 'gi'), '<<ResourceGroupName>>');
+
+    // Replace all occurrences of the resource name (case insensitive) with a placeholder.
+    kustoQuery = kustoQuery.replace(new RegExp(resourceUriParts.resource, 'gi'), '<<ResourceName>>');
+    return kustoQuery;
+  }
+
+  onBeforeSubmit = (chatFeedbackModel:ChatFeedbackModel): Observable<ChatFeedbackModel> => {    
     if(chatFeedbackModel && chatFeedbackModel.expectedResponse && !StringUtilities.IsNullOrWhiteSpace(chatFeedbackModel.expectedResponse) && chatFeedbackModel.expectedResponse.length < 5) {
       chatFeedbackModel.validationStatus.succeeded = false;
       chatFeedbackModel.validationStatus.validationStatusResponse = 'Response must be a Kusto query.';
@@ -167,11 +182,12 @@ export class KustoGPTComponent {
       if(queryTextFindings) {
         chatFeedbackModel.validationStatus.succeeded = false;
         chatFeedbackModel.validationStatus.validationStatusResponse = queryTextFindings;
+        return of(chatFeedbackModel);
       }
-      else {
-        chatFeedbackModel.validationStatus.succeeded = true;
-        chatFeedbackModel.validationStatus.validationStatusResponse = 'Validation succeeded';
-      }
+
+      chatFeedbackModel.expectedResponse = this.ReplaceResourceIdsWithPlaceholders(this._resourceService.getCurrentResourceId(false), chatFeedbackModel.expectedResponse);
+      chatFeedbackModel.validationStatus.succeeded = true;
+      chatFeedbackModel.validationStatus.validationStatusResponse = 'Validation succeeded';
     }
     return of(chatFeedbackModel);
   }
@@ -237,7 +253,7 @@ export class KustoGPTComponent {
             }
           }
         }
-        //chatMessage.displayMessage = chatMessageSplit.filter((line) => line.indexOf('Additional_Fields:') === -1).join('\n');
+
         chatMessageSplit.forEach((line, index:number) => {
           if(line.indexOf('Additional_Fields:') > -1) {
             chatMessageSplit[index] = this.chatMessageKustoExecuteLink[chatMessage.id]? this.chatMessageKustoExecuteLink[chatMessage.id]: '';
@@ -253,7 +269,8 @@ export class KustoGPTComponent {
     return chatMessage;
   }
 
-  constructor(private _applensGlobal:ApplensGlobal, private _diagnosticService: ApplensDiagnosticService, private _resourceService: ResourceService, private _diagnosticApiService: DiagnosticApiService, private _adalService: AdalService, private _telemetryService: TelemetryService)  {
+  constructor(private _applensGlobal:ApplensGlobal, private _diagnosticService: ApplensDiagnosticService, private _resourceService: ResourceService, private _diagnosticApiService: DiagnosticApiService, 
+    private _openAIService: GenericOpenAIChatService, private _adalService: AdalService, private _telemetryService: TelemetryService, private _detectorControlService: DetectorControlService)  {
     this._applensGlobal.updateHeader('KQL assistant'); // This sets the title of the HTML page
     this._applensGlobal.updateHeader(''); // Clear the header title of the component as the chat header is being displayed in the chat UI
     
@@ -268,7 +285,7 @@ export class KustoGPTComponent {
     this.prepareChatHeader();
     this.chatIdentifier = this.genericKustoAssistantChatIdentifier;
     this.updateFeedbackSubmissionStatus(this.chatIdentifier);
-
+    this.customInitialPrompt = `\nStart time = ${this._detectorControlService.startTimeString}\nEnd time ; ${this._detectorControlService.endTimeString}`;
     if(`${this._resourceService.ArmResource.provider}/${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase() !== 'microsoft.web/sites') {
       this._diagnosticService.getKustoMappings().subscribe((response) => {
         // Find the first entry with non empty publicClusterName in the response Array
@@ -292,11 +309,9 @@ export class KustoGPTComponent {
         this._diagnosticApiService.isCopilotEnabled(`${this._resourceService.ArmResource.provider}`,`${this._resourceService.ArmResource.resourceTypeName}`, this.antaresAnalyticsChatIdentifier).subscribe((isCopilotEnabled) => {
           this.isAnalyticsCopilotAllowed = isCopilotEnabled;
           if(this.isAnalyticsCopilotAllowed) {
-            this.customInitialPrompt = '';
             this.chatIdentifier = this.antaresAnalyticsChatIdentifier;
             this.updateFeedbackSubmissionStatus(this.antaresAnalyticsChatIdentifier);
             this.prepareChatHeader();
-
             this.clusterName =  this.analyticsClusterNameConst;
             this.databaseName = this.analyticsDatabaseNameConst;
             this.additionalFields = this.getAdditionalFieldsForChatFeedback(this.analyticsClusterNameConst, this.analyticsDatabaseNameConst);
@@ -306,7 +321,7 @@ export class KustoGPTComponent {
           siteResource.getCurrentResource().subscribe((siteResource:ObserverSiteInfo) => {
             if(siteResource) {
               this.antaresStampName = siteResource.StampName;
-              this.customInitialPrompt = this.antaresStampName && !this.isAnalyticsCopilotAllowed ? `EventPrimaryStampName = '${this.antaresStampName}'` : '';
+              this.customInitialPrompt += this.antaresStampName && !this.isAnalyticsCopilotAllowed ? `EventPrimaryStampName = '${this.antaresStampName}'` : '';
               if(siteResource.GeomasterName && siteResource.GeomasterName.indexOf('-') > 0) {
                 let geoRegionName = siteResource.GeomasterName.split('-').pop().toLowerCase();
                 this._diagnosticApiService.getKustoClusterForGeoRegion(geoRegionName).subscribe((kustoClusterRes) => {
