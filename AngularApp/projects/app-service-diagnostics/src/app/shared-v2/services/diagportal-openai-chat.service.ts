@@ -128,7 +128,8 @@ export class DiagPortalOpenAIChatService {
             text: this.messageBuilder,
             truncated: null,
             finishReason: messageJson.FinishReason,
-            exception: ''
+            exception: '',
+            feedbackIds: []
           };
 
           this.onMessageReceive.next(chatResponse);
@@ -153,7 +154,8 @@ export class DiagPortalOpenAIChatService {
         text: '',
         truncated: null,
         finishReason: 'cancelled',
-        exception: reason
+        exception: reason,
+        feedbackIds: []
       };
 
       this.onMessageReceive.next(chatResponse);
