@@ -29,7 +29,7 @@ export class CommunicationToolkitComponent implements OnInit {
   // Variables to be passed down to the OpenAI Chat component
   chatComponentIdentifier: string = "rcacopilot";
   showContentDisclaimer: boolean = true;
-  contentDisclaimerMessage: string = "* Please do not send any sensitive data in your queries. Please VERIFY the given RCA before sending to customers...I'm still learning :)";
+  contentDisclaimerMessage: string = "*Please VERIFY the RCA before sending to customers. I'm still learning :). Don't send any sensitive data.";
 
   userAlias: string = '';
   userChatGPTSetting: UserChatGPTSetting;
@@ -47,6 +47,7 @@ export class CommunicationToolkitComponent implements OnInit {
   inputTextLimit = 1000;
   showCopyOption = true; 
   chatModel: ChatModel = ChatModel.GPT4; 
+  chatContainerHeight: string = '72vh';
 
   // Component's internal variables
   isEnabled: boolean = false;

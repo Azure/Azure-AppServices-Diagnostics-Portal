@@ -20,13 +20,16 @@ var sectionParser = (content: string) => {
 	return sections;
 }
 
-export var cleanApolloSolutions = (docContent) => {
+export var cleanApolloSolutions = (docContent, returnAllContent:boolean) => {
 	var sections = sectionParser(docContent);
 	//Remove sections which have Apollo replacement string
 	var targetParts = sections.filter((x:string) => x.length > 1 && !isReplacementString(x));
 
-	//Also remove the FIRST SECTION if it has h2 tag or if it doesn't contain any links
-	targetParts = targetParts[0].includes("<h2>") || !targetParts[0].includes("a href") ? targetParts.slice(1, targetParts.length): targetParts;
+	//Also remove the FIRST SECTION if it has h2 tag or if it doesn't contain any links only if the returnAllContent flag is false
+	if(!returnAllContent) {
+		targetParts = (returnAllContent && targetParts[0].includes("<h2>")) || !targetParts[0].includes("a href") ? targetParts.slice(1, targetParts.length): targetParts;
+	}
+	
 	let result = targetParts ? targetParts.join('\n'): '';
 	const hrefTerm = "a href";
 	const searchRegExp = new RegExp(hrefTerm, 'g');

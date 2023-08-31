@@ -1,0 +1,40 @@
+.selected-component {
+    position: relative;
+    min-height: 50px;
+    background: #fffaf6;
+    border: 1px solid #fbdcbf;
+    border-radius: 5px;
+    margin: 15px 30px 15px 30px;
+}
+.selected-component-content-container{
+    padding: 10px;
+}
+.selected-component-content-container .title-container {
+    display: flex;
+}
+.selected-component-content-container .title-container .icon {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;font-size: 13px;font-weight: 500;
+}
+.selected-component-content-container .title-container .title {
+    margin-left: 5px;
+    font-size: 13px;
+    font-weight: 500;
+}
+.selected-component-content-container .subheading {
+    font-size: 12px;
+    margin-left:32px;
+    color: #434343;
+    margin-top: 3px;
+}
+.clear-selected-component {
+    position: absolute;
+    top:0;
+    right: 0;
+    margin:0;
+    background: none;
+    border: none;
+    padding-top: 5px;
+    padding-right: 5px;
+}

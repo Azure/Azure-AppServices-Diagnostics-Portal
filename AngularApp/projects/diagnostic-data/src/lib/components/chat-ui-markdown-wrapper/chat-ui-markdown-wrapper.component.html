@@ -1,13 +1,13 @@
 <ng-container *ngFor = "let element of parsedData; let i=index">
   <br *ngIf = "i==0 && isSnippet(element)" />
-  <markdown  *ngIf = "isMarkdown(element)" [data]="getElementValue(element)"></markdown>
+  <markdown-text  *ngIf = "isMarkdown(element)" [markdownData]="getElementValue(element)" [isMarkdownView]="true"></markdown-text>
   <div *ngIf="isSnippet(element)">
     <div class = "snippet-header-wrapper">
       <span class = "snippet-lang-text"> {{getSnippetLanguage(element)}} </span>
       <div (click)="copyDataToClipboard(element)" class="snippet-copy-button"> <i class="snippet-copy-icon fa fa-files-o"></i>Copy snippet </div>
     </div>
     <div class = 'snippet-markdown-wrapper'>
-      <markdown [data]="getElementValue(element)"></markdown>
+      <markdown-text [markdownData]="getElementValue(element)" [isMarkdownView]="true"></markdown-text>
     </div>
   </div>
   <br *ngIf = "isSnippet(element)" />

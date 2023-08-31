@@ -1,0 +1,16 @@
+{
+    "samples": [
+        {
+            "key": "What do these numbers represent?",
+            "value": "What do these numbers represent?"
+        },
+        {
+            "key": "Can you explain more about this data summary.",
+            "value": "Can you explain more about this data summary."
+        },
+        {
+            "key": "What are the best practices or safe limits for these numbers.",
+            "value": "What are the best practices or safe limits for these numbers."
+        }
+    ]
+}

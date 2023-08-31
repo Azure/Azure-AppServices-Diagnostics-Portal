@@ -666,7 +666,8 @@ export class SideNavComponent implements OnInit {
 
   private checkMenuItemMatchesWithSearchTerm(item: CollapsibleMenuItem, searchValue: string) {
     if (searchValue == null || searchValue.length === 0) return true;
-    return FastSearch.fast_search(item.label.toLowerCase(), searchValue.toLowerCase()) >= 0 || FastSearch.fast_search(item.id.toLowerCase(), searchValue.toLowerCase()) >= 0;
+    if (item == null || item.id == null || item.label == null) return false;
+    return FastSearch.fast_search(`${item.label}`.toLowerCase(), `${searchValue}`.toLowerCase()) >= 0 || FastSearch.fast_search(`${item.id}`.toLowerCase(), `${searchValue}`.toLowerCase()) >= 0;
   }
 
   private contSubMenuItems(items: CollapsibleMenuItem[]): number {

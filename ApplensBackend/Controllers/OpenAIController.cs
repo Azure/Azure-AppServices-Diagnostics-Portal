@@ -131,19 +131,44 @@ namespace AppLensV3.Controllers
         }
 
         [HttpGet("detectorcopilot/enabled")]
-        public async Task<IActionResult> IsDetectorCopilotEnabled()
+        public async Task<IActionResult> IsDetectorCopilotEnabled(string detectorMode)
         {
             try
             {
-                if (!bool.TryParse(_configuration["DetectorCopilot:Enabled"], out bool isCopilotEnabled))
+                if (!bool.TryParse(_configuration["DetectorCopilot:EnabledInDevelopmentTab"], out bool isDevelopCopilotEnabled))
                 {
-                    isCopilotEnabled = false;
+                    isDevelopCopilotEnabled = false;
+                }
+
+                if (!bool.TryParse(_configuration["DetectorCopilot:EnabledInDataTab"], out bool isDataCopilotEnabled))
+                {
+                    isDataCopilotEnabled = false;
                 }
 
                 var userAlias = Utilities.GetUserIdFromToken(Request.Headers.Authorization).Split(new char[] { '@' }).FirstOrDefault();
                 var allowedUsers = _configuration["DetectorCopilot:AllowedUserAliases"].Trim()
                     .Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                isCopilotEnabled &= allowedUsers.Length == 0 || allowedUsers.Any(p => p.Trim().ToLower().Equals(userAlias));
+
+                bool isUserAlllowed = allowedUsers.Length == 0 || allowedUsers.Any(p => p.Trim().ToLower().Equals(userAlias));
+
+                // Re-purposing AllowedUserAliases only for data tab
+                bool isCopilotEnabled = false;
+                if (string.IsNullOrWhiteSpace(detectorMode))
+                {
+                    isCopilotEnabled = isDevelopCopilotEnabled || (isDataCopilotEnabled & isUserAlllowed);
+                }
+                else if (detectorMode.ToLower() == "data")
+                {
+                    isCopilotEnabled = isDataCopilotEnabled & isUserAlllowed;
+                }
+                else if (detectorMode.ToLower() == "develop")
+                {
+                    isCopilotEnabled = isDevelopCopilotEnabled;
+                }
+                else
+                {
+                    isCopilotEnabled = false;
+                }
 
                 return Ok(isCopilotEnabled);
             }
