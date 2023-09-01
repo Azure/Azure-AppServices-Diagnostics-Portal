@@ -920,6 +920,12 @@ export class DetectorViewComponent implements OnInit {
     this.ProgressToNextNode.emit(this.selectedWorkflowDowntime);
     this.nextButtonDisabled = true;
     this.selectWorkflowDownTimeDisabled = true;
+
+    //
+    // Make sure user is not able to zoom in on the chart once a downtime has been selected.
+    //
+
+    this.zoomBehavior = zoomBehaviors.CancelZoom;
   }
 }
 
