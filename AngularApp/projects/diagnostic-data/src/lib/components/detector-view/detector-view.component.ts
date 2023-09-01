@@ -84,6 +84,7 @@ export class DetectorViewComponent implements OnInit {
   selectWorkflowDownTimeDisabled: boolean = false;
   downTimeOptions: IDropdownOption[] = [];
   defaultSelectedKey: string = "";
+  _isWorkflowNode: boolean = false;
 
   get loadingMessage() {
     return `Analyzing data ${this.timePickerButtonStr.includes("to") ? "from" : "in"} ${this.timePickerButtonStr}, to change, use the time range picker`;
@@ -140,7 +141,10 @@ export class DetectorViewComponent implements OnInit {
   @Input() isRiskAlertDetector: boolean = false;
   @Input() overWriteDetectorDescription: string = "";
   @Input() overWriteDetectorName: string = "";
-  @Input() isWorkflowNode: boolean = false;
+
+  @Input() set isWorkflowNode(val: boolean) {
+    this._isWorkflowNode = val;
+  }
   feedbackButtonLabel: string = 'Send Feedback';
   hideShieldComponent: boolean = false;
 
@@ -182,7 +186,7 @@ export class DetectorViewComponent implements OnInit {
       this.downTimes.forEach(d => { d.isSelected = false; });
       this.downTimes.push(downTime);
 
-      if (this.isWorkflowNode) {
+      if (this._isWorkflowNode) {
         this.populateWorkflowDowntimeDropDown(this.downTimes);
 
       } else {
@@ -323,7 +327,7 @@ export class DetectorViewComponent implements OnInit {
 
         this.logInsights(data);
 
-        if (this.isAnalysisView || this.isWorkflowNode) {
+        if (this.isAnalysisView || this._isWorkflowNode) {
           let downTime = data.dataset.find(set => (<Rendering>set.renderingProperties).type === RenderingType.DownTime);
           if (this.isInCaseSubmission()) {
             //Disable downtimes in case submission
@@ -395,7 +399,7 @@ export class DetectorViewComponent implements OnInit {
               }
             }
 
-            if (!!defaultDowntime && !this.isWorkflowNode) {
+            if (!!defaultDowntime && !this._isWorkflowNode) {
               this.populateFabricDowntimeDropDown(this.downTimes);
               this.onDownTimeChange(defaultDowntime, defaultDowntimeTriggerSource);
             }
@@ -521,6 +525,10 @@ export class DetectorViewComponent implements OnInit {
   }
 
   getDefaultDowntimeEntry(): DownTime {
+    if (this._isWorkflowNode) {
+      return null;
+    }
+
     return {
       StartTime: moment.utc('1990-01-01 00:00:00'),
       EndTime: moment.utc('1990-01-01 00:00:00'),
@@ -562,7 +570,7 @@ export class DetectorViewComponent implements OnInit {
   }
 
   private populateFabricDowntimeDropDown(downTimes: DownTime[]): void {
-    if (this.isWorkflowNode) {
+    if (this._isWorkflowNode) {
       this.populateWorkflowDowntimeDropDown(downTimes);
       return;
     }
@@ -611,7 +619,7 @@ export class DetectorViewComponent implements OnInit {
         d.EndTime = moment.utc(row[endTimeIndex]);
         d.downTimeLabel = row[downtimeLabelIndex];
         d.isSelected = row[isSelectedIndex];
-        if (d.isSelected && !this.isWorkflowNode) {
+        if (d.isSelected) {
           this.selectedDownTime = d;
         }
         if (this.validateDowntimeEntry(d)) {
@@ -619,7 +627,7 @@ export class DetectorViewComponent implements OnInit {
         }
       }
 
-      if (!this.isWorkflowNode) {
+      if (!this._isWorkflowNode) {
         let selectedDownTime = this.downTimes.find(downtime => downtime.isSelected == true);
         if (selectedDownTime == null && this.downTimes.length > 0) {
           this.downTimes[0].isSelected = true;
