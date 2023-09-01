@@ -15,8 +15,8 @@
   "aks": {
     "resourceUri": "/subscriptions/931906d8-00b9-481b-aba2-f227b237cada/resourceGroups/CanaryResources/providers/Microsoft.ContainerService/managedClusters/applensdiagnoticscanaryaks",
     "diagAndSolve": {
-      "categoryName": "Known Issues, Availability and Performance",
-      "detectorName": "Kubernetes API Deprecations",
+      "categoryName": "Cluster and Control Plane Availability and Performance",
+      "detectorName": "Etcd Availability Issues",
       "diagPortalPath": "aksDiagnostics"
     },
     "caseSubmission": {
