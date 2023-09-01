@@ -85,7 +85,7 @@
 </ng-container>
 
 <div *ngIf="isWorkflowNode && supportsDownTime">
-  Before proceeding further, please choose a downtime or select on the graph
+  Before proceeding further, please <strong>choose</strong> a downtime or <strong>select a range</strong> on the above graph
   <div class="mt-2">
     <fab-dropdown [disabled]="selectWorkflowDownTimeDisabled" role="combobox" [options]="downTimeOptions"
       (onChange)="onWorkflowDowntimeChange($event)" [defaultSelectedKey]="defaultSelectedKey">
