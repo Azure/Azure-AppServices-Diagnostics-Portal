@@ -187,7 +187,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
   workflowPackage: Package;
 
   // copilot variables
-  copilotEnabled: boolean = true;
+  copilotVisibilityStyle: any = {};
   copilotCodeSuggestionObservable: any;
   copilotCodeUpdateProgressStateObservable: any;
   copilotServiceMembersInitialized: boolean = false;
@@ -664,10 +664,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     });
 
     this._diagnosticApi.get<boolean>('api/openai/detectorcopilot/enabled?detectorMode=develop').subscribe(res => {
-
-      this.copilotEnabled = res &&
-        isSystemInvoker == false &&
-        this.isWorkflowDetector == false;
+      this.copilotVisibilityStyle = res && isSystemInvoker == false && this.isWorkflowDetector == false ? {} : { display: "none" };
     });
   }
 
@@ -1608,7 +1605,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
               }
             }
           });
-          if (error.status === 403 && errorObj.Status === UserAccessStatus.AllowedResourceException)  {
+          if (error.status === 403 && errorObj.Status === UserAccessStatus.AllowedResourceException) {
             var url = errorObj.DetailText;
             this.detailedCompilationTraces.push({
               severity: HealthStatus.Critical,
@@ -2053,7 +2050,7 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
       this.publishingPackage.packageConfig
     ] : [
       this.code,
-      JSON.stringify({ "utterances": this.allUtterances, "shieldEmbedded" : this.isShieldEmbedded }),
+      JSON.stringify({ "utterances": this.allUtterances, "shieldEmbedded": this.isShieldEmbedded }),
       JSON.stringify(this.configuration)
     ];
 
