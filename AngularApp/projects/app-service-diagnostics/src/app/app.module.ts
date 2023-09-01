@@ -50,6 +50,7 @@ import { GenericThemeService } from 'diagnostic-data';
 import { ClientScriptService } from './shared-v2/services/client-script.service';
 import { OpenAIArmService } from 'diagnostic-data';
 import { OptInsightsService } from './shared/services/optinsights/optinsights.service';
+import {DocumentationCopilotModule} from './documentation-copilot/documentation-copilot.module';
 
 @NgModule({
   imports: [
@@ -77,7 +78,8 @@ import { OptInsightsService } from './shared/services/optinsights/optinsights.se
 ], { relativeLinkResolution: 'legacy' }),
     CustomMaterialModule,
     HighchartsChartModule,
-    FabricModule
+    FabricModule,
+    DocumentationCopilotModule
   ],
   declarations: [
     AppComponent,

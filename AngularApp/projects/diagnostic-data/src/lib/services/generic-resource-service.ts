@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class GenericResourceService {
+    public armResourceConfig: any;
     // TODO: Figure out if this can be done with an abstract class
     // Ran into difficulties in Support Center when this was abstract
     // This class is never supposed to be used directly

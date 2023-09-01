@@ -27,6 +27,14 @@ export class Globals {
   showCommAlertSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   breadCrumb: BreadcrumbNavigationItem = null;
 
+  set openDocumentationCopilotPanel(value: boolean) {
+    this._openDocumentationCopilotPanel = value;
+  };
+  get openDocumentationCopilotPanel() {
+    return this._openDocumentationCopilotPanel;
+  }
+  private _openDocumentationCopilotPanel: boolean = false;
+
   constructor(private activatedRoute: ActivatedRoute) {
   }
 

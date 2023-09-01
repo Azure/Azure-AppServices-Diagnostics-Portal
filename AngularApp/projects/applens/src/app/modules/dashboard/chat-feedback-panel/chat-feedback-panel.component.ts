@@ -88,15 +88,15 @@ export class ChatFeedbackPanelComponent implements OnInit {
         root: {fontWeight: 700}
       },
 
+      }
     }
-  }
 
   fabDefaultButtonStyle: IButtonStyles = {
     root: {
       margin: "1.5em",
     }
   }
-  
+
   feedbackUserQuestion:ChatMessage = this.GetEmptyChatMessage();
   systemResponse:ChatMessage = this.GetEmptyChatMessage();
   correctResponseFeedback:string = '';
@@ -252,7 +252,7 @@ export class ChatFeedbackPanelComponent implements OnInit {
             this._openAIService.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom, ChatModel.GPT3), this.GetEmptyChatMessage(), true, true, ChatModel.GPT3, 
                 "Given the chat history, consolidate the users latest topic of discussion into a self contained question. Do not attempt to answer the user's question, the goal is to construct a self contained question that captures the user's most recent topic of discussion. Phrase the question as if the user were talking with the AI assistant in first person. Output only the question without any explanation.",
                 '', this.responseTokenSize, this.currentApiCallCount, this.openAIApiCallLimit, true)
-            .subscribe((messageObj) => {
+              .subscribe((messageObj) => {
                 if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
                   this.feedbackUserQuestion = messageObj;
                   this.statusMessage = 'Note: User question was updated based on the chat history. Please validate the question before submitting.';
@@ -263,6 +263,9 @@ export class ChatFeedbackPanelComponent implements OnInit {
       }
     }
   }
+  /*
+  Considering the chat history, consolidate it into a self-contained question. Do not answer the user's question. Respond with only the consolidated question and phrase it as if the user were talking to the AI assistant in first person.
+  */
 
   private GetEmptyChatMessage(): ChatMessage {
     return {
@@ -277,7 +280,195 @@ export class ChatFeedbackPanelComponent implements OnInit {
       renderingType: MessageRenderingType.Text,
       feedbackDocumentIds: []
     };
-  } 
+  }
+
+  private fetchOpenAIResultAsChatMessageUsingRest(chatHistory: any, messageObj: ChatMessage, retry: boolean = true, trimnewline: boolean = false, chatModel:ChatModel, 
+    customInitialPrompt:string, chatIdentifier:string, insertCustomPromptAtEnd:boolean = false): Observable<ChatMessage> {
+    if (this.currentApiCallCount >= this.openAIApiCallLimit) {
+      this.statusMessage = "Error: OpenAI API call limit reached.";
+      this.currentApiCallCount = 0;
+      return of(messageObj);
+    }
+  
+    this.currentApiCallCount++;
+  
+    if (messageObj.status == MessageStatus.Cancelled) {
+      this.currentApiCallCount = 0;
+      return of(messageObj);
+    }
+      
+  
+    let openAIAPICall: Observable<ChatResponse> = new Observable();
+    this.currentApiCallCount = 0;
+  
+    messageObj.status = messageObj.status == MessageStatus.Created ? MessageStatus.Waiting : messageObj.status;
+  
+    if (chatModel == ChatModel.GPT3) {
+      let openAIQueryModel = CreateTextCompletionModel(chatHistory, TextModels.Default, this.responseTokenSize);
+      openAIAPICall = this._openAIService.generateTextCompletion(openAIQueryModel, customInitialPrompt, true, insertCustomPromptAtEnd);
+    } else {
+      let chatCompletionQueryModel = CreateChatCompletionModel(chatHistory, messageObj.id, chatIdentifier, chatModel, this.responseTokenSize);
+      openAIAPICall = this._openAIService.getChatCompletion(chatCompletionQueryModel, customInitialPrompt);
+    }
+  
+    return new Observable<ChatMessage>((observer) => {
+      const subscription = openAIAPICall.subscribe( (response: ChatResponse) => {
+          if (messageObj.status == MessageStatus.Cancelled) {
+            this.currentApiCallCount = 0;
+            observer.next(messageObj);
+            observer.complete();
+            return;
+          }
+  
+          let trimmedText = chatModel == ChatModel.GPT3 ? (trimnewline ? StringUtilities.TrimBoth(response.text) : StringUtilities.TrimEnd(response.text)) : response.text;
+  
+          messageObj.message = StringUtilities.mergeOverlappingStrings(messageObj.message, trimmedText);
+          messageObj.status = response.truncated === true ? MessageStatus.InProgress : MessageStatus.Finished;
+          messageObj.displayMessage = StringUtilities.mergeOverlappingStrings(messageObj.displayMessage, trimmedText);
+
+  
+          if (response.truncated) {
+            // Do not trim newline for the next query
+            this.fetchOpenAIResultAsChatMessageUsingRest(chatHistory, messageObj, retry, false, chatModel, customInitialPrompt, chatIdentifier, insertCustomPromptAtEnd).subscribe( (result: ChatMessage) => {
+                observer.next(result);
+                observer.complete();
+              },
+              (error: any) => {
+                observer.error(error);
+              }
+            );
+          } else {
+            messageObj.status =  MessageStatus.Finished;
+            messageObj.timestamp = new Date().getTime();
+            messageObj.messageDisplayDate = TimeUtilities.displayMessageDate(new Date());
+            this.currentApiCallCount = 0;
+            this.statusMessage = '';
+            messageObj.displayMessage = messageObj.displayMessage.replace('System: ', '');
+            messageObj.displayMessage = messageObj.displayMessage.replace('Assistant: ', '');
+  
+            observer.next(messageObj);
+            observer.complete();
+          }
+        },
+        (error: any) => {
+          if (retry) {
+            this.fetchOpenAIResultAsChatMessageUsingRest(chatHistory, messageObj, false, trimnewline, chatModel, customInitialPrompt, chatIdentifier, insertCustomPromptAtEnd).subscribe(
+              (result: ChatMessage) => {
+                this.currentApiCallCount = 0;
+                observer.next(result);
+                observer.complete();
+              },
+              (error: any) => {
+                observer.error(error);
+              }
+            );
+          } else {
+            observer.error(error);
+          }
+        }
+      );
+  
+      return () => {
+        subscription.unsubscribe();
+      };
+    });
+  }
+  
+
+  private fetchOpenAIResultUsingRest(chatHistory: any, messageObj: ChatMessage, retry: boolean = true, trimnewline: boolean = false, chatModel:ChatModel, customInitialPrompt:string, 
+    chatIdentifier:string, insertCustomPromptAtEnd:boolean = false):Observable<ChatMessage> {
+    if (this.currentApiCallCount >= this.openAIApiCallLimit) {
+      this.statusMessage = "Error: OpenAI API call limit reached.";
+      this.currentApiCallCount = 0;
+      return;
+    }
+    this.currentApiCallCount++;
+
+    if(messageObj.status == MessageStatus.Cancelled) {
+      this.currentApiCallCount = 0;      
+      return;
+    }
+
+    this.statusMessage = '';
+    let openAIAPICall: Observable<ChatResponse> = new Observable();
+
+    try
+    {
+      messageObj.status = messageObj.status == MessageStatus.Created ? MessageStatus.Waiting : messageObj.status;
+
+      if (chatModel == ChatModel.GPT3) {
+        let openAIQueryModel = CreateTextCompletionModel(chatHistory, TextModels.Default, this.responseTokenSize);
+        openAIAPICall = this._openAIService.generateTextCompletion(openAIQueryModel, customInitialPrompt, true, insertCustomPromptAtEnd);
+      }
+      else {
+        let chatCompletionQueryModel = CreateChatCompletionModel(chatHistory, messageObj.id, chatIdentifier, chatModel, this.responseTokenSize);
+        openAIAPICall = this._openAIService.getChatCompletion(chatCompletionQueryModel, customInitialPrompt);
+      }
+
+      this.openAIAPICallSubscription = openAIAPICall.subscribe((response: ChatResponse) => {
+        if (messageObj.status == MessageStatus.Cancelled) {
+          this.currentApiCallCount = 0;
+          return;
+        }
+
+        let trimmedText = chatModel == ChatModel.GPT3 ? (trimnewline ? StringUtilities.TrimBoth(response.text) : StringUtilities.TrimEnd(response.text)) : response.text;
+        messageObj.message = StringUtilities.mergeOverlappingStrings(messageObj.message, trimmedText);
+        messageObj.status = response.truncated === true ? MessageStatus.InProgress : MessageStatus.Finished;
+        messageObj.displayMessage = StringUtilities.mergeOverlappingStrings(messageObj.displayMessage, trimmedText);
+
+        if (response.truncated) {
+          //Do not trim newline for the next query
+          this.fetchOpenAIResultUsingRest(chatHistory, messageObj, retry, trimnewline = false, chatModel, customInitialPrompt, chatIdentifier, insertCustomPromptAtEnd);
+        }
+        else {
+          messageObj.status =  MessageStatus.Finished;
+          messageObj.timestamp = new Date().getTime();
+          messageObj.messageDisplayDate = TimeUtilities.displayMessageDate(new Date());
+          this.currentApiCallCount = 0;
+          this.statusMessage = '';          
+          messageObj.displayMessage = messageObj.displayMessage.replace('System: ', '');
+
+          this.feedbackUserQuestion = messageObj;
+          return Observable.of(messageObj);
+        }
+
+
+      }, (err) => {
+        if (err.status && err.status == 400) {
+          //Sometimes the chat context may become too long for the API to handle. In that case, we reduce the chat context length by 2 and retry
+          //this._telemetryService.logEvent("OpenAIChatBadRequestError", { ...err, userId: this._chatContextService.userId, ts: new Date().getTime().toString() });
+          this.chatContextLength = this.chatContextLength - 2 >= 0? this.chatContextLength - 2 : 0;
+          this.fetchOpenAIResultUsingRest(chatHistory, messageObj, retry = false, false, chatModel, customInitialPrompt, chatIdentifier, insertCustomPromptAtEnd);
+        }
+        else if (retry) {
+          this.fetchOpenAIResultUsingRest(chatHistory, messageObj, retry = false, false, chatModel, customInitialPrompt, chatIdentifier, insertCustomPromptAtEnd);
+        }
+        else {
+          this.statusMessage = "Error: " + err;
+          this.currentApiCallCount = 0;
+          messageObj.status =  MessageStatus.Finished;
+          messageObj.timestamp = new Date().getTime();
+          messageObj.messageDisplayDate = TimeUtilities.displayMessageDate(new Date());
+          messageObj.message = this.statusMessage;
+          messageObj.displayMessage = this.statusMessage;
+          return Observable.of(messageObj);
+        }
+      }, () => {});
+      
+
+    }
+    catch (error) {
+      this.statusMessage = "Error: " + error;
+      this.currentApiCallCount = 0;
+      messageObj.status =  MessageStatus.Finished;
+      messageObj.timestamp = new Date().getTime();
+      messageObj.messageDisplayDate = TimeUtilities.displayMessageDate(new Date());
+      
+      return Observable.of(messageObj);;
+    }
+
+
+  }
 
   private prepareChatHistory(messagesToConsider: ChatMessage[], chatModel: ChatModel) {
     //Take last 'chatContextLength' messages to build context    
@@ -319,14 +510,14 @@ export class ChatFeedbackPanelComponent implements OnInit {
     if(e && e.event && e.event.target && e.event.target['selectionStart']) {
       cursorStartPosition = e.event.target['selectionStart'];
     }
-    this.correctResponseFeedback = (e?.newValue)? `${e.newValue}` : '';
-    this.correctResponseFeedbackReasoning = '';
-    if(!StringUtilities.IsNullOrWhiteSpace(this.correctResponseFeedback)) {
-      this.disableSubmitButton = false;
-    }
-    else {
-      this.disableSubmitButton = true;
-    }
+      this.correctResponseFeedback = (e?.newValue)? `${e.newValue}` : '';
+      this.correctResponseFeedbackReasoning = '';
+      if(!StringUtilities.IsNullOrWhiteSpace(this.correctResponseFeedback)) {
+        this.disableSubmitButton = false;
+      }
+      else {
+        this.disableSubmitButton = true;
+      }
     if(cursorStartPosition > -1) {
       setTimeout(() => {
         e.event.target['selectionStart'] = cursorStartPosition;
@@ -447,14 +638,15 @@ You are a chat assistant that helps explain why an expected response successfull
                   this._openAIService.fetchOpenAIResultAsChatMessageUsingRest('', this.GetEmptyChatMessage(), true, true, ChatModel.GPT3, this.getFeedbackExplanationInitialPrompt(), '', 
                     this.responseTokenSize, this.currentApiCallCount, this.openAIApiCallLimit, false)
                   .subscribe((messageObj) => {
-                    if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
-                      this.correctResponseFeedbackReasoning = messageObj.displayMessage;
-                    }
-                    this.handleFeedbackAutoSaveAndRaiseEvent();
-                  }, (error) => {
-                    this.statusMessage = `Error saving feedback: ${error.message}`;
-                    this.savingInProgress = false;
-                  });
+                      if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
+                        this.correctResponseFeedbackReasoning = messageObj.displayMessage;
+                      }
+
+                      this.handleFeedbackAutoSaveAndRaiseEvent();
+                    }, (error) => {
+                      this.statusMessage = `Error saving feedback: ${error.message}`;
+                      this.savingInProgress = false;
+                    });
                 }
               }, (error) => {
                 this.statusMessage = `Error saving feedback: ${error.message}`;

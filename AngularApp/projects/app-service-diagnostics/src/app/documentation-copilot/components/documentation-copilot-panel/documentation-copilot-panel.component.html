@@ -1,0 +1,5 @@
+<fab-panel [isOpen]="globals.openDocumentationCopilotPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
+  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'"
+  (onDismiss)="docCopilotDismissHandler()" [headerText]="'Copilot'">
+  <documentation-copilot></documentation-copilot>
+</fab-panel>

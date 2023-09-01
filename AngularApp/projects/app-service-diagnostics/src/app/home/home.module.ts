@@ -63,7 +63,9 @@ import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
 import { DownloadReportComponent } from '../shared/components/download-report/download-report.component';
 import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
 import { ClientScriptService } from '../shared-v2/services/client-script.service';
-import { OpenAIArmService } from '../../../../diagnostic-data/src/public_api';
+import { OpenAIArmService, GenericDocumentationCopilotService, GenericOpenAIChatService } from 'diagnostic-data';
+import { DiagDocumentationCopilotService } from '../shared-v2/services/diag-documentation-copilot.service';
+import {DocumentationCopilotModule} from '../documentation-copilot/documentation-copilot.module';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -771,6 +773,7 @@ export const HomeRoutes = RouterModule.forChild([
         SupportBotModule,
         GenieModule,
         FabricModule,
+        DocumentationCopilotModule,
         FormsModule,
         MarkdownModule.forRoot({
             sanitize: SecurityContext.STYLE
@@ -798,7 +801,9 @@ export const HomeRoutes = RouterModule.forChild([
             { provide: GenericDocumentsSearchService, useExisting: DocumentSearchService },
             { provide: CXPChatService, useExisting: CXPChatCallerService },
             { provide: GenericResourceService, useExisting: ResourceService },
-            { provide: GenericClientScriptService, useExisting: ClientScriptService}
+            { provide: GenericClientScriptService, useExisting: ClientScriptService},
+            DiagDocumentationCopilotService,
+            { provide: GenericDocumentationCopilotService, useExisting: DiagDocumentationCopilotService}
         ],
 })
 export class HomeModule { }
