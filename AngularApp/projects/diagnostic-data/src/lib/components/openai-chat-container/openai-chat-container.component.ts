@@ -71,6 +71,7 @@ export class OpenAIChatContainerComponent implements OnInit {
   @Input() customCommandBarButtons:CustomCommandBarButtons[] = [];
   @Input() onFeedbackClicked: (chatMessage:ChatMessage, feedbackType:FeedbackOptions) => void;
   @Input() autoAddResourceSpecificInfoToChatMessages:boolean = true;
+  @Input() useDisplayMessageForChatHistory: boolean = true;
 
   constructor(private _activatedRoute: ActivatedRoute, private _router: Router,
     private _chatContextService: ChatUIContextService,

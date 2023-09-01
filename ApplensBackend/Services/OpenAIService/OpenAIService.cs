@@ -634,19 +634,16 @@ namespace AppLensV3.Services
                             if (metadata.ResourceSpecificInfo?.Count > 0)
                             {
                                 // Match retrieved feedback based on resource specific Info.
-                                for (int i = feedbackList.Count - 1; i > -1; i--)
-                                {
-                                   if (!IsFeedbackApplicable(metadata, feedbackList[0]))
-                                   {
-                                        feedbackList.RemoveAt(i);
-                                   }
-                                }
+                                feedbackList = feedbackList.Where(f => IsFeedbackApplicable(metadata, f)).ToList();
                             }
 
                             if (feedbackList.Count > feedbackSearchSettings.NumDocuments)
                             {
-                                // Optional, apply some semantic sorting to intelligently determine which feedbacks to retain out of the ones that matched.
                                 feedbackList = feedbackList.Take(feedbackSearchSettings.NumDocuments).ToList();
+
+                                // TODO: Apply some post filtering to intelligently determine which feedbacks to retain out of the ones that matched.
+                                // This ensures feedbacks with high scores go towards the end of the prompt granting them more importance.
+                                feedbackList.Reverse();
                             }
 
                             StringBuilder feedbackSb = new StringBuilder();

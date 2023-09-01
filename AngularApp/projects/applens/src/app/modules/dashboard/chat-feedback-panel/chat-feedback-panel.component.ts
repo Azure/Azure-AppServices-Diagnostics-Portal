@@ -40,6 +40,8 @@ export class ChatFeedbackPanelComponent implements OnInit {
 
   @Input() SubmitButtonText: string = "Submit feedback";
 
+  @Input() UseDisplayMessageForChatHistory: boolean = true;
+
   
   _feedbackPanelState:ChatFeedbackPanelOpenParams = {
     isOpen: false,
@@ -283,7 +285,7 @@ export class ChatFeedbackPanelComponent implements OnInit {
       var context;
       if (chatModel == ChatModel.GPT3) {
         context = messagesToConsider.map((x: ChatMessage, index: number) => {
-          return `${x.messageSource}: ${ (x.displayMessage? x.displayMessage: x.message)}`;
+          return `${x.messageSource}: ${ (x.displayMessage && this.UseDisplayMessageForChatHistory ? x.displayMessage: x.message)}`;
         }).join('\n');
         return context;
       }
@@ -291,7 +293,7 @@ export class ChatFeedbackPanelComponent implements OnInit {
         context = [];
         messagesToConsider.forEach((element: ChatMessage, index: number) => {
           let role = element.messageSource == MessageSource.User ? "User" : "Assistant";
-          let content = element.displayMessage? element.displayMessage : element.message ;
+          let content = element.displayMessage &&  this.UseDisplayMessageForChatHistory ? element.displayMessage : element.message ;
           if (content != '') {
             context.push({
               "role": role,

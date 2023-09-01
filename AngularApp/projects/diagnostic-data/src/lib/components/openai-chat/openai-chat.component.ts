@@ -55,6 +55,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
   @Input() inputTextLimit: Number = 500;
   @Input() autoAddResourceSpecificInfoToChatMessages:boolean = true;
   @Input() chatContainerHeight: string  = ''; 
+  @Input() useDisplayMessageForChatHistory: boolean = true;
 
   // Callback methods for pre and post processing messages
   @Input() preprocessUserMessage: (message: ChatMessage) => ChatMessage = function (message: ChatMessage) {
@@ -474,7 +475,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
         if (index >= messagesToConsider.length - 2) {
           return `${x.messageSource}: ${x.message}`;
         }
-        return `${x.messageSource}: ${x.displayMessage}`;
+        return `${x.messageSource}: ${x.displayMessage && this.useDisplayMessageForChatHistory ? x.displayMessage : x.message}`;
       }).join('\n');
     }
     else {
@@ -482,7 +483,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
       messagesToConsider.forEach((element: ChatMessage, index: number) => {
         let role = element.messageSource == MessageSource.User ? "User" : "Assistant";
         let content = index >= messagesToConsider.length - 2 ?
-          element.message : element.displayMessage;
+          element.message : (element.displayMessage && this.useDisplayMessageForChatHistory ? element.displayMessage : element.message);
 
         if (content != '') {
           context.push({
