@@ -897,8 +897,16 @@ export class DetectorViewComponent implements OnInit {
 
   onWorkflowDowntimeChange(e: { option: IDropdownOption, index: number }) {
     if (e.option.data == null) {
-      this.setxAxisPlotBands(false, null);
-      this.onDownTimeChange(null, DowntimeInteractionSource.Workflow);
+
+      //
+      // This is the case when the user selects the "Choose a downtime" option.
+      // We need to reset the selected downtime to clear the plot bands on 
+      // the chart.
+      //
+
+      this.selectedDownTime = null;
+      this.downTimeChanged.emit(this.selectedDownTime);
+      this.setxAxisPlotBands(false);
       this.nextButtonDisabled = true;
       return;
     }

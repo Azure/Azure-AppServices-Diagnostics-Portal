@@ -631,6 +631,15 @@ export class HighchartsGraphComponent implements OnInit {
             this.options.xAxis.plotBands = chartPlotBands;
         }
 
+        //
+        // Used by DownTime selector in Workflow Nodes to reset the plotBand
+        // when an end user chooses 'Choose a downtime' from the dropdown
+        //
+
+        if (!!this.xAxisPlotBands && this.xAxisPlotBands.length === 0) {
+            this.options.xAxis.plotBands = [];
+        }
+
         if (this.chartOptions) {
             this._updateObject(this.options, this.chartOptions);
         }
