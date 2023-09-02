@@ -525,10 +525,6 @@ export class DetectorViewComponent implements OnInit {
   }
 
   getDefaultDowntimeEntry(): DownTime {
-    if (this._isWorkflowNode) {
-      return null;
-    }
-
     return {
       StartTime: moment.utc('1990-01-01 00:00:00'),
       EndTime: moment.utc('1990-01-01 00:00:00'),
