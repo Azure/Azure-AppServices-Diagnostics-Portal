@@ -357,6 +357,8 @@
         (click)="downloadWorkflow()"></fab-command-bar-item>
       <fab-command-bar-item *ngIf="isWorkflowDetector" key="upload" text="Upload" [iconProps]="{ iconName: 'PublishContent' }"
         (click)="uploader.click()"></fab-command-bar-item>
+      <fab-command-bar-item *ngIf="isWorkflowDetector" key="refreshVariables" text="Refresh variables" [iconProps]="{ iconName: 'Refresh' }"
+        (click)="refreshWorkflowVariables()"></fab-command-bar-item>
       <fab-command-bar-item *ngIf="!isWorkflowDetector" key="gistVersion" text="Gist version"
         [iconProps]="{ iconName: 'BackToWindow' }" (click)="showGistDialog()"></fab-command-bar-item>
       <fab-command-bar-item [style]="commitHistoryVisibilityStyle" key="commitHistory" text="Commit History"

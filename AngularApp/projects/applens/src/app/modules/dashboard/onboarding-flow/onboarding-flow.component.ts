@@ -2472,6 +2472,10 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     this.createWorkflow.showFlowData();
   }
 
+  refreshWorkflowVariables(){
+    this.createWorkflow.refreshVariables();
+  }
+
   async uploadWorkflow($event) {
     let file = $event.target.files[0];
     const text = await file.text();

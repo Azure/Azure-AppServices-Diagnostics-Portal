@@ -377,9 +377,8 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
 
   onProgressToNextNode(event: DownTime) {
     if (event) {
-
       if (this._activatedRoute == null || this._activatedRoute.firstChild == null || !this._activatedRoute.firstChild.snapshot.paramMap.has('detector') || this._activatedRoute.firstChild.snapshot.paramMap.get('detector').length < 1) {
-        this._router.navigate([`./`], {
+        this._router.navigate([], {
           relativeTo: this._activatedRoute,
           queryParams: { startTimeChildDetector: event.StartTime.format(this.stringFormat), endTimeChildDetector: event.EndTime.format(this.stringFormat) },
           queryParamsHandling: 'merge',

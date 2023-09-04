@@ -18,6 +18,8 @@
                             <option *ngFor="let detector of workflowNodeDetectors" [value]="detector.id">{{
                                 detector.name }}</option>
                         </select>
+                        <button [disabled]="data.detectorId ==='choosedetector'" type="button" class="btn btn-sm ml-2"
+                            (click)="refreshVariables()"><i class="fa fa-refresh" title="Click here to refresh the variables"></i></button>
                         <div>
                             <label class="checkbox-inline">
                                 <input [(ngModel)]="data.addDetectorOutput" id="addDetectorOutput"

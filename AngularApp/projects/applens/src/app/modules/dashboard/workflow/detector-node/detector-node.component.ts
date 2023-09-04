@@ -52,6 +52,10 @@ export class DetectorNodeComponent extends WorkflowNodeBaseClass implements OnIn
     let idNumber = this._workflowServicePrivate.getIdNumberForNode(this, detectorId);
     this.data.name = this.data.detectorId + idNumber;
 
+    this.loadDetector();
+  }
+
+  loadDetector() {
     let allRouteQueryParams = this._route.snapshot.queryParams;
     let additionalQueryString = '';
     let knownQueryParams = ['startTime', 'endTime'];
@@ -77,6 +81,7 @@ export class DetectorNodeComponent extends WorkflowNodeBaseClass implements OnIn
   private parseData(dataSet: DiagnosticData) {
     let table: DataTableResponseObject = dataSet.table;
     let rendering: Rendering = dataSet.renderingProperties;
+    this.data.variables = [];
 
     if (table.rows.length > 0) {
 
@@ -99,6 +104,12 @@ export class DetectorNodeComponent extends WorkflowNodeBaseClass implements OnIn
         element.name = this.data.name + '_' + element.name;
         this.data.variables.push(element);
       });
+    }
+  }
+
+  refreshVariables() {
+    if (this.data.detectorId != 'choosedetector') {
+      this.loadDetector();
     }
   }
 }
