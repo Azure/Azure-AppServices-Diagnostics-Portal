@@ -3,8 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { DataTableResponseObject, DetectorControlService, DetectorMetaData, DetectorType, DiagnosticData, Rendering, RenderingType } from 'diagnostic-data';
 import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
 import { promptType, workflowNodeData, stepVariable } from "diagnostic-data";
-import { WorkflowNodeBaseClass } from '../node-base-class';
 import { WorkflowService } from '../services/workflow.service';
+import WorkflowNodeBaseClass from '../node-base-class';
 
 @Component({
   selector: 'detector-node',

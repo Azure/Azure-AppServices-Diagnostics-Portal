@@ -9,10 +9,14 @@
     <input *ngIf="data.isEditingTitle" type="text" [(ngModel)]="data.title" name="cardTitle">
   </div>
 
-  <ng-container *ngIf="!disableEdit">
+  <ng-container>
     <div class="filler"></div>
     <div class="center">
-      <button (click)="data.isEditingTitle = !data.isEditingTitle" class="fa mr-2" [ngClass]="data.isEditingTitle ? 'fa-save' : 'fa-pencil'">
+      <button *ngIf="!disableEdit" (click)="data.isEditingTitle = !data.isEditingTitle" class="fa"
+        [ngClass]="data.isEditingTitle ? 'fa-save' : 'fa-pencil'">
+      </button>
+      <button *ngIf="!hideCollapse" (click)="toggleCollapsed()">
+        <i class="fa" [ngClass]="collapsed ? 'fa-plus' : 'fa-minus'"></i>
       </button>
     </div>
   </ng-container>
