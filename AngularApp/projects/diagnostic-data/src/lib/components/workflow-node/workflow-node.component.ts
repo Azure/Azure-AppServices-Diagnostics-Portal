@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Moment } from 'moment';
 import { NgFlowchart, NgFlowchartStepComponent } from 'projects/ng-flowchart/dist';
-import { HealthStatus } from '../../models/detector';
+import { DetectorResponse, DownTime, HealthStatus, RenderingType } from '../../models/detector';
 import { workflowNodeResult, workflowNodeState } from '../../models/workflow';
 import { DetectorControlService } from '../../services/detector-control.service';
 import { DiagnosticService } from '../../services/diagnostic.service';
@@ -9,6 +9,10 @@ import { WorkflowHelperService } from "../../services/workflow-helper.service";
 import { WorkflowConditionNodeComponent } from '../workflow-condition-node/workflow-condition-node.component';
 import Swal from 'sweetalert2';
 import { WorkflowAcceptUserinputComponent } from '../workflow-accept-userinput/workflow-accept-userinput.component';
+import { ActivatedRoute, Router } from '@angular/router';
+import * as momentNs from 'moment';
+
+const moment = momentNs;
 
 @Component({
   selector: 'workflow-node',
@@ -26,6 +30,8 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
 
   @ViewChild('detectorViewDiv') detectorViewDiv: ElementRef;
 
+  readonly stringFormat: string = 'YYYY-MM-DDTHH:mm';
+
   isLoading: boolean = false;
   error: any;
   status: HealthStatus = HealthStatus.Info;
@@ -36,14 +42,21 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
   resizeObserver: ResizeObserver;
 
   constructor(private _diagnosticService: DiagnosticService, private _detectorControlService: DetectorControlService,
-    private _workflowHelperService: WorkflowHelperService) {
+    private _workflowHelperService: WorkflowHelperService, private _activatedRoute: ActivatedRoute, private _router: Router) {
     super();
   }
 
   ngOnInit(): void {
     this.updateStatus();
     if (this.data.promptType && this.data.promptType === 'automatic' && this.data.type !== "IfElseCondition" && this.data.type !== "SwitchCondition") {
-      this.runNext(this.data.children);
+
+      //
+      // Do not run children for the detector node if it is a downtime detector 
+      //
+
+      if (!(this.data.type.toLowerCase() === "detector" && this.isDownTimeDetector(this.data.detectorResponse))) {
+        this.runNext(this.data.children); 
+      }
     }
 
     this.setupResizeObserver();
@@ -143,9 +156,10 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
       Resource: null,
       UserInputs: userInputs
     }
+    let { startTime, endTime } = this.getCorrectTimeRange();
     this._diagnosticService.getWorkflowCompilerResponse(body,
-      this._detectorControlService.startTimeString,
-      this._detectorControlService.endTimeString,
+      startTime,
+      endTime,
       {
         scriptETag: this.data.compilationProperties.scriptETag,
         assemblyName: this.data.compilationProperties.assemblyName,
@@ -186,8 +200,7 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
   }
 
   executeNode(child: workflowNodeState, userInputs: any = null) {
-    let startTime = this._detectorControlService.startTimeString;
-    let endTime = this._detectorControlService.endTimeString;
+    let { startTime, endTime } = this.getCorrectTimeRange();
 
     this._diagnosticService.getWorkflowNode(this.data.workflowId, this.data.workflowExecutionId, child.id, startTime, endTime,
       this._detectorControlService.isInternalView, null, null, userInputs)
@@ -224,8 +237,7 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
 
   addAdditionalNodesIfNeeded(nodeResult: workflowNodeResult, description: string, addedNode: NgFlowchartStepComponent<workflowNodeResult>) {
     if (nodeResult.type === "IfElseCondition" || nodeResult.type === "SwitchCondition") {
-      let startTime = this._detectorControlService.startTimeString;
-      let endTime = this._detectorControlService.endTimeString;
+      let { startTime, endTime } = this.getCorrectTimeRange();
       this.isLoading = true;
       nodeResult.children.forEach(childNode => {
         if (childNode.isActive) {
@@ -333,5 +345,48 @@ export class WorkflowNodeComponent extends NgFlowchartStepComponent<workflowNode
       width: 1000,
       showCloseButton: true
     })
+  }
+
+  getCorrectTimeRange() {
+    let startTime = this._detectorControlService.startTimeString;
+    let endTime = this._detectorControlService.endTimeString;
+
+    let startTimeChildDetector: string = this._activatedRoute.snapshot.queryParams['startTimeChildDetector'];
+    if (!!startTimeChildDetector && startTimeChildDetector.length > 1 && moment.utc(startTimeChildDetector).isValid()) {
+      let startTimeMoment = moment.utc(startTimeChildDetector);
+      startTime = startTimeMoment.format(this.stringFormat);
+    }
+
+    let endTimeChildDetector: string = this._activatedRoute.snapshot.queryParams['endTimeChildDetector'];
+    if (!!endTimeChildDetector && endTimeChildDetector.length > 1 && moment.utc(endTimeChildDetector).isValid()) {
+      let endTimeMoment = moment.utc(endTimeChildDetector);
+      endTime = endTimeMoment.format(this.stringFormat);
+    }
+
+    return { startTime: startTime, endTime: endTime };
+  }
+
+  isDownTimeDetector(detectorResponse: DetectorResponse): boolean {
+    if (detectorResponse == null || detectorResponse.dataset == null || detectorResponse.dataset.length == 0) {
+      return false;
+    }
+
+    let downtimeDetector = detectorResponse.dataset.find(dataset => dataset.renderingProperties.type === RenderingType.DownTime);
+    return downtimeDetector != null;
+  }
+
+  onProgressToNextNode(event: DownTime) {
+    if (event) {
+      if (this._activatedRoute == null || this._activatedRoute.firstChild == null || !this._activatedRoute.firstChild.snapshot.paramMap.has('detector') || this._activatedRoute.firstChild.snapshot.paramMap.get('detector').length < 1) {
+        this._router.navigate([], {
+          relativeTo: this._activatedRoute,
+          queryParams: { startTimeChildDetector: event.StartTime.format(this.stringFormat), endTimeChildDetector: event.EndTime.format(this.stringFormat) },
+          queryParamsHandling: 'merge',
+          replaceUrl: true
+        }).then(value => {
+          this.runNext(this.data.children);
+        });
+      }
+    }
   }
 }

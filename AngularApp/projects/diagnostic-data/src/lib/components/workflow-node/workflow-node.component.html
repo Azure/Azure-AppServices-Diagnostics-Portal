@@ -42,8 +42,8 @@
         <markdown-text [markdownData]="data.markdownText" [isMarkdownView]="true"></markdown-text>
       </div>
       <div #detectorViewDiv *ngIf="data.detectorResponse" class="mr-3 min-width-detector-section">
-        <detector-view [detectorResponse]="data.detectorResponse" [developmentMode]="false" hideDetectorControl="true"
-          [startTime]="startTime" [endTime]="endTime">
+        <detector-view [isWorkflowNode]="true" [detectorResponse]="data.detectorResponse" [developmentMode]="false" hideDetectorControl="true"
+          [startTime]="startTime" [endTime]="endTime" (ProgressToNextNode)="onProgressToNextNode($event)">
         </detector-view>
       </div>
       <workflow-accept-userinput *ngIf="data.inputNodeSettings" [data]="data"

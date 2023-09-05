@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { WorkflowNodeBaseClass } from '../node-base-class';
+import WorkflowNodeBaseClass from '../node-base-class';
 import { WorkflowService } from '../services/workflow.service';
 
 @Component({

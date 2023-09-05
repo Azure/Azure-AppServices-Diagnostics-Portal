@@ -1,10 +1,10 @@
-<div [attr.name]="data.name" #canvasContent>
+<div [attr.name]="data.name" #canvasContent class="workflow-node">
     <div class="panel panel-default">
         <div class="panel-heading panel-title-detector">
-            <node-title [data]="data" [customClass]="'background-blue'" [customClassIcon]="'fa-solid fa-bolt'">
+            <node-title (collapseChange)="onCollapseChange($event)" [data]="data" [customClass]="'background-blue'" [customClassIcon]="'fa-solid fa-bolt'">
             </node-title>
         </div>
-        <div class="panel-body">
+        <div #nodeBodyDiv class="panel-body" [hidden]="collapsed">
             <h5 class="mb-2 text-muted">{{ data.name }}</h5>
             <form>
                 <div class="mb-3">
@@ -18,6 +18,8 @@
                             <option *ngFor="let detector of workflowNodeDetectors" [value]="detector.id">{{
                                 detector.name }}</option>
                         </select>
+                        <button [disabled]="data.detectorId ==='choosedetector'" type="button" class="btn btn-sm ml-2"
+                            (click)="refreshVariables()"><i class="fa fa-refresh" title="Click here to refresh the variables"></i></button>
                         <div>
                             <label class="checkbox-inline">
                                 <input [(ngModel)]="data.addDetectorOutput" id="addDetectorOutput"

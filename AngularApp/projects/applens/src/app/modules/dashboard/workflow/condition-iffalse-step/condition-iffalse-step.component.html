@@ -1,11 +1,11 @@
-<div [attr.name]="data.name" #canvasContent class="condition">
+<div [attr.name]="data.name" #canvasContent class="workflow-node">
     <div class="panel panel-default">
         <div class="panel-heading panel-title-else">
-            <node-title [data]="data" [disableEdit]="true" [customClass]="'background-red'"
+            <node-title [data]="data" (collapseChange)="onCollapseChange($event)" [disableEdit]="true" [customClass]="'background-red'"
                 [customClassIcon]="'fa-times'">
             </node-title>
         </div>
-        <div class="panel-body">
+        <div #nodeBodyDiv class="panel-body" [hidden]="collapsed">
             <div class="mt-3">
                 <div class="mb-5">Executes if condition is false</div>
                 <node-actions [isConditionNode]="true" (onNodeAdded)="addNode($event)"

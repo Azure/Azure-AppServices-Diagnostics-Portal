@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { stepVariable } from "projects/diagnostic-data/src/lib/models/workflow";
-import { WorkflowNodeBaseClass } from '../node-base-class';
+import WorkflowNodeBaseClass from '../node-base-class';
 import { WorkflowService } from '../services/workflow.service';
 
 @Component({

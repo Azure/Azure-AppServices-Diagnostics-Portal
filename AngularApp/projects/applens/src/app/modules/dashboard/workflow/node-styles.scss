@@ -31,3 +31,7 @@ select {
 ::ng-deep .mat-form-field-appearance-fill ::ng-deep .mat-form-field-flex {
     background-color: var(--bodyBackground);
 }
+
+.workflow-node {
+    min-width: 400px;
+}
