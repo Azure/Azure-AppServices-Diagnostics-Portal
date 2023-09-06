@@ -33,8 +33,8 @@ export class SolutionComponent extends DataRenderBaseComponent {
         this.solution.Action = this.inferActionType(this.solution);
         this.showActionButton = this.solution.Action != ActionType.Markdown;
 
-        let uriParts = this.solution.ResourceUri.split('/');
-        this.appName = uriParts[uriParts.length - 1];
+        let uriParts = this.solution.ResourceUri?.split('/') ?? [];
+        this.appName = uriParts.length >= 1 ? uriParts[uriParts.length - 1] : "";
 
         if (this.renderedInternalMarkdown === '') {
             this.buildInternalText();
