@@ -2,8 +2,8 @@
 	<div [id]="nodeModel.id + '_composerheaderRow'" style="width: 100%; display: flex;justify-content:space-between; padding: 0.25em;background-color: lightsteelblue;">
 		<div>
 			<fab-text-field [ariaLabel]="'Name'" [styles]="fabTextFieldStyleNoStretch" 
-					[required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" [(value)]="nodeModel.queryName"
-					[autoComplete]="'off'"  (onBlur)="removeSpacesFromQueryName($event)"></fab-text-field>
+					[required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" [defaultValue]="nodeModel.queryName"
+					[autoComplete]="'off'"  (onBlur)="removeSpacesFromQueryName($event)" (onChange)="onChangeQueryName($event)"></fab-text-field>
 		</div>
 		<div style="display:flex;font-size:large;">
 			<div style="padding-left: 2px;padding-right: 15px;">
@@ -12,17 +12,17 @@
 				>
 				</fab-dropdown>
 			</div>
-			<div style="padding-left: 2px;padding-right: 15px;">
+			<div style="padding-left: 2px;padding-right: 15px; padding-top: 4px;">
 				<fab-link (onClick)="previewResults($event)">
 					<fab-icon [iconName]="'Play'" ></fab-icon>
 				</fab-link>
 			</div>
-			<div style="padding-left: 2px;padding-right: 15px;">
+			<div style="padding-left: 2px;padding-right: 15px; padding-top: 4px;">
 				<fab-link (onClick)="duplicateNode($event)">
 					<fab-icon [iconName]="'Copy'" ></fab-icon>
 				</fab-link>
 			</div>
-			<div style="padding-left: 2px;padding-right: 15px;">
+			<div style="padding-left: 2px;padding-right: 15px; padding-top: 4px;">
 				<fab-link (onClick)="deleteNode($event)">
 					<fab-icon [iconName]="'Delete'" ></fab-icon>
 				</fab-link>
@@ -39,7 +39,7 @@
 				</div>
 			</fab-pivot-item>
 			<fab-pivot-item [headerText]="'Settings'" [itemKey]="nodeModel.id + '_Settings'">
-				<div class = "pivotItemContainer">
+				<div class = "pivotItemContainer" style="padding-left: 10px; height: fit-content;">
 					<!-- Settings for {{RenderingType[nodeModel.renderingType]}} -->
 					<dynamic-node-settings [renderingType]="nodeModel.renderingType" [renderingSettings] = "[]" (renderingSettingsChange)="rsc($event)"></dynamic-node-settings>
 				</div>

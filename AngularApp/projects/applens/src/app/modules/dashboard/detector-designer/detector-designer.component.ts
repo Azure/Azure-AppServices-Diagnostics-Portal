@@ -27,7 +27,7 @@ import { AnalysisPickerModel, DetectorSettingsModel, EntityType, SupportTopic, S
 import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 import { INodeModelChangeEventProps } from '../node-composer/node-composer.component';
-import { NoCodeDetector, NoCodeExpressionBody, NoCodeExpressionResponse, NoCodePackage, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
+import { KustoDataSourceSettings, NoCodeDetector, NoCodeExpressionBody, NoCodeExpressionResponse, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, NoCodePackage, NoCodeSupportedDataSourceTypes, NoCodeTableRenderingProperties, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
 import * as moment from 'moment';
 import { NodeCompatibleEventEmitter } from 'rxjs/internal/observable/fromEvent';
 import { DevopsConfig } from '../../../shared/models/devopsConfig';
@@ -48,6 +48,8 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   detectorName:string = 'Settings Panel Name';//'Auto Generated Detector Name';
   //detectorPanelOpen:boolean = true;
   detectorPanelOpenObservable: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  detectorLoaded: boolean = false;
 
   PanelType = PanelType;
   RenderingType = RenderingType;
@@ -186,6 +188,8 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   isProd: boolean = true;
   PPEHostname: string = '';
   PPELink: string = '';
+  owners: string[] = [];
+  branchInput: string = '';
   //#endregion Graduation branch picker variables
 
   //#region Time picker variables
@@ -196,6 +200,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       //  color: "#323130",
       borderRadius: "12px",
       marginTop: "8px",
+      marginRight: "10px",
       background: "rgba(0, 120, 212, 0.1)",
       fontSize: "13",
       fontWeight: "600",
@@ -211,13 +216,31 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   initialized: boolean = false;  
 
   resetSettingsPanel(): void {
-    this.detectorSettingsPanelValue = new DetectorSettingsModel(this.resourceService.ArmResource.provider.replace(/\./g, "_"), this.resourceService.ArmResource.resourceTypeName.replace(/\./g, "_"));
+    this.detectorSettingsPanelValue = new DetectorSettingsModel(this.resourceService.ArmResource.provider.replace(/[\. ]/g, '_').replace(/[^\w. ]/g, ""), this.resourceService.ArmResource.resourceTypeName.replace(/[\. ]/g, '_').replace(/[^\w. ]/g, ""));
     //this.detectorSettingsPanelValue.id = this.detectorSettingsPanelValue.id.replace(/\./g, "_");
     this.detectorSettingsPanelValue.name = this.detectorName;
     this.detectorId = this.detectorSettingsPanelValue.id;
+    this.detectorSettingsPanelValue.authors = [this.userAlias];
+    this.detectorSettingsPanelValue.isInternalOnly = true;
+
+
+    
   
     if(this.detectorSettingsPanelValue.isAppService) {
       //TODO: Initialize this with whatever the detector is currently set to.
+      this.detectorSettingsPanelValue.appTypes = [AppType.All];
+
+      let resourceReady =  (this.resourceService.ArmResource?.resourceGroup && this.resourceService.ArmResource?.resourceName) ? this.resourceService.getCurrentResource() : of(null);    
+      resourceReady.subscribe(resource => {
+        if (resource) {
+          if (resource["IsLinux"] && resource["IsLinux"].toLowerCase() === "true") {
+            this.detectorSettingsPanelValue.platformTypes = [PlatformType.Linux];
+          } else {
+            this.detectorSettingsPanelValue.platformTypes = [PlatformType.Windows];
+          }
+        } 
+      });
+      this.detectorSettingsPanelValue.stackTypes = [StackType.All];
     } else {
     }
 
@@ -339,10 +362,16 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
         }
 
         if (this.showBranches.length < 1) this.noBranchesAvailable();
+
+        this.detectorLoaded = true;
     });
   }
 
   editStartUp(branches: { branchName: string, isMainBranch: string }[]) {
+    this.branchInput = this._activatedRoute.snapshot.queryParams['branchInput'];
+    if (!!this.branchInput && branches.find(branch => branch.branchName === this.branchInput))
+      this.displayBranch = this.branchInput;
+
     var branchRegEx = new RegExp(`dev\/.*\/noCodeDetector\/${this.detectorId}`);
     branches = branches.filter(bn => {
       return branchRegEx.test(bn.branchName);
@@ -352,17 +381,24 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       return { key: branch.branchName, text: `${branch.branchName.split('/')[1]} : ${branch.branchName.split('/')[3]}` };
     });
 
-    branches.forEach(branch => {
-      this.showBranches.push({ key: branch.branchName, text: branch.branchName });
-    });
+    // branches.forEach(branch => {
+    //   this.showBranches.push({ key: branch.branchName, text: branch.branchName });
+    // });
     let inProgressBranch = this.showBranches.find(branch => branch.key === `dev/${this.userAlias}/noCodeDetector/${this.detectorId}`);
-    this.displayBranch = inProgressBranch ? inProgressBranch.key : this.mainBranch;
+    if (!this.branchInput)
+      this.displayBranch = inProgressBranch ? inProgressBranch.key : this.mainBranch;
     this.showBranches.push({ key: this.mainBranch, text: this.mainBranch });
 
     this.diagnosticApiService.getDetectorCode(`${this.detectorId}/package.json`, this.displayBranch, `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(pkg => {
       console.log(pkg);
       this.buildSavedDetector(pkg);
     });
+
+    if (Object.keys(this.devopsConfig.appTypeReviewers).length > 0 || Object.keys(this.devopsConfig.platformReviewers).length > 0) {
+      this.diagnosticApiService.getDetectorCode(`${this.detectorId.toLowerCase()}/owners.txt`, this.mainBranch, `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(o => {
+        this.owners = o.split('\n');
+      });
+    }
   }
 
   createStartUp(branches: { branchName: string, isMainBranch: string }[]) {
@@ -405,7 +441,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
     this.detectorName = pkg.name;
 
-    if (!this.detectorSettingsPanelValue) this.detectorSettingsPanelValue = new DetectorSettingsModel(this.resourceService.ArmResource.provider.replace(/\./g, "_"), this.resourceService.ArmResource.resourceTypeName.replace(/\./g, "_"));
+    if (!this.detectorSettingsPanelValue) this.detectorSettingsPanelValue = new DetectorSettingsModel(this.resourceService.ArmResource.provider.replace(/[\. ]/g, '_').replace(/[^\w. ]/g, ""), this.resourceService.ArmResource.resourceTypeName.replace(/[\. ]/g, '_').replace(/[^\w. ]/g, ""));
     this.detectorSettingsPanelValue.description = pkg.Description;
     this.detectorSettingsPanelValue.category = pkg.Category;
     this.detectorSettingsPanelValue.isInternalOnly = pkg.IsInternal;
@@ -460,11 +496,68 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
     savedDetector.nodes.forEach(node => {
       let newNode = new ComposerNodeModel;
-      newNode.settings = node.NodeSettings;
+      newNode.settings = this.parseNodeSettings(node.NodeSettings);
       newNode.queryName = node.OperationName;
       newNode.code = node.Text;
       this.elements.push(newNode);
     });
+  }
+
+  parseNodeSettings(settings){
+    let result = new NodeSettings;
+
+    switch (settings.DataSourceSettings.DataSourceType) {
+      case "Kusto":
+        let kustoSettings = new KustoDataSourceSettings();
+        kustoSettings = new KustoDataSourceSettings;
+        kustoSettings.dataBaseName = settings.DataSourceSettings.DataBaseName;
+        kustoSettings.clusterName = settings.DataSourceSettings.ClusterName;
+        result.dataSourceSettings = kustoSettings;
+        break;
+      default:
+        let defaultSettings = new KustoDataSourceSettings();
+        defaultSettings = new KustoDataSourceSettings;
+        defaultSettings.dataBaseName = settings.DataSourceSettings.DataBaseName;
+        defaultSettings.clusterName = settings.DataSourceSettings.ClusterName;
+        result.dataSourceSettings = defaultSettings;
+        break;
+    }
+
+    switch (settings.RenderingSettings.RenderingType) {
+      case RenderingType.Table:
+        let tableSettings = new NoCodeTableRenderingProperties;
+        tableSettings.description = settings.RenderingSettings.Description;
+        tableSettings.title = settings.RenderingSettings.Title;
+        result.renderingSettings = tableSettings;
+        break;
+      case RenderingType.TimeSeries:
+        let graphSettings = new NoCodeGraphRenderingProperties;
+        graphSettings.description = settings.RenderingSettings.Description;
+        graphSettings.title = settings.RenderingSettings.Title;
+        graphSettings.graphType = settings.RenderingSettings.GraphType;
+        graphSettings.graphDefaultValue = settings.RenderingSettings.GraphDefaultValue;
+        result.renderingSettings = graphSettings;
+        break;
+      case RenderingType.Insights:
+        let insightSettings = new NoCodeInsightRenderingProperties;
+        insightSettings.isExpanded = settings.RenderingSettings.IsExpanded;
+        result.renderingSettings = insightSettings;
+        break;
+      case RenderingType.Markdown:
+        let markdownSettings = new NoCodeMarkdownRenderingProperties;
+        result.renderingSettings = markdownSettings;
+        break;
+      default:
+        let defaultSettings = new NoCodeTableRenderingProperties;
+        defaultSettings.description = settings.RenderingSettings.description;
+        defaultSettings.title = settings.RenderingSettings.title;
+        result.renderingSettings = defaultSettings;
+        break;
+    }
+
+    return result;
+    //let kustoSettings = new KustoDataSourceSettings();
+    
   }
 
   canExit() : boolean {
@@ -493,19 +586,22 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   
   public runCompilation():void {
-    let djson = '[';
-    let det: NoCodeDetector = new NoCodeDetector;
-    this.elements.forEach(x => {
-      let newNode = new NoCodeExpressionBody;
-      newNode.NodeSettings = x.settings;
-      newNode.OperationName = x.queryName;
-      newNode.Text = x.code;
-      det.nodes.push(newNode);
-      djson = djson.concat(x.GetJson(),',');
-      //this.detectorJson.push(x.GetJson());
-    });
-    djson = djson.substring(0, djson.length - 1);
-    djson = djson.concat(']');
+    this.detectorPanelOpenObservable.next(true);
+    let det: NoCodeDetector = this.buildNoCodeDetectorObject();
+
+    // let djson = '[';
+    // let det: NoCodeDetector = new NoCodeDetector;
+    // this.elements.forEach(x => {
+    //   let newNode = new NoCodeExpressionBody;
+    //   newNode.NodeSettings = x.settings;
+    //   newNode.OperationName = x.queryName;
+    //   newNode.Text = x.code;
+    //   det.nodes.push(newNode);
+    //   djson = djson.concat(x.GetJson(),',');
+    //   //this.detectorJson.push(x.GetJson());
+    // });
+    // djson = djson.substring(0, djson.length - 1);
+    // djson = djson.concat(']');
 
     // let djson = '{"nodes":[';
     // let det: NoCodeDetector = new NoCodeDetector;
@@ -521,7 +617,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     // djson = djson.substring(0, djson.length - 1);
     // djson = djson.concat(']}');
 
-    this.detectorJson = djson;
+    // this.detectorJson = djson;
 
     det.author = "author";
     det.id = "id";
@@ -532,7 +628,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
     this.diagnosticApiService.executeNoCodeDetector(det, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe((x: any) => {
       this.detectorNodes = x;
-      this.detectorPanelOpenObservable.next(true);
+      //this.detectorPanelOpenObservable.next(true);
     });
     console.log(JSON.stringify(this.detectorJson));
     console.log('Run Compilation');
@@ -542,7 +638,9 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     console.log('Save Detector Code');
     var det = this.buildNoCodeDetectorObject();
     let changeType = this.mode == DevelopMode.Create ? 'Add' : 'Edit';
-    this.saveDetector(det, changeType);
+    let comment = this.mode == DevelopMode.Create ? `Adding ${det.id} Author : ${this.userAlias}` : `Editing ${det.id} Author : ${this.userAlias}`;
+
+    this.saveDetector(det, changeType, comment);
   }
 
   public publishButtonOnClick():void {
@@ -553,8 +651,9 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       console.log("subscribe");
     });*/
     let changeType = this.mode == DevelopMode.Create ? 'Add' : 'Edit';
+    let comment = this.mode == DevelopMode.Create ? `Adding ${det.id} Author : ${this.userAlias}` : `Editing ${det.id} Author : ${this.userAlias}`;
 
-    this.autoMerge ? this.autoMergePublish(det, changeType) : this.gradPublish(det, changeType);
+    this.autoMerge ? this.autoMergePublish(det, changeType, comment) : this.gradPublish(det, changeType, comment);
 
     // let branch = `dev/${det.author}/noCodeDetector/${det.id}`;
     // let repoPaths = [`${det.id}/metadata.json`];
@@ -567,16 +666,27 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     // });
   }
 
-  private gradPublish(det: NoCodeDetector, changeType: string, comment: string = 'gotta pass something here'): void {
+  private gradPublish(det: NoCodeDetector, changeType: string, comment: string = 'pushing changes to detector'): void {
     let branch = `dev/${this.userAlias}/noCodeDetector/${det.id}`;
-    let repoPaths = [`${det.id}/metadata.json`];
+    let repoPaths = [`/${det.id}/metadata.json`];
     let files = [`{"utterances":[]}`];
     //let comment = "test push detector";
     //let changeType = "Add";
     let resourceUri = this.resourceService.getCurrentResourceId();
+    let title = `Publishing ${det.name} detector`;
+    let link = `${this.PPEHostname}/${resourceUri}/detectors/${det.id}/nocodeedit?branchInput=${branch}`;
+    let description = `This Pull Request was created via AppLens. To make edits, go to ${link}`;
+
+    let reviewers = "";
+
+    if (Object.keys(this.devopsConfig.appTypeReviewers).length > 0 || Object.keys(this.devopsConfig.platformReviewers).length > 0) {
+      reviewers = this.addReviewers(det);
+      repoPaths.push(`/${det.id.toLowerCase()}/owners.txt`);
+      files.push(reviewers);
+    }
 
     const PushDetector = this.diagnosticApiService.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri, det);
-    const MakePullRequest = this.diagnosticApiService.makePullRequest(branch, this.mainBranch, 'test pullrequest title', resourceUri);
+    const MakePullRequest = this.diagnosticApiService.makePullRequest(branch, this.mainBranch, title, resourceUri, this.owners, description);
 
     PushDetector.subscribe(x => {
       console.log("push");
@@ -586,7 +696,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     });
   }
 
-  private autoMergePublish(det: NoCodeDetector, changeType: string, comment: string = ''): void {
+  private autoMergePublish(det: NoCodeDetector, changeType: string, comment: string = 'pushing changes to detector'): void {
     let repoPaths = [`${det.id}/metadata.json`];
     let files = [`{"utterances":[]}`];
     let resourceUri = this.resourceService.getCurrentResourceId();
@@ -598,19 +708,78 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     });
   }
 
-  private saveDetector(det: NoCodeDetector, changeType: string, comment: string = ''): void {
+  private saveDetector(det: NoCodeDetector, changeType: string, comment: string = 'pushing changes to detector'): void {
     let branch = `dev/${this.userAlias}/noCodeDetector/${det.id}`;
-    let repoPaths = [`${det.id}/metadata.json`];
+    let repoPaths = [`/${det.id}/metadata.json`];
     let files = [`{"utterances":[]}`];
     //let comment = "test push detector";
     //let changeType = "Add";
     let resourceUri = this.resourceService.getCurrentResourceId();
+    let reviewers = "";
+
+    if (Object.keys(this.devopsConfig.appTypeReviewers).length > 0 || Object.keys(this.devopsConfig.platformReviewers).length > 0) {
+      reviewers = this.addReviewers(det);
+      repoPaths.push(`/${det.id.toLowerCase()}/owners.txt`);
+      files.push(reviewers);
+    }
 
     const PushDetector = this.diagnosticApiService.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri, det);
 
     PushDetector.subscribe(x => {
       console.log("push");
     });
+  }
+
+  deleteDetector() {
+    let branch = `dev/${this.userAlias}/noCodeDetector/${this.detectorId}`;
+    let repoPaths = [
+      `/${this.detectorId}/metadata.json`,
+      `/${this.detectorId}/package.json`,
+      `/${this.detectorId}/nocode.json`,
+      `/${this.detectorId}/${this.detectorId}.csx`,
+    ];
+    let files = [
+      'delete metadata',
+      'delete package',
+      'delete nocode json',
+      'delete csx'
+    ];
+    if (Object.keys(this.devopsConfig.appTypeReviewers).length > 0 || Object.keys(this.devopsConfig.platformReviewers).length > 0) {
+      repoPaths.push(`/${this.detectorId.toLowerCase()}/owners.txt`);
+      files.push('delete owners txt');
+    }
+    let comment = `Deleting ${this.detectorId} Author : ${this.userAlias}`;
+    let changeType = "Delete";
+    let resourceUri = this.resourceService.getCurrentResourceId();
+    this.diagnosticApiService.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri).subscribe(x => {
+      console.log("subscribe");
+    });
+  }
+
+  private addReviewers(det: NoCodeDetector): string {
+    let reviewers = "";
+
+    det.appType.split(',').forEach(apt => {
+      if (Object.keys(this.devopsConfig.appTypeReviewers).includes(apt)) {
+        this.devopsConfig.appTypeReviewers[apt].forEach(rev => {
+          if (!this.owners.includes(rev)) this.owners.push(rev);
+        });
+      }
+    });
+
+    det.platform.split(',').forEach(plt => {
+      if (Object.keys(this.devopsConfig.platformReviewers).includes(plt)) {
+        this.devopsConfig.platformReviewers[plt].forEach(rev => {
+          if (!this.owners.includes(rev)) this.owners.push(rev);
+        });
+      }
+    });
+
+    this.owners.forEach(o => {
+      if (o.match(/^\s*$/) == null) reviewers = reviewers.concat(o, '\n');
+    });
+
+    return reviewers;
   }
 
   private buildNoCodeDetectorObject(): NoCodeDetector {
@@ -625,19 +794,30 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       det.stackType = this.getStackTypes();
     
     det.supportTopics = []
-    this.detectorSettingsPanelValue.supportTopicList.forEach(x => {
-      det.supportTopics.push(new SupportTopic(x));
-    });
+    if (!!this.detectorSettingsPanelValue.supportTopicList)
+      this.detectorSettingsPanelValue.supportTopicList.forEach(x => {
+        det.supportTopics.push(new SupportTopic(x));
+      });
+    if (!!this.detectorSettingsPanelValue.analysisList)
+      det.analysisTypes = this.detectorSettingsPanelValue.analysisList.map(x => x.id);
+
+      this.elements.forEach(x => {
+        let newNode = new NoCodeExpressionBody;
+        newNode.NodeSettings = x.settings;
+        newNode.OperationName = x.queryName;
+        newNode.Text = x.code;
+        det.nodes.push(newNode);
+        //this.detectorJson.push(x.GetJson());
+      });
 
     det.id = this.detectorId;
-    det.nodes = this.nodeExpressionList;
+    //det.nodes = this.nodeExpressionList;
     det.author = this.detectorSettingsPanelValue.authors.join(",");
     det.name = this.detectorName;
     det.description = this.detectorSettingsPanelValue.description;
     det.category = this.detectorSettingsPanelValue.category;
     det.isInternal = this.detectorSettingsPanelValue.isInternalOnly;
-    det.analysisTypes = this.detectorSettingsPanelValue.analysisList.map(x => x.id);
-
+    
     return det;
   }
 
@@ -720,6 +900,29 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   public onDismissDetectorSettingsPanel(source:string) {
     console.log('Parent : Detector Settings1 Panel OnClosed: Source=' + source + ' ' + window.performance.now().toString());    
     console.log(this.detectorSettingsPanelValue);
+  }
+
+  public onChangeDetectorName(e: {event: Event, newValue?: string}) {
+    this.detectorName = e.newValue;
+    let cursorStartPosition:number = -1;
+
+    if(e && e.event && e.event.target && e.event.target['selectionStart']) {
+
+      cursorStartPosition = e.event.target['selectionStart'];
+
+    }
+
+    if(cursorStartPosition > -1) {
+
+      setTimeout(() => {
+
+        e.event.target['selectionStart'] = cursorStartPosition;
+
+        e.event.target['selectionEnd'] = cursorStartPosition;
+
+      });
+
+    }
   }
 
 
@@ -816,13 +1019,23 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     if (this.tempBranch != this.mainBranch) {
       this.detectorId = this.tempBranch.split('/')[3];
     }
+    this.detectorLoaded = false;
     this.diagnosticApiService.getDetectorCode(`${this.detectorId}/package.json`, this.displayBranch, `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(pkg => {
       console.log(pkg);
       this.buildSavedDetector(pkg);
       this.mode = DevelopMode.Edit;
       this.closeBranchCallout();
+      this.detectorLoaded = true;
     });
-    
+  }
+
+  ngOnDestroy() {
+    this._router.navigate([], {
+      queryParams: {
+        'branchInput': null,
+      },
+      queryParamsHandling: 'merge'
+    });
   }
 }
 

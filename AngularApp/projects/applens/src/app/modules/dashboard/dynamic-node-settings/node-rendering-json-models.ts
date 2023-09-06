@@ -49,7 +49,7 @@ export class NodeSettings {
     dataSourceSettings: DataSourceSettingsBase = new KustoDataSourceSettings;
     renderingSettings: RenderingSettingsBase = new NoCodeTableRenderingProperties;
     public GetJson(): string {
-        return `{"dataSourceSettings":${this.dataSourceSettings.GetJson()},"renderingSettings":${this.renderingSettings.getJson()}}`
+        return `{"dataSourceSettings":${this.dataSourceSettings.GetJson()},"renderingSettings":${this.renderingSettings.GetJson()}}`
     }
 }
 
@@ -57,21 +57,21 @@ export abstract class RenderingSettingsBase {
     //renderingType: NoCodeSupportedRenderingTypesRMs = NoCodeSupportedRenderingTypesRMs.Table;
     renderingType: RenderingType = RenderingType.Table;
     isVisible: boolean = true;
-    abstract getJson();
+    abstract GetJson();
 }
 
 export class NoCodeTableRenderingProperties extends RenderingSettingsBase {
     renderingType: RenderingType = RenderingType.Table;
     title?: string;
     description?: string;
-    public getJson(){
+    public GetJson(){
       return JSON.stringify(this);
     }
   }
 
 export class NoCodeMarkdownRenderingProperties extends RenderingSettingsBase {
     renderingType: RenderingType = RenderingType.Markdown;
-    public getJson(){
+    public GetJson(){
       return JSON.stringify(this);
     }
   }
@@ -79,7 +79,7 @@ export class NoCodeMarkdownRenderingProperties extends RenderingSettingsBase {
 export class NoCodeInsightRenderingProperties extends RenderingSettingsBase {
     renderingType: RenderingType = RenderingType.Insights;
     isExpanded: boolean = true;
-    public getJson(){
+    public GetJson(){
       return JSON.stringify(this);
     }
   }
@@ -90,7 +90,7 @@ export class NoCodeGraphRenderingProperties extends RenderingSettingsBase{
     description?: string;
     graphType?: TimeSeriesType;
     graphDefaultValue?: number;
-    public getJson(){
+    public GetJson(){
       return JSON.stringify(this);
     }
   }

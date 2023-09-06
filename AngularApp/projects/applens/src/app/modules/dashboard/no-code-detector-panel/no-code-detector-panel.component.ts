@@ -31,10 +31,13 @@ export class NoCodeDetectorPanelComponent implements OnInit {
   ngOnInit(): void {
     this.detectorNodesSubject.subscribe(x => {
       this.detectorView = x;
-      this.isOpen = x != null;
+      //this.isOpen = x != null;
       // this.nodeList = x;
       // this.nodeList.slice();
       // this.isOpen = x.length > 0;
+    });
+    this.isOpenObservable.subscribe(x => {
+      this.isOpen = x;
     });
   }
 

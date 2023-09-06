@@ -21,13 +21,12 @@ export class TableRenderingSettingsComponent extends RenderingSettingsBaseCompon
 
   textBoxStyle: ITextFieldProps['styles'] = {
     root: {
-      display: "flex"
+      display: "flex",
+      paddingBottom: "5px",
+      marginLeft: "10px"
     },
     wrapper: {
-      display: "flex"
-    },
-    fieldGroup: {
-      marginLeft: "10px"
+      display: "block"
     }
   }
 
@@ -37,12 +36,14 @@ export class TableRenderingSettingsComponent extends RenderingSettingsBaseCompon
     this.renderingProperties.title = event.newValue == '' ? null : event.newValue;
     this.settingsChangeEvent.emit({field: 'title', oldValue: this.title, newValue: event.newValue});
     this.renderingSettingsChange.emit({instance: this.renderingProperties});
+    this.title = event.newValue;
   }
 
   updateDesc(event: any){
     this.renderingProperties.description = event.newValue == '' ? null : event.newValue;
     this.settingsChangeEvent.emit({field: 'desc', oldValue: this.desc, newValue: event.newValue});
     this.renderingSettingsChange.emit({instance: this.renderingProperties});
+    this.desc = event.newValue;
   }
 
   constructor() {

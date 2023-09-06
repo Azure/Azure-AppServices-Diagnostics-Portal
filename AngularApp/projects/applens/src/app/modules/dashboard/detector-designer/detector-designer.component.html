@@ -1,10 +1,11 @@
 <div>
   <no-code-detector-panel [isOpenObservable]="detectorPanelOpenObservable" [detectorNodes]="detectorNodes" [detectorJson]="detectorJson" (publish)="publishButtonOnClick()"></no-code-detector-panel>
 </div>
-<div style="width: 100%;">
-    <div style = "display: flex; justify-content: left;align-items: baseline;">
+<loader-view *ngIf="!detectorLoaded" message="Loading detector ..."></loader-view>
+<div *ngIf="detectorLoaded" style="width: 100%;">
+    <div style = "display: flex; justify-content: left;align-items: baseline; padding-left: 8px;">
         <fab-text-field [ariaLabel]="'Detector Name'" [styles]="fabTextFieldStyle" [label]="'Name'" [required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" 
-        [(value)]="detectorName" [autoComplete]="'off'" (onBlur)="onBlurDetectorName($event)" ></fab-text-field>
+        [value]="detectorName" [autoComplete]="'off'" (onBlur)="onBlurDetectorName($event)" (onChange)="onChangeDetectorName($event)"></fab-text-field>
     </div>
     <fab-command-bar tabindex="1"  [attr.id]="'fab-command-bar'" [contentClass]="'fab-command-bar-class'">
         <items>
@@ -31,18 +32,18 @@
                 <fab-command-bar-item *ngIf="detectorGraduation" key="brachSelectorPill" text="custom text">
                     <render>
                       <ng-template let-item="item">
-                        <div style="padding-top:1px!important;">
+                        <div style="padding-top:1px!important; margin-right: 10px;">
                           <fab-default-button id="develop-tab-branch-selector" (click)="branchToggleCallout()"
                             [styles]="pillButtonStyleBranchPicker" [ariaLabel]="displayName" [iconProps]="{ iconName: 'BranchSearch' }">
                             Branch: {{displayBranch}}</fab-default-button>
-                          <fab-callout [hidden]="!isBranchCallOutVisible" (onDismiss)="closeBranchCallout()" [setInitialFocus]="true"
+                          <fab-callout [hidden]="!isBranchCallOutVisible" [setInitialFocus]="true"
                             [target]="'#develop-tab-branch-selector'">
                             <div class="callout-padding">
                               <div>
                                 <fab-choice-group [options]="showBranches" (onChange)="updateTempBranch($event)">
                                 </fab-choice-group>
                               </div>
-                              <div style="border-top: 1px solid gray;" class="pt-3 pb-3 callout-padding">
+                              <div style="border-top: 1px solid gray; padding-left: 10px;" class="pt-3 pb-3 callout-padding">
                                 <fab-primary-button (onClick)="updateBranch()" (keyup.enter)="updateBranch()"
                                   [ariaLabel]="'Apply'" [contentClass]="'mr-3 callout-button'" [contentStyle]="'border-radius: 2px;'">
                                   Apply

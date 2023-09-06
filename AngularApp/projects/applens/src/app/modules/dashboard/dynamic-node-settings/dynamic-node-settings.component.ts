@@ -12,6 +12,7 @@ import { DataSourceSettingsBase, NoCodeTableRenderingProperties, NodeSettings } 
 import { NoCodeSupportedDataSourceTypes } from './node-rendering-json-models';
 import { KustoDataSourceSettings } from './node-rendering-json-models';
 import { RenderingSettingsBase } from './node-rendering-json-models';
+import { pad } from 'highcharts';
 
 @Component({
   selector: 'dynamic-node-settings',
@@ -46,13 +47,12 @@ export class DynamicNodeSettings implements OnInit {
 
   textBoxStyle: ITextFieldProps['styles'] = {
     root: {
-      display: "flex"
+      display: "flex",
+      paddingBottom: "10px",
+      marginLeft: "10px"
     },
     wrapper: {
-      display: "flex"
-    },
-    fieldGroup: {
-      marginLeft: "10px"
+      display: "block"
     }
   }
 
@@ -103,6 +103,7 @@ export class DynamicNodeSettings implements OnInit {
     // }
 
     this.settings.dataSourceSettings.processScopeString(event.newValue);
+    this.scopeString = event.newValue.toString();
 
     this.settings.dataSourceSettings = this.datasource;
      
