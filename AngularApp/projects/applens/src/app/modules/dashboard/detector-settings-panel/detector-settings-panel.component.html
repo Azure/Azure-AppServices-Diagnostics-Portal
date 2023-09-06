@@ -6,8 +6,8 @@
             <div class="row" style="padding: 2px; display: flex; align-items: center;">
                 <div class="col-md-4">
                     <fab-text-field [ariaLabel]="'Detector Id'" [styles]="fabTextFieldStyleNoStretch" [label]="'Id'"
-                        [required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" [(value)]="detectorId"
-                        [autoComplete]="'off'" [disabled]="isEditMode" (onChange)="saveButtonDisabledStatus = false"></fab-text-field>
+                        [required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" [value]="detectorId"
+                        [autoComplete]="'off'" [disabled]="isEditMode" (onChange)="saveButtonDisabledStatus = false; onChangeDetectorId($event)"></fab-text-field>
                 </div>
                 <div class="col-md-4">
                     <fab-dropdown role="combobox" [label]="'Type'" [required]="true" [styles]="fabDropdownStyle"
@@ -34,7 +34,7 @@
                 <div class="col-md-8">
                     <fab-text-field [ariaLabel]="'Description for the detector'"
                         [styles]="fabTextFieldStyleNoStretchWide" [label]="'Description'"
-                        [(value)]="detectorDescription" [autoComplete]="'off'" (onChange)="saveButtonDisabledStatus = false"></fab-text-field>
+                        [autoComplete]="'off'" (onChange)="saveButtonDisabledStatus = false; onChangeDetectorDescription($event)"></fab-text-field>
                 </div>
                 <div class="col-md-4">
                     <div>
@@ -89,12 +89,12 @@
                 </div>
                 <div class="col-md-3">
                     <fab-checkbox [label]="'OnDemand rendering'" [ariaLabel]="'Render UI elements on demand'"
-                        [checked]="getOnDemandRenderCheckStatus()" [styles]="fabCheckboxStyle"
+                        [checked]="getOnDemandRenderCheckStatus()" [styles]="fabCheckboxStyle" [disabled]="true"
                         (checkedChange)="toggleOnDemandRenderState($event);saveButtonDisabledStatus = false" [boxSide]="'end'"></fab-checkbox>
                 </div>
                 <div class="col-md-2">
                     <fab-checkbox [label]="'Mark private'" [ariaLabel]="'Mark private'"
-                        [checked]="getDetectorPrivateCheckStatus()" [styles]="fabCheckboxStyle"
+                        [checked]="getDetectorPrivateCheckStatus()" [styles]="fabCheckboxStyle" [disabled]="true"
                         (checkedChange)="toggleDetectorPrivateState($event);saveButtonDisabledStatus = false" [boxSide]="'end'"></fab-checkbox>
                 </div>
                 <div class="col-md-4">

@@ -5,6 +5,7 @@ import { ApplensGlobal } from '../../../../applens-global';
 import { RenderingSettingsBaseComponent } from '../rendering-settings-base/rendering-settings-base.component';
 import { NoCodeInsightRenderingProperties } from '../../dynamic-node-settings/node-rendering-json-models';
 import { RenderingType } from 'diagnostic-data';
+import { ICheckboxProps } from 'office-ui-fabric-react';
 
 @Component({
   selector: 'insight-rendering-settings',

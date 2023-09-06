@@ -192,7 +192,7 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    //this.resetGlobals();
+    if (!this.isEditMode) this.resetGlobals();
   }
 
   ngOnDestroy(): void {
@@ -490,7 +490,7 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
     if(this.detectorId) {
       return this.detectorId;
     }    
-    return this.resourceService.ArmResource.provider + '_' + this.resourceService.ArmResource.resourceTypeName + '_' + this.detectorName.replace(/\s/g, '_',).replace(/\./g, '_');
+    return (this.resourceService.ArmResource.provider + '_' + this.resourceService.ArmResource.resourceTypeName + '_' + this.detectorName.replace(/[\. ]/g, '_').replace(/[^\w. ]/g, '',)).toLowerCase();
   }
 
   public detectorSettingsPanelOnOpened(): void {
@@ -505,9 +505,16 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
       this.settingsValue.description = this.detectorDescription;
       this.settingsValue.authors = this.detectorAuthorIds && this.detectorAuthorIds.some(author => author.text) ? this.detectorAuthorIds.map<string>(authorPersona => authorPersona.text) : [];
       this.settingsValue.category = this.detectorCategoryPickerSelectedItems && this.detectorCategoryPickerSelectedItems.some(category => category.key) ? this.detectorCategoryPickerSelectedItems.find(category => category.key).name : '';
-      if(this.settingsValue.isAppService)
-      {
+      if (this.settingsValue.isAppService) {
         this.settingsValue.appTypes = this.effectiveResourceAppType;
+        if (this.effectiveResourcePlatformType?.some(pt => pt === PlatformType.All)) {
+          this.effectiveResourcePlatformType = [];
+          for (let platformType in PlatformType) {
+            if (isNaN(Number(platformType)) && platformType !== PlatformType[PlatformType.All]) {
+              this.effectiveResourcePlatformType.push(SitePropertiesParser.getPlatformType(platformType));
+            }
+          }
+        }
         this.settingsValue.platformTypes = this.effectiveResourcePlatformType;
         this.settingsValue.stackTypes = this.effectiveResourceStackType;
       }
@@ -573,6 +580,33 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
   public onChangeDetectorType(event: any): void {
     let key:string = event.option.key.toString();
     this.detectorType = EntityType[key];
+  }
+
+  public onChangeDetectorId(e: any): void {
+    this.detectorId = e.newValue?.toLowerCase().replace(/[\. ]/g, '_').replace(/[^\w. ]/g, '');
+    let cursorStartPosition:number = -1;
+
+    if(e && e.event && e.event.target && e.event.target['selectionStart']) {
+
+      cursorStartPosition = e.event.target['selectionStart'];
+
+    }
+    
+    if(cursorStartPosition > -1) {
+
+      setTimeout(() => {
+
+        e.event.target['selectionStart'] = cursorStartPosition;
+
+        e.event.target['selectionEnd'] = cursorStartPosition;
+
+      });
+
+    }
+  }
+
+  public onChangeDetectorDescription(event: any): void {
+    this.detectorDescription = event.newValue;
   }
 
   //#region Detector Author Picker Methods
@@ -804,6 +838,7 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
     else {
       this.effectiveResourcePlatformType = [];
     }
+    
     this.resourcePlatformTypeOptionsSelectedKeys = this.resourcePlatformTypeOptions.filter(option => option.selected).map(option => option.key.toString());
   }
 

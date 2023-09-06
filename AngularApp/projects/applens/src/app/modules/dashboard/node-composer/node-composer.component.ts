@@ -17,6 +17,7 @@ import { ResourceService } from '../../../shared/services/resource.service';
 import { dynamicExpressionBody, kustoQueryDialogParams } from '../workflow/models/kusto';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NoCodeSupportedDataSourceTypes, NoCodeExpressionBody, NodeSettings, NoCodeTableRenderingProperties, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, nodeJson, NoCodeExpressionResponse } from '../dynamic-node-settings/node-rendering-json-models';
+import { toUnicode } from 'punycode';
 const moment = momentNs;
 
 @Component({
@@ -93,70 +94,31 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
 
   public sampleTestDataset:any =  [
     {
-      "table": {
-          "tableName": "Table_0",
-          "columns": [
-              {
-                  "columnName": "EventStampName",
-                  "dataType": "String",
-                  "columnType": null
-              },
-              {
-                  "columnName": "RoleInstance",
-                  "dataType": "String",
-                  "columnType": null
-              },
-              {
-                  "columnName": "Details",
-                  "dataType": "String",
-                  "columnType": null
-              },
-              {
-                  "columnName": "LatestBuildVersion",
-                  "dataType": "String",
-                  "columnType": null
-              }
-          ],
-          "rows": [
-              [
-                  "waws-prod-bay-111",
-                  "dw0SmallDedicatedWebWorkerRole_IN_10762",
-                  "10.10.0.232",
-                  "99.0.10.793"
-              ],
-              [
-                  "waws-prod-bay-111",
-                  "dw1SmallDedicatedWebWorkerRole_IN_5888",
-                  "10.11.0.147",
-                  "99.0.10.793"
-              ],
-              [
-                  "waws-prod-bay-111",
-                  "dw1SmallDedicatedWebWorkerRole_IN_2356",
-                  "10.11.1.209",
-                  "99.0.10.793"
-              ],
-              [
-                  "waws-prod-bay-111",
-                  "dw1SmallDedicatedWebWorkerRole_IN_8158",
-                  "10.11.0.57",
-                  "99.0.10.793"
-              ],
-              [
-                  "waws-prod-bay-111",
-                  "pd0LargeDedicatedWebWorkerRole_IN_25631",
-                  "10.20.64.39",
-                  "99.0.10.793"
-              ]
-          ]
-      },
-      "renderingProperties": {
-          "type": 1,
-          "title": "Sample Table",
-          "description": "Some description here",
-          "isVisible": true
-      }
-    }];
+        "table": {
+            "tableName": "",
+            "columns": [
+                {
+                    "columnName": "Markdown",
+                    "dataType": "String",
+                    "columnType": null
+                }
+            ],
+            "rows": [
+                [
+                    "<center><b><span style=\"color: red;\">Click the run button to see query results.</b></center></span>"
+                ]
+            ]
+        },
+        "renderingProperties": {
+            "enableEmailButtons": false,
+            "isContainerNeeded": true,
+            "type": 9,
+            "title": null,
+            "description": null,
+            "isVisible": true
+        }
+    }
+];
 // #endregion sample hardcoded data
 
 
@@ -496,6 +458,10 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
       this.nodeModel.code = template.text;
       this.previewResults(event);
     });
+  }
+
+  onChangeQueryName(event:any) {
+    this.nodeModel.queryName = event.newValue;
   }
 }
 

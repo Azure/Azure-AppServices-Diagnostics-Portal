@@ -63,16 +63,16 @@ export interface SupportTopicResponseModel {
      */
     public get id(): string {
         if(this._id){
-            return this._id;
+            return this._id.toLowerCase();
         }
         else {
-            return this.providerName + '_' + this.resourceTypeName + '_' + this.name.replace(/\s/g, '_',).replace(/\./g, '_');
+            return (this.providerName + '_' + this.resourceTypeName + '_' + this.name.replace(/[\. ]/g, '_').replace(/[^\w. ]/g, '',)).toLowerCase();
         }
     }
 
     public set id(value: string) {
         if(value){
-            this._id = value;
+            this._id = value.toLowerCase();
         }
     }
 
