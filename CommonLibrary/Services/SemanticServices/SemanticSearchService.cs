@@ -13,6 +13,12 @@ namespace CommonLibrary.Services
         Task<List<SemanticSearchDocument>> SearchDocuments(string query, string indexName, int numDocuments = 3, double minScore = 0.5);
     }
 
+    public class SemanticSearchServiceDisabled: ISemanticSearchService
+    {
+        public async Task<List<SemanticSearchDocument>> SearchDocuments(string query, string indexName, string azureServiceName, int numDocuments = 3, double minScore = 0.5) { return null; }
+        public async Task<List<SemanticSearchDocument>> SearchDocuments(string query, string indexName, int numDocuments = 3, double minScore = 0.5) { return null; }
+    }
+
     public class SemanticSearchService : ISemanticSearchService
     {
         private static HttpClient httpClient;

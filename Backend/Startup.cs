@@ -182,10 +182,13 @@ namespace Backend
             var semanticServiceConfiguration = Configuration.GetSection("SemanticService").Get<SemanticServiceConfiguration>();
             services.AddSingleton(semanticServiceConfiguration);
 
-            if (semanticServiceConfiguration != null)
+            if (semanticServiceConfiguration != null && semanticServiceConfiguration.Enabled)
             {
                 SemanticTokenService.Instance.Initialize(semanticServiceConfiguration);
                 services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
+            }
+            else{
+                services.AddSingleton<ISemanticSearchService, SemanticSearchServiceDisabled>();
             }
 
             var openAIServiceConfiguration = Configuration.GetSection("OpenAIService").Get<OpenAIServiceConfiguration>();
