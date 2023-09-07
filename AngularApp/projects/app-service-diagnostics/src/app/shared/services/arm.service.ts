@@ -189,6 +189,10 @@ export class ArmService {
 
         requestBody.properties.parameters["Preview"] = "true";
         this._startupInfo.optionalParameters?.forEach(param => {
+            // Check if param.value is not a string, stringify it.
+            if (typeof param.value !== 'string') {
+                param.value = JSON.stringify(param.value);
+            }
             this.updateRequestBodyIfValueNotEmpty(requestBody, param.key, param.value);
         });
 
