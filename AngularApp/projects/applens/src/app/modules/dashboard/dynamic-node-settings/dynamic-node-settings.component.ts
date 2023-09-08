@@ -24,8 +24,8 @@ export class DynamicNodeSettings implements OnInit {
   public readonly antaresClusterNamePlaceholderConst: string = '@AntaresStampKustoCluster';  
   public readonly antaresDatabaseNamePlaceholderConst: string = '@AnataresStampKustoDB';
   public readonly connectionStringPlaceholder: string = `${this.antaresClusterNamePlaceholderConst}/${this.antaresDatabaseNamePlaceholderConst}`;
-  clusterName: string = '@StampCluster';
-  databaseName: string = 'wawsprod';
+  clusterName: string = '';
+  databaseName: string = '';
   scopeString: string = "";
   //dataSourceType: NoCodeSupportedDataSourceTypes = NoCodeSupportedDataSourceTypes.Kusto
   // dataSource: KustoDataSourceSettings = {
@@ -112,6 +112,32 @@ export class DynamicNodeSettings implements OnInit {
      
     this.renderingSettingsChange.emit({instance: this.settings});
     this.settingsChangeEvent.emit({field: 'scope', oldValue: this.scopeString, newValue: event.newValue});   
+  }
+
+  updateCluster(event: any){
+    this.clusterName = event.newValue;
+    var oldScope = this.scopeString;
+    this.scopeString = this.databaseName ? `${this.clusterName}/${this.databaseName}` : this.clusterName;
+
+    this.settings.dataSourceSettings.processScopeString(this.scopeString);
+
+    this.settings.dataSourceSettings = this.datasource;
+     
+    this.renderingSettingsChange.emit({instance: this.settings});
+    this.settingsChangeEvent.emit({field: 'scope', oldValue: oldScope, newValue: event.newValue});  
+  }
+
+  updateDatabase(event: any){
+    this.databaseName = event.newValue;
+    var oldScope = this.scopeString;
+    this.scopeString = `${this.clusterName}/${this.databaseName}`;
+
+    this.settings.dataSourceSettings.processScopeString(this.scopeString);
+
+    this.settings.dataSourceSettings = this.datasource;
+     
+    this.renderingSettingsChange.emit({instance: this.settings});
+    this.settingsChangeEvent.emit({field: 'scope', oldValue: oldScope, newValue: event.newValue});  
   }
 
   private _processRenderingSettingsData() {

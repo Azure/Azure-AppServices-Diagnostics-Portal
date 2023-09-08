@@ -119,7 +119,10 @@ export class  KustoDataSourceSettings extends DataSourceSettingsBase {
         this.clusterName = sParams[0];
         this.dataBaseName = sParams[1];
       }
-      else this.dataBaseName = scope;
+      else {
+        this.clusterName = scope;
+        this.dataBaseName = "";
+      }
     }
 
     public GetJson(): string {
