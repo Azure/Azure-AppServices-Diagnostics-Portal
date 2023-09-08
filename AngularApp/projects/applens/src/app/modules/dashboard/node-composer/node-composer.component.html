@@ -2,7 +2,7 @@
 	<div [id]="nodeModel.id + '_composerheaderRow'" style="width: 100%; display: flex;justify-content:space-between; padding: 0.25em;background-color: lightsteelblue;">
 		<div>
 			<fab-text-field [ariaLabel]="'Name'" [styles]="fabTextFieldStyleNoStretch" 
-					[required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" [defaultValue]="nodeModel.queryName"
+					[getErrorMessage]="getRequiredErrorMessageOnTextField" [defaultValue]="nodeModel.queryName"
 					[autoComplete]="'off'"  (onBlur)="removeSpacesFromQueryName($event)" (onChange)="onChangeQueryName($event)"></fab-text-field>
 		</div>
 		<div style="display:flex;font-size:large;">
@@ -13,7 +13,7 @@
 				</fab-dropdown>
 			</div>
 			<div style="padding-left: 2px;padding-right: 15px; padding-top: 4px;">
-				<fab-link (onClick)="previewResults($event)">
+				<fab-link [disabled]="runButtonDisabled || nodeStatus" (onClick)="previewResults($event)">
 					<fab-icon [iconName]="'Play'" ></fab-icon>
 				</fab-link>
 			</div>
@@ -47,8 +47,28 @@
 			<fab-pivot-item [headerText]="'Result'" [itemKey]="nodeModel.id + '_Result'">
 				<div>
 					<div style = "padding-top: 0.25em;">
-						<dynamic-data [diagnosticData]="sampleTestDataset[0]" [startTime]="startTime" [endTime]="endTime">
-						</dynamic-data>
+						<!-- <ng-container ngIf*="executionState == executionState.default"><span style="color: red; text-align: center;"><b>Click the run button to see query results.</b></span></ng-container> -->
+						<ng-container *ngIf="state === executionState.success">
+							<dynamic-data [diagnosticData]="sampleTestDataset[0]" [startTime]="startTime" [endTime]="endTime">
+							</dynamic-data>
+						</ng-container>
+						<ng-container *ngIf="state === executionState.running">
+							<div style="text-align: center;">
+								<fab-spinner [label]="'Running query...'" [size]="'large'"></fab-spinner>
+							</div>
+						</ng-container>
+						<ng-container *ngIf="state === executionState.default">
+							<div style="text-align: center;">
+								<span style="color: red; text-align: center;"><b>Click the run button to see query results.</b></span>
+							</div>
+						</ng-container>
+						<ng-container *ngIf="state === executionState.failure">
+							<div>
+								<span><b style="color: red;">ERROR:</b> Problem executing node {{nodeModel.queryName}}</span>
+								<br>
+								<span>{{errorMessage}}</span>
+							</div>
+						</ng-container>
 					</div>
 				</div>
 			</fab-pivot-item>

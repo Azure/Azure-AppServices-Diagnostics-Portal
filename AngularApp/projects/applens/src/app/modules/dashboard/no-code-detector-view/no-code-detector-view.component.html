@@ -6,9 +6,16 @@
 
 <fab-pivot (onLinkClick)="changeTab($event)">
     <fab-pivot-item [headerText]="'Data'" [itemKey]="'data'">
-        <detector-view [detectorResponse]="detectorView"
+        <ng-container *ngIf="state === executionState.success">
+            <detector-view [detectorResponse]="detectorView"
               [startTime]="startTime" [endTime]="endTime" [showEdit]="false"
               [developmentMode]="true" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
+        </ng-container>
+        <ng-container *ngIf="state === executionState.failure">
+            <div>
+                {{errorMessage}}
+            </div>
+        </ng-container>
     </fab-pivot-item>
     <fab-pivot-item [headerText]="'Data source'" [itemKey]="'dataSource'">
         <tab-data-sources *ngIf="pivotKey=='dataSource'" [onboardingMode]="true" [detectorResponse]="detectorView"></tab-data-sources>

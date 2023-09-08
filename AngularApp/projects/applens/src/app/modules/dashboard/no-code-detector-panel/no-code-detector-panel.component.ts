@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
-import { PanelType } from 'office-ui-fabric-react';
+import { IButtonStyles, IPanelProps, PanelType } from 'office-ui-fabric-react';
 import { NoCodeExpressionResponse } from 'projects/applens/src/app/modules/dashboard/dynamic-node-settings/node-rendering-json-models';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
+import { executionState } from '../node-composer/node-composer.component';
 
 
 @Component({
@@ -21,10 +22,20 @@ export class NoCodeDetectorPanelComponent implements OnInit {
   // @Input() startTime: moment.Moment;
   // @Input() endTime: moment.Moment;
   @Input() isOpenObservable: Observable<boolean>;
+  executionState = executionState;
+  @Input() state: executionState = this.executionState.success;
+  @Input() errorMessage: string = "";
   @Output() publish = new EventEmitter<any>();
   isOpen: boolean = false;
   detectorView: any;
   type: PanelType = PanelType.custom;
+
+  panelStyle: IPanelProps['styles'] = {
+    root: {
+      height: "100%",
+      display: "block"
+    }
+  }
 
   constructor(private changeDetection: ChangeDetectorRef, public diagnosticApiService: ApplensDiagnosticService) { }
 

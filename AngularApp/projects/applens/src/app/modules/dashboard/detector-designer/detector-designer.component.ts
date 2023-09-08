@@ -26,11 +26,12 @@ import { Options } from 'ng5-slider';
 import { AnalysisPickerModel, DetectorSettingsModel, EntityType, SupportTopic, SupportTopicPickerModel } from '../models/detector-designer-models/detector-settings-models';
 import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
-import { INodeModelChangeEventProps } from '../node-composer/node-composer.component';
+import { INodeModelChangeEventProps, executionState } from '../node-composer/node-composer.component';
 import { KustoDataSourceSettings, NoCodeDetector, NoCodeExpressionBody, NoCodeExpressionResponse, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, NoCodePackage, NoCodeSupportedDataSourceTypes, NoCodeTableRenderingProperties, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
 import * as moment from 'moment';
 import { NodeCompatibleEventEmitter } from 'rxjs/internal/observable/fromEvent';
 import { DevopsConfig } from '../../../shared/models/devopsConfig';
+import { element } from 'protractor';
 
 
 @Component({
@@ -44,6 +45,10 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   @Input() detectorId:string = '';
 
   DevelopMode = DevelopMode;
+
+  executionState = executionState;
+  state = this.executionState.default;
+  errorMessage: string = "";
 
   detectorName:string = 'Settings Panel Name';//'Auto Generated Detector Name';
   //detectorPanelOpen:boolean = true;
@@ -207,6 +212,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       height: "80%"
     }
   }
+  
   //#region Time picker variables
 
   //#region Detector settings panel variables
@@ -255,7 +261,23 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   }
 
   
+  isNodeValid = (node: ComposerNodeModel): string => {
+    if (node.queryName){
+      if (this.elements.some( element => element.id != node.id && element.queryName.toLowerCase() === node.queryName.toLowerCase())) {
+        return 'Duplicate query name';
+      }
+      else {
+        return '';
+      }
+    }
+    else {
+      return 'Query name is required';
+    }
+  }
 
+  nodesValid(): boolean {
+    return this.elements.some(element => !element.isValid)
+  }
   //#region Element composer
   elements:ComposerNodeModel[] = [
     // {
@@ -586,6 +608,9 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   
   public runCompilation():void {
+    this.runButtonDisabled = true;
+    this.detectorNodes = null;
+    this.state = this.executionState.success;
     this.detectorPanelOpenObservable.next(true);
     let det: NoCodeDetector = this.buildNoCodeDetectorObject();
 
@@ -628,7 +653,14 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
     this.diagnosticApiService.executeNoCodeDetector(det, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe((x: any) => {
       this.detectorNodes = x;
+      this.runButtonDisabled = false;
       //this.detectorPanelOpenObservable.next(true);
+    },
+    error => {
+      this.state = this.executionState.failure;
+      this.errorMessage = error.error;
+      this.runButtonDisabled = false;
+      console.log(error);
     });
     console.log(JSON.stringify(this.detectorJson));
     console.log('Run Compilation');

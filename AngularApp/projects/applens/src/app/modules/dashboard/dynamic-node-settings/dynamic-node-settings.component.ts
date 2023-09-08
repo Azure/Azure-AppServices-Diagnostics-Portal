@@ -53,8 +53,11 @@ export class DynamicNodeSettings implements OnInit {
     },
     wrapper: {
       display: "block"
+    },
+    field: {
+      width: '312px'
     }
-  }
+  };
 
   private _instanceRef: RenderingSettingsBaseComponent = null;
 

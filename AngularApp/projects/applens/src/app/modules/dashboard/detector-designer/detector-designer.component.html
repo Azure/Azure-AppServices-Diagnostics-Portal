@@ -1,5 +1,5 @@
-<div>
-  <no-code-detector-panel [isOpenObservable]="detectorPanelOpenObservable" [detectorNodes]="detectorNodes" [detectorJson]="detectorJson" (publish)="publishButtonOnClick()"></no-code-detector-panel>
+<div style="height: 100%;">
+  <no-code-detector-panel [errorMessage]="errorMessage" [state]="state" [isOpenObservable]="detectorPanelOpenObservable" [detectorNodes]="detectorNodes" [detectorJson]="detectorJson" (publish)="publishButtonOnClick()"></no-code-detector-panel>
 </div>
 <loader-view *ngIf="!detectorLoaded" message="Loading detector ..."></loader-view>
 <div *ngIf="detectorLoaded" style="width: 100%;">
@@ -11,7 +11,7 @@
         <items>
             <!-- do not use *ngIf on these buttons  -->
             <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"
-                [disabled]="runButtonDisabled"></fab-command-bar-item>
+                [disabled]="state === executionState.running || nodesValid()"></fab-command-bar-item>
             
             <fab-command-bar-item [style]="saveButtonVisibilityStyle" key="save" [text]="saveButtonText" [iconProps]="saveIcon"
                 (click)="saveDetectorCode()"></fab-command-bar-item>
@@ -128,7 +128,7 @@
         </div>
         <div class="composerEleBorder"  style="width: 96%;">
           <node-composer [mode]="mode" [nodeModel] = "element" (nodeModelChange) = "reflectModelChanges(element, i, $event)" (onDuplicateClick) = "duplicateElement(element, i, $event)" 
-            (onDeleteClick) = "deleteElement(element, i, $event)"  (onNodeModelChange) = "onComposerElementChange(element, i, $event)"
+            (onDeleteClick) = "deleteElement(element, i, $event)"  (onNodeModelChange) = "onComposerElementChange(element, i, $event)" [isNodeValid] = "isNodeValid"
           ></node-composer>
         </div>
       </div>

@@ -583,12 +583,13 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
   }
 
   public onChangeDetectorId(e: any): void {
+    let detectorIdBeforeUpdate = this.detectorId;
     this.detectorId = e.newValue?.toLowerCase().replace(/[\. ]/g, '_').replace(/[^\w. ]/g, '');
     let cursorStartPosition:number = -1;
 
     if(e && e.event && e.event.target && e.event.target['selectionStart']) {
 
-      cursorStartPosition = e.event.target['selectionStart'];
+      cursorStartPosition = detectorIdBeforeUpdate != this.detectorId ? e.event.target['selectionStart'] : e.event.target['selectionStart'] - 1;
 
     }
     
