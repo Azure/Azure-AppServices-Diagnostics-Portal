@@ -74,6 +74,10 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\CommonLibrary\CommonLibrary.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <None Update="Templates\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

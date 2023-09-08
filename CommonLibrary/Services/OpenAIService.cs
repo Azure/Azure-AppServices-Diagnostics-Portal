@@ -267,15 +267,24 @@ namespace CommonLibrary.Services
                         var documentContent = string.Join("\n\n", documentContentList);
                         if (documentSearchSettings.IncludeReferences)
                         {
-                            documentContent = documentContent + "\nPlease provide reference links of the documents used to answer the query, at the bottom of your answer. Reference links should be created with title and url of the document using the <a href> HTML attribute with target='_blank'";
+                            documentContent = documentContent + "\n<strong>Please provide reference links of the documents used to answer the query, at the bottom of your answer. Reference links should be created with title and url of the document using the <a href> HTML attribute with target='_blank'</strong>";
                         }
                         return documentContent;
+                    }
+                    else
+                    {
+                        logger.LogError($"OpenAIServiceNoDocumentsFoundError - DocSearchSettings: {JsonConvert.SerializeObject(documentSearchSettings)}, UserQuery: {chatMessages.Last().Content}, RefinedQuery: {query}");
                     }
                 }
                 catch (Exception ex)
                 {
+                    logger.LogError($"OpenAIServiceDocumentSearchException - DocSearchSettings: {JsonConvert.SerializeObject(documentSearchSettings)}, UserQuery: {chatMessages.Last().Content}, RefinedQuery: {query}, Exception: {ex}");
                     return null;
                 }
+            }
+            else
+            {
+                logger.LogError($"OpenAIServiceBadDocumentSearchConfig - DocSearchSettings: {(documentSearchSettings != null? JsonConvert.SerializeObject(documentSearchSettings): null)}");
             }
             return null;
         }
@@ -634,6 +643,10 @@ namespace CommonLibrary.Services
                         if (jObject["DocumentSearchSettings"] != null)
                         {
                             documentSearchSettings = jObject["DocumentSearchSettings"].ToObject<DocumentSearchSettings>();
+                            if (documentSearchSettings.IndexName == "azuredocs" && !string.IsNullOrWhiteSpace(metadata.AzureServiceName))
+                            {
+                                documentSearchSettings.IndexName = $"{documentSearchSettings.IndexName}--{metadata.AzureServiceName.ToLower()}";
+                            }
                             documentContentTask = PrepareDocumentContent(documentSearchSettings, null, chatMessages);
                         }
 
@@ -664,6 +677,14 @@ namespace CommonLibrary.Services
                                     systemPrompt = $"Here is some information that can help answer user queries:\n{documentContent}\n\n{systemPrompt}";
                                 }
                             }
+                            else
+                            {
+                                if (documentSearchSettings.NoDocsNoAnswer)
+                                {
+                                    var noAnswerPrompt = "<strong>No relevant documents found for the user query. Do not try to answer the user query, simply say 'We could not find any information about that'.</strong>";
+                                    systemPrompt = $"{noAnswerPrompt}\n\n{systemPrompt}\n\n{noAnswerPrompt}";
+                                }
+                            }
                         }
 
                         if (getFeedbackListRawTask != null)
@@ -673,19 +694,16 @@ namespace CommonLibrary.Services
                             if (metadata.ResourceSpecificInfo?.Count > 0)
                             {
                                 // Match retrieved feedback based on resource specific Info.
-                                for (int i = feedbackList.Count - 1; i > -1; i--)
-                                {
-                                    if (!IsFeedbackApplicable(metadata, feedbackList[0]))
-                                    {
-                                        feedbackList.RemoveAt(i);
-                                    }
-                                }
+                                feedbackList = feedbackList.Where(f => IsFeedbackApplicable(metadata, f)).ToList();
                             }
 
                             if (feedbackList.Count > feedbackSearchSettings.NumDocuments)
                             {
-                                // Optional, apply some semantic sorting to intelligently determine which feedbacks to retain out of the ones that matched.
                                 feedbackList = feedbackList.Take(feedbackSearchSettings.NumDocuments).ToList();
+
+                                // TODO: Apply some post filtering to intelligently determine which feedbacks to retain out of the ones that matched.
+                                // This ensures feedbacks with high scores go towards the end of the prompt granting them more importance.
+                                feedbackList.Reverse();
                             }
 
                             StringBuilder feedbackSb = new StringBuilder();

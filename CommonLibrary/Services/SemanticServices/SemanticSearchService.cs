@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using System.Web;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
+using System.Text;
+using System.Data.Common;
 
 namespace CommonLibrary.Services
 {
@@ -11,12 +13,16 @@ namespace CommonLibrary.Services
     {
         Task<List<SemanticSearchDocument>> SearchDocuments(string query, string indexName, string azureServiceName, int numDocuments=3, double minScore = 0.5);
         Task<List<SemanticSearchDocument>> SearchDocuments(string query, string indexName, int numDocuments = 3, double minScore = 0.5);
+        Task<List<bool>> AddDocuments(List<SemanticSearchDocument> documents, string indexName);
+        Task<List<bool>> RemoveDocuments(List<string> documentIds, string indexName);
     }
 
     public class SemanticSearchServiceDisabled: ISemanticSearchService
     {
         public async Task<List<SemanticSearchDocument>> SearchDocuments(string query, string indexName, string azureServiceName, int numDocuments = 3, double minScore = 0.5) { return null; }
         public async Task<List<SemanticSearchDocument>> SearchDocuments(string query, string indexName, int numDocuments = 3, double minScore = 0.5) { return null; }
+        public async Task<List<bool>> AddDocuments(List<SemanticSearchDocument> documents, string indexName) { return null; }
+        public async Task<List<bool>> RemoveDocuments(List<string> documentIds, string indexName) { return null; }
     }
 
     public class SemanticSearchService : ISemanticSearchService
@@ -32,7 +38,7 @@ namespace CommonLibrary.Services
             semanticServiceEndpoint = config["SemanticService:Endpoint"];
             InitializeHttpClient();
         }
-        public static string ToQueryString(Dictionary<string, string> parameters)
+        private static string ToQueryString(Dictionary<string, string> parameters)
         {
             var query = HttpUtility.ParseQueryString(string.Empty);
             foreach (var kvp in parameters)
@@ -40,6 +46,27 @@ namespace CommonLibrary.Services
                 query[kvp.Key] = kvp.Value;
             }
             return query.ToString();
+        }
+
+        private async Task<HttpResponseMessage?> ExecuteRequest(HttpRequestMessage request)
+        {
+            string authorizationToken = null;
+            try
+            {
+                if (SemanticTokenService.Instance != null)
+                {
+                    authorizationToken = await SemanticTokenService.Instance.GetAuthorizationTokenAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occurred in getting authorization token from SemanticTokenService, {ex}");
+            }
+            if (!string.IsNullOrWhiteSpace(authorizationToken))
+            {
+                request.Headers.Add("Authorization", authorizationToken);
+            }
+            return await httpClient.SendAsync(request);
         }
 
 
@@ -65,12 +92,9 @@ namespace CommonLibrary.Services
                 };
                 string queryString = ToQueryString(jsonQueryParameters);
                 string requestUrl = $"{semanticServiceEndpoint}/DocumentIndexing/searchDocuments?{queryString}";
-                string authorizationToken = await SemanticTokenService.Instance.GetAuthorizationTokenAsync();
                 var requestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
-                requestMessage.Headers.Add("Authorization", authorizationToken);
-
-                var response = await httpClient.SendAsync(requestMessage);
-                if (response.IsSuccessStatusCode)
+                var response = await ExecuteRequest(requestMessage);
+                if (response != null & response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
                     var result = JsonConvert.DeserializeObject<List<SemanticSearchDocument>>(content);
@@ -79,7 +103,7 @@ namespace CommonLibrary.Services
                 }
                 else
                 {
-                    _logger.LogError($"SemanticSearchServiceFailedStatusCode: {response.StatusCode}");
+                    _logger.LogError($"SemanticSearchServiceFailedStatusCode - Operation: SearchDocuments, StatusCode: {response?.StatusCode}");
                 }
             }
             catch (Exception ex)
@@ -87,6 +111,55 @@ namespace CommonLibrary.Services
                 _logger.LogError($"SemanticSearchServiceCallerError: {ex.GetType()}", ex);
             }
             return new List<SemanticSearchDocument>();
+        }
+
+        public async Task<List<bool>> AddDocuments(List<SemanticSearchDocument> documents, string indexName) {
+            var result = new List<bool>();
+            foreach (var document in documents)
+            {
+                if (string.IsNullOrWhiteSpace(document.CollectionName))
+                {
+                    document.CollectionName = indexName;
+                }
+            }
+            string requestContent = JsonConvert.SerializeObject(documents);
+            string requestUrl = $"{semanticServiceEndpoint}/DocumentIndexing/saveDocuments";
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+            requestMessage.Content = new StringContent(requestContent, Encoding.UTF8, "application/json");
+            var response = await ExecuteRequest(requestMessage);
+            if (response != null & response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                result = JsonConvert.DeserializeObject<List<bool>>(content);
+            }
+            else
+            {
+                _logger.LogError($"SemanticSearchServiceFailedStatusCode - Operation: SaveDocuments, StatusCode: {response?.StatusCode}");
+            }
+            return result;
+        }
+
+        public async Task<List<bool>> RemoveDocuments(List<string> documentIds, string indexName)
+        {
+            var result = new List<bool>();
+            var body = new Dictionary<string, object>();
+            body["collectionName"] = indexName;
+            body["documentIds"] = documentIds;
+            string requestContent = JsonConvert.SerializeObject(body);
+            string requestUrl = $"{semanticServiceEndpoint}/DocumentIndexing/deleteDocuments";
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+            requestMessage.Content = new StringContent(requestContent, Encoding.UTF8, "application/json");
+            var response = await ExecuteRequest(requestMessage);
+            if (response != null & response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                result = JsonConvert.DeserializeObject<List<bool>>(content);
+            }
+            else
+            {
+                _logger.LogError($"SemanticSearchServiceFailedStatusCode - Operation: DeleteDocuments, StatusCode: {response?.StatusCode}");
+            }
+            return result;
         }
 
         private void InitializeHttpClient()

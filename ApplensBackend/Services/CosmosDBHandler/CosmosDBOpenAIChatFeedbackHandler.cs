@@ -1,5 +1,5 @@
-﻿using AppLensV3.Models;
-using AppLensV3.Services.CognitiveSearchService;
+﻿using CommonLibrary.Models;
+using CommonLibrary.Services;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -13,28 +13,28 @@ namespace AppLensV3.Services
     public class CosmosDBOpenAIChatFeedbackHandler : CosmosDBHandlerBase<ChatFeedback>, ICosmosDBOpenAIChatFeedbackHandler
     {
         const string collectionId = "OpenAIChatFeedback";
-        private readonly ICognitiveSearchAdminService _cognitiveSearchAdminService;
+        private readonly ISemanticSearchService _semanticSearchService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CosmosDBOpenAIChatFeedbackHandler"/> class.
         /// Constructor.
         /// </summary>
         /// <param name="configuration">Configuration object.</param>
-        public CosmosDBOpenAIChatFeedbackHandler(IConfiguration configration, ICognitiveSearchAdminService cognitiveSearchAdminService) : base(configration)
+        public CosmosDBOpenAIChatFeedbackHandler(IConfiguration configration, ISemanticSearchService semanticSearchService) : base(configration)
         {
             CollectionId = collectionId;
             Inital(configration).Wait();
-            _cognitiveSearchAdminService = cognitiveSearchAdminService;
+            _semanticSearchService = semanticSearchService;
         }
 
-        private CognitiveSearchDocument GetCogSearchDocFromFeedback(ChatFeedback chatFeedback)
+        private SemanticSearchDocument GetCogSearchDocFromFeedback(ChatFeedback chatFeedback)
         {
             if (chatFeedback == null)
             {
                 return null;
             }
 
-            CognitiveSearchDocument doc = new CognitiveSearchDocument(chatFeedback.Id, chatFeedback.UserQuestion, !string.IsNullOrWhiteSpace(chatFeedback.FeedbackExplanation) ? chatFeedback.FeedbackExplanation : chatFeedback.ExpectedResponse);
+            SemanticSearchDocument doc = new SemanticSearchDocument(chatFeedback.Id, chatFeedback.UserQuestion, !string.IsNullOrWhiteSpace(chatFeedback.FeedbackExplanation) ? chatFeedback.FeedbackExplanation : chatFeedback.ExpectedResponse);
             doc.JsonPayload = JsonConvert.SerializeObject(chatFeedback);
             return doc;
         }
@@ -46,13 +46,13 @@ namespace AppLensV3.Services
         /// <returns>ChatFeedbackSaveOperationResponse object indicating whether the save operation was successful or a failure.</returns>
         public async Task<ChatFeedback> SaveFeedback(ChatFeedback chatFeedback)
         {
-            CognitiveSearchDocument doc = GetCogSearchDocFromFeedback(chatFeedback);
+            SemanticSearchDocument doc = GetCogSearchDocFromFeedback(chatFeedback);
             var cosmosSaveResponse = await Container.CreateItemAsync<ChatFeedback>(chatFeedback, GetPartitionKey(chatFeedback));
             if ((int)cosmosSaveResponse.StatusCode > 199 && (int)cosmosSaveResponse.StatusCode < 300)
             {
                 try
                 {
-                    _ = await _cognitiveSearchAdminService.AddDocuments(new List<CognitiveSearchDocument>() { doc }, chatFeedback.PartitionKey);
+                    _ = await _semanticSearchService.AddDocuments(new List<SemanticSearchDocument>() { doc }, chatFeedback.PartitionKey);
                     return chatFeedback;
                 }
                 catch
@@ -83,31 +83,37 @@ namespace AppLensV3.Services
             }
 
             string partitionKeyStr = ChatFeedback.GetPartitionKey(chatIdentifier, provider, resourceType);
-            Tuple<bool, List<string>> deleteResult = await _cognitiveSearchAdminService.DeleteDocuments(feedbackIds, partitionKeyStr, "Id");
+            List<bool> deleteResult = await _semanticSearchService.RemoveDocuments(feedbackIds, partitionKeyStr);
 
-            if (deleteResult.Item2.Count > 0)
+            if (deleteResult.Any())
             {
                 List<string> deletedFeedbacks = new List<string>();
                 PartitionKey partitionKey = new PartitionKey(partitionKeyStr);
-                foreach (string feedbackId in deleteResult.Item2)
+                List<string> docsFailedDeletionFromCosmos = new List<string>();
+                for (var idx=0; idx<feedbackIds.Count; idx++)
                 {
-                    try
+                    if (deleteResult[idx])
                     {
-                        await Container.DeleteItemAsync<ChatFeedback>(feedbackId, partitionKey);
-                        deletedFeedbacks.Add(feedbackId);
+                        try
+                        {
+                            await Container.DeleteItemAsync<ChatFeedback>(feedbackIds[idx], partitionKey);
+                            deletedFeedbacks.Add(feedbackIds[idx]);
+                        }
+                        catch
+                        {
+                            docsFailedDeletionFromCosmos.Add(feedbackIds[idx]);
+                        }
                     }
-                    catch
-                    { }
                 }
 
-                if (deletedFeedbacks.Count < deleteResult.Item2.Count)
+                if (docsFailedDeletionFromCosmos.Count > 0)
                 {
                     // Some documents could not be deleted from Cosmos while they were deleted from CognitiveSearch. Re-insert them in Cognitive to ensure consistency
-                    List<string> docsFailedDeletionFromCosmos = deleteResult.Item2.Except(deletedFeedbacks).ToList();
                     List<ChatFeedback> feedbacksToReinsert = new List<ChatFeedback>();
                     foreach (string feedbackId in docsFailedDeletionFromCosmos)
                     {
                         var chatFeedbackItem = await GetItemAsync(feedbackId, partitionKeyStr);
+                        // Item not present in Cosmos, conclude it was deleted.
                         if (chatFeedbackItem == null)
                         {
                             // Item not present in Cosmos, conclude it was deleted.
@@ -122,11 +128,11 @@ namespace AppLensV3.Services
                         }
                     }
 
-                    List<CognitiveSearchDocument> docs = feedbacksToReinsert.Where(f => f != null).Select(f => GetCogSearchDocFromFeedback(f)).ToList();
-                    _ = await _cognitiveSearchAdminService.AddDocuments(docs, partitionKeyStr);
+                    List<SemanticSearchDocument> docs = feedbacksToReinsert.Where(f => f != null).Select(f => GetCogSearchDocFromFeedback(f)).ToList();
+                    _ = await _semanticSearchService.AddDocuments(docs, partitionKeyStr);
                 }
 
-                return new Tuple<bool, List<string>>(deletedFeedbacks.Count == deleteResult.Item2.Count, deletedFeedbacks);
+                return new Tuple<bool, List<string>>(deletedFeedbacks.Count == deleteResult.Count(x => x), deletedFeedbacks);
             }
             else
             {

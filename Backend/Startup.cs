@@ -184,7 +184,10 @@ namespace Backend
 
             if (semanticServiceConfiguration != null && semanticServiceConfiguration.Enabled)
             {
-                SemanticTokenService.Instance.Initialize(semanticServiceConfiguration);
+                if (!Environment.IsDevelopment())
+                {
+                    SemanticTokenService.Instance.Initialize(semanticServiceConfiguration);
+                }
                 services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
             }
             else{

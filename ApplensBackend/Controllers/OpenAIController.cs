@@ -8,6 +8,8 @@ using AppLensV3.Helpers;
 using AppLensV3.Hubs;
 using AppLensV3.Models;
 using AppLensV3.Services;
+using CommonLibrary.Models;
+using CommonLibrary.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

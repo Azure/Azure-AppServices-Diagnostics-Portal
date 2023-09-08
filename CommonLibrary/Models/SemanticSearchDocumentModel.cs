@@ -25,6 +25,7 @@
         public bool IncludeReferences { get; set; }
         public int NumDocuments { get; set; } = 3;
         public double MinScore { get; set; } = 0.5;
+        public bool NoDocsNoAnswer { get; set; } = false;
         public string DocumentContentPlaceholder { get; set; } = "<<DOCUMENT_CONTENT_HERE>>";
     }
 
