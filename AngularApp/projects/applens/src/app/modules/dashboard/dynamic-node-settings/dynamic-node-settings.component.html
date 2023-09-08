@@ -1,8 +1,11 @@
 <div style="padding-top: 0.25em;">
     <div style="height:calc(20%);display: block;">
-        <div>
+        <div style="display: flex;">
             <div>
-                <fab-text-field [label]="'Scope: '" [placeholder]="connectionStringPlaceholder" [styles]="textBoxStyle" (onChange)="updateScope($event)"></fab-text-field>
+                <fab-text-field [label]="'Cluster: '" [placeholder]="antaresClusterNamePlaceholderConst" [styles]="textBoxStyle" (onChange)="updateCluster($event)"></fab-text-field>
+            </div>
+            <div>
+                <fab-text-field [label]="'Database: '" [placeholder]="antaresDatabaseNamePlaceholderConst" [styles]="textBoxStyle" (onChange)="updateDatabase($event)"></fab-text-field>
             </div>
         </div>
     </div>
