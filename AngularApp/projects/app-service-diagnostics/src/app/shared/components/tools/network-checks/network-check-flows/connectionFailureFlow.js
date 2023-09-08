@@ -70,7 +70,7 @@ async function runConnectivityCheck(hostname, port, diagProvider, isLinuxOrConta
             title: "Explanation of the result and recommended next steps",
             markdown: markdown
         }));
-    } else if (status == 1) {
+    } else if (status >= 1 && status <= 4) {
         markdown = "Connectivity test failed at TCP level. " +
             "This means the endpoint was not reachable in Transportation Layer. Possible reasons can be: \r\n\r\n" +
             "-  The endpoint does not exist, please double check the hostname:port or ip:port was correctly set. \r\n\r\n" +
@@ -94,7 +94,7 @@ async function runConnectivityCheck(hostname, port, diagProvider, isLinuxOrConta
     } else {
         subChecks.push({ title: `TCP ping to ${hostname} failed, errorcode:${status}`, level: 2 });
         views.push(new CheckStepView({
-            title: msg + ` - failed, errorcode:${status}`,
+            title: msg + ` - failed, internal error. Please retry. Please submit a feedback if error persists.`,
             subChecks: subChecks,
             level: 2
         }));
