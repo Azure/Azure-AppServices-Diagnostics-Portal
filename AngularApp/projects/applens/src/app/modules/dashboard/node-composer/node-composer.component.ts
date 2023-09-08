@@ -36,6 +36,8 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   @Output() onNodeModelChange = new EventEmitter<INodeModelChangeEventProps>();
   @Output() onDuplicateClick = new EventEmitter<ComposerNodeModel>();
   @Output() onDeleteClick = new EventEmitter<ComposerNodeModel>();
+  @Input() isNodeValid: (node: ComposerNodeModel) => string;
+  nodeStatus: string = '';
 
   private readonly TPROMPT_SUGGESTIONS_ENABLED:boolean = false;
   startTime: Moment;
@@ -46,6 +48,11 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   inputKustoQueryDialogParams: kustoQueryDialogParams;
   dRenderingSettings: any = {};
   noCodeExpression: NoCodeExpressionBody= new NoCodeExpressionBody;
+  executionState = executionState;
+  state: executionState = this.executionState.default;
+  errorMessage: string = 'test error message';
+  runButtonDisabled: boolean = false;
+  detectorLoading: boolean = false;
 
   microsoftWebPrompt: string = `input: for an app named nmallick1
 
@@ -248,10 +255,20 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
     }
   }
 
-  public getRequiredErrorMessageOnTextField(value: string): string {
-    if (!value) {
-      return ' Value cannot be empty';
-    };
+  public getRequiredErrorMessageOnTextField = (value: string): string => {
+    if (this.isNodeValid) {
+      this.nodeStatus = this.isNodeValid(this.nodeModel);
+      this.nodeModel.invalidReason = this.nodeStatus;
+    }
+    else if (!value) {
+      this.nodeStatus = 'This field is required';
+      this.nodeModel.invalidReason = this.nodeStatus;
+    }
+    else {
+      this.nodeStatus = '';
+      this.nodeModel.invalidReason = this.nodeStatus;
+    }
+    return this.nodeStatus;
   }
 
   public removeSpacesFromQueryName(event:any):void {
@@ -322,15 +339,27 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
 
   public previewResults(event:any) {
     if (this.templatized){
+      this.runButtonDisabled = true;
+      this.state = this.executionState.running;
+      this.sampleTestDataset = null;
+      //this.state = this.executionState.running;
+      this.pivotSelectedKey = this.nodeModel.id + '_Result';
       //this.pivotSelectedKey = this.nodeModel.id + '_Result';
       this.noCodeExpression.OperationName = this.nodeModel.queryName;
       this.noCodeExpression.Text = this.nodeModel.code;
       this.noCodeExpression.NodeSettings = this.nodeModel.settings;
       this.diagnosticApiService.evaluateNoCodeExpression(this.noCodeExpression, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe( x => {
-        
         this.sampleTestDataset = x.res;
-        this.pivotSelectedKey = this.nodeModel.id + '_Result';
-      });
+        this.state = this.executionState.success;
+        this.runButtonDisabled = false;
+        //this.detectorLoading = false;
+      },
+      error => {
+        this.state = this.executionState.failure;
+        this.errorMessage = error.error;
+        this.runButtonDisabled = false;
+        //this.detectorLoading = false;
+        });
     }
     else {
       this.templatized = true;
@@ -462,10 +491,20 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
 
   onChangeQueryName(event:any) {
     this.nodeModel.queryName = event.newValue;
+    // if (this.isNodeValid) {
+    //   this.nodeStatus = this.isNodeValid(this.nodeModel);
+    // }
   }
 }
 
 export interface INodeModelChangeEventProps {
   fieldChanged:string;
   nodeModel:ComposerNodeModel;
+}
+
+export enum executionState {
+  default = 0,
+  success = 1,
+  failure = 2,
+  running = 3
 }

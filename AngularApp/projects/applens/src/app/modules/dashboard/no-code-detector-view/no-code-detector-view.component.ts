@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { NoCodeExpressionResponse } from '../dynamic-node-settings/node-rendering-json-models';
 import { DetectorControlService } from 'diagnostic-data';
+import { executionState } from '../node-composer/node-composer.component';
 
 @Component({
   selector: 'no-code-detector-view',
@@ -19,6 +20,9 @@ export class NoCodeDetectorViewComponent implements OnInit {
     // this.showView = false;
     this.detectorNodesSubject.next(nodes);
   }
+  executionState = executionState;
+  @Input() state: executionState = executionState.success;
+  @Input() errorMessage: string = "";
   showView: boolean = true;
   detectorView = null;
   startTime: moment.Moment;

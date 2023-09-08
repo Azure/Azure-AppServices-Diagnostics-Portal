@@ -2,10 +2,11 @@
     <div style="height:calc(20%);display: block;">
         <div>
             <div>
-                <fab-text-field [label]="'scope: '" [required]="true" [placeholder]="connectionStringPlaceholder" [styles]="textBoxStyle" (onChange)="updateScope($event)"></fab-text-field>
+                <fab-text-field [label]="'Scope: '" [placeholder]="connectionStringPlaceholder" [styles]="textBoxStyle" (onChange)="updateScope($event)"></fab-text-field>
             </div>
         </div>
     </div>
+    <hr style="margin: 0px;border-top: 1px solid #999; width: calc(100% - 9px);">
     <div  style="height:calc(80%);display: block;">
         <div #dynamicRenderingSettingsContainer></div>
     </div>

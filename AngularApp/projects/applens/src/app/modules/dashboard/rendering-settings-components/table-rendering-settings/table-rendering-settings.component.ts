@@ -22,11 +22,14 @@ export class TableRenderingSettingsComponent extends RenderingSettingsBaseCompon
   textBoxStyle: ITextFieldProps['styles'] = {
     root: {
       display: "flex",
-      paddingBottom: "5px",
+      paddingBottom: "10px",
       marginLeft: "10px"
     },
     wrapper: {
       display: "block"
+    },
+    field: {
+      width: '312px'
     }
   }
 

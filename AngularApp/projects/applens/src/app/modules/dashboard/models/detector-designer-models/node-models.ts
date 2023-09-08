@@ -11,6 +11,10 @@ export class ComposerNodeModel {
     public renderingType:NoCodeSupportedRenderingTypes = RenderingType.Table;
     public settings:NodeSettings = new NodeSettings;
     public dataset: DiagnosticData;
+    public get isValid(): boolean {
+        return this.invalidReason == "";
+    }
+    public invalidReason: string = "";
     public GetJson(){
         return`{"operationName":"${this.queryName}","text":"${this.code}","nodeSettings":${this.settings.GetJson()}}`
         //return`{"id":{${this.id}},"operationName":{${this.queryName}},"text":{${this.code}},"editorRef":{${this.editorRef}},"renderingType":{${this.renderingType}},"nodeSettings":{${this.settings.GetJson()}}}`

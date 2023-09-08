@@ -106,8 +106,8 @@ export abstract class DataSourceSettingsBase {
 // }
 
 export class  KustoDataSourceSettings extends DataSourceSettingsBase {
-    dataBaseName: string = "wawsprod";
-    clusterName: string = "@stampcluster";
+    dataBaseName: string = "";
+    clusterName: string = "";
 
     public getConnectionString() {
         return `https://${this.clusterName}.kusto.windows.net/${this.dataBaseName}`

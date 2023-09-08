@@ -33,18 +33,22 @@ export class GraphRenderingSettingsComponent extends RenderingSettingsBaseCompon
       width: "fit-content"
     },
     dropdown: {
-      width: "fit-content"
+      //width: "fit-content"
+      width: "312px"
     }
   }
 
   textBoxStyle: ITextFieldProps['styles'] = {
     root: {
       display: "flex",
-      paddingBottom: "5px",
+      paddingBottom: "10px",
       marginLeft: "10px"
     },
     wrapper: {
       display: "block"
+    },
+    field: {
+      width: '312px'
     }
   }
 

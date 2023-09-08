@@ -1,6 +1,7 @@
-<div>
+<div style="display: block;">
     <fab-panel [type]="type" [isOpen]="isOpen" [hasCloseButton]="false" [customWidth]="'60%'">
-        <no-code-detector-view [detectorNodes]="detectorView"></no-code-detector-view>
+        <div style="margin-left: 10px;">
+            <no-code-detector-view [errorMessage]="errorMessage" [state]="state" [detectorNodes]="detectorView"></no-code-detector-view>
         <!-- <fab-pivot>
             <fab-pivot-item [headerText]="'Data'" >
                 <div>
@@ -23,8 +24,15 @@
               <!-- <no-code-detector-view [detectorNodes]="detectorView"></no-code-detector-view> -->
         <!-- <ng-container [ngTemplateOutlet]="noCodeDetectorView"></ng-container> -->
 
-        <fab-primary-button (onClick)="publishDetector()">publish</fab-primary-button>
-        <fab-default-button (onClick)="closePanel()">edit</fab-default-button>
+        <div style="margin-top: 66px; display: flex;">
+            <div style="padding-right: 5px;">
+                <fab-primary-button [disabled]="state != executionState.success" (onClick)="publishDetector()">publish</fab-primary-button>
+            </div>
+            <div style="padding-right: 5px;">
+                <fab-default-button (onClick)="closePanel()">edit</fab-default-button>
+            </div>
+        </div>
+        </div>
     </fab-panel>
 </div>
 <!-- <ng-template #noCodeDetectorView>
