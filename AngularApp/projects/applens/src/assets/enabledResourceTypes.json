@@ -379,6 +379,30 @@
             "displayName": "Relay"
         },
         {
+            "service": "CognitiveSearchService",
+            "resourceType": "Microsoft.Search/searchServices",
+            "templateFileName": "CognitiveSearch",
+            "imgSrc": "assets/img/cognitivesearch-logo.png",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "CognitiveSearchService",
+            "pesId": "15568",
+            "staticSelfHelpContent": "Microsoft.Search",
+            "searchSuffix": "AZURE COGNITIVE SEARCH",
+            "displayName": "Azure Cognitive Search"
+        },
+        {
+            "service": "NotificationHubs",
+            "resourceType": "Microsoft.NotificationHubs/namespaces",
+            "templateFileName": "NotificationHubs",
+            "imgSrc": "assets/img/notificationhubs-logo.png",
+            "versionPrefix": "",
+            "azureCommImpactedServicesList": "NotificationHubs",
+            "pesId": "15973",
+            "staticSelfHelpContent": "Microsoft.NotificationHubs",
+            "searchSuffix": "AZURE NOTIFICATION HUBS",
+            "displayName": "Azure Notification Hubs"
+        },
+        {
             "service": "ResourceService",
             "resourceType": "Microsoft.SignalRService/SignalR",
             "templateFileName": "SignalRService",
