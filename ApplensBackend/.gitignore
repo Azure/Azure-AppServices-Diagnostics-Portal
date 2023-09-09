@@ -20,7 +20,7 @@
 
 # IDE - Visual Studio
 .vs/*
-*.sln
+*.sln.docstates
 
 # misc
 /.sass-cache
