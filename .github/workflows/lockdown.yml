@@ -1,0 +1,29 @@
+# For disabling pull requests and issues with repo-lockdown github action
+# https://github.com/marketplace/actions/repo-lockdown
+name: 'Repo Lockdown'
+
+on:
+  issues:
+    types: opened
+  pull_request_target:
+    types: opened
+  schedule:
+    - cron: '0 * * * *'
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/repo-lockdown@v3
+      with:
+          issue-labels: 'off-topic'
+          issue-comment: >
+            This repository does not accept bug reports,
+            see the README for details.
+          pr-comment: >
+            This repository does not accept pull requests,
+            see the README for details.

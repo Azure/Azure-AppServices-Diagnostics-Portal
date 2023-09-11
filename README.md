@@ -1,3 +1,5 @@
+# :exclamation: Warning: This Repo is no longer accept new Pull Requests, please use [AAPT-Antares-AppServiceDiagnostics-Portal](https://msazure.visualstudio.com/One/_git/AAPT-Antares-AppServiceDiagnostics-Portal)
+
 # Azure App Services Diagnostics Portal And Applens
 
 This is the repository for Azure App Service diagnostics experience.
