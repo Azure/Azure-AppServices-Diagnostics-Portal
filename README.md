@@ -8,7 +8,7 @@ This is the repository for Azure App Service diagnostics experience.
 
 - Install [Node 18.15.*](https://nodejs.org/en/blog/release/v18.15.0)
    - Only version 18.15.* will work for this project as there are dependency changes in latter version of Node which our project is incompatible with.
-- Run `npm install`
+- Run `npm install --registry https://registry.npmjs.org`
 - Build the diagnostic-data lib, Applens and Diagnostics Portal: `npm run build`
 - Run the project locally:
    - To run Applens: `npm run applens`
