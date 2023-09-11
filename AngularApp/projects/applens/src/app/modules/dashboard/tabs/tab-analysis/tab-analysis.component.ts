@@ -52,12 +52,12 @@ export class TabAnalysisComponent implements OnInit, OnDestroy {
   downtimeZoomBehavior = zoomBehaviors.Zoom;
 
   // copilot variables
-  copilotEnabled: boolean = true;
+  copilotVisibilityStyle: any = {};
   copilotServiceMembersInitialized: boolean = false;
 
   constructor(private _activatedRoute: ActivatedRoute, private _router: Router, private _applensApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService,
     private _applensCommandBarService: ApplensCommandBarService, private _applensGlobal: ApplensGlobal, private _telemetryService: TelemetryService,
-    public _copilotContainerService: ApplensCopilotContainerService, private _detectorCopilotService: ApplensDetectorCopilotService) {
+    public _copilotContainerService: ApplensCopilotContainerService, public _detectorCopilotService: ApplensDetectorCopilotService) {
   }
 
   ngOnInit() {
@@ -88,7 +88,7 @@ export class TabAnalysisComponent implements OnInit, OnDestroy {
     });
 
     this._detectorCopilotService.isEnabled().subscribe(res => {
-      this.copilotEnabled = res;
+      this.copilotVisibilityStyle = res ? {} : { display: "none" }
     });
   }
 
