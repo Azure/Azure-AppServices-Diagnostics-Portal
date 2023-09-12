@@ -1,5 +1,5 @@
 import { AdalService } from 'adal-angular4';
-import { DetectorMetaData, DetectorResponse, ExtendDetectorMetaData, QueryResponse, TelemetryService } from 'diagnostic-data';
+import { ChatCompletionModel, DetectorMetaData, DetectorResponse, ExtendDetectorMetaData, QueryResponse, TelemetryService } from 'diagnostic-data';
 import { map, retry, catchError, tap } from 'rxjs/operators';
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
@@ -16,6 +16,7 @@ import { List } from 'office-ui-fabric-react';
 import { dynamicExpressionBody } from '../../modules/dashboard/workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../models/devopsCommitStatus';
+import { ChatFeedbackPostBody } from '../models/openAIChatFeedbackModel';
 
 
 @Injectable()
@@ -392,7 +393,7 @@ export class DiagnosticApiService {
 
     let keyPostfix = internalClient === true ? "-true" : "-false";
     if (useCache) {
-      return this._cacheService.get(this.getCacheKey(method, path + keyPostfix), request, invalidateCache, logData);
+      return this._cacheService.get(this.getCacheKey(method, path + keyPostfix), request, invalidateCache, false, logData);
     }
     else {
       this._telemetryService.logEvent(logData.eventIdentifier, logData.eventPayload);
@@ -409,7 +410,7 @@ export class DiagnosticApiService {
     return this._cacheService.get(path, request, invalidateCache);
   }
 
-  public post<T, S>(path: string, body?: S, additionalHeaders: HttpHeaders = null): Observable<T> {
+  public post<T, S>(path: string, body?: S, additionalHeaders: HttpHeaders = null, invalidateCache: boolean = true, ignoreInFlightCall: boolean = false): Observable<T> {
     const url = `${this.diagnosticApi}${path}`;
     let bodyString: string = '';
     if (body) {
@@ -429,7 +430,7 @@ export class DiagnosticApiService {
       headers: requestHeaders,
     });
 
-    return this._cacheService.get(path, request, true);
+    return this._cacheService.get(path, request, invalidateCache, ignoreInFlightCall);
   }
 
   public hasApplensAccess(): Observable<any> {
@@ -637,7 +638,7 @@ export class DiagnosticApiService {
   public getEnableDetectorDevelopment(): Observable<boolean> {
     const path = "api/appsettings/DetectorDevelopmentEnabled";
     return this.get<boolean>(path).pipe(map((res) => {
-      return res.toString().toLowerCase() === "true";
+      return `${res}`.toLowerCase() === "true";
     }));
   }
   public getDevopsConfig(resourceProviderType: string): Observable<any> {
@@ -681,7 +682,7 @@ export class DiagnosticApiService {
   public isStaging(): Observable<boolean> {
     let path = "api/appsettings/APPLENS_ENVIRONMENT";
     return this.get<boolean>(path).pipe(map((res) => {
-      return res.toString().toLowerCase() === 'staging';
+      return `${res}`.toLowerCase() === 'staging';
     }));
   }
 
@@ -728,5 +729,33 @@ export class DiagnosticApiService {
       'TargetResourceType': targetResourceType
     };
     return this.invoke<any>(path, HttpMethod.POST, body, false, false, true, false);
+  }
+
+  public saveChatFeedback(chatFeedback: ChatFeedbackPostBody): Observable<ChatFeedbackPostBody> {
+    let path = 'api/openai/saveChatFeedback';
+    return this.post<ChatFeedbackPostBody, ChatFeedbackPostBody>(path, chatFeedback).pipe(map(res => {
+      return res;
+    }));
+  }
+
+  public getRelatedFeedbackListFromChatHistory(chatCompletionModel: ChatCompletionModel): Observable<ChatFeedbackPostBody[]> {
+    let path = 'api/openai/getRelatedFeedbackListFromChatHistory';
+    return this.post<ChatFeedbackPostBody[], ChatCompletionModel>(path, chatCompletionModel).pipe(map(res => {
+      return res;
+    }));
+  }
+
+  public isCopilotEnabled(resourceProvider:string, resourceType:string, chatIdentifier:string): Observable<boolean> {
+    let path = `api/openai/isCopilotEnabled/${resourceProvider}/${resourceType}/${chatIdentifier}`;
+    return this.get<boolean>(path).pipe(map((res) => {
+      return res;
+    }));
+  }
+
+  public isFeedbackSubmissionEnabled(resourceProvider:string, resourceType:string, chatIdentifier:string): Observable<boolean> {
+    let path = `api/openai/isFeedbackSubmissionEnabled/${resourceProvider}/${resourceType}/${chatIdentifier}`;
+    return this.get<boolean>(path).pipe(map((res) => {
+      return res;
+    }));
   }
 }

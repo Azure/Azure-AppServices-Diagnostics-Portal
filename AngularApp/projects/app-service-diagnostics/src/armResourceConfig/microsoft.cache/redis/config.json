@@ -1,0 +1,23 @@
+{
+  "homePageText": {
+    "title": "Azure Cache for Redis Diagnostics",
+    "description": "Use Azure Cache for Redis Diagnostics to investigate how your cache is performing, diagnose issues, and discover how to improve its reliability. Select the problem category that best matches the information or tool that you're interested in:",
+    "searchBarPlaceHolder": "Search Azure Cache for Redis"
+  },
+  "matchRegEx": "/Microsoft.Cache/redis/",
+  "searchSuffix": "redis",
+  "azureServiceName": "Azure Cache for Redis",
+  "armApiConfig": {
+    "armApiVersion": "2019-04-01"
+  },
+  "isSearchEnabled": true,
+  "keystoneDetectorId": "",
+  "liveChatConfig": {
+    "isApplicableForLiveChat": false,
+    "supportTopicIds": []
+  },
+  "categories": [],
+  "queryLinks": [],
+  "pesId": "14783",
+  "sapProductId": "275635f1-6a9b-cca1-af9e-c379b30890ff"
+}

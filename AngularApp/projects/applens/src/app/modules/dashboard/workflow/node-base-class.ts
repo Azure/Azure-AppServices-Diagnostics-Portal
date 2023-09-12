@@ -2,14 +2,23 @@ import { newNodeProperties } from "./node-actions/node-actions.component";
 import { WorkflowService } from "./services/workflow.service";
 import { NgFlowchart, NgFlowchartStepComponent } from "projects/ng-flowchart/dist";
 import { nodeType, stepVariable, workflowNodeData } from "projects/diagnostic-data/src/lib/models/workflow";
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from "@angular/core";
 
-export class WorkflowNodeBaseClass extends NgFlowchartStepComponent<workflowNodeData> {
+@Component({
+    template: ''
+})
+export default class WorkflowNodeBaseClass extends NgFlowchartStepComponent<workflowNodeData> implements AfterViewInit, OnDestroy {
     constructor(private _workflowService: WorkflowService) {
         super();
+        this.setupResizeObserver();
     }
 
     variables: stepVariable[] = [];
     nodeType = nodeType;
+    collapsed: boolean = true;
+    resizeObserver: ResizeObserver;
+
+    @ViewChild('nodeBodyDiv') nodeBodyDiv: ElementRef;
 
     deleteNode() {
         this._workflowService.onDelete(this);
@@ -83,5 +92,42 @@ export class WorkflowNodeBaseClass extends NgFlowchartStepComponent<workflowNode
         }
 
         return false;
+    }
+
+
+    ngOnDestroy(): void {
+        if (this.resizeObserver != null) {
+            this.resizeObserver.disconnect();
+        }
+    }
+
+    ngAfterViewInit(): void {
+        super.ngAfterViewInit();
+
+        if (this.nodeBodyDiv != null && this.nodeBodyDiv.nativeElement != null) {
+            this.resizeObserver.observe(this.nodeBodyDiv.nativeElement);
+        }
+    }
+
+    onCollapseChange(event: boolean) {
+        this.collapsed = event;
+    }
+
+    setupResizeObserver() {
+        this.resizeObserver = new ResizeObserver(entries => {
+            this.canvas.reRender(true);
+            this.induceCanvasScroll();
+        });
+    }
+
+    //
+    // No clue why this is needed, but without it, the canvas re-rendering doesn't reposition the
+    // draw arrows quickly and there is a huge delay. If we just induce a change in scorll, the
+    // arrows reposition immediately.
+    //
+
+    induceCanvasScroll() {
+        let nativeElement = this.canvas.viewContainer.element.nativeElement;
+        nativeElement.scrollWidth = nativeElement.scrollWidth + 1;
     }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { WorkflowNodeBaseClass } from '../node-base-class';
+import WorkflowNodeBaseClass from '../node-base-class';
 import { map, startWith } from 'rxjs/operators';
 import { WorkflowService } from '../services/workflow.service';
 

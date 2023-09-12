@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -7,6 +7,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
-		<PackageReference Include="Selenium.WebDriver" Version="4.9.1" />
+		<PackageReference Include="Selenium.WebDriver" Version="4.12.2" />
 	</ItemGroup>
 </Project>

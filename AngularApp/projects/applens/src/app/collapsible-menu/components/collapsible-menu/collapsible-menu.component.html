@@ -1,3 +1,8 @@
-<div class="menu">
-    <ng-content></ng-content>
+<div style="height:100%">
+    <div [ngClass]="menuClass">
+        <ng-content></ng-content>
+    </div>
+    <div class="collapse-container" (click)="collapseSideMenu()">
+        <i [ngClass]="iconClass" aria-hidden="true"></i>
+    </div>
 </div>

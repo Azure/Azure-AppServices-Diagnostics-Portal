@@ -5,7 +5,7 @@
         "searchBarPlaceHolder": "Search a keyword that best describes your issue"
     },
 	"matchRegEx": "/Microsoft.RedHatOpenShift/openShiftClusters/",
-	"searchSuffix": "ARO",
+	"searchSuffix": "Azure Red Hat OpenShift",
 	"azureServiceName": "Azure Red Hat OpenShift",
 	"armApiConfig": {
 		"armApiVersion": "2022-09-04"

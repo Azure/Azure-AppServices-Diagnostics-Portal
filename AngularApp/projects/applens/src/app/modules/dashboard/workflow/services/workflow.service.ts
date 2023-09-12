@@ -377,6 +377,15 @@ export class WorkflowService {
     return false;
   }
 
+  isConditionNode(node:NgFlowchartStepComponent<workflowNodeData>){
+    if (node.type === 'ifelsecondition'
+      || node.type === 'switchCondition') {
+      return true;
+    }
+
+    return false;
+  }
+
   getVariableCompletionOptions(node: NgFlowchartStepComponent<workflowNodeData>, includeCurrentNode: boolean = true): stepVariable[] {
     let allVariables: stepVariable[] = [];
     let currentNode = node;
@@ -497,8 +506,8 @@ export class WorkflowService {
     return atob(input);
   }
 
-  showMessageBox(title: string, message: string) {
-    swalWithBootstrapButtons.fire(title, message, 'error');
+  showMessageBox(title: string, message: string, showError: boolean = true) {
+    swalWithBootstrapButtons.fire(title, message, showError ? 'error' : 'success');
   }
 
   showMessageBoxWithFooter(title: string, message: string, footer: string, width?: string) {
@@ -548,4 +557,16 @@ export class WorkflowService {
     return `${variable.name} > 100 ? \"Critical\" : \"Success\"`;
   }
 
+  refreshVariables(workflowNode: NgFlowchartStepComponent<workflowNodeData>) {
+    if (this.isActionNode(workflowNode) || this.isConditionNode(workflowNode)) {
+      workflowNode.data.completionOptions = this.getVariableCompletionOptions(workflowNode, false);
+    }
+
+    for (let index = 0; index < workflowNode.children.length; index++) {
+      const child = workflowNode.children[index];
+      if (child != null) {
+        this.refreshVariables(child);
+      }
+    }
+  }
 }

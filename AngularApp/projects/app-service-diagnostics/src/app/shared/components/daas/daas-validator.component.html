@@ -83,6 +83,7 @@
 
 <div class="col" *ngIf="storageAccountNeeded">
   <configure-storage-account [siteToBeDiagnosed]="siteToBeDiagnosed" [sessionInProgress]="sessionInProgress"
-    [useDiagServerForLinux]="useDiagServerForLinux && !isWindowsApp" (StorageAccountValidated)="onStorageAccountValidated($event)">
+    [useDiagServerForLinux]="useDiagServerForLinux && !isWindowsApp" (StorageAccountValidated)="onStorageAccountValidated($event)"
+    [serverFarmSku]="serverFarmSku">
   </configure-storage-account>
 </div>

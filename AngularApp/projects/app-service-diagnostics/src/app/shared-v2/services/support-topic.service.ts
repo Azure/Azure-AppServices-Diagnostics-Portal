@@ -63,7 +63,7 @@ export class SupportTopicService {
 
     private cleanSelfHelpContentApollo(selfHelpResponse) {
         let docContent = selfHelpResponse.properties.content;
-        let result = cleanApolloSolutions(docContent);
+        let result = cleanApolloSolutions(docContent, this.showAllSelfHelpContent());
         return result;
     }
 
@@ -72,6 +72,8 @@ export class SupportTopicService {
 
             // To generate a unique apollo search Id, we use resource name, current timestamp and a guid.
             let apolloResourceId = `${this._resourceService.resource.name}-${Math.floor(Date.now() / 1000)}-${uuid()}`;
+            let fullResourceUri = this._resourceService.resource.id;
+            let partialResourceUri = `/subscriptions/${fullResourceUri.split("subscriptions/")[1].split("/")[0]}/providers/${fullResourceUri.split("/providers/")[1].split("/")[0]}/${fullResourceUri.split("/providers/")[1].split("/")[1].split("?")[0]}`;
             let requestBody =
             {
                 "properties": {
@@ -84,11 +86,12 @@ export class SupportTopicService {
                     "parameters": {
                         "SearchText": "error found",
                         "ProductId": this.pesId,
-                        "LegacyTopicId": this.supportTopicId
+                        "LegacyTopicId": this.supportTopicId,
+                        "PartialResourceUri": partialResourceUri
                     }
                 }
             };
-            let resourceUri = `${this._resourceService.resource.id}/${this.apolloApiConfig.apolloResourceProvider}/${apolloResourceId}`;
+            let resourceUri = `/subscriptions/${this._resourceService.subscriptionId}/${this.apolloApiConfig.apolloResourceProvider}/${apolloResourceId}`;
             let apolloHeaders = new Map<string, string>();
             apolloHeaders.set("x-ms-client-agent", "AppServiceDiagnostics");
             return this._armService.putResource(resourceUri, requestBody, this.apolloApiConfig.apiVersion, true, apolloHeaders).pipe(map((response: ResponseMessageEnvelope<any>) => {
@@ -104,15 +107,23 @@ export class SupportTopicService {
         return throwError("Cannot get self content from Apollo");
     }
 
+    private showAllSelfHelpContent():boolean {
+        let rp =  `${this._resourceService?.resource?.id}`.toLowerCase().split('/providers/')[1].split('/')[0];
+        let rpsToShowAllContent = ['microsoft.web', 'microsoft.containerservice', 'microsoft.domainregistration', 'microsoft.certificateregistration', 'microsoft.workflow', 'microsoft.apimanagement', 'microsoft.app', 'microsoft.containerregistry', 'microsoft.containerinstance', 'microsoft.redhatopenshift', 'microsoft.servicefabric'];
+        return rpsToShowAllContent.some((rpToShowAllContent) => rp.includes(rpToShowAllContent));
+    }
+
     private cleanSelfHelpContentLegacy(selfHelpResponse) {
         if (selfHelpResponse && selfHelpResponse.length > 0) {
             var htmlContent = selfHelpResponse[0]["htmlContent"];
             // Custom javascript code to remove top header from support document html string
             var tmp = document.createElement("DIV");
             tmp.innerHTML = htmlContent;
-            var h2s = tmp.getElementsByTagName("h2");
-            if (h2s && h2s.length > 0) {
-                h2s[0].remove();
+            if(!this.showAllSelfHelpContent()) {
+                var h2s = tmp.getElementsByTagName("h2");
+                if (h2s && h2s.length > 0) {
+                    h2s[0].remove();
+                }
             }
 
             return tmp.innerHTML;
@@ -246,6 +257,19 @@ export class SupportTopicService {
                     }
                     
                     if (matchingDetectors && matchingDetectors.length > 0) {
+                        this._telemetryService.logEvent("MatchingDetectorsInCaseSubmission", {
+                            "MatchingDetectors": JSON.stringify(matchingDetectors.map(detector => {
+                                return { 
+                                    id: detector.id, 
+                                    type: detector.type
+                                };
+                            })),
+                            "SapSupportTopicId": sapSupportTopicId,
+                            "SupportTopicId": supportTopicId,
+                            "PesId": pesId,
+                            "SapProductId": sapProductId,
+                            "CaseSubject": searchTerm
+                        });
                         if (matchingDetectors.length === 1 && matchingDetectors[0] && matchingDetectors[0].id) {
                             if (matchingDetectors[0].type === DetectorType.Analysis) {
                                 detectorPath = `/analysis/${matchingDetectors[0].id}`;
@@ -260,6 +284,14 @@ export class SupportTopicService {
                         }
                     }
                     else {
+                        this._telemetryService.logEvent("MatchingDetectorsInCaseSubmission", {
+                            "MatchingDetectors": '[]',
+                            "SapSupportTopicId": sapSupportTopicId,
+                            "SupportTopicId": supportTopicId,
+                            "PesId": pesId,
+                            "SapProductId": sapProductId,
+                            "CaseSubject": searchTerm
+                        });
                         detectorPath = `/analysis/searchResultsAnalysis/search`;
                     }
                 }
@@ -288,7 +320,8 @@ export class SupportTopicService {
 
                                 this._telemetryService.logEvent("KeywordsListForKeyStone", {
                                     "Keywords": keystoneInsight["Title"],
-                                    "KeystoneSolutionApplied": String(keystoneSolutionApplied)
+                                    "KeystoneSolutionApplied": String(keystoneSolutionApplied),
+                                    "CaseSubject": searchTerm
                                 });
                             }
                             

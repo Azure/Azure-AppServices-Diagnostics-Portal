@@ -16,7 +16,7 @@ export class ContentService {
   private _config : DocumentSearchConfiguration;
   private featureEnabledForSupportTopic: boolean = false;
   httpOptions = {}
-  private bingDetectorEnabledPesIds = ["14748", "16072", "16170", "15791", "15551"]
+  private bingDetectorEnabledPesIds = ["14748", "16072", "16170", "15791", "15551", "16450"]
 
   
   constructor(private _http: HttpClient, private _resourceService: ResourceService, private _backendApi: BackendCtrlService, private _diagnosticService: DiagnosticService, private _detectorControlService: DetectorControlService) { 

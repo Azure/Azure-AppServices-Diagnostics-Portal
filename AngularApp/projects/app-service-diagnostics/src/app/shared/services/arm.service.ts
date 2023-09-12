@@ -135,9 +135,9 @@ export class ArmService {
         }
     }
 
-    createUrl(resourceUri: string, apiVersion?: string) {
+    createUrl(resourceUri: string, apiVersion?: string, modifyUrl = true) {
         let resourceUriToUse = resourceUri;
-        if (UriUtilities.isNoResourceCall(resourceUri) && !UriUtilities.isApolloApiCall(resourceUri) && resourceUri.split("subscriptions/").length > 1) {
+        if (modifyUrl && UriUtilities.isNoResourceCall(resourceUri) && !UriUtilities.isApolloApiCall(resourceUri) && resourceUri.split("subscriptions/").length > 1) {
             //Call is for get resource with a partial resource uri, convert it into a get subscription call.
             //If the call is for Apollo, then we do not want to modify anything in the resource uri and just construct the URL            
             resourceUriToUse = `/subscriptions/${resourceUri.split("subscriptions/")[1].split("/")[0]}`;//resourceUri.replace(/\/providers\/[^\/]*\/[^\/]*\//, '/');
@@ -345,11 +345,11 @@ export class ArmService {
         return this._cache.get(requestedApiPath, apolloRequest, invalidateCache, logData);
     }
 
-    getResource<T>(resourceUri: string, apiVersion?: string, invalidateCache: boolean = false, additionalHeaders?: Map<string, string>): Observable<{} | ResponseMessageEnvelope<T>> {
+    getResource<T>(resourceUri: string, apiVersion?: string, invalidateCache: boolean = false, additionalHeaders?: Map<string, string>, modifyUrl = true): Observable<{} | ResponseMessageEnvelope<T>> {
         if (!resourceUri.startsWith('/')) {
             resourceUri = '/' + resourceUri;
         }
-        const url = this.createUrl(resourceUri, apiVersion);
+        const url = this.createUrl(resourceUri, apiVersion, modifyUrl);
         let subscriptionLocation = '';
         let subscriptionId = resourceUri.split("subscriptions/")[1].split("/")[0];
 
@@ -552,8 +552,8 @@ export class ArmService {
         return this._cache.get(url, request, invalidateCache);
     }
 
-    postResource<T, S>(resourceUri: string, body?: S, apiVersion?: string, invalidateCache: boolean = false, appendBodyToCacheKey: boolean = false): Observable<boolean | {} | ResponseMessageEnvelope<T>> {
-        const url = this.createUrl(resourceUri, apiVersion);
+    postResource<T, S>(resourceUri: string, body?: S, apiVersion?: string, invalidateCache: boolean = false, appendBodyToCacheKey: boolean = false, modifyUrl = true): Observable<boolean | {} | ResponseMessageEnvelope<T>> {
+        const url = this.createUrl(resourceUri, apiVersion, modifyUrl);
         let bodyString: string = '';
         if (body) {
             bodyString = JSON.stringify(body);
@@ -569,11 +569,11 @@ export class ArmService {
         return this._cache.get(cacheKey, request, invalidateCache);
     }
 
-    requestResource<T, S>(method: string, resourceUri: string, body?: S, apiVersion?: string): Observable<{} | T> {
+    requestResource<T, S>(method: string, resourceUri: string, body?: S, apiVersion?: string, modifyUrl = true): Observable<{} | T> {
         if (!resourceUri.startsWith('/')) {
             resourceUri = '/' + resourceUri;
         }
-        const url = this.createUrl(resourceUri, apiVersion);
+        const url = this.createUrl(resourceUri, apiVersion, modifyUrl);
         let bodyString: string = '';
         if (body) {
             bodyString = JSON.stringify(body);
@@ -718,9 +718,9 @@ export class ArmService {
         return this._cache.get(resourceUri, request, invalidateCache);
     }
 
-    getResourceFullResponse<T>(resourceUri: string, invalidateCache = false, apiVersion?: string):
+    getResourceFullResponse<T>(resourceUri: string, invalidateCache = false, apiVersion?: string, modifyUrl = true):
         Observable<HttpResponse<T>> {
-        const url = this.createUrl(resourceUri, apiVersion);
+        const url = this.createUrl(resourceUri, apiVersion, modifyUrl);
         const request = this._http.get<T>(url, {
             headers: this.getHeaders(),
             observe: 'response'

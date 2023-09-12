@@ -7,6 +7,7 @@ export interface AlertInfo {
     confirmationOptions: ConfirmationOption[]; 
     alertStatus: HealthStatus;
     userAccessStatus:UserAccessStatus;
+    resourceId?: string;
 }
 
 export interface ConfirmationOption {
@@ -25,5 +26,6 @@ export enum UserAccessStatus
   SGMembershipNeeded,
   CaseNumberNeeded,
   HasAccess,
-  ConsentRequired
+  ConsentRequired,
+  AllowedResourceException
 }

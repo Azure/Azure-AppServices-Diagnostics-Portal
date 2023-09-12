@@ -2,7 +2,8 @@ import {
   CommsService, DiagnosticDataModule, DiagnosticService, DiagnosticSiteService,
   PUBLIC_DEV_CONFIGURATION, PUBLIC_PROD_CONFIGURATION, SolutionService, SettingsService,
   BackendCtrlQueryService, GenieGlobals, PortalActionGenericService,
-  KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService, GenericFeatureService, OptInsightsGenericService
+  KustoTelemetryService, AppInsightsTelemetryService, UnhandledExceptionHandlerService,
+  GenericFeatureService, OptInsightsGenericService
 } from 'diagnostic-data';
 import { SiteService } from 'projects/app-service-diagnostics/src/app/shared/services/site.service';
 import { HttpClientModule } from '@angular/common/http';

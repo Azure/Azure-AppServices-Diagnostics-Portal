@@ -4,6 +4,9 @@
   <div class="main-row" style="margin: 0px auto; width: 100%;margin-bottom: 15px;" *ngIf="displayLoader">
     <fab-spinner [size]="loaderSize" [label]="'Loading...'"></fab-spinner>
   </div>
+  <div class="main-row" style="display: flex; justify-content: center;" *ngIf="displayLoader && showLoadingMessage">
+    We're working on retrieving the information you requested. This process may take a few moments. Thank you for your patience and understanding.
+  </div>
   <div class="main-row"
     style="margin: 0 auto; width: 50%; text-align: center; margin-bottom: 15px; font-size: 18px; color: red;"
     *ngIf="displayUserAccessError">
@@ -158,7 +161,7 @@
 </ng-template>
 
 <ng-template #deletedOrCreationFailedResourceTimePicker>
-  <date-time-picker style="margin-right: 6.5rem;" [label]="'Time when resource was deleted or created (UTC)'"  [moment]="deletedOrCreationFailedResourceSelectedMoment" (momentChange)="updateMomentForDeletedOrCreationFailedResource($event)"></date-time-picker>
+  <date-time-picker style="margin-right: 6.5rem;" [label]="'Time when resource was deleted or created (UTC)'"  [moment]="deletedOrCreationFailedResourceSelectedMoment" (momentChange)="updateMomentForDeletedOrCreationFailedResource($event)" [showDatePickerOnly]="true"></date-time-picker>
 </ng-template>
 
 <fab-panel [isOpen]="openResourceTypePanel == true" [type]="type" [customWidth]="width" 

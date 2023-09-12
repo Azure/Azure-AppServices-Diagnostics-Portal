@@ -7,18 +7,25 @@ namespace AppLensV3.Services
     public interface IOpenAIRedisService
     {
         bool IsEnabled();
+
         Task<string> GetKey(string key);
+
         Task<bool> SetKey(string key, string value, TimeSpan? expiryTime = null);
+
         Task<bool> DeleteKey(string key);
     }
 
     public class OpenAIRedisServiceDisabled : IOpenAIRedisService
     {
         public bool IsEnabled() { return false; }
+
         public async Task<string> GetKey(string key) { return null; }
+
         public async Task<bool> SetKey(string key, string value, TimeSpan? expiryTime = null) { return false; }
+
         public async Task<bool> DeleteKey(string key) { return false; }
     }
+
     /// <summary>
     /// Resource Validation service
     /// </summary>

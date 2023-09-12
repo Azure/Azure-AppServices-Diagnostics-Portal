@@ -98,3 +98,13 @@
   width: 20px;
   margin-right: 5px;
 }
+
+.min-width-detector {
+  min-width: 600px;
+}
+
+.min-width-detector-section {
+  min-width: 500px;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}

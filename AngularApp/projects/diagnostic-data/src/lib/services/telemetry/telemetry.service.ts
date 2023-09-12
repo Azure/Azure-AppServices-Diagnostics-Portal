@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { ITelemetryProvider } from './telemetry.common';
+import { ITelemetryProvider, TelemetryUtilities } from './telemetry.common';
 import { DIAGNOSTIC_DATA_CONFIG, DiagnosticDataConfig } from '../../config/diagnostic-data-config';
 import { AppInsightsTelemetryService } from './appinsights-telemetry.service';
 import { KustoTelemetryService } from './kusto-telemetry.service';
@@ -146,19 +146,7 @@ export class TelemetryService {
         //If it's a web app, Check the kind of web app(Function/Linux)
         //If it's not Function/Linux, keep productNamse as it is
         if (type.toLowerCase() === "microsoft.web/sites") {
-            if (!this._diagnosticSiteService.currentSite.value || !this._diagnosticSiteService.currentSite.value.kind) {
-                return productName;
-            }
-            const kind = this._diagnosticSiteService.currentSite.value.kind;
-
-            if (kind.indexOf('linux') >= 0 && kind.indexOf('functionapp') >= 0) {
-                productName = "Azure Linux Function App";
-            }
-            else if (kind.indexOf('linux') >= 0) {
-                productName = "Azure Linux App";
-            } else if (kind.indexOf('functionapp') >= 0) {
-                productName = "Azure Function App";
-            }
+            productName = TelemetryUtilities.getProductNameByTypeAndKind(type, this._diagnosticSiteService.currentSite.value?.kind);
         }
 
         return productName;
@@ -182,6 +170,6 @@ export class TelemetryService {
     }
 
     public updateCommonProperties(properties: { [name: string]: string }) {
-        this.commonProperties = {...this.commonProperties, ...properties};
+        this.commonProperties = { ...this.commonProperties, ...properties };
     }
 }

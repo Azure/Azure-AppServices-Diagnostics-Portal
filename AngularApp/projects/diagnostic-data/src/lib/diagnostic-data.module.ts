@@ -166,8 +166,11 @@ import { ChatUIComponent } from './components/chat-ui/chat-ui.component';
 import { ChatUIContextService } from './services/chatui-context.service';
 import {OpenAIChatComponent} from './components/openai-chat/openai-chat.component';
 import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.component';
-
+import {OpenAIChatContainerComponent} from './components/openai-chat-container/openai-chat-container.component';
+import { ChatUIMarkdownWrapperComponent } from './components/chat-ui-markdown-wrapper/chat-ui-markdown-wrapper.component';
+import { GenericDetectorCopilotService } from './services/generic-detector-copilot.service';
 import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
+
 
 @NgModule({
     imports: [
@@ -283,7 +286,9 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         DateTimePickerComponent,
         ChatUIComponent,
         OpenAIChatComponent,
-        OpenAIGenieComponent
+        OpenAIGenieComponent,
+        OpenAIChatContainerComponent,
+        ChatUIMarkdownWrapperComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -331,7 +336,9 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         ChatUIComponent,
         OpenAIChatComponent,
         OpenAIGenieComponent,
-        DateTimePickerComponent
+        DateTimePickerComponent,
+        OpenAIChatContainerComponent,
+        ChatUIMarkdownWrapperComponent
     ]
 })
 export class DiagnosticDataModule {
@@ -365,7 +372,8 @@ export class DiagnosticDataModule {
                 QueryResponseService,
                 OptInsightsGenericService,
                 DemoSubscriptions,
-                ChatUIContextService
+                ChatUIContextService,
+                GenericDetectorCopilotService
             ]
         };
     }

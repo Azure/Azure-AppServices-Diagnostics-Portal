@@ -40,6 +40,7 @@ export class UriElementsService {
     private _killw3wpUrlFormat: string = this._supportApi + 'sites/{subscriptionId}/{resourceGroup}/{siteName}/killsiteprocess';
 
     private _instances: string = "/instances"
+    private _instaceProcesses: string = this._instances + "/{instanceId}/processes"
 
     /*
         TODO : Need to add start time and end time parameters
@@ -153,7 +154,7 @@ export class UriElementsService {
     getMonitoringSessionsUrl(site: SiteDaasInfo) {
         return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasCpuMonitoringPath;
     }
-    
+
     getMonitoringSessionsListUrl(site: SiteDaasInfo) {
         return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._daasCpuMonitoringListSessionsPath;
     }
@@ -305,6 +306,11 @@ export class UriElementsService {
 
     getInstances(site: SiteDaasInfo) {
         return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._instances;
+    }
+
+    getInstanceProcesses(site: SiteDaasInfo, instanceId: string) {
+        return this._getSiteResourceUrl(site.subscriptionId, site.resourceGroupName, site.siteName, site.slot) + this._instaceProcesses
+        .replace('{instanceId}', instanceId);
     }
 
     private _getSiteResourceUrl(subscriptionId: string, resourceGroup: string, siteName: string, slot: string = '') {

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { forkJoin, Observable, pipe } from "rxjs";
+import { forkJoin, Observable, of, pipe } from "rxjs";
 import { map } from "rxjs/operators";
 import { DocumentationRepoSettings } from "../../../shared/models/documentationRepoSettings";
 import { DiagnosticApiService } from "../../../shared/services/diagnostic-api.service";
@@ -18,8 +18,6 @@ export class ApplensDocumentationService {
         let docStagingBranch = '';
         let docsResource = '';
         let isStaging = false;
-
-        
 
         return forkJoin([repoRootObservable, stagingBranchObservable, resourceObservable, isStagingObservable]).pipe(map(repoSettings => {
             docsRepoRoot = repoSettings[0];

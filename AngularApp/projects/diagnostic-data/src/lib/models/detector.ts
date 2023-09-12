@@ -2,6 +2,8 @@ import * as momentNs from 'moment';
 import { Solution, SolutionButtonOption } from '../components/solution/solution';
 import { TableColumnOption } from './data-table';
 import { MetricType } from './time-series';
+import { Observable } from 'rxjs';
+import { LoadingStatus } from './loading';
 
 export interface ArmObject {
     id: string;
@@ -88,7 +90,7 @@ export interface SupportTopic {
     id: string;
     pesId: string;
     sapSupportTopicId: string;
-    sapPesId: string;
+    sapProductId: string;
 }
 
 export enum DetectorType {
@@ -132,7 +134,7 @@ export enum RenderingType {
     StepViews,
     Report,
     ClientScriptComponent,
-    WorkflowResult, 
+    WorkflowResult,
     Video,
     ArchitectureDiagramResult
 }
@@ -229,6 +231,7 @@ export interface DetectorListRendering extends Rendering {
     detectorIds: string[];
     additionalParams?: string;
     resourceUri?: string
+    disableCollapse?: boolean;
 }
 
 export interface MarkdownRendering extends Rendering {
@@ -268,10 +271,32 @@ export const DowntimeInteractionSource = {
     Dropdown: 'Dropdown',
     DefaultFromDetector: 'DefaultFromDetector',
     DefaultFromQueryParams: 'DefaultFromQueryParams',
-    DefaultFromUI: 'DefaultFromUI'
+    DefaultFromUI: 'DefaultFromUI',
+    Workflow:'Workflow'
 };
 
 export enum GanttChartInnerMarkdownPosition {
     BelowChart = 0,
     AboveChart,
+}
+
+export interface DetectorViewModel {
+    title: string;
+    metadata: DetectorMetaData;
+    loadingStatus: LoadingStatus;
+    status: HealthStatus;
+    statusColor: string;
+    statusIcon: string;
+    expanded: boolean;
+    response: DetectorResponse;
+    request: Observable<DetectorResponse>
+}
+
+export interface BasicInsightInfo {
+    insightTitle: string;
+    insightDescription: string;
+}
+
+export interface DetectorViewModeWithInsightInfo extends BasicInsightInfo {
+    model: DetectorViewModel;
 }

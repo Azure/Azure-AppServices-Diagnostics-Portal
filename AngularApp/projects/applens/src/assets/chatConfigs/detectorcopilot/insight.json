@@ -1,0 +1,16 @@
+{
+    "samples": [
+        {
+            "key": "What is the issue reported by this insight.",
+            "value": "What is the issue reported by this insight."
+        },
+        {
+            "key": "How can I resolve this issue.",
+            "value": "How can I resolve this issue or next steps."
+        },
+        {
+            "key": "Give me more information about this insight.",
+            "value": "Give me more information about this insight."
+        }
+    ]
+}

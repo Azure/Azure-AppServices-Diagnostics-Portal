@@ -1,10 +1,10 @@
-<div [attr.name]="data.name" #canvasContent>
+<div [attr.name]="data.name" #canvasContent class="workflow-node">
   <div class="panel panel-default">
     <div class="panel-heading panel-title-input">
-      <node-title [data]="data" [disableEdit]="true" [customClass]="'background-green'" [customClassIcon]="'fa-list'">
+      <node-title [data]="data" (collapseChange)="onCollapseChange($event)" [disableEdit]="true" [customClass]="'background-green'" [customClassIcon]="'fa-list'">
       </node-title>
     </div>
-    <div class="panel-body panel-input-body">
+    <div #nodeBodyDiv class="panel-body panel-input-body" [hidden]="collapsed">
       <form class="form" style="height: 90%;">
         <div>
           <label for="chooseInputType">Choose Input type</label>

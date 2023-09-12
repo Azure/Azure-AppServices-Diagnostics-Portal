@@ -15,6 +15,7 @@ import { UriUtilities } from '../../utilities/uri-utilities';
 import { QueryResponseService } from '../../services/query-response.service';
 import * as moment from 'moment';
 import { TimeUtilities } from '../../utilities/time-utilities';
+import { GenericDetectorCopilotService } from '../../services/generic-detector-copilot.service';
 
 @Component({
   selector: 'custom-form',
@@ -36,6 +37,7 @@ export class FormComponent extends DataRenderBaseComponent {
     private detectorControlService: DetectorControlService, private _queryResponseService: QueryResponseService,
     private activatedRoute: ActivatedRoute,
     private locationService: Location,
+    private copilotService: GenericDetectorCopilotService
   ) {
     super(telemetryService);
     this.isPublic = config && config.isPublic;
@@ -116,8 +118,14 @@ export class FormComponent extends DataRenderBaseComponent {
               formInputs[ip]["toolTip"] != undefined ? formInputs[ip]["toolTip"] : "",
               formInputs[ip]["tooltipIcon"] != "" ? formInputs[ip]["tooltipIcon"] : "fa-info-circle",
               formInputs[ip]["children"] != undefined ? formInputs[ip]["children"] : [],
-              formInputs[ip]["isVisible"] != undefined ? formInputs[ip]["isVisible"] : true
+              formInputs[ip]["isVisible"] != undefined ? formInputs[ip]["isVisible"] : true,
+              formInputs[ip]["submitOnSelection"] != undefined ? formInputs[ip]["submitOnSelection"] : false
             ));
+            if(formInputs[ip]["submitOnSelection"] !=null && formInputs[ip]["submitOnSelection"] == true){
+              if(formInputs[ip]["defaultSelectedKey"] != null && formInputs[ip]["defaultSelectedKey"] != ""){
+                this.OnSubmitFormAction(this.detectorForms[i].formId, -1);
+              }
+            }
           }
           else if(this.isDateTimePicker(formInputs[ip]["inputType"])) {
             this.detectorForms[i].formInputs.push(new DateTimePicker(
@@ -232,13 +240,6 @@ export class FormComponent extends DataRenderBaseComponent {
             }
           }
         });
-        this.activatedRoute.queryParams.subscribe(allRouteParams => {
-          for (let key of Object.keys(allRouteParams)) {
-            if (!detectorParams.hasOwnProperty(key)) {
-              detectorParams[key] = allRouteParams[key];
-            }
-          }
-        });
         let detectorQueryParamsString = JSON.stringify(detectorParams);
         if (!this.isPublic) {
           let currentURL = new URL(window.location.href);
@@ -298,6 +299,8 @@ export class FormComponent extends DataRenderBaseComponent {
           formToExecute.formResponse = response;
           formToExecute.errorMessage = '';
           formToExecute.loadingFormResponse = false;
+
+          this.copilotService.processAsyncFormsResponse(formToExecute.formId, response);
         }, (error: any) => {
           formToExecute.loadingFormResponse = false;
           formToExecute.errorMessage = 'Something went wrong while loading data';
@@ -358,6 +361,7 @@ export class FormComponent extends DataRenderBaseComponent {
     let data = event.option["data"];
     let isMultiSelect = data["isMultiSelect"];
     let internalId = data["internalId"];
+   
     let formId = internalId.split("-")[1];
     let inputId = internalId.split("-")[2];
     // Find matching form
@@ -374,6 +378,12 @@ export class FormComponent extends DataRenderBaseComponent {
         this.changeVisibility(children, form.formInputs, formInput);
       }
     }
+    let submitOnSelection = formInput["submitOnSelection"] ?? false;
+
+    if(submitOnSelection){
+      this.OnSubmitFormAction(formId, -1);
+    }
+
   }
 
   getQueryParamForDropdown(formInput: FormInput): string {

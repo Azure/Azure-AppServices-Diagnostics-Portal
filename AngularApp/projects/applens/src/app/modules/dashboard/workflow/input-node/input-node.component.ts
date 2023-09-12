@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { inputType } from 'diagnostic-data';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { WorkflowNodeBaseClass } from '../node-base-class';
+import WorkflowNodeBaseClass from '../node-base-class';
 import { WorkflowService } from '../services/workflow.service';
 
 @Component({

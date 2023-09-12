@@ -12,7 +12,7 @@ export class LinkInterceptorService {
 
   constructor() { }
 
-  interceptLinkClick(e: Event, router: Router, detector: string, telemetryService: TelemetryService, activatedRoute: ActivatedRoute) {
+  interceptLinkClick(e: Event, router: Router, source: string, telemetryService: TelemetryService, activatedRoute: ActivatedRoute) {
     if (e.target && (e.target as any).tagName === 'A') {
 
       const el = (e.target as HTMLElement);
@@ -23,17 +23,29 @@ export class LinkInterceptorService {
       const linkClickedProps: { [name: string]: string } = {
         'Title': linkText,
         'Href': linkURL,
-        'Detector': detector
+        'SourcePage': source
       };
 
-      telemetryService.logEvent(TelemetryEventNames.LinkClicked, linkClickedProps);
+      if (telemetryService) {
+        telemetryService.logEvent(TelemetryEventNames.LinkClicked, linkClickedProps);
+      }
+
       let navigationExtras: NavigationExtras = {
         queryParamsHandling: 'preserve',
         preserveFragment: true,
-        relativeTo: activatedRoute
       };
 
-      if (linkURL && !isAbsolute.test(linkURL)) {
+      //
+      // Don't treat url as relative to the current URL if the 
+      // hyper link passed contains a full resourceId
+      //
+
+      if (linkURL.toLowerCase().indexOf('subscriptions/') === -1
+        && linkURL.toLowerCase().indexOf('/resourcegroups/') === -1) {
+        navigationExtras.relativeTo = activatedRoute;
+      }
+
+      if (linkURL && (!isAbsolute.test(linkURL) || linkURL.startsWith('./') || linkURL.startsWith('../'))) {
         e.preventDefault();
         router.navigate([linkURL], navigationExtras);
       } else {

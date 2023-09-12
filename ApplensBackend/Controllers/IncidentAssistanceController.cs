@@ -16,7 +16,7 @@ using System.IdentityModel.Tokens.Jwt;
 namespace AppLensV3.Controllers
 {
     [Route("api/icm/")]
-    [Authorize(Policy = "DefaultAccess")]
+    [Authorize(Policy = "ApplensAccess")]
     public class IncidentAssistanceController : Controller
     {
         private readonly IIncidentAssistanceService _incidentAssistanceService;
