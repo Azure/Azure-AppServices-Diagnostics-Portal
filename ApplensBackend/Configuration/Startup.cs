@@ -185,6 +185,10 @@ namespace AppLensV3
                 }
                 services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
             }
+            else
+            {
+                services.AddSingleton<ISemanticSearchService, SemanticSearchServiceDisabled>();
+            }
 
             if (Configuration.GetValue("Graph:Enabled", false))
             {
