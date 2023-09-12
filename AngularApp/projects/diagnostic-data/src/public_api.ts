@@ -35,6 +35,7 @@ export * from './lib/diagnostic-data.module';
 export * from './lib/services/optinsights.service';
 export * from './lib/services/chatui-context.service';
 export * from './lib/services/generic-detector-copilot.service';
+export * from './lib/services/conversational-diag.service';
 export * from './lib/services/generic-documentation-copilot.service';
 
 
@@ -62,6 +63,7 @@ export * from './lib/models/chatbot-models';
 export * from './lib/models/optinsights';
 export * from './lib/models/alerts';
 export * from './lib/models/common-models';
+export * from './lib/models/betaSubscriptions';
 
 export * from './lib/components/detector-list-analysis/detector-list-analysis.component'
 
@@ -160,6 +162,8 @@ export * from './lib/components/openai-chat/openai-chat.component';
 export * from './lib/components/openai-chat-container/openai-chat-container.component';
 export * from './lib/components/chat-ui-markdown-wrapper/chat-ui-markdown-wrapper.component';
 export * from './lib/components/openai-genie/openai-genie.component';
+export * from './lib/components/diag-chat-container/diag-chat-container.component';
+export * from './lib/components/diag-chat-solution/diag-chat-solution.component';
 export * from "./lib/components/documentation-copilot/documentation-copilot.component";
 
 export * from './lib/modules/fab-coachmark/coachmark.module'

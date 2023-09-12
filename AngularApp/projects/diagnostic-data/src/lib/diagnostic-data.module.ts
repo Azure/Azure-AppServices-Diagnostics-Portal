@@ -123,6 +123,7 @@ import { FormStepComponent } from './components/step-views/form-step-view/form-s
 import { GenericPortalService } from './services/generic-portal.service';
 
 import { FabIconModule } from '@angular-react/fabric/lib/components/icon';
+import { FabShimmerModule } from '@angular-react/fabric/lib/components/shimmer';
 import { FabButtonModule } from '@angular-react/fabric/lib/components/button';
 import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown';
 import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
@@ -150,7 +151,7 @@ import { WorkflowNodeComponent } from './components/workflow-node/workflow-node.
 import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
 import { ArchitectureDiagramComponent } from './components/architecture-diagram/architecture-diagram.component';
 import { ArchitectureDiagramNodeComponent } from './components/architecture-diagram-node/architecture-diagram-node.component';
-import { GenericOpenAIChatService, OpenAIArmService } from '../public_api';
+import { ConversationalDiagService, GenericOpenAIChatService, OpenAIArmService } from '../public_api';
 import { OpenaiComponent } from './components/openai/openai.component';
 import { QueryResponseService } from './services/query-response.service';
 import { WorkflowConditionNodeComponent } from './components/workflow-condition-node/workflow-condition-node.component';
@@ -172,6 +173,8 @@ import { GenericDetectorCopilotService } from './services/generic-detector-copil
 import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
 import { GenericDocumentationCopilotService } from "./services/generic-documentation-copilot.service";
 import { DocumentationCopilotComponent } from './components/documentation-copilot/documentation-copilot.component';
+import { DiagChatSolutionComponent } from './components/diag-chat-solution/diag-chat-solution.component';
+import { DiagChatContainerComponent } from './components/diag-chat-container/diag-chat-container.component';
 
 
 @NgModule({
@@ -209,7 +212,8 @@ import { DocumentationCopilotComponent } from './components/documentation-copilo
         FabDatePickerModule,
         FabCalendarModule,
         NgFlowchartModule,
-        FabDialogModule
+        FabDialogModule,
+        FabShimmerModule,
     ],
     providers: [
         ClipboardService
@@ -291,7 +295,9 @@ import { DocumentationCopilotComponent } from './components/documentation-copilo
         OpenAIGenieComponent,
         OpenAIChatContainerComponent,
         ChatUIMarkdownWrapperComponent,
-        DocumentationCopilotComponent
+        DocumentationCopilotComponent,
+        DiagChatContainerComponent,
+        DiagChatSolutionComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -342,7 +348,9 @@ import { DocumentationCopilotComponent } from './components/documentation-copilo
         DateTimePickerComponent,
         OpenAIChatContainerComponent,
         ChatUIMarkdownWrapperComponent,
-        DocumentationCopilotComponent
+        DocumentationCopilotComponent,
+        DiagChatContainerComponent,
+        DiagChatSolutionComponent
     ]
 })
 export class DiagnosticDataModule {
@@ -378,7 +386,8 @@ export class DiagnosticDataModule {
                 DemoSubscriptions,
                 ChatUIContextService,
                 GenericDetectorCopilotService,
-                GenericDocumentationCopilotService
+                GenericDocumentationCopilotService,
+                ConversationalDiagService
             ]
         };
     }

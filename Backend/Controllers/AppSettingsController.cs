@@ -17,7 +17,7 @@ namespace Backend.Controllers
         private IConfiguration config;
         private IWebHostEnvironment env;
 
-        private string[] AllowedSections = new string[] { "Arm", "ApplicationInsights", "ASD_ENVIRONMENT", "ASD_HOST", "AcceptOriginSuffix:Origins", "AppInsights:UseCertificates" };
+        private string[] AllowedSections = new string[] { "Arm", "ApplicationInsights", "ASD_ENVIRONMENT", "ASD_HOST", "AcceptOriginSuffix:Origins", "AppInsights:UseCertificates", "ConversationalDiagnostic" };
 
         public AppSettingsController(IConfiguration configuration, IWebHostEnvironment env)
         {

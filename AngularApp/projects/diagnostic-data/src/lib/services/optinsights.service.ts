@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 @Injectable()
 export class OptInsightsGenericService {
 
-    getInfoForOptInsights(codeOptimizationsRequest: CodeOptimizationsRequest): Observable<any[] | null> {
+    getInfoForOptInsights(codeOptimizationsRequest: CodeOptimizationsRequest): Observable<any[] | any | null> {
         return of(null);
     }
 

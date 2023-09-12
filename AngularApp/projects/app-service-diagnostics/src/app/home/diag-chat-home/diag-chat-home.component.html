@@ -1,0 +1,16 @@
+<div class="mt-3 ml-3">
+    <fab-link (onClick)="navigateToLastPage()">&lt;Go Back</fab-link>
+    <ng-container *ngIf="isConversationalDiagnosticEnabledByAppSetting;else featureNotAvailable">
+        <diag-chat-container></diag-chat-container>
+    </ng-container>
+</div>
+
+<ng-container *ngIf="isWindowsOrLinuxApp">
+    <diagostic-sessions-panel [isPanelBlocking]="true"></diagostic-sessions-panel>
+    <create-storage-account-panel [isPanelBlocking]="true"></create-storage-account-panel>
+    <callstack-panel [isPanelBlocking]="true"></callstack-panel>
+</ng-container>
+
+<ng-template #featureNotAvailable>
+    <div>This feature is not yet available</div>
+</ng-template>

@@ -1,13 +1,14 @@
 import { TelemetryService } from 'diagnostic-data';
 import { Observable, of } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { DefaultUrlSerializer, Router } from '@angular/router';
+import { ActivatedRoute, DefaultUrlSerializer, Router } from '@angular/router';
 import { PortalService } from '../../startup/services/portal.service';
 import { OpenBladeInfo } from '../models/portal';
 import { ArmService } from './arm.service';
 import { DaasService } from './daas.service';
 import { PortalActionService } from './portal-action.service';
 import { AppInsightsService } from './appinsights/appinsights.service';
+import { Globals } from '../../globals';
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +25,8 @@ export class GenericSolutionService {
 
   constructor(private armService: ArmService, private portalService: PortalService,
     private logService: TelemetryService, private portalNavService: PortalActionService,
-    private appInsightsService:AppInsightsService,
-    private _daasService: DaasService, private _router: Router) {}
+    private appInsightsService: AppInsightsService,
+    private _daasService: DaasService, private _router: Router, private _route: ActivatedRoute, private _globals: Globals) { }
 
   assertPropertyExists(dict: {}, property: string) {
     if (!(property in dict) || property == undefined) {
@@ -33,7 +34,7 @@ export class GenericSolutionService {
     }
   }
 
-  validateArmApiOptions(options: {route: string, verb: string}) {
+  validateArmApiOptions(options: { route: string, verb: string }) {
     for (let prop of ['route', 'verb']) {
       this.assertPropertyExists(options, prop);
     }
@@ -47,7 +48,7 @@ export class GenericSolutionService {
   }
 
   buildRoute(resourceUri: string, routeSegment: string): string {
-    resourceUri = !resourceUri.endsWith('/') ? resourceUri+'/': resourceUri;
+    resourceUri = !resourceUri.endsWith('/') ? resourceUri + '/' : resourceUri;
     return resourceUri + routeSegment;
   }
 
@@ -57,7 +58,7 @@ export class GenericSolutionService {
     return 'api-version' in urlTree.queryParams ? urlTree.queryParams['api-version'] : null;
   }
 
-  ArmApi(resourceUri: string, actionOptions: {route: string, verb: string}): Observable<any> {
+  ArmApi(resourceUri: string, actionOptions: { route: string, verb: string }): Observable<any> {
     this.validateArmApiOptions(actionOptions);
 
     const verb = actionOptions['verb'].toLowerCase();
@@ -65,7 +66,7 @@ export class GenericSolutionService {
     const apiVersion = this.getApiVersion(route);
     const body = 'body' in actionOptions ? actionOptions['body'] : null;
 
-    this.logService.logEvent('SolutionArmApi', {'fullRoute': route, ...actionOptions});
+    this.logService.logEvent('SolutionArmApi', { 'fullRoute': route, ...actionOptions });
 
     if (verb === 'get') {
       return this.armService.getResourceFullResponse(route, true, apiVersion);
@@ -75,14 +76,24 @@ export class GenericSolutionService {
     return this.armService[actionMethod](route, body, true, apiVersion);
   }
 
-  OpenTab(resourceUri: string, actionOptions: {tabUrl: string}): Observable<any> {
+  OpenTab(resourceUri: string, actionOptions: { tabUrl: string }): Observable<any> {
     this.assertPropertyExists(actionOptions, 'tabUrl');
-    this.logService.logEvent('SolutionOpenTab', {'resourceUri': resourceUri, ...actionOptions});
+    this.logService.logEvent('SolutionOpenTab', { 'resourceUri': resourceUri, ...actionOptions });
 
     const tabUrl = actionOptions.tabUrl.toLowerCase();
     this._router.navigateByUrl(tabUrl);
 
     return of(tabUrl);
+  }
+
+  OpenTabFromChat(resourceUri: string, actionOptions: { tabUrl: string }): Observable<any> {
+    this.assertPropertyExists(actionOptions, 'tabUrl');
+    this._globals.openDiagChatSolutionPanel = true;
+    const routePath = this.extractRoutePath(resourceUri, actionOptions.tabUrl);
+
+    this._router.navigateByUrl(`/diagnosticChat${routePath}`, { skipLocationChange: true });
+
+    return of(actionOptions.tabUrl);
   }
 
   getBladeInfo(options: {}) {
@@ -91,9 +102,9 @@ export class GenericSolutionService {
     return options as OpenBladeInfo;
   }
 
-  GoToBlade(resourceUri: string, actionOptions: {detailBlade: string}): Observable<any> {
+  GoToBlade(resourceUri: string, actionOptions: { detailBlade: string }): Observable<any> {
     const bladeInfo = this.getBladeInfo(actionOptions);
-    this.logService.logEvent('SolutionGoToBlade', {'resourceUri': resourceUri, ...actionOptions});
+    this.logService.logEvent('SolutionGoToBlade', { 'resourceUri': resourceUri, ...actionOptions });
 
     switch (bladeInfo.detailBlade.toLowerCase()) {
       case 'scaleup': {
@@ -128,10 +139,16 @@ export class GenericSolutionService {
     return of(bladeInfo.detailBlade);
   }
 
-  ToggleStdoutSetting(resourceUri: string, actionOptions: {enabled: boolean}): Observable<any> {
-    this.logService.logEvent('SolutionToggleStdoutSetting', {'resourceUri': resourceUri, 'enabled': actionOptions.enabled.toString()});
+  ToggleStdoutSetting(resourceUri: string, actionOptions: { enabled: boolean }): Observable<any> {
+    this.logService.logEvent('SolutionToggleStdoutSetting', { 'resourceUri': resourceUri, 'enabled': actionOptions.enabled.toString() });
 
     return this._daasService.putStdoutSetting(resourceUri, actionOptions.enabled);
   }
 
+  private extractRoutePath(resourceUri: string, tabUrl: string): string {
+    tabUrl = tabUrl.toLowerCase();
+    resourceUri = resourceUri.toLowerCase();
+    const regex = new RegExp(/\/(tools|analysis|detectors)\/[a-zA-Z0-9]+/g);
+    return tabUrl.indexOf(resourceUri) > -1 && regex.test(tabUrl) ? tabUrl.match(regex)[0] : "";
+  }
 }

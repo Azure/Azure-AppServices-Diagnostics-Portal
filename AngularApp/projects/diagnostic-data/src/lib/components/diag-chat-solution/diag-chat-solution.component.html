@@ -1,0 +1,11 @@
+<solution-view-container *ngIf="solutionTitle != '' && solutionDescription != ''" [solutionTitle]="solutionTitle"
+    [detector]="'conversationalDiagnostics'" [isAnalysisView]="false" [isKeystoneDetector]="false"
+    [showFeedbackQuestion]="false" [hasBorder]="false">
+    <markdown [data]="solutionDescription"></markdown>
+</solution-view-container>
+<div *ngIf="buttonText !== ''" class="mt-3 chat-solution-btn">
+    <fab-primary-button (onClick)="perfSolutionAction()" [disabled]="isActionLoading">{{buttonText}}</fab-primary-button>
+</div>
+<div class="mt-3" *ngIf="isActionLoading">
+    <fab-shimmer [width]="'100%'"></fab-shimmer>
+</div>

@@ -8,6 +8,7 @@ export const environment = {
   production: false,
   backendHost: 'http://localhost:62302/',
   useApplensBackend: false,
+  conversationalDiagnosticsHost: 'http://localhost:5043/',
   authServiceToken: "",
   authServiceResourceId: ""
 };

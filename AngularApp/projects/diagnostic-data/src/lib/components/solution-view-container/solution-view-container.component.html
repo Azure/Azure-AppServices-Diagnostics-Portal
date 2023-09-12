@@ -1,4 +1,4 @@
-<div class="solution-view-container">
+<div [ngClass]="hasBorder ? 'solution-view-container' : 'solution-view-container-no-border'">
   <div class="solution-container-title">
     <img [src]="customSolutionTitleImageSrc && customSolutionTitleImageSrc.length>0? customSolutionTitleImageSrc: solutionTitleImageSrc">
     <span class="solution-title">{{solutionTitle}}</span>

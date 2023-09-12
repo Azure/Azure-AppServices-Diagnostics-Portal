@@ -1,5 +1,5 @@
 <fab-panel [isOpen]="globals.openSessionPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'"
+  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="isPanelBlocking" [closeButtonAriaLabel]="'close'"
   (onDismiss)="dismissedHandler()" [headerText]="'Diagnostic sessions'">
   <div class="row panel-padding">
     <div style="margin-bottom: 10px">

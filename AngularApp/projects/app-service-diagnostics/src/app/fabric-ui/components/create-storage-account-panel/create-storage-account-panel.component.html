@@ -1,5 +1,5 @@
 <fab-panel [isOpen]="globals.openCreateStorageAccountPanel" [type]="type" [customWidth]="width"
-  [isHiddenOnDismiss]="true" [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false"  [closeButtonAriaLabel]="'close'"
+  [isHiddenOnDismiss]="true" [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="isPanelBlocking"  [closeButtonAriaLabel]="'close'"
   (onDismiss)="dismissedHandler()" [headerText]="'Choose Storage account'">
   <div class="panel-padding">
     <div class="row mt-5">
