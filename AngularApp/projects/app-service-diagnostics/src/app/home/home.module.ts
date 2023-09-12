@@ -64,6 +64,9 @@ import { DownloadReportComponent } from '../shared/components/download-report/do
 import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
 import { ClientScriptService } from '../shared-v2/services/client-script.service';
 import { OpenAIArmService } from '../../../../diagnostic-data/src/public_api';
+import { DiagPortalOpenAIChatService } from '../shared-v2/services/diagportal-openai-chat.service';
+import { DiagPortalDocsCopilotComponent } from './components/diagportal-docs-copilot/diagportal-docs-copilot.component';
+import { GenericOpenAIChatService } from '../../../../diagnostic-data/src/public_api';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -78,6 +81,15 @@ export const HomeRoutes = RouterModule.forChild([
                 component: HomeComponent,
                 data: {
                     navigationTitle: 'Home',
+                    cacheComponent: true
+                },
+                pathMatch: 'full',
+            },
+            {
+                path: 'documentationCopilot',
+                component: DiagPortalDocsCopilotComponent,
+                data: {
+                    navigationTitle: 'DocsCopilot',
                     cacheComponent: true
                 },
                 pathMatch: 'full',
@@ -779,7 +791,7 @@ export const HomeRoutes = RouterModule.forChild([
         FabCommandBarModule,
         FabSpinnerModule
     ],
-    declarations: [HomeContainerComponent, HomeComponent, CategoryChatComponent, CategoryTileComponent, SearchResultsComponent, SupportTopicRedirectComponent, DiagnosticsSettingsComponent, CategoryTileV4Component, RiskTileComponent],
+    declarations: [HomeContainerComponent, HomeComponent, CategoryChatComponent, CategoryTileComponent, SearchResultsComponent, SupportTopicRedirectComponent, DiagnosticsSettingsComponent, CategoryTileV4Component, RiskTileComponent,DiagPortalDocsCopilotComponent],
     providers:
         [
             CategoryTabResolver,
@@ -793,12 +805,14 @@ export const HomeRoutes = RouterModule.forChild([
             MetricsPerInstanceAppServicePlanResolver,
             AdvanceApplicationRestartResolver,
             SecurityScanningResolver,
+            DiagPortalOpenAIChatService,
             { provide: GenericSupportTopicService, useExisting: SupportTopicService },
             { provide: GenericContentService, useExisting: ContentService },
             { provide: GenericDocumentsSearchService, useExisting: DocumentSearchService },
             { provide: CXPChatService, useExisting: CXPChatCallerService },
             { provide: GenericResourceService, useExisting: ResourceService },
-            { provide: GenericClientScriptService, useExisting: ClientScriptService}
+            { provide: GenericClientScriptService, useExisting: ClientScriptService},
+            { provide: GenericOpenAIChatService, useExisting: DiagPortalOpenAIChatService}
         ],
 })
 export class HomeModule { }

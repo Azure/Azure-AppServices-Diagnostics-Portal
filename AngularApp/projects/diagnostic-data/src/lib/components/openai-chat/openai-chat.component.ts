@@ -48,6 +48,7 @@ export class OpenAIChatComponent implements OnInit, OnChanges {
   @Input() chatModel: ChatModel = ChatModel.GPT3;
   @Input() responseTokenSize: ResponseTokensSize = ResponseTokensSize.Small;
   @Input() stopMessageGeneration: boolean = false;
+  @Input() userNameInitial: string = "";
   @Input() systemInitial: string = "AI";
   @Input() systemPhotoSource: string = '/assets/img/openailogo.svg';
   @Input() showCopyOption: boolean = false;

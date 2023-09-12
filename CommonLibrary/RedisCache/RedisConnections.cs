@@ -1,10 +1,7 @@
-﻿using System;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
 using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Backend.Services
+namespace CommonLibrary.Services
 {
     public class RedisConnection : IDisposable
     {
