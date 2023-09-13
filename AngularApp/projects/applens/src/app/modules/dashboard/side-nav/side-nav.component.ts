@@ -65,6 +65,7 @@ export class SideNavComponent implements OnInit {
   isGraduation: boolean = false;
   isProd: boolean = false;
   workflowsEnabled: boolean = false;
+  noCodeDetectorsEnabled: boolean = false;
   showChatGPT: boolean = false;
   askAppLensEnabled: boolean = false;  
 
@@ -132,19 +133,19 @@ export class SideNavComponent implements OnInit {
       },
       icon: null
     },
-    {
-      label: 'Quick Create New Detector',
-      id: "",
-      onClick: () => {
-        this.navigateTo('designDetector');
-      },
-      expanded: false,
-      subItems: null,
-      isSelected: () => {
-        return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `designDetector`.toLowerCase();
-      },
-      icon: null
-    },
+    // {
+    //   label: 'Quick Create New Detector',
+    //   id: "",
+    //   onClick: () => {
+    //     this.navigateTo('designDetector');
+    //   },
+    //   expanded: false,
+    //   subItems: null,
+    //   isSelected: () => {
+    //     return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `designDetector`.toLowerCase();
+    //   },
+    //   icon: null
+    // },
     {
       label: 'New Detector',
       id: "",
@@ -296,6 +297,25 @@ export class SideNavComponent implements OnInit {
           subItems: null,
           isSelected: () => {
             return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `createWorkflow`.toLowerCase();
+          },
+          icon: null
+        }
+      );
+    }
+
+    this.noCodeDetectorsEnabled = this.resourceService.noCodeDetectorsEnabled;
+    if (this.noCodeDetectorsEnabled) {
+      this.createNew.splice(1, 0,
+        {
+          label: 'Quick Create New Detector',
+          id: "",
+          onClick: () => {
+            this.navigateTo('designDetector');
+          },
+          expanded: false,
+          subItems: null,
+          isSelected: () => {
+            return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `designDetector`.toLowerCase();
           },
           icon: null
         }

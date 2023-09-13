@@ -27,6 +27,8 @@ export class DynamicNodeSettings implements OnInit {
   clusterName: string = '';
   databaseName: string = '';
   scopeString: string = "";
+  @Input() dataSourceRequired: boolean = false;
+  @Input() isMicrosoftWeb: boolean = false;
   //dataSourceType: NoCodeSupportedDataSourceTypes = NoCodeSupportedDataSourceTypes.Kusto
   // dataSource: KustoDataSourceSettings = {
   //   clusterName: this.clusterName,

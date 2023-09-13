@@ -1,4 +1,5 @@
 <div>
+    <h2>UI Rendering</h2>
     <fab-text-field [label]="'Title: '" [placeholder]="'(optional)'" [styles]="textBoxStyle" (onChange)="updateTitle($event)"></fab-text-field>
     <fab-text-field [label]="'Description: '" [placeholder]="'(optional)'" [styles]="textBoxStyle" (onChange)="updateDesc($event)"></fab-text-field>
     <fab-dropdown [label]="'Graph type: '" [(defaultSelectedKey)]="selectedType" [options]="graphTypeOptions" [styles]="dropdownStyle" (onChange)="updateType($event)"></fab-dropdown>

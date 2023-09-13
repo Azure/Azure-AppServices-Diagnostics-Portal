@@ -16,7 +16,8 @@
             "emergingIssuesICMLookupEnabled": false,
             "displayName": "App",
             "overviewPageMetricsId" : "applensoverviewmetrics_appservices",
-            "workflowsEnabled": true
+            "workflowsEnabled": true,
+            "noCodeDetectorsEnabled": true
         },
         {
             "service": "AseService",

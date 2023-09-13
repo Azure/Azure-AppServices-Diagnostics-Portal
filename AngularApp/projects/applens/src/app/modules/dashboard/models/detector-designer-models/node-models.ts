@@ -1,20 +1,23 @@
 import { DiagnosticData, RenderingType } from "diagnostic-data";
 import { Guid } from "projects/diagnostic-data/src/lib/utilities/guid";
 import { NodeSettings, nodeJson } from "../../dynamic-node-settings/node-rendering-json-models";
+import { BehaviorSubject } from "rxjs";
 //import { nodeStatus } from "dist/diagnostic-data/public_api";
 
 export class ComposerNodeModel {
     id: string = Guid.newGuid();
-    public queryName:string; //Use a property here to replace space with underscore
+    public queryName:string = ''; //Use a property here to replace space with underscore
     public code:string = '<query>\r\n';
     public editorRef?: monaco.editor.ICodeEditor = null;
     public renderingType:NoCodeSupportedRenderingTypes = RenderingType.Table;
     public settings:NodeSettings = new NodeSettings;
     public dataset: DiagnosticData;
+    public validationObservable = new BehaviorSubject<string>('');
     public get isValid(): boolean {
         return this.invalidReason == "";
     }
     public invalidReason: string = "";
+    public hasDataSource = false;
     public GetJson(){
         return`{"operationName":"${this.queryName}","text":"${this.code}","nodeSettings":${this.settings.GetJson()}}`
         //return`{"id":{${this.id}},"operationName":{${this.queryName}},"text":{${this.code}},"editorRef":{${this.editorRef}},"renderingType":{${this.renderingType}},"nodeSettings":{${this.settings.GetJson()}}}`

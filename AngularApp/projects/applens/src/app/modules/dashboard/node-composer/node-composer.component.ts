@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DetectorControlService, DetectorMetaData, RenderingType, ResponseTokensSize, TextModels } from 'diagnostic-data';
-import { IBasePickerProps, ITagPickerProps, ITagItemProps, ISuggestionModel, ITag, TagItem, IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IIconProps, IPanelProps, IPersona, IPersonaProps, IPickerItemProps, IPivotProps, ITextFieldProps, MessageBarType, PanelType, SelectableOptionMenuItemType, TagItemSuggestion, IDropdown, ICalloutProps, ICheckboxStyleProps, ICheckboxProps, PivotItem, List } from 'office-ui-fabric-react';
+import { IBasePickerProps, ITagPickerProps, ITagItemProps, ISuggestionModel, ITag, TagItem, IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IIconProps, IPanelProps, IPersona, IPersonaProps, IPickerItemProps, IPivotProps, ITextFieldProps, MessageBarType, PanelType, SelectableOptionMenuItemType, TagItemSuggestion, IDropdown, ICalloutProps, ICheckboxStyleProps, ICheckboxProps, PivotItem, List, IPivotItemProps } from 'office-ui-fabric-react';
 import { KeyValuePair } from 'projects/app-service-diagnostics/src/app/shared/models/portal';
 import { Observable, of } from 'rxjs';
 import { ApplensGlobal } from '../../../applens-global';
@@ -18,6 +18,7 @@ import { dynamicExpressionBody, kustoQueryDialogParams } from '../workflow/model
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NoCodeSupportedDataSourceTypes, NoCodeExpressionBody, NodeSettings, NoCodeTableRenderingProperties, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, nodeJson, NoCodeExpressionResponse } from '../dynamic-node-settings/node-rendering-json-models';
 import { toUnicode } from 'punycode';
+import { get } from 'http';
 const moment = momentNs;
 
 @Component({
@@ -36,7 +37,7 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   @Output() onNodeModelChange = new EventEmitter<INodeModelChangeEventProps>();
   @Output() onDuplicateClick = new EventEmitter<ComposerNodeModel>();
   @Output() onDeleteClick = new EventEmitter<ComposerNodeModel>();
-  @Input() isNodeValid: (node: ComposerNodeModel) => string;
+  @Input() isNodeValid: () => void;
   nodeStatus: string = '';
 
   private readonly TPROMPT_SUGGESTIONS_ENABLED:boolean = false;
@@ -53,6 +54,12 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   errorMessage: string = 'test error message';
   runButtonDisabled: boolean = false;
   detectorLoading: boolean = false;
+
+  defaultKustoCluster: string = '';
+  defaultKustoDatabase: string = '';
+  dataSourceRequired: boolean = false;
+
+  isMicrosoftWeb: boolean = false;
 
   microsoftWebPrompt: string = `input: for an app named nmallick1
 
@@ -162,6 +169,10 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
       borderTop: '1px solid'
     }
   }
+
+  // highlightedPivotStyle: IPivotItemProps['headerText'] = {
+    
+  // }
   //#endregion Fabric element styles
 
   renderingTypeOptions:IDropdownOption[] = [];
@@ -202,7 +213,14 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   }
 
   public initComponent() {
-   
+   this.isMicrosoftWeb = this.resourceService.ArmResource.provider.toLowerCase() === 'microsoft.web' && this.resourceService.ArmResource.resourceTypeName.toLowerCase() === 'sites';
+
+   this.nodeModel.validationObservable.subscribe( validationMessage => {
+      this.nodeStatus = validationMessage;
+      this.nodeModel.invalidReason = validationMessage;
+   });
+
+   this.getDefaultClusterParams();
 
     //Initialize rendering type options with only the supported entity types
     this.renderingTypeOptions = [];
@@ -255,21 +273,34 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
     }
   }
 
-  public getRequiredErrorMessageOnTextField = (value: string): string => {
+  public checkIfNodeValid() {
+    
     if (this.isNodeValid) {
-      this.nodeStatus = this.isNodeValid(this.nodeModel);
-      this.nodeModel.invalidReason = this.nodeStatus;
-    }
-    else if (!value) {
-      this.nodeStatus = 'This field is required';
-      this.nodeModel.invalidReason = this.nodeStatus;
+      this.isNodeValid();
+      // this.nodeStatus = this.isNodeValid(this.nodeModel);
+      // this.nodeModel.invalidReason = this.nodeStatus;
+      // return this.nodeStatus;
     }
     else {
-      this.nodeStatus = '';
-      this.nodeModel.invalidReason = this.nodeStatus;
+      return '';
     }
-    return this.nodeStatus;
   }
+
+  // public getRequiredErrorMessageOnTextField = (value: string): string => {
+  //   if (this.isNodeValid) {
+  //     this.nodeStatus = this.isNodeValid(this.nodeModel);
+  //     this.nodeModel.invalidReason = this.nodeStatus;
+  //   }
+  //   else if (!value) {
+  //     this.nodeStatus = 'This field is required';
+  //     this.nodeModel.invalidReason = this.nodeStatus;
+  //   }
+  //   else {
+  //     this.nodeStatus = '';
+  //     this.nodeModel.invalidReason = this.nodeStatus;
+  //   }
+  //   return this.nodeStatus;
+  // }
 
   public removeSpacesFromQueryName(event:any):void {
     this.nodeModel.queryName = this.nodeModel.queryName.replace(/(\b|_|-)\s?(\w)/g, (c) => {return c.replace(/[\s|_|-]/g, '').toUpperCase();} )
@@ -392,6 +423,10 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   }
   rsc(event: any){
     this.nodeModel.settings = event.instance;
+    if (this.dataSourceRequired) {
+      this.nodeModel.hasDataSource = event.instance.dataSourceSettings.isValid();
+    }
+    this.checkIfNodeValid();
   }
 
   writeDatasetJson(response){ 
@@ -479,9 +514,9 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   }
 
   private templatizeQuery(event = null){
-    let isMicrosoftWeb = true;
+    this.isMicrosoftWeb = true;
     let appName = 'todoapiv420210108090805';
-    let prompt = isMicrosoftWeb ? CreateTextCompletionModel(`${this.microsoftWebPrompt}\n\nfor an app named ${appName}\n\n${this.nodeModel.code}\n\noutput:\n`, TextModels.Default, ResponseTokensSize.Large) : CreateTextCompletionModel(`prompt2`);
+    let prompt = this.isMicrosoftWeb ? CreateTextCompletionModel(`${this.microsoftWebPrompt}\n\nfor an app named ${appName}\n\n${this.nodeModel.code}\n\noutput:\n`, TextModels.Default, ResponseTokensSize.Large) : CreateTextCompletionModel(`prompt2`);
     
     this._openAIService.generateTextCompletion(prompt, null, true).subscribe(template => {
       this.nodeModel.code = template.text;
@@ -489,8 +524,28 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
     });
   }
 
+  private getDefaultClusterParams() {
+    this.dataSourceRequired = !this.isMicrosoftWeb && !(this.defaultKustoCluster && this.defaultKustoDatabase)
+    this.diagnosticApiService.getKustoMappings().subscribe(clusterParams => {
+      if (clusterParams && clusterParams.length > 0 && clusterParams[0].publicDatabaseName && clusterParams[0].publicClusterName) {
+        this.defaultKustoCluster = clusterParams[0].publicClusterName;
+        this.defaultKustoDatabase = clusterParams[0].publicDatabaseName;
+        this.nodeModel.hasDataSource = true;
+      }
+      else {
+        this.nodeModel.hasDataSource = false;
+      }
+      this.checkIfNodeValid();
+    },
+    error => {
+      this.nodeModel.hasDataSource = false;
+      this.checkIfNodeValid();
+    });
+  }
+
   onChangeQueryName(event:any) {
     this.nodeModel.queryName = event.newValue;
+    this.checkIfNodeValid();
     // if (this.isNodeValid) {
     //   this.nodeStatus = this.isNodeValid(this.nodeModel);
     // }

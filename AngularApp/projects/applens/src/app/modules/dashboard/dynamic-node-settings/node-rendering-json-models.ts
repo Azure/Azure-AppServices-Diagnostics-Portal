@@ -98,6 +98,7 @@ export class NoCodeGraphRenderingProperties extends RenderingSettingsBase{
 export abstract class DataSourceSettingsBase {
     dataSourceType:NoCodeSupportedDataSourceTypes = NoCodeSupportedDataSourceTypes.Kusto;
     abstract processScopeString(scope: string);
+    abstract isValid(): boolean;
     abstract GetJson(): string;
 }
 
@@ -127,6 +128,10 @@ export class  KustoDataSourceSettings extends DataSourceSettingsBase {
 
     public GetJson(): string {
         return JSON.stringify(this);
+    }
+
+    public isValid(): boolean {
+        return this.clusterName != "" && this.dataBaseName != "";
     }
 }
 

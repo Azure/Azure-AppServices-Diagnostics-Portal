@@ -2,9 +2,14 @@
 	<div [id]="nodeModel.id + '_composerheaderRow'" style="width: 100%; display: flex;justify-content:space-between; padding: 0.25em;background-color: lightsteelblue;">
 		<div>
 			<fab-text-field [ariaLabel]="'Name'" [styles]="fabTextFieldStyleNoStretch" 
-					[getErrorMessage]="getRequiredErrorMessageOnTextField" [defaultValue]="nodeModel.queryName"
+					[errorMessage]="nodeStatus" [defaultValue]="nodeModel.queryName"
 					[autoComplete]="'off'"  (onBlur)="removeSpacesFromQueryName($event)" (onChange)="onChangeQueryName($event)"></fab-text-field>
 		</div>
+		<!-- <div>
+			<span style="color: red;">
+				{{this.nodeStatus}}
+			</span>
+		</div> -->
 		<div style="display:flex;font-size:large;">
 			<div style="padding-left: 2px;padding-right: 15px;">
 				<fab-dropdown [ariaLabel]="'Render as'" [options]="renderingTypeOptions" (onChange)="onRenderingTypeChange($event)"
@@ -41,7 +46,7 @@
 			<fab-pivot-item [headerText]="'Settings'" [itemKey]="nodeModel.id + '_Settings'">
 				<div class = "pivotItemContainer" style="padding-left: 10px; height: fit-content;">
 					<!-- Settings for {{RenderingType[nodeModel.renderingType]}} -->
-					<dynamic-node-settings [renderingType]="nodeModel.renderingType" [renderingSettings] = "[]" (renderingSettingsChange)="rsc($event)"></dynamic-node-settings>
+					<dynamic-node-settings [isMicrosoftWeb]="isMicrosoftWeb" [dataSourceRequired]="dataSourceRequired" [renderingType]="nodeModel.renderingType" [renderingSettings] = "[]" (renderingSettingsChange)="rsc($event)"></dynamic-node-settings>
 				</div>
 			</fab-pivot-item>
 			<fab-pivot-item [headerText]="'Result'" [itemKey]="nodeModel.id + '_Result'">

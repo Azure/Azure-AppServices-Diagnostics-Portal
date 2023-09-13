@@ -260,19 +260,54 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   public resetComposerNodes(): void {       
   }
 
-  
-  isNodeValid = (node: ComposerNodeModel): string => {
+  updateNodeValidity(node: ComposerNodeModel) {
     if (node.queryName){
       if (this.elements.some( element => element.id != node.id && element.queryName.toLowerCase() === node.queryName.toLowerCase())) {
+        this.elements.find(element => element.id === node.id).validationObservable.next('Duplicate query name');
         return 'Duplicate query name';
-      }
-      else {
-        return '';
       }
     }
     else {
+      this.elements.find(element => element.id === node.id).validationObservable.next('Query name is required');
       return 'Query name is required';
     }
+    // if (!node.code){
+    //   this.elements.find(element => element.id === node.id).validationObservable.next('Query is required');
+    //   return 'Node must contain a query';
+    // }
+    if (!node.hasDataSource){
+      this.elements.find(element => element.id === node.id).validationObservable.next('Cluster and Database names are mandatory. Please set them in the Settings tab.');
+      return 'Cluster and Database names are mandatory. Please set them in the Settings tab.';
+    }
+
+    this.elements.find(element => element.id === node.id).validationObservable.next('');
+    return '';
+  }
+  
+  isNodeValid = (): void => {
+    this.elements.forEach(element => {
+      this.updateNodeValidity(element);
+    });
+    // if (node.queryName){
+    //   if (this.elements.some( element => element.id != node.id && element.queryName.toLowerCase() === node.queryName.toLowerCase())) {
+    //     this.elements.find(element => element.id === node.id).validationObservable.next('Duplicate query name');
+    //     return 'Duplicate query name';
+    //   }
+    // }
+    // else {
+    //   this.elements.find(element => element.id === node.id).validationObservable.next('Query name is required');
+    //   return 'Query name is required';
+    // }
+    // if (!node.code){
+    //   this.elements.find(element => element.id === node.id).validationObservable.next('Query is required');
+    //   return 'Node must contain a query';
+    // }
+    // if (!node.hasDataSource){
+    //   this.elements.find(element => element.id === node.id).validationObservable.next('Data source settings required');
+    //   return 'Data source settings required';
+    // }
+
+    // return '';
   }
 
   nodesValid(): boolean {

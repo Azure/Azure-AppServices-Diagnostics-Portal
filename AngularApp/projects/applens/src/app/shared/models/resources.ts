@@ -68,6 +68,7 @@ export interface ResourceServiceInputs {
     displayName?: string;
     overviewPageMetricsId?: string;
     workflowsEnabled: boolean;
+    noCodeDetectorsEnabled: boolean;
 }
 
 export interface ResourceError {
@@ -89,5 +90,6 @@ export const DEFAULT_RESOURCE_SERVICE_INPUTS: ResourceServiceInputs = {
     sapProductId:'',
     staticSelfHelpContent: '',
     searchSuffix: 'AZURE',
-    workflowsEnabled: true
+    workflowsEnabled: true,
+    noCodeDetectorsEnabled: false
 };
