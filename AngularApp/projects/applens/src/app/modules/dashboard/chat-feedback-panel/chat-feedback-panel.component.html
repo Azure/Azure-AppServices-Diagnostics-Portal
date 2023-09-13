@@ -1,0 +1,26 @@
+<div>
+  <fab-panel [isOpen] = 'feedbackPanelState.isOpen' [type]="panelType" [customWidth]="width" (onDismiss)="dismissedHandler('Close')" [renderFooterContent]='PanelFooter' [isFooterAtBottom]="true"
+  [headerText]="headerText">  
+    <div style="margin: 5px; display:flex;flex-direction: column;">
+      <div style="height:95%">
+        <fab-text-field [ariaLabel]="'Question'" [required]="'{true}'" [label]="'Question'" [styles]="fabTextFieldStyles" [rows] = 4 [multiline]="true" (onChange) = "updateFeedbackUserQuestion($event)" [value] = "feedbackUserQuestion.displayMessage">
+        </fab-text-field>
+        <fab-text-field [ariaLabel]="'System response'"  [required]="'{true}'" [label]="'System response'" [styles]="fabTextFieldStyles" [disabled]="true" aria-disabled="true" [rows] = 15 [resizable]="false" [autoAdjustHeight] = "false" [multiline]="true" [value] = "systemResponse.displayMessage">
+        </fab-text-field>
+        <fab-text-field [ariaLabel]="expectedResponseLabelText" [required]="'{true}'" [label]="expectedResponseLabelText" [styles]="fabTextFieldStyles" [rows] = 15 [autoAdjustHeight] = "true" [multiline]="true" (onChange) = "updateFeedbackUserResponse($event)" [defaultValue] = "correctResponseFeedback">
+        </fab-text-field>
+        <fab-text-field *ngFor = "let element of additionalFields" [ariaLabel]="element.labelText"  [label]="element.labelText" [styles]="fabTextFieldStyles" [rows] = 5 [autoAdjustHeight] = "true" [multiline]="element.isMultiline"  [defaultValue] = "element.defaultValue" (onChange)="updateAdditionalFieldValue(element, $event)">
+        </fab-text-field>
+        <div *ngIf = "statusMessage" style="color: brown;margin:2em;" role="text" aria-label="Status message" aria-disabled="true"  >{{statusMessage}}</div>
+      </div>
+    </div>
+  </fab-panel>
+  <ng-template #PanelFooter>
+    <div>
+      <div style="margin:1.5em;display:flex;align-items: center;">
+        <fab-primary-button (onClick)="submitChatFeedback()" [disabled]="disableSubmitButton" [contentClass]="'feedback-submit-button'">Submit feedback</fab-primary-button>          
+        <div *ngIf = "savingInProgress" style="margin: 2em;"><fab-spinner [ariaLabel]="'Saving'" [label] = "savingProgressText"></fab-spinner></div>
+      </div>
+    </div>
+</ng-template>
+</div>

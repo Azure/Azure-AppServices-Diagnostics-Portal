@@ -4,6 +4,7 @@
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "styles/vendor/bootstrap-4-utilities.min.css";
 @import "styles/icons.scss";
+@import "../../diagnostic-data/src/lib/scss/styles.scss";
 
 /* You can add global styles to this file, and also import other style files */
 body {
@@ -31,7 +32,11 @@ body {
 }
 
 .copilot-header {
-  color: #289dc2;
+  background-image: radial-gradient(109.81% 107.82% at 100.1% 90.19%, #1c82c2 33.63%, #2D87C3 53.31%, #63b2ae 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-top: 15px;
 }
 
 .copilot-header-secondary {

@@ -1,11 +1,11 @@
-<div [attr.name]="data.name" #canvasContent>
+<div [attr.name]="data.name" #canvasContent class="workflow-node">
   <div class="panel panel-default">
     <div class="panel-heading panel-title-kusto">
-      <node-title [data]="data" [customClass]="'background-purple'" [customClassIcon]="'fa-bar-chart'">
+      <node-title [data]="data" (collapseChange)="onCollapseChange($event)" [customClass]="'background-purple'" [customClassIcon]="'fa-bar-chart'">
       </node-title>
     </div>
 
-    <div class="panel-body">
+    <div #nodeBodyDiv class="panel-body" [hidden]="collapsed">
       <pre class="kusto-query mt-1">
 {{ getQueryText(data.queryText) }}
 </pre>

@@ -25,6 +25,7 @@ export interface ChatResponse {
     text: string,
     truncated: boolean,
     finishReason: string,
+    feedbackIds: string[],
     exception: string
 }
 

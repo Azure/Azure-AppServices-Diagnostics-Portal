@@ -1,6 +1,7 @@
 
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "../src/styles/icons.scss";
+@import "../../diagnostic-data/src/lib/scss/styles.scss";
 
 body {
     background-color: var(--bodyBackground)!important;
@@ -119,7 +120,9 @@ fab-command-bar {
 }
 
 .ms-Panel-main {
-    border: 1px solid var(--panelBorder)
+    border: 1px solid var(--panelBorder);
+    //Add board on top to differentiate between panel and main context
+    border-top: 1px solid #cccccc;
 }
 
 blockquote p{

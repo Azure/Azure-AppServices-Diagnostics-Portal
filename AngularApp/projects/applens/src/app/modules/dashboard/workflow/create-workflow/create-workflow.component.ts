@@ -395,6 +395,10 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
   //
 
   getSupportTopicPaths(supportTopicList: []): string[] {
+    if (supportTopicList == null) {
+      return [];
+    }
+
     let supportTopicPaths: string[] = [];
     supportTopicList.forEach((supportTopic: any) => {
       let idx = this.allSupportTopics.findIndex(x => x.sapProductId === supportTopic.SapProductId && x.sapSupportTopicId === supportTopic.SapSupportTopicId);
@@ -458,6 +462,18 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
       //
 
       this.supportTopicsInUse.push({ id: id, supportTopicPath: this.correctSupportTopicPath(this.allSupportTopics[idx].supportTopicPath) });
+    }
+  }
+
+  refreshVariables() {
+    let rootNode = this.canvas.getFlow().getRoot();
+    if (rootNode != null) {
+      this._workflowService.refreshVariables(rootNode);
+      let wf = new workflow();
+      wf.root = rootNode;
+      let jsonString = JSON.stringify(wf, null, 4);
+      this.canvas.getFlow().upload(jsonString);
+      this._workflowService.showMessageBox("Success", "Variables refreshed successfully", false);
     }
   }
 }

@@ -5,7 +5,7 @@ import { NgFlowchartStepComponent } from 'projects/ng-flowchart/dist';
 import { ConfigureVariablesComponent } from '../configure-variables/configure-variables.component';
 import { KustoQueryDialogComponent } from '../kusto-query-dialog/kusto-query-dialog.component';
 import { kustoQueryDialogParams } from '../models/kusto';
-import { WorkflowNodeBaseClass } from '../node-base-class';
+import WorkflowNodeBaseClass from '../node-base-class';
 import { WorkflowService } from '../services/workflow.service';
 import { ResourceService } from '../../../../shared/services/resource.service';
 import { DetectorGistApiService } from '../../../../shared/services/detectorgist-template-api.service';

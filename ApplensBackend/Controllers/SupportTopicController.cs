@@ -24,9 +24,9 @@ namespace AppLensV3.Controllers
         [HttpOptions("supporttopics/{pesId}")]
         public async Task<IActionResult> GetSupportTopics(string pesId)
         {
-            if (string.IsNullOrWhiteSpace(pesId))
+            if (string.IsNullOrWhiteSpace(pesId) || !Int32.TryParse(pesId.Trim(), out int parsedProductId))
             {
-                return BadRequest("Product Id cannot be empty");
+                return BadRequest("Invalid Product Id");
             }
 
             List<SupportTopic> supportTopicsList = await _supportTopicService.GetSupportTopicsAsync(pesId);

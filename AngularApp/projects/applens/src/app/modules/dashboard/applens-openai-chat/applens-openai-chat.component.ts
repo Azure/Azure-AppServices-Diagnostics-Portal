@@ -75,6 +75,7 @@ export class ApplensOpenAIChatComponent implements OnInit {
     const userId = alias.replace('@microsoft.com', '');
     this.userAlias = userId;
     this._diagnosticApiService.getUserPhoto(userId).subscribe(image => {
+      
       this._chatUIContextService.userPhotoSource = image;
     });
 

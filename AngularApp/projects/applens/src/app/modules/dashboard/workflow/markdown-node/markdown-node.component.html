@@ -1,10 +1,10 @@
-<div [attr.name]="data.name" #canvasContent>
+<div [attr.name]="data.name" #canvasContent class="workflow-node">
     <div class="panel panel-default">
         <div class="panel-heading panel-title-markdown">
-            <node-title [data]="data" [customClass]="'background-green'" [customClassIcon]="'fa-html5'">
+            <node-title [data]="data" (collapseChange)="onCollapseChange($event)" [customClass]="'background-green'" [customClassIcon]="'fa-html5'">
             </node-title>
         </div>
-        <div class="panel-body">
+        <div #nodeBodyDiv class="panel-body" [hidden]="collapsed">
             <div class="markdown-editor">
                 <div class="markdown-text mt-2">{{ data.markdownText }}</div>
                 <button class="btn btn-primary btn-sm" (click)="configureMarkdown()">Configure markdown</button>

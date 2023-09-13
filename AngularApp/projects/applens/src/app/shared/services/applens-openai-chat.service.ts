@@ -1,13 +1,13 @@
 import { catchError, map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from, of } from 'rxjs';
-import { TextCompletionModel, ChatCompletionModel, OpenAIAPIResponse, ChatResponse, TelemetryService } from "diagnostic-data";
+import { TextCompletionModel, ChatCompletionModel, ChatResponse, TelemetryService,KeyValuePair } from "diagnostic-data";
 import { DiagnosticApiService } from './diagnostic-api.service';
 import { HttpHeaders } from "@angular/common/http";
 import { ResourceService } from './resource.service';
 import { environment } from '../../../environments/environment';
 import * as signalR from "@microsoft/signalr";
-import { error } from 'console';
+import { AdalService } from 'adal-angular4';
 
 @Injectable()
 export class ApplensOpenAIChatService {
@@ -21,14 +21,34 @@ export class ApplensOpenAIChatService {
   private chatCompletionApiPath: string = "api/openai/runChatCompletion";
   private signalRChatEndpoint: string = "/chatcompletionHub";
   private resourceProvider: string;
+  private providerName:string;
+  private resourceTypeName: string;
   private productName: string;
   private signalRConnection: any;
   private signalRLogLevel: any;
   private messageBuilder: string;
+  private resourceSpecificInfo: KeyValuePair[] = [];
+  private resource:any;
 
-  constructor(private _backendApi: DiagnosticApiService, private _resourceService: ResourceService, private telemetryService: TelemetryService) {
+  private addOrUpdateResourceSpecificInfo(key:string, value:string) {
+    if(key) {
+      let existing =  this.resourceSpecificInfo.find(kvp => kvp.key === key);
+      if(existing) {
+        existing.value = value;
+      }
+      else {
+        this.resourceSpecificInfo.push(<KeyValuePair>{
+          key: key,
+          value: value
+        });
+      }
+    }
+  }
+
+  constructor(private _adalService: AdalService, private _backendApi: DiagnosticApiService, private _resourceService: ResourceService, private telemetryService: TelemetryService) {
     this.resourceProvider = `${this._resourceService.ArmResource.provider}/${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase();
-    this.productName = this._resourceService.searchSuffix + ((this.resourceProvider === 'microsoft.web/sites') ? ` ${this._resourceService.displayName}` : '');
+    this.providerName = `${this._resourceService.ArmResource.provider}`.toLowerCase();
+    this.resourceTypeName = `${this._resourceService.ArmResource.resourceTypeName}`.toLowerCase();
     this.onMessageReceive = new BehaviorSubject<ChatResponse>(null);
     this.signalRLogLevel = signalR.LogLevel.Information;
 
@@ -36,15 +56,31 @@ export class ApplensOpenAIChatService {
       this.signalRChatEndpoint = "http://localhost:5000/chatcompletionHub";
       this.signalRLogLevel = signalR.LogLevel.Debug;
     }
+    this.addOrUpdateResourceSpecificInfo('provider', this.providerName);
+    this.addOrUpdateResourceSpecificInfo('resourceTypeName', this.resourceTypeName );
+
+    let resourceReady: Observable<any>;
+    resourceReady = (this._resourceService.ArmResource?.resourceGroup && this._resourceService.ArmResource?.resourceName) ? this._resourceService.getCurrentResource() : of(null);    
+    resourceReady.subscribe(resource => {
+      if (resource) {
+        this.resource = resource;
+        let valuesToAdd = ['IsLinux', 'Kind', 'IsXenon'];
+        valuesToAdd.forEach(key => {
+          if(this.resource[key]) {
+            this.addOrUpdateResourceSpecificInfo(key, this.resource[key]);
+          }
+        });
+      }
+    });
   }
 
   public CheckEnabled(): Observable<boolean> {
     return this._backendApi.get<boolean>(`api/openai/enabled`).pipe(map((value: boolean) => { this.isEnabled = value; return value; }), catchError((err) => of(false)));
   }
 
-  public generateTextCompletion(queryModel: TextCompletionModel, customPrompt: string = '', caching: boolean = true): Observable<ChatResponse> {
+  public generateTextCompletion(queryModel: TextCompletionModel, customPrompt: string = '', caching: boolean = true, insertCustomPromptAtEnd:boolean = false): Observable<ChatResponse> {
     if (customPrompt && customPrompt.length > 0) {
-      queryModel.prompt = `${customPrompt}\n${queryModel.prompt}`;
+      queryModel.prompt = insertCustomPromptAtEnd? `${queryModel.prompt}\n${customPrompt}` : `${customPrompt}\n${queryModel.prompt}`;
     }
     else {
       queryModel.prompt = `You are helping eningeers to debug issues related to ${this.productName}. Do not be repetitive when providing steps in your answer. Please answer the below question\n${queryModel.prompt}`;
@@ -53,7 +89,15 @@ export class ApplensOpenAIChatService {
     return this._backendApi.post(this.textCompletionApiPath, { payload: queryModel }, new HttpHeaders({ "x-ms-openai-cache": caching.toString() })).pipe(map((res: ChatResponse) => {return res;}));
   }
 
-  public getChatCompletion(queryModel: ChatCompletionModel, customPrompt: string = ''): Observable<ChatResponse> {
+  private ConvertKeyValuePairArrayToObj(keyValuePairArray: KeyValuePair[]): Record<string, string> {
+    let result: Record<string, string> = {};
+    keyValuePairArray.forEach((keyValuePair: KeyValuePair) => {
+      result[keyValuePair.key] = keyValuePair.value;
+    });
+    return result;    
+  }
+
+  public getChatCompletion(queryModel: ChatCompletionModel, customPrompt: string = '', autoAddResourceSpecificInfo:boolean = true): Observable<ChatResponse> {
 
     if (customPrompt && customPrompt.length > 0) {
       queryModel.messages.unshift({
@@ -63,20 +107,27 @@ export class ApplensOpenAIChatService {
     }
 
     queryModel.metadata["azureServiceName"] = this.productName;
+    queryModel.metadata["armResourceId"] = this._resourceService.getCurrentResourceId();
+    
+    if(autoAddResourceSpecificInfo) {
+      queryModel.metadata["resourceSpecificInfo"] = this.ConvertKeyValuePairArrayToObj(this.resourceSpecificInfo);
+    }
 
     return this._backendApi.post(this.chatCompletionApiPath, queryModel, null, true, true).pipe(map((res: ChatResponse) => {return res;}));
   }
 
-  public sendChatMessage(queryModel: ChatCompletionModel, customPrompt: string = ''): Observable<{ sent: boolean, failureReason: string }> {
+  public sendChatMessage(queryModel: ChatCompletionModel, customPrompt: string = '', autoAddResourceSpecificInfo:boolean = true): Observable<{ sent: boolean, failureReason: string }> {
 
     if (customPrompt && customPrompt.length > 0) {
-      queryModel.messages.unshift({
-        "role": "user",
-        "content": customPrompt
-      });
+      queryModel.metadata['customPrompt'] = customPrompt;
     }
 
     queryModel.metadata["azureServiceName"] = this.productName;
+    queryModel.metadata["armResourceId"] = this._resourceService.getCurrentResourceId();
+    
+    if(autoAddResourceSpecificInfo) {
+      queryModel.metadata["resourceSpecificInfo"] = this.ConvertKeyValuePairArrayToObj(this.resourceSpecificInfo);
+    }
 
     return from(this.signalRConnection.send("sendMessage", JSON.stringify(queryModel))).pipe(
       map(() => ({ sent: true, failureReason: '' })),
@@ -102,7 +153,10 @@ export class ApplensOpenAIChatService {
       if (!this.signalRConnection || this.signalRConnection.state !== signalR.HubConnectionState.Connected) {
 
         this.signalRConnection = new signalR.HubConnectionBuilder()
-          .withUrl(this.signalRChatEndpoint)
+          .withUrl(this.signalRChatEndpoint, {  
+            accessTokenFactory: () => {  
+              return this._adalService.userInfo.token;
+            }})
           .configureLogging(this.signalRLogLevel)
           .withAutomaticReconnect()
           .build();
@@ -140,10 +194,11 @@ export class ApplensOpenAIChatService {
         if (this.messageBuilder.length > 10 || (messageJson.FinishReason != undefined && messageJson.FinishReason != '')) {
 
           let chatResponse: ChatResponse = {
-            text: this.messageBuilder,
+            text: messageJson.FinishReason && messageJson.Content ? '' : this.messageBuilder,
             truncated: null,
             finishReason: messageJson.FinishReason,
-            exception: ''
+            exception: '',
+            feedbackIds: messageJson.FinishReason && messageJson.Content? JSON.parse(messageJson.Content) : []
           };
 
           this.onMessageReceive.next(chatResponse);
@@ -168,7 +223,8 @@ export class ApplensOpenAIChatService {
         text: '',
         truncated: null,
         finishReason: 'cancelled',
-        exception: reason
+        exception: reason,
+        feedbackIds: []
       };
 
       this.onMessageReceive.next(chatResponse);

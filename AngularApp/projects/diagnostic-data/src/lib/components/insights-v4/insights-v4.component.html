@@ -3,15 +3,26 @@
      otherwise I will show it by itself -->
 <ng-template #insightView>
   <div *ngFor="let insight of insights">
-    <fab-card [isExpandable]="hasContent(insight)" [expanded]="hasContent(insight) && insight.isExpanded" [ariaLabel]="insight.title" [background]="getInsightBackground(insight.status)">
-      <div header>
+    <fab-card [isExpandable]="hasContent(insight)" [expanded]="hasContent(insight) && insight.isExpanded"
+      [ariaLabel]="insight.title" [background]="getInsightBackground(insight.status)">
+
+      <div header style="display: flex; justify-content: space-between;">
         <div style="display: flex;align-items: center;min-height: 40px;">
           <status-icon class="mr-3" [status]="insight.status"></status-icon>
-          <div class="mr-3"><strong><openai [text]="insight.title"></openai></strong></div>
+          <div class="mr-3"><strong>
+              <openai [text]="insight.title"></openai>
+            </strong></div>
+
           <div *ngIf="hasSolutions(insight) && solutionButtonPosition === SolutionButtonPosition.NextToTitle">
-            <ng-container [ngTemplateOutlet]="solutionButton" [ngTemplateOutletContext]="{'insight':insight}"></ng-container>
+            <ng-container [ngTemplateOutlet]="solutionButton"
+              [ngTemplateOutletContext]="{'insight':insight}"></ng-container>
           </div>
         </div>
+        
+        <span class="additional-options-container">
+          <fab-icon *ngIf="copilotEnabled" [iconName]="'robot'" [ariaLabel]="'Ask Detector Copilot'" [contentClass]="'additional-option'"
+            (click)="openCopilot(insight)" title="Ask Detector Copilot" (keydown.enter)="openCopilot(insight)" tabindex="0"></fab-icon>
+        </span>
       </div>
 
       <div body style="margin-bottom: 10px;">
@@ -30,13 +41,15 @@
       </div>
 
       <div *ngIf="hasSolutions(insight) && solutionButtonPosition === SolutionButtonPosition.Bottom" footer>
-        <ng-container [ngTemplateOutlet]="solutionButton" [ngTemplateOutletContext]="{'insight':insight}"></ng-container>
+        <ng-container [ngTemplateOutlet]="solutionButton"
+          [ngTemplateOutletContext]="{'insight':insight}"></ng-container>
       </div>
     </fab-card>
   </div>
 </ng-template>
 
-<solutions-panel [isPanelOpenObservable]="solutionPanelOpenSubject" [solutions]="solutions" [title]="solutionTitle"></solutions-panel>
+<solutions-panel [isPanelOpenObservable]="solutionPanelOpenSubject" [solutions]="solutions"
+  [title]="solutionTitle"></solutions-panel>
 
 <!-- If there is title wrap it in container -->
 <data-container *ngIf="renderingProperties.title; else noContainer" [title]="renderingProperties.title"
@@ -54,7 +67,8 @@
   <ng-container [ngSwitch]="solutionButtonType">
     <ng-container *ngSwitchCase="SolutionButtonType.Button">
       <div style="margin-bottom: 15px;">
-        <fab-primary-button (onClick)="openSolutionPanel(insight)" [contentStyle]="'border-radius: 2px;font-size: 13px;'">{{solutionButtonLabel}}</fab-primary-button>
+        <fab-primary-button (onClick)="openSolutionPanel(insight)"
+          [contentStyle]="'border-radius: 2px;font-size: 13px;'">{{solutionButtonLabel}}</fab-primary-button>
       </div>
     </ng-container>
     <ng-container *ngSwitchCase="SolutionButtonType.Link">

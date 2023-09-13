@@ -17,7 +17,7 @@ namespace UITestUtilities
                     var chromeOption = new ChromeOptions();
                     chromeOption.AddArguments(arguments);
                     chromeOption.AddExtensions(extensions);
-                    var driver = new ChromeDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), chromeOption);
+                    var driver = new ChromeDriver(chromeOption);
                     return driver;
             }
         }

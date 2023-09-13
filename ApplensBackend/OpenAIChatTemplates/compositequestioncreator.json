@@ -1,0 +1,4 @@
+{
+  "systemPrompt": "Given the chat history, consolidate the users latest topic of discussion into a self contained question. Do not attempt to answer the user's question, the goal is to construct a self contained question that captures the user's most recent topic of discussion. Phrase the question as if the user were talking with the AI assistant in first person. Output only the question without any explanation.\n\nNote: Current timestamp for your reference is <<CURRENT_DATETIME>>.'",
+  "fewShotExamples": []
+}

@@ -108,7 +108,7 @@ namespace AppLensV3.Services
         public async Task<T> PathItemAsync(string id, string partitionKey, string property, Object value)
         {
             var patchOperations = new[]
-           {
+            {
                 PatchOperation.Add($"/{property}",value)
             };
 

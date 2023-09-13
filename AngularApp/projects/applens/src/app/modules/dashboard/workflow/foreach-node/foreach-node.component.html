@@ -1,11 +1,11 @@
-<div [attr.name]="data.name" #canvasContent>
+<div [attr.name]="data.name" #canvasContent class="workflow-node">
     <div class="panel panel-default">
         <div class="panel-heading panel-title-foreach">
-            <node-title [data]="data" [disableEdit]="true" [customClass]="'background-green'"
+            <node-title [data]="data" (collapseChange)="onCollapseChange($event)" [disableEdit]="true" [customClass]="'background-green'"
                 [customClassIcon]="'fa-list'">
             </node-title>
         </div>
-        <div class="panel-body">
+        <div #nodeBodyDiv class="panel-body" [hidden]="collapsed">
             <mat-form-field class="example-full-width" appearance="fill">
                 <mat-label>Variable</mat-label>
                 <input type="text" placeholder="Choose a variable" aria-label="Number" matInput

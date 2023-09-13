@@ -4,7 +4,7 @@ import { MarkdownService } from 'ngx-markdown';
 import { MarkdownQueryDialogComponent } from '../markdown-query-dialog/markdown-query-dialog.component';
 import { markdownDialogParams } from '../models/markdown';
 import { workflowNodeData } from "projects/diagnostic-data/src/lib/models/workflow";
-import { WorkflowNodeBaseClass } from '../node-base-class';
+import WorkflowNodeBaseClass from '../node-base-class';
 import { WorkflowService } from '../services/workflow.service';
 
 @Component({

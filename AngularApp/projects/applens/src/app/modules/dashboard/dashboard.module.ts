@@ -17,7 +17,7 @@ import { ResourceService } from '../../shared/services/resource.service';
 import { ResourceServiceFactory } from '../../shared/providers/resource.service.provider';
 import { ResourceHomeComponent } from './resource-home/resource-home.component';
 import { OnboardingFlowComponent } from './onboarding-flow/onboarding-flow.component';
-import { DetectorCopilotComponent } from './detector-copilot/detector-copilot.component';
+import { CopilotContainerComponent, DetectorCopilotComponent, DetectorDevelopmentCopilotComponent } from './copilot';
 import { TabCommonComponent } from './tabs/tab-common/tab-common.component';
 import { TabDataComponent } from './tabs/tab-data/tab-data.component';
 import { TabDevelopComponent } from './tabs/tab-develop/tab-develop.component';
@@ -25,7 +25,7 @@ import { ApplensDiagnosticService } from './services/applens-diagnostic.service'
 import { ApplensCommsService } from './services/applens-comms.service';
 import { ApplensSupportTopicService } from './services/applens-support-topic.service';
 import { ApplensContentService } from './services/applens-content.service';
-import { DiagnosticService, DiagnosticDataModule, CommsService, DetectorControlService, GenericSupportTopicService, GenericContentService, GenericDocumentsSearchService, GenieGlobals, SolutionOrchestratorComponent, TimePickerOptions, GenericBreadcrumbService, GenericUserSettingService } from 'diagnostic-data';
+import { DiagnosticService, DiagnosticDataModule, CommsService, DetectorControlService, GenericSupportTopicService, GenericContentService, GenericDocumentsSearchService, GenieGlobals, SolutionOrchestratorComponent, TimePickerOptions, GenericBreadcrumbService, GenericUserSettingService, GenericDetectorCopilotService } from 'diagnostic-data';
 import { CollapsibleMenuModule } from '../../collapsible-menu/collapsible-menu.module';
 import { ObserverService } from '../../shared/services/observer.service';
 import { TabDataSourcesComponent } from './tabs/tab-data-sources/tab-data-sources.component';
@@ -136,10 +136,14 @@ import { WorkflowUserAccessComponent } from './workflow/workflow-user-access/wor
 import { InputNodeComponent } from './workflow/input-node/input-node.component';
 import { NetworkTraceAnalysisComponent } from './network-trace-analysis/network-trace-analysis.component';
 import { KustoGPTComponent } from './kustogpt/kustogpt.component';
+import { ChatFeedbackPanelComponent } from './chat-feedback-panel/chat-feedback-panel.component';
 import * as moment from 'moment';
 import { ApplensOpenAIChatComponent } from './applens-openai-chat/applens-openai-chat.component';
 import { CommunicationToolkitComponent } from './communication-toolkit/communication-toolkit.component';
-import { DetectorCopilotService } from 'projects/applens/src/app/modules/dashboard/services/detector-copilot.service';
+import { ApplensCopilotContainerService } from 'projects/applens/src/app/modules/dashboard/services/copilot/applens-copilot-container.service';
+import { ApplensDetectorCopilotService } from 'projects/applens/src/app/modules/dashboard/services/copilot/applens-detector-copilot.service';
+import { ApplensDetectorDevelopmentCopilotService } from 'projects/applens/src/app/modules/dashboard/services/copilot/applens-detector-development-copilot.service';
+import { ApplensDocsCopilotComponent } from './applens-docs-copilot/applens-docs-copilot.component';
 
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
@@ -511,6 +515,10 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
             { 
                 path: 'communicationToolkit',
                 component: CommunicationToolkitComponent
+            },
+            {
+                path: 'askApplens',
+                component: ApplensDocsCopilotComponent
             }
         ]
     },
@@ -590,7 +598,10 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         BreadcrumbService,
         ClientScriptService,
         WorkflowService,
-        DetectorCopilotService,
+        ApplensCopilotContainerService,
+        ApplensDetectorDevelopmentCopilotService,
+        ApplensDetectorCopilotService,
+        { provide: GenericDetectorCopilotService, useExisting: ApplensDetectorCopilotService },
         {
             provide: ResourceService,
             useFactory: ResourceServiceFactory,
@@ -610,7 +621,8 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         { provide: GenericClientScriptService, useExisting: ClientScriptService },
         { provide: GenericOpenAIChatService, useExisting: ApplensOpenAIChatService }
     ],
-    declarations: [DashboardComponent, SideNavComponent, ResourceMenuItemComponent, ResourceHomeComponent, OnboardingFlowComponent, DetectorCopilotComponent, SearchTermAdditionComponent,
+    declarations: [DashboardComponent, SideNavComponent, ResourceMenuItemComponent, ResourceHomeComponent, OnboardingFlowComponent, SearchTermAdditionComponent,
+        CopilotContainerComponent, DetectorCopilotComponent, DetectorDevelopmentCopilotComponent,
         SearchMenuPipe, TabDataComponent, TabDevelopComponent, TabCommonComponent, TabDataSourcesComponent, TabMonitoringComponent,
         TabMonitoringDevelopComponent, TabAnalyticsDevelopComponent, TabAnalyticsDashboardComponent, GistComponent, TabGistCommonComponent,
         TabGistDevelopComponent, TabChangelistComponent, GistChangelistComponent, TabAnalysisComponent, CategoryPageComponent, SupportTopicPageComponent,
@@ -620,6 +632,6 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         KustoQueryDialogComponent, DetectorNodeComponent, KustoNodeComponent, MarkdownNodeComponent, NodeActionsComponent, ConfigureVariablesComponent, CommonNodePropertiesComponent,
         NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent,
         WorkflowUserAccessComponent, ForeachNodeComponent, DevopsDeploymentsComponent, InputNodeComponent, NetworkTraceAnalysisComponent,
-        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent]
+        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent, ApplensDocsCopilotComponent, ChatFeedbackPanelComponent]
 })
 export class DashboardModule { }

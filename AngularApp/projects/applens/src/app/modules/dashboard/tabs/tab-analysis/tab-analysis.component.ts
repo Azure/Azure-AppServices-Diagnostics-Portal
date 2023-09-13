@@ -6,6 +6,10 @@ import { DownTime, zoomBehaviors } from 'diagnostic-data';
 import { ApplensCommandBarService } from '../../services/applens-command-bar.service';
 import { ApplensGlobal } from 'projects/applens/src/app/applens-global';
 import { IPanelProps, PanelType } from 'office-ui-fabric-react';
+import { ApplensCopilotContainerService } from '../../services/copilot/applens-copilot-container.service';
+import { ApplensDetectorCopilotService } from '../../services/copilot/applens-detector-copilot.service';
+import { DiagnosticApiService } from 'projects/applens/src/app/shared/services/diagnostic-api.service';
+import { PortalUtils } from 'projects/applens/src/app/shared/utilities/portal-util';
 
 @Component({
   selector: 'tab-analysis',
@@ -13,7 +17,7 @@ import { IPanelProps, PanelType } from 'office-ui-fabric-react';
   styleUrls: ['./tab-analysis.component.scss']
 })
 
-export class TabAnalysisComponent implements OnInit {
+export class TabAnalysisComponent implements OnInit, OnDestroy {
 
   analysisId: string;
   detectorName: string;
@@ -47,28 +51,58 @@ export class TabAnalysisComponent implements OnInit {
   @ViewChild('detectorListAnalysis', { static: true }) detectorListAnalysis: DetectorListAnalysisComponent
   downtimeZoomBehavior = zoomBehaviors.Zoom;
 
-  constructor(private _activatedRoute: ActivatedRoute, private _router: Router, private _diagnosticService: ApplensDiagnosticService, private _applensCommandBarService: ApplensCommandBarService, private _applensGlobal: ApplensGlobal, private _telemetryService: TelemetryService) {
+  // copilot variables
+  copilotEnabled: boolean = true;
+  copilotServiceMembersInitialized: boolean = false;
+
+  constructor(private _activatedRoute: ActivatedRoute, private _router: Router, private _applensApiService: ApplensDiagnosticService, private _diagnosticApi: DiagnosticApiService,
+    private _applensCommandBarService: ApplensCommandBarService, private _applensGlobal: ApplensGlobal, private _telemetryService: TelemetryService,
+    public _copilotContainerService: ApplensCopilotContainerService, private _detectorCopilotService: ApplensDetectorCopilotService) {
+  }
+
+  ngOnInit() {
+
+    this.copilotServiceMembersInitialized = false;
+
     this._activatedRoute.paramMap.subscribe(params => {
+
       this.analysisId = params.get('analysisId');
-      this._diagnosticService.getDetectorMetaDataById(this.analysisId).subscribe(metaData => {
+      this._applensApiService.getDetectorMetaDataById(this.analysisId).subscribe(metaData => {
         if (metaData) this._applensGlobal.updateHeader(metaData.name);
       });
+
       this._applensCommandBarService.getUserSetting().subscribe(userSetting => {
         if (userSetting && userSetting.favoriteDetectors) {
           const favoriteDetectorIds = Object.keys(userSetting.favoriteDetectors);
           this.pinnedDetector = favoriteDetectorIds.findIndex(d => d.toLowerCase() === this.analysisId.toLowerCase()) > -1;
         }
       });
+
+      // When the analysis is changed, close the copilot window
+      if (this.copilotServiceMembersInitialized) {
+        this._copilotContainerService.onCloseCopilotPanelEvent.next({ showConfirmation: false, resetCopilot: true });
+      }
+
+      this._detectorCopilotService.initializeMembers(true);
+      this.copilotServiceMembersInitialized = true;
     });
 
+    this._detectorCopilotService.isEnabled().subscribe(res => {
+      this.copilotEnabled = res;
+    });
+  }
+
+  ngOnDestroy(): void {
+
+    if (this.copilotServiceMembersInitialized) {
+      this._copilotContainerService.onCloseCopilotPanelEvent.next({ showConfirmation: false, resetCopilot: true });
+    }
   }
 
   onUpdateDowntimeZoomBehavior(zoomBehavior: zoomBehaviors) {
     this.downtimeZoomBehavior = zoomBehavior;
   }
 
-  ngOnInit() {
-  }
   onActivate(event) {
     window.scroll(0, 0);
   }
@@ -90,12 +124,14 @@ export class TabAnalysisComponent implements OnInit {
   }
 
   emailToAuthor() {
+
     this._applensCommandBarService.getDetectorMeatData(this.analysisId).subscribe(metaData => {
       this._applensCommandBarService.emailToAuthor(metaData);
     });
   }
 
   openFeedback() {
+    this._copilotContainerService.onCloseCopilotPanelEvent.next({ showConfirmation: false, resetCopilot: false });
     this._applensGlobal.openFeedback = true;
   }
 
@@ -111,6 +147,11 @@ export class TabAnalysisComponent implements OnInit {
       this._telemetryService.logEvent(TelemetryEventNames.FavoriteDetectorAdded, { 'detectorId': this.analysisId, 'location': 'CommandBar' });
       this.addFavoriteDetector();
     }
+  }
+
+  openDetectorCopilot() {
+    this._copilotContainerService.showCopilotPanel();
+    PortalUtils.logEvent('detectorcopilot-open', '', this._telemetryService);
   }
 
   private addFavoriteDetector() {

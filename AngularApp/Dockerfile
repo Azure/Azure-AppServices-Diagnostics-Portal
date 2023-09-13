@@ -1,3 +1,0 @@
-FROM mcr.microsoft.com/mirror/docker/library/ubuntu:18.04 AS base-layer
-COPY installNode14Repo.sh /tmp/installNode14Repo.sh
-RUN sh /tmp/installNode14Repo.sh && apt-get update && apt-get install nodejs -y

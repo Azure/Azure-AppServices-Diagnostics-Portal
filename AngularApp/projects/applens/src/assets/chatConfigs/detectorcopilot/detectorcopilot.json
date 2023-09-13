@@ -1,0 +1,28 @@
+{
+    "samples": [
+        {
+            "key": "What is the purpose of this detector.",
+            "value": "What is the purpose of this detector."
+        },
+        {
+            "key": "What is the issue with my resource here.",
+            "value": "What is the issue with my resource here."
+        },
+        {
+            "key": "How can I resolve this issue or next steps.",
+            "value": "How can I resolve this issue or next steps."
+        },
+        {
+            "key": "Write an email to customer with issue and next steps.",
+            "value": "Write an email to customer with issue and next steps."
+        },
+        {
+            "key": "What are the best practices to follow for this issue.",
+            "value": "What are the best practices to follow for this issue."
+        },
+        {
+            "key": "Who is the author of this detector.",
+            "value": "Who is the author of this detector."
+        }
+    ]
+}

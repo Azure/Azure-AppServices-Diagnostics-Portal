@@ -18,14 +18,14 @@
 	},
     "categories": [
         {
-            "id": "knownissueavailabilityperfaks",
-            "name": "Known Issues, Availability and Performance",
-            "description": "Check your cluster health and investigate performance issues",
-            "keywords": [ "Latency", "Throttling", "Autoscaler", "Helm-2", "Tiller", "OOMKilled", "CRUD"],
+            "id": "ccpavailabilityperfaks",
+            "name": "Cluster and Control Plane Availability and Performance",
+            "description": "Check your cluster and control plane availability and performance issues",
+            "keywords": [ "Control Plane Availability", "Throttling", "OOMKilled", "Service Health"],
             "color": "rgb(186, 211, 245)",
             "createFlowForCategory": true,
             "chatEnabled": false,
-            "overviewDetectorId": "aks-category-availability-perf"
+            "overviewDetectorId": "aks-ccp-availability-perf"
         },
         {
             "id": "connectivityissuesaks",
@@ -80,7 +80,7 @@
         {
             "id": "storageaks",
             "name": "Storage",
-            "description": "Diagnose any problems related to storage issues.",
+            "description": "Diagnose any problems relating to storage issues.",
             "keywords": [ "Disk Mount", "Node Disk Pressure", "Storage"],
             "color": "rgb(186, 211, 245)",
             "createFlowForCategory": true,

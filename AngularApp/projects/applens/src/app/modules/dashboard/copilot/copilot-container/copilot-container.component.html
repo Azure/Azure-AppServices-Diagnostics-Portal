@@ -1,0 +1,9 @@
+<ng-container *ngIf="_copilotContainerService.feature == CopilotSupportedFeature.AnalysisDataTab || 
+    _copilotContainerService.feature == CopilotSupportedFeature.DetectorDataTab">
+    <detector-copilot></detector-copilot>
+</ng-container>
+
+<ng-container *ngIf="_copilotContainerService.feature == CopilotSupportedFeature.DetectorDevelopmentTab 
+    || _copilotContainerService.feature == CopilotSupportedFeature.GistDevelopmentTab">
+    <detector-development-copilot></detector-development-copilot>
+</ng-container>

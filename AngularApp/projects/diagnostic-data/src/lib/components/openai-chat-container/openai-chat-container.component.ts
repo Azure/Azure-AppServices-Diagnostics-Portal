@@ -12,6 +12,7 @@ import {
   ChatModel,
   ResponseTokensSize,
   APIProtocol,
+  FeedbackOptions,
   TelemetryEventNames
 
 } from "../../../public_api";
@@ -29,6 +30,7 @@ export class OpenAIChatContainerComponent implements OnInit {
   @Input() customInitialPrompt: string = '';
   @Input() customFirstMessage: string = '';
   @Input() chatIdentifier: string = '';
+  @Input() chatContainerHeight: string = '';
   @Input() persistChat: boolean = false;
   @Input() chatHeader: string = '';
   @Input() chatContextLength: number = 2;
@@ -67,6 +69,8 @@ export class OpenAIChatContainerComponent implements OnInit {
 
   @Input() feedbackEmailAlias:string = 'applensv2team';
   @Input() customCommandBarButtons:CustomCommandBarButtons[] = [];
+  @Input() onFeedbackClicked: (chatMessage:ChatMessage, feedbackType:FeedbackOptions) => void;
+  @Input() autoAddResourceSpecificInfoToChatMessages:boolean = true;
 
   constructor(private _activatedRoute: ActivatedRoute, private _router: Router,
     private _chatContextService: ChatUIContextService,
@@ -172,4 +176,4 @@ export class OpenAIChatContainerComponent implements OnInit {
       this.isEnabled = this._openAIService.isEnabled;
     });
   }
-}  
+}

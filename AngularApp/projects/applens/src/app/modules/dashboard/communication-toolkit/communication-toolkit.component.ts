@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { IBreadcrumbItem, IBreadcrumbProps, SpinnerSize } from 'office-ui-fabric-react';
 import { delay } from 'rxjs-compat/operator/delay';
 import { ApplensOpenAIChatService } from '../../../shared/services/applens-openai-chat.service';
@@ -29,7 +29,7 @@ export class CommunicationToolkitComponent implements OnInit {
   // Variables to be passed down to the OpenAI Chat component
   chatComponentIdentifier: string = "rcacopilot";
   showContentDisclaimer: boolean = true;
-  contentDisclaimerMessage: string = "* Please do not send any sensitive data in your queries. Please VERIFY the given RCA before sending to customers...I'm still learning :)";
+  contentDisclaimerMessage: string = "*Please VERIFY the RCA before sending to customers. I'm still learning :). Don't send any sensitive data.";
 
   userAlias: string = '';
   userChatGPTSetting: UserChatGPTSetting;
@@ -47,6 +47,7 @@ export class CommunicationToolkitComponent implements OnInit {
   inputTextLimit = 1000;
   showCopyOption = true; 
   chatModel: ChatModel = ChatModel.GPT4; 
+  chatContainerHeight: string = '72vh';
 
   // Component's internal variables
   isEnabled: boolean = false;
@@ -102,5 +103,16 @@ export class CommunicationToolkitComponent implements OnInit {
     PortalUtils.logEvent("rcacopilot-messagecopied", textToCopy, this._telemetryService); 
   }
 
+  //windows users control c for keyboard c 
+  @HostListener('window:keydown.control.c') //windows
+  copyFromKeyboardClickedWithControlC(){
+    PortalUtils.logEvent("rcacopilot-messagecopied", "Copied From Keyboard with Control C", this._telemetryService); 
+  }
+
+  //mac users command c for keyboard copy
+  @HostListener('window:keydown.command.c') //mac users
+  copyFromKeyboardClickedWithCommandC(){
+    PortalUtils.logEvent("rcacopilot-messagecopied", "Copied from keyboard Command C", this._telemetryService); 
+  }
 
 }

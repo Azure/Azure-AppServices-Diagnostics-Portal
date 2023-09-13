@@ -3,6 +3,7 @@ using AppLensV3.Models;
 using AppLensV3.Services;
 using AppLensV3.Services.ApplensTelemetryInitializer;
 using AppLensV3.Services.AppSvcUxDiagnosticDataService;
+using AppLensV3.Services.CognitiveSearchService;
 using AppLensV3.Services.DiagnosticClientService;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -106,6 +107,8 @@ namespace AppLensV3
 
             services.AddSingletonWhenEnabled<ICosmosDBWorkflowUsersHandler, CosmosDBWorkflowUsersHandler, NullableCosmosDBWorkflowUsersHandler>(Configuration, "Workflow");
 
+            services.AddSingletonWhenEnabled<ICosmosDBOpenAIChatFeedbackHandler, CosmosDBOpenAIChatFeedbackHandler, NullableCosmosDBOpenAIChatFeedbackHandler>(Configuration, "OpenAIChatFeedback");
+
             services.AddSingletonWhenEnabled<IDetectorGistTemplateService, TemplateService>(Configuration, "DetectorGistTemplateService");
 
             services.AddSingletonWhenEnabled<IAppSvcUxDiagnosticDataService, AppSvcUxDiagnosticDataService, NullableAppSvcUxDiagnosticDataService>(Configuration, "LocationPlacementIdService");
@@ -170,6 +173,15 @@ namespace AppLensV3
                 services.AddSingleton<IBingSearchService, BingSearchServiceDisabled>();
             }
 
+            var cognitiveSearchConfiguration = Configuration.GetSection("CognitiveSearch").Get<CognitiveSearchConfiguration>();
+
+            if (cognitiveSearchConfiguration != null)
+            {
+                services.AddSingleton<ICognitiveSearchBaseService>(new CognitiveSearchBaseService(cognitiveSearchConfiguration));
+                services.AddSingleton<ICognitiveSearchAdminService, CognitiveSearchAdminService>();
+                services.AddSingleton<ICognitiveSearchQueryService, CognitiveSearchQueryService>();
+            }
+
             if (Configuration.GetValue("Graph:Enabled", false))
             {
                 GraphTokenService.Instance.Initialize(Configuration);
@@ -194,6 +206,8 @@ namespace AppLensV3
                         .WithExposedHeaders("*"));
                 });
             }
+
+            services.Configure<CopilotsConfiguration>(Configuration.GetSection("Copilots"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

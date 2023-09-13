@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ResourceService } from '../../../shared/services/resource.service';
-import { DetectorResponse, DetectorMetaData, ExtendDetectorMetaData } from 'diagnostic-data';
+import { DetectorResponse, DetectorMetaData, ExtendDetectorMetaData, ChatCompletionModel } from 'diagnostic-data';
 import { Observable } from 'rxjs';
 import { QueryResponse } from 'diagnostic-data';
 import { Package } from '../../../shared/models/package';
@@ -10,6 +10,7 @@ import { map } from 'rxjs/operators';
 import { dynamicExpressionBody } from '../workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../../../shared/models/devopsCommitStatus';
+import { ChatFeedbackPostBody } from '../../../shared/models/openAIChatFeedbackModel';
 
 
 @Injectable()
@@ -366,5 +367,13 @@ export class ApplensDiagnosticService {
 
   addWorkflowUser(useralias: string): Observable<any> {
     return this._diagnosticApi.addWorkflowUser(useralias);
+  }
+
+  saveChatFeedback(chatFeedback: ChatFeedbackPostBody): Observable<ChatFeedbackPostBody> {
+    return this._diagnosticApi.saveChatFeedback(chatFeedback);
+  }
+
+  getRelatedFeedbackListFromChatHistory(chatCompletionModel: ChatCompletionModel): Observable<ChatFeedbackPostBody[]> {
+    return this._diagnosticApi.getRelatedFeedbackListFromChatHistory(chatCompletionModel);
   }
 }

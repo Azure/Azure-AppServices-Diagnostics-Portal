@@ -108,7 +108,7 @@ export class SolutionComponent extends DataRenderBaseComponent {
     }
 
     buildInternalText() {
-        let markdownBuilder = this.solution.InternalMarkdown;
+        let markdownBuilder = this.solution?.InternalMarkdown ?? "";
 
         let detectorLink = UriUtilities.BuildDetectorLink(this.solution.ResourceUri, this.solution.DetectorId);
         let detectorLinkMarkdown = `Go to [App Service Diagnostics](${detectorLink})`;
