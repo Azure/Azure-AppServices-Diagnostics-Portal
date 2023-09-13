@@ -5,28 +5,18 @@ import * as signalR from "@microsoft/signalr";
 import { TelemetryService } from './telemetry/telemetry.service';
 import { catchError, map } from 'rxjs/operators';
 
-@Injectable()
-export class ConversationalDiagService {
+export abstract class ConversationalDiagService {
   public onMessageReceive: BehaviorSubject<DiagChatResponse> = null;
-  private signalRChatEndpoint: string = "/chatHub";
+  protected abstract signalRChatEndpoint: string;
   private resourceProvider: string;
   private productName: string;
   private signalRConnection: signalR.HubConnection;
   private signalRLogLevel: any;
   private messageBuilder: string;
 
-  constructor(private telemetryService: TelemetryService) {
+  constructor(protected telemetryService: TelemetryService) {
     this.onMessageReceive = new BehaviorSubject<DiagChatResponse>(null);
-    this.signalRLogLevel = signalR.LogLevel.Information;
-
-    //if (!process.env.production) {
-    this.signalRChatEndpoint = "http://localhost:5043/chatHub";
     this.signalRLogLevel = signalR.LogLevel.Debug;
-    //}
-    //else {
-    //  this.signalRChatEndpoint = "USE_THE_PRODUCTION_ENDPOINT_HERE";
-    //  this.signalRLogLevel = signalR.LogLevel.Debug;
-    //}
   }
 
   public sendChatMessage(queryModel: DiagChatRequestBody): Observable<{ sent: boolean, failureReason: string }> {

@@ -386,8 +386,7 @@ export class DiagnosticDataModule {
                 DemoSubscriptions,
                 ChatUIContextService,
                 GenericDetectorCopilotService,
-                GenericDocumentationCopilotService,
-                ConversationalDiagService
+                GenericDocumentationCopilotService
             ]
         };
     }

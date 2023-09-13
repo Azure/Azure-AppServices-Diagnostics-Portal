@@ -48,6 +48,7 @@ import { FabLinkModule } from '@angular-react/fabric/lib/components/link';
 import { OpenAIArmService, GenericDocumentationCopilotService, ChatUIContextService } from 'diagnostic-data';
 import { DiagDocumentationCopilotService } from '../shared-v2/services/diag-documentation-copilot.service';
 import { DocumentationCopilotModule } from '../documentation-copilot/documentation-copilot.module';
+import { ConversationalDiagPortalService } from '../shared-v2/services/conversational-diagnostic-portal.service';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -599,7 +600,8 @@ export const HomeRoutes = RouterModule.forChild([
             { provide: GenericClientScriptService, useExisting: ClientScriptService },
             DiagDocumentationCopilotService,
             { provide: GenericDocumentationCopilotService, useExisting: DiagDocumentationCopilotService },
-            ConversationalDiagService
+            ConversationalDiagPortalService,
+            { provide: ConversationalDiagService, useExisting: ConversationalDiagPortalService }
         ],
 })
 export class HomeModule { }
