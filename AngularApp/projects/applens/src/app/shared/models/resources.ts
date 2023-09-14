@@ -89,5 +89,5 @@ export const DEFAULT_RESOURCE_SERVICE_INPUTS: ResourceServiceInputs = {
     sapProductId:'',
     staticSelfHelpContent: '',
     searchSuffix: 'AZURE',
-    workflowsEnabled: false
+    workflowsEnabled: true
 };
