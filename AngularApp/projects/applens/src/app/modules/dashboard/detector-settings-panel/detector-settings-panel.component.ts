@@ -301,13 +301,6 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
         imageUrl: undefined,
         showInitialsUntilImageLoads: true
       });
-      // this.detectorAuthorIds.push({
-      //   text: `puneetg`,
-      //   secondaryText: `Punet Gupta`,
-      //   showSecondaryText:false,
-      //   imageUrl: undefined,
-      //   showInitialsUntilImageLoads: true
-      // });
     }
 
     // This will initialize the detector author picker so that the user experience is smooth.
@@ -494,7 +487,6 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
   }
 
   public detectorSettingsPanelOnOpened(): void {
-    //console.log('Component : Detector Settings Panel component OnOpened: ' + window.performance.now().toString());
     this.onOpened.emit();
   }
 
@@ -743,15 +735,6 @@ export class DetectorSettingsPanelComponent implements OnInit, OnDestroy {
       return tagSuggestions.slice(0, 5);
     }).toPromise();
   }
-
-  // public detectorCategoryPickerValidateInput(input: string): ValidationState {
-  //   if(input) {
-  //     return ValidationState.valid;
-  //   }
-  //   else {
-  //     return ValidationState.invalid;
-  //   }
-  // }
 
   //#endregion Detector Category Picker Methods
 

@@ -12,12 +12,7 @@ import { executionState } from '../node-composer/node-composer.component';
 export class NoCodeDetectorViewComponent implements OnInit {
   detectorNodesSubject = new BehaviorSubject<NoCodeExpressionResponse[]>([]);
   nodeList: NoCodeExpressionResponse[] = [];
-  // testArray = ["to", "be", "continued"];
-
-  //@Input() startTime: moment.Moment;
-  //@Input() endTime: moment.Moment;
   @Input() set detectorNodes(nodes: any) {
-    // this.showView = false;
     this.detectorNodesSubject.next(nodes);
   }
   executionState = executionState;
@@ -35,10 +30,6 @@ export class NoCodeDetectorViewComponent implements OnInit {
     this.startTime = this._detectorControlService.startTime;
     this.endTime = this._detectorControlService.endTime;
     this.detectorNodesSubject.subscribe(x => {
-      //this.nodeList = x;
-      // setTimeout(() => {
-      //   this.showView = true;
-      // }, 1000);
       
       this.detectorView = x;
     });

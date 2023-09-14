@@ -169,10 +169,6 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
       borderTop: '1px solid'
     }
   }
-
-  // highlightedPivotStyle: IPivotItemProps['headerText'] = {
-    
-  // }
   //#endregion Fabric element styles
 
   renderingTypeOptions:IDropdownOption[] = [];
@@ -254,10 +250,6 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
     private _detectorControl: DetectorControlService, public diagnosticApiService: ApplensDiagnosticService,private _httpClient: HttpClient, private _openAIService: ApplensOpenAIChatService,
     private resourceService: ResourceService, private _detectorControlService: DetectorControlService ) {
     this._applensGlobal.updateHeader('');
-    // this.inputKustoQueryDialogParams = data; 
-    // if (data.queryLabel) {
-    //   this.kustoQueryLabel = data.queryLabel;
-    // }  
   }
 
   ngOnInit() {
@@ -277,30 +269,11 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
     
     if (this.isNodeValid) {
       this.isNodeValid();
-      // this.nodeStatus = this.isNodeValid(this.nodeModel);
-      // this.nodeModel.invalidReason = this.nodeStatus;
-      // return this.nodeStatus;
     }
     else {
       return '';
     }
   }
-
-  // public getRequiredErrorMessageOnTextField = (value: string): string => {
-  //   if (this.isNodeValid) {
-  //     this.nodeStatus = this.isNodeValid(this.nodeModel);
-  //     this.nodeModel.invalidReason = this.nodeStatus;
-  //   }
-  //   else if (!value) {
-  //     this.nodeStatus = 'This field is required';
-  //     this.nodeModel.invalidReason = this.nodeStatus;
-  //   }
-  //   else {
-  //     this.nodeStatus = '';
-  //     this.nodeModel.invalidReason = this.nodeStatus;
-  //   }
-  //   return this.nodeStatus;
-  // }
 
   public removeSpacesFromQueryName(event:any):void {
     this.nodeModel.queryName = this.nodeModel.queryName.replace(/(\b|_|-)\s?(\w)/g, (c) => {return c.replace(/[\s|_|-]/g, '').toUpperCase();} )
@@ -312,7 +285,6 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   }
 
   public onRenderingTypeChange(event:any) {
-    //let key:string = event.option.key.toString();
     this.removeProjectStatement(this.getProjectStatement(this.nodeModel.renderingType));
     this.nodeModel.renderingType = event.option.key;
     this.setRenderingSettings(event.option.key);
@@ -373,9 +345,7 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
       this.runButtonDisabled = true;
       this.state = this.executionState.running;
       this.sampleTestDataset = null;
-      //this.state = this.executionState.running;
       this.pivotSelectedKey = this.nodeModel.id + '_Result';
-      //this.pivotSelectedKey = this.nodeModel.id + '_Result';
       this.noCodeExpression.OperationName = this.nodeModel.queryName;
       this.noCodeExpression.Text = this.nodeModel.code;
       this.noCodeExpression.NodeSettings = this.nodeModel.settings;
@@ -383,13 +353,11 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
         this.sampleTestDataset = x.res;
         this.state = this.executionState.success;
         this.runButtonDisabled = false;
-        //this.detectorLoading = false;
       },
       error => {
         this.state = this.executionState.failure;
         this.errorMessage = error.error;
         this.runButtonDisabled = false;
-        //this.detectorLoading = false;
         });
     }
     else {
@@ -403,16 +371,6 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   }
 
   buildRenderingProps(){
-    //LineGraph, BarGraph, StackedAreaGraph
-    /*
-      "type": this.nodeModel.renderingType,
-      "title": "Sample Table",
-      "description": "Some description here",
-      "isVisible": true,
-      "graphType": 0
-    */
-   // markdown project - Markdown
-   // insight project - Status, Message, Data.Name, Data.Value, Expanded, Solutions
     return {
       "type": this.nodeModel.renderingType,
       "title": "Sample Table",
@@ -546,9 +504,6 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   onChangeQueryName(event:any) {
     this.nodeModel.queryName = event.newValue;
     this.checkIfNodeValid();
-    // if (this.isNodeValid) {
-    //   this.nodeStatus = this.isNodeValid(this.nodeModel);
-    // }
   }
 }
 

@@ -2,27 +2,6 @@
     <fab-panel [type]="type" [isOpen]="isOpen" [hasCloseButton]="false" [customWidth]="'60%'">
         <div style="margin-left: 10px;">
             <no-code-detector-view [errorMessage]="errorMessage" [state]="state" [detectorNodes]="detectorView"></no-code-detector-view>
-        <!-- <fab-pivot>
-            <fab-pivot-item [headerText]="'Data'" >
-                <div>
-                    <no-code-detector-view [detectorNodes]="detectorView"></no-code-detector-view>
-                </div>
-            </fab-pivot-item>
-            <fab-pivot-item [headerText]="'Data source'">
-                <div>
-                    <tab-data-sources [onboardingMode]="true" [detectorResponse]="detectorView"></tab-data-sources>
-                </div>
-            </fab-pivot-item>
-            <fab-pivot-item [headerText]="'test'">
-                <p>test</p>
-            </fab-pivot-item>
-        </fab-pivot> -->
-        <!-- <no-code-detector-view [detectorNodes]="detectorView" [startTime]="startTime" [endTime]="endTime"></no-code-detector-view> -->
-        <!-- <no-code-detector-view [detectorNodes]="detectorView"
-              [startTime]="startTime" [endTime]="endTime" [showEdit]="false"
-              [developmentMode]="true" [hideDetectorHeader]="true" [hideDetectorControl]="true"></no-code-detector-view> -->
-              <!-- <no-code-detector-view [detectorNodes]="detectorView"></no-code-detector-view> -->
-        <!-- <ng-container [ngTemplateOutlet]="noCodeDetectorView"></ng-container> -->
 
         <div style="margin-top: 66px; display: flex;">
             <div style="padding-right: 5px;">
@@ -35,8 +14,3 @@
         </div>
     </fab-panel>
 </div>
-<!-- <ng-template #noCodeDetectorView>
-    <detector-view [detectorResponse]="detectorView"
-              [startTime]="startTime" [endTime]="endTime" [showEdit]="false"
-              [developmentMode]="true" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
-</ng-template> -->

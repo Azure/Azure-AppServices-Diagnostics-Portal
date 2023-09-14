@@ -51,7 +51,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   errorMessage: string = "";
 
   detectorName:string = 'Settings Panel Name';//'Auto Generated Detector Name';
-  //detectorPanelOpen:boolean = true;
   detectorPanelOpenObservable: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   detectorLoaded: boolean = false;
@@ -151,9 +150,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   //#endregion Panel Footer variables
 
   //#region Detector settings variables
-  // detectorSettingsButtonText:string = 'Settings';
-  // settingsIcon: any = { iconName: 'Settings' };
-  // detectorSettingsPanelOpenState: boolean = false;
   //#endregion Detector settings variables
 
   //#region Detector settings variables
@@ -216,7 +212,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   //#region Time picker variables
 
   //#region Detector settings panel variables
-  //detectorId:string = '';  
   //#endregion Detector settings panel variables
 
   initialized: boolean = false;  
@@ -288,26 +283,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     this.elements.forEach(element => {
       this.updateNodeValidity(element);
     });
-    // if (node.queryName){
-    //   if (this.elements.some( element => element.id != node.id && element.queryName.toLowerCase() === node.queryName.toLowerCase())) {
-    //     this.elements.find(element => element.id === node.id).validationObservable.next('Duplicate query name');
-    //     return 'Duplicate query name';
-    //   }
-    // }
-    // else {
-    //   this.elements.find(element => element.id === node.id).validationObservable.next('Query name is required');
-    //   return 'Query name is required';
-    // }
-    // if (!node.code){
-    //   this.elements.find(element => element.id === node.id).validationObservable.next('Query is required');
-    //   return 'Node must contain a query';
-    // }
-    // if (!node.hasDataSource){
-    //   this.elements.find(element => element.id === node.id).validationObservable.next('Data source settings required');
-    //   return 'Data source settings required';
-    // }
-
-    // return '';
   }
 
   nodesValid(): boolean {
@@ -315,42 +290,9 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   }
   //#region Element composer
   elements:ComposerNodeModel[] = [
-    // {
-    //   id: Guid.newGuid(),
-    //   queryName: 'firstQuery',
-    //   code:'<query>\r\n',
-    //   renderingType:RenderingType.Table,
-    //   settings: new NodeSettings,
-    // }
-    /*,
-    {
-      id: Guid.newGuid(),
-      queryName: 'secondQuery',
-      code:'',
-      renderingType:RenderingType.Table
-    },
-    {
-      id: Guid.newGuid(),
-      queryName: 'thirdQuery',
-      code:'',
-      renderingType:RenderingType.Table
-    }*/
+    
   ];
 
-    // fabDropdownStyle: IDropdownProps["styles"] = {
-    //   root: {
-    //     minWidth: '100px'
-    //   },
-    //   dropdownItem: {
-    //     width: '200px'
-    //   },
-    //   errorMessage: {
-    //     paddingLeft: '0em'
-    //   },
-    //   dropdown: {
-    //     minWidth: '100px'
-    //   }
-    // };
 
   //#endregion Element composer
 
@@ -365,12 +307,8 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     //if (this.mode == DevelopMode.Create) this.resetGlobals();
   }
 
-  // startTime: moment.Moment;
-  // endTime: moment.Moment;
 
   ngOnInit() {
-    // this.startTime = this._detectorControlService.startTime;
-    // this.endTime = this._detectorControlService.endTime;
     this.userAlias = this._adalService.userInfo.profile ? this._adalService.userInfo.profile.upn.replace('@microsoft.com', '') : '';
     this._activatedRoute.params.subscribe((params: Params) => {
       this.initialized = false;
@@ -402,7 +340,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     this.detectorGraduation = true;
     
     this.diagnosticApiService.getDevopsConfig(`${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(devopsConfig => {
-      //this.noBranchesAvailable();
       this.detectorGraduation = devopsConfig.graduationEnabled;
       this.devopsConfig = new DevopsConfig(devopsConfig);
       this.autoMerge = devopsConfig.autoMerge
@@ -438,9 +375,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       return { key: branch.branchName, text: `${branch.branchName.split('/')[1]} : ${branch.branchName.split('/')[3]}` };
     });
 
-    // branches.forEach(branch => {
-    //   this.showBranches.push({ key: branch.branchName, text: branch.branchName });
-    // });
     let inProgressBranch = this.showBranches.find(branch => branch.key === `dev/${this.userAlias}/noCodeDetector/${this.detectorId}`);
     if (!this.branchInput)
       this.displayBranch = inProgressBranch ? inProgressBranch.key : this.mainBranch;
@@ -475,10 +409,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       });
     });
   }
-
-  // setBranch(branch: string) {
-  //   this.displayBranch = branch;
-  // }
 
   buildSavedDetector(pkgJson: string) {
     this.elements = [];
@@ -544,11 +474,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
       this.detectorSettingsPanelValue.supportTopicList.push(supportTopic);
     });
 
-    // parsedDetector.Nodes.forEach(n => {
-    //   let node = new NoCodeExpressionBody;
-    //   node.NodeSettings = n.NodeSettings;
-    // });
-
     savedDetector.nodes = parsedDetector.Nodes;
 
     savedDetector.nodes.forEach(node => {
@@ -613,25 +538,10 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     }
 
     return result;
-    //let kustoSettings = new KustoDataSourceSettings();
     
   }
 
   canExit() : boolean {
-    // if (this.detectorDeleted)
-    //   return true;
-    // else if (!!this.lastSavedVersion && this.code != this.lastSavedVersion)
-    //   {
-    //     if (confirm("Are you sure you want to leave? You have some unsaved changes.")){
-    //       return true;
-    //     }
-    //     else {
-    //       return false;
-    //     }
-    //   }
-    // else {
-    //   return true;
-    // }
     return true;
   }
 
@@ -649,47 +559,15 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     this.detectorPanelOpenObservable.next(true);
     let det: NoCodeDetector = this.buildNoCodeDetectorObject();
 
-    // let djson = '[';
-    // let det: NoCodeDetector = new NoCodeDetector;
-    // this.elements.forEach(x => {
-    //   let newNode = new NoCodeExpressionBody;
-    //   newNode.NodeSettings = x.settings;
-    //   newNode.OperationName = x.queryName;
-    //   newNode.Text = x.code;
-    //   det.nodes.push(newNode);
-    //   djson = djson.concat(x.GetJson(),',');
-    //   //this.detectorJson.push(x.GetJson());
-    // });
-    // djson = djson.substring(0, djson.length - 1);
-    // djson = djson.concat(']');
-
-    // let djson = '{"nodes":[';
-    // let det: NoCodeDetector = new NoCodeDetector;
-    // this.elements.forEach(x => {
-    //   let newNode = new NoCodeExpressionBody;
-    //   newNode.NodeSettings = x.settings;
-    //   newNode.OperationName = x.queryName;
-    //   newNode.Text = x.code;
-    //   det.nodes.push(newNode);
-    //   djson = djson.concat(x.GetJson(),',');
-    //   //this.detectorJson.push(x.GetJson());
-    // });
-    // djson = djson.substring(0, djson.length - 1);
-    // djson = djson.concat(']}');
-
-    // this.detectorJson = djson;
-
     det.author = "author";
     det.id = "id";
     det.description = "desc";
     det.name = this.detectorName;
     this.nodeExpressionList = det.nodes;
-    //det.nodes = JSON.parse(djson);
 
     this.diagnosticApiService.executeNoCodeDetector(det, this._detectorControlService.startTimeString, this._detectorControlService.endTimeString).subscribe((x: any) => {
       this.detectorNodes = x;
       this.runButtonDisabled = false;
-      //this.detectorPanelOpenObservable.next(true);
     },
     error => {
       this.state = this.executionState.failure;
@@ -714,31 +592,16 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     console.log('Publish Button On Click');
     var det = this.buildNoCodeDetectorObject();
 
-    /*this.diagnosticApiService.publishNoCode(pkg).subscribe(x => {
-      console.log("subscribe");
-    });*/
     let changeType = this.mode == DevelopMode.Create ? 'Add' : 'Edit';
     let comment = this.mode == DevelopMode.Create ? `Adding ${det.id} Author : ${this.userAlias}` : `Editing ${det.id} Author : ${this.userAlias}`;
 
     this.autoMerge ? this.autoMergePublish(det, changeType, comment) : this.gradPublish(det, changeType, comment);
-
-    // let branch = `dev/${det.author}/noCodeDetector/${det.id}`;
-    // let repoPaths = [`${det.id}/metadata.json`];
-    // let files = [`{"utterances":[]}`];
-    // let comment = "test push detector";
-    // let changeType = "Add";
-    // let resourceUri = this.resourceService.getCurrentResourceId();
-    // this.diagnosticApiService.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri, det).subscribe(x => {
-    //   console.log("subscribe");
-    // });
   }
 
   private gradPublish(det: NoCodeDetector, changeType: string, comment: string = 'pushing changes to detector'): void {
     let branch = `dev/${this.userAlias}/noCodeDetector/${det.id}`;
     let repoPaths = [`/${det.id}/metadata.json`];
     let files = [`{"utterances":[]}`];
-    //let comment = "test push detector";
-    //let changeType = "Add";
     let resourceUri = this.resourceService.getCurrentResourceId();
     let title = `Publishing ${det.name} detector`;
     let link = `${this.PPEHostname}/${resourceUri}/detectors/${det.id}/nocodeedit?branchInput=${branch}`;
@@ -779,8 +642,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     let branch = `dev/${this.userAlias}/noCodeDetector/${det.id}`;
     let repoPaths = [`/${det.id}/metadata.json`];
     let files = [`{"utterances":[]}`];
-    //let comment = "test push detector";
-    //let changeType = "Add";
     let resourceUri = this.resourceService.getCurrentResourceId();
     let reviewers = "";
 
@@ -851,8 +712,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   private buildNoCodeDetectorObject(): NoCodeDetector {
     var det = new NoCodeDetector();
-    // if web app add app plat and stack types
-    // also write functions for adding these. looks like theyre enums instead of strings
     if (!!this.detectorSettingsPanelValue.appTypes)
       det.appType = this.getAppTypes();
     if (!!this.detectorSettingsPanelValue.platformTypes)
@@ -874,11 +733,9 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
         newNode.OperationName = x.queryName;
         newNode.Text = x.code;
         det.nodes.push(newNode);
-        //this.detectorJson.push(x.GetJson());
       });
 
     det.id = this.detectorId;
-    //det.nodes = this.nodeExpressionList;
     det.author = this.detectorSettingsPanelValue.authors.join(",");
     det.name = this.detectorName;
     det.description = this.detectorSettingsPanelValue.description;
@@ -931,11 +788,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   //#region Detector Settings Panel Methods
 
-  // public detectorSettingsButtonOnClick():void {
-  //   this.detectorSettingsPanelOpenState = true;
-  //   console.log('Detector Settings Button On Click');
-  // }
-
   public detectorSettingsButtonOnClick():void {
     this.detectorSettingsPanelOpenState = true;
     console.log('Detector Settings-1 Button On Click');
@@ -943,13 +795,9 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   public detectorSettingsPanelOnDismiss(dismissAction:string):void {
     if(!this.detectorSettingsPanelOpenState) {
-      //this.detectorSettingsPanelOpenState = false;
       console.log('Detector Settings Panel On Dismiss : ' + dismissAction  + ' ' + window.performance.now().toString());
     }
   }  
-
-  
-  
   
   //#endregion Detector Settings Panel Methods
 
@@ -961,7 +809,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   }
 
   public onOpenedDetectorSettingsPanel():void {
-    //console.log('Parent : Detector Settings1 Panel OnOpened: ' + window.performance.now().toString());
   }
 
   public onDismissDetectorSettingsPanel(source:string) {

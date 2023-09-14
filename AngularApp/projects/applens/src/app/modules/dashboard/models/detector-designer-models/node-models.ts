@@ -2,7 +2,6 @@ import { DiagnosticData, RenderingType } from "diagnostic-data";
 import { Guid } from "projects/diagnostic-data/src/lib/utilities/guid";
 import { NodeSettings, nodeJson } from "../../dynamic-node-settings/node-rendering-json-models";
 import { BehaviorSubject } from "rxjs";
-//import { nodeStatus } from "dist/diagnostic-data/public_api";
 
 export class ComposerNodeModel {
     id: string = Guid.newGuid();
@@ -20,7 +19,6 @@ export class ComposerNodeModel {
     public hasDataSource = false;
     public GetJson(){
         return`{"operationName":"${this.queryName}","text":"${this.code}","nodeSettings":${this.settings.GetJson()}}`
-        //return`{"id":{${this.id}},"operationName":{${this.queryName}},"text":{${this.code}},"editorRef":{${this.editorRef}},"renderingType":{${this.renderingType}},"nodeSettings":{${this.settings.GetJson()}}}`
     }
     public constructor() {
         this.id = Guid.newGuid();

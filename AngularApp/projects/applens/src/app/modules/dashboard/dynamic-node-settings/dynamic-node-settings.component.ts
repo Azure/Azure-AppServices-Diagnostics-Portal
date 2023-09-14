@@ -29,18 +29,6 @@ export class DynamicNodeSettings implements OnInit {
   scopeString: string = "";
   @Input() dataSourceRequired: boolean = false;
   @Input() isMicrosoftWeb: boolean = false;
-  //dataSourceType: NoCodeSupportedDataSourceTypes = NoCodeSupportedDataSourceTypes.Kusto
-  // dataSource: KustoDataSourceSettings = {
-  //   clusterName: this.clusterName,
-  //   dataBaseName: this.databaseName,
-  //   getConnectionString: function (): string {
-  //     throw new Error('Function not implemented.');
-  //   },
-  //   GetJson: function (): string {
-  //     throw new Error('Function not implemented.');
-  //   },
-  //   dataSourceType: NoCodeSupportedDataSourceTypes.Kusto
-  // }
   datasource: DataSourceSettingsBase = new KustoDataSourceSettings;
 
   rendering: RenderingSettingsBase = new NoCodeTableRenderingProperties;
@@ -96,16 +84,6 @@ export class DynamicNodeSettings implements OnInit {
   }
 
   updateScope(event: any){
-    //(this.settings.dataSourceSettings as testDatasettings).connectionString = event.newValue;
-    // if (event.newValue.includes('/')){
-    //   let connection = event.newValue.split('/');
-
-    //   this.datasource_.clusterName = connection[0];
-    //   this.datasource_.dataBaseName = connection[1]; 
-    // }
-    // else {
-    //   this.datasource_.dataBaseName = event.newValue;
-    // }
 
     this.settings.dataSourceSettings.processScopeString(event.newValue);
     this.scopeString = event.newValue.toString();

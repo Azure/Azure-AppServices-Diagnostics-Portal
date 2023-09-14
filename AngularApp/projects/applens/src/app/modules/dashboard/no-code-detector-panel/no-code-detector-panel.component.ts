@@ -19,8 +19,6 @@ export class NoCodeDetectorPanelComponent implements OnInit {
   }
   nodeList: NoCodeExpressionResponse[] = [];
   @Input() detectorJson: string = "";
-  // @Input() startTime: moment.Moment;
-  // @Input() endTime: moment.Moment;
   @Input() isOpenObservable: Observable<boolean>;
   executionState = executionState;
   @Input() state: executionState = this.executionState.success;
@@ -42,10 +40,6 @@ export class NoCodeDetectorPanelComponent implements OnInit {
   ngOnInit(): void {
     this.detectorNodesSubject.subscribe(x => {
       this.detectorView = x;
-      //this.isOpen = x != null;
-      // this.nodeList = x;
-      // this.nodeList.slice();
-      // this.isOpen = x.length > 0;
     });
     this.isOpenObservable.subscribe(x => {
       this.isOpen = x;
@@ -63,17 +57,13 @@ export class NoCodeDetectorPanelComponent implements OnInit {
 
   openPanel(){
     this.isOpen = true;
-    //this.isOpenChange.emit(true);
   }
 
   closePanel(){
     this.isOpen = false;
-    //this.isOpenChange.emit(true);
   }
 
   ngOnChanges(changes: SimpleChanges){
-    //if (this.isOpen) this.openPanel();
-    //this.nodeList = changes.columns.currentValue;
   }
 
   trackBy(index, item) {
@@ -81,7 +71,6 @@ export class NoCodeDetectorPanelComponent implements OnInit {
   }
 
   nodeListObservable(){
-    //return of(this.nodeList);
   }
 
 }

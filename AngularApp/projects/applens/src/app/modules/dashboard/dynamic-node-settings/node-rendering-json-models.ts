@@ -2,7 +2,6 @@ import { RenderingType, TimeSeriesType } from "diagnostic-data";
 import { NormalPeoplePickerBase } from "office-ui-fabric-react";
 import { NoCodeSupportedRenderingTypes } from "../models/detector-designer-models/node-models";
 import { AnalysisPickerModel, SupportTopic, SupportTopicPickerModel } from "../models/detector-designer-models/detector-settings-models";
-//import { SupportTopic } from "dist/diagnostic-data/public_api";
 
 export class NoCodeExpressionBody {
     Text: string;
@@ -11,21 +10,7 @@ export class NoCodeExpressionBody {
     public GetJson(){
       return `{"Text":{${this.Text}},"OperationName":{${this.Text}},"NodeSettings":{${this.NodeSettings.GetJson()}}`
     }
-    // DataSourceType: NoCodeSupportedDataSourceTypes;
-    // ConnectionString: string;
-    // RenderingType: RenderingType;
-    // RenderingProperties: NoCodeRenderingProperties;
   }
-
-//   export class NoCodeRenderingProperties {
-//     isVisible?: boolean = true;
-//     type: RenderingType = RenderingType.Table;
-//     isExpanded?: boolean;
-//     title?: string;
-//     description?: string;
-//     graphType?: TimeSeriesType;
-//     graphDefaultValue?: number;
-//   }
   
   export class NoCodeExpressionResponse {
     res: string;
@@ -37,13 +22,6 @@ export class NoCodeExpressionBody {
   export enum NoCodeSupportedDataSourceTypes {
     Kusto
   }
-
-//   export enum NoCodeSupportedRenderingTypesRMs {
-//     Table = RenderingType.Table,
-//     Insight = RenderingType.Insights,
-//     Graph = RenderingType.TimeSeries,
-//     Markdown = RenderingType.Markdown
-//   }
   
 export class NodeSettings {
     dataSourceSettings: DataSourceSettingsBase = new KustoDataSourceSettings;
@@ -54,7 +32,6 @@ export class NodeSettings {
 }
 
 export abstract class RenderingSettingsBase {
-    //renderingType: NoCodeSupportedRenderingTypesRMs = NoCodeSupportedRenderingTypesRMs.Table;
     renderingType: RenderingType = RenderingType.Table;
     isVisible: boolean = true;
     abstract GetJson();
@@ -101,11 +78,6 @@ export abstract class DataSourceSettingsBase {
     abstract isValid(): boolean;
     abstract GetJson(): string;
 }
-
-// export class testDatasettings extends DataSourceSettingsBase {
-//   connectionString: string = '@stampcluster/wawsprod';
-// }
-
 export class  KustoDataSourceSettings extends DataSourceSettingsBase {
     dataBaseName: string = "";
     clusterName: string = "";
@@ -153,7 +125,6 @@ export class NoCodeDetector {
   category: string = "";
   supportTopics: SupportTopic[] = [];
   analysisTypes: string[] = [];
-  //json: string = "";
 }
 
 export class NoCodePackage {

@@ -1,9 +1,3 @@
-<!-- <ng-container *ngFor="let node of nodeList">
-    <div>
-        <dynamic-data [diagnosticData]="node.res[0]" [startTime]="startTime" [endTime]="endTime"></dynamic-data>
-    </div>
-</ng-container> -->
-
 <fab-pivot (onLinkClick)="changeTab($event)">
     <fab-pivot-item [headerText]="'Data'" [itemKey]="'data'">
         <ng-container *ngIf="state === executionState.success">
@@ -21,7 +15,3 @@
         <tab-data-sources *ngIf="pivotKey=='dataSource'" [onboardingMode]="true" [detectorResponse]="detectorView"></tab-data-sources>
     </fab-pivot-item>
 </fab-pivot>
-<!-- <detector-view *ngIf="showView && pivotKey=='data'" [detectorResponse]="detectorView"
-              [startTime]="startTime" [endTime]="endTime" [showEdit]="false"
-              [developmentMode]="true" [hideDetectorHeader]="true" [hideDetectorControl]="true"></detector-view>
-<tab-data-sources *ngIf="pivotKey=='dataSource'" [onboardingMode]="true" [detectorResponse]="detectorView"></tab-data-sources> -->

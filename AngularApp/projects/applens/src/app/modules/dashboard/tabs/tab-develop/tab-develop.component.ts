@@ -24,7 +24,6 @@ export class TabDevelopComponent implements OnInit {
   canExit(): boolean {
     this._changeDetectorRef.detectChanges();
     return this.isNoCode ? this.detectorDesignerComponent.canExit() : this.onboardingFlowComponent.canExit();
-    // return this.detectorDesignerComponent.canExit();
   };
 
   ngOnInit() {
