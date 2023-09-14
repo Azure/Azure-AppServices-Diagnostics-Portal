@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { KeyValuePair } from 'projects/app-service-diagnostics/src/app/shared/models/portal';
 import { ApplensGlobal } from '../../../../applens-global';
-import { RenderingSettingsBaseComponent } from '../rendering-settings-base/rendering-settings-base.component';
-import { NoCodeInsightRenderingProperties } from '../../dynamic-node-settings/node-rendering-json-models';
+import { RenderingSettingsBaseComponent } from '../../../../../../../diagnostic-data/src/lib/components/rendering-settings-base/rendering-settings-base.component';
+import { NoCodeInsightRenderingProperties } from '../../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
 import { RenderingType } from 'diagnostic-data';
 import { ICheckboxProps } from 'office-ui-fabric-react';
 

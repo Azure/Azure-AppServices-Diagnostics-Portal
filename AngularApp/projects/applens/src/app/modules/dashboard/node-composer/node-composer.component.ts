@@ -16,7 +16,7 @@ import { ApplensOpenAIChatService } from '../../../shared/services/applens-opena
 import { ResourceService } from '../../../shared/services/resource.service';
 import { dynamicExpressionBody, kustoQueryDialogParams } from '../workflow/models/kusto';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { NoCodeSupportedDataSourceTypes, NoCodeExpressionBody, NodeSettings, NoCodeTableRenderingProperties, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, nodeJson, NoCodeExpressionResponse } from '../dynamic-node-settings/node-rendering-json-models';
+import { NoCodeSupportedDataSourceTypes, NoCodeExpressionBody, NodeSettings, NoCodeTableRenderingProperties, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, nodeJson, NoCodeExpressionResponse } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
 import { toUnicode } from 'punycode';
 import { get } from 'http';
 const moment = momentNs;

@@ -2,6 +2,33 @@
   <no-code-detector-panel [errorMessage]="errorMessage" [state]="state" [isOpenObservable]="detectorPanelOpenObservable" [detectorNodes]="detectorNodes" [detectorJson]="detectorJson" (publish)="publishButtonOnClick()"></no-code-detector-panel>
 </div>
 <loader-view *ngIf="!detectorLoaded" message="Loading detector ..."></loader-view>
+
+<fab-panel [isOpen]="publishSuccess || publishFailed" [isLightDismiss]="true" [type]="PanelType.custom"
+  [customWidth]="'400px'" [isHiddenOnDismiss]="true" [hasCloseButton]="false" [closeButtonAriaLabel]="'close'"
+  [styles]="submittedPanelStyles" [isBlocking]="false" (onDismissed)="dismissPublishSuccessHandler()"
+  (onOpened)="onOpenPublishSuccessPanel()">
+  <div class="submitted-panel-text panel-text">
+    <div style="display: flex;align-items: center; margin-left: 4px; margin-right: 8px;">
+      <div *ngIf="publishSuccess || saveSuccess" style="display: flex; align-items: center; padding: 0px 10px;">
+        <status-icon [status]="HealthStatus.Success" class="mr-3"></status-icon>
+        <div>
+          <h5 style="font-weight: 600;">Your detector {{detectorName}} was saved</h5>
+        </div>
+      </div>
+
+      <div *ngIf="publishFailed" style="display: flex; align-items: center; padding: 0px 10px;">
+        <status-icon [status]="HealthStatus.Critical" class="mr-3"></status-icon>
+        <div style="font-weight: 600;">Your detector {{detectorName}} publish failed </div>
+      </div>
+
+      <div *ngIf="saveFailed" style="display: flex; align-items: center; padding: 0px 10px;">
+        <status-icon [status]="HealthStatus.Critical" class="mr-3"></status-icon>
+        <div style="font-weight: 600;">Failed to save your detector </div>
+      </div>
+    </div>
+  </div>
+</fab-panel>
+
 <div *ngIf="detectorLoaded" style="width: 100%;">
     <div style = "display: flex; justify-content: left;align-items: baseline; padding-left: 8px;">
         <fab-text-field [ariaLabel]="'Detector Name'" [styles]="fabTextFieldStyle" [label]="'Name'" [required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" 

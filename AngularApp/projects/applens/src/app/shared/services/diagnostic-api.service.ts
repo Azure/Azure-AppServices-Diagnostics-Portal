@@ -17,7 +17,7 @@ import { dynamicExpressionBody } from '../../modules/dashboard/workflow/models/k
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../models/devopsCommitStatus';
 import { ChatFeedbackPostBody } from '../models/openAIChatFeedbackModel';
-import { NoCodeDetector, NoCodeExpressionBody, NoCodePackage } from '../../modules/dashboard/dynamic-node-settings/node-rendering-json-models';
+import { NoCodeDetector, NoCodeExpressionBody, NoCodePackage } from '../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
 
 
 @Injectable()

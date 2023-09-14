@@ -64,6 +64,7 @@ export * from './lib/models/optinsights';
 export * from './lib/models/alerts';
 export * from './lib/models/common-models';
 export * from './lib/models/betaSubscriptions';
+export * from './lib/models/node-rendering-json-models';
 
 export * from './lib/components/detector-list-analysis/detector-list-analysis.component'
 
@@ -165,6 +166,7 @@ export * from './lib/components/openai-genie/openai-genie.component';
 export * from './lib/components/diag-chat-container/diag-chat-container.component';
 export * from './lib/components/diag-chat-solution/diag-chat-solution.component';
 export * from "./lib/components/documentation-copilot/documentation-copilot.component";
+export * from "./lib/components/rendering-settings-base/rendering-settings-base.component";
 
 export * from './lib/modules/fab-coachmark/coachmark.module'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.module'

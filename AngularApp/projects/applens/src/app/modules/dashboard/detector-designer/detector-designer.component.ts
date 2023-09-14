@@ -8,7 +8,7 @@ import { DetectorGistApiService } from '../../../shared/services/detectorgist-te
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ResourceService } from '../../../shared/services/resource.service';
-import { DetectorControlService, DetectorMetaData, DetectorType, GenericThemeService, RenderingType, TelemetryService } from 'diagnostic-data';
+import { DetectorControlService, DetectorMetaData, DetectorType, GenericThemeService, HealthStatus, RenderingType, TelemetryService } from 'diagnostic-data';
 import { AdalService } from 'adal-angular4';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import { ApplensCommandBarService } from '../services/applens-command-bar.service';
@@ -27,7 +27,7 @@ import { AnalysisPickerModel, DetectorSettingsModel, EntityType, SupportTopic, S
 import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 import { INodeModelChangeEventProps, executionState } from '../node-composer/node-composer.component';
-import { KustoDataSourceSettings, NoCodeDetector, NoCodeExpressionBody, NoCodeExpressionResponse, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, NoCodePackage, NoCodeSupportedDataSourceTypes, NoCodeTableRenderingProperties, NodeSettings, nodeJson } from '../dynamic-node-settings/node-rendering-json-models';
+import { KustoDataSourceSettings, NoCodeDetector, NoCodeExpressionBody, NoCodeExpressionResponse, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, NoCodePackage, NoCodeSupportedDataSourceTypes, NoCodeTableRenderingProperties, NodeSettings, nodeJson } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
 import * as moment from 'moment';
 import { NodeCompatibleEventEmitter } from 'rxjs/internal/observable/fromEvent';
 import { DevopsConfig } from '../../../shared/models/devopsConfig';
@@ -45,6 +45,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   @Input() detectorId:string = '';
 
   DevelopMode = DevelopMode;
+  HealthStatus = HealthStatus;
 
   executionState = executionState;
   state = this.executionState.default;
@@ -57,6 +58,18 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
 
   PanelType = PanelType;
   RenderingType = RenderingType;
+
+  submittedPanelStyles: IPanelProps["styles"] = {
+    root: {
+      height: "100px",
+    },
+    content: {
+      padding: "0px"
+    },
+    navigation: {
+      height: "18px"
+    }
+  }
 
   fabTextFieldStyle: ITextFieldProps["styles"] = {
     wrapper: {
@@ -77,9 +90,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   };
 
   fabTextFieldStyleNoStretch: ITextFieldProps["styles"] = {
-    //wrapper: {
-      //display: 'flex',
-    //},
     field: {
       width: '300px'
     }
@@ -191,6 +201,13 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   PPELink: string = '';
   owners: string[] = [];
   branchInput: string = '';
+  PRLink: string = '';
+  publishSuccess: boolean = false;
+  publishFailed: boolean = false;
+  saveSuccess: boolean = false;
+  saveFailed: boolean = false;
+  currentTime: string = "";
+  submittedPanelTimer: any = null;
   //#endregion Graduation branch picker variables
 
   //#region Time picker variables
@@ -621,9 +638,32 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     PushDetector.subscribe(x => {
       console.log("push");
       MakePullRequest.subscribe(x => {
+        this.PRLink = `${x["webUrl"]}/pullrequest/${x["prId"]}`
+        this.publishSuccess = true;
         console.log("pr");
+      },
+      error => {
+        this.publishFailed = true;
       });
+    },
+    error => {
+      this.publishFailed = true;
     });
+  }
+
+  onOpenPublishSuccessPanel() {
+    this.currentTime = moment(Date.now()).format("hh:mm A");
+    this.detectorPanelOpenObservable.next(false);
+    this.submittedPanelTimer = setTimeout(() => {
+      this.dismissPublishSuccessHandler();
+    }, 10000);
+  }
+
+  dismissPublishSuccessHandler() {
+    this.publishSuccess = false;
+    this.publishFailed = false;
+    this.saveSuccess = false;
+    this.saveFailed = false;
   }
 
   private autoMergePublish(det: NoCodeDetector, changeType: string, comment: string = 'pushing changes to detector'): void {
@@ -654,7 +694,11 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     const PushDetector = this.diagnosticApiService.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri, det);
 
     PushDetector.subscribe(x => {
+      this.saveSuccess = true;
       console.log("push");
+    },
+    error => {
+      this.saveFailed = true;
     });
   }
 

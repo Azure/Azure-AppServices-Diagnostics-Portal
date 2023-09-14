@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { IButtonStyles, IPanelProps, PanelType } from 'office-ui-fabric-react';
-import { NoCodeExpressionResponse } from 'projects/applens/src/app/modules/dashboard/dynamic-node-settings/node-rendering-json-models';
+import { NoCodeExpressionResponse } from 'projects/diagnostic-data/src/lib/models/node-rendering-json-models';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { executionState } from '../node-composer/node-composer.component';

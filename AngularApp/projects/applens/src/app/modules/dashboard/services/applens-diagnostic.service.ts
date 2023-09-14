@@ -11,7 +11,7 @@ import { dynamicExpressionBody } from '../workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../../../shared/models/devopsCommitStatus';
 import { ChatFeedbackPostBody } from '../../../shared/models/openAIChatFeedbackModel';
-import { NoCodeDetector, NoCodeExpressionBody, NoCodePackage } from '../dynamic-node-settings/node-rendering-json-models';
+import { NoCodeDetector, NoCodeExpressionBody, NoCodePackage } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
 
 
 @Injectable()

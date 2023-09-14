@@ -152,7 +152,7 @@ import { DetectorDesignerComponent } from './detector-designer/detector-designer
 import { DetectorSettingsPanelComponent } from './detector-settings-panel/detector-settings-panel.component';
 import { NodeComposerComponent } from './node-composer/node-composer.component';
 import { DynamicNodeSettings } from './dynamic-node-settings/dynamic-node-settings.component';
-import { RenderingSettingsBaseComponent } from './rendering-settings-components/rendering-settings-base/rendering-settings-base.component';
+import { RenderingSettingsBaseComponent } from '../../../../../diagnostic-data/src/lib/components/rendering-settings-base/rendering-settings-base.component';
 import { TableRenderingSettingsComponent } from './rendering-settings-components/table-rendering-settings/table-rendering-settings.component';
 import { InsightRenderingSettingsComponent } from './rendering-settings-components/insight-rendering-settings/insight-rendering-settings.component';
 import { NoCodeDetectorPanelComponent } from './no-code-detector-panel/no-code-detector-panel.component';

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { RenderingType, TimeSeriesType } from 'diagnostic-data';
+import { RenderingType, TimeSeriesType } from '../models/detector';
 import { IDropdownProps, ITextFieldProps } from 'office-ui-fabric-react';
-import { NoCodeGraphRenderingProperties } from 'projects/applens/src/app/modules/dashboard/dynamic-node-settings/node-rendering-json-models';
-import { RenderingSettingsBaseComponent } from 'projects/applens/src/app/modules/dashboard/rendering-settings-components/rendering-settings-base/rendering-settings-base.component';
+import { NoCodeGraphRenderingProperties } from 'projects/diagnostic-data/src/lib/models/node-rendering-json-models';
+import { RenderingSettingsBaseComponent } from 'projects/diagnostic-data/src/lib/components/rendering-settings-base/rendering-settings-base.component';
 
 @Component({
   selector: 'graph-rendering-settings',
@@ -92,9 +92,4 @@ export class GraphRenderingSettingsComponent extends RenderingSettingsBaseCompon
         return TimeSeriesType.LineGraph
     }
   }
-
-  // changeType(event:any){
-  //   this.selectedType = event.option.key;
-  // }
-
 }

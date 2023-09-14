@@ -6,12 +6,12 @@ import { GraphRenderingSettingsComponent } from 'projects/diagnostic-data/src/li
 import { MarkdownRenderingSettingsComponent } from 'projects/diagnostic-data/src/lib/markdown-rendering-settings/markdown-rendering-settings.component';
 import { ApplensGlobal } from '../../../applens-global';
 import { InsightRenderingSettingsComponent } from '../rendering-settings-components/insight-rendering-settings/insight-rendering-settings.component';
-import { RenderingSettingsBaseComponent } from '../rendering-settings-components/rendering-settings-base/rendering-settings-base.component';
+import { RenderingSettingsBaseComponent } from '../../../../../../diagnostic-data/src/lib/components/rendering-settings-base/rendering-settings-base.component';
 import { TableRenderingSettingsComponent } from '../rendering-settings-components/table-rendering-settings/table-rendering-settings.component';
-import { DataSourceSettingsBase, NoCodeTableRenderingProperties, NodeSettings } from './node-rendering-json-models';
-import { NoCodeSupportedDataSourceTypes } from './node-rendering-json-models';
-import { KustoDataSourceSettings } from './node-rendering-json-models';
-import { RenderingSettingsBase } from './node-rendering-json-models';
+import { DataSourceSettingsBase, NoCodeTableRenderingProperties, NodeSettings } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
+import { NoCodeSupportedDataSourceTypes } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
+import { KustoDataSourceSettings } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
+import { RenderingSettingsBase } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
 import { pad } from 'highcharts';
 
 @Component({
