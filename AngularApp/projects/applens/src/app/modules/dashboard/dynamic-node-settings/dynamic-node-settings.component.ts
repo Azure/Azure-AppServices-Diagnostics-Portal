@@ -2,8 +2,8 @@ import { Component, Input, OnInit, Output, ViewChild, ViewContainerRef, EventEmi
 import { ActivatedRoute, Router } from '@angular/router';
 import { RenderingType } from 'diagnostic-data';
 import { ITextFieldProps } from 'office-ui-fabric-react';
-import { GraphRenderingSettingsComponent } from 'projects/diagnostic-data/src/lib/graph-rendering-settings/graph-rendering-settings.component';
-import { MarkdownRenderingSettingsComponent } from 'projects/diagnostic-data/src/lib/markdown-rendering-settings/markdown-rendering-settings.component';
+import { GraphRenderingSettingsComponent } from '../../../../../../diagnostic-data/src/lib/graph-rendering-settings/graph-rendering-settings.component';
+import { MarkdownRenderingSettingsComponent } from '../../../../../../diagnostic-data/src/lib/markdown-rendering-settings/markdown-rendering-settings.component';
 import { ApplensGlobal } from '../../../applens-global';
 import { InsightRenderingSettingsComponent } from '../rendering-settings-components/insight-rendering-settings/insight-rendering-settings.component';
 import { RenderingSettingsBaseComponent } from '../../../../../../diagnostic-data/src/lib/components/rendering-settings-base/rendering-settings-base.component';

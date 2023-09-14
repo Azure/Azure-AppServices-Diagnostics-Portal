@@ -4,7 +4,6 @@ import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } fro
 import { ActivatedRoute, Router } from '@angular/router';
 import { DetectorControlService, DetectorMetaData, RenderingType, ResponseTokensSize, TextModels } from 'diagnostic-data';
 import { IBasePickerProps, ITagPickerProps, ITagItemProps, ISuggestionModel, ITag, TagItem, IButtonStyles, IChoiceGroupOption, IDialogContentProps, IDialogProps, IDropdownOption, IDropdownProps, IIconProps, IPanelProps, IPersona, IPersonaProps, IPickerItemProps, IPivotProps, ITextFieldProps, MessageBarType, PanelType, SelectableOptionMenuItemType, TagItemSuggestion, IDropdown, ICalloutProps, ICheckboxStyleProps, ICheckboxProps, PivotItem, List, IPivotItemProps } from 'office-ui-fabric-react';
-import { KeyValuePair } from 'projects/app-service-diagnostics/src/app/shared/models/portal';
 import { Observable, of } from 'rxjs';
 import { ApplensGlobal } from '../../../applens-global';
 import { ComposerNodeModel, ITPromptSuggestionModel, NoCodeSupportedRenderingTypes } from '../models/detector-designer-models/node-models';

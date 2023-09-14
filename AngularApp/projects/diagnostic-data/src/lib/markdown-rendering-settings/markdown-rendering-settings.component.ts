@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ITextFieldProps } from 'office-ui-fabric-react';
-import { NoCodeMarkdownRenderingProperties } from 'projects/diagnostic-data/src/lib/models/node-rendering-json-models';
+import { NoCodeMarkdownRenderingProperties } from '../models/node-rendering-json-models';
 import { RenderingType } from '../models/detector';
-import { RenderingSettingsBaseComponent } from 'projects/diagnostic-data/src/lib/components/rendering-settings-base/rendering-settings-base.component';
+import { RenderingSettingsBaseComponent } from '../components/rendering-settings-base/rendering-settings-base.component';
 
 @Component({
   selector: 'markdown-rendering-settings',

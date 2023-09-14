@@ -1,5 +1,5 @@
 import { DiagnosticData, RenderingType } from "diagnostic-data";
-import { Guid } from "projects/diagnostic-data/src/lib/utilities/guid";
+import { Guid } from "../../../../../../../diagnostic-data/src/lib/utilities/guid";
 import { NodeSettings, nodeJson } from "../../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models";
 import { BehaviorSubject } from "rxjs";
 
