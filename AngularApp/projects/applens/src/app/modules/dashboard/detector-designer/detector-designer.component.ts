@@ -398,7 +398,6 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     this.showBranches.push({ key: this.mainBranch, text: this.mainBranch });
 
     this.diagnosticApiService.getDetectorCode(`${this.detectorId}/package.json`, this.displayBranch, `${this.resourceService.ArmResource.provider}/${this.resourceService.ArmResource.resourceTypeName}`).subscribe(pkg => {
-      console.log(pkg);
       this.buildSavedDetector(pkg);
     });
 

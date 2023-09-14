@@ -146,7 +146,6 @@ export class DynamicNodeSettings implements OnInit {
       }
     }
     else {
-      console.error(`RenderingSettings:${this.renderingSettings} RenderingType: ${this.renderingType} is null`);
     }
   }
 

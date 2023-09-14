@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { KeyValuePair } from 'projects/app-service-diagnostics/src/app/shared/models/portal';
+import { KeyValuePair } from '../../../../../../app-service-diagnostics/src/app/shared/models/portal';
 import { ApplensGlobal } from '../../../applens-global';
 
 @Component({
