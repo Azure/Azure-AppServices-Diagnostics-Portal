@@ -3,7 +3,7 @@ import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.se
 import { ResourceService } from '../../../shared/services/resource.service';
 import { DetectorResponse, DetectorMetaData, ExtendDetectorMetaData, ChatCompletionModel } from 'diagnostic-data';
 import { Observable } from 'rxjs';
-import { QueryResponse } from 'diagnostic-data';
+import { QueryResponse, NoCodeDetector, NoCodeExpressionBody, NoCodePackage  } from 'diagnostic-data';
 import { Package } from '../../../shared/models/package';
 import { filter } from 'rxjs-compat/operator/filter';
 import { map } from 'rxjs/operators';
@@ -11,7 +11,6 @@ import { dynamicExpressionBody } from '../workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../../../shared/models/devopsCommitStatus';
 import { ChatFeedbackPostBody } from '../../../shared/models/openAIChatFeedbackModel';
-import { NoCodeDetector, NoCodeExpressionBody, NoCodePackage } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
 
 
 @Injectable()

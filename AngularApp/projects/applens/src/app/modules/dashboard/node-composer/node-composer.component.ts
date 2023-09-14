@@ -10,12 +10,11 @@ import { ComposerNodeModel, ITPromptSuggestionModel, NoCodeSupportedRenderingTyp
 import { DevelopMode } from '../onboarding-flow/onboarding-flow.component';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import * as momentNs from 'moment';
-import { CreateTextCompletionModel } from 'diagnostic-data';
+import { CreateTextCompletionModel, NoCodeSupportedDataSourceTypes, NoCodeExpressionBody, NodeSettings, NoCodeTableRenderingProperties, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, nodeJson, NoCodeExpressionResponse  } from 'diagnostic-data';
 import { ApplensOpenAIChatService } from '../../../shared/services/applens-openai-chat.service';
 import { ResourceService } from '../../../shared/services/resource.service';
 import { dynamicExpressionBody, kustoQueryDialogParams } from '../workflow/models/kusto';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { NoCodeSupportedDataSourceTypes, NoCodeExpressionBody, NodeSettings, NoCodeTableRenderingProperties, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, nodeJson, NoCodeExpressionResponse } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
 import { toUnicode } from 'punycode';
 import { get } from 'http';
 const moment = momentNs;

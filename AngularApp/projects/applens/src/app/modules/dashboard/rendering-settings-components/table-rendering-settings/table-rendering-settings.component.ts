@@ -2,9 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ITextFieldProps } from 'office-ui-fabric-react';
 import { ApplensGlobal } from '../../../../applens-global';
-import { RenderingSettingsBaseComponent } from '../../../../../../../diagnostic-data/src/lib/components/rendering-settings-base/rendering-settings-base.component';
-import { NoCodeTableRenderingProperties } from '../../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
-import { RenderingType } from 'diagnostic-data';
+import { RenderingType, NoCodeTableRenderingProperties, RenderingSettingsBaseComponent } from 'diagnostic-data';
 
 @Component({
   selector: 'table-rendering-settings',

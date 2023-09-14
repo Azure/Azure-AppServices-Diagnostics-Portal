@@ -1,4 +1,4 @@
-import { AppType, PlatformType, SitePropertiesParser, StackType } from '../../../../shared/utilities/applens-site-properties-parsing-utilities';
+import { AppType, PlatformType, SitePropertiesParser, StackType } from '../utilities/applens-site-properties-parsing-utilities';
 
 export interface AnalysisPickerModel {
     id: string;
@@ -26,7 +26,7 @@ export interface SupportTopicResponseModel {
     supportTopicL3Name?: string
   }
 
-  export class SupportTopic{
+  export class NoCodeSupportTopic{
     id: string;
     pesId: string;
     sapSupportTopicId: string;

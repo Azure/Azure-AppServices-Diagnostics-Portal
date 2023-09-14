@@ -65,6 +65,8 @@ export * from './lib/models/alerts';
 export * from './lib/models/common-models';
 export * from './lib/models/betaSubscriptions';
 export * from './lib/models/node-rendering-json-models';
+export * from './lib/models/detector-settings-models';
+
 
 export * from './lib/components/detector-list-analysis/detector-list-analysis.component'
 
@@ -78,6 +80,8 @@ export * from './lib/utilities/response-utilities';
 export * from './lib/components/step-views/step-view-lib';
 export * from "./lib/components/solution-orchestrator/solution-orchestrator.component";
 export * from './lib/utilities/resiliencyScoreReportHelper';
+export * from './lib/utilities/guid';
+export * from './lib/utilities/applens-site-properties-parsing-utilities';
 
 export * from './lib/components/app-dependencies/app-dependencies.component'
 export * from './lib/components/app-insights-enablement/app-insights-enablement.component'
@@ -167,6 +171,8 @@ export * from './lib/components/diag-chat-container/diag-chat-container.componen
 export * from './lib/components/diag-chat-solution/diag-chat-solution.component';
 export * from "./lib/components/documentation-copilot/documentation-copilot.component";
 export * from "./lib/components/rendering-settings-base/rendering-settings-base.component";
+export * from './lib/graph-rendering-settings/graph-rendering-settings.component';
+export * from './lib/markdown-rendering-settings/markdown-rendering-settings.component';
 
 export * from './lib/modules/fab-coachmark/coachmark.module'
 export * from './lib/modules/fab-teachingbubble/teachingbubble.module'

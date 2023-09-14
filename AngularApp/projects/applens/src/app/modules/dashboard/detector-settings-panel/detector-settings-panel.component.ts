@@ -10,9 +10,9 @@ import { DetectorMetaData, DetectorType, GenericThemeService, TelemetryService }
 import { InputRendererOptions } from '@angular-react/core';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, mergeMap, switchMap, tap } from 'rxjs/operators';
-import { AppType, PlatformType, SitePropertiesParser, StackType } from '../../../shared/utilities/applens-site-properties-parsing-utilities';
+import { AppType, PlatformType, SitePropertiesParser, StackType } from '../../../../../../diagnostic-data/src/lib/utilities/applens-site-properties-parsing-utilities';
 import { DevelopMode } from '../onboarding-flow/onboarding-flow.component';
-import { AnalysisPickerModel, DetectorSettingsModel, EntityType, SupportTopicPickerModel, SupportTopicResponseModel } from '../models/detector-designer-models/detector-settings-models';
+import { AnalysisPickerModel, DetectorSettingsModel, EntityType, SupportTopicPickerModel, SupportTopicResponseModel } from '../../../../../../diagnostic-data/src/lib/models/detector-settings-models';
 
 @Component({
   selector: 'detector-settings-panel',

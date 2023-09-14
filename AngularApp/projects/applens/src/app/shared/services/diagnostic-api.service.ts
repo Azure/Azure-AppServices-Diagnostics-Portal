@@ -10,14 +10,13 @@ import { Package } from '../models/package';
 import { CacheService } from './cache.service';
 import { Guid } from 'projects/app-service-diagnostics/src/app/shared/utilities/guid';
 import { Router } from '@angular/router';
-import { TelemetryPayload } from 'diagnostic-data';
+import { TelemetryPayload, NoCodeDetector, NoCodeExpressionBody, NoCodePackage } from 'diagnostic-data';
 import { FavoriteDetectorProp, FavoriteDetectors, LandingInfo, RecentResource, UserPanelSetting, UserSetting } from '../models/user-setting';
 import { List } from 'office-ui-fabric-react';
 import { dynamicExpressionBody } from '../../modules/dashboard/workflow/models/kusto';
 import { workflowNodeResult, workflowPublishBody } from 'projects/diagnostic-data/src/lib/models/workflow';
 import { CommitStatus } from '../models/devopsCommitStatus';
 import { ChatFeedbackPostBody } from '../models/openAIChatFeedbackModel';
-import { NoCodeDetector, NoCodeExpressionBody, NoCodePackage } from '../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
 
 
 @Injectable()

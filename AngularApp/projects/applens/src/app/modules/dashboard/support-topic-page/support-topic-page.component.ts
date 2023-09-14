@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SupportTopicItem, SupportTopicResult } from '../resource-home/resource-home.component';
-import { DetectorMetaData, SupportTopic } from 'diagnostic-data';
+import { DetectorMetaData, NoCodeSupportTopic } from 'diagnostic-data';
 import { map } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 import { Router, ActivatedRoute, NavigationExtras, NavigationEnd, Params } from '@angular/router';

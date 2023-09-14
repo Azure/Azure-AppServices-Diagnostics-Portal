@@ -8,7 +8,7 @@ import { DetectorGistApiService } from '../../../shared/services/detectorgist-te
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ResourceService } from '../../../shared/services/resource.service';
-import { DetectorControlService, DetectorMetaData, DetectorType, GenericThemeService, HealthStatus, RenderingType, TelemetryService } from 'diagnostic-data';
+import { DetectorControlService, DetectorMetaData, DetectorType, GenericThemeService, HealthStatus, RenderingType, TelemetryService,KustoDataSourceSettings, NoCodeDetector, NoCodeExpressionBody, NoCodeExpressionResponse, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, NoCodePackage, NoCodeSupportedDataSourceTypes, NoCodeTableRenderingProperties, NodeSettings, nodeJson  } from 'diagnostic-data';
 import { AdalService } from 'adal-angular4';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import { ApplensCommandBarService } from '../services/applens-command-bar.service';
@@ -21,13 +21,12 @@ import { ValidationState } from '@fluentui/react/lib/Pickers';
 import { FabPeoplePickerComponent } from '@angular-react/fabric/lib/components/pickers';
 import { SiteService } from '../../../shared/services/site.service';
 import { ObserverSiteInfo } from '../../../shared/models/observer';
-import { AppType, PlatformType, SitePropertiesParser, StackType } from '../../../shared/utilities/applens-site-properties-parsing-utilities';
+import { AppType, PlatformType, SitePropertiesParser, StackType } from '../../../../../../diagnostic-data/src/lib/utilities/applens-site-properties-parsing-utilities';
 import { Options } from 'ng5-slider';
-import { AnalysisPickerModel, DetectorSettingsModel, EntityType, SupportTopic, SupportTopicPickerModel } from '../models/detector-designer-models/detector-settings-models';
+import { AnalysisPickerModel, DetectorSettingsModel, EntityType, NoCodeSupportTopic, SupportTopicPickerModel } from '../../../../../../diagnostic-data/src/lib/models/detector-settings-models';
 import { ComposerNodeModel } from '../models/detector-designer-models/node-models';
 import { Guid } from 'projects/diagnostic-data/src/lib/utilities/guid';
 import { INodeModelChangeEventProps, executionState } from '../node-composer/node-composer.component';
-import { KustoDataSourceSettings, NoCodeDetector, NoCodeExpressionBody, NoCodeExpressionResponse, NoCodeGraphRenderingProperties, NoCodeInsightRenderingProperties, NoCodeMarkdownRenderingProperties, NoCodePackage, NoCodeSupportedDataSourceTypes, NoCodeTableRenderingProperties, NodeSettings, nodeJson } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
 import * as moment from 'moment';
 import { NodeCompatibleEventEmitter } from 'rxjs/internal/observable/fromEvent';
 import { DevopsConfig } from '../../../shared/models/devopsConfig';
@@ -765,7 +764,7 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
     det.supportTopics = []
     if (!!this.detectorSettingsPanelValue.supportTopicList)
       this.detectorSettingsPanelValue.supportTopicList.forEach(x => {
-        det.supportTopics.push(new SupportTopic(x));
+        det.supportTopics.push(new NoCodeSupportTopic(x));
       });
     if (!!this.detectorSettingsPanelValue.analysisList)
       det.analysisTypes = this.detectorSettingsPanelValue.analysisList.map(x => x.id);

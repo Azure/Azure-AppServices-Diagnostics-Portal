@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RenderingType } from 'diagnostic-data';
+import { RenderingType } from '../../models/detector';
 
 @Component({
   selector: 'rendering-settings-base',

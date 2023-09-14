@@ -22,7 +22,7 @@ import { InputNodeComponent } from '../input-node/input-node.component';
 import { ApplensDiagnosticService } from '../../services/applens-diagnostic.service';
 import { ApplensSupportTopicService } from '../../services/applens-support-topic.service';
 import { SupportTopicResult } from '../../resource-home/resource-home.component';
-import { DetectorMetaData, SupportTopic } from 'diagnostic-data';
+import { DetectorMetaData, NoCodeSupportTopic } from 'diagnostic-data';
 
 @Component({
   selector: 'create-workflow',
@@ -452,7 +452,7 @@ export class CreateWorkflowComponent implements OnInit, AfterViewInit, OnChanges
     }
   }
 
-  addExistingSupportTopic(id: string, st: SupportTopic) {
+  addExistingSupportTopic(id: string, st: NoCodeSupportTopic) {
     let idx = this.allSupportTopics.findIndex(x => x.sapSupportTopicId === st.sapSupportTopicId && x.sapProductId === st.sapProductId);
     if (idx > -1) {
 

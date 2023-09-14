@@ -132,7 +132,7 @@ import { WorkflowRootNodeComponent } from './workflow/workflow-root-node/workflo
 import { ApplensOpenAIChatService } from '../../shared/services/applens-openai-chat.service';
 import { GenericOpenAIChatService } from '../../../../../diagnostic-data/src/public_api';
 import { OpenAIArmService } from '../../../../../diagnostic-data/src/public_api';
-import { ChatUIContextService } from 'diagnostic-data';
+import { ChatUIContextService, RenderingSettingsBaseComponent } from 'diagnostic-data';
 import { DevopsDeploymentsComponent } from './devops-deployments/devops-deployments.component';
 import { ForeachNodeComponent } from './workflow/foreach-node/foreach-node.component';
 import { WorkflowUserAccessComponent } from './workflow/workflow-user-access/workflow-user-access.component';
@@ -152,7 +152,6 @@ import { DetectorDesignerComponent } from './detector-designer/detector-designer
 import { DetectorSettingsPanelComponent } from './detector-settings-panel/detector-settings-panel.component';
 import { NodeComposerComponent } from './node-composer/node-composer.component';
 import { DynamicNodeSettings } from './dynamic-node-settings/dynamic-node-settings.component';
-import { RenderingSettingsBaseComponent } from '../../../../../diagnostic-data/src/lib/components/rendering-settings-base/rendering-settings-base.component';
 import { TableRenderingSettingsComponent } from './rendering-settings-components/table-rendering-settings/table-rendering-settings.component';
 import { InsightRenderingSettingsComponent } from './rendering-settings-components/insight-rendering-settings/insight-rendering-settings.component';
 import { NoCodeDetectorPanelComponent } from './no-code-detector-panel/no-code-detector-panel.component';

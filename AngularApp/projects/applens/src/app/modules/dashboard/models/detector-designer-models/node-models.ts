@@ -1,6 +1,4 @@
-import { DiagnosticData, RenderingType } from "diagnostic-data";
-import { Guid } from "../../../../../../../diagnostic-data/src/lib/utilities/guid";
-import { NodeSettings, nodeJson } from "../../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models";
+import { DiagnosticData, RenderingType, NodeSettings, Guid } from "diagnostic-data";
 import { BehaviorSubject } from "rxjs";
 
 export class ComposerNodeModel {

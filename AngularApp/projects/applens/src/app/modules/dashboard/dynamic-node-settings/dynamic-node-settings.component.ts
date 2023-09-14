@@ -1,18 +1,9 @@
 import { Component, Input, OnInit, Output, ViewChild, ViewContainerRef, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RenderingType } from 'diagnostic-data';
+import { RenderingType, DataSourceSettingsBase, NoCodeTableRenderingProperties, NodeSettings, KustoDataSourceSettings, RenderingSettingsBase, RenderingSettingsBaseComponent, GraphRenderingSettingsComponent, MarkdownRenderingSettingsComponent } from 'diagnostic-data';
 import { ITextFieldProps } from 'office-ui-fabric-react';
-import { GraphRenderingSettingsComponent } from '../../../../../../diagnostic-data/src/lib/graph-rendering-settings/graph-rendering-settings.component';
-import { MarkdownRenderingSettingsComponent } from '../../../../../../diagnostic-data/src/lib/markdown-rendering-settings/markdown-rendering-settings.component';
-import { ApplensGlobal } from '../../../applens-global';
 import { InsightRenderingSettingsComponent } from '../rendering-settings-components/insight-rendering-settings/insight-rendering-settings.component';
-import { RenderingSettingsBaseComponent } from '../../../../../../diagnostic-data/src/lib/components/rendering-settings-base/rendering-settings-base.component';
 import { TableRenderingSettingsComponent } from '../rendering-settings-components/table-rendering-settings/table-rendering-settings.component';
-import { DataSourceSettingsBase, NoCodeTableRenderingProperties, NodeSettings } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
-import { NoCodeSupportedDataSourceTypes } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
-import { KustoDataSourceSettings } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
-import { RenderingSettingsBase } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
-import { pad } from 'highcharts';
 
 @Component({
   selector: 'dynamic-node-settings',

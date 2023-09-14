@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { NoCodeExpressionResponse } from '../../../../../../diagnostic-data/src/lib/models/node-rendering-json-models';
-import { DetectorControlService } from 'diagnostic-data';
+import { DetectorControlService, NoCodeExpressionResponse } from 'diagnostic-data';
 import { executionState } from '../node-composer/node-composer.component';
 
 @Component({
