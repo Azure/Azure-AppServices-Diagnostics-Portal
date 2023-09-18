@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-
+using Azure_Cost_Optimization;
 namespace AppLensV3.Services
 {
     public class CompletionModel
@@ -399,7 +399,32 @@ namespace AppLensV3.Services
             }
             else
             {
-                response = await openAIClient.GetChatCompletionsAsync(metadata.ChatModel == "gpt4" || string.IsNullOrWhiteSpace(openAIGPT35Model) ? openAIGPT4Model: openAIGPT35Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
+                // cost-optimize call to Coar
+                string chatLog = string.Join(';', chatCompletionsOptions.Messages.Select(m => $"{m.Role}: {m.Content}\n"));
+
+                var coar = new Coar();
+                string gptModel = null;
+                double savedCosts = 0;
+
+                try
+                {
+                    if (metadata.ChatModel == "gpt4" || string.IsNullOrWhiteSpace(openAIGPT35Model))
+                    {
+                        (gptModel, savedCosts) = coar.GetRecommendedModel(openAIGPT4Model, chatLog, 0.3);
+                    }
+                    else
+                    {
+                        (gptModel, savedCosts) = coar.GetRecommendedModel(openAIGPT35Model, chatLog, 0.3);
+                    }
+                }
+                catch
+                {
+                    gptModel = openAIGPT4Model;
+                    logger.LogError("COAR call failed. Gpt model defaulted to gpt-4-32k");
+                }
+
+                response = await openAIClient.GetChatCompletionsAsync(gptModel, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
+                logger.LogInformation($"COAR query cost saved: {savedCosts}");
             }
 
             ChatResponse chatResponse = new ChatResponse(response);
@@ -443,39 +468,63 @@ namespace AppLensV3.Services
                         content: chatCompletionsOptions.FeedbackIdsUsed.Count > 0 ? JsonConvert.SerializeObject(chatCompletionsOptions.FeedbackIdsUsed) : string.Empty,
                         finishReason: "stop"));
                 }
-            }
-            else
-            {
-                Response<StreamingChatCompletions> response = await openAIClient.GetChatCompletionsStreamingAsync(
-                    metadata.ChatModel == "gpt4" || string.IsNullOrWhiteSpace(openAIGPT35Model) ? openAIGPT4Model : openAIGPT35Model, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
-                using StreamingChatCompletions streamingChatCompletions = response.Value;
-                await foreach (StreamingChatChoice choice in streamingChatCompletions.GetChoicesStreaming(cancellationToken))
+                }
+                else
                 {
-                    await foreach (ChatMessage message in choice.GetMessageStreaming(cancellationToken))
-                    {
-                        string messageState = await GetFromRedisCache($"{chatHubRedisKeyPrefix}{metadata.MessageId}");
-                        if (messageState != null && messageState.Equals("cancelled", StringComparison.OrdinalIgnoreCase))
-                        {
-                            throw new OperationCanceledException("message marked for cancellation in redis cache");
-                        }
+                    // cost-optimize call to Coar
+                    string chatLog = string.Join(';', chatCompletionsOptions.Messages.Select(m => $"{m.Role}: {m.Content}\n"));
 
-                        if (onMessageStreamAsyncCallback != default && message != null)
+                    var coar = new Coar();
+                    string gptModel = null;
+                    double savedCosts = 0;
+
+                    try
+                    {
+                        if (metadata.ChatModel == "gpt4" || string.IsNullOrWhiteSpace(openAIGPT35Model))
                         {
-                            await onMessageStreamAsyncCallback(new ChatStreamResponse(content: message.Content));
+                            (gptModel, savedCosts) = coar.GetRecommendedModel(openAIGPT4Model, chatLog, 0.3);
+                        }
+                        else
+                        {
+                            (gptModel, savedCosts) = coar.GetRecommendedModel(openAIGPT35Model, chatLog, 0.3);
                         }
                     }
+                    catch
+                    {
+                        gptModel = openAIGPT4Model;
+                        logger.LogError("COAR call failed. Gpt model defaulted to gpt-4-32k");
+                    }
 
-                    finishReason = choice.FinishReason;
-                }
+                    Response<StreamingChatCompletions> response = await openAIClient.GetChatCompletionsStreamingAsync(gptModel, chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions);
+                    logger.LogInformation($"COAR query cost saved: {savedCosts}");
+                    using StreamingChatCompletions streamingChatCompletions = response.Value;
+                    await foreach (StreamingChatChoice choice in streamingChatCompletions.GetChoicesStreaming(cancellationToken))
+                    {
+                        await foreach (ChatMessage message in choice.GetMessageStreaming(cancellationToken))
+                        {
+                            string messageState = await GetFromRedisCache($"{chatHubRedisKeyPrefix}{metadata.MessageId}");
+                            if (messageState != null && messageState.Equals("cancelled", StringComparison.OrdinalIgnoreCase))
+                            {
+                                throw new OperationCanceledException("message marked for cancellation in redis cache");
+                            }
 
-                if (onMessageStreamAsyncCallback != default)
-                {
-                    List<string> feedbackIdsToReturn = new List<string>();
-                    feedbackIdsToReturn = (chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions)?.FeedbackIdsUsed;
-                    await onMessageStreamAsyncCallback(new ChatStreamResponse(
-                        content: feedbackIdsToReturn?.Count > 0 ? JsonConvert.SerializeObject(feedbackIdsToReturn) : string.Empty,
-                        finishReason: finishReason));
-                }
+                            if (onMessageStreamAsyncCallback != default && message != null)
+                            {
+                                await onMessageStreamAsyncCallback(new ChatStreamResponse(content: message.Content));
+                            }
+                        }
+
+                        finishReason = choice.FinishReason;
+                    }
+
+                    if (onMessageStreamAsyncCallback != default)
+                    {
+                        List<string> feedbackIdsToReturn = new List<string>();
+                        feedbackIdsToReturn = (chainResponse?.ChatCompletionsOptionsToUseInChain ?? chatCompletionsOptions)?.FeedbackIdsUsed;
+                        await onMessageStreamAsyncCallback(new ChatStreamResponse(
+                            content: feedbackIdsToReturn?.Count > 0 ? JsonConvert.SerializeObject(feedbackIdsToReturn) : string.Empty,
+                            finishReason: finishReason));
+                    }
             }
         }
 
