@@ -1,0 +1,51 @@
+﻿{
+  "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/rolloutSpecification.json",
+  "rolloutMetadata": {
+  "serviceModelPath": "ServiceModel.json",
+	"scopeBindingsPath": "ScopeBindings.json",
+    "name": "AppServiceDiagnosticsRollout",
+    "rolloutType": "Major",
+    "buildSource": {
+      "parameters": {
+        "versionFile": "buildver.txt"
+      }
+    },
+    "notification": {
+      "email": {
+        "to": "hawfor@microsoft.com"
+      }
+    }
+  },
+  "orchestratedsteps": [
+    {
+      "name": "Create App Service for AppServiceDiagnostics UI",
+      "targetType": "ServiceResource",
+      "targetName": "AppServiceDiagnosticsPublicWebAppCreate",
+      "actions": [
+        "Deploy"
+      ]
+    },
+    {
+      "name": "Update appsettings",
+      "targetType": "ServiceResource",
+      "targetName": "AppServiceDiagnosticsPublicAppSettings",
+      "actions": [
+        "Deploy"
+      ],
+      "dependsOn": [
+        "Create App Service for AppServiceDiagnostics UI"
+      ]
+    },
+    {
+      "name": "Deploy App Service Diagnostics Package",
+      "targetType": "ServiceResource",
+      "targetName": "AppServiceDiagnosticsPublicZipDeploy",
+      "actions": [
+        "Deploy"
+      ],
+      "dependsOn": [
+        "Update appsettings"
+      ]
+    }
+  ]
+}

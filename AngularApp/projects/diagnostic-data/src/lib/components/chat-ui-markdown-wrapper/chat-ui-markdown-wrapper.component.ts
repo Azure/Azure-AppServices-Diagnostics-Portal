@@ -54,8 +54,10 @@ export class ChatUIMarkdownWrapperComponent {
     }
 
     public getElementValue(element:any): string {
-        if(element?.type === 'snippet' && (`${element?.lang}`.toLowerCase() === 'kusto' || `${element?.lang$}`.toLowerCase() === 'kql')) {            
-            return `${element?.value}`.replace(new RegExp(element.lang), 'csharp');
+        if(element?.type === 'snippet' && (`${element?.lang}`.toLowerCase() === 'kusto' || `${element?.lang}`.toLowerCase() === 'kql')) {
+            // Replace the language with csharp for kusto snippets
+            // Also remove any empty lines since kusto queries cannot have empty lines
+            return `${element?.value?.split('\n')?.filter((line) => line.trim().length > 0)?.join('\n')}`.replace(new RegExp(element.lang), 'csharp');
         }
         else {
             return `${element?.value}`;

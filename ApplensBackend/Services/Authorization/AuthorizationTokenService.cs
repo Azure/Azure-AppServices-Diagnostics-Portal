@@ -1,6 +1,6 @@
 using System;
 using AppLensV3.Helpers;
-using AppLensV3.Services.TokenService;
+using CommonLibrary.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 

@@ -87,6 +87,9 @@ import { FabCalendarModule } from '@angular-react/fabric/lib/components/calendar
 import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown';
 import { FabBreadcrumbModule } from '@angular-react/fabric/lib/components/breadcrumb';
 import { FabMessageBarModule } from '@angular-react/fabric/lib/components/message-bar';
+import { FabLinkModule } from '@angular-react/fabric/lib/components/link';
+import { FabTooltipModule } from '@angular-react/fabric/lib/components/tooltip';
+import { FabPeoplePickerModule, FabTagPickerModule, FabBasePickerModule } from '@angular-react/fabric/lib/components/pickers';
 import { CreateWorkflowComponent } from './workflow/create-workflow/create-workflow.component';
 import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
 import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
@@ -129,7 +132,7 @@ import { WorkflowRootNodeComponent } from './workflow/workflow-root-node/workflo
 import { ApplensOpenAIChatService } from '../../shared/services/applens-openai-chat.service';
 import { GenericOpenAIChatService } from '../../../../../diagnostic-data/src/public_api';
 import { OpenAIArmService } from '../../../../../diagnostic-data/src/public_api';
-import { ChatUIContextService } from 'diagnostic-data';
+import { ChatUIContextService, RenderingSettingsBaseComponent } from 'diagnostic-data';
 import { DevopsDeploymentsComponent } from './devops-deployments/devops-deployments.component';
 import { ForeachNodeComponent } from './workflow/foreach-node/foreach-node.component';
 import { WorkflowUserAccessComponent } from './workflow/workflow-user-access/workflow-user-access.component';
@@ -144,7 +147,15 @@ import { ApplensCopilotContainerService } from 'projects/applens/src/app/modules
 import { ApplensDetectorCopilotService } from 'projects/applens/src/app/modules/dashboard/services/copilot/applens-detector-copilot.service';
 import { ApplensDetectorDevelopmentCopilotService } from 'projects/applens/src/app/modules/dashboard/services/copilot/applens-detector-development-copilot.service';
 import { ApplensDocsCopilotComponent } from './applens-docs-copilot/applens-docs-copilot.component';
-
+import { CreateExperiencePicker } from './create-experience-picker/create-experience-picker.component';
+import { DetectorDesignerComponent } from './detector-designer/detector-designer.component';
+import { DetectorSettingsPanelComponent } from './detector-settings-panel/detector-settings-panel.component';
+import { NodeComposerComponent } from './node-composer/node-composer.component';
+import { DynamicNodeSettings } from './dynamic-node-settings/dynamic-node-settings.component';
+import { TableRenderingSettingsComponent } from './rendering-settings-components/table-rendering-settings/table-rendering-settings.component';
+import { InsightRenderingSettingsComponent } from './rendering-settings-components/insight-rendering-settings/insight-rendering-settings.component';
+import { NoCodeDetectorPanelComponent } from './no-code-detector-panel/no-code-detector-panel.component';
+import { NoCodeDetectorViewComponent } from './no-code-detector-view/no-code-detector-view.component';
 @Injectable()
 export class InitResolver implements Resolve<Observable<ResourceInfo>>{
     constructor(private _resourceService: ResourceService, private _detectorControlService: DetectorControlService, private _userSettingService: UserSettingService, private _router: Router) { }
@@ -237,6 +248,17 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
             {
                 path: 'pesId/:pesId/supportTopics/:supportTopicId',
                 component: SelfHelpContentComponent,
+            },
+            {
+                path: 'createPicker',
+                component: CreateExperiencePicker,
+                data: {
+                    creationFor: 'detector'
+                }
+            },
+            {
+                path: 'designDetector',
+                component: DetectorDesignerComponent,
             },
             {
                 path: 'create',
@@ -394,7 +416,16 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
                         data: {
                             tabKey: TabKey.Develop
                         }
-                    }, {
+                    },
+                    {
+                        path: 'nocodeedit',
+                        component: TabDevelopComponent,
+                        canDeactivate: [DevelopNavigationGuardService],
+                        data: {
+                            tabKey: TabKey.Develop
+                        }
+                    },
+                    {
                         path: 'changelist',
                         component: TabChangelistComponent,
                         data: {
@@ -560,6 +591,9 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         FabDropdownModule,
         FabBreadcrumbModule,
         FabMessageBarModule,
+        FabLinkModule,
+        FabTooltipModule,
+        FabPeoplePickerModule, FabTagPickerModule, FabBasePickerModule,
         NgFlowchartModule,
         FormsModule,
         ReactiveFormsModule,
@@ -632,6 +666,7 @@ export const DashboardModuleRoutes: ModuleWithProviders<DashboardModule> = Route
         KustoQueryDialogComponent, DetectorNodeComponent, KustoNodeComponent, MarkdownNodeComponent, NodeActionsComponent, ConfigureVariablesComponent, CommonNodePropertiesComponent,
         NodeTitleComponent, ErrorMessageComponent, MarkdownQueryDialogComponent, WorkflowComponent, WorkflowRunDialogComponent, UpdateDetectorReferencesComponent, WorkflowRootNodeComponent,
         WorkflowUserAccessComponent, ForeachNodeComponent, DevopsDeploymentsComponent, InputNodeComponent, NetworkTraceAnalysisComponent,
-        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent, ApplensDocsCopilotComponent, ChatFeedbackPanelComponent]
+        ApplensOpenAIChatComponent, KustoGPTComponent, CommunicationToolkitComponent, ApplensDocsCopilotComponent, ChatFeedbackPanelComponent,
+        CreateExperiencePicker,  DetectorDesignerComponent, DetectorSettingsPanelComponent, NodeComposerComponent, DynamicNodeSettings, RenderingSettingsBaseComponent, TableRenderingSettingsComponent, InsightRenderingSettingsComponent, NoCodeDetectorPanelComponent, NoCodeDetectorViewComponent]
 })
 export class DashboardModule { }

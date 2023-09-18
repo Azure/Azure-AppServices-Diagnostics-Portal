@@ -16,15 +16,17 @@ import { AppType } from '../../../shared/models/portal';
 import { DiagnosticService } from 'diagnostic-data';
 import { HttpResponse } from '@angular/common/http';
 import { Globals } from '../../../globals';
-import { PortalActionService } from '../../../shared/services/portal-action.service';
 import { SubscriptionPropertiesService } from '../../../shared/services/subscription-properties.service';
 import { Feature } from '../../../shared-v2/models/features';
 import { QuickLinkService } from '../../../shared-v2/services/quick-link.service';
 import { OperatingSystem } from '../../../shared/models/site';
 import { RiskAlertService } from '../../../shared-v2/services/risk-alert.service';
-import { ABTestingService } from '../../../shared/services/abtesting.service';
+import { ABTestingService, ABTestingType } from '../../../shared/services/abtesting.service';
 import { SlotType } from '../../../shared/models/slottypes';
 import { Observable, of } from 'rxjs';
+import { GenericDocumentationCopilotService } from 'diagnostic-data';
+import { BackendCtrlService } from '../../../shared/services/backend-ctrl.service';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
     selector: 'home',
@@ -55,11 +57,19 @@ export class HomeComponent implements OnInit, AfterViewInit {
     isPreview: boolean = false;
     abTestingBannerText: string = "";
     disableGenie: boolean = false;
+    docsCopilotEnabled: boolean = false;
+    docsCopilotCommandButtonStyle: any = { display: 'none' };
+    conversationalDiagnosticButtonStyle: any = { display: 'none' };
 
     get inputAriaLabel(): string {
         return this.searchValue !== '' ?
             `${this.searchResultCount} Result` + (this.searchResultCount !== 1 ? 's' : '') :
             '';
+    }
+
+    openDocsCopilot() {
+        this.globals.openDocumentationCopilotPanel = true;
+        //TODO: Log the event
     }
 
     get isIE_Browser(): boolean {
@@ -72,8 +82,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     constructor(private _resourceService: ResourceService, private _categoryService: CategoryService, private _notificationService: NotificationService, private _router: Router,
         private _detectorControlService: DetectorControlService, private _featureService: FeatureService, private _logger: LoggingV2Service, private _authService: AuthService,
-        private _navigator: FeatureNavigationService, private _activatedRoute: ActivatedRoute, private armService: ArmService, private _telemetryService: TelemetryService, private _diagnosticService: DiagnosticService, private _portalService: PortalActionService, private globals: Globals,
-        private subscriptionPropertiesService: SubscriptionPropertiesService, private _quickLinkService: QuickLinkService, private _riskAlertService: RiskAlertService, public abTestingService: ABTestingService) {
+        private _activatedRoute: ActivatedRoute, private armService: ArmService, private _telemetryService: TelemetryService, private _diagnosticService: DiagnosticService, private globals: Globals,
+        private subscriptionPropertiesService: SubscriptionPropertiesService, private _quickLinkService: QuickLinkService, private _riskAlertService: RiskAlertService, public abTestingService: ABTestingService,
+        private _documentationCopilotService: GenericDocumentationCopilotService, private _backendCtrlService: BackendCtrlService) {
 
         this.subscriptionId = this._activatedRoute.snapshot.params['subscriptionid'];
         this.resourceName = this._resourceService.resource ? this._resourceService.resource.name : "";
@@ -173,11 +184,28 @@ export class HomeComponent implements OnInit, AfterViewInit {
         })
     }
 
+    openDiagChat() {
+        this._router.navigate(['/diagnosticChat'], { queryParams: { 'category': 'diagnostics' } });
+    }
+
     ngOnInit() {
         this.providerRegisterUrl = `/subscriptions/${this.subscriptionId}/providers/Microsoft.ChangeAnalysis/register`;
         if (!this._detectorControlService.startTime) {
             this._detectorControlService.setDefault();
         }
+
+        this._documentationCopilotService.CheckEnabled().subscribe(enabled => {
+            this.docsCopilotEnabled = this._documentationCopilotService.isEnabled;
+            if (this.docsCopilotEnabled) {
+                this._telemetryService.logEvent("DiagPortalDocsCopilotCheck", { IsEnabled: this.docsCopilotEnabled.toString(), ts: new Date().getTime().toString() });
+            }
+            if (this.docsCopilotEnabled) {
+                this.docsCopilotCommandButtonStyle = {};
+            }
+        },
+            (err) => {
+                this.docsCopilotEnabled = false;
+            });
 
         let locationPlacementId = '';
         this.subscriptionPropertiesService.getSubscriptionProperties(this.subscriptionId).subscribe((response: HttpResponse<{}>) => {
@@ -213,7 +241,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
             this._detectorControlService.setDefault();
         }
 
-        this.initalABTestingBanner();
+        this.initalABTesting();
 
         this._riskAlertService.getRiskAlertNotificationResponse().subscribe(() => {
             this._riskAlertService.riskPanelContentsSub.next(this._riskAlertService.risksPanelContents);
@@ -378,29 +406,22 @@ export class HomeComponent implements OnInit, AfterViewInit {
         });
     }
 
-    private initalABTestingBanner() {
-        this.isPreview = this.abTestingService.isPreview;
-        var isContainerApps = this._resourceService && !!this._resourceService.resource &&
-            (this._resourceService.resource.type.toLowerCase() === 'microsoft.web/containerapps' ||
-                this._resourceService.resource.type.toLowerCase() === 'microsoft.app/containerapps');
-        var isArcApplianceApps = this._resourceService && !!this._resourceService.resource && this._resourceService.resource.type.toLowerCase() === 'microsoft.resourceConnector/appliances';
-
-        this.enableABTesting = this.abTestingService.enableABTesting && !isContainerApps && !isArcApplianceApps;
-
-        if (this.isPreview) {
-            this.abTestingBannerText = "Welcome to the new and improved version of Diagnose and Solve Problems. If you'd like to switch back to the old experience";
-        } else {
-            this.abTestingBannerText = "You are currently on the old version of the Diagnose and Solve Problems. To explore the latest UI improvements in the new version";
-        }
-
+    private initalABTesting() {
+        this.abTestingService.isPreview().subscribe(isPreview => {
+            this.enableABTesting = this.abTestingService.enableABTesting !== ABTestingType.Disabled;
+            this.conversationalDiagnosticButtonStyle = isPreview ? {} : { display: 'none' };
+        });
+        // if (this.isPreview) {
+        //     this.abTestingBannerText = "Welcome to the new and improved version of Diagnose and Solve Problems. If you'd like to switch back to the old experience";
+        // } else {
+        //     this.abTestingBannerText = "You are currently on the old version of the Diagnose and Solve Problems. To explore the latest UI improvements in the new version";
+        // }
     }
 
     openSlotInNewTab(event: Event) {
         event.stopPropagation();
         const url = this.abTestingService.generateSlotLink();
-        this._telemetryService.logEvent(TelemetryEventNames.OpenSlotInNewTab, {
-            currentSlot: SlotType[this.abTestingService.slot]
-        });
+        this._telemetryService.logEvent(TelemetryEventNames.OpenSlotInNewTab,{});
         window.open(url);
     }
 }

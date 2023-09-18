@@ -1,0 +1,20 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "paths": [
+        {
+            "parameterReference": "servicePackageLink"
+        }
+    ],
+    "parameters": {
+        "siteName": {
+            "value": "__SITENAME__-__LOCATION_ABBR__"
+        },
+        "slotName": {
+            "value": "__TARGET_DEPLOYMENT_SLOT__"
+        },
+        "servicePackageLink": {
+            "value": "AppServiceDiagnostics.zip"
+        }
+    }
+}

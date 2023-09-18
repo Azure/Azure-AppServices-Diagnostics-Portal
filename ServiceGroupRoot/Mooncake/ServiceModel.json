@@ -1,0 +1,113 @@
+﻿{
+  "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/serviceModel.json",
+  "serviceMetadata": {
+    "serviceGroup": "DiagnosticsFrontend",
+    "environment": "Prod"
+  },
+  "serviceResourceGroupDefinitions": [
+    {
+      "name": "WebAppResourceGroupDefinitions",
+      "serviceResourceDefinitions": [
+        {
+          "name": "WebAppDefinitionV2",
+          "composedOf": {
+            "arm": {
+              "templatePath": "Templates\\DeployWebAppV2.json",
+              "parametersPath": "Parameters\\MultiRegion.WebApp.Parameters.json"
+            }
+          }
+        },
+        {
+          "name": "ZipDeployDefinition",
+          "composedOf": {
+            "arm": {
+              "templatePath": "Templates\\WebAppZipDeploy.json",
+              "parametersPath": "Parameters\\ZipDeploy.Parameters.json"
+            }
+          }
+        },
+        {
+          "name": "AutoSwapDefinition",
+          "composedOf": {
+              "arm": {
+                  "templatePath": "Templates\\AutoSwap.json",
+                  "parametersPath": "Parameters\\AutoSwap.Parameters.json"
+              }
+          }
+        },
+        {
+          "name": "ApplensAppSettingsDefinition",
+          "composedOf": {
+            "arm": {
+              "templatePath": "Templates\\AppLens.AppSettings.Template.json",
+              "parametersPath": "Parameters\\AppLens.AppSettings.Parameters.json"
+            }
+          }
+        },
+        {
+          "name": "ApplensAppSettingsStagingDefinition",
+          "composedOf": {
+            "arm": {
+              "templatePath": "Templates\\AppLens.AppSettings-Staging.Template.json",
+              "parametersPath": "Parameters\\AppLens.AppSettings.Parameters.json"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "serviceResourceGroups": [
+    {
+      "azureResourceGroupName": "Support-RG",
+      "location": "China East 2",
+      "instanceOf": "WebAppResourceGroupDefinitions",
+      "azureSubscriptionId": "a4935e11-0d76-436e-8114-d29f14c6e724",
+      "scopeTags": [
+        {
+          "name": "General"
+        }
+      ],
+      "serviceResources": [
+        {
+          "name": "AppSettingsUpdate",
+          "instanceOf": "ApplensAppSettingsDefinition",
+          "scopeTags": [
+            {
+              "name": "Applens"
+            }
+          ]
+        },
+        {
+          "name": "AppSettingsStagingUpdate",
+          "instanceOf": "ApplensAppSettingsStagingDefinition",
+          "scopeTags": [
+            {
+              "name": "Applens"
+            }
+          ]
+        },
+        {
+          "name": "ApplensZipDeploy",
+          "instanceOf": "ZipDeployDefinition",
+          "scopeTags": [
+            {
+              "name": "Applens"
+            }
+          ]
+        },
+        {
+          "name": "ApplensSwap",
+          "instanceOf": "AutoSwapDefinition",
+          "scopeTags": [
+            {
+              "name": "Applens"
+            },
+            {
+              "name": "ChinaNorthRegion"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

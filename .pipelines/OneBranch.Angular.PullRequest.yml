@@ -1,0 +1,215 @@
+#################################################################################
+#                               OneBranch Pipelines                             #
+# This pipeline was created by EasyStart from a sample located at:              #
+#   https://aka.ms/obpipelines/easystart/samples                                #
+# Documentation:  https://aka.ms/obpipelines                                    #
+# Yaml Schema:    https://aka.ms/obpipelines/yaml/schema                        #
+# Retail Tasks:   https://aka.ms/obpipelines/tasks                              #
+# Support:        https://aka.ms/onebranchsup                                   #
+#################################################################################
+
+trigger: none
+
+variables:
+  CDP_DEFINITION_BUILD_COUNT: $[counter('', 0)] # needed for onebranch.pipeline.version task https://aka.ms/obpipelines/versioning
+  LinuxContainerImage: 'mcr.microsoft.com/onebranch/cbl-mariner/build:2.0' # Docker image which is used to build the project https://aka.ms/obpipelines/containers
+  DEBIAN_FRONTEND: noninteractive
+
+resources:
+  repositories: 
+    - repository: templates
+      type: git
+      name: OneBranch.Pipelines/GovernedTemplates
+      ref: refs/heads/main
+
+extends:
+  template: v2/OneBranch.NonOfficial.CrossPlat.yml@templates # https://aka.ms/obpipelines/templates
+  parameters:
+    globalSdl: # https://aka.ms/obpipelines/sdl
+      tsa:
+        enabled: false # SDL results of non-official builds aren't uploaded to TSA by default.
+      # credscan:
+      #   suppressionsFile: $(Build.SourcesDirectory)\.config\CredScanSuppressions.json
+      policheck:
+        break: true # always break the build on policheck issues. You can disable it by setting to 'false'
+      # suppression:
+      #   suppressionFile: $(Build.SourcesDirectory)\.gdn\global.gdnsuppress
+
+    stages:
+    - stage: main
+      jobs:
+      - job: build
+        pool:
+          type: linux
+
+        variables: # More settings at https://aka.ms/obpipelines/yaml/jobs
+          ob_outputDirectory: '$(Build.SourcesDirectory)/out' # this directory is uploaded to pipeline artifacts, reddog and cloudvault. More info at https://aka.ms/obpipelines/artifacts
+          ob_sdl_binskim_break: true # always break the build on binskim issues, even if TSA enabled. You can disable it by setting to 'false'
+          ob_sdl_roslyn_break: true
+          ob_sdl_codeSignValidation_excludes: 'regex|.+(?:dll|exe|sys|ps1|ps1xml|psc1|psd1|cdxml|vbs|js|wsf)$;-:file|**\*.zip*\**'
+          ob_artifactBaseName: 'drop'
+
+        steps: # These steps will be run in unrestricted container's network
+          - task: onebranch.pipeline.version@1
+            displayName: 'Setup BuildNumber'
+            inputs:
+              system: 'RevisionCounter'
+              major: '1'
+              minor: '0'
+              exclude_commit: false
+
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: 'echo ''export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1'' >> ~/.bashrc'
+
+          - task: UseDotNet@2
+            displayName: 'Install DotNet'
+            inputs:
+              packageType: 'sdk'
+              version: '6.0.x'                            
+
+          - task: NodeTool@0
+            inputs:
+                versionSpec: '18.15.x'
+            displayName: 'Install Node.js'
+
+          - task: npmAuthenticate@0
+            inputs:
+              workingFile: './AngularApp/.npmrc'
+
+          - script: |
+              cd AngularApp
+              npm install
+              npm run build
+            displayName: 'build applens public azure'
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'restore'
+              projects: 'ApplensBackend/AppLensV3.csproj'
+              feedsToUse: 'config'
+              nugetConfigPath: 'ApplensBackend/nuget.config' 
+
+          - task: DotNetCoreCLI@2
+            displayName: 'build applens backend'
+            inputs:
+              projects: ApplensBackend/AppLensV3.csproj
+              arguments: '--configuration $(BuildConfiguration)'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'publish applens public azure'
+            inputs:
+              command: publish
+              publishWebProjects: false
+              projects: ApplensBackend/AppLensV3.csproj
+              arguments: '--configuration $(BuildConfiguration) --output $(System.ArtifactsDirectory)/ApplensPublicAzure'
+              zipAfterPublish: false
+
+          - task: CopyFiles@2
+            displayName: 'Copy ev2 root'
+            inputs:
+              SourceFolder: 'ServiceGroupRoot'
+              Contents: '**'
+              TargetFolder: '$(ob_outputDirectory)/Ev2ServiceGroupRoot'              
+
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: '$(System.ArtifactsDirectory)/ApplensPublicAzure/ApplensBackend'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/Applens.zip'
+              replaceExistingArchive: true              
+
+          - script: |
+              cd AngularApp
+              npm install
+              npm run build-ncloud-applens-prod
+            displayName: 'build applens national clouds'
+
+          - task: DotNetCoreCLI@2
+            displayName: 'build applens backend'
+            inputs:
+              projects: ApplensBackend/AppLensV3.csproj
+              arguments: '--configuration $(BuildConfiguration)'            
+
+          - task: DotNetCoreCLI@2
+            displayName: 'publish applens national clouds'
+            inputs:
+              command: publish
+              publishWebProjects: false
+              projects: ApplensBackend/AppLensV3.csproj
+              arguments: '--configuration $(BuildConfiguration) --output $(System.ArtifactsDirectory)/ApplensNationalClouds'
+              zipAfterPublish: false
+
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: '$(System.ArtifactsDirectory)/ApplensNationalClouds/ApplensBackend'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/ApplensNationalCloud.zip'
+
+          - script: |
+              cd AngularApp
+              npm run build-asd
+            displayName: 'build appservice diagnostics'
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: 'restore'
+              projects: 'Backend/Backend.csproj'
+              feedsToUse: 'config'
+              nugetConfigPath: 'Backend/nuget.config'               
+
+          - task: DotNetCoreCLI@2
+            displayName: 'build appservice diagnostics backend'
+            inputs:
+              projects: Backend/Backend.csproj
+              arguments: '--configuration $(BuildConfiguration)'            
+
+          - task: DotNetCoreCLI@2
+            displayName: 'publish appservice diagnostics backend'
+            inputs:
+              command: publish
+              publishWebProjects: false
+              projects: Backend/Backend.csproj
+              arguments: '--configuration $(BuildConfiguration) --output $(System.ArtifactsDirectory)/AppServiceDiagnostics'
+              zipAfterPublish: false
+
+          - task: CopyFiles@2
+            inputs:
+              SourceFolder: '$(System.ArtifactsDirectory)/AppServiceDiagnostics/Backend/wwwroot'
+              Contents: '*.map'
+              TargetFolder: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/sourcemaps'
+
+          - task: CopyFiles@2
+            displayName: 'Copy all files and directories from ServiceGroupRoot\Bin to shell_deps'
+            inputs:
+              SourceFolder: 'ServiceGroupRoot/Bin'
+              Contents: '**'
+              TargetFolder: '$(System.ArtifactsDirectory)/ServiceGroupRoot/shell_deps'              
+
+          - task: ArchiveFiles@2
+            displayName: 'Archive AppServiceDiagnostics'
+            inputs:
+              rootFolderOrFile: '$(System.ArtifactsDirectory)/AppServiceDiagnostics/Backend'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/AppServiceDiagnostics.zip'
+
+          - task: ArchiveFiles@2
+            inputs:
+              rootFolderOrFile: '$(System.ArtifactsDirectory)/AppServiceDiagnostics/Backend'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(System.ArtifactsDirectory)/ServiceGroupRoot/shell_deps/AppServiceDiagnostics.zip'
+
+          - task: ArchiveFiles@2
+            displayName: 'Create setup.tar.gz and copy to bin'
+            inputs:
+              rootFolderOrFile: '$(System.ArtifactsDirectory)/ServiceGroupRoot/shell_deps'
+              includeRootFolder: true
+              archiveType: 'tar'
+              archiveFile: '$(ob_outputDirectory)/Ev2ServiceGroupRoot/bin/setup.tar.gz'
+              replaceExistingArchive: true
+              verbose: true

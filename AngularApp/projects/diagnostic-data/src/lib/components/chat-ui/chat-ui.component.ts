@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges, EventEmitter, Output } from '@angular/core';
 import { KeyValuePair } from '../../models/common-models';
 import { ChatMessage, ChatAlignment, MessageSource, MessageStatus, MessageRenderingType, FeedbackOptions } from '../../models/chatbot-models';
 import { TelemetryService } from '../../services/telemetry/telemetry.service';
@@ -51,8 +51,11 @@ export class ChatUIComponent implements OnInit {
     @Input() inputTextLimit: number = 1000;
     @Input() chatContainerHeight: string  = ''; 
 
+    @Input() displayLoaderShimmer: boolean = false;
+    
     chatInputTextInternal: string = '';
 
+    @Output() OnPushSystemMessage: EventEmitter<ChatMessage> = new EventEmitter<ChatMessage>();
     public focusChatInput = () => {
         setTimeout(() => {
             document.getElementById("chatUIInputBox").focus();
@@ -130,14 +133,19 @@ export class ChatUIComponent implements OnInit {
             this.chatInputTextInternal = this.chatInputText;
     }
 
-    copySystemMessageToClipboard(textToCopy:string) {
-        if(this.onCopyClick){
+    copySystemMessageToClipboard(textToCopy: string) {
+        if (this.onCopyClick) {
             this.onCopyClick(textToCopy);
         }
         //default handling 
-        else{
+        else {
             navigator.clipboard.writeText(textToCopy);
         }
+    }
+
+    appendSolutionFinishedMessage(message: ChatMessage) {
+        if(!message) return;
+        this.OnPushSystemMessage.emit(message);
     }
 
     

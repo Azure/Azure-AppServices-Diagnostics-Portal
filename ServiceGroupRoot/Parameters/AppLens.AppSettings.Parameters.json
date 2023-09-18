@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "siteName": {
+            "value": "__SITENAME__"
+        },
+        "slotName": {
+            "value": "staging"
+        },
+        "cloudEnvironment": {
+            "value": "__CLOUD_ENVIRONMENT__"
+        },
+        "dstsRealm": {
+            "value": "svc://applens@__APPSERVICE_DNS_SUFFIX__/"
+        },
+        "dstsRealmStaging": {
+            "value": "svc://applens-staging@__APPSERVICE_DNS_SUFFIX__/"
+        },
+        "runtimeHostEndpoint": {
+            "value": "https://__RUNTIMEHOST_SITENAME__.__APPSERVICE_DNS_SUFFIX__"
+        },
+        "runtimeHostEndpointStaging": {
+            "value": "https://__RUNTIMEHOST_SITENAME__-staging.__APPSERVICE_DNS_SUFFIX__"
+        },
+        "observerKeyVaultAppKey": {
+            "value": "__OBSERVER_AAD_APPKEY__"
+        },
+        "runtimeHostKeyVaultAppKey": {
+            "value": "__RUNTIMEHOST_AAD_APPKEY__"
+        }
+    }
+}

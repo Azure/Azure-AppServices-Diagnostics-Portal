@@ -3,6 +3,7 @@
   "fewShotExamples": [],
   "DocumentSearchSettings": {
     "indexName": "applensdocs",
-    "includeReferences": true
+    "includeReferences": true,
+    "noDocsNoAnswer": true
   }
 }

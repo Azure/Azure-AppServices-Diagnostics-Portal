@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ChatMessage, ChatModel, ChatResponse, ChatUIContextService, CreateChatCompletionModel, CreateTextCompletionModel, 
   FeedbackOptions, GenericOpenAIChatService, KeyValuePair, MessageRenderingType, MessageSource, MessageStatus, ResponseTokensSize, StringUtilities, TelemetryService, TextModels, TimeUtilities } from 'diagnostic-data';
 import { ApplensGlobal } from '../../../applens-global';
@@ -10,6 +10,7 @@ import { ChatFeedbackAdditionalField, ChatFeedbackModel, ChatFeedbackPanelOpenPa
 import { AdalService } from 'adal-angular4';
 import { ResourceService } from '../../../shared/services/resource.service';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
+import { FabTextFieldComponent } from '@angular-react/fabric/lib/components/text-field';
 
 @Component({
   selector: 'chat-feedback-panel',
@@ -29,13 +30,17 @@ export class ChatFeedbackPanelComponent implements OnInit {
   /// If chatIdentifier is supplied, then the feedback will be autosaved else no action is taken and the calling component is responsible for saving the feedback. Feedback can be accessed via onDismissed event.
   @Input() autoSaveFeedback: boolean = true;
   
-  @Input() responseTokenSize: ResponseTokensSize = ResponseTokensSize.Large;
+  @Input() responseTokenSize: ResponseTokensSize = ResponseTokensSize.XLarge;
   
   @Input() headerText: string = "Finetune AI";
 
   @Input() additionalFields: ChatFeedbackAdditionalField[];
 
   @Input() resourceSpecificInfo: KeyValuePair[] = [];
+
+  @Input() SubmitButtonText: string = "Submit feedback";
+
+  @Input() UseDisplayMessageForChatHistory: boolean = true;
 
   
   _feedbackPanelState:ChatFeedbackPanelOpenParams = {
@@ -81,9 +86,10 @@ export class ChatFeedbackPanelComponent implements OnInit {
     subComponentStyles: {
       label: {
         root: {fontWeight: 700}
+      },
+
       }
     }
-  }
 
   fabDefaultButtonStyle: IButtonStyles = {
     root: {
@@ -243,9 +249,9 @@ export class ChatFeedbackPanelComponent implements OnInit {
         this._openAIService.CheckEnabled().subscribe((enabled) => {
           if(enabled) {
             this.currentApiCallCount = 0;
-            this.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom, ChatModel.GPT3), this.GetEmptyChatMessage(), true, true, ChatModel.GPT3,
-              "Given the chat history, consolidate the users latest topic of discussion into a self contained question. Do not attempt to answer the user's question, the goal is to construct a self contained question that captures the user's most recent topic of discussion. Phrase the question as if the user were talking with the AI assistant in first person. Output only the question without any explanation."
-              , '', true)
+            this._openAIService.fetchOpenAIResultAsChatMessageUsingRest(this.prepareChatHistory(chatMessagesToConstructUserQuestionFrom, ChatModel.GPT3), this.GetEmptyChatMessage(), true, true, ChatModel.GPT3, 
+                "Given the chat history, consolidate the users latest topic of discussion into a self contained question. Do not attempt to answer the user's question, the goal is to construct a self contained question that captures the user's most recent topic of discussion. Phrase the question as if the user were talking with the AI assistant in first person. Output only the question without any explanation.",
+                '', this.responseTokenSize, this.currentApiCallCount, this.openAIApiCallLimit, true)
               .subscribe((messageObj) => {
                 if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
                   this.feedbackUserQuestion = messageObj;
@@ -470,7 +476,7 @@ export class ChatFeedbackPanelComponent implements OnInit {
       var context;
       if (chatModel == ChatModel.GPT3) {
         context = messagesToConsider.map((x: ChatMessage, index: number) => {
-          return `${x.messageSource}: ${ (x.displayMessage? x.displayMessage: x.message)}`;
+          return `${x.messageSource}: ${ (x.displayMessage && this.UseDisplayMessageForChatHistory ? x.displayMessage: x.message)}`;
         }).join('\n');
         return context;
       }
@@ -478,7 +484,7 @@ export class ChatFeedbackPanelComponent implements OnInit {
         context = [];
         messagesToConsider.forEach((element: ChatMessage, index: number) => {
           let role = element.messageSource == MessageSource.User ? "User" : "Assistant";
-          let content = element.displayMessage? element.displayMessage : element.message ;
+          let content = element.displayMessage &&  this.UseDisplayMessageForChatHistory ? element.displayMessage : element.message ;
           if (content != '') {
             context.push({
               "role": role,
@@ -500,6 +506,10 @@ export class ChatFeedbackPanelComponent implements OnInit {
   }
 
   updateFeedbackUserResponse(e: { event: Event, newValue?: string }) {
+    let cursorStartPosition:number = -1;
+    if(e && e.event && e.event.target && e.event.target['selectionStart']) {
+      cursorStartPosition = e.event.target['selectionStart'];
+    }
       this.correctResponseFeedback = (e?.newValue)? `${e.newValue}` : '';
       this.correctResponseFeedbackReasoning = '';
       if(!StringUtilities.IsNullOrWhiteSpace(this.correctResponseFeedback)) {
@@ -508,6 +518,12 @@ export class ChatFeedbackPanelComponent implements OnInit {
       else {
         this.disableSubmitButton = true;
       }
+    if(cursorStartPosition > -1) {
+      setTimeout(() => {
+        e.event.target['selectionStart'] = cursorStartPosition;
+        e.event.target['selectionEnd'] = cursorStartPosition;
+      });
+    }
   }
   
   updateAdditionalFieldValue(element: ChatFeedbackAdditionalField, e: { event: Event, newValue?: string }) {
@@ -522,21 +538,24 @@ export class ChatFeedbackPanelComponent implements OnInit {
       let chatFeedbackModel = this.GetChatFeedbackModel();
       if(this.onBeforeSubmit) {
         return this.onBeforeSubmit(chatFeedbackModel).pipe(map((validatedChatFeedback) => {
-          if(validatedChatFeedback && validatedChatFeedback.validationStatus && validatedChatFeedback.validationStatus.succeeded) {
+          if(validatedChatFeedback && validatedChatFeedback.validationStatus) {
             this.statusMessage = validatedChatFeedback.validationStatus.validationStatusResponse;
-            this.feedbackUserQuestion.displayMessage = validatedChatFeedback.userQuestion;
-            this.feedbackUserQuestion.message = validatedChatFeedback.userQuestion;
-            this.systemResponse.displayMessage = validatedChatFeedback.incorrectSystemResponse;
-            this.systemResponse.message = validatedChatFeedback.incorrectSystemResponse;
-            this.correctResponseFeedback = validatedChatFeedback.expectedResponse;
+            this.feedbackUserQuestion.displayMessage = validatedChatFeedback.userQuestion? validatedChatFeedback.userQuestion : this.feedbackUserQuestion.displayMessage;
+            this.feedbackUserQuestion.message = validatedChatFeedback.userQuestion? validatedChatFeedback.userQuestion : this.feedbackUserQuestion.message;
+            this.systemResponse.displayMessage = validatedChatFeedback.incorrectSystemResponse? validatedChatFeedback.incorrectSystemResponse : this.systemResponse.displayMessage;
+            this.systemResponse.message = validatedChatFeedback.incorrectSystemResponse? validatedChatFeedback.incorrectSystemResponse : this.systemResponse.message;            
+
+            //Update UI element with returned values for user response
+            this.correctResponseFeedback = validatedChatFeedback.expectedResponse? validatedChatFeedback.expectedResponse : this.correctResponseFeedback;
+            
+            // Not updating this.correctResponseFeedbackReasoning as it is not part of the validation response
             this.correctResponseFeedbackReasoning = validatedChatFeedback.feedbackExplanation;
             this.additionalFields = validatedChatFeedback.additionalFields;
             chatFeedbackModel = validatedChatFeedback;
-            
-            return true;
+            return validatedChatFeedback.validationStatus.succeeded;
           }
           else {
-            this.statusMessage = `Error: Failed to validate feedback. ${validatedChatFeedback?.validationStatus?.validationStatusResponse}`;
+            this.statusMessage = validatedChatFeedback && validatedChatFeedback.validationStatus && validatedChatFeedback.validationStatus.validationStatusResponse? validatedChatFeedback?.validationStatus?.validationStatusResponse: 'Error: Failed to validate feedback.';
             return false;
           }
         }));
@@ -616,7 +635,9 @@ You are a chat assistant that helps explain why an expected response successfull
               this._openAIService.CheckEnabled().subscribe((enabled) => {
                 if(enabled && this.feedbackUserQuestion.displayMessage && this.systemResponse.message && this.correctResponseFeedback) {            
                   this.currentApiCallCount = 0;
-                  this.fetchOpenAIResultAsChatMessageUsingRest( null, this.GetEmptyChatMessage(), true, true, ChatModel.GPT3, this.getFeedbackExplanationInitialPrompt(), '').subscribe((messageObj) => {
+                  this._openAIService.fetchOpenAIResultAsChatMessageUsingRest('', this.GetEmptyChatMessage(), true, true, ChatModel.GPT3, this.getFeedbackExplanationInitialPrompt(), '', 
+                    this.responseTokenSize, this.currentApiCallCount, this.openAIApiCallLimit, false)
+                  .subscribe((messageObj) => {
                       if(messageObj && messageObj.status === MessageStatus.Finished && !`${messageObj.displayMessage}`.startsWith('Error: ')  ) {
                         this.correctResponseFeedbackReasoning = messageObj.displayMessage;
                       }
@@ -640,6 +661,8 @@ You are a chat assistant that helps explain why an expected response successfull
         }
       }, (error) => {
         this.savingInProgress = false;
+        this.statusMessage = `Error saving feedback: ${error.message}`;
+        throw error;
       });
     }
     catch(ex) {

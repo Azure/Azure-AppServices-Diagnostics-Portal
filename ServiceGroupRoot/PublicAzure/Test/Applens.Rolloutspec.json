@@ -1,0 +1,47 @@
+{
+  "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/rolloutSpecification.json",
+  "rolloutMetadata": {
+    "serviceModelPath": "PublicAzure\\Test\\ServiceModel.json",
+    "scopeBindingsPath": "PublicAzure\\Test\\ScopeBindings.json",
+    "name": "Test Staging",
+    "rolloutType": "Major",
+    "buildSource": {
+      "parameters": {
+        "versionFile": "buildver.txt"
+      }
+    },
+    "notification": {
+      "email": {
+        "to": "hawfor@microsoft.com",
+        "options": {
+          "when": [
+            "onError",
+            "onComplete"
+          ],
+          "verbosity": "Compact"
+        }
+      }
+    }
+  },
+  "orchestratedsteps": [
+    {
+      "name": "AppSettingsUpdate",
+      "targetType": "ServiceResource",
+      "targetName": "AppSettingsUpdate",
+      "actions": [
+        "Deploy"
+      ]
+    },
+    {
+      "name": "ZipDeploy",
+      "targetType": "ServiceResource",
+      "targetName": "ApplensZipDeploy",
+      "actions": [
+        "Deploy"
+      ],
+      "dependsOn": [
+        "AppSettingsUpdate"
+      ]
+    }
+  ]
+}

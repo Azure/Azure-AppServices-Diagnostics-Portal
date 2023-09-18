@@ -39,6 +39,9 @@ export class SupportTopicRedirectComponent implements OnInit {
 
     // Logging subscription location placement id in case detector opened from Case Submission flow directly
     let subscriptionid = this._activatedRoute.snapshot.params['subscriptionid'];
+    if(!subscriptionid && this._activatedRoute.parent?.snapshot?.params['subscriptionid']) {
+      subscriptionid = this._activatedRoute.parent.snapshot.params['subscriptionid'];
+    }
 
     this.subscriptionPropertiesService.getSubscriptionProperties(subscriptionid).subscribe(response => {
       if (response.body["subscriptionPolicies"]) {

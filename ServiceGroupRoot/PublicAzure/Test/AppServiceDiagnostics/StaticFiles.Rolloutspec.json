@@ -1,0 +1,36 @@
+{
+    "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/rolloutSpecification.json",
+    "rolloutMetadata": {
+      "serviceModelPath": "PublicAzure\\Test\\AppServiceDiagnostics\\ServiceModel.json",
+      "scopeBindingsPath": "PublicAzure\\Test\\AppServiceDiagnostics\\ScopeBindings.json",
+      "name": "Load metadata files",
+      "rolloutType": "Major",
+      "buildSource": {
+        "parameters": {
+          "versionFile": "buildver.txt"
+        }
+      },
+      "notification": {
+        "email": {
+          "to": "applensdeployments@microsoft.com",
+          "options": {
+            "when": [
+              "onError",
+              "onComplete"
+            ],
+            "verbosity": "Compact"
+          }
+        }
+      }
+    },
+    "orchestratedsteps": [
+      {
+        "name": "ExecuteShellScripts",
+        "targetType": "ServiceResource",
+        "targetName": "ExecuteShellScripts",
+        "actions": [
+          "shell/upload-static-files-for-cdn"
+        ]
+      }
+    ]
+  }

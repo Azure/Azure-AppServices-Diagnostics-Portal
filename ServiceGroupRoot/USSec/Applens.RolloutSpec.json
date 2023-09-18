@@ -1,0 +1,29 @@
+{
+    "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/rolloutSpecification.json",
+    "rolloutMetadata": {
+        "serviceModelPath": "USSec\\ServiceModel.json",
+        "scopeBindingsPath": "USSec\\ScopeBindings.json",
+        "name": "ApplensRollout",
+        "rolloutType": "Major",
+        "buildSource": {
+            "parameters": {
+                "versionFile": "buildver.txt"
+            }
+        },
+        "notification": {
+            "email": {
+                "to": "hawfor@microsoft.com"
+            }
+        }
+    },
+    "orchestratedsteps": [
+        {
+            "name": "ZipDeploy",
+            "targetType": "ServiceResource",
+            "targetName": "ApplensZipDeploy",
+            "actions": [
+                "Deploy"
+            ]
+        }
+    ]
+}

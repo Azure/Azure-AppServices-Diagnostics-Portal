@@ -64,5 +64,13 @@ namespace AppLensV3.Controllers
             var response = await _graphClientService.GetUserInfoAsync(userId);
             return Ok(response);
         }
+
+        [HttpGet("users/suggestion/{aliasFilter}")]
+        [HttpOptions("users/suggestion/{aliasFilter}")]
+        public async Task<IActionResult> GetUsersSuggestion(string aliasFilter)
+        {
+            var response = await _graphClientService.GetSuggestionForAlias(aliasFilter);
+            return Ok(response);
+        }
     }
 }

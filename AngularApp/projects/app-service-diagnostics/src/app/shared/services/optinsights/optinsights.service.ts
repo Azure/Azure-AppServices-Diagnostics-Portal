@@ -218,7 +218,7 @@ export class OptInsightsService {
     }
   }
 
-  getInfoForOptInsights(codeOptimizationsRequest: CodeOptimizationsRequest): Observable<any[] | null> {
+  getInfoForOptInsights(codeOptimizationsRequest: CodeOptimizationsRequest): Observable<any[] | any | null> {
     this.appInsightsResourceUri = codeOptimizationsRequest.appInsightsResourceId;
     this.site = codeOptimizationsRequest.site;
     return this.getARMToken().pipe(

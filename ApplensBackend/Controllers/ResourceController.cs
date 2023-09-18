@@ -12,10 +12,12 @@ namespace AppLensV3
     public class ResourceController : Controller
     {
         IObserverClientService _observerService;
+        IArmResourceService _armResourceService;
 
-        public ResourceController(IObserverClientService observerService)
+        public ResourceController(IObserverClientService observerService, IArmResourceService resourceService)
         {
             _observerService = observerService;
+            _armResourceService = resourceService;
         }
 
         [HttpGet("api/sites/{siteName}")]

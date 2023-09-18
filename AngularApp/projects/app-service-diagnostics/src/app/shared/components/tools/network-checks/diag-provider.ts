@@ -10,7 +10,7 @@ import { ArmService } from '../../../services/arm.service';
 import { SiteService } from '../../../services/site.service';
 
 
-enum ConnectionCheckStatus { success, timeout, hostNotFound, blocked, refused }
+enum ConnectionCheckStatus { success, timeout, hostNotFound, blocked, refused, internalError }
 export enum OutboundType { SWIFT, gateway };
 export enum InboundType { privateEndpoint, serviceEndpoint }
 export interface DiagResponse {
@@ -318,6 +318,10 @@ export class DiagProvider {
                         statuses.push(ConnectionCheckStatus.timeout);
                     } else if (line.startsWith("Connection attempt failed: An attempt was made to access a socket")) {
                         statuses.push(ConnectionCheckStatus.blocked);
+                    } else if(line.startsWith("Connection attempt failed: No connection could be made because the target machine actively refused")){
+                        statuses.push(ConnectionCheckStatus.refused);
+                    } else if(line.startsWith("Connection attempt failed: A non-recoverable error occurred during a database lookup") || line.startsWith("Failed to process api request for Tcp ping Check")){
+                        statuses.push(ConnectionCheckStatus.internalError);
                     } else if (line.startsWith("Complete")) {
                         break;
                     } else {

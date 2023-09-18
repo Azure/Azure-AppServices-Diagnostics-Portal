@@ -65,6 +65,7 @@ export class SideNavComponent implements OnInit {
   isGraduation: boolean = false;
   isProd: boolean = false;
   workflowsEnabled: boolean = false;
+  noCodeDetectorsEnabled: boolean = false;
   showChatGPT: boolean = false;
   askAppLensEnabled: boolean = false;  
 
@@ -289,6 +290,25 @@ export class SideNavComponent implements OnInit {
       );
     }
 
+    this.noCodeDetectorsEnabled = this.resourceService.noCodeDetectorsEnabled;
+    if (this.noCodeDetectorsEnabled) {
+      this.createNew.splice(1, 0,
+        {
+          label: 'Quick Create New Detector',
+          id: "",
+          onClick: () => {
+            this.navigateTo('designDetector');
+          },
+          expanded: false,
+          subItems: null,
+          isSelected: () => {
+            return this.currentRoutePath && this.currentRoutePath.join('/').toLowerCase() === `designDetector`.toLowerCase();
+          },
+          icon: null
+        }
+      );
+    }
+
     this.toolsCopy = this.deepCopyArray(this.tools);
   }
 
@@ -397,7 +417,7 @@ export class SideNavComponent implements OnInit {
   }
 
   initializeDetectors() {
-    this._diagnosticApiService.getDetectors().subscribe(detectorList => {
+    this._diagnosticApiService.getDetectorsWithExtendDefinition().subscribe(detectorList => {
       if (detectorList) {
         detectorList.forEach(element => {
           this.createDetectorMenuItem(element, this.categories);

@@ -93,6 +93,10 @@
     <items>
       <fab-command-bar-item *ngIf="disableGenie==false" key="askGenie" text="Ask Genie" [iconProps]="{ iconName: 'ChatInviteFriend' }"
         (click)="openGeniePanel()" data-track-type="run"></fab-command-bar-item>
+      <fab-command-bar-item key="diagChat" text="Diag Chat" [iconProps]="{ iconName: 'Robot' }" [style]="conversationalDiagnosticButtonStyle"
+      (click)="openDiagChat()" data-track-type="run"></fab-command-bar-item>
+      <fab-command-bar-item [style]="docsCopilotCommandButtonStyle" key="docsChat" text="Copilot" [iconProps]="{ iconName: 'Robot' }"
+      (click)="openDocsCopilot()" data-track-type="run"></fab-command-bar-item>
       <fab-command-bar-item *ngIf="showRiskSection" key="refresh1" text="Refresh" [iconProps]="{ iconName: 'Refresh' }"
         (click)="refreshPage()">
       </fab-command-bar-item>
@@ -100,7 +104,7 @@
         (click)="openFeedbackPanel()"></fab-command-bar-item>
     </items>
   </fab-command-bar>
-  <ng-container *ngTemplateOutlet="previewBanner"></ng-container>
+  <!-- <ng-container *ngTemplateOutlet="previewBanner"></ng-container> -->
   <risk-alerts-notification></risk-alerts-notification>
 
 
@@ -159,7 +163,7 @@
   </div>
 </ng-template>
 
-<ng-template #previewBanner>
+<!-- <ng-template #previewBanner>
   <ng-container *ngIf="enableABTesting && !showSwitchBanner">
     <div [ngClass]="{'home-banner-preview': isPreview, 'home-banner-prod': !isPreview}" class="home-banner">
       <i *ngIf="isPreview" class="ib-blueinfo mr-3"></i>
@@ -172,7 +176,7 @@
       <span>&nbsp;. This will open in a new tab.</span>
     </div>
   </ng-container>
-</ng-template>
+</ng-template> -->
 
 <risk-alerts-panel></risk-alerts-panel>
 </div>

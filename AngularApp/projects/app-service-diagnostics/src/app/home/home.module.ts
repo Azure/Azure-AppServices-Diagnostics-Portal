@@ -2,8 +2,7 @@ import { NgModule, SecurityContext } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../shared/shared.module';
 import { RouterModule } from '@angular/router';
-import { SharedV2Module } from '../shared-v2/shared-v2.module';
-import { GenericSupportTopicService, GenericContentService, GenericResourceService, GenericDocumentsSearchService } from 'diagnostic-data';
+import { GenericSupportTopicService, GenericContentService, GenericResourceService, GenericDocumentsSearchService, ConversationalDiagService } from 'diagnostic-data';
 import { HomeComponent } from './components/home/home.component';
 import { CategoryChatComponent } from './components/category-chat/category-chat.component';
 import { CategoryTileComponent } from './components/category-tile/category-tile.component';
@@ -29,41 +28,27 @@ import { PortalReferrerResolverComponent } from '../shared/components/portal-ref
 import { CXPChatCallerService } from '../shared-v2/services/cxp-chat-caller.service';
 import { UncategorizedDetectorsResolver } from './resolvers/uncategorized-detectors.resolver';
 import { DetectorCategorizationService } from '../shared/services/detector-categorized.service';
-import { ToolNames } from '../shared/models/tools-constants';
-import { ProfilerToolComponent } from '../shared/components/tools/profiler-tool/profiler-tool.component';
-import { NetworkCheckComponent } from '../shared/components/tools/network-checks/network-checks.component';
-import { MemoryDumpToolComponent } from '../shared/components/tools/memorydump-tool/memorydump-tool.component';
-import { JavaThreadDumpToolComponent } from '../shared/components/tools/java-threaddump-tool/java-threaddump-tool.component';
-import { JavaMemoryDumpToolComponent } from '../shared/components/tools/java-memorydump-tool/java-memorydump-tool.component';
-import { ConnectionDiagnoserToolComponent } from '../shared/components/tools/connection-diagnoser-tool/connection-diagnoser-tool.component';
-import { AutohealingComponent } from '../auto-healing/autohealing.component';
-import { NetworkTraceToolComponent } from '../shared/components/tools/network-trace-tool/network-trace-tool.component';
-import { DaasMainComponent } from '../shared/components/daas-main/daas-main.component';
-import { AutohealingDetectorComponent } from '../availability/detector-view/detectors/autohealing-detector/autohealing-detector.component';
-import { CpuMonitoringToolComponent } from '../shared/components/tools/cpu-monitoring-tool/cpu-monitoring-tool.component';
-import { EventViewerComponent } from '../shared/components/daas/event-viewer/event-viewer.component';
-import { FrebViewerComponent } from '../shared/components/daas/freb-viewer/freb-viewer.component';
-import { MetricsPerInstanceAppServicePlanResolver, AdvanceApplicationRestartResolver, SecurityScanningResolver, MetricsPerInstanceAppsResolver } from '../diagnostic-tools/diagnostic-tools.routeconfig';
+import { MetricsPerInstanceAppServicePlanResolver, AdvanceApplicationRestartResolver, SecurityScanningResolver, MetricsPerInstanceAppsResolver, DiagnosticToolsRoutes } from '../diagnostic-tools/diagnostic-tools.routeconfig';
 import { CategoryTileV4Component } from '../fabric-ui/components/category-tile-v4/category-tile-v4.component';
 import { GenieModule } from '../genie/genie.module';
 import { FabricModule } from '../fabric-ui/fabric.module';
 import { ResourceService } from '../shared-v2/services/resource.service';
-import { JavaFlightRecorderToolComponent } from '../shared/components/tools/java-flight-recorder-tool/java-flight-recorder-tool.component';
-import { CrashMonitoringComponent } from '../shared/components/tools/crash-monitoring/crash-monitoring.component';
 import { RiskTileComponent } from './components/risk-tile/risk-tile.component';
 import { IntegratedSolutionsViewComponent } from '../shared/components/integrated-solutions-view/integrated-solutions-view.component';
 import { HomeContainerComponent } from './components/home-container/home-container.component';
 import { SolutionOrchestratorComponent } from "diagnostic-data";
-import { LinuxNodeHeapDumpComponent } from '../shared/components/tools/linux-node-heap-dump/linux-node-heap-dump.component';
-import { LinuxNodeCpuProfilerComponent } from '../shared/components/tools/linux-node-cpu-profiler/linux-node-cpu-profiler.component';
-import { LinuxPythonCpuProfilerComponent } from '../shared/components/tools/linux-python-cpu-profiler/linux-python-cpu-profiler.component';
 import { FabSearchBoxModule } from '@angular-react/fabric/lib/components/search-box';
 import { FabCommandBarModule } from '@angular-react/fabric/lib/components/command-bar';
 import { FabSpinnerModule } from '@angular-react/fabric/lib/components/spinner';
 import { DownloadReportComponent } from '../shared/components/download-report/download-report.component';
 import { GenericClientScriptService } from 'projects/diagnostic-data/src/lib/services/generic-client-script.service';
 import { ClientScriptService } from '../shared-v2/services/client-script.service';
-import { OpenAIArmService } from '../../../../diagnostic-data/src/public_api';
+import { DiagChatHomeComponent } from './diag-chat-home/diag-chat-home.component';
+import { FabLinkModule } from '@angular-react/fabric/lib/components/link';
+import { OpenAIArmService, GenericDocumentationCopilotService, ChatUIContextService } from 'diagnostic-data';
+import { DiagDocumentationCopilotService } from '../shared-v2/services/diag-documentation-copilot.service';
+import { DocumentationCopilotModule } from '../documentation-copilot/documentation-copilot.module';
+import { ConversationalDiagPortalService } from '../shared-v2/services/conversational-diagnostic-portal.service';
 
 export const HomeRoutes = RouterModule.forChild([
     {
@@ -81,6 +66,21 @@ export const HomeRoutes = RouterModule.forChild([
                     cacheComponent: true
                 },
                 pathMatch: 'full',
+            },
+            {
+                path: 'diagnosticChat',
+                component: DiagChatHomeComponent,
+                data: {
+                    navigationTitle: 'DiagChat',
+                    cacheComponent: true
+                },
+                //pathMatch: 'full',
+                children: [
+                    {
+                        'path': 'tools',
+                        loadChildren: () => import('../diagnostic-tools/diagnostic-tools.module').then(m => m.DiagnosticToolsModule)
+                    }
+                ]
             },
             {
                 path: 'solutionorchestrator',
@@ -245,211 +245,7 @@ export const HomeRoutes = RouterModule.forChild([
                             navigationTitle: TabTitleResolver,
                         }
                     },
-                    {
-                        path: 'tools/profiler',
-                        component: ProfilerToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.Profiler,
-                            cacheComponent: true
-                        }
-                    },
-                    // Profiler Tool for Linux (To be shown when All Instances of a Linux App are running on ANT 98)
-                    {
-                        path: 'tools/profilerlinuxv2',
-                        component: ProfilerToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.Profiler,
-                            cacheComponent: true,
-                            allLinuxInstancesOnAnt98: true
-                        }
-                    },
-                    // Memory Dump
-                    {
-                        path: 'tools/memorydump',
-                        component: MemoryDumpToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.MemoryDump,
-                            cacheComponent: true
-                        }
-                    },
-                    // Memory Dump for Linux (To be shown when All Instances of a Linux App are running on ANT 98)
-                    {
-                        path: 'tools/memorydumplinuxv2',
-                        component: MemoryDumpToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.MemoryDump,
-                            cacheComponent: true,
-                            allLinuxInstancesOnAnt98: true
-                        }
-                    },
-                    // Java Thread Dump
-                    {
-                        path: 'tools/javathreaddump',
-                        component: JavaThreadDumpToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.JavaThreadDump,
-                            cacheComponent: true
-                        }
-                    },
-                    // Java Memory Dump
-                    {
-                        path: 'tools/javamemorydump',
-                        component: JavaMemoryDumpToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.JavaMemoryDump,
-                            cacheComponent: true
-                        }
-                    },
-                    // Java Flight Recorder
-                    {
-                        path: 'tools/javaflightrecorder',
-                        component: JavaFlightRecorderToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.JavaFlightRecorder,
-                            cacheComponent: true
-                        }
-                    },
-                    // Linux Node Heap Dump
-                    {
-                        path: 'tools/linuxnodeheapdump',
-                        component: LinuxNodeHeapDumpComponent,
-                        data: {
-                            navigationTitle: ToolNames.LinuxNodeHeapDump,
-                            cacheComponent: true
-                        }
-                    },
-                    // Linux Node Cpu Profiler
-                    {
-                        path: 'tools/linuxnodecpuprofiler',
-                        component: LinuxNodeCpuProfilerComponent,
-                        data: {
-                            navigationTitle: ToolNames.LinuxNodeCpuProfiler,
-                            cacheComponent: true
-                        }
-                    },
-                    // Linux Python CPU Profiler
-                    {
-                        path: 'tools/linuxpythoncpuprofiler',
-                        component: LinuxPythonCpuProfilerComponent,
-                        data: {
-                            navigationTitle: ToolNames.LinuxPythonCpuProfiler,
-                            cacheComponent: true
-                        }
-                    },
-                    // Database Test Tool(connection string)
-                    {
-                        path: 'tools/databasetester',
-                        component: ConnectionDiagnoserToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.DatabaseTester,
-                            cacheComponent: true
-                        }
-                    },
-                    // CPU Monitoring tool
-                    {
-                        path: 'tools/cpumonitoring',
-                        component: CpuMonitoringToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.CpuMonitoring,
-                            cacheComponent: true
-                        }
-                    },
-                    // Crash Monitoring tool
-                    {
-                        path: 'tools/crashmonitoring',
-                        component: CrashMonitoringComponent,
-                        data: {
-                            navigationTitle: ToolNames.CrashMonitoring,
-                            cacheComponent: true
-                        }
-                    },
-                    // Autohealing
-                    {
-                        path: 'tools/mitigate',
-                        component: AutohealingComponent,
-                        data: {
-                            navigationTitle: ToolNames.AutoHealing,
-                            detectorComponent: AutohealingDetectorComponent
-                        }
-                    },
-                    // Network Trace
-                    {
-                        path: 'tools/networktrace',
-                        component: NetworkTraceToolComponent,
-                        data: {
-                            navigationTitle: ToolNames.NetworkTrace,
-                            cacheComponent: true
-                        }
-                    },
-                    // Network Checks
-                    {
-                        path: 'tools/networkchecks',
-                        component: NetworkCheckComponent,
-                        data: {
-                            navigationTitle: ToolNames.NetworkChecks,
-                            cacheComponent: true
-                        }
-                    },
-                    // Diagnostics
-                    {
-                        path: 'tools/daas',
-                        component: DaasMainComponent,
-                        data: {
-                            navigationTitle: ToolNames.Diagnostics,
-                            cacheComponent: true
-                        }
-                    },
-                    // Event Viewer
-                    {
-                        path: 'tools/eventviewer',
-                        component: EventViewerComponent,
-                        data: {
-                            navigationTitle: ToolNames.EventViewer,
-                            cacheComponent: true
-                        }
-                    },
-                    // Freb Viewer
-                    {
-                        // path: 'tools/frebviewer',
-                        path: 'tools/freblogs',
-                        component: FrebViewerComponent,
-                        data: {
-                            navigationTitle: ToolNames.FrebViewer,
-                            cacheComponent: true
-                        }
-                    },
-                    //Metrics per Instance (Apps)
-                    {
-                        // path: 'tools/metricsperinstance',
-                        path: 'tools/sitemetrics',
-                        resolve: {
-                            reroute: MetricsPerInstanceAppsResolver
-                        },
-                    },
-                    //Metrics per Instance (App Service Plan)
-                    {
-                        // path: 'tools/metricsperinstanceappserviceplan',
-                        path: 'tools/appserviceplanmetrics',
-                        resolve: {
-                            reroute: MetricsPerInstanceAppServicePlanResolver
-                        },
-                    },
-                    //Advanced Application Restart
-                    {
-                        // path: 'tools/applicationrestart',
-                        path: 'tools/advancedapprestart',
-                        resolve: {
-                            reroute: AdvanceApplicationRestartResolver
-                        },
-                    },
-                    //Security Scanning
-                    {
-                        // path: 'tools/securityscanning',
-                        path: 'tools/tinfoil',
-                        resolve: {
-                            reroute: SecurityScanningResolver
-                        },
-                    },
+                    { path: "tools", loadChildren: () => import('../diagnostic-tools/diagnostic-tools.module').then(m => m.DiagnosticToolsModule) },
                     // App settings page
                     {
                         path: 'settings',
@@ -771,15 +567,17 @@ export const HomeRoutes = RouterModule.forChild([
         SupportBotModule,
         GenieModule,
         FabricModule,
+        DocumentationCopilotModule,
         FormsModule,
         MarkdownModule.forRoot({
             sanitize: SecurityContext.STYLE
         }),
         FabSearchBoxModule,
         FabCommandBarModule,
-        FabSpinnerModule
+        FabSpinnerModule,
+        FabLinkModule
     ],
-    declarations: [HomeContainerComponent, HomeComponent, CategoryChatComponent, CategoryTileComponent, SearchResultsComponent, SupportTopicRedirectComponent, DiagnosticsSettingsComponent, CategoryTileV4Component, RiskTileComponent],
+    declarations: [HomeContainerComponent, HomeComponent, CategoryChatComponent, CategoryTileComponent, SearchResultsComponent, SupportTopicRedirectComponent, DiagnosticsSettingsComponent, CategoryTileV4Component, RiskTileComponent, DiagChatHomeComponent],
     providers:
         [
             CategoryTabResolver,
@@ -792,13 +590,18 @@ export const HomeRoutes = RouterModule.forChild([
             MetricsPerInstanceAppsResolver,
             MetricsPerInstanceAppServicePlanResolver,
             AdvanceApplicationRestartResolver,
+            ChatUIContextService,
             SecurityScanningResolver,
             { provide: GenericSupportTopicService, useExisting: SupportTopicService },
             { provide: GenericContentService, useExisting: ContentService },
             { provide: GenericDocumentsSearchService, useExisting: DocumentSearchService },
             { provide: CXPChatService, useExisting: CXPChatCallerService },
             { provide: GenericResourceService, useExisting: ResourceService },
-            { provide: GenericClientScriptService, useExisting: ClientScriptService}
+            { provide: GenericClientScriptService, useExisting: ClientScriptService },
+            DiagDocumentationCopilotService,
+            { provide: GenericDocumentationCopilotService, useExisting: DiagDocumentationCopilotService },
+            ConversationalDiagPortalService,
+            { provide: ConversationalDiagService, useExisting: ConversationalDiagPortalService }
         ],
 })
 export class HomeModule { }

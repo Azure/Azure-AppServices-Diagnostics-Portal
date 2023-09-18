@@ -1,0 +1,32 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "siteName": {
+            "type": "string"
+        },
+        "slotName": {
+            "type": "string",
+            "metadata": {
+                "description": "Target deployment slot to zipdeploy into."
+            },
+            "defaultValue": "staging"
+        },
+        "servicePackageLink": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The URL for the GitHub repository that contains the project to deploy."
+            }
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2014-06-01",
+            "type": "Microsoft.Web/sites/slots/extensions",
+            "name": "[concat(parameters('siteName'),'\/',parameters('slotName'),'\/','\/zipdeploy')]",
+            "properties": {
+                "packageUri": "[parameters('servicePackageLink')]"
+            }
+        }
+    ]
+}

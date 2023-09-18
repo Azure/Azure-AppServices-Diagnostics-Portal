@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ActivatedRoute } from '@angular/router';
 import { ApplensDiagnosticService } from '../services/applens-diagnostic.service';
-import { DataTableResponseColumn, DataTableResponseObject, DetectorMetaData, ExtendDetectorMetaData as ExtendedDetectorMetaData, SupportTopic, TableColumnOption, TableFilterSelectionOption } from 'diagnostic-data';
+import { DataTableResponseColumn, DataTableResponseObject, DetectorMetaData, ExtendDetectorMetaData as ExtendedDetectorMetaData, NoCodeSupportTopic, TableColumnOption, TableFilterSelectionOption } from 'diagnostic-data';
 import { ApplensSupportTopicService } from '../services/applens-support-topic.service';
 import { catchError } from 'rxjs/operators';
 import { of, forkJoin as observableForkJoin } from 'rxjs';
@@ -179,7 +179,7 @@ export class UserDetectorsComponent implements OnInit {
         this.isCurrentUser = currentUser.toLowerCase() === this.userId;
     }
 
-    private getSupportTopicName(supportTopicIds: SupportTopic[]): string {
+    private getSupportTopicName(supportTopicIds: NoCodeSupportTopic[]): string {
         const l2ToL3Map: Map<string, Set<string>> = new Map<string, Set<string>>();
         supportTopicIds.forEach(t => {
             const topic = this.supportTopics.find(topic => topic.supportTopicId === t.id);

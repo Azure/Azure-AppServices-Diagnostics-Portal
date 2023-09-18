@@ -19,8 +19,8 @@ namespace AppLensV3.Services
         cluster('azsupportfollower.westus2').database('AzureSupportability').ActiveSupportTopicTree
         | where ProductId in ('{PRODUCTID}') 
         | where Timestamp > ago(3d)
-        | summarize by ProductId, SupportTopicId = SupportTopicL3Id, ProductName, SupportTopicL2Name, SupportTopicL3Name, SapProductId, SapSupportTopicId = SapSupportTopicL3Id
-        | where SupportTopicId != '' and SupportTopicL2Name != '' and SupportTopicL3Name != ''
+        | summarize by ProductId, SupportTopicId = SupportTopicL3Id, SapProductId, SapSupportTopicId = SapSupportTopicL3Id, ProductName, SupportTopicL2Name, SupportTopicL3Name
+        | where (isnotempty(SupportTopicId) or isnotempty(SapSupportTopicId) ) and SupportTopicL2Name != '' and SupportTopicL3Name != ''
         | extend SupportTopicPath = strcat(ProductName, ""/"", SupportTopicL2Name,""/"", SupportTopicL3Name)
         ";
 
@@ -59,12 +59,12 @@ namespace AppLensV3.Services
                 {
                     ProductId = row["ProductId"].ToString(),
                     SupportTopicId = row["SupportTopicId"].ToString(),
+                    SapProductId = row["SapProductId"].ToString(),
+                    SapSupportTopicId = row["SapSupportTopicId"].ToString(),
                     ProductName = row["ProductName"].ToString(),
                     SupportTopicL2Name = row["SupportTopicL2Name"].ToString(),
                     SupportTopicL3Name = row["SupportTopicL3Name"].ToString(),
-                    SupportTopicPath = row["SupportTopicPath"].ToString(),
-                    SapSupportTopicId = row["SapSupportTopicId"].ToString(),
-                    SapProductId = row["SapProductId"].ToString(),
+                    SupportTopicPath = row["SupportTopicPath"].ToString()
                 };
 
                 supportTopicsList.Add(supportTopic);

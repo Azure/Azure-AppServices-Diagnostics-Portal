@@ -1,0 +1,16 @@
+{
+    "samples": [
+        {
+            "key": "How to configure VNET",
+            "value": "How to configure VNET on my Azure Kubernetes Cluster?"
+        },
+        {
+            "key": "How to enable auto scaling?",
+            "value": "How to enable auto scaling on my Azure Kubernetes Cluster?"
+        },
+        {
+            "key": "Add monitoring for upgrade issues",
+            "value": "How to add monitoring for upgrade issues with my Azure Kubernetes Cluster?"
+        }
+    ]
+}

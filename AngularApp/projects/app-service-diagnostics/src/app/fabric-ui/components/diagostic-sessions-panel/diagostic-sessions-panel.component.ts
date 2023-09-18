@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { PanelType } from 'office-ui-fabric-react';
 import { Globals } from '../../../globals';
 import { SiteDaasInfo } from '../../../shared/models/solution-metadata';
@@ -11,6 +11,7 @@ import { SiteService } from '../../../shared/services/site.service';
   styleUrls: ['./diagostic-sessions-panel.component.scss']
 })
 export class DiagosticSessionsPanelComponent implements OnInit {
+  @Input() isPanelBlocking: boolean = false;
   siteToBeDiagnosed: SiteDaasInfo;
   scmPath: string;
   type: PanelType = PanelType.custom;

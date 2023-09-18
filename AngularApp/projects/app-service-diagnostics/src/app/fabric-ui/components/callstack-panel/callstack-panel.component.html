@@ -1,5 +1,5 @@
 <fab-panel [isOpen]="globals.openCallStackPanel" [type]="type" [customWidth]="width" [isHiddenOnDismiss]="true"
-  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="false" [closeButtonAriaLabel]="'close'" (onDismiss)="dismissedHandler()"
+  [isLightDismiss]="true" [hasCloseButton]="true" [isBlocking]="isPanelBlocking" [closeButtonAriaLabel]="'close'" (onDismiss)="dismissedHandler()"
   [headerText]="'Call Stack'">
   <div class="panel-padding">
     <div class="exception" *ngIf="globals.callStackDetails.managedException">

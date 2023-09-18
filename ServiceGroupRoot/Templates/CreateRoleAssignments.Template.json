@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "createRBAC": {
+        "type": "string",
+        "defaultValue": "true",
+        "metadata": {
+          "description": "Has the RBAC role assignments been created for this MSI already?"
+        }
+      },
+      "principalId":{
+          "type": "string",
+          "metadata": {
+            "description": "The object id for the role assignement name"
+          }
+      },
+      "roleDefinitionId": {
+        "type": "string",
+        "defaultValue": "b24988ac-6180-42a0-ab88-20f7382dd24c",
+        "metadata": {
+          "description": "roleDefinition for the assignment - default is contributor"
+        }
+      }
+    },
+    "variables": {
+      // This creates an idempotent guid for the role assignment
+      "roleAssignmentNameTenantResourceGroupLevel": "[guid(parameters('principalId'), parameters('roleDefinitionId'))]"
+    },
+    "resources": [
+      {
+        "condition": "[equals(parameters('createRBAC'), 'true')]",
+        "type": "Microsoft.Authorization/roleAssignments",
+        "apiVersion": "2017-09-01",
+        "name": "[variables('roleAssignmentNameTenantResourceGroupLevel')]",
+        "properties": {
+          "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+          "principalId": "[parameters('principalId')]",
+          "scope": "[resourceGroup().id]"
+        }
+      }
+    ]
+  }
+  

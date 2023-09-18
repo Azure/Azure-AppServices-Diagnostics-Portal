@@ -1366,7 +1366,8 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
         if (modelData.workflowSucceeded === true) {
           this.workflowPackage = modelData.workflowPackage;
           this.code = this.workflowPackage.codeString;
-          this.useAutoMergeText = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.code) && !this.IsDetectorMarkedPublic(this.originalCode));
+          this.useAutoMergeText = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.code) && !this.IsDetectorMarkedPublic(this.originalCode)
+                                  && !this.isLogicAppStandardOnlyCode(this.code) && !this.isLogicAppStandardOnlyCode(this.code));
           this.modalPublishingButtonText = !this.useAutoMergeText ? "Create PR" : "Publish";
           this.enablePublishButton();
         }
@@ -1560,7 +1561,9 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
             this.disablePublishButton();
           }
           else {
-            this.useAutoMergeText = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.code) && !this.IsDetectorMarkedPublic(this.originalCode));
+            let isLogicAppStandard = this.isLogicAppStandardOnlyDetector(this.queryResponse.invocationOutput['appFilter']);
+            // Auto merge works only if config has auto merge to true or it has internal pass through and its not marked public and its not Logic App Standard only detector
+            this.useAutoMergeText = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.code) && !this.IsDetectorMarkedPublic(this.originalCode) && !isLogicAppStandard);
             this.modalPublishingButtonText = !this.useAutoMergeText ? "Create PR" : "Publish";
             this.enablePublishButton();
           }
@@ -1954,7 +1957,8 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     this.detectorDeleted = true;
     this.deletingDetector = true;
 
-    this.useAutoMergeText = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.code) && !this.IsDetectorMarkedPublic(this.originalCode));
+    this.useAutoMergeText = this.DevopsConfig.autoMerge || (this.DevopsConfig.internalPassthrough && !this.IsDetectorMarkedPublic(this.code) && !this.IsDetectorMarkedPublic(this.originalCode)
+                            && !this.isLogicAppStandardOnlyCode(this.code) && !this.isLogicAppStandardOnlyCode(this.originalCode));
 
     let gradPublishFiles: string[] = [
       "delete code",
@@ -2558,6 +2562,18 @@ export class OnboardingFlowComponent implements OnInit, OnDestroy, IDeactivateCo
     this._detectorDevelopmentCopilotService.detectorCode = event;
   }
 
+  isLogicAppStandardOnlyDetector(appFilter: any): boolean {
+    return (appFilter['AppType']  === 'WorkflowApp');
+  }
+
+  isLogicAppStandardOnlyCode(codeString:string): boolean {
+    if (codeString) {
+      var trimmedCode = codeString.toLowerCase().replace(/\s/g, "");
+      return trimmedCode.includes('apptype=apptype.workflowapp,');
+    }
+
+    return false;
+  }
   //#endregion
 
 }

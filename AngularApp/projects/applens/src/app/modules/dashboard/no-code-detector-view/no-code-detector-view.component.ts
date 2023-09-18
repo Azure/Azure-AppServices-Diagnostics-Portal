@@ -1,0 +1,41 @@
+import { Component, Input, OnInit } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { DetectorControlService, NoCodeExpressionResponse } from 'diagnostic-data';
+import { executionState } from '../node-composer/node-composer.component';
+
+@Component({
+  selector: 'no-code-detector-view',
+  templateUrl: './no-code-detector-view.component.html',
+  styleUrls: ['./no-code-detector-view.component.scss']
+})
+export class NoCodeDetectorViewComponent implements OnInit {
+  detectorNodesSubject = new BehaviorSubject<NoCodeExpressionResponse[]>([]);
+  nodeList: NoCodeExpressionResponse[] = [];
+  @Input() set detectorNodes(nodes: any) {
+    this.detectorNodesSubject.next(nodes);
+  }
+  executionState = executionState;
+  @Input() state: executionState = executionState.success;
+  @Input() errorMessage: string = "";
+  showView: boolean = true;
+  detectorView = null;
+  startTime: moment.Moment;
+  endTime: moment.Moment;
+  pivotKey: string = "data";
+
+  constructor(private _detectorControlService: DetectorControlService) { }
+
+  ngOnInit(): void {
+    this.startTime = this._detectorControlService.startTime;
+    this.endTime = this._detectorControlService.endTime;
+    this.detectorNodesSubject.subscribe(x => {
+      
+      this.detectorView = x;
+    });
+  }
+
+  changeTab(ev: any){
+    this.pivotKey = ev.item.props.itemKey;
+  }
+
+}

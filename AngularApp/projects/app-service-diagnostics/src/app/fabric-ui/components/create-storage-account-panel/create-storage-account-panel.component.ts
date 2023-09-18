@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { PanelType, IChoiceGroupOption, IDropdownOption } from 'office-ui-fabric-react';
 import { Globals } from '../../../globals';
 import { StorageService } from '../../../shared/services/storage.service';
@@ -20,7 +20,7 @@ const BlobContainerName: string = "memorydumps";
   styleUrls: ['./create-storage-account-panel.component.scss']
 })
 export class CreateStorageAccountPanelComponent implements OnInit {
-
+  @Input() isPanelBlocking: boolean = false;
   type: PanelType = PanelType.custom;
   width: string = "850px";
   error: any;

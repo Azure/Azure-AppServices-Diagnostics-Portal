@@ -931,6 +931,10 @@ export class DetectorViewComponent implements OnInit {
 
     this.zoomBehavior = zoomBehaviors.CancelZoom;
   }
+
+  ngOnChanges(){
+    this.ngOnInit();
+  }
 }
 
 @Pipe({

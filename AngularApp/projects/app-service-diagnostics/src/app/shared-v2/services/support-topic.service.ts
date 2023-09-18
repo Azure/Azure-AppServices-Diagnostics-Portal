@@ -71,7 +71,7 @@ export class SupportTopicService {
         if (this.pesId && this.pesId.length > 0 && this.sapSupportTopicId && this.sapSupportTopicId.length > 0) {
 
             // To generate a unique apollo search Id, we use resource name, current timestamp and a guid.
-            let apolloResourceId = `${this._resourceService.resource.name}-${Math.floor(Date.now() / 1000)}-${uuid()}`;
+            let apolloResourceId = `${this._resourceService.resource.name ? this._resourceService.resource.name : this._resourceService.subscriptionId}-${Math.floor(Date.now() / 1000)}-${uuid()}`;
             let fullResourceUri = this._resourceService.resource.id;
             let partialResourceUri = `/subscriptions/${fullResourceUri.split("subscriptions/")[1].split("/")[0]}/providers/${fullResourceUri.split("/providers/")[1].split("/")[0]}/${fullResourceUri.split("/providers/")[1].split("/")[1].split("?")[0]}`;
             let requestBody =

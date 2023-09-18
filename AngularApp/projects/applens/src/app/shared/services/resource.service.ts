@@ -19,6 +19,7 @@ export class ResourceService {
   public emergingIssuesICMLookupEnabled: boolean;
   public overviewPageMetricsId: string;
   public workflowsEnabled: boolean;
+  public noCodeDetectorsEnabled: boolean;
   public service:string;
 
   protected _observerResource: any = null;
@@ -40,6 +41,7 @@ export class ResourceService {
     this.emergingIssuesICMLookupEnabled = (inputs.emergingIssuesICMLookupEnabled !== undefined && inputs.emergingIssuesICMLookupEnabled);
     this.overviewPageMetricsId = inputs.overviewPageMetricsId;
     this.workflowsEnabled = inputs.workflowsEnabled;
+    this.noCodeDetectorsEnabled = inputs.noCodeDetectorsEnabled;
     this.service = inputs.service;
   }
 

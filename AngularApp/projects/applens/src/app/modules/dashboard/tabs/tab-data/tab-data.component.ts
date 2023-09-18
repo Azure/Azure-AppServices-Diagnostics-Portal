@@ -86,7 +86,7 @@ export class TabDataComponent implements OnInit, OnDestroy {
   vfsFonts: any;
 
   // copilot variables
-  copilotEnabled: boolean = true;
+  copilotVisibilityStyle: any = {};
   copilotServiceMembersInitialized: boolean = false;
 
   constructor(public resourceService: ResourceService, public _copilotContainerService: ApplensCopilotContainerService, public _detectorCopilotService: ApplensDetectorCopilotService,
@@ -99,7 +99,7 @@ export class TabDataComponent implements OnInit, OnDestroy {
     this.copilotServiceMembersInitialized = false;
 
     this._detectorCopilotService.isEnabled().subscribe(res => {
-      this.copilotEnabled = res && !this.isWorkflowDetector;
+      this.copilotVisibilityStyle = res && !this.isWorkflowDetector ? {} : { display: "none" };
     });
 
     // If route query params contains detectorQueryParams, setting the values in shared service so it is accessible in all components
@@ -204,7 +204,7 @@ export class TabDataComponent implements OnInit, OnDestroy {
       this.isWorkflowDetector = true;
 
       // disable copilot for workflows
-      this.copilotEnabled = false;
+      this.copilotVisibilityStyle = { display: "none" };
 
     } else {
       this.detector = this._route.snapshot.params['detector'];

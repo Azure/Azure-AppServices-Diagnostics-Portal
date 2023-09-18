@@ -41,6 +41,7 @@ export class OpenAIChatContainerComponent implements OnInit {
   @Input() chatModel: ChatModel = ChatModel.GPT3;
   @Input() responseTokenSize: ResponseTokensSize = ResponseTokensSize.Small;
   @Input() stopMessageGeneration: boolean = false;
+  @Input() userNameInitial: string = "";
   @Input() systemInitial: string = "AI";
   @Input() systemPhotoSource: string = '/assets/img/openailogo.svg';
   @Input() showCopyOption:boolean = false;
@@ -71,6 +72,7 @@ export class OpenAIChatContainerComponent implements OnInit {
   @Input() customCommandBarButtons:CustomCommandBarButtons[] = [];
   @Input() onFeedbackClicked: (chatMessage:ChatMessage, feedbackType:FeedbackOptions) => void;
   @Input() autoAddResourceSpecificInfoToChatMessages:boolean = true;
+  @Input() useDisplayMessageForChatHistory: boolean = true;
 
   constructor(private _activatedRoute: ActivatedRoute, private _router: Router,
     private _chatContextService: ChatUIContextService,

@@ -1,0 +1,68 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "siteName": {
+            "type": "string"
+        },
+        "slotName": {
+            "type": "string",
+            "metadata": {
+                "description": "Target deployment slot to zipdeploy into."
+            },
+            "defaultValue": "staging"
+        },
+        "cloudEnvironment": {
+            "type": "string"
+        },
+        "dstsRealm": {
+          "type": "string"
+        },
+        "dstsRealmStaging": {
+          "type": "string"
+        },
+        "runtimeHostEndpoint": {
+            "type": "string"
+        },
+        "runtimeHostEndpointStaging": {
+            "type": "string"
+        },
+        "runtimeHostKeyVaultAppKey": {
+            "type": "string"
+        },
+        "observerKeyVaultAppKey": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('siteName'),'\/','\/appsettings')]",
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2018-11-01",
+            "properties": {
+                "ASPNETCORE_ENVIRONMENT": "Production",
+                "CloudDomain": "[if(or(equals(parameters('cloudEnvironment'), 'Prod'), equals(parameters('cloudEnvironment'), 'Test')), 'PublicAzure', parameters('cloudEnvironment'))]",
+                "DatacenterFederationConfiguration:Realm": "[parameters('dstsRealm')]",
+                "DiagnosticRole:AppServiceEndpoint": "[parameters('runtimeHostEndpoint')]",
+                "WEBSITE_ADD_SITENAME_BINDINGS_IN_APPHOST_CONFIG": "1",
+                "WEBSITE_LOAD_CERTIFICATES": "*",
+                "DiagnosticRole:UseAppService": "true",
+                "Observer:clientCertEnabled": "false",
+                "Observer:clientSecret": "[parameters('observerKeyVaultAppKey')]"
+            }
+        },
+        {
+            "name": "[concat(parameters('siteName'),'\/slotconfignames')]",
+            "type": "Microsoft.Web/sites/config",
+            "comments": "This specifies the names of all the appsettings we want to be set to sticky",
+            "apiVersion": "2018-11-01",
+            "properties": {
+                "appSettingNames": [
+                    "DatacenterFederationConfiguration:Realm",
+                    "DiagnosticRole:AppServiceEndpoint",
+                    "CloudDomain"
+                ]
+            }
+        }
+    ]
+}

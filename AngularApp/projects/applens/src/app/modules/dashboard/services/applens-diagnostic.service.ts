@@ -3,7 +3,7 @@ import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.se
 import { ResourceService } from '../../../shared/services/resource.service';
 import { DetectorResponse, DetectorMetaData, ExtendDetectorMetaData, ChatCompletionModel } from 'diagnostic-data';
 import { Observable } from 'rxjs';
-import { QueryResponse } from 'diagnostic-data';
+import { QueryResponse, NoCodeDetector, NoCodeExpressionBody, NoCodePackage  } from 'diagnostic-data';
 import { Package } from '../../../shared/models/package';
 import { filter } from 'rxjs-compat/operator/filter';
 import { map } from 'rxjs/operators';
@@ -132,6 +132,12 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getDetectorsWithExtendDefinition(versionPrefix, resourceId, null, internalClient);
   }
 
+  getDetectorExtendedMetaDataById(id: string): Observable<ExtendDetectorMetaData> {
+    return this.getDetectorsWithExtendDefinition().pipe(map(datas => {
+      return datas.find(d => d.id === id);
+    }));
+  }
+
   getDetectorsSearch(query: string, internalClient: boolean = true): Observable<DetectorMetaData[]> {
     var queryParams: any[] = null;
     if (query != null)
@@ -157,6 +163,10 @@ export class ApplensDiagnosticService {
 
   getUsers(body: any): Observable<any> {
     return this._diagnosticApi.getUsers(body);
+  }
+
+  getSuggestionForAlias(aliasStartsWith:string): Observable<any> {
+    return this._diagnosticApi.getSuggestionForAlias(aliasStartsWith);
   }
 
   getSupportTopics(pesId: any): Observable<any> {
@@ -211,6 +221,10 @@ export class ApplensDiagnosticService {
       publishingDetectorId,
       workflowExecutionId,
       nodeId);
+  }
+
+  getTPromptCodeSuggestions(queryName:string): Observable<any> {
+    return this._diagnosticApi.getTPromptCodeSuggestions(queryName);
   }
 
   getCompilerResponse(body: any, isSystemInvoker: boolean, detectorId: string = '', startTime: string = '', endTime: string = '', dataSource: string = '', timeRange: string = '', additionalParams: any, publishingDetectorId: string, isDocumentation: boolean = false): Observable<QueryResponse<DetectorResponse>> {
@@ -288,9 +302,22 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.evaluateDynamicExpression(this._resourceService.getCurrentResourceId(true), dynamicExpression, startTime, endTime);
   }
 
+  evaluateNoCodeExpression(expression: NoCodeExpressionBody, startTime: string, endTime: string): Observable<any> {
+    return this._diagnosticApi.evaluateNoCodeExpression(this._resourceService.getCurrentResourceId(true), expression, startTime, endTime);
+  }
+
+  executeNoCodeDetector(expression: NoCodeDetector, startTime: string, endTime: string): Observable<any> {
+    return this._diagnosticApi.executeNoCodeDetector(this._resourceService.getCurrentResourceId(true), expression, startTime, endTime);
+  }
+
   publishWorkflow(publishBody: workflowPublishBody) {
     this._resourceService.getCurrentResourceId(true)
     return this._diagnosticApi.publishWorkflow(this._resourceService.getCurrentResourceId(true), publishBody);
+  }
+
+  publishNoCode(publishBody: NoCodePackage) {
+    this._resourceService.getCurrentResourceId(true)
+    return this._diagnosticApi.publishNoCode(this._resourceService.getCurrentResourceId(true), publishBody);
   }
 
   getDetectorCode(detectorPath: string, branch: string, resourceUri: string): Observable<string> {
@@ -301,8 +328,8 @@ export class ApplensDiagnosticService {
     return this._diagnosticApi.getDevOpsTree(devOpsPath, branch, resourceUri);
   }
 
-  pushDetectorChanges(branch: string, files: string[], repoPaths: string[], comment: string, changeType: string, resourceUri: string) {
-    return this._diagnosticApi.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri);
+  pushDetectorChanges(branch: string, files: string[], repoPaths: string[], comment: string, changeType: string, resourceUri: string, noCodeDetector: NoCodeDetector = null) {
+    return this._diagnosticApi.pushDetectorChanges(branch, files, repoPaths, comment, changeType, resourceUri, noCodeDetector);
   }
 
   makePullRequest(sourceBranch: string, targetBranch: string, title: string, resourceUri: string, reviewers: string[] = [], description: string = "") {

@@ -19,6 +19,10 @@
   {{breadCrumb.name}}
 </a>
 
+<!-- <div *ngIf="detectorDataLocalCopy && detectorDataLocalCopy.metadata && !isPublic && !isInCaseSubmission()">
+  <p><b>Author</b>: {{detectorDataLocalCopy.metadata.author}}</p>
+  <p><b>Description</b>: {{detectorDataLocalCopy.metadata.description}}</p>
+</div> -->
 <div *ngIf="detectorDataLocalCopy" class="detector-control">
   <div *ngIf="!hideDetectorControl && !insideDetectorList">
     <ng-container *ngTemplateOutlet="detectorTimePickerPill"></ng-container>

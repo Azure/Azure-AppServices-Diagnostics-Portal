@@ -1,4 +1,5 @@
 <div class="flow-container">
-  <onboarding-flow [isWorkflowDetector]="isWorkflow" [mode]="DevelopMode.Edit" [id]="id" #onboardingFlow>
+  <onboarding-flow *ngIf="!isNoCode" [isWorkflowDetector]="isWorkflow" [mode]="DevelopMode.Edit" [id]="id" #onboardingFlow>
   </onboarding-flow>
+  <detector-designer *ngIf="isNoCode" [mode]="DevelopMode.Edit" [detectorId]="id" #detectorDesigner></detector-designer>
 </div>

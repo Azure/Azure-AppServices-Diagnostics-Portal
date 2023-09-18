@@ -310,8 +310,7 @@ export class DetectorListComponent extends DataRenderBaseComponent {
               });
 
               this._copilotService.processAsyncDetectorViewModels([issueDetectedViewModel]);
-
-            } else {
+            } else if(this.detectorViewModels[index].status !== HealthStatus.None){
               let insightInfo = this.getDetectorInsightInfo(this.detectorViewModels[index]);
               let successViewModel: DetectorViewModeWithInsightInfo = { model: this.detectorViewModels[index], ...insightInfo };
 

@@ -1,0 +1,325 @@
+{
+    "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/scopeBindings.json",
+    "contentVersion": "0.0.0.1",
+    "scopeBindings": [
+        {
+            "scopeTagName": "General",
+            "bindings": [
+                {
+                    "find": "__TENANT_ID__",
+                    "replaceWith": "$callerTenantId()"
+                },
+                {
+                    "find": "__CLOUD_ENVIRONMENT__",
+                    "replaceWith": "$rolloutInfra()"
+                },
+                {
+                    "find": "__CURRENT_RESOURCE_GROUP_SUBSCRIPTION_ID__",
+                    "replaceWith": "$azureSubscriptionId()"
+                },
+                {
+                    "find": "__CDN_STORAGE_ACCOUNT_NAME__",
+                    "replaceWith": "diagnoseandsolve"
+                },
+                {
+                    "find": "__MANAGED_IDENTITY_NAME__",
+                    "replaceWith": "diag-msi"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "AM2",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-am2"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "North Europe"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "BAY",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-bay"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "West US"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "BLU",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-blu"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "East US"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "BM",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-bm"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "West India"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "CQ",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-cq"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "Brazil South"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "HK1",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-hk1"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "East Asia"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "JNB",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-jnb"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "South Africa North"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "MA",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-ma"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "South India"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "ML1",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-ml1"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "Australia Southeast"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "PAR",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-par"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "France Central"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "PN",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-pn"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "Central India"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "SE1",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-se1"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "Korea Central"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "SG1",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-sg1"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "Southeast Asia"
+                }
+            ]
+        },
+        {
+            "scopeTagName": "SN1",
+            "bindings": [
+                {
+                    "find": "__SITENAME__",
+                    "replaceWith": "appservice-diagnostics-sn1"
+                },
+                {
+                    "find": "__TARGET_DEPLOYMENT_SLOT__",
+                    "replaceWith": "staging"
+                },
+                {
+                    "find": "__ZIP_PACKAGE__",
+                    "replaceWith": "AppServiceDiagnostics.zip"
+                },
+                {
+                    "find": "__LOCATION__",
+                    "replaceWith": "South Central US"
+                }
+            ]
+        }
+    ]
+}

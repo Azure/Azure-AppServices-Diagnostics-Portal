@@ -1,0 +1,25 @@
+<div style="padding-top: 0.25em;">
+    <div style="height:calc(20%);display: block;">
+        <div *ngIf="isMicrosoftWeb">
+            <h2>Data Source</h2>
+            <div>
+                <fab-text-field [required]="dataSourceRequired" [label]="'Cluster: '" [placeholder]="antaresClusterNamePlaceholderConst" [styles]="textBoxStyle" (onChange)="updateCluster($event)"></fab-text-field>
+            </div>
+            <div>
+                <fab-text-field [required]="dataSourceRequired" [label]="'Database: '" [placeholder]="antaresDatabaseNamePlaceholderConst" [styles]="textBoxStyle" (onChange)="updateDatabase($event)"></fab-text-field>
+            </div>
+        </div>
+        <div *ngIf="!isMicrosoftWeb">
+            <h2>Data Source</h2>
+            <div>
+                <fab-text-field [required]="dataSourceRequired" [label]="'Cluster: '" [styles]="textBoxStyle" (onChange)="updateCluster($event)"></fab-text-field>
+            </div>
+            <div>
+                <fab-text-field [required]="dataSourceRequired" [label]="'Database: '" [styles]="textBoxStyle" (onChange)="updateDatabase($event)"></fab-text-field>
+            </div>
+        </div>
+    </div>
+    <div style="height:calc(80%);display: block;padding-top: 5px;">
+        <div #dynamicRenderingSettingsContainer></div>
+    </div>
+</div>

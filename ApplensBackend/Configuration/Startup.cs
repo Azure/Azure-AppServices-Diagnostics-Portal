@@ -3,8 +3,9 @@ using AppLensV3.Models;
 using AppLensV3.Services;
 using AppLensV3.Services.ApplensTelemetryInitializer;
 using AppLensV3.Services.AppSvcUxDiagnosticDataService;
-using AppLensV3.Services.CognitiveSearchService;
 using AppLensV3.Services.DiagnosticClientService;
+using CommonLibrary.Models;
+using CommonLibrary.Services;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
@@ -161,6 +162,8 @@ namespace AppLensV3
             services.AddSingleton<IRedisService<ArmResourceRedisModel>>(new ArmResourceRedisCache(Configuration, RedisConnection.InitializeAsync(true, connectionString: Configuration["ArmResourceService:RedisConnectionString"].ToString())));
             services.AddSingletonWhenEnabled<IArmResourceService, ArmResourceService, NullableArmResourceService>(Configuration, "ArmResourceService");
 
+            services.AddSingleton<ITPromptClientService, TPromptClientService>();
+
             services.AddMemoryCache();
             services.AddMvc().AddNewtonsoftJson();
 
@@ -173,13 +176,20 @@ namespace AppLensV3
                 services.AddSingleton<IBingSearchService, BingSearchServiceDisabled>();
             }
 
-            var cognitiveSearchConfiguration = Configuration.GetSection("CognitiveSearch").Get<CognitiveSearchConfiguration>();
+            var semanticServiceConfiguration = Configuration.GetSection("SemanticService").Get<SemanticServiceConfiguration>();
+            services.AddSingleton(semanticServiceConfiguration);
 
-            if (cognitiveSearchConfiguration != null)
+            if (semanticServiceConfiguration != null && semanticServiceConfiguration.Enabled)
             {
-                services.AddSingleton<ICognitiveSearchBaseService>(new CognitiveSearchBaseService(cognitiveSearchConfiguration));
-                services.AddSingleton<ICognitiveSearchAdminService, CognitiveSearchAdminService>();
-                services.AddSingleton<ICognitiveSearchQueryService, CognitiveSearchQueryService>();
+                if (!Environment.IsDevelopment())
+                {
+                    SemanticTokenService.Instance.Initialize(semanticServiceConfiguration);
+                }
+                services.AddSingleton<ISemanticSearchService, SemanticSearchService>();
+            }
+            else
+            {
+                services.AddSingleton<ISemanticSearchService, SemanticSearchServiceDisabled>();
             }
 
             if (Configuration.GetValue("Graph:Enabled", false))

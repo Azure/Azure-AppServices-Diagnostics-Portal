@@ -1,0 +1,51 @@
+{
+    "$schema": "https://ev2schema.azure.net/schemas/2020-01-01/rolloutParameters.json",
+    "contentVersion": "1.0.0.0",
+    "wait": [
+      {
+        "name": "wait1minute",
+        "properties": {
+          "duration": "PT1M"
+        }
+      },
+      {
+        "name": "wait3minute",
+        "properties": {
+          "duration": "PT3M"
+        }
+      },
+      {
+        "name": "wait5minute",
+        "properties": {
+          "duration": "PT5M"
+        }
+      }
+    ],
+    "shellExtensions": [
+      {
+        "name": "upload-static-files-for-cdn",
+        "type": "mySimpleShell",
+        "properties": {
+          "maxExecutionTime": "PT20M"
+        },
+        "package": {
+          "reference": {
+            "path": "bin\\setup.tar.gz"
+          }
+        },
+        "launch": {
+          "command": [
+            "/bin/bash",
+            "-c",
+            "pwsh shell_deps/upload-cdn.ps1 -SubscriptionId __CURRENT_RESOURCE_GROUP_SUBSCRIPTION_ID__ -StorageAccountName __CDN_STORAGE_ACCOUNT_NAME__"
+          ],
+          "identity": {
+            "type": "UserAssigned",
+            "userAssignedIdentities": [
+              "/subscriptions/__CURRENT_RESOURCE_GROUP_SUBSCRIPTION_ID__/resourceGroups/AppServiceDiagnosticsResources/providers/Microsoft.ManagedIdentity/userAssignedIdentities/__MANAGED_IDENTITY_NAME__"
+            ]
+          }
+        }
+      }
+    ]
+  }

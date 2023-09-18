@@ -21,6 +21,7 @@ export class SolutionViewContainerComponent implements OnInit {
     @Input() metadataForLogging: any = {};
     @Input() showThanksMessage: boolean = false;
     @Input() customSolutionTitleImageSrc: string = "";
+    @Input() hasBorder: boolean = true;
 
     @Output() showThanksMessageChange = new EventEmitter<any>();
     

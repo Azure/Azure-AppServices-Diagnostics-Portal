@@ -1,0 +1,12 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "keyVaultName": {
+        "value": "__KEYVAULTNAME__"
+      },
+      "azureWebsitesServicePrincipalObjectId": {
+        "value": "__AZURE_WEBSITES_SERVICE_PRINCIPAL_OBJECT_ID__"
+      }
+    }
+}

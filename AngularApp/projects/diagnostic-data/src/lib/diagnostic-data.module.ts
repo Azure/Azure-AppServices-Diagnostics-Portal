@@ -123,6 +123,7 @@ import { FormStepComponent } from './components/step-views/form-step-view/form-s
 import { GenericPortalService } from './services/generic-portal.service';
 
 import { FabIconModule } from '@angular-react/fabric/lib/components/icon';
+import { FabShimmerModule } from '@angular-react/fabric/lib/components/shimmer';
 import { FabButtonModule } from '@angular-react/fabric/lib/components/button';
 import { FabDropdownModule } from '@angular-react/fabric/lib/components/dropdown';
 import { FabPanelModule } from '@angular-react/fabric/lib/components/panel';
@@ -150,7 +151,7 @@ import { WorkflowNodeComponent } from './components/workflow-node/workflow-node.
 import { NgFlowchartModule } from 'projects/ng-flowchart/dist';
 import { ArchitectureDiagramComponent } from './components/architecture-diagram/architecture-diagram.component';
 import { ArchitectureDiagramNodeComponent } from './components/architecture-diagram-node/architecture-diagram-node.component';
-import { GenericOpenAIChatService, OpenAIArmService } from '../public_api';
+import { ConversationalDiagService, GenericOpenAIChatService, OpenAIArmService } from '../public_api';
 import { OpenaiComponent } from './components/openai/openai.component';
 import { QueryResponseService } from './services/query-response.service';
 import { WorkflowConditionNodeComponent } from './components/workflow-condition-node/workflow-condition-node.component';
@@ -168,8 +169,14 @@ import {OpenAIChatComponent} from './components/openai-chat/openai-chat.componen
 import {OpenAIGenieComponent} from './components/openai-genie/openai-genie.component';
 import {OpenAIChatContainerComponent} from './components/openai-chat-container/openai-chat-container.component';
 import { ChatUIMarkdownWrapperComponent } from './components/chat-ui-markdown-wrapper/chat-ui-markdown-wrapper.component';
-import { GenericDetectorCopilotService } from './services/generic-detector-copilot.service';
+import { GenericDetectorCopilotService } from './services/generic-detector-copilot.service';import { MarkdownRenderingSettingsComponent } from './markdown-rendering-settings/markdown-rendering-settings.component';
+import { GraphRenderingSettingsComponent } from './graph-rendering-settings/graph-rendering-settings.component';
+
 import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
+import { GenericDocumentationCopilotService } from "./services/generic-documentation-copilot.service";
+import { DocumentationCopilotComponent } from './components/documentation-copilot/documentation-copilot.component';
+import { DiagChatSolutionComponent } from './components/diag-chat-solution/diag-chat-solution.component';
+import { DiagChatContainerComponent } from './components/diag-chat-container/diag-chat-container.component';
 
 
 @NgModule({
@@ -207,7 +214,8 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         FabDatePickerModule,
         FabCalendarModule,
         NgFlowchartModule,
-        FabDialogModule
+        FabDialogModule,
+        FabShimmerModule,
     ],
     providers: [
         ClipboardService
@@ -288,7 +296,12 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         OpenAIChatComponent,
         OpenAIGenieComponent,
         OpenAIChatContainerComponent,
-        ChatUIMarkdownWrapperComponent
+        ChatUIMarkdownWrapperComponent,
+        DocumentationCopilotComponent,
+        DiagChatContainerComponent,
+        DiagChatSolutionComponent,
+        MarkdownRenderingSettingsComponent,
+        GraphRenderingSettingsComponent
     ],
     exports: [
         FormsModule, TimeSeriesGraphComponent, DynamicDataComponent, DetectorViewComponent, DetectorSearchComponent, ClientScriptViewComponent,
@@ -338,7 +351,10 @@ import { FabDialogModule } from '@angular-react/fabric/lib/components/dialog';
         OpenAIGenieComponent,
         DateTimePickerComponent,
         OpenAIChatContainerComponent,
-        ChatUIMarkdownWrapperComponent
+        ChatUIMarkdownWrapperComponent,
+        DocumentationCopilotComponent,
+        DiagChatContainerComponent,
+        DiagChatSolutionComponent
     ]
 })
 export class DiagnosticDataModule {
@@ -373,7 +389,8 @@ export class DiagnosticDataModule {
                 OptInsightsGenericService,
                 DemoSubscriptions,
                 ChatUIContextService,
-                GenericDetectorCopilotService
+                GenericDetectorCopilotService,
+                GenericDocumentationCopilotService
             ]
         };
     }

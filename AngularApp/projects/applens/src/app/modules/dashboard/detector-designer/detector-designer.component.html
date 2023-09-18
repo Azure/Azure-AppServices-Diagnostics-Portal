@@ -1,0 +1,144 @@
+<div style="height: 100%;">
+  <no-code-detector-panel [errorMessage]="errorMessage" [state]="state" [isOpenObservable]="detectorPanelOpenObservable" [detectorNodes]="detectorNodes" [detectorJson]="detectorJson" (publish)="publishButtonOnClick()"></no-code-detector-panel>
+</div>
+<loader-view *ngIf="!detectorLoaded" message="Loading detector ..."></loader-view>
+
+<fab-panel [isOpen]="publishSuccess || publishFailed" [isLightDismiss]="true" [type]="PanelType.custom"
+  [customWidth]="'400px'" [isHiddenOnDismiss]="true" [hasCloseButton]="false" [closeButtonAriaLabel]="'close'"
+  [styles]="submittedPanelStyles" [isBlocking]="false" (onDismissed)="dismissPublishSuccessHandler()"
+  (onOpened)="onOpenPublishSuccessPanel()">
+  <div class="submitted-panel-text panel-text">
+    <div style="display: flex;align-items: center; margin-left: 4px; margin-right: 8px;">
+      <div *ngIf="publishSuccess || saveSuccess" style="display: flex; align-items: center; padding: 0px 10px;">
+        <status-icon [status]="HealthStatus.Success" class="mr-3"></status-icon>
+        <div>
+          <h5 style="font-weight: 600;">Your detector {{detectorName}} was saved</h5>
+        </div>
+      </div>
+
+      <div *ngIf="publishFailed" style="display: flex; align-items: center; padding: 0px 10px;">
+        <status-icon [status]="HealthStatus.Critical" class="mr-3"></status-icon>
+        <div style="font-weight: 600;">Your detector {{detectorName}} publish failed </div>
+      </div>
+
+      <div *ngIf="saveFailed" style="display: flex; align-items: center; padding: 0px 10px;">
+        <status-icon [status]="HealthStatus.Critical" class="mr-3"></status-icon>
+        <div style="font-weight: 600;">Failed to save your detector </div>
+      </div>
+    </div>
+  </div>
+</fab-panel>
+
+<div *ngIf="detectorLoaded" style="width: 100%;">
+    <div style = "display: flex; justify-content: left;align-items: baseline; padding-left: 8px;">
+        <fab-text-field [ariaLabel]="'Detector Name'" [styles]="fabTextFieldStyle" [label]="'Name'" [required]="true" [getErrorMessage]="getRequiredErrorMessageOnTextField" 
+        [value]="detectorName" [autoComplete]="'off'" (onBlur)="onBlurDetectorName($event)" (onChange)="onChangeDetectorName($event)"></fab-text-field>
+    </div>
+    <fab-command-bar tabindex="1"  [attr.id]="'fab-command-bar'" [contentClass]="'fab-command-bar-class'">
+        <items>
+            <!-- do not use *ngIf on these buttons  -->
+            <fab-command-bar-item key="run" [text]="runButtonText" [iconProps]="runIcon" (click)="runCompilation()"
+                [disabled]="state === executionState.running || nodesValid()"></fab-command-bar-item>
+            
+            <fab-command-bar-item [style]="saveButtonVisibilityStyle" key="save" [text]="saveButtonText" [iconProps]="saveIcon"
+                (click)="saveDetectorCode()"></fab-command-bar-item>
+
+            <fab-command-bar-item key="detectorSettings" [text]="detectorSettingsButtonText" [iconProps]="settingsIcon"
+                (click)="detectorSettingsButtonOnClick()" >
+            </fab-command-bar-item>
+
+            <far-items>
+                <fab-command-bar-item *ngIf="detectorGraduation" key="brachSelectorPill" text="custom text">
+                    <render>
+                      <ng-template let-item="item">
+                        <div style="padding-top:1px!important; margin-right: 10px;">
+                          <fab-default-button id="develop-tab-branch-selector" (click)="branchToggleCallout()"
+                            [styles]="pillButtonStyleBranchPicker" [ariaLabel]="displayName" [iconProps]="{ iconName: 'BranchSearch' }">
+                            Branch: {{displayBranch}}</fab-default-button>
+                          <fab-callout [hidden]="!isBranchCallOutVisible" [setInitialFocus]="true"
+                            [target]="'#develop-tab-branch-selector'">
+                            <div class="callout-padding">
+                              <div>
+                                <fab-choice-group [options]="showBranches" (onChange)="updateTempBranch($event)">
+                                </fab-choice-group>
+                              </div>
+                              <div style="border-top: 1px solid gray; padding-left: 10px;" class="pt-3 pb-3 callout-padding">
+                                <fab-primary-button (onClick)="updateBranch()" (keyup.enter)="updateBranch()"
+                                  [ariaLabel]="'Apply'" [contentClass]="'mr-3 callout-button'" [contentStyle]="'border-radius: 2px;'">
+                                  Apply
+                                </fab-primary-button>
+                                <fab-default-button (onClick)="closeBranchCallout()" (keyup.enter)="closeBranchCallout()"
+                                  [ariaLabel]="'Cancel'" [contentStyle]="'border-radius: 2px;'">Cancel</fab-default-button>
+                              </div>
+                            </div>
+                          </fab-callout>
+                        </div>
+                      </ng-template>
+                    </render>
+                    <render-icon>
+                      <ng-template let-contextualMenuItemProps="contextualMenuItemProps">
+                        <div>custom icon</div>
+                      </ng-template>
+                    </render-icon>
+                  </fab-command-bar-item>
+                <fab-command-bar-item key="timePickerPill" text="custom text">
+                    <render>
+                      <ng-template let-item="item">
+                        <div style="padding-top:1px!important;">
+                          <fab-default-button id="develop-tab-timepicker" (onClick)="openTimePickerSubject.next(true);"
+                            [styles]="pillButtonStyleTimePicker" [ariaLabel]="displayName" [iconProps]="{ iconName: 'clock' }">Time range (UTC):
+                            {{timePickerButtonStr}}
+                          </fab-default-button>
+                        </div>
+                        <detector-time-picker [target]="'#develop-tab-timepicker'" [openTimePickerCalloutObservable]="openTimePickerSubject">
+                        </detector-time-picker>
+                      </ng-template>
+                    </render>
+                    <render-icon>
+                      <ng-template let-contextualMenuItemProps="contextualMenuItemProps">
+                        <div>custom icon</div>
+                      </ng-template>
+                    </render-icon>
+                  </fab-command-bar-item>
+            </far-items>
+        </items>
+    </fab-command-bar>
+
+    <detector-settings-panel [detectorId]="detectorId" [id] = '"detectorSettingsPanel"' [mode] = "mode" [(isOpen)] = "detectorSettingsPanelOpenState" 
+    (onOpened) = "onOpenedDetectorSettingsPanel()" [isEditMode]="mode != DevelopMode.Create" (onDismiss) = "onDismissDetectorSettingsPanel($event)" [(settingsValue)] = "detectorSettingsPanelValue"
+     ></detector-settings-panel>
+
+     <ng-container *ngFor="let element of elements; let i = index">
+      <div [id]="element.id + '_rowContainer'" class="" style="width: 80%;margin:2em auto 2em auto;display: flex;">
+        <div style="display: flex;width: 4%;flex-direction: column;justify-content: space-evenly;align-items: center;">
+          <div>
+            <fab-link [disabled]="i==0" (onClick)="moveElementUp(element, i, $event)">
+            <fab-icon [iconName]="'CaretSolidUp'" ></fab-icon>
+            </fab-link>
+          </div>
+          <div>
+            <fab-link [disabled] = "i == elements.length-1" (onClick)="moveElementDown(element, i, $event)">
+            <fab-icon [iconName]="'CaretSolidDown'" ></fab-icon>
+          </fab-link></div>
+        </div>
+        <div class="composerEleBorder"  style="width: 96%;">
+          <node-composer [mode]="mode" [nodeModel] = "element" (nodeModelChange) = "reflectModelChanges(element, i, $event)" (onDuplicateClick) = "duplicateElement(element, i, $event)" 
+            (onDeleteClick) = "deleteElement(element, i, $event)"  (onNodeModelChange) = "onComposerElementChange(element, i, $event)" [isNodeValid] = "isNodeValid"
+          ></node-composer>
+        </div>
+      </div>
+    </ng-container>
+    <div style="width: 80%;margin:2em auto 2em auto;display: flex;">
+      <div  style="display: flex;width: 4%;flex-direction: column;justify-content: space-evenly;align-items: center;"></div>
+      <div style="width: 96%;display: flex;justify-content: center;">
+        <fab-link (onClick) = "addElement()">
+          <div class="addNode-container">
+            <div  style="display: flex;align-self: center; font-size: medium; color:#0E95E2" class="option-picker-option-icon">
+              <fab-icon [iconName]="'Add'" ></fab-icon>
+            </div>          
+            <div  style="display: flex;align-self: center;padding: 0.5em; font-size: medium;">Add</div>
+          </div>
+        </fab-link>
+      </div>
+    </div>
+</div>

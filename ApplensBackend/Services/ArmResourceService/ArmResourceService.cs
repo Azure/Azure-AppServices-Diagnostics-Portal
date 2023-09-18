@@ -2,6 +2,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Octokit;
+using CommonLibrary.Services;
 
 namespace AppLensV3.Services
 {

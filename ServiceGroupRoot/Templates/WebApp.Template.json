@@ -1,0 +1,88 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appService_name": {
+            "type": "String"
+        },
+        "appServicePlan_location": {
+            "type": "String"
+        },
+        "appServicePlan_name": {
+            "type": "String"
+        },
+        "appServicePlan_skuName": {
+            "type": "String"
+        },
+        "appServicePlan_skuTier": {
+            "type": "String"
+        },
+        "appServicePlan_skuFamily": {
+            "type": "String"
+        },
+        "appServicePlan_skuSize": {
+            "type": "String"
+        },
+        "appServicePlan_workerSizeId": {
+            "type": "Int"
+        },
+        "servicePackageLink": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The URL for the GitHub repository that contains the project to deploy."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites",
+            "kind": "WebApp",
+            "name": "[parameters('appService_name')]",
+            "apiVersion": "2015-04-01",
+            "location": "[parameters('appServicePlan_location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "tags": {
+                "[concat('hidden-related:', resourceId(resourcegroup().name,'Microsoft.Web/serverfarms', parameters('appServicePlan_name')))]": "empty"
+            },
+            "properties": {
+                "name": "[parameters('appService_name')]",
+                "serverFarmId": "[resourceId(resourcegroup().name,'Microsoft.Web/serverfarms', parameters('appServicePlan_name'))]",
+                "kind": "WebApp",
+                "httpsOnly": true
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverFarms', parameters('appServicePlan_name'))]"
+            ],
+            "resources": [
+                {
+                    "apiVersion": "2014-06-01",
+                    "name": "MSDeploy",
+                    "type": "Extensions",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('appService_name'))]"
+                    ],
+                    "properties": {
+                        "packageUri": "[parameters('servicePackageLink')]"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "[parameters('appServicePlan_skuName')]",
+                "tier": "[parameters('appServicePlan_skuTier')]",
+                "family": "[parameters('appServicePlan_skuFamily')]",
+                "size": "[parameters('appServicePlan_skuSize')]"
+            },
+            "name": "[parameters('appServicePlan_name')]",
+            "apiVersion": "2015-04-01",
+            "location": "[parameters('appServicePlan_location')]",
+            "properties": {
+                "name": "[parameters('appServicePlan_name')]"
+            }
+        }
+    ]
+}

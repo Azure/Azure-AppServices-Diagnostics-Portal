@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DiagnosticApiService } from '../../../shared/services/diagnostic-api.service';
 import { ResourceService } from '../../../shared/services/resource.service';
-import { DetectorMetaData, DetectorType, SupportTopic } from 'diagnostic-data';
+import { DetectorMetaData, DetectorType, NoCodeSupportTopic } from 'diagnostic-data';
 import { ApplensDiagnosticService } from './applens-diagnostic.service';
 import { CacheService } from '../../../shared/services/cache.service';
 import { HttpClient } from '@angular/common/http';

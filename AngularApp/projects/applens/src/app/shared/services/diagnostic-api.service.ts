@@ -10,7 +10,7 @@ import { Package } from '../models/package';
 import { CacheService } from './cache.service';
 import { Guid } from 'projects/app-service-diagnostics/src/app/shared/utilities/guid';
 import { Router } from '@angular/router';
-import { TelemetryPayload } from 'diagnostic-data';
+import { TelemetryPayload, NoCodeDetector, NoCodeExpressionBody, NoCodePackage } from 'diagnostic-data';
 import { FavoriteDetectorProp, FavoriteDetectors, LandingInfo, RecentResource, UserPanelSetting, UserSetting } from '../models/user-setting';
 import { List } from 'office-ui-fabric-react';
 import { dynamicExpressionBody } from '../../modules/dashboard/workflow/models/kusto';
@@ -163,6 +163,14 @@ export class DiagnosticApiService {
     return useCache ? this._cacheService.get(this.getCacheKey(HttpMethod.POST, url + body.toString()), request, invalidateCache) : request;
   }
 
+  public getSuggestionForAlias(aliasStartsWith:string, useCache: boolean = true, invalidateCache: boolean = false): Observable<any> {
+    let url: string = `${this.diagnosticApi}api/graph/users/suggestion/${aliasStartsWith}`;
+    let request = this._httpClient.get(url, {
+      headers: this._getHeaders()
+    });
+    return useCache ? this._cacheService.get(this.getCacheKey(HttpMethod.POST, url), request, invalidateCache) : request;    
+  }
+
   public getKustoClusterForGeoRegion(geoRegion: string, useCache: boolean = true, invalidateCache: boolean = false): Observable<any> {
     let path = `api/kustogeo/${geoRegion}`;
     return this.get(path, invalidateCache);
@@ -196,6 +204,17 @@ export class DiagnosticApiService {
 
     let path = `${version}${resourceId}/gists/${gistId}`;
     return this.invoke<any>(path, HttpMethod.POST, body, true);
+  }
+
+  public getTPromptCodeSuggestions(queryName:string): Observable<any> {
+    
+    let url: string = `${this.diagnosticApi}api/tprompt/getCodeSuggestions/${queryName}`;
+    let request = this._httpClient.get(url, {
+      headers: this._getHeaders()
+    });
+    return request;
+    
+    //return this.invoke<any>(`${this.diagnosticApi}api/tprompt/getCodeSuggestions/${queryName}`, HttpMethod.GET, null, true);
   }
 
 
@@ -345,8 +364,25 @@ export class DiagnosticApiService {
     return this.invoke<string>(path, HttpMethod.POST, body, false);
   }
 
+  public evaluateNoCodeExpression(resourceId: string, body: NoCodeExpressionBody, startTime: string, endTime: string): Observable<any> {
+    let timeParameters = this._getTimeQueryParameters(startTime, endTime);
+    let path = `${resourceId}/noCodeEvaluateExpression?${timeParameters}`;
+    return this.invoke<string>(path, HttpMethod.POST, body, false);
+  }
+
+  public executeNoCodeDetector(resourceId: string, body: NoCodeDetector, startTime: string, endTime: string): Observable<any> {
+    let timeParameters = this._getTimeQueryParameters(startTime, endTime);
+    let path = `${resourceId}/executeNoCodeDetector?${timeParameters}`;
+    return this.invoke<string>(path, HttpMethod.POST, body, false);
+  }
+
   public publishWorkflow(resourceId: string, publishBody: workflowPublishBody): Observable<any> {
     let path = `${resourceId}/diagnostics/publishworkflow`;
+    return this.invoke<string>(path, HttpMethod.POST, publishBody, false);
+  }
+
+  public publishNoCode(resourceId: string, publishBody: NoCodePackage): Observable<any> {
+    let path = `${resourceId}/diagnostics/publishnocodedetector`;
     return this.invoke<string>(path, HttpMethod.POST, publishBody, false);
   }
 
@@ -582,7 +618,7 @@ export class DiagnosticApiService {
     return this.invoke(path, HttpMethod.GET, null, false);
   }
 
-  public pushDetectorChanges(branch: string, files: string[], repoPaths: string[], comment: string, changeType: string, resourceUri: string) {
+  public pushDetectorChanges(branch: string, files: string[], repoPaths: string[], comment: string, changeType: string, resourceUri: string, noCodeDetector: NoCodeDetector = null) {
 
     var body = {};
     body['branch'] = branch;
@@ -591,6 +627,7 @@ export class DiagnosticApiService {
     body['comment'] = comment;
     body['changeType'] = changeType;
     body['resourceUri'] = resourceUri;
+    body['noCodeDetector'] = noCodeDetector;
 
     let path = "devops/push";
     return this.invoke<any>(path, HttpMethod.POST, body, false, true, true, true, false);

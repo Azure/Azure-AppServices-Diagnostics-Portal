@@ -14,19 +14,23 @@ export class KustoUtilities {
         if(!markdown) {
             return '';
         }
+        let queryText:string = '';
         if(markdown.indexOf('```') > -1) {
             let codeSnippetExtractionRegex = /```(.*?)\n([\s\S]*?)\n```/;
             let matches = markdown.match(codeSnippetExtractionRegex);
             if (matches && matches.length > 2) {
-                return `${matches[2]}`.trim();
+                queryText = `${matches[2]}`.trim();
             }
             else {
-                return `${markdown}`.trim();
+                queryText = `${markdown}`.trim();
             }
         }
         else {
-            return `${markdown}`.trim();
+            queryText = `${markdown}`.trim();
         }
+
+        // Remove empty lines since kusto queries cannot have empty lines
+        return queryText.split('\n').filter((line) => line.trim().length > 0).join('\n');
     }
 
     public static GetKustoQueryFromMarkdown(markdown: string, cluster:string, database:string): KustoQuery {
@@ -44,6 +48,7 @@ export class KustoUtilities {
 
     public static GetKustoQuery(queryText: string, cluster:string, database:string): KustoQuery {
         if(queryText && cluster && database) {
+            queryText = queryText.split('\n').filter((line) => line.trim().length > 0).join('\n');
             let encodedQueryText = '';
             try {
                 //First zip the query text, then base64encode it and then url encode it
