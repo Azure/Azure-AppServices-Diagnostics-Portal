@@ -74,6 +74,12 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Reference Include="Azure-Cost-Optimization">
+      <HintPath>..\..\..\Users\jchukwuma.REDMOND\source\repos\Azure-Cost-Optimization\Azure-Cost-Optimization\bin\Debug\net6.0\Azure-Cost-Optimization.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  
+  <ItemGroup>
     <None Update="Templates\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
