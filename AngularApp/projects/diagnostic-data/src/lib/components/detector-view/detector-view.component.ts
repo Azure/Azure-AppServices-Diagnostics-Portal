@@ -933,7 +933,7 @@ export class DetectorViewComponent implements OnInit {
   }
 
   ngOnChanges(){
-    this.ngOnInit();
+    //this.ngOnInit();
   }
 }
 
