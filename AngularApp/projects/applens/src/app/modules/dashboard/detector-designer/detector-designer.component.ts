@@ -343,14 +343,14 @@ export class DetectorDesignerComponent implements OnInit, IDeactivateComponent  
   startUp(){
     this.diagnosticApiService.getPPEHostname().subscribe(host => {
       this.PPEHostname = host;
-      this.diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
-        this.PPELink = `${this.PPEHostname}${this._router.url}`;
-        this.isProd = env === "Prod";
-        if (this.isProd) {
-          window.open(this.PPELink, '_blank');
-          this.mode === DevelopMode.Create ? window.open(this._router.url.replace('/designDetector?', '?'), '_self') : window.open(this._router.url.replace('/nocodeedit?', '?'), '_self');
-        }
-      });
+      // this.diagnosticApiService.getDetectorDevelopmentEnv().subscribe(env => {
+      //   this.PPELink = `${this.PPEHostname}${this._router.url}`;
+      //   this.isProd = env === "Prod";
+      //   if (this.isProd) {
+      //     window.open(this.PPELink, '_blank');
+      //     this.mode === DevelopMode.Create ? window.open(this._router.url.replace('/designDetector?', '?'), '_self') : window.open(this._router.url.replace('/nocodeedit?', '?'), '_self');
+      //   }
+      // });
     });
 
     this.detectorGraduation = true;
