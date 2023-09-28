@@ -50,6 +50,7 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   executionState = executionState;
   state: executionState = this.executionState.default;
   errorMessage: string = 'test error message';
+  runningMessage: string = 'Running...';
   runButtonDisabled: boolean = false;
   detectorLoading: boolean = false;
 
@@ -339,9 +340,10 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   }
 
   public previewResults(event:any) {
+    this.state = this.executionState.running;
+    this.runButtonDisabled = true;
     if (this.templatized){
-      this.runButtonDisabled = true;
-      this.state = this.executionState.running;
+      this.runningMessage = 'Running query...';
       this.sampleTestDataset = null;
       this.pivotSelectedKey = this.nodeModel.id + '_Result';
       this.noCodeExpression.OperationName = this.nodeModel.queryName;
@@ -470,6 +472,8 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   }
 
   private templatizeQuery(event = null){
+    this.runningMessage = 'Templatizing your query with AI...'
+    this.pivotSelectedKey = this.nodeModel.id + '_Result';
     this.isMicrosoftWeb = true;
     let appName = 'todoapiv420210108090805';
     let prompt = this.isMicrosoftWeb ? CreateTextCompletionModel(`${this.microsoftWebPrompt}\n\nfor an app named ${appName}\n\n${this.nodeModel.code}\n\noutput:\n`, TextModels.Default, ResponseTokensSize.Large) : CreateTextCompletionModel(`prompt2`);
@@ -477,6 +481,11 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
     this._openAIService.generateTextCompletion(prompt, null, true).subscribe(template => {
       this.nodeModel.code = template.text;
       this.previewResults(event);
+    }, 
+    error => {
+      this.state = this.executionState.failure;
+      this.errorMessage = error.error;
+      this.runButtonDisabled = false;
     });
   }
 
@@ -500,7 +509,27 @@ export class NodeComposerComponent implements OnInit, OnDestroy {
   }
 
   onChangeQueryName(event:any) {
-    this.nodeModel.queryName = event.newValue;
+    let detectorIdBeforeUpdate = this.nodeModel.queryName;
+    this.nodeModel.queryName = event.newValue?.toLowerCase().replace(/[\. ]/g, '_').replace(/[^\w. ]/g, '');
+    let cursorStartPosition:number = -1;
+
+    if(event && event.event && event.event.target && event.event.target['selectionStart']) {
+
+      cursorStartPosition = detectorIdBeforeUpdate != this.nodeModel.queryName ? event.event.target['selectionStart'] : event.event.target['selectionStart'] - 1;
+
+    }
+    
+    if(cursorStartPosition > -1) {
+
+      setTimeout(() => {
+
+        event.event.target['selectionStart'] = cursorStartPosition;
+
+        event.event.target['selectionEnd'] = cursorStartPosition;
+
+      });
+
+    }
     this.checkIfNodeValid();
   }
 }

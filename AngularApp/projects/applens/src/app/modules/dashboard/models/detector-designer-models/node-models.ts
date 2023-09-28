@@ -27,9 +27,7 @@ export class ComposerNodeModel {
         newElement.queryName = element.queryName + " (Copy)";
         newElement.code = element.code;
         newElement.renderingType = element.renderingType;
-        if(element.renderingType == RenderingType.Markdown){
-            newElement.code += 'you selected markdown';
-        }
+        newElement.settings = element.settings;
         return newElement;
     }
 }

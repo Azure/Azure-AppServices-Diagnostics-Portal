@@ -2,7 +2,7 @@
 	<div [id]="nodeModel.id + '_composerheaderRow'" style="width: 100%; display: flex;justify-content:space-between; padding: 0.25em;background-color: lightsteelblue;">
 		<div>
 			<fab-text-field [ariaLabel]="'Name'" [styles]="fabTextFieldStyleNoStretch" 
-					[errorMessage]="nodeStatus" [defaultValue]="nodeModel.queryName"
+					[errorMessage]="nodeStatus" [value]="nodeModel.queryName" 
 					[autoComplete]="'off'"  (onBlur)="removeSpacesFromQueryName($event)" (onChange)="onChangeQueryName($event)"></fab-text-field>
 		</div>
 		<div style="display:flex;font-size:large;">
@@ -52,7 +52,7 @@
 						</ng-container>
 						<ng-container *ngIf="state === executionState.running">
 							<div style="text-align: center;">
-								<fab-spinner [label]="'Running query...'" [size]="'large'"></fab-spinner>
+								<fab-spinner [label]="runningMessage" [size]="'large'"></fab-spinner>
 							</div>
 						</ng-container>
 						<ng-container *ngIf="state === executionState.default">
