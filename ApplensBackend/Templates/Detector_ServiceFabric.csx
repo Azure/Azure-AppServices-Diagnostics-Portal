@@ -1,21 +1,14 @@
 using System;
 using System.Threading;
 
-private static string GetQuery(OperationContext<ArmResource> cxt)
-{
-    return
-    $@"
-		let startTime = datetime({cxt.StartTime});
-		let endTime = datetime({cxt.EndTime});
-		YOUR_TABLE_NAME
-		| where Timestamp >= startTime and Timestamp <= endTime
-		YOUR_QUERY
-	";
-}
-
-
 [ArmResourceFilter(provider: "Microsoft.ServiceFabric", resourceTypeName: "clusters")]
-[Definition(Id = "YOUR_DETECTOR_ID", Name = "", Author = "YOUR_ALIAS", Description = "")]
+[Definition(
+    Id = "YOUR_DETECTOR_ID", 
+    Name = "YOUR_DETECTOR_TITLE", 
+    Author = "sfapplensreview", 
+    Category = "InReview",    
+    Description = ""
+)]
 public async static Task<Response> Run(DataProviders dp, OperationContext<ArmResource> cxt, Response res)
 {
     res.Dataset.Add(new DiagnosticData()
@@ -29,4 +22,16 @@ public async static Task<Response> Run(DataProviders dp, OperationContext<ArmRes
     });
 
     return res;
+}
+
+private static string GetQuery(OperationContext<ArmResource> cxt)
+{
+    return
+    $@"
+		let startTime = datetime({cxt.StartTime});
+		let endTime = datetime({cxt.EndTime});
+		YOUR_TABLE_NAME
+		| where Timestamp >= startTime and Timestamp <= endTime
+		YOUR_QUERY
+	";
 }
