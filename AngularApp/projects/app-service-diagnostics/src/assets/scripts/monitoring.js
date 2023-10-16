@@ -63,10 +63,16 @@ class Logging {
         const eles = document.getElementsByTagName("sc-app");
         for (const ele of eles) {
             if (ele.innerText.length > 0) {
+                this.hideLoadingIcon();
                 return true;
             }
         }
         return false;
+    }
+
+    hideLoadingIcon() {
+        const ele = document.getElementById("loading-icon");
+        ele.style.display = "none";
     }
 }
 
@@ -106,7 +112,7 @@ function monitoring() {
     const logger = new Logging(shellSrc);
     logger.postMessage("initializationcomplete", null);
     logger.logEvent(LoggingUtilities.startMonitoringIFrame, {});
-    logger.setIntervalForCheckComponent(2 * 1000, LoggingUtilities.monitoringTimeout * 1000);
+    logger.setIntervalForCheckComponent(200, LoggingUtilities.monitoringTimeout * 1000);
 }
 
 monitoring();
